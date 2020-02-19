@@ -82,7 +82,7 @@
 				<tfoot id="detalle_totales">
 					<tr class="headt">
 						<th colspan="5" style='text-align:left'>TOTAL</th>
-						<th class="textright">{{number_format($aux_total 2, ",", ".")}}</th>
+						<th class="textright">{{number_format($aux_total, 2, ",", ".")}}</th>
 					</tr>
 				</tfoot>
 			</table>
