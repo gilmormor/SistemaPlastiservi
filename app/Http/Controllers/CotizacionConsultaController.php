@@ -85,6 +85,7 @@ class CotizacionConsultaController extends Controller
             <tbody>';
             $i = 0;
             $aux_nfila = 0;
+            $aux_total = 0;
             foreach ($datas as $data) {
                 $aux_nfila++; 
                 $colorFila = "";
@@ -155,8 +156,22 @@ class CotizacionConsultaController extends Controller
                 </tr>";
 
                 //dd($data->contacto);
+                $aux_total += $data->total;
             }
-			$respuesta['tabla'] .= "</tbody>
+            $respuesta['tabla'] .= "
+            </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th style='text-align:right'></th>
+                        <th style='text-align:right'>". number_format($aux_total, 2, ",", ".") ."</th>
+                        <th style='text-align:right'></th>
+                    </tr>
+                </tfoot>
+
 			</table>";
             //dd($respuesta);
             //dd(compact('datas'));

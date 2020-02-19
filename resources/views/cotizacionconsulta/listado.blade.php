@@ -42,8 +42,12 @@
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
+					<?php
+						$aux_total = 0;
+					?>
 					@foreach($cotizaciones as $cotizacion)
 					<?php
+						$aux_total += $cotizacion->total;
 						$rut = number_format( substr ( $cotizacion->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->rut, strlen($cotizacion->rut) -1 , 1 );
 						$aux_mensaje= "";
 						$aux_icono = "";
@@ -75,23 +79,13 @@
 						</tr>
 					@endforeach
 				</tbody>
-				<!--
 				<tfoot id="detalle_totales">
 					<tr class="headt">
-						<td colspan="7" class="textright"><span>NETO</span></td>
-						<td class="textright"><span>{{number_format($cotizacion->neto, 2, ",", ".")}}</span></td>
-					</tr>
-					<tr class="headt">
-						<td colspan="7" class="textright"><span>IVA {{$empresa[0]['iva']}}%</span></td>
-						<td class="textright"><span>{{number_format($cotizacion->iva, 2, ",", ".")}}</span></td>
-					</tr>
-					<tr class="headt">
-						<td colspan="7" class="textright"><span>TOTAL</span></td>
-						<td class="textright"><span>{{number_format($cotizacion->total, 2, ",", ".")}}</span></td>
+						<th colspan="5" style='text-align:left'>TOTAL</th>
+						<th class="textright">{{number_format($aux_total 2, ",", ".")}}</th>
 					</tr>
 				</tfoot>
-				-->
-		</table>
+			</table>
 	</div>
 
 	<!--

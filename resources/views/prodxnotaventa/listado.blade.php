@@ -76,7 +76,6 @@
 						<th class="textright">{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
 					</tr>
 				</tfoot>
-
 		</table>
 	</div>
 </div>
