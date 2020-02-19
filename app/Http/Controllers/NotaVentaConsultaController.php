@@ -76,6 +76,8 @@ class NotaVentaConsultaController extends Controller
 			</thead>
             <tbody>";
             $i = 0;
+            $aux_totalKG = 0;
+            $aux_totalps = 0;
             foreach ($datas as $data) {
                 $colorFila = "";
                 $aux_data_toggle = "";
@@ -105,11 +107,23 @@ class NotaVentaConsultaController extends Controller
                         </a>
                     </td>
                 </tr>";
-
+                $aux_totalKG += $data->totalkilos;
+                $aux_totalps += $data->totalps;
+    
                 //dd($data->contacto);
             }
-			$respuesta['tabla'] .= "</tbody>
-			</table>";
+            $respuesta['tabla'] .= "
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='8' style='text-align:left'>TOTAL</th>
+                    <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
+                    <th style='text-align:right'></th>
+                </tr>
+            </tfoot>
+
+            </table>";
             //dd($respuesta);
             //dd(compact('datas'));
             //dd($clientedirecs->get());

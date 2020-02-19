@@ -171,7 +171,6 @@ class CotizacionConsultaController extends Controller
                         <th style='text-align:right'></th>
                     </tr>
                 </tfoot>
-
 			</table>";
             //dd($respuesta);
             //dd(compact('datas'));

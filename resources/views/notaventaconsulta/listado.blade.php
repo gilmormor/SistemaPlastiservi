@@ -49,10 +49,14 @@
 				<tbody id="detalle_productos">
 					<?php
 						$i=0;
+						$aux_totalKG = 0;
+						$aux_totalps = 0;
 					?>
 					@foreach($notaventas as $notaventa)
 						<?php
 							$i++;
+							$aux_totalKG += $notaventa->totalkilos;
+							$aux_totalps += $notaventa->totalps;
 							$rut = number_format( substr ( $notaventa->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->rut, strlen($notaventa->rut) -1 , 1 );
 							$colorFila = "";
 							$aux_data_toggle = "";
@@ -79,22 +83,12 @@
 
 					@endforeach
 				</tbody>
-				<!--
 				<tfoot id="detalle_totales">
 					<tr class="headt">
-						<td colspan="7" class="textright"><span>NETO</span></td>
-						<td class="textright"><span>{{number_format($notaventa->pvckg, 2, ",", ".")}}</span></td>
-					</tr>
-					<tr class="headt">
-						<td colspan="7" class="textright"><span>IVA {{$empresa[0]['iva']}}%</span></td>
-						<td class="textright"><span>{{number_format($notaventa->pvckg, 2, ",", ".")}}</span></td>
-					</tr>
-					<tr class="headt">
-						<td colspan="7" class="textright"><span>TOTAL</span></td>
-						<td class="textright"><span>{{number_format($notaventa->pvckg, 2, ",", ".")}}</span></td>
-					</tr>
+						<td colspan="8" class="textright"><span>TOTALES</span></td>
+						<td class="textright"><span>{{number_format($aux_totalKG, 2, ",", ".")}}</span></td>
+						<td class="textright"><span>{{number_format($aux_totalps, 2, ",", ".")}}</span></td>
 				</tfoot>
-				-->
 		</table>
 	</div>
 
