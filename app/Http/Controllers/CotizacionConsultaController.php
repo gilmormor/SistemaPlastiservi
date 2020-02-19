@@ -79,6 +79,7 @@ class CotizacionConsultaController extends Controller
                     <th>Razón Social</th>
                     <th>Estado</th>
                     <th>Total</th>
+                    <th>PDF</th>
 				</tr>
 			</thead>
             <tbody>';
@@ -145,6 +146,12 @@ class CotizacionConsultaController extends Controller
                         </a>
                     </td>
                     <td class='textright' align='right' id='contacto$i' name='contacto$i'>".number_format($data->total, 2, ",", ".") ."</td>
+                    <td>
+                        <a href='" . route('exportPdf_cotizacion', ['id' => $data->id]) . "' class='btn-accion-tabla tooltipsC' title='PDF' target='_blank'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                        </a>
+                    </td>
+
                 </tr>";
 
                 //dd($data->contacto);
