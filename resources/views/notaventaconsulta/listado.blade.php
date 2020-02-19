@@ -85,9 +85,11 @@
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr class="headt">
+						<b>
 						<td colspan="9" class="textright"><span>TOTALES</span></td>
 						<td class="textright"><span>{{number_format($aux_totalKG, 2, ",", ".")}}</span></td>
 						<td class="textright"><span>{{number_format($aux_totalps, 2, ",", ".")}}</span></td>
+						</b>
 				</tfoot>
 		</table>
 	</div>
