@@ -27,4 +27,10 @@ class CategoriaProd extends Model
     {
         return $this->hasMany(GrupoProd::class,'categoriaprod_id');
     }
+    //Relacion inversa a AreaProduccion
+    public function areaproduccion()
+    {
+        return $this->belongsTo(AreaProduccion::class);
+    }
+    
 }

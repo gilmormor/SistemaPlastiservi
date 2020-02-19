@@ -277,7 +277,7 @@ Route::get('cotizacionconsulta/exportPdf', 'CotizacionConsultaController@exportP
 /*RUTAS APROBAR COTIZACION*/
 Route::get('cotizacionaprobar', 'CotizacionAprobarController@index')->name('cotizacionaprobar');
 
-/*RUTAS Color*/
+/*RUTAS GIRO*/
 Route::get('giro', 'GiroController@index')->name('giro');
 Route::get('giro/crear', 'GiroController@crear')->name('crear_giro');
 Route::post('giro', 'GiroController@guardar')->name('guardar_giro');
@@ -344,3 +344,12 @@ Route::get('clientetemp/{id}/editar', 'ClienteTempController@editar')->name('edi
 Route::put('clientetemp/{id}', 'ClienteTempController@actualizar')->name('actualizar_clientetemp');
 Route::delete('clientetemp/{id}', 'ClienteTempController@eliminar')->name('eliminar_clientetemp');
 Route::post('clientetemp/buscarCliTemp', 'ClienteTempController@buscarCliTemp')->name('buscarCliTemp');
+
+
+/*RUTAS AREAPRODUCCION*/
+Route::get('areaproduccion', 'AreaProduccionController@index')->name('areaproduccion');
+Route::get('areaproduccion/crear', 'AreaProduccionController@crear')->name('crear_areaproduccion');
+Route::post('areaproduccion', 'AreaProduccionController@guardar')->name('guardar_areaproduccion');
+Route::get('areaproduccion/{id}/editar', 'AreaProduccionController@editar')->name('editar_areaproduccion');
+Route::put('areaproduccion/{id}', 'AreaProduccionController@actualizar')->name('actualizar_areaproduccion');
+Route::delete('areaproduccion/{id}', 'AreaProduccionController@eliminar')->name('eliminar_areaproduccion');

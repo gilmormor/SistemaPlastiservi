@@ -4,7 +4,6 @@ Cotización
 @endsection
 
 @section("scripts")
-    <script type="text/javascript" src="{{asset("assets/js/jquery-barcode.js")}}"></script>
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/notaventaconsulta/index.js")}}" type="text/javascript"></script>
@@ -89,5 +88,5 @@ Cotización
         </div>
     </div>
 </div>
-@endsection
 @include('generales.buscarcliente')
+@endsection

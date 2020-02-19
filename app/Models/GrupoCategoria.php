@@ -5,18 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AreaProduccion extends Model
+class GrupoCategoria extends Model
 {
     use SoftDeletes;
-    protected $table = "areaproduccion";
-    protected $fillable = [
-        'nombre',
-        'descripcion',
-        'usuariodel_id'
-    ];
-    //RELACION UNO A MUCHOS CATEGORIAPROD
+    protected $table = "grupocategoria";
+    protected $fillable = ['gruc_nombre','gruc_descripcion','usuariodel_id'];
+
+    //RELACION DE UNO A VARIOS
     public function categoriaprods()
     {
         return $this->hasMany(CategoriaProd::class);
     }
+
 }

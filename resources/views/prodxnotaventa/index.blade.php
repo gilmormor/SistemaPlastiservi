@@ -76,5 +76,5 @@ Productos Notas de Venta
         </div>
     </div>
 </div>
-@endsection
 @include('generales.buscarcliente')
+@endsection
