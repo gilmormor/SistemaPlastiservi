@@ -36,7 +36,7 @@ Productos Notas de Venta
                             </div>
                             <div class="col-xs-12 col-md-4 col-sm-4">
                                 <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                    <label for="dep_fecha">Fecha Fin1:</label>
+                                    <label for="dep_fecha">Fecha Fin:</label>
                                 </div>
                                 <div class="col-xs-12 col-md-9 col-sm-9">
                                     <input type="text" class="form-control datepicker" name="fechah" id="fechah" placeholder="DD/MM/AAAA" required readonly="">
