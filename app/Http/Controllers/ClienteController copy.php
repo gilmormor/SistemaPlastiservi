@@ -414,4 +414,24 @@ class ClienteController extends Controller
             //return response()->json($clientedirecs->get());
         }
     }
+
+    public function clientegiro(){
+        $sql = 'SELECT *
+            FROM clientegiro;';
+        //where usuario_id='.auth()->id();
+        //dd($sql);
+        $clientegiros = DB::select($sql);
+        $longitud = count($clientegiros);
+        /*
+        for ($i=0;$i<=$longitud;$i++){
+            dd($clientegiros[$i]['cliente_id']);
+        }*/
+        //dd($clientegiros);
+        foreach ($clientegiros as $clientegiro) {
+            $cliente = Cliente::findOrFail($clientegiro->cliente_id);
+            $cliente->giro_id=$clientegiro->giro_id;
+            $cliente->save();
+        }
+    }
+
 }
