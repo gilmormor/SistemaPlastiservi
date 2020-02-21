@@ -43,6 +43,43 @@ Productos Notas de Venta
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-xs-12 col-md-12 col-sm-12">
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                    <label data-toggle='tooltip' title="Categoría">Categoría</label>
+                                </div>
+                                <div class="col-xs-12 col-md-9 col-sm-9">
+                                    <select name="categoriaprod_id" id="categoriaprod_id" class="form-control select2 categoriaprod_id">
+                                        <option value="" precio="0">Seleccione...</option>
+                                        @foreach($categoriaprods as $categoriaprod)
+                                            <option
+                                                value="{{$categoriaprod->id}}" precio="{{$categoriaprod->precio}}">
+                                                {{$categoriaprod->nombre}}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                    <label for="giro_id" data-toggle='tooltip' title="Giro">Giro</label>
+                                </div>
+                                <div class="col-xs-12 col-md-9 col-sm-9">
+                                    <select name="giro_id" id="giro_id" class="form-control select2 giro_id">
+                                        <option value="">Seleccione...</option>
+                                        @foreach($giros as $giro)
+                                            <option
+                                                value="{{$giro->id}}"
+                                                >
+                                                {{$giro->nombre}}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-sm-4">
                                 <div class="col-xs-12 col-md-3 col-sm-3 text-left">

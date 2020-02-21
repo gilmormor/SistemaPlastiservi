@@ -164,6 +164,7 @@ Route::post('cliente/eliminarClienteDirec/{id}', 'ClienteController@eliminarClie
 Route::post('cliente/buscarCli', 'ClienteController@buscarCli')->name('buscarCli');
 Route::post('cliente/buscarClisinsuc', 'ClienteController@buscarClisinsuc')->name('buscarClisinsuc');
 Route::post('cliente/guardarclientetemp', 'ClienteController@guardarclientetemp')->name('guardarclientetemp');
+//Ruta para actualizar el campo giro_id en la tabla clientes
 Route::get('cliente/clientegiro', 'ClienteController@clientegiro')->name('clientegiro');
 
 

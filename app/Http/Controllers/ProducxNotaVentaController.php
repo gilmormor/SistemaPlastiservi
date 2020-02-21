@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoriaProd;
 use App\Models\Cliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Empresa;
+use App\Models\Giro;
 use App\Models\NotaVentaDetalle;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
@@ -45,8 +47,11 @@ class ProducxNotaVentaController extends Controller
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        $giros = Giro::orderBy('id')->get();
+        $categoriaprods = CategoriaProd::orderBy('id')->get();
 
-        return view('prodxnotaventa.index', compact('clientes'));
+
+        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods'));
     }
 
     
@@ -57,7 +62,7 @@ class ProducxNotaVentaController extends Controller
 		$respuesta['tabla'] = "";
 
         if($request->ajax()){
-            $datas = consulta($request->fechad,$request->fechah);
+            $datas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons'>
 			<thead>
@@ -198,10 +203,10 @@ class ProducxNotaVentaController extends Controller
         //$cotizaciones = Cotizacion::orderBy('id')->get();
         //dd($rut);
         if($request->ajax()){
-            $notaventas = consulta($request->fechad,$request->fechah);
+            $notaventas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id);
         }
         //dd($request);
-        $notaventas = consulta($request->fechad,$request->fechah);
+        $notaventas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -209,7 +214,7 @@ class ProducxNotaVentaController extends Controller
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
         if($notaventas){
-            //return view('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
+            return view('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
         
             $pdf = PDF::loadView('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
             //return $pdf->download('cotizacion.pdf');
@@ -221,7 +226,7 @@ class ProducxNotaVentaController extends Controller
 }
 
 
-function consulta($fdesde,$fhasta){
+function consulta($fdesde,$fhasta,$categoriaprod_id,$giro_id){
     $user = Usuario::findOrFail(auth()->id());
     $sql= 'SELECT COUNT(*) AS contador
         FROM vendedor INNER JOIN persona
@@ -250,6 +255,17 @@ function consulta($fdesde,$fhasta){
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
     }
+    if(empty($categoriaprod_id)){
+        $aux_condcategoriaprod_id = " true";
+    }else{
+        $aux_condcategoriaprod_id = "categoriaprod.id='$categoriaprod_id'";
+    }
+    if(empty($giro_id)){
+        $aux_condgiro_id = " true";
+    }else{
+        $aux_condgiro_id = "cliente.giro_id='$giro_id'";
+    }
+
 
     $sql = "SELECT notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,
@@ -263,6 +279,8 @@ function consulta($fdesde,$fhasta){
     on notaventadetalle.producto_id=producto.id
     INNER JOIN notaventa
     ON notaventa.id=notaventadetalle.notaventa_id
+    INNER JOIN cliente
+    ON cliente.id=notaventa.cliente_id
     INNER JOIN grupoprod
     ON grupoprod.id = producto.grupoprod_id
     INNER JOIN claseprod
@@ -271,6 +289,8 @@ function consulta($fdesde,$fhasta){
     ON categoriaprod.id=producto.categoriaprod_id
     WHERE " . $vendedorcond .
     " and " . $aux_condFecha .
+    " and " . $aux_condcategoriaprod_id .
+    " and " . $aux_condgiro_id .
     " and notaventadetalle.deleted_at is null
     GROUP BY notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,producto.diamextmm,claseprod.cla_nombre,
