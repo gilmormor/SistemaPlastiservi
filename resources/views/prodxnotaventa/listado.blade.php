@@ -40,6 +40,7 @@
 						<th style='text-align:right'>Peso x Unidad</th>
 						<th style='text-align:center'>TU</th>
 						<th style='text-align:right'>Unid</th>
+						<th style='text-align:right'>Pesos</th>
 						<th style='text-align:right'>KG</th>
 						<th style='text-align:right'>Precio Prom Unit</th>
 						<th style='text-align:right'>Precio Kilo</th>	
@@ -49,11 +50,16 @@
 					<?php
 						$i=0;
 						$aux_totalkilos = 0;
+						$totalsumsubtotal = 0;
+            			$totalsumcant = 0;
+
 					?>
 					@foreach($notaventas as $notaventa)
 						<?php
 							$i++;
 							$aux_totalkilos = $aux_totalkilos + $notaventa->sumtotalkilos;
+							$totalsumsubtotal += $notaventa->sumsubtotal;
+                			$totalsumcant += $notaventa->sumcant;
 						?>
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td>{{$notaventa->nombre}}</td>
@@ -63,6 +69,7 @@
 							<td style='text-align:right'>{{number_format($notaventa->peso, 2, ",", ".")}}</td>
 							<td style='text-align:center'>{{$notaventa->tipounion}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->sumcant, 2, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($notaventa->sumsubtotal, 2, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->sumtotalkilos, 2, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->prompreciounit, 2, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->promprecioxkilo, 2, ",", ".")}}</td>
@@ -72,8 +79,12 @@
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr class="headt">
-						<th colspan="7" style='text-align:left'>TOTAL</th>
+						<th colspan="6" style='text-align:left'>TOTAL</th>
+						<th class="textright">{{number_format($totalsumcant, 2, ",", ".")}}</th>
+						<th class="textright">{{number_format($totalsumsubtotal, 2, ",", ".")}}</th>
 						<th class="textright">{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
+						<th style="text-align:right">{{number_format($totalsumsubtotal/$totalsumcant, 2, ",", ".")}}</th>
+                        <th style="text-align:right">{{number_format($totalsumsubtotal/$aux_totalkilos, 2, ",", ".")}}</th>
 					</tr>
 				</tfoot>
 		</table>

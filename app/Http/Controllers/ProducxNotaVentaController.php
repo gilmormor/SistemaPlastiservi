@@ -74,6 +74,7 @@ class ProducxNotaVentaController extends Controller
                     <th style='text-align:right'>Peso x Unidad</th>
                     <th style='text-align:right'>TU</th>
                     <th style='text-align:right'>Unid</th>
+                    <th style='text-align:right'>Pesos</th>
                     <th style='text-align:right'>KG</th>
                     <th style='text-align:right'>Precio Prom Unit</th>
                     <th style='text-align:right'>Precio Kilo</th>
@@ -82,9 +83,13 @@ class ProducxNotaVentaController extends Controller
             <tbody>";
             $i = 0;
             $aux_totalkilos = 0;
+            $totalsumsubtotal = 0;
+            $totalsumcant = 0;
             foreach ($datas as $data) {
                 $colorFila = 'background-color: #87CEEB;';
                 $aux_totalkilos = $aux_totalkilos + $data->sumtotalkilos;
+                $totalsumsubtotal += $data->sumsubtotal;
+                $totalsumcant += $data->sumcant;
     
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
@@ -95,6 +100,7 @@ class ProducxNotaVentaController extends Controller
                     <td id='peso$i' name='peso$i' style='text-align:right'>".number_format($data->peso, 2, ",", ".") ."</td>
                     <td id='tipounion$i' name='tipounion$i' style='text-align:right'>$data->tipounion</td>
                     <td id='sumcant$i' name='sumcant$i' style='text-align:right'>".number_format($data->sumcant, 2, ",", ".") ."</td>
+                    <td id='subtotal$i' name='subtotal$i' style='text-align:right'>".number_format($data->sumsubtotal, 2, ",", ".") ."</td>
                     <td id='sumtotalkilos$i' name='sumtotalkilos$i' style='text-align:right'>".number_format($data->sumtotalkilos, 2, ",", ".") ."</td>
                     <td id='prompreciounit$i' name='prompreciounit$i' style='text-align:right'>".number_format($data->prompreciounit, 2, ",", ".") ."</td>
                     <td id='promprecioxkilo$i' name='promprecioxkilo$i' style='text-align:right'>".number_format($data->promprecioxkilo, 2, ",", ".") ."</td>
@@ -112,10 +118,11 @@ class ProducxNotaVentaController extends Controller
                             <th></th>
                             <th style='text-align:right'></th>
                             <th style='text-align:right'></th>
-                            <th style='text-align:right'></th>
+                            <th style='text-align:right'>". number_format($totalsumcant, 2, ",", ".") ."</th>
+                            <th style='text-align:right'>". number_format($totalsumsubtotal, 2, ",", ".") ."</th>
                             <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
-                            <th style='text-align:right'></th>
-                            <th style='text-align:right'></th>
+                            <th style='text-align:right'>". number_format($totalsumsubtotal/$totalsumcant, 2, ",", ".") ."</th>
+                            <th style='text-align:right'>". number_format($totalsumsubtotal/$aux_totalkilos, 2, ",", ".") ."</th>
                         </tr>
                     </tfoot>
                 
@@ -274,7 +281,8 @@ function consulta($fdesde,$fhasta,$categoriaprod_id,$giro_id){
     sum(notaventadetalle.cant) AS sumcant,
     sum(notaventadetalle.totalkilos) AS sumtotalkilos,
     AVG(notaventadetalle.preciounit) AS prompreciounit,
-    AVG(notaventadetalle.precioxkilo) AS promprecioxkilo
+    AVG(notaventadetalle.precioxkilo) AS promprecioxkilo,
+    sum(notaventadetalle.subtotal) AS sumsubtotal
     FROM notaventadetalle INNER JOIN producto
     on notaventadetalle.producto_id=producto.id
     INNER JOIN notaventa
