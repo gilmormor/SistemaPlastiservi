@@ -12,7 +12,8 @@ class Vendedor extends Model
     protected $table = "vendedor";
     protected $fillable = [
         'persona_id',
-        'usuariodel_id'
+        'usuariodel_id',
+        'sta_activo'
     ];
 
     public function clientess()

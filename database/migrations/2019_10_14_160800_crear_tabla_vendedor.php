@@ -18,6 +18,7 @@ class CrearTablaVendedor extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('persona_id')->comment("Id persona");
             $table->foreign('persona_id','fk_vendedor_persona')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');
+            $table->integer('sta_activo')->nullable();
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
             $table->timestamps();

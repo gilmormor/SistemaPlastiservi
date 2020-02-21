@@ -10,6 +10,7 @@ use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\NotaVentaDetalle;
 use App\Models\Seguridad\Usuario;
+use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\DB;
@@ -49,9 +50,10 @@ class ProducxNotaVentaController extends Controller
         ->get();
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::orderBy('id')->get();
+        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
 
-        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods'));
+        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','vendedores'));
     }
 
     
@@ -62,7 +64,7 @@ class ProducxNotaVentaController extends Controller
 		$respuesta['tabla'] = "";
 
         if($request->ajax()){
-            $datas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id);
+            $datas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id,$request->rut,$request->vendedor_id);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons'>
 			<thead>
@@ -107,6 +109,12 @@ class ProducxNotaVentaController extends Controller
                 </tr>";
 
                 //dd($data->contacto);
+            }
+            if($totalsumcant==0){
+                $totalsumcant = 1;
+            }
+            if($aux_totalkilos==0){
+                $aux_totalkilos = 1;
             }
             $respuesta['tabla'] .= "
                 </tbody>
@@ -209,11 +217,13 @@ class ProducxNotaVentaController extends Controller
     {
         //$cotizaciones = Cotizacion::orderBy('id')->get();
         //dd($rut);
+        $rut=str_replace("-","",$request->rut);
+        $rut=str_replace(".","",$rut);
         if($request->ajax()){
-            $notaventas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id);
+            $notaventas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id,$rut,$request->vendedor_id);
         }
         //dd($request);
-        $notaventas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id);
+        $notaventas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id,$rut,$request->vendedor_id);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -233,23 +243,27 @@ class ProducxNotaVentaController extends Controller
 }
 
 
-function consulta($fdesde,$fhasta,$categoriaprod_id,$giro_id){
-    $user = Usuario::findOrFail(auth()->id());
-    $sql= 'SELECT COUNT(*) AS contador
-        FROM vendedor INNER JOIN persona
-        ON vendedor.persona_id=persona.id
-        INNER JOIN usuario 
-        ON persona.usuario_id=usuario.id
-        WHERE usuario.id=' . auth()->id();
-    $counts = DB::select($sql);
-    if($counts[0]->contador>0){
-        $vendedor_id=$user->persona->vendedor->id;
-        $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
+function consulta($fdesde,$fhasta,$categoriaprod_id,$giro_id,$rut,$vendedor_id1){
+    if(empty($vendedor_id1)){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+        }else{
+            $vendedorcond = " true ";
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
     }else{
-        $vendedorcond = " true ";
-        $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        $vendedorcond = "notaventa.vendedor_id='$vendedor_id1'";
     }
 
 
@@ -271,6 +285,11 @@ function consulta($fdesde,$fhasta,$categoriaprod_id,$giro_id){
         $aux_condgiro_id = " true";
     }else{
         $aux_condgiro_id = "cliente.giro_id='$giro_id'";
+    }
+    if(empty($rut)){
+        $aux_condrut = " true";
+    }else{
+        $aux_condrut = "cliente.rut='$rut'";
     }
 
 
@@ -299,6 +318,7 @@ function consulta($fdesde,$fhasta,$categoriaprod_id,$giro_id){
     " and " . $aux_condFecha .
     " and " . $aux_condcategoriaprod_id .
     " and " . $aux_condgiro_id .
+    " and " . $aux_condrut .
     " and notaventadetalle.deleted_at is null
     GROUP BY notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,producto.diamextmm,claseprod.cla_nombre,

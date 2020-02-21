@@ -16,7 +16,7 @@ $(document).ready(function () {
 */
     $("#btnconsultar").click(function()
     {
-        consultar($("#fechad").val(),$("#fechah").val(),$("#categoriaprod_id").val(),$("#giro_id").val());
+        consultar($("#fechad").val(),$("#fechah").val(),$("#categoriaprod_id").val(),$("#giro_id").val(),$("#rut").val(),$("#vendedor_id").val());
     });
 
     $("#btnpdf1").click(function()
@@ -75,12 +75,14 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function consultar(fechad,fechah,categoriaprod_id,giro_id){
+function consultar(fechad,fechah,categoriaprod_id,giro_id,rut,vendedor_id){
     var data = {
         fechad: fechad,
         fechah: fechah,
         categoriaprod_id: categoriaprod_id,
         giro_id: giro_id,
+        rut: eliminarFormatoRutret(rut),
+        vendedor_id: vendedor_id,
         _token: $('input[name=_token]').val()
     };
     $.ajax({
@@ -119,7 +121,19 @@ function consultarpdf(fechad,fechah,categoriaprod_id,giro_id){
         }
     });
 }
-/*
+
+$("#btnbuscarcliente").click(function(event){
+    $("#rut").val("");
+    $("#myModalBusqueda").modal('show');
+});
+
+function copiar_rut(id,rut){
+	$("#myModalBusqueda").modal('hide');
+	$("#rut").val(rut);
+	//$("#rut").focus();
+	$("#rut").blur();
+}
+
 $("#rut").blur(function(){
 	codigo = $("#rut").val();
 	aux_sta = $("#aux_sta").val();
@@ -179,16 +193,3 @@ $("#rut").blur(function(){
 		}
 	}
 });
-
-$("#btnbuscarcliente").click(function(event){
-    $("#rut").val("");
-    $("#myModalBusqueda").modal('show');
-});
-
-function copiar_rut(id,rut){
-	$("#myModalBusqueda").modal('hide');
-	$("#rut").val(rut);
-	//$("#rut").focus();
-	$("#rut").blur();
-}
-*/

@@ -7,6 +7,7 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Empresa;
 use App\Models\Seguridad\Usuario;
+use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\DB;
@@ -44,8 +45,9 @@ class NotaVentaConsultaController extends Controller
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
-        return view('notaventaconsulta.index', compact('clientes'));
+        return view('notaventaconsulta.index', compact('clientes','vendedores'));
 
     }
 
@@ -56,7 +58,7 @@ class NotaVentaConsultaController extends Controller
 		$respuesta['tabla'] = "";
 
         if($request->ajax()){
-            $datas = consulta($request->fechad,$request->fechah,$request->rut);
+            $datas = consulta($request->fechad,$request->fechah,$request->rut,$request->vendedor_id);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons'>
 			<thead>
@@ -209,10 +211,10 @@ class NotaVentaConsultaController extends Controller
         $rut=str_replace(".","",$rut);
         //dd($rut);
         if($request->ajax()){
-            $notaventas = consulta($request->fechad,$request->fechah,$rut);
+            $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id);
         }
         //dd($request);
-        $notaventas = consulta($request->fechad,$request->fechah,$rut);
+        $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -233,23 +235,27 @@ class NotaVentaConsultaController extends Controller
     
 }
 
-function consulta($fdesde,$fhasta,$rut){
-    $user = Usuario::findOrFail(auth()->id());
-    $sql= 'SELECT COUNT(*) AS contador
-        FROM vendedor INNER JOIN persona
-        ON vendedor.persona_id=persona.id
-        INNER JOIN usuario 
-        ON persona.usuario_id=usuario.id
-        WHERE usuario.id=' . auth()->id();
-    $counts = DB::select($sql);
-    if($counts[0]->contador>0){
-        $vendedor_id=$user->persona->vendedor->id;
-        $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
+function consulta($fdesde,$fhasta,$rut,$vendedor_id1){
+    if(empty($vendedor_id1)){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+        }else{
+            $vendedorcond = " true ";
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
     }else{
-        $vendedorcond = " true ";
-        $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        $vendedorcond = "notaventa.vendedor_id='$vendedor_id1'";
     }
 
     if(empty($fdesde) or empty($fhasta)){

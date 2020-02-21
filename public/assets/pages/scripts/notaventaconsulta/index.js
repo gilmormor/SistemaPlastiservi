@@ -16,12 +16,12 @@ $(document).ready(function () {
 */
     $("#btnconsultar").click(function()
     {
-        consultar($("#fechad").val(),$("#fechah").val(),$("#rut").val());
+        consultar($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf($("#fechad").val(),$("#fechah").val());
+        consultarpdf($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val());
     });
 
     //alert(aux_nfila);
@@ -78,11 +78,12 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function consultar(fechad,fechah,rut){
+function consultar(fechad,fechah,rut,vendedor_id){
     var data = {
         fechad: fechad,
         fechah: fechah,
         rut: eliminarFormatoRutret(rut),
+        vendedor_id: vendedor_id,
         _token: $('input[name=_token]').val()
     };
     $.ajax({
@@ -98,10 +99,12 @@ function consultar(fechad,fechah,rut){
     });
 }
 
-function consultarpdf(fechad,fechah){
+function consultarpdf(fechad,fechah,rut,vendedor_id){
     var data = {
         fechad: fechad,
         fechah: fechah,
+        rut: eliminarFormatoRutret(rut),
+        vendedor_id: vendedor_id,
         _token: $('input[name=_token]').val()
     };
     $.ajax({

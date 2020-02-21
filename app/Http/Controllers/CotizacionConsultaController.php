@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cliente;
+use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Cotizacion;
 use App\Models\Empresa;
 use App\Models\Seguridad\Usuario;
+use App\Models\Vendedor;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +25,32 @@ class CotizacionConsultaController extends Controller
     public function index()
     {
         can('consulta-cotizacion');
-        return view('cotizacionconsulta.index', compact('datas'));
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        }else{
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
+        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->pluck('cliente_sucursal.cliente_id')->toArray())
+        ->whereIn('cliente.id',$clientevendedorArray)
+        ->get();
+        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+
+        return view('cotizacionconsulta.index', compact('datas','clientes','vendedores'));
     }
 
     /**
@@ -39,7 +67,7 @@ class CotizacionConsultaController extends Controller
         //$aux_fechad=DateTime::createFromFormat('d/m/Y', $request->fechad)->format('Y-m-d');
         //$aux_fechah=DateTime::createFromFormat('d/m/Y', $request->fechah)->format('Y-m-d');
         if($request->ajax()){
-            $datas = consulta($request->fechad,$request->fechah);
+            $datas = consulta($request->fechad,$request->fechah,$request->rut,$request->vendedor_id);
             /*
             if(empty($request->fechad) or empty($request->fechah)){
                 $aux_condFecha = " true";
@@ -70,7 +98,7 @@ class CotizacionConsultaController extends Controller
             //dd("$sql");
             $datas = DB::select($sql);
             */
-            $respuesta['tabla'] .= '<table id="tablacotizacion" name="tablacotizacion" class="table display AllDataTables responsive table-hover table-condensed tablas">
+            $respuesta['tabla'] .= '<table id="tablacotizacion" name="tablacotizacion" class="table display AllDataTables responsive table-hover table-condensed tablascons">
 			<thead>
 				<tr>
 					<th>ID</th>
@@ -244,42 +272,54 @@ class CotizacionConsultaController extends Controller
     public function exportPdf(Request $request)
     {
         //$cotizaciones = Cotizacion::orderBy('id')->get();
+        $rut=str_replace("-","",$request->rut);
+        $rut=str_replace(".","",$rut);
+
         if($request->ajax()){
-            $cotizaciones = consulta($request->fechad,$request->fechah);
+            $cotizaciones = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id);
         }
-        $cotizaciones = consulta($request->fechad,$request->fechah);
+        $cotizaciones = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
         //$cotizaciones = consulta('','');
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
-        //return view('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta'));
-        
-        $pdf = PDF::loadView('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta'));
-        //return $pdf->download('cotizacion.pdf');
-        return $pdf->stream();
+        if($cotizaciones){
+            //return view('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta'));
+            
+            $pdf = PDF::loadView('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta'));
+            //return $pdf->download('cotizacion.pdf');
+            return $pdf->stream();
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        }
+
         
     }
 }
 
-function consulta($fdesde,$fhasta){
-    $user = Usuario::findOrFail(auth()->id());
-    $sql= 'SELECT COUNT(*) AS contador
-        FROM vendedor INNER JOIN persona
-        ON vendedor.persona_id=persona.id
-        INNER JOIN usuario 
-        ON persona.usuario_id=usuario.id
-        WHERE usuario.id=' . auth()->id();
-    $counts = DB::select($sql);
-    if($counts[0]->contador>0){
-        $vendedor_id=$user->persona->vendedor->id;
-        $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
+function consulta($fdesde,$fhasta,$rut,$vendedor_id1){
+    if(empty($vendedor_id1)){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $vendedorcond = "cotizacion.vendedor_id=" . $vendedor_id ;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+        }else{
+            $vendedorcond = " true ";
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
     }else{
-        $vendedorcond = " true ";
-        $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        $vendedorcond = "cotizacion.vendedor_id='$vendedor_id1'";
     }
     if(empty($fdesde) or empty($fhasta)){
         $aux_condFecha = " true";
@@ -289,6 +329,11 @@ function consulta($fdesde,$fhasta){
         $fecha = date_create_from_format('d/m/Y', $fhasta);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "cotizacion.fechahora>='$fechad' and cotizacion.fechahora<='$fechah'";
+    }
+    if(empty($rut)){
+        $aux_condrut = " true ";
+    }else{
+        $aux_condrut = "cliente.rut='$rut'";
     }
 
     $sql = "SELECT cotizacion.*,if(isnull(cliente.razonsocial),clientetemp.rut,cliente.rut) as rut,
@@ -302,7 +347,9 @@ function consulta($fdesde,$fhasta){
         on cotizacion.cliente_id=cliente.id
         left join clientetemp
         on cotizacion.clientetemp_id=clientetemp.id
-        where " . $aux_condFecha . " and " . $vendedorcond .
+        where " . $aux_condFecha . 
+        " and " . $vendedorcond .
+        " and " . $aux_condrut .
         " and cotizacion.deleted_at is null;";
     //dd("$sql");
     $datas = DB::select($sql);
