@@ -335,3 +335,92 @@ function eliminarFormatoRutret(rut){
 	}
 	return rutR;
 }
+
+//Llevar de milimetros a pulgadas 
+function mmAPg(aux_valor){
+	switch (aux_valor) {
+		case "16":
+			return '5/8"';
+			break;
+		case "20":
+			return '1/2"';
+			break;
+		case "21.20":
+			return '1/2"';
+			break;
+		case "25":
+			return '3/8"';
+			break;
+		case "26.60":
+			return '3/4"';
+			break;
+		case "32":
+			return '1"';
+			break;
+		case "33.30":
+			return '1"';
+			break;
+		case "40":
+			return '1 1/4"';
+			break;
+		case "42":
+			return '1 1/4"';
+			break;
+		case "48":
+			return '1 1/2"';
+			break;
+		case "50":
+			return '1 1/2"';
+			break;
+		case "60.20":
+			return '2"';
+			break;
+		case "63":
+			return '2"';
+			break;
+		case "72.80":
+			return '2 1/2"';
+			break;
+		case "75":
+			return '2 1/2"';
+			break;
+		case "88.70":
+			return '3"';
+			break;
+		case "90":
+			return '3"';
+			break;
+		case "110":
+			return '4"';
+			break;
+		case "114.10":
+			return '4"';
+			break;
+		case "125":
+			return '4 1/2"';
+			break;
+		case "140":
+			return '5"';
+			break;
+		case "160":
+			return '6"';
+			break;
+		case "168":
+			return '6"';
+			break;
+		case "180":
+			return '7"';
+			break;
+		case "200":
+			return '8"';
+			break;
+		case "218.70":
+			return '8"';
+			break;
+		case "250":
+			return '8"';
+			break;
+	default:
+		return '';
+	}
+}

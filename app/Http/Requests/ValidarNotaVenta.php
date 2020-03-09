@@ -29,7 +29,7 @@ class ValidarNotaVenta extends FormRequest
             'direccioncot' => 'required|max:200',
             'cliente_id' => 'required',
             'contacto' => 'required|max:50',
-            'contactoemail' => 'required|max:50|email:rfc,dns',
+            //'contactoemail' => 'required|max:50|email:rfc,dns',
             'contactotelf' => 'required|max:50',
             'email' => 'required|max:50',
             'telefono' => 'required|max:50',

@@ -95,10 +95,11 @@
                     <label for="telefono" class="control-label requerido">Telefono</label>
                     <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', $data->telefono ?? '')}}" required readonly/>
                 </div>
-                <div class="form-group col-xs-12 col-sm-2">
+                <div class="form-group col-xs-12 col-sm-3">
                     <label for="email" class="control-label requerido">Email</label>
                     <input type="text" name="email" id="email" class="form-control" value="{{old('email', $data->email ?? '')}}" required readonly/>
                 </div>
+                <!--
                 <div class="form-group col-xs-12 col-sm-4">
                     <label for="clientedirec_id" class="control-label">Dirección adicional</label>
                     <select name="clientedirec_id" id="clientedirec_id" class="form-control select2 clientedirec_id" data-live-search='true' disabled readonly>
@@ -123,6 +124,7 @@
                         @endif
                     </select>
                 </div>
+                -->
                 <div class="form-group col-xs-12 col-sm-2">
                     <label for="comuna_idD" class="control-label requerido">Comuna</label>
                     <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
@@ -158,10 +160,6 @@
                         @endforeach
                     </select>
                 </div>
-            
-            </div>
-
-            <div class="row">
                 <div class="form-group col-xs-12 col-sm-1">
                     <label for="plazopago_idD" class="control-label requerido">Plazo</label>
                     <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
@@ -195,7 +193,10 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-xs-12 col-sm-1">
+            </div>
+
+            <div class="row">
+                <div class="form-group col-xs-12 col-sm-2">
                     <label for="giro_idD" class="control-label requerido">Giro</label>
                     <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
                         <option value=''>Seleccione...</option>
@@ -211,6 +212,7 @@
                         @endforeach
                     </select>
                 </div>
+
                 <div class="form-group col-xs-12 col-sm-2">
                     <label for="tipoentrega_id" class="control-label requerido">Tipo Entrega</label>
                     <select name="tipoentrega_id" id="tipoentrega_id" class="form-control selectpicker tipoentrega_id" required {{$disabledReadOnly}}>
@@ -232,11 +234,11 @@
                     <input type="text" name="plazoentrega" id="plazoentrega" class="form-control pull-right datepicker"  value="{{old('plazoentrega', $data->plazoentrega ?? '')}}" readonly required {{$disabledReadOnly}}>
                 </div>
                 
-                <div class="form-group col-xs-12 col-sm-2">
+                <div class="form-group col-xs-12 col-sm-3">
                     <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
                     <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega"/>
                 </div>
-                <div class="form-group col-xs-12 col-sm-2">
+                <div class="form-group col-xs-12 col-sm-3">
                     <label for="comunaentrega_id" class="control-label requerido">Comuna Entrega</label>
                     <select name="comunaentrega_id" id="comunaentrega_id" class="form-control select2  comunaentrega_id" data-live-search='true' value="{{old('comunaentrega_id', $data->comunaentrega_id ?? '')}}" required>
                         <option value="">Seleccione...</option>
@@ -279,7 +281,7 @@
             </div>
         <div class="row">
             <div class="form-group col-xs-12 col-sm-3">
-                <label for="oc_id" class="control-label requerido">Nro OrdenCompra</label>
+                <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label requerido">Nro OrdenCompra</label>
                 <div class="input-group">
                     <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" required/>
                     <span class="input-group-btn">
