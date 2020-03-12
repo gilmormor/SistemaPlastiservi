@@ -32,6 +32,7 @@ Productos
                             <th>Cod-Int</th>
                             <th>Cod Barra</th>
                             <th>DiamExt</th>
+                            <th>DiaPulg</th>
                             <th>Espesor mm</th>
                             <th>Longitud</th>
                             <th>Peso</th>
@@ -51,6 +52,7 @@ Productos
                             <td>{{$data->codintprod}}</td>
                             <td id="barcodeTarget{{$aux_nfila}}" class="barcodeTarget" onLoad="generateBarcode()">{{$data->codbarra}}</td>
                             <td>{{$data->diamextmm}}</td>
+                            <td>{{$data->diamextpg}}</td>
                             <td>{{$data->espesor}}</td>
                             <td>{{$data->long}}</td>
                             <td>{{$data->peso}}</td>
