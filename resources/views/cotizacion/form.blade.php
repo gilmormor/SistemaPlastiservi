@@ -660,7 +660,7 @@
                                 <th>Nombre</th>
                                 <th>Clase</th>
                                 <th>Codigo</th>
-                                <th>Diam mm/pg</th>
+                                <th>Diametro</th>
                                 <th>Esp</th>
                                 <th>Long</th>
                                 <th>Peso</th>
