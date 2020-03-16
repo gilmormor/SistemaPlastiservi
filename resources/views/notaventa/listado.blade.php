@@ -83,7 +83,7 @@
 						<td class="textcenter">{{$notaventaDetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$notaventaDetalle->producto->nombre}}</td>
 						<td class="textleft">{{$notaventaDetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textright">{{$notaventaDetalle->producto->diamextmm}} mm</td>
+						<td class="textright">{{$notaventaDetalle->producto->diamextmm}}mm - {{$notaventaDetalle->producto->diamextpg}}</td>
 						<td class="textright">{{$notaventaDetalle->producto->long}} mts</td>
 						<td class="textright">{{number_format($notaventaDetalle->preciounit, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($notaventaDetalle->subtotal, 2, ",", ".")}}</td>

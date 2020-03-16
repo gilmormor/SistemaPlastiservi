@@ -660,7 +660,7 @@
                                 <th>Nombre</th>
                                 <th>Clase</th>
                                 <th>Codigo</th>
-                                <th>Diametro</th>
+                                <th>Diam mm/pg</th>
                                 <th>Esp</th>
                                 <th>Long</th>
                                 <th>Peso</th>
@@ -687,7 +687,7 @@
                                         {{$producto->codintprod}}
                                     </td>
                                     <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
-                                        {{$producto->diamextmm}}
+                                        {{$producto->diamextmm}}mm - {{$producto->diamextpg}}
                                     </td>
                                     <td name="productoespesorBtd{{$aux_nfila}}" id="productoespesorBtd{{$aux_nfila}}">
                                         {{$producto->espesor}}

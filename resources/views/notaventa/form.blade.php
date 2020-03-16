@@ -792,7 +792,7 @@
                                         {{$producto->codintprod}}
                                     </td>
                                     <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
-                                        {{$producto->diamextmm}}
+                                        {{$producto->diamextmm}}mm - {{$producto->diamextpg}}
                                     </td>
                                     <td name="productoespesorBtd{{$aux_nfila}}" id="productoespesorBtd{{$aux_nfila}}">
                                         {{$producto->espesor}}
