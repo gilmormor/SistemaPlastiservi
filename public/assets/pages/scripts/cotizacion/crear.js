@@ -158,6 +158,7 @@ $(document).ready(function () {
 	}
 	formato_rut($('#rut'));
 
+
 });
 
 $("#botonNewProd").click(function(event)
@@ -950,7 +951,11 @@ $("#producto_idM").blur(function(){
 					$("#nombreprodM").val(respuesta[0]['nombre']);
 					$("#codintprodM").val(respuesta[0]['codintprod']);
 					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
-					$("#diamextmmM").val(respuesta[0]['diamextmm']);
+					if (respuesta[0]['diamextmm']=='0'){
+						$("#diamextmmM").val(respuesta[0]['diamextpg']);
+					}else{
+						$("#diamextmmM").val(respuesta[0]['diamextmm'] +' - '+ respuesta[0]['diamextpg']);
+					}
 					$("#espesorM").val(respuesta[0]['espesor']);
 					$("#longM").val(respuesta[0]['long']);
 					$("#pesoM").val(respuesta[0]['peso']);
@@ -1025,6 +1030,11 @@ function desactivar_controles(){
 }
 
 function totalizarItem(aux_estprec){
+	if($("#pesoM").val()==0){
+		aux_peso = 1;
+	}else{
+		aux_peso = $("#pesoM").val();
+	}
 	if(aux_estprec==1)
 	{
 		precioneto = $("#precionetoM").val();
@@ -1032,21 +1042,22 @@ function totalizarItem(aux_estprec){
 		$("#precionetoM").val(Math.round(precioneto));
 		$("#precioM").val(precio);
 	}else{
-		precioneto = $("#precioM").val() * $("#pesoM").val();
+		precioneto = $("#precioM").val() * aux_peso;
 		$("#precionetoM").val(Math.round(precioneto));
 		$("#descuentoM").val('1');
 		$(".selectpicker").selectpicker('refresh');
 	}
-	aux_tk = $("#cantM").val()*$("#pesoM").val();
+	alert(aux_peso);
+	aux_tk = $("#cantM").val() * aux_peso;
 	$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
 	$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
-	aux_total = ($("#cantM").val() * $("#pesoM").val() * $("#precioM").val()) * ($("#descuentoM").val());
+	aux_total = ($("#cantM").val() * aux_peso * $("#precioM").val()) * ($("#descuentoM").val());
 	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-##,###,##0.00',1));
 	$("#subtotalM").attr('valor',aux_total.toFixed(2));
 	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();
 	$("#precioM").val(aux_precdesc);
 	$("#precioM").attr('valor',aux_precdesc);
-	aux_precioUnit = aux_precdesc * $("#pesoM").val();
+	aux_precioUnit = aux_precdesc * aux_peso;
 	$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
 	$("#precionetoM").attr('valor',Math.round(aux_precioUnit));
 }

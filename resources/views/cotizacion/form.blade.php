@@ -459,31 +459,6 @@
                 </div>
             </div>
             <div class="row">
-                <!--
-                <div class="col-xs-12 col-sm-2">
-                    <label for="producto_idM" class="control-label">Producto</label>
-                    <select name="producto_idM" id="producto_idM" class="selectpicker form-control producto_idM" data-live-search='true' title='Seleccione...'>
-                        @foreach($productos as $producto)
-                            <option
-                                value="{{$producto->id}}"
-                                nombre="{{$producto->nombre}}"
-                                cla_nombre="{{$producto->cla_nombre}}"
-                                diamextmm="{{$producto->diamextmm}}"
-                                espesor="{{$producto->espesor}}"
-                                long="{{$producto->long}}"
-                                peso="{{$producto->peso}}"
-                                tipounion="{{$producto->tipounion}}"
-                                precioneto="{{$producto->precioneto}}"
-                                precio="{{$producto->precio}}"
-                                codintprod="{{$producto->codintprod}}"
-                                >
-                                {{$producto->nombre}} - {{$producto->codintprod}} - {{$producto->cla_nombre}}
-                            </option>
-                        @endforeach
-                    </select>
-                    <span class="help-block"></span>
-                </div>-->
-                
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="cantM" class="control-label" data-toggle='tooltip'>Cant</label>
                     <input type="text" name="cantM" id="cantM" class="form-control" value="{{old('cantM', $data->cantM ?? '')}}" tipoval="numerico" placeholder="Cant"/>

@@ -170,6 +170,7 @@ class ProductoController extends Controller
                     'claseprod.cla_nombre',
                     'producto.codintprod',
                     'producto.diamextmm',
+                    'producto.diamextpg',
                     'producto.espesor',
                     'producto.long',
                     'producto.peso',
