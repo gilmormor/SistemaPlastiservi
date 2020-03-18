@@ -74,6 +74,7 @@
                     <option value="S/C">S/C</option>
                     <option value="S/U">S/U</option>
                     <option value="R600">R-600</option>
+                    <option value="R2100">R-2100</option>
                 </select>
             @else
                 <select name="tipounion" id="tipounion" class="form-control select2 tipounion" required>
@@ -102,7 +103,12 @@
                         @if ($data->tipounion=="R600")
                             {{'selected'}}
                         @endif            
-                    >R-600</option>
+                    >R-2100</option>
+                    <option value="R600"
+                        @if ($data->tipounion=="R2100")
+                            {{'selected'}}
+                        @endif            
+                    >R-2100</option>
                 </select>
             @endif
         </div>
