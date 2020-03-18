@@ -104,7 +104,7 @@
                             {{'selected'}}
                         @endif            
                     >R-2100</option>
-                    <option value="R600"
+                    <option value="R2100"
                         @if ($data->tipounion=="R2100")
                             {{'selected'}}
                         @endif            
