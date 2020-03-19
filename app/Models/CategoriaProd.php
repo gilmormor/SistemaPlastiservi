@@ -13,6 +13,7 @@ class CategoriaProd extends Model
         'nombre',
         'descripcion',
         'precio',
+        'sta_precioxkilo',
         'usuariodel_id',
         'areaproduccion_id'
     ];

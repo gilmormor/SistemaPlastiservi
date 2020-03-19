@@ -26,6 +26,7 @@ Vendedor
                         <tr>
                             <th class="width70">ID</th>
                             <th>Nombre</th>
+                            <th>Activo</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
@@ -34,6 +35,7 @@ Vendedor
                         <tr>
                             <td>{{$data->id}}</td>
                             <td>{{$data->persona->nombre}} {{$data->persona->apellido}}</td>
+                            <td>{{$data->sta_activo ? 'Si' : 'No' }}</td>
                             <td>
                                 <a href="{{route('editar_vendedor', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
                                     <i class="fa fa-fw fa-pencil"></i>

@@ -122,7 +122,9 @@ class CotizacionController extends Controller
 
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
-        $vendedores = Vendedor::orderBy('id')->get();
+        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+/*        $vendedores1 = Vendedor::findOrFail(1);
+        dd($vendedores1->persona->usuario);*/
         $comunas = Comuna::orderBy('id')->get();
         $provincias = Provincia::orderBy('id')->get();
         $regiones = Region::orderBy('id')->get();

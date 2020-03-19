@@ -114,7 +114,7 @@
                             {{'selected'}}
                         @endif
                         >
-                        {{$vendedor->persona->nombre}}
+                        {{$vendedor->persona->nombre}} {{$vendedor->persona->apellido}}
                     </option>
                 @endforeach
             </select>

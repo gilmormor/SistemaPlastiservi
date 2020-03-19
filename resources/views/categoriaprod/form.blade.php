@@ -15,6 +15,29 @@
     </div>
 </div>
 <div class="form-group">
+    <label for="sta_precioxkilo" class="col-lg-3 control-label requerido">Status Precio x Kilo</label>
+    <div class="col-lg-8">
+        <select name="sta_precioxkilo" id="sta_precioxkilo" class="form-control select2 tipounion" required>
+            <option value="">Seleccione...</option>
+            <option value="0"
+                @if (($aux_sta==2) and ($data->sta_precioxkilo=="0"))
+                    {{'selected'}}
+                @endif
+            >No</option>
+            <option value="1"
+                @if (($aux_sta==2) and ($data->sta_precioxkilo=="1"))
+                    {{'selected'}}
+                @endif            
+            >Si</option>
+            <option value="2"
+                @if (($aux_sta==2) and ($data->sta_precioxkilo=="2"))
+                    {{'selected'}}
+                @endif            
+            >Asignar Precio al Vender</option>
+        </select>
+    </div>
+</div>
+<div class="form-group">
     <label for="precio" class="col-lg-3 control-label requerido">Precio</label>
     <div class="col-lg-8">
     <input type="text" name="precio" id="precio" class="form-control camponumerico" value="{{old('precio', $data->precio ?? '')}}" placeholder="9999999999.99" required pattern="[0-9]{0,10}.[0-9]{0,2}" maxlength="13" required/>

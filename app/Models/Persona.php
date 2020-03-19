@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Seguridad\Usuario;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -40,4 +41,10 @@ class Persona extends Model
     {
         return $this->hasOne(Vendedor::class);
     }
+    //RELACION INVERSA User
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class);
+    }
+    
 }

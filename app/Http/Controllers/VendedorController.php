@@ -29,7 +29,9 @@ class VendedorController extends Controller
     public function crear()
     {
         can('crear-vendedor');
-        $personas = Persona::orderBy('id')->get();
+        $vendedor = Vendedor::orderBy('id')->pluck('persona_id')->toArray();
+        $personas = Persona::orderBy('id')->whereNotIn('id',$vendedor)->get();
+        //dd($personas);
         $aux_sta = 1;
         return view('vendedor.crear', compact('personas','aux_sta'));
     }
@@ -69,7 +71,13 @@ class VendedorController extends Controller
     {
         can('editar-vendedor');
         $data = Vendedor::findOrFail($id);
-        $personas = Persona::orderBy('id')->get();
+        //dd($data->persona_id);
+        $data1 = Vendedor::orderBy('id')->where('persona_id',$data->persona_id)->pluck('persona_id')->toArray();
+        //dd($data1);
+        $vendedor = Vendedor::whereNotIn('persona_id',$data1)->pluck('persona_id')->toArray();
+        //dd($vendedor);
+        $personas = Persona::orderBy('id')->whereNotIn('id',$vendedor)->get();
+        //dd($personas);
         $aux_sta = 2;
         return view('vendedor.editar', compact('data','personas','aux_sta'));
     }
