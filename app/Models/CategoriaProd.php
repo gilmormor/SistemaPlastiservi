@@ -13,9 +13,10 @@ class CategoriaProd extends Model
         'nombre',
         'descripcion',
         'precio',
+        'areaproduccion_id',
         'sta_precioxkilo',
-        'usuariodel_id',
-        'areaproduccion_id'
+        'unidadmedida_id',
+        'usuariodel_id'
     ];
 
     public function productos()

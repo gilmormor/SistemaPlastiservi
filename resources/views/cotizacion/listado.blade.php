@@ -100,7 +100,13 @@
 						<td class="textcenter">{{$CotizacionDetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->nombre}}</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textright">{{$CotizacionDetalle->producto->diamextmm}}mm - {{$CotizacionDetalle->producto->diamextpg}}</td>
+						<td class="textright">
+							@if ($CotizacionDetalle->producto->categoriaprod->unidadmedida_id==3)
+								{{$CotizacionDetalle->producto->diamextpg}}								
+							@else
+								{{$CotizacionDetalle->producto->diamextmm}}mm
+							@endif
+						</td>
 						<td class="textright">{{$CotizacionDetalle->producto->long}} mts</td>
 						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 2, ",", ".")}}</td>

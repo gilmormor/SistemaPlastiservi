@@ -103,13 +103,27 @@ class NotaVentaController extends Controller
     {
         can('crear-notaventa');
         $user = Usuario::findOrFail(auth()->id());
-        $vendedor_id=$user->persona->vendedor->id;
+        //$vendedor_id=$user->persona->vendedor->id;
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        }else{
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
         //dd($vendedor_id);
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
         //dd($sucurArray);
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        //$clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
     
         //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
@@ -119,7 +133,7 @@ class NotaVentaController extends Controller
         $fecha = date("d/m/Y");
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
-        $vendedores = Vendedor::orderBy('id')->get();
+        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $comunas = Comuna::orderBy('id')->get();
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
@@ -336,6 +350,7 @@ class NotaVentaController extends Controller
         $detalles = $data->notaventadetalles()->get();
         $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
+        session(['aux_aprocot' => '0']);
         //dd($clienteselec[0]->rut);
 
         $user = Usuario::findOrFail(auth()->id());
@@ -602,7 +617,7 @@ class NotaVentaController extends Controller
         $empresa = Empresa::orderBy('id')->get();
         $rut = number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
-        //return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
+        return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
         
         $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
         //return $pdf->download('cotizacion.pdf');

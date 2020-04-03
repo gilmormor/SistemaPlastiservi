@@ -104,7 +104,7 @@
             <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
             <select name="vendedor_idD" id="vendedor_idD" class="selectpicker form-control vendedor_idD" required readonly disabled>
                 <option value="">Seleccione...</option>
-                @foreach($vendedores as $vendedor)
+                @foreach($vendedores1 as $vendedor)
                     <option
                         value="{{$vendedor->id}}"
                         @if (($aux_sta==1) and ($vendedor_id==$vendedor->id))
@@ -114,7 +114,7 @@
                             {{'selected'}}
                         @endif
                         >
-                        {{$vendedor->persona->nombre}} {{$vendedor->persona->apellido}}
+                        {{$vendedor->nombre}} {{$vendedor->apellido}}
                     </option>
                 @endforeach
             </select>
@@ -317,7 +317,11 @@
                                             {{$CotizacionDetalle->producto->claseprod->cla_nombre}}
                                         </td>
                                         <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                            {{$CotizacionDetalle->producto->diamextmm}}
+                                            @if ($CotizacionDetalle->producto->categoriaprod->unidadmedida_id==3)
+                                                {{$CotizacionDetalle->producto->diamextpg}}
+                                            @else
+                                                {{$CotizacionDetalle->producto->diamextmm}}mm
+                                            @endif
                                         </td>
                                         <td style="display:none;">
                                             <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diamextmm}}" style="display:none;"/>
@@ -493,7 +497,7 @@
                     </select>
                     <span class="help-block"></span>
                 </div>
-                <div class="col-xs-12 col-sm-2">
+                <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="precioM" class="control-label" data-toggle='tooltip'>Precio Kg</label>
                     <input type="text" name="precioM" id="precioM" class="form-control" value="{{old('precioM', $data->precio ?? '')}}" valor="0.00" placeholder="Precio Kg"/>
                     <span class="help-block"></span>

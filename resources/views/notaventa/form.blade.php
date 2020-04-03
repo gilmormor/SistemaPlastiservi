@@ -283,7 +283,7 @@
             <div class="form-group col-xs-12 col-sm-3">
                 <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label requerido">Nro OrdenCompra</label>
                 <div class="input-group">
-                    <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" required/>
+                    <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra"/>
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="button" id="btnfotooc" name="btnfotooc" data-toggle='tooltip' title="Cargar Imagen OC">Examinar...</button>
                     </span>
@@ -422,7 +422,12 @@
                                         {{$detalle->producto->claseprod->cla_nombre}}
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->producto->diamextmm}}
+                                        @if ($detalle->producto->categoriaprod->unidadmedida_id==3)
+                                            {{$detalle->producto->diamextpg}}
+                                        @else
+                                            {{$detalle->producto->diamextmm}}mm
+                                        @endif
+
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->diamextmm}}" style="display:none;"/>
@@ -702,7 +707,7 @@
             <table class="table table-striped table-bordered table-hover tablas" id="tabla-data-clientes">
                 <thead>
                     <tr>
-                        <th class="width70">ID</th>
+                        <th>ID</th>
                         <th>RUT</th>
                         <th>Razón Social</th>
                         <th>Dirección</th>

@@ -161,8 +161,40 @@ class CotizacionController extends Controller
         $sucursales = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
         $aux_sta=1;
         $aux_statusPant='0';
-        //dd($sucurArray[0]);
-        return view('cotizacion.crear',compact('clientes','formapagos','plazopagos','vendedores','fecha','comunas','provincias','regiones','productos','empresa','tipoentregas','vendedor_id','giros','sucurArray','sucursales','aux_sta','aux_statusPant'));
+        //dd($sucurArray);
+        $sql = "SELECT usuario,usuario.email,persona.nombre
+        FROM usuario INNER JOIN sucursal_usuario
+        ON usuario.id=sucursal_usuario.usuario_id
+        INNER JOIN persona 
+        ON usuario.id=persona.usuario_id
+        INNER JOIN vendedor 
+        ON persona.id=vendedor.persona_id AND vendedor.sta_activo=1
+        where sucursal_usuario.sucursal_id IN (" . implode(",",$sucurArray) . ")";
+        $vend = DB::select($sql);
+
+        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+                                $user = Usuario::findOrFail(auth()->id());
+                                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+                                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                            })
+                    ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+                    ->join('vendedor', function ($join) {
+                        $join->on('persona.id', '=', 'vendedor.persona_id')
+                            ->where('vendedor.sta_activo', '=', 1);
+                    })
+                    ->select([
+                        'vendedor.id',
+                        'persona.nombre',
+                        'persona.apellido'
+                    ])
+                    ->get();
+
+        //dd($vendedores1);
+
+        return view('cotizacion.crear',compact('clientes','formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','provincias','regiones','productos','empresa','tipoentregas','vendedor_id','giros','sucurArray','sucursales','aux_sta','aux_statusPant'));
     }
     /**
      * Store a newly created resource in storage.
@@ -348,8 +380,28 @@ class CotizacionController extends Controller
         $sucursales = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
         $aux_sta=2;
         $aux_statusPant = 0;
+
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
+
+
         //dd($clientedirecs);
-        return view('cotizacion.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','cotizacionDetalles','comunas','provincias','regiones','formapagos','plazopagos','vendedores','productos','fecha','empresa','tipoentregas','giros','sucurArray','sucursales','aux_sta','aux_cont','aux_statusPant'));
+        return view('cotizacion.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','cotizacionDetalles','comunas','provincias','regiones','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','sucursales','aux_sta','aux_cont','aux_statusPant'));
     }
 
     /**

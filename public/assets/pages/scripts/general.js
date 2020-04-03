@@ -58,7 +58,7 @@ function validacion(campo,tipo)
 			cajatexto = document.getElementById(campo).value;
 			var caract = new RegExp(/^[0-9]+$/);
 
-			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo) ) {
+			if( codigo == null || codigo==0 || codigo.length == 0 || /^\s+$/.test(codigo) ) {
 				$("#glypcn"+campo).remove();
 				$('#'+campo).parent().attr("class", columnas+" has-error has-feedback");
 				$('#'+campo).parent().children('span').text("Campo obligatorio").show();

@@ -51,9 +51,7 @@ class ValidarNotaVenta extends FormRequest
             'giro_id' => 'required',
             'neto' => 'required|numeric|min:1',
             'iva' => 'required|numeric|min:1',
-            'total' => 'required|numeric|min:1',
-            'oc_id' => 'required|max:10',
-            'oc_file' => 'required|max:4000'
+            'total' => 'required|numeric|min:1'
         ];
     }
 }
