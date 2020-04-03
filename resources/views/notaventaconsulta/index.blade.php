@@ -64,11 +64,11 @@ Cotización
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
                                             <option value="">Seleccione...</option>
-                                            @foreach($vendedores as $vendedor)
+                                            @foreach($vendedores1 as $vendedor)
                                                 <option
                                                     value="{{$vendedor->id}}"
                                                     >
-                                                    {{$vendedor->persona->nombre}} {{$vendedor->persona->apellido}}
+                                                    {{$vendedor->nombre}} {{$vendedor->apellido}}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -97,6 +97,9 @@ Cotización
 				</div>
 			</div>
 
+            <div class="table-responsive" id="tablaconsulta">
+            </div>
+            <!--
             <div class="container">
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
@@ -104,7 +107,8 @@ Cotización
                         </div>			
                     </div>
                 </div>
-            </div>    
+            </div>
+            -->
         </div>
     </div>
 </div>

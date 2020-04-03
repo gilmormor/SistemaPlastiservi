@@ -46,8 +46,25 @@ class NotaVentaConsultaController extends Controller
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
 
-        return view('notaventaconsulta.index', compact('clientes','vendedores'));
+        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1'));
 
     }
 
@@ -67,10 +84,13 @@ class NotaVentaConsultaController extends Controller
 					<th>Fecha</th>
 					<th>RUT</th>
                     <th>Razón Social</th>
+                    <th>OC</th>
                     <th style='text-align:right'>PVC Kg</th>
                     <th style='text-align:right'>PVC $</th>
+                    <th style='text-align:right'>Prom</th>
                     <th style='text-align:right'>Cañeria Kg</th>
                     <th style='text-align:right'>Cañeria $</th>
+                    <th style='text-align:right'>Prom</th>
                     <th style='text-align:right'>Total Kg</th>
                     <th style='text-align:right'>Total $</th>
                     <th>PDF</th>
@@ -91,16 +111,27 @@ class NotaVentaConsultaController extends Controller
                 }
     
                 $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
+                $prompvc = 0;
+                if($data->pvckg!=0){
+                    $prompvc = $data->pvcpesos / $data->pvckg;
+                }
+                $promcan = 0;
+                if($data->cankg!=0){
+                    $promcan = $data->canpesos / $data->cankg;
+                }
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id</td>
-                    <td id='fechahora$i' name='fechahora$i'>$data->fechahora</td>
+                    <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                    <td id='oc_id$i' name='oc_id$i'>$data->oc_id</td>
                     <td id='pvckg$i' name='pvckg$i' style='text-align:right'>".number_format($data->pvckg, 2, ",", ".") ."</td>
                     <td id='pvcpesos$i' name='pvcpesos$i' style='text-align:right'>".number_format($data->pvcpesos, 2, ",", ".") ."</td>
+                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($prompvc, 2, ",", ".") ."</td>
                     <td id='cankg$i' name='cankg$i' style='text-align:right'>".number_format($data->cankg, 2, ",", ".") ."</td>
                     <td id='canpesos$i' name='canpesos$i' style='text-align:right'>".number_format($data->canpesos, 2, ",", ".") ."</td>
+                    <td id='promcan$i' name='promcan$i' style='text-align:right'>".number_format($promcan, 2, ",", ".") ."</td>
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
                     <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->totalps, 2, ",", ".") ."</td>
                     <td>

@@ -145,7 +145,7 @@
                     <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
                     <select name="vendedor_idD" id="vendedor_idD" class="selectpicker form-control vendedor_idD" required readonly disabled>
                         <option value="">Seleccione...</option>
-                        @foreach($vendedores as $vendedor)
+                        @foreach($vendedores1 as $vendedor)
                             <option
                                 value="{{$vendedor->id}}"
                                 @if (($aux_sta==1) and ($vendedor_id==$vendedor->id))
@@ -155,7 +155,7 @@
                                     {{'selected'}}
                                 @endif
                                 >
-                                {{$vendedor->persona->nombre}}
+                                {{$vendedor->nombre}} {{$vendedor->apellido}}
                             </option>
                         @endforeach
                     </select>

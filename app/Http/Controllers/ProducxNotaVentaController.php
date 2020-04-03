@@ -51,9 +51,26 @@ class ProducxNotaVentaController extends Controller
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
 
 
-        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','vendedores'));
+        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1'));
     }
 
     
