@@ -165,7 +165,10 @@ $(document).ready(function () {
 		$("#vendedor_idD").removeAttr("readonly");
 		$("#vendedor_idD").val("");
 	}
-
+	$("#vendedor_idD").change(function(){
+		//alert($("#vendedor_idD").val());
+		$("#vendedor_id").val($("#vendedor_idD").val());
+	});
 });
 
 
@@ -805,6 +808,7 @@ $("#rut").blur(function(){
 				data: data,
 				success: function (respuesta) {
 					if(respuesta.length>0){
+						alert(respuesta[0]['vendedor_id']);
 						$("#razonsocial").val(respuesta[0]['razonsocial']);
 						$("#telefono").val(respuesta[0]['telefono']);
 						$("#email").val(respuesta[0]['email']);
@@ -812,8 +816,10 @@ $("#rut").blur(function(){
 						$("#direccioncot").val(respuesta[0]['direccion']);
 						$("#cliente_id").val(respuesta[0]['id'])
 						$("#contacto").val(respuesta[0]['contactonombre']);
-						//$("#vendedor_id").val(respuesta[0]['vendedor_id']);
-						//$("#vendedor_idD").val(respuesta[0]['vendedor_id']);
+						/*
+						$("#vendedor_id").val(respuesta[0]['vendedor_id']);
+						$("#vendedor_idD").val(respuesta[0]['vendedor_id']);
+						*/
 						$("#region_id").val(respuesta[0]['regionp_id']);
 						//alert($("#region_id").val());
 						$("#provincia_id").val(respuesta[0]['provinciap_id']);

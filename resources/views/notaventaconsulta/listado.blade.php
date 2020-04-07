@@ -38,6 +38,7 @@
 						<th class="textcenter">Fecha</th>
 						<th class="textleft">RUT</th>
 						<th class="textleft">Razón Social</th>
+						<th>OC</th>
 						<th style='text-align:right'>PVC Kg</th>
 						<th style='text-align:right'>PVC $</th>
 						<th style='text-align:right'>Cañeria Kg</th>
@@ -73,6 +74,7 @@
 							<td style='text-align:center'>{{$notaventa->fechahora}}</td>
 							<td>{{$rut}}</td>
 							<td>{{$notaventa->razonsocial}}</td>
+							<td>{{$notaventa->oc_id}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->pvckg, 2, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->pvcpesos, 2, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->cankg, 2, ",", ".")}}</td>

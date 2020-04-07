@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AreaProduccion;
 use App\Models\Cliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Empresa;
+use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -63,8 +65,10 @@ class NotaVentaConsultaController extends Controller
                 'persona.apellido'
             ])
             ->get();
+        $giros = Giro::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::orderBy('id')->get();
 
-        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1'));
+        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions'));
 
     }
 
@@ -75,7 +79,7 @@ class NotaVentaConsultaController extends Controller
 		$respuesta['tabla'] = "";
 
         if($request->ajax()){
-            $datas = consulta($request->fechad,$request->fechah,$request->rut,$request->vendedor_id);
+            $datas = consulta($request->fechad,$request->fechah,$request->rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons'>
 			<thead>
@@ -84,20 +88,24 @@ class NotaVentaConsultaController extends Controller
 					<th>Fecha</th>
 					<th>RUT</th>
                     <th>Razón Social</th>
-                    <th>OC</th>
-                    <th style='text-align:right'>PVC Kg</th>
-                    <th style='text-align:right'>PVC $</th>
-                    <th style='text-align:right'>Prom</th>
-                    <th style='text-align:right'>Cañeria Kg</th>
-                    <th style='text-align:right'>Cañeria $</th>
-                    <th style='text-align:right'>Prom</th>
-                    <th style='text-align:right'>Total Kg</th>
-                    <th style='text-align:right'>Total $</th>
+                    <th class='tooltipsC' title='Número Orden de Compra'>OC</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total kg PVC'>PVC Kg</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total pesos PVC'>PVC $</th>
+                    <th style='text-align:right' class='tooltipsC' title='Promedio x kg PVC'>Prom</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total Kg Cañeria'>Cañeria Kg</th>
+                    <th style='text-align:right' class='tooltipsC' title='Promedio x kilo PVC'>Cañeria $</th>
+                    <th style='text-align:right' class='tooltipsC' title='Promedio x kg Cañeria'>Prom</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
                     <th>PDF</th>
 				</tr>
 			</thead>
             <tbody>";
             $i = 0;
+            $aux_Tpvckg = 0;
+            $aux_Tpvcpesos= 0;
+            $aux_Tcankg = 0;
+            $aux_Tcanpesos = 0;
             $aux_totalKG = 0;
             $aux_totalps = 0;
             foreach ($datas as $data) {
@@ -140,6 +148,10 @@ class NotaVentaConsultaController extends Controller
                         </a>
                     </td>
                 </tr>";
+                $aux_Tpvckg += $data->pvckg;
+                $aux_Tpvcpesos += $data->pvcpesos;
+                $aux_Tcankg += $data->cankg;
+                $aux_Tcanpesos += $data->canpesos;
                 $aux_totalKG += $data->totalkilos;
                 $aux_totalps += $data->totalps;
     
@@ -149,7 +161,13 @@ class NotaVentaConsultaController extends Controller
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='8' style='text-align:left'>TOTAL</th>
+                    <th colspan='5' style='text-align:left'>TOTAL</th>
+                    <th style='text-align:right'>". number_format($aux_Tpvckg, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_Tpvcpesos, 2, ",", ".") ."</th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'>". number_format($aux_Tcankg, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_Tcanpesos, 2, ",", ".") ."</th>
+                    <th style='text-align:right'></th>
                     <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
                     <th style='text-align:right'></th>
@@ -242,10 +260,10 @@ class NotaVentaConsultaController extends Controller
         $rut=str_replace(".","",$rut);
         //dd($rut);
         if($request->ajax()){
-            $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id);
+            $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id);
         }
         //dd($request);
-        $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id);
+        $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -253,7 +271,7 @@ class NotaVentaConsultaController extends Controller
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
         if($notaventas){
-            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
+            return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
         
             $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
             //return $pdf->download('cotizacion.pdf');
@@ -266,7 +284,7 @@ class NotaVentaConsultaController extends Controller
     
 }
 
-function consulta($fdesde,$fhasta,$rut,$vendedor_id1){
+function consulta($fdesde,$fhasta,$rut,$vendedor_id1,$oc_id,$giro_id,$areaproduccion_id){
     if(empty($vendedor_id1)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -303,6 +321,22 @@ function consulta($fdesde,$fhasta,$rut,$vendedor_id1){
     }else{
         $aux_condrut = "cliente.rut='$rut'";
     }
+    if(empty($oc_id)){
+        $aux_condoc_id = " true";
+    }else{
+        $aux_condoc_id = "notaventa.oc_id='$oc_id'";
+    }
+    if(empty($giro_id)){
+        $aux_condgiro_id = " true";
+    }else{
+        $aux_condgiro_id = "notaventa.giro_id='$giro_id'";
+    }
+    if(empty($areaproduccion_id)){
+        $aux_condareaproduccion_id = " true";
+    }else{
+        $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$areaproduccion_id'";
+    }
+
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,
             sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
@@ -326,6 +360,9 @@ function consulta($fdesde,$fhasta,$rut,$vendedor_id1){
             WHERE " . $vendedorcond .
             " and " . $aux_condFecha .
             " and " . $aux_condrut .
+            " and " . $aux_condoc_id .
+            " and " . $aux_condgiro_id .
+            " and " . $aux_condareaproduccion_id .
             " and notaventa.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial;";

@@ -184,6 +184,7 @@ class NotaVentaController extends Controller
                 'persona.apellido'
             ])
             ->get();
+        //dd($vendedor_id);
         return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','productos','clientes','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant'));
     }
 
@@ -436,6 +437,23 @@ class NotaVentaController extends Controller
         ->get();
 
         //dd($clientes);
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
 
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
@@ -443,7 +461,7 @@ class NotaVentaController extends Controller
         $aux_sta=2;
         $aux_statusPant = 0;
         //dd($clientedirecs);
-        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant'));
+        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant'));
     }
 
     /**
@@ -634,7 +652,7 @@ class NotaVentaController extends Controller
         $empresa = Empresa::orderBy('id')->get();
         $rut = number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
-        //return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
+        return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
         
         $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
         //return $pdf->download('cotizacion.pdf');
