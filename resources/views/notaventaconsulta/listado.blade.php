@@ -34,7 +34,7 @@
 				<thead>
 					<tr>
 						<th width="50px" style='text-align:left'>#</th>
-						<th width="50px" style='text-align:left'>ID</th>
+						<th width="50px" style='text-align:left'>NV ID</th>
 						<th class="textcenter">Fecha</th>
 						<th class="textleft">RUT</th>
 						<th class="textleft">Razón Social</th>
@@ -71,7 +71,7 @@
 						<tr style='{{$colorFila}}' title='{{$aux_title}}' data-toggle='{{$aux_data_toggle}}' class='btn-accion-tabla tooltipsC'>
 							<td>{{$i}}</td>
 							<td>{{$notaventa->id}}</td>
-							<td style='text-align:center'>{{$notaventa->fechahora}}</td>
+							<td style='text-align:center'>{{date('d-m-Y', strtotime($notaventa->fechahora))}}</td>
 							<td>{{$rut}}</td>
 							<td>{{$notaventa->razonsocial}}</td>
 							<td>{{$notaventa->oc_id}}</td>

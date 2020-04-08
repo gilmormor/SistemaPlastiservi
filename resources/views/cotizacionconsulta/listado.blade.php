@@ -33,7 +33,7 @@
 		<table id="factura_detalle">
 				<thead>
 					<tr>
-						<th width="50px">Id.</th>
+						<th width="50px">Cot Id.</th>
 						<th class="textcenter">Fecha</th>
 						<th class="textleft">RUT</th>
 						<th class="textleft">Razón Social</th>
@@ -71,7 +71,7 @@
 					?>
 						<tr class="headt" style="height:150%;">
 							<td class="textcenter">{{number_format($cotizacion->id,0)}}</td>
-							<td class="textcenter">{{$cotizacion->fechahora}}</td>
+							<td class="textcenter">{{date('d-m-Y', strtotime($cotizacion->fechahora))}} {{date("h:i:s A", strtotime($cotizacion->fechahora))}}</td>
 							<td class="textleft">{{$rut}}</td>
 							<td class="textleft">{{$cotizacion->razonsocial}}</td>
 							<td class="textleft">{{$aux_mensaje}}</td>
