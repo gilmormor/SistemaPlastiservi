@@ -656,7 +656,7 @@ class NotaVentaController extends Controller
         
         $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
         //return $pdf->download('cotizacion.pdf');
-        return $pdf->stream();
+        return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
         
     }
 

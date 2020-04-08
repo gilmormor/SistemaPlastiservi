@@ -610,7 +610,7 @@ class CotizacionController extends Controller
         
         $pdf = PDF::loadView('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         //return $pdf->download('cotizacion.pdf');
-        return $pdf->stream(str_pad($cotizacion->id, 4, "0", STR_PAD_LEFT) .' - '. $cotizacion->cliente->razonsocial . '.pdf');
+        return $pdf->stream(str_pad($cotizacion->id, 5, "0", STR_PAD_LEFT) .' - '. $cotizacion->cliente->razonsocial . '.pdf');
         
     }
 }
