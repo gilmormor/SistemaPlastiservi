@@ -61,7 +61,8 @@ Cotización
                         ?>
                         <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}" style="{{$colorFila}}" title="{{$aux_title}}" data-toggle="{{$aux_data_toggle}}">
                             <td>{{$data->id}}</td>
-                            <td class="width200">{{$data->fechahora}}</td>
+                            <!--<td class="width200">{{$data->fechahora}}</td>-->
+                            <td class="width200">{{date('d-m-Y', strtotime($data->fechahora))}} {{date("h:i:s A", strtotime($data->fechahora))}}</td>
                             <td >{{$data->razonsocial}}</td>
                             @if (session('aux_aprocot')=='0')
                                 <td>
