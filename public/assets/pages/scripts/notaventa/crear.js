@@ -808,7 +808,7 @@ $("#rut").blur(function(){
 				data: data,
 				success: function (respuesta) {
 					if(respuesta.length>0){
-						alert(respuesta[0]['vendedor_id']);
+						//alert(respuesta[0]['vendedor_id']);
 						$("#razonsocial").val(respuesta[0]['razonsocial']);
 						$("#telefono").val(respuesta[0]['telefono']);
 						$("#email").val(respuesta[0]['email']);

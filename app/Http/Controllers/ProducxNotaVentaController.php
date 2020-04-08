@@ -37,8 +37,45 @@ class ProducxNotaVentaController extends Controller
         if($counts[0]->contador>0){
             $vendedor_id=$user->persona->vendedor->id;
             $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+                $user = Usuario::findOrFail(auth()->id());
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                        })
+                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+                ->join('vendedor', function ($join) {
+                    $join->on('persona.id', '=', 'vendedor.persona_id')
+                        ->where('vendedor.sta_activo', '=', 1);
+                })
+                ->select([
+                    'vendedor.id',
+                    'persona.nombre',
+                    'persona.apellido'
+                ])
+                ->where('vendedor.id','=',$vendedor_id)
+                ->get();
+    
         }else{
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+                $user = Usuario::findOrFail(auth()->id());
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                        })
+                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+                ->join('vendedor', function ($join) {
+                    $join->on('persona.id', '=', 'vendedor.persona_id')
+                        ->where('vendedor.sta_activo', '=', 1);
+                })
+                ->select([
+                    'vendedor.id',
+                    'persona.nombre',
+                    'persona.apellido'
+                ])
+                ->get();
+    
         }
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
@@ -51,24 +88,6 @@ class ProducxNotaVentaController extends Controller
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-            $user = Usuario::findOrFail(auth()->id());
-            $sucurArray = $user->sucursales->pluck('id')->toArray();
-            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                    })
-            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-            ->join('vendedor', function ($join) {
-                $join->on('persona.id', '=', 'vendedor.persona_id')
-                    ->where('vendedor.sta_activo', '=', 1);
-            })
-            ->select([
-                'vendedor.id',
-                'persona.nombre',
-                'persona.apellido'
-            ])
-            ->get();
-
 
         return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1'));
     }
