@@ -26,27 +26,27 @@ Cotización
                         @csrf
                         <div class="col-xs-12 col-md-8 col-sm-8">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6">
+                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
                                     <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label for="fecha" data-toggle='tooltip' title="Fecha Inicial">Fecha Ini:</label>
+                                        <label for="fecha">Fecha Ini:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required readonly=""  data-toggle='tooltip' title="Fecha Inicial">
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6">
+                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final">
                                     <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label for="dep_fecha" data-toggle='tooltip' title="Fecha Final">Fecha Fin:</label>
+                                        <label for="dep_fecha">Fecha Fin:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
-                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" placeholder="DD/MM/AAAA" required readonly="" data-toggle='tooltip' title="Fecha Final">
+                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="RUT">
                                     <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label for="rut" data-toggle='tooltip' title="RUT">RUT:</label>
+                                        <label for="rut">RUT:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <div class="input-group">
@@ -57,11 +57,11 @@ Cotización
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Vendedor">
                                     <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label data-toggle='tooltip' title="Vendedor">Vendedor:</label>
+                                        <label>Vendedor:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-9 col-sm-9" data-toggle='tooltip' title="Vendedor">
+                                    <div class="col-xs-12 col-md-9 col-sm-9">
                                         <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
                                             <option value="">Seleccione...</option>
                                             @foreach($vendedores1 as $vendedor)
@@ -76,17 +76,17 @@ Cotización
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Orden de Compra">
                                     <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label for="rut" data-toggle='tooltip' title="Orden de Compra">OC:</label>
+                                        <label for="rut">OC:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id')}}" maxlength="12"/>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Giro">
                                     <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label data-toggle='tooltip' title="Giro">Giro:</label>
+                                        <label>Giro:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <select name="giro_id" id="giro_id" class="selectpicker form-control giro_id">
@@ -103,9 +103,9 @@ Cotización
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
                                     <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label data-toggle='tooltip' title="Area de Producción">Area Prod:</label>
+                                        <label >Area Prod:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <select name="areaproduccion_id" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id">

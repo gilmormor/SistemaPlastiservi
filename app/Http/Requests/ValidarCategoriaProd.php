@@ -27,6 +27,9 @@ class ValidarCategoriaProd extends FormRequest
             'nombre' => 'required|max:100|unique:categoriaprod,nombre,' . $this->route('id'),
             'descripcion' => 'required|max:200',
             'precio' => 'required|max:99999.99|numeric',
+            'sta_precioxkilo' => 'required|max:200',
+            'unidadmedida_id' => 'required|max:200',
+            'unidadmedidafact_id' => 'required|max:200',
         ];
     }
 }

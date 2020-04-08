@@ -16,6 +16,7 @@ class CategoriaProd extends Model
         'areaproduccion_id',
         'sta_precioxkilo',
         'unidadmedida_id',
+        'unidadmedidafact_id',
         'usuariodel_id'
     ];
 
@@ -40,5 +41,18 @@ class CategoriaProd extends Model
     {
         return $this->belongsTo(AreaProduccion::class);
     }
+
+    //Relacion inversa a UnidadMedida
+    public function unidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class);
+    }
+
+    //Relacion inversa a UnidadMedida
+    public function unidadmedidafact()
+    {
+        return $this->belongsTo(UnidadMedida::class,'unidadmedidafact_id');
+    }
+    
     
 }

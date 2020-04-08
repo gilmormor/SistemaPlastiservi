@@ -94,6 +94,24 @@
         </select>
     </div>
 </div>
+<div class="form-group">
+    <label for="unidadmedidafact_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad de Medida">Unidad de Medida</label>
+    <div class="col-lg-8">
+        <select name="unidadmedidafact_id" id="unidadmedidafact_id" class="form-control select2 unidadmedidafact_id" required>
+            <option value="">Seleccione...</option>
+            @foreach($unidadmedidas as $id => $descripcion)
+                <option
+                    value="{{$id}}"
+                    @if (($aux_sta==2) and ($data->unidadmedidafact_id==$id))
+                        {{'selected'}}
+                    @endif
+                    >
+                    {{$descripcion}}
+                </option>
+            @endforeach
+        </select>
+    </div>
+</div>
 
 <div class="col-md-6">
     <div class="box box-primary">

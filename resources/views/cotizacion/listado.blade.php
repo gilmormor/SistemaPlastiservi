@@ -97,7 +97,7 @@
 				@foreach($cotizacionDetalles as $CotizacionDetalle)
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{number_format($CotizacionDetalle->cant,0)}}</td>
-						<td class="textcenter">{{$CotizacionDetalle->unidadmedida->nombre}}</td>
+						<td class="textcenter">{{$CotizacionDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->nombre}}</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->claseprod->cla_nombre}}</td>
 						<td class="textright">
