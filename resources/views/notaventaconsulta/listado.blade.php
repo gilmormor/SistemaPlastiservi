@@ -33,8 +33,8 @@
 		<table id="factura_detalle">
 				<thead>
 					<tr>
-						<th width="50px" style='text-align:left'>#</th>
-						<th width="50px" style='text-align:left'>NV ID</th>
+						<th style='text-align:left'>#</th>
+						<th style='text-align:left'>NV ID</th>
 						<th class="textcenter">Fecha</th>
 						<th class="textleft">RUT</th>
 						<th class="textleft">Razón Social</th>
