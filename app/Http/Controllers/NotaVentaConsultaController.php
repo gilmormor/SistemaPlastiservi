@@ -110,10 +110,8 @@ class NotaVentaConsultaController extends Controller
                     <th class='tooltipsC' title='Número Orden de Compra'>OC</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg PVC'>PVC Kg</th>
                     <th style='text-align:right' class='tooltipsC' title='Total pesos PVC'>PVC $</th>
-                    <th style='text-align:right' class='tooltipsC' title='Promedio x kg PVC'>Prom</th>
                     <th style='text-align:right' class='tooltipsC' title='Total Kg Cañeria'>Cañeria Kg</th>
                     <th style='text-align:right' class='tooltipsC' title='Promedio x kilo PVC'>Cañeria $</th>
-                    <th style='text-align:right' class='tooltipsC' title='Promedio x kg Cañeria'>Prom</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
                     <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
                     <th>PDF</th>
@@ -155,10 +153,8 @@ class NotaVentaConsultaController extends Controller
                     <td id='oc_id$i' name='oc_id$i'>$data->oc_id</td>
                     <td id='pvckg$i' name='pvckg$i' style='text-align:right'>".number_format($data->pvckg, 2, ",", ".") ."</td>
                     <td id='pvcpesos$i' name='pvcpesos$i' style='text-align:right'>".number_format($data->pvcpesos, 2, ",", ".") ."</td>
-                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($prompvc, 2, ",", ".") ."</td>
                     <td id='cankg$i' name='cankg$i' style='text-align:right'>".number_format($data->cankg, 2, ",", ".") ."</td>
                     <td id='canpesos$i' name='canpesos$i' style='text-align:right'>".number_format($data->canpesos, 2, ",", ".") ."</td>
-                    <td id='promcan$i' name='promcan$i' style='text-align:right'>".number_format($promcan, 2, ",", ".") ."</td>
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
                     <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->totalps, 2, ",", ".") ."</td>
                     <td>
@@ -183,10 +179,8 @@ class NotaVentaConsultaController extends Controller
                     <th colspan='5' style='text-align:left'>TOTAL</th>
                     <th style='text-align:right'>". number_format($aux_Tpvckg, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_Tpvcpesos, 2, ",", ".") ."</th>
-                    <th style='text-align:right'></th>
                     <th style='text-align:right'>". number_format($aux_Tcankg, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_Tcanpesos, 2, ",", ".") ."</th>
-                    <th style='text-align:right'></th>
                     <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
                     <th style='text-align:right'></th>
