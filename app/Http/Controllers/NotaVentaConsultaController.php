@@ -9,6 +9,7 @@ use App\Models\ClienteVendedor;
 use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
+use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -86,8 +87,9 @@ class NotaVentaConsultaController extends Controller
 
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $tipoentregas = TipoEntrega::orderBy('id')->get();
 
-        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions'));
+        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas'));
 
     }
 
@@ -98,7 +100,7 @@ class NotaVentaConsultaController extends Controller
 		$respuesta['tabla'] = "";
 
         if($request->ajax()){
-            $datas = consulta($request->fechad,$request->fechah,$request->rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id);
+            $datas = consulta($request->fechad,$request->fechah,$request->rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id,$request->tipoentrega_id);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons'>
 			<thead>
@@ -273,10 +275,10 @@ class NotaVentaConsultaController extends Controller
         $rut=str_replace(".","",$rut);
         //dd($rut);
         if($request->ajax()){
-            $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id);
+            $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id,$request->tipoentrega_id);
         }
         //dd($request);
-        $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id);
+        $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id,$request->tipoentrega_id);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -297,7 +299,7 @@ class NotaVentaConsultaController extends Controller
     
 }
 
-function consulta($fdesde,$fhasta,$rut,$vendedor_id1,$oc_id,$giro_id,$areaproduccion_id){
+function consulta($fdesde,$fhasta,$rut,$vendedor_id1,$oc_id,$giro_id,$areaproduccion_id,$tipoentrega_id){
     if(empty($vendedor_id1)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -349,6 +351,11 @@ function consulta($fdesde,$fhasta,$rut,$vendedor_id1,$oc_id,$giro_id,$areaproduc
     }else{
         $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$areaproduccion_id'";
     }
+    if(empty($tipoentrega_id)){
+        $aux_condtipoentrega_id = " true";
+    }else{
+        $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$tipoentrega_id'";
+    }
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,
@@ -376,6 +383,7 @@ function consulta($fdesde,$fhasta,$rut,$vendedor_id1,$oc_id,$giro_id,$areaproduc
             " and " . $aux_condoc_id .
             " and " . $aux_condgiro_id .
             " and " . $aux_condareaproduccion_id .
+            " and " . $aux_condtipoentrega_id .
             " and notaventa.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial;";

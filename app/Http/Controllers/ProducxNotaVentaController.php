@@ -115,7 +115,7 @@ class ProducxNotaVentaController extends Controller
                     <th style='text-align:right'>Pesos</th>
                     <th style='text-align:right'>KG</th>
                     <th style='text-align:right'>Precio Prom Unit</th>
-                    <th style='text-align:right'>Precio Kilo</th>
+                    <th style='text-align:right'>Precio Prom Kilo</th>
 				</tr>
 			</thead>
             <tbody>";

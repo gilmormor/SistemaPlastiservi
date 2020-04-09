@@ -16,12 +16,12 @@ $(document).ready(function () {
 */
     $("#btnconsultar").click(function()
     {
-        consultar($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val(),$("#oc_id").val(),$("#giro_id").val(),$("#areaproduccion_id").val());
+        consultar($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val(),$("#oc_id").val(),$("#giro_id").val(),$("#areaproduccion_id").val(),$("#tipoentrega_id").val());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val(),$("#oc_id").val(),$("#giro_id").val(),$("#areaproduccion_id").val());
+        consultarpdf($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val(),$("#oc_id").val(),$("#giro_id").val(),$("#areaproduccion_id").val(),$("#tipoentrega_id").val());
     });
 
     //alert(aux_nfila);
@@ -78,7 +78,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function consultar(fechad,fechah,rut,vendedor_id,oc_id,giro_id,areaproduccion_id){
+function consultar(fechad,fechah,rut,vendedor_id,oc_id,giro_id,areaproduccion_id,tipoentrega_id){
     var data = {
         fechad     : fechad,
         fechah     : fechah,
@@ -87,6 +87,7 @@ function consultar(fechad,fechah,rut,vendedor_id,oc_id,giro_id,areaproduccion_id
         oc_id      : oc_id,
         giro_id    : giro_id,
         areaproduccion_id: areaproduccion_id,
+        tipoentrega_id: tipoentrega_id,
         _token: $('input[name=_token]').val()
     };
     $.ajax({
@@ -102,7 +103,7 @@ function consultar(fechad,fechah,rut,vendedor_id,oc_id,giro_id,areaproduccion_id
     });
 }
 
-function consultarpdf(fechad,fechah,rut,vendedor_id,oc_id,giro_id,areaproduccion_id){
+function consultarpdf(fechad,fechah,rut,vendedor_id,oc_id,giro_id,areaproduccion_id,tipoentrega_id){
     var data = {
         fechad: fechad,
         fechah: fechah,
@@ -111,6 +112,7 @@ function consultarpdf(fechad,fechah,rut,vendedor_id,oc_id,giro_id,areaproduccion
         oc_id      : oc_id,
         giro_id    : giro_id,
         areaproduccion_id: areaproduccion_id,
+        tipoentrega_id: tipoentrega_id,
         _token: $('input[name=_token]').val()
     };
     $.ajax({

@@ -120,6 +120,23 @@ Cotización
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Tipo de Entrega">
+                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                        <label >T Entrega:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                        <select name="tipoentrega_id" id="tipoentrega_id" class="selectpicker form-control tipoentrega_id">
+                                            <option value="">Seleccione...</option>
+                                            @foreach($tipoentregas as $tipoentrega)
+                                                <option
+                                                    value="{{$tipoentrega->id}}"
+                                                    >
+                                                    {{$tipoentrega->nombre}}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
 
                             </div>
 
