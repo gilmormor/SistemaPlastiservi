@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Cliente;
 use App\Models\ClienteSucursal;
@@ -88,8 +89,9 @@ class ProducxNotaVentaController extends Controller
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+        $areaproduccions = AreaProduccion::orderBy('id')->get();
 
-        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1'));
+        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions'));
     }
 
     
