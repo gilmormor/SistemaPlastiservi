@@ -71,8 +71,8 @@
 						<th class="textright">Peso</th>
 						<th class="textright">Precio x Kg</th>
 						<th class="textright">Total Kg</th>
-						<th class="textright" width="50px">Precio Unit</th>
-						<th class="textright" width="50px">Total Neto</th>
+						<th class="textright" width="90px">Precio Unit</th>
+						<th class="textright" width="90px">Total Neto</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
