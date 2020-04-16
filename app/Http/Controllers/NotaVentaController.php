@@ -645,18 +645,31 @@ class NotaVentaController extends Controller
 
     }
 
-    public function exportPdf($id)
+    public function exportPdf($id,$stareport = '1')
     {
         $notaventa = NotaVenta::findOrFail($id);
         $notaventaDetalles = $notaventa->notaventadetalles()->get();
         $empresa = Empresa::orderBy('id')->get();
         $rut = number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
-        //return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
+        if($stareport == '1'){
+            // return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
         
-        $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
-        //return $pdf->download('cotizacion.pdf');
-        return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+            $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
+            //return $pdf->download('cotizacion.pdf');
+            return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+    
+        }else{
+            if($stareport == '2'){
+                // return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+        
+                $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                //return $pdf->download('cotizacion.pdf');
+                return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+    
+            }
+        }
+        
         
     }
 

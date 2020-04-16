@@ -50,7 +50,7 @@ Cotización
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <div class="input-group">
-                                            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut')}}" title="F2 Buscar" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12" data-toggle='tooltip'/>
+                                            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut')}}" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12" data-toggle='tooltip'/>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
                                             </span>
@@ -76,29 +76,20 @@ Cotización
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Nota de Venta">
+                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                        <label for="notaventa_id">NotaVenta:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                        <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{old('notaventa_id')}}" maxlength="12"/>
+                                    </div>
+                                </div>
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Orden de Compra">
                                     <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label for="rut">OC:</label>
+                                        <label for="oc_id">OC:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id')}}" maxlength="12"/>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Giro">
-                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label>Giro:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-9 col-sm-9">
-                                        <select name="giro_id" id="giro_id" class="selectpicker form-control giro_id">
-                                            <option value="">Seleccione...</option>
-                                            @foreach($giros as $giro)
-                                                <option
-                                                    value="{{$giro->id}}"
-                                                    >
-                                                    {{$giro->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -137,9 +128,26 @@ Cotización
                                         </select>
                                     </div>
                                 </div>
-
                             </div>
-
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Giro">
+                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                        <label>Giro:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                        <select name="giro_id" id="giro_id" class="selectpicker form-control giro_id">
+                                            <option value="">Seleccione...</option>
+                                            @foreach($giros as $giro)
+                                                <option
+                                                    value="{{$giro->id}}"
+                                                    >
+                                                    {{$giro->nombre}}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-xs-12 col-md-4 col-sm-4">
                             <div class="col-xs-12 col-md-12 col-sm-12">

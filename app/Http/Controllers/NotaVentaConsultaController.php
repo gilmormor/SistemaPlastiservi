@@ -100,7 +100,7 @@ class NotaVentaConsultaController extends Controller
 		$respuesta['tabla'] = "";
 
         if($request->ajax()){
-            $datas = consulta($request->fechad,$request->fechah,$request->rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id,$request->tipoentrega_id);
+            $datas = consulta($request);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons'>
 			<thead>
@@ -112,13 +112,14 @@ class NotaVentaConsultaController extends Controller
                     <th class='tooltipsC' title='Número Orden de Compra'>OC</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg PVC'>PVC Kg</th>
                     <th style='text-align:right' class='tooltipsC' title='Total pesos PVC'>PVC $</th>
-                    <th style='text-align:right'>Prom</th>
+                    <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg PVC'>Prom</th>
                     <th style='text-align:right' class='tooltipsC' title='Total Kg Cañeria'>Cañeria Kg</th>
                     <th style='text-align:right' class='tooltipsC' title='Promedio x kilo PVC'>Cañeria $</th>
-                    <th style='text-align:right'>Prom</th>
+                    <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg PVC'>Prom</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
                     <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
-                    <th>PDF</th>
+                    <th class='tooltipsC' title='PDF Nota de Venta'>PDF</th>
+                    <th class='tooltipsC' title='PDF Precio x Kg'>PDF</th>
 				</tr>
 			</thead>
             <tbody>";
@@ -164,7 +165,12 @@ class NotaVentaConsultaController extends Controller
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
                     <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->totalps, 2, ",", ".") ."</td>
                     <td>
-                        <a href='" . route('exportPdf_notaventa', ['id' => $data->id]) . "' class='btn-accion-tabla tooltipsC' title='PDF' target='_blank'>
+                        <a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='PDF Nota de Venta' target='_blank'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                        </a>
+                    </td>
+                    <td>
+                        <a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2']) . "' class='btn-accion-tabla tooltipsC' title='PDF Precio x Kg' target='_blank'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
                     </td>
@@ -281,10 +287,10 @@ class NotaVentaConsultaController extends Controller
         $rut=str_replace(".","",$rut);
         //dd($rut);
         if($request->ajax()){
-            $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id,$request->tipoentrega_id);
+            $notaventas = consulta($request);
         }
         //dd($request);
-        $notaventas = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id,$request->oc_id,$request->giro_id,$request->areaproduccion_id,$request->tipoentrega_id);
+        $notaventas = consulta($request);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -305,8 +311,8 @@ class NotaVentaConsultaController extends Controller
     
 }
 
-function consulta($fdesde,$fhasta,$rut,$vendedor_id1,$oc_id,$giro_id,$areaproduccion_id,$tipoentrega_id){
-    if(empty($vendedor_id1)){
+function consulta($request){
+    if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
@@ -325,42 +331,47 @@ function consulta($fdesde,$fhasta,$rut,$vendedor_id1,$oc_id,$giro_id,$areaproduc
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$vendedor_id1'";
+        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
-    if(empty($fdesde) or empty($fhasta)){
+    if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
     }else{
-        $fecha = date_create_from_format('d/m/Y', $fdesde);
+        $fecha = date_create_from_format('d/m/Y', $request->fechad);
         $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
-        $fecha = date_create_from_format('d/m/Y', $fhasta);
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
     }
-    if(empty($rut)){
+    if(empty($request->rut)){
         $aux_condrut = " true";
     }else{
-        $aux_condrut = "cliente.rut='$rut'";
+        $aux_condrut = "cliente.rut='$request->rut'";
     }
-    if(empty($oc_id)){
+    if(empty($request->oc_id)){
         $aux_condoc_id = " true";
     }else{
-        $aux_condoc_id = "notaventa.oc_id='$oc_id'";
+        $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
     }
-    if(empty($giro_id)){
+    if(empty($request->giro_id)){
         $aux_condgiro_id = " true";
     }else{
-        $aux_condgiro_id = "notaventa.giro_id='$giro_id'";
+        $aux_condgiro_id = "notaventa.giro_id='$request->giro_id'";
     }
-    if(empty($areaproduccion_id)){
+    if(empty($request->areaproduccion_id)){
         $aux_condareaproduccion_id = " true";
     }else{
-        $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$areaproduccion_id'";
+        $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$request->areaproduccion_id'";
     }
-    if(empty($tipoentrega_id)){
+    if(empty($request->tipoentrega_id)){
         $aux_condtipoentrega_id = " true";
     }else{
-        $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$tipoentrega_id'";
+        $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$request->tipoentrega_id'";
+    }
+    if(empty($request->notaventa_id)){
+        $aux_condnotaventa_id = " true";
+    }else{
+        $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
     }
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
@@ -390,6 +401,7 @@ function consulta($fdesde,$fhasta,$rut,$vendedor_id1,$oc_id,$giro_id,$areaproduc
             " and " . $aux_condgiro_id .
             " and " . $aux_condareaproduccion_id .
             " and " . $aux_condtipoentrega_id .
+            " and " . $aux_condnotaventa_id .
             " and notaventa.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial;";

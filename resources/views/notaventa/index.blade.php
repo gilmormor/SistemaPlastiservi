@@ -38,6 +38,7 @@ Nota de Venta
                                     <th class="width30"><label for="" title='Cerrar Nota de venta' data-toggle='tooltip'>CNV</label></th>
                                     <th class="width30"><label for="" title='Anular Nota de venta' data-toggle='tooltip'></label></th>
                                 @endif
+                                <th class="width30"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
                                 <th class="width70"></th>
                             </tr>
                         </thead>
@@ -81,9 +82,14 @@ Nota de Venta
                                     </td>
                                 @endif
                                 <td>
-                                    <a href="{{route('exportPdf_notaventa', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="PDF" target="_blank">
+                                    <a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="Nota de Venta" target="_blank">
                                         <i class="fa fa-fw fa-file-pdf-o"></i>                                    
                                     </a>
+                                    <a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2'])}}" class="btn-accion-tabla tooltipsC" title="Precio x Kg" target="_blank">
+                                        <i class="fa fa-fw fa-file-pdf-o"></i>                                    
+                                    </a>
+                                </td>
+                                <td>
                                     @if (session('aux_aproNV')=='0' and $aux_statusPant==0)    
                                         <a href="{{route('editar_notaventa', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
                                             <i class="fa fa-fw fa-pencil"></i>                                    
