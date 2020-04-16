@@ -102,7 +102,7 @@ class ProducxNotaVentaController extends Controller
 		$respuesta['tabla'] = "";
 
         if($request->ajax()){
-            $datas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id,$request->rut,$request->vendedor_id);
+            $datas = consulta($request);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons'>
 			<thead>
@@ -114,7 +114,7 @@ class ProducxNotaVentaController extends Controller
                     <th style='text-align:right'>Peso x Unidad</th>
                     <th style='text-align:right'>TU</th>
                     <th style='text-align:right'>Unid</th>
-                    <th style='text-align:right'>Pesos</th>
+                    <th style='text-align:right'>$</th>
                     <th style='text-align:right'>KG</th>
                     <th style='text-align:right'>Precio Prom Unit</th>
                     <th style='text-align:right'>Precio Prom Kilo</th>
@@ -258,10 +258,10 @@ class ProducxNotaVentaController extends Controller
         $rut=str_replace("-","",$request->rut);
         $rut=str_replace(".","",$rut);
         if($request->ajax()){
-            $notaventas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id,$rut,$request->vendedor_id);
+            $notaventas = consulta($request);
         }
         //dd($request);
-        $notaventas = consulta($request->fechad,$request->fechah,$request->categoriaprod_id,$request->giro_id,$rut,$request->vendedor_id);
+        $notaventas = consulta($request);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -281,8 +281,8 @@ class ProducxNotaVentaController extends Controller
 }
 
 
-function consulta($fdesde,$fhasta,$categoriaprod_id,$giro_id,$rut,$vendedor_id1){
-    if(empty($vendedor_id1)){
+function consulta($request){
+    if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
@@ -301,33 +301,39 @@ function consulta($fdesde,$fhasta,$categoriaprod_id,$giro_id,$rut,$vendedor_id1)
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$vendedor_id1'";
+        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
 
-    if(empty($fdesde) or empty($fhasta)){
+    if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
     }else{
-        $fecha = date_create_from_format('d/m/Y', $fdesde);
+        $fecha = date_create_from_format('d/m/Y', $request->fechad);
         $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
-        $fecha = date_create_from_format('d/m/Y', $fhasta);
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
     }
-    if(empty($categoriaprod_id)){
+    if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";
     }else{
-        $aux_condcategoriaprod_id = "categoriaprod.id='$categoriaprod_id'";
+        $aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
     }
-    if(empty($giro_id)){
+    if(empty($request->giro_id)){
         $aux_condgiro_id = " true";
     }else{
-        $aux_condgiro_id = "cliente.giro_id='$giro_id'";
+        $aux_condgiro_id = "cliente.giro_id='$request->giro_id'";
     }
-    if(empty($rut)){
+    if(empty($request->rut)){
         $aux_condrut = " true";
     }else{
-        $aux_condrut = "cliente.rut='$rut'";
+        $aux_condrut = "cliente.rut='$request->rut'";
+    }
+
+    if(empty($request->areaproduccion_id)){
+        $aux_condareaproduccion_id = " true";
+    }else{
+        $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$request->areaproduccion_id'";
     }
 
 
@@ -357,6 +363,7 @@ function consulta($fdesde,$fhasta,$categoriaprod_id,$giro_id,$rut,$vendedor_id1)
     " and " . $aux_condcategoriaprod_id .
     " and " . $aux_condgiro_id .
     " and " . $aux_condrut .
+    " and " . $aux_condareaproduccion_id .
     " and notaventadetalle.deleted_at is null
     GROUP BY notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,producto.diamextmm,claseprod.cla_nombre,

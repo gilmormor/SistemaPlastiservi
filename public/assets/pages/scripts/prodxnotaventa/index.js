@@ -16,12 +16,12 @@ $(document).ready(function () {
 */
     $("#btnconsultar").click(function()
     {
-        consultar($("#fechad").val(),$("#fechah").val(),$("#categoriaprod_id").val(),$("#giro_id").val(),$("#rut").val(),$("#vendedor_id").val());
+        consultar();
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf($("#fechad").val(),$("#fechah").val(),$("#categoriaprod_id").val(),$("#giro_id").val());
+        consultarpdf();
     });
 
     //alert(aux_nfila);
@@ -33,6 +33,8 @@ $(document).ready(function () {
     
 
     configurarTabla('.tablas');
+
+    $("#areaproduccion_id").val('1');
 
 });
 
@@ -75,14 +77,15 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function consultar(fechad,fechah,categoriaprod_id,giro_id,rut,vendedor_id){
+function consultar(){
     var data = {
-        fechad: fechad,
-        fechah: fechah,
-        categoriaprod_id: categoriaprod_id,
-        giro_id: giro_id,
-        rut: eliminarFormatoRutret(rut),
-        vendedor_id: vendedor_id,
+        fechad: $("#fechad").val(),
+        fechah: $("#fechah").val(),
+        categoriaprod_id: $("#categoriaprod_id").val(),
+        giro_id: $("#giro_id").val(),
+        rut: eliminarFormatoRutret($("#rut").val()),
+        vendedor_id: $("#vendedor_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
         _token: $('input[name=_token]').val()
     };
     $.ajax({
@@ -98,12 +101,15 @@ function consultar(fechad,fechah,categoriaprod_id,giro_id,rut,vendedor_id){
     });
 }
 
-function consultarpdf(fechad,fechah,categoriaprod_id,giro_id){
+function consultarpdf(){
     var data = {
-        fechad: fechad,
-        fechah: fechah,
-        categoriaprod_id: categoriaprod_id,
-        giro_id: giro_id,
+        fechad: $("#fechad").val(),
+        fechah: $("#fechah").val(),
+        categoriaprod_id: $("#categoriaprod_id").val(),
+        giro_id: $("#giro_id").val(),
+        rut: eliminarFormatoRutret($("#rut").val()),
+        vendedor_id: $("#vendedor_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
         _token: $('input[name=_token]').val()
     };
     $.ajax({
