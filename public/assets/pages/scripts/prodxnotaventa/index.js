@@ -34,7 +34,7 @@ $(document).ready(function () {
 
     configurarTabla('.tablas');
 
-    $("#areaproduccion_id").val('1');
+    $("#areaproduccion_id").val('1'); 
 
 });
 
