@@ -122,7 +122,7 @@ class ProducxNotaVentaController extends Controller
 			</thead>
             <tbody>";
             $i = 0;
-            $aux_totalkilos = 0; 
+            $aux_totalkilos = 0;
             $totalsumsubtotal = 0;
             $totalsumcant = 0;
             foreach ($datas as $data) {
