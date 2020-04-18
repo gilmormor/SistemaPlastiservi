@@ -66,10 +66,10 @@
 						<th class="textcenter">Unidad</th>
 						<th class="textleft">Descripción</th>
 						<th class="textleft">Clase</th>
-						<th class="textright">Diametro</th>
+						<th class="textright">Diam</th>
 						<th class="textright">Largo</th>
 						<th class="textright">Peso</th>
-						<th class="textright">Precio x Kg</th>
+						<th class="textright">$ x Kg</th>
 						<th class="textright">Total Kg</th>
 						<th class="textright" width="90px">Precio Unit</th>
 						<th class="textright" width="90px">Total Neto</th>
