@@ -111,13 +111,13 @@ class ProducxNotaVentaController extends Controller
 					<th>Diametro</th>
 					<th>Long</th>
                     <th>Clase</th>
-                    <th style='text-align:right'>Peso x Unidad</th>
-                    <th style='text-align:right'>TU</th>
-                    <th style='text-align:right'>Unid</th>
-                    <th style='text-align:right'>$</th>
-                    <th style='text-align:right'>KG</th>
-                    <th style='text-align:right'>Precio Prom Unit</th>
-                    <th style='text-align:right'>Precio Prom Kilo</th>
+                    <th style='text-align:right' class='tooltipsC' title='Peso x Unidad'>Peso x Unidad</th>
+                    <th style='text-align:right' class='tooltipsC' title='Tipo de Unión'>TU</th>
+                    <th style='text-align:right' class='tooltipsC' title='Precio $'>$</th>
+                    <th style='text-align:right' class='tooltipsC' title='Unidades'>Unid</th>
+                    <th style='text-align:right' class='tooltipsC' title='Precio promedio por Unidad'>Precio Prom Unit</th>
+                    <th style='text-align:right' class='tooltipsC' title='Kg'>KG</th>
+                    <th style='text-align:right' class='tooltipsC' title='Precio promedio por Kg'>Precio Prom Kilo</th>
 				</tr>
 			</thead>
             <tbody>";
@@ -139,10 +139,10 @@ class ProducxNotaVentaController extends Controller
                     <td id='cla_nombre$i' name='cla_nombre$i'>$data->cla_nombre</td>
                     <td id='peso$i' name='peso$i' style='text-align:right'>".number_format($data->peso, 2, ",", ".") ."</td>
                     <td id='tipounion$i' name='tipounion$i' style='text-align:right'>$data->tipounion</td>
-                    <td id='sumcant$i' name='sumcant$i' style='text-align:right'>".number_format($data->sumcant, 2, ",", ".") ."</td>
                     <td id='subtotal$i' name='subtotal$i' style='text-align:right'>".number_format($data->sumsubtotal, 2, ",", ".") ."</td>
-                    <td id='sumtotalkilos$i' name='sumtotalkilos$i' style='text-align:right'>".number_format($data->sumtotalkilos, 2, ",", ".") ."</td>
+                    <td id='sumcant$i' name='sumcant$i' style='text-align:right'>".number_format($data->sumcant, 2, ",", ".") ."</td>
                     <td id='prompreciounit$i' name='prompreciounit$i' style='text-align:right'>".number_format($data->prompreciounit, 2, ",", ".") ."</td>
+                    <td id='sumtotalkilos$i' name='sumtotalkilos$i' style='text-align:right'>".number_format($data->sumtotalkilos, 2, ",", ".") ."</td>
                     <td id='promprecioxkilo$i' name='promprecioxkilo$i' style='text-align:right'>".number_format($data->promprecioxkilo, 2, ",", ".") ."</td>
                 </tr>";
 
@@ -164,10 +164,10 @@ class ProducxNotaVentaController extends Controller
                             <th></th>
                             <th style='text-align:right'></th>
                             <th style='text-align:right'></th>
-                            <th style='text-align:right'>". number_format($totalsumcant, 2, ",", ".") ."</th>
                             <th style='text-align:right'>". number_format($totalsumsubtotal, 2, ",", ".") ."</th>
-                            <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
+                            <th style='text-align:right'>". number_format($totalsumcant, 2, ",", ".") ."</th>
                             <th style='text-align:right'>". number_format($totalsumsubtotal/$totalsumcant, 2, ",", ".") ."</th>
+                            <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
                             <th style='text-align:right'>". number_format($totalsumsubtotal/$aux_totalkilos, 2, ",", ".") ."</th>
                         </tr>
                     </tfoot>
