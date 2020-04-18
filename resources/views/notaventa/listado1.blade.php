@@ -62,7 +62,7 @@
 		<table id="factura_detalle">
 				<thead>
 					<tr>
-						<th width="50px">Cant.</th>
+						<th width="30px">Cant.</th>
 						<th class="textcenter">Unidad</th>
 						<th class="textleft">Descripción</th>
 						<th class="textleft">Clase</th>
