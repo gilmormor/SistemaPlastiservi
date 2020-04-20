@@ -49,7 +49,7 @@ $(document).ready(function () {
 	}
 	//$("#rut").numeric();
 	$("#cantM").numeric();
-	$("#precioM").numeric();
+	$("#precioM").numeric({decimalPlaces: 2});
 	$(".numerico").numeric();
 	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
@@ -128,8 +128,8 @@ $(document).ready(function () {
 		$("#myModalBuscarProd").modal('show');
 	});
 
-
-	$("#precioM").keyup(function(event){
+	
+	$("#precioM").blur(function(event){
 		totalizarItem(0);
 	});
 

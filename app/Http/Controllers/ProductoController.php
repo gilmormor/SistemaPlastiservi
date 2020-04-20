@@ -93,6 +93,7 @@ class ProductoController extends Controller
     public function actualizar(Request $request, $id)
     {
         can('guardar-producto');
+        //dd($request);
         $Producto = Producto::findOrFail($id);
         $Producto->update($request->all());
         return redirect('producto')->with('mensaje','Producto actualizado con exito');

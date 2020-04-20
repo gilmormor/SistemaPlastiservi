@@ -632,7 +632,7 @@
                 </div>
                 <div class="col-xs-12 col-sm-2">
                     <label for="precioM" class="control-label" data-toggle='tooltip'>Precio Kg</label>
-                    <input type="text" name="precioM" id="precioM" class="form-control" value="{{old('precioM', $data->precio ?? '')}}" valor="0.00" placeholder="Precio Kg"/>
+                    <input type="text" name="precioM" id="precioM" style="text-align:right" class="form-control" value="{{old('precioM', $data->precio ?? '')}}" valor="0.00" placeholder="Precio Kg"/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">
