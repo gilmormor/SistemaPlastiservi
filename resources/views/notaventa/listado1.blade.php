@@ -65,8 +65,8 @@
 						<th width="30px">Cant.</th>
 						<th class="textcenter">Unidad</th>
 						<th class="textleft">Descripción</th>
+						<th class="textleft">Diam</th>
 						<th class="textleft">Clase</th>
-						<th class="textright">Diam</th>
 						<th class="textright">Largo</th>
 						<th class="textright">Peso</th>
 						<th class="textright">$ x Kg</th>
@@ -81,14 +81,14 @@
 							<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
 							<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 							<td class="textleft">{{$notaventaDetalle->producto->nombre}}</td>
-							<td class="textleft">{{$notaventaDetalle->producto->claseprod->cla_nombre}}</td>
-							<td class="textright">
+							<td class="textleft">
 								@if ($notaventaDetalle->producto->categoriaprod->unidadmedida_id==3)
 									{{$notaventaDetalle->producto->diamextpg}}								
 								@else
 									{{$notaventaDetalle->producto->diamextmm}}mm
 								@endif
 							</td>
+							<td class="textleft">{{$notaventaDetalle->producto->claseprod->cla_nombre}}</td>
 							<td class="textright">{{$notaventaDetalle->producto->long}} mts</td>
 							<td class="textright">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 2, ",", ".")}}</td>

@@ -86,8 +86,8 @@
 					<th width="50px">Cant.</th>
 					<th class="textcenter">Unidad</th>
 					<th class="textleft">Descripción</th>
+					<th class="textleft">Diametro</th>
 					<th class="textleft">Clase</th>
-					<th class="textright">Diametro</th>
 					<th class="textright">Largo</th>
 					<th class="textright" width="150px">Precio Neto</th>
 					<th class="textright" width="150px">Total Neto</th>
@@ -99,8 +99,8 @@
 						<td class="textcenter">{{number_format($CotizacionDetalle->cant, 0, ",", "."))}}</td>
 						<td class="textcenter">{{$CotizacionDetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->nombre}}</td>
+						<td class="textleft">{{$CotizacionDetalle->producto->diamextmm}} mm</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textright">{{$CotizacionDetalle->producto->diamextmm}} mm</td>
 						<td class="textright">{{$CotizacionDetalle->producto->long}} mts</td>
 						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 2, ",", ".")}}</td>
