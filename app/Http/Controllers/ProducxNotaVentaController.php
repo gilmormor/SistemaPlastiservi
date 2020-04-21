@@ -268,12 +268,17 @@ class ProducxNotaVentaController extends Controller
         //$cotizaciones = consulta('','');
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
+        $nomvendedor = "";
+        if(!empty($request->vendedor_id)){
+            $vendedor = Vendedor::findOrFail($request->vendedor_id);
+            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+        }
         if($notaventas){
-            //return view('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
+            //return view('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
         
-            $pdf = PDF::loadView('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
+            $pdf = PDF::loadView('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
             //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream();
+            return $pdf->stream("prueba");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         }
@@ -282,6 +287,7 @@ class ProducxNotaVentaController extends Controller
 
 
 function consulta($request){
+
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -303,7 +309,6 @@ function consulta($request){
     }else{
         $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
-
 
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";

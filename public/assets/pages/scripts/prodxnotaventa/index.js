@@ -14,14 +14,15 @@ $(document).ready(function () {
         }
 	});
 */
+
     $("#btnconsultar").click(function()
     {
-        consultar();
+        consultar(datos());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf();
+        consultarpdf(datos());
     });
 
     //alert(aux_nfila);
@@ -37,6 +38,20 @@ $(document).ready(function () {
     $("#areaproduccion_id").val('1'); 
 
 });
+
+function datos(){
+    var data = {
+        fechad: $("#fechad").val(),
+        fechah: $("#fechah").val(),
+        categoriaprod_id: $("#categoriaprod_id").val(),
+        giro_id: $("#giro_id").val(),
+        rut: eliminarFormatoRutret($("#rut").val()),
+        vendedor_id: $("#vendedor_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
+        _token: $('input[name=_token]').val()
+    };
+    return data;
+}
 
 function configurarTabla(aux_tabla){
     $(aux_tabla).DataTable({
@@ -77,17 +92,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function consultar(){
-    var data = {
-        fechad: $("#fechad").val(),
-        fechah: $("#fechah").val(),
-        categoriaprod_id: $("#categoriaprod_id").val(),
-        giro_id: $("#giro_id").val(),
-        rut: eliminarFormatoRutret($("#rut").val()),
-        vendedor_id: $("#vendedor_id").val(),
-        areaproduccion_id : $("#areaproduccion_id").val(),
-        _token: $('input[name=_token]').val()
-    };
+function consultar(data){
     $.ajax({
         url: '/prodxnotaventa/reporte',
         type: 'POST',
@@ -101,23 +106,13 @@ function consultar(){
     });
 }
 
-function consultarpdf(){
-    var data = {
-        fechad: $("#fechad").val(),
-        fechah: $("#fechah").val(),
-        categoriaprod_id: $("#categoriaprod_id").val(),
-        giro_id: $("#giro_id").val(),
-        rut: eliminarFormatoRutret($("#rut").val()),
-        vendedor_id: $("#vendedor_id").val(),
-        areaproduccion_id : $("#areaproduccion_id").val(),
-        _token: $('input[name=_token]').val()
-    };
+function consultarpdf(data){
     $.ajax({
-        url: '/cotizacionconsulta/exportPdf',
+        url: '/prodxnotaventa/exportPdf',
         type: 'GET',
         data: data,
         success: function (datos) {
-            $("#midiv").html(datos);
+            //$("#midiv").html(datos);
             /*
             if(datos['tabla'].length>0){
                 $("#tablaconsulta").html(datos['tabla']);

@@ -20,9 +20,7 @@
 					<span class="h3">DESPACHO PVC</span>
 					<p>Fecha: {{date("d-m-Y")}}</p>
 					<p>Hora: {{date("h:i:s A")}}</p>
-					<p>Vendedor: {{$usuario->persona ? $usuario->persona->nombre . " " . $usuario->persona->apellido : ""}} </p>
-					<p>Teléfono: {{$usuario->persona ? $usuario->persona->telefono : ""}} </p>
-					<p>email: {{$usuario->persona ? $usuario->persona->email : ""}} </p>
+					<p>Vendedor: {{$nomvendedor}} </p>
 					<p>Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
 				</div>
 			</td>
@@ -40,7 +38,7 @@
 						<th style='text-align:right'>Peso x Unidad</th>
 						<th style='text-align:center'>TU</th>
 						<th style='text-align:right'>Unid</th>
-						<th style='text-align:right'>Pesos</th>
+						<th style='text-align:right'>$</th>
 						<th style='text-align:right'>KG</th>
 						<th style='text-align:right'>Precio Prom Unit</th>
 						<th style='text-align:right'>Precio Prom Kilo</th>	

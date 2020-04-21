@@ -141,6 +141,10 @@ Productos Notas de Venta
                                         <button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
                                             <i class="fa fa-fw fa-file-pdf-o"></i>
                                         </button>
+                                        <!--
+                                        <button type="button" id="btnpdf1" name="btnpdf1" class="btn-accion-tabla tooltipsC" title="PDF1">
+                                            <i class="fa fa-fw fa-file-pdf-o"></i>
+                                        </button>-->
                                     </div>
                                 </div>
                             </div>
