@@ -297,10 +297,16 @@ class NotaVentaConsultaController extends Controller
         //$cotizaciones = consulta('','');
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
+        $nomvendedor = "";
+        if(!empty($request->vendedor_id)){
+            $vendedor = Vendedor::findOrFail($request->vendedor_id);
+            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+        }
+
         if($notaventas){
-            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
         
-            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta'));
+            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream();
         }else{
