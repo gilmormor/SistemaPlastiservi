@@ -319,10 +319,16 @@ class CotizacionConsultaController extends Controller
         //$cotizaciones = consulta('','');
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
+        $nomvendedor = "";
+        if(!empty($request->vendedor_id)){
+            $vendedor = Vendedor::findOrFail($request->vendedor_id);
+            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+        }
+
         if($cotizaciones){
-            //return view('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta'));
+            //return view('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
             
-            $pdf = PDF::loadView('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta'));
+            $pdf = PDF::loadView('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream();
         }else{
