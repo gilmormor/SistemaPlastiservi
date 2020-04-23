@@ -34,7 +34,16 @@ class ProductoController extends Controller
     public function crear()
     {
         can('crear-producto');
-        $categoriaprods = CategoriaProd::orderBy('id')->get();//->pluck('nombre', 'id')->toArray();
+        //$categoriaprods = CategoriaProd::orderBy('id')->get();//->pluck('nombre', 'id')->toArray();
+
+        $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+            ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
+                    })
+            ->get();
+
         $aux_sta=1;
         return view('producto.crear',compact('categoriaprods','aux_sta'));
     }
@@ -75,7 +84,15 @@ class ProductoController extends Controller
     {
         can('editar-producto');
         $data = Producto::findOrFail($id);
-        $categoriaprods = CategoriaProd::orderBy('id')->get();
+        //$categoriaprods = CategoriaProd::orderBy('id')->get();
+        $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+            ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
+                    })
+            ->get();
+
         $claseprods = ClaseProd::where('categoriaprod_id',$data->categoriaprod_id)->orderBy('id')->get();
         $grupoprods = GrupoProd::where('categoriaprod_id',$data->categoriaprod_id)->orderBy('id')->get();
         //dd($claseprods);
