@@ -32,7 +32,7 @@
                                     {{$cliente->rut}}
                                 </td>
                                 <td>
-                                    <a href="#" class="copiar_id" onclick="copiar_rut({{$cliente->id}},{{$cliente->rut}})"> {{$cliente->razonsocial}} </a>
+                                    <a href="#" class="copiar_id" onclick="copiar_rut({{$cliente->id}},'{{$cliente->rut}}')"> {{$cliente->razonsocial}} </a>
                                 </td>
                                 <td>
                                     {{$cliente->direccion}}

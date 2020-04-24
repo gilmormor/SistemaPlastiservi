@@ -51,7 +51,7 @@ $(document).ready(function () {
 	});
 	*/
 	$("#cantM").numeric();
-	$("#precioM").numeric();
+	$("#precioM").numeric({decimalPlaces: 2});
 	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});
@@ -131,7 +131,7 @@ $(document).ready(function () {
 	});
 
 
-	$("#precioM").keyup(function(event){
+	$("#precioM").blur(function(event){
 		totalizarItem(0);
 	});
 
@@ -192,93 +192,8 @@ $("#botonNewProd").click(function(event)
 	}
 	*/
 });
-$("#btnGuardarM").click(function(event)
-{
-	event.preventDefault();
-	//alert('entro');
-	if(verificar())
-	{
-		//alert($("#aux_sta").val());
-		
-		aux_precioxkilo = parseFloat($("#precioM").attr('valor')); //parseFloat($("#precioM").val());
-		aux_precioxkiloreal = parseFloat($("#precioxkilorealM").val());
-		if(aux_precioxkilo<aux_precioxkiloreal){
-			swal({
-				title: 'Precio menor al valor en tabla. Desea continuar?',
-				text: "",
-				icon: 'warning',
-				buttons: {
-					cancel: "Cancelar",
-					confirm: "Aceptar"
-				},
-			}).then((value) => {
-				if (value) {
-					
-					insertarModificar();
-				}
-			});
-		}else{
-			insertarModificar();
-		}
-
-	}else{
-		alertify.error("Falta incluir informacion");
-	}
-});
-
-function insertarModificar(){
-	if($("#aux_sta").val()=="1"){
-		insertarTabla();
-	}else{
-		modificarTabla($("#aux_numfila").val());
-	}
-	$("#myModal").modal('hide');
-}
 
 
-function modificarTabla(i){
-	//alert($("#sucursal_idM").val());
-	$("#aux_sta").val('0')
-	$("#producto_id"+i).val($("#producto_idM").val());
-
-	$("#codintprodTD"+i).html($("#codintprodM").val());
-	$("#codintprod"+i).val($("#codintprodM").val());
-	$("#cantTD"+i).html($("#cantM").val());
-	$("#cant"+i).val($("#cantM").val());
-	$("#nombreProdTD"+i).html($("#nombreprodM").val());
-	$("#cla_nombreTD"+i).html($("#cla_nombreM").val());
-	$("#diamextmmTD"+i).html($("#diamextmmM").val());
-	$("#diamextmm"+i).val($("#diamextmmM").val());
-	$("#espesorTD"+i).html($("#espesorM").val());
-	$("#espesor"+i).val($("#espesorM").val());
-	$("#longTD"+i).html($("#longM").val());
-	$("#long"+i).val($("#longM").val());
-	$("#pesoTD"+i).html($("#pesoM").val());
-	$("#peso"+i).val($("#pesoM").val());
-	$("#tipounionTD"+i).html($("#tipounionM").val());
-	$("#tipounion"+i).val($("#tipounionM").val());
-	$("#descuentoTD"+i).html($("#descuentoM option:selected").html());
-	$("#descuento"+i).val($("#descuentoM option:selected").attr('porc'));
-	$("#descuentoval"+i).val($("#descuentoM option:selected").attr('value'));
-	$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
-	$("#preciounit"+i).val($("#precionetoM").attr('valor'));
-	aux_precioxkilo = $("#precioM").attr("valor");
-	//alert($("#pesoM").val());
-	if($("#pesoM").val()==0)
-	{
-		aux_precioxkilo = 0; //$("#precioM").attr("valor");
-	}
-	//$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").attr('valor'), '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
-	$("#precioxkiloTD"+i).html(MASK(0, aux_precioxkilo, '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
-	$("#precioxkilo"+i).val($("#precioM").attr('valor'));
-	$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
-	$("#totalkilos"+i).val($("#totalkilosM").attr('valor'));
-	$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-##,###,##0.00',1));
-	$("#subtotal"+i).val($("#subtotalM").attr('valor'));
-	$("#subtotalSFTD"+i).html($("#subtotalM").attr('valor'));
-	totalizar();
-
-}
 
 function insertarTabla(){
 	$("#trneto").remove();
@@ -430,35 +345,7 @@ function insertarTabla(){
 	totalizar();
 }
 
-function totalizar(){
-	total_neto = 0;
 
-	$("#tabla-data tr .subtotal").each(function() {
-		valor = $(this).html() ;
-		valorNum = parseFloat(valor);
-		total_neto += valorNum;
-	});
-	aux_porciva = $("#aux_iva").val()
-	aux_porciva = parseFloat(aux_porciva);
-	aux_iva = total_neto * (aux_porciva/100);
-	aux_total = total_neto + aux_iva;
-	aux_netoform = MASK(0, total_neto, '-##,###,##0.00',1)
-	aux_ivaform = MASK(0, aux_iva, '-##,###,##0.00',1)
-	aux_tdtotalform = MASK(0, aux_total, '-##,###,##0.00',1)
-	
-	//$("#tdneto").html(total_neto.toFixed(2));
-	$("#tdneto").html(aux_netoform);
-	$("#tdiva").html(aux_ivaform);
-	$("#tdtotal").html(aux_tdtotalform);
-
-	$("#neto").val(total_neto);
-	$("#iva").val(aux_iva);
-	$("#total").val(aux_total);
-}
-
-$('.region_id').on('change', function () {
-	llenarProvincia(this,0);
-});
 
 $('#vendedor_idD').on('change', function () {
 	$("#vendedor_id").val($("#vendedor_idD").val());
@@ -495,124 +382,6 @@ function llenarProvincia(obj,i){
 $('.provincia_id').on('change', function () {
     llenarComuna(this,0);
 });
-
-function llenarComuna(obj,i){
-	var data = {
-        provincia_id: $(obj).val(),
-        _token: $('input[name=_token]').val()
-    };
-    $.ajax({
-        url: '/sucursal/obtComunas',
-        type: 'POST',
-        data: data,
-        success: function (comuna) {
-            $("#comuna_idM").empty();
-            //$(".comuna_id").append("<option value=''>Seleccione...</option>");
-            $.each(comuna, function(index,value){
-                $("#comuna_idM").append("<option value='" + index + "'>" + value + "</option>")
-            });
-			$(".selectpicker").selectpicker('refresh');
-			if(i>0){
-				$("#comuna_idM").val($("#comuna_id"+i).val());
-			}
-			$(".selectpicker").selectpicker('refresh');
-        }
-    });
-}
-
-
-//VALIDACION DE CAMPOS
-function limpiarInputOT(){
-	$("#precioxkilorealM").val('');
-	$("#producto_idM").val('');
-	$("#codintprodM").val('');
-	$("#nombreprodM").val('');
-	$("#cantM").val('');
-	$("#descuentoM").val('1');
-	$("#totalkilosM").val('');
-	$("#totalkilosM").attr('valor','0.00');
-	$("#subtotalM").val('');
-	$("#subtotalM").attr('valor','0.00');
-	$("#cla_nombreM").val('');
-	$("#diamextmmM").val('');
-	$("#espesorM").val('');
-	$("#longM").val('');
-	$("#pesoM").val('');
-	$("#tipounionM").val('');
-	$("#precionetoM").val('');
-	$("#precionetoM").attr('valor','0.00');
-	$("#precioM").val('');
-	$("#precioM").attr('valor','0.00');
-    $(".selectpicker").selectpicker('refresh');
-}
-
-function verificar()
-{
-	var v1=0,v2=0,v3=0,v4=0,v5=0,v6=0,v7=0,v8=0,v9=0,v10=0,v11=0,v12=0,v13,v14=0;
-	
-	v4=validacion('precioM','numerico');
-	v3=validacion('descuentoM','combobox');
-	v2=validacion('cantM','texto');
-	v1=validacion('producto_idM','textootro');
-
-	if (v1===false || v2===false || v3===false || v4===false || v5===false || v6===false || v7===false || v8===false || v9===false || v10===false || v11===false || v12===false || v13===false || v14===false)
-	{
-		//$("#exito").hide();
-		//$("#error").show();
-		return false;
-	}else{
-		//$("#error").hide();
-		//$("#exito").show();
-		return true;
-	}
-}
-
-function quitarverificar(){
-	quitarValidacion('descuentoM','combobox');
-	quitarValidacion('cantM','texto');
-	quitarValidacion('producto_idM','textootro');
-}
-
-
-
-
-function editarRegistro(i){
-	//alert($("#direccion"+i).val());
-	event.preventDefault();
-    limpiarInputOT();
-	quitarverificar();
-	$("#aux_sta").val('0');
-
-	$("#aux_numfila").val(i);
-
-	$("#precioxkilorealM").attr('valor',$("#precioxkiloreal"+i).val());
-	$("#precioxkilorealM").val(MASK(0, $("#precioxkiloreal"+i).val(), '-##,###,##0.00',1));
-	$("#codintprodM").val($.trim($("#codintprodTD"+i).html()));
-	$("#nombreprodM").val($.trim($("#nombreProdTD"+i).html()));
-	$("#producto_idM").val($("#producto_id"+i).val());
-
-
-	$("#cantM").val($("#cant"+i).val());
-	$("#descuentoM").val($.trim($("#descuentoval"+i).val()));
-	$("#precionetoM").attr('valor',$("#preciounit"+i).val());
-	$("#precionetoM").val(MASK(0, $("#preciounit"+i).val(), '-##,###,##0.00',1));
-	$("#precioM").attr('valor',$("#precioxkilo"+i).val());
-	$("#precioM").val(MASK(0, $("#precioxkilo"+i).val(), '-##,###,##0.00',1));
-	$("#totalkilosM").attr('valor',$("#totalkilos"+i).val());
-	$("#totalkilosM").val(MASK(0, $("#totalkilos"+i).val(), '-##,###,##0.00',1));
-	$("#subtotalM").attr('valor',$("#subtotal"+i).val());
-	$("#subtotalM").val(MASK(0, $("#subtotal"+i).val(), '-##,###,##0.00',1));
-	$("#cla_nombreM").val($.trim( $("#cla_nombreTD"+i).html() ));
-	$("#tipounionM").val($("#tipounion"+i).val());
-	$("#diamextmmM").val($("#diamextmm"+i).val());
-	$("#espesorM").val($("#espesor"+i).val());
-	$("#longM").val($("#long"+i).val());
-	$("#pesoM").val($("#peso"+i).val());
-	
-
-	$(".selectpicker").selectpicker('refresh');
-    $("#myModal").modal('show');
-}
 
 function eliminarRegistro(i){
 	event.preventDefault();
@@ -1043,40 +812,6 @@ function desactivar_controles(){
 	$("#lugarentrega").prop("readonly",true);	
 }
 
-function totalizarItem(aux_estprec){
-	if($("#pesoM").val()==0){
-		aux_peso = 1;
-	}else{
-		aux_peso = $("#pesoM").val();
-	}
-	if(aux_estprec==1)
-	{
-		precioneto = $("#precionetoM").val();
-		precio = $("#precioxkilorealM").val();
-		$("#precionetoM").val(Math.round(precioneto));
-		$("#precioM").val(precio);
-	}else{
-		precioneto = $("#precioM").val() * aux_peso;
-		$("#precionetoM").val(Math.round(precioneto));
-		$("#descuentoM").val('1');
-		$(".selectpicker").selectpicker('refresh');
-	}
-	//alert(aux_peso);
-	aux_tk = $("#cantM").val() * aux_peso;
-	if($("#pesoM").val()>0){	
-		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
-		$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
-	}
-	aux_total = ($("#cantM").val() * aux_peso * $("#precioM").val()) * ($("#descuentoM").val());
-	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-##,###,##0.00',1));
-	$("#subtotalM").attr('valor',aux_total.toFixed(2));
-	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();
-	$("#precioM").val(aux_precdesc);
-	$("#precioM").attr('valor',aux_precdesc);
-	aux_precioUnit = aux_precdesc * aux_peso;
-	$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
-	$("#precionetoM").attr('valor',Math.round(aux_precioUnit));
-}
 
 function limpiarCampos(){
 
