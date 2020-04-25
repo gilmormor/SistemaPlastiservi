@@ -23,6 +23,10 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
 	});
+
+
+
+
 	//$('.form-group').css({'margin-bottom':'0px','margin-left': '0px','margin-right': '0px','padding-left' : '5px','padding-right': '5px'});
 	//$('.table').css({'margin-bottom':'0px','padding-top': '0px','padding-bottom': '0px'});
 	//$(".box-body").css({'padding-top': '5px','padding-bottom': '0px'});
