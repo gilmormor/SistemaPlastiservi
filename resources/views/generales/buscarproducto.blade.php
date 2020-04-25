@@ -14,7 +14,7 @@
                 <div class="table-responsive">
                     
                     <!--<table class="table table-striped table-bordered table-hover display tablas" id="tabla-data-productos" style="width:100%">-->
-                    <table id="tabla-data-productos" class="display" style="width:100%">
+                    <table id="tabla-data-productos" class="table-striped table-hover displayr" style="width:100%">
                         
                         <thead>
                             <tr>
