@@ -8,6 +8,7 @@ use App\Models\CategoriaProd;
 use App\Models\CategoriaProdSuc;
 use App\Models\ClaseProd;
 use App\Models\GrupoProd;
+use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\UnidadMedida;
 use Illuminate\Http\Request;
@@ -24,6 +25,24 @@ class CategoriaProdController extends Controller
     {
         can('listar-categoriaprod');
         $datas = CategoriaProd::orderBy('id')->get();
+        $datas = CategoriaProd::join('categoriaprodsuc', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+            ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
+                    })
+        ->select([
+            'categoriaprod.id',
+            'categoriaprod.nombre',
+            'categoriaprod.descripcion',
+            'categoriaprod.precio',
+            'categoriaprod.areaproduccion_id',
+            'categoriaprod.sta_precioxkilo',
+            'categoriaprod.unidadmedida_id',
+            'categoriaprod.unidadmedidafact_id'
+        ])
+        ->get();
+
         return view('categoriaprod.index', compact('datas'));
     }
 

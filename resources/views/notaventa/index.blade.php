@@ -128,6 +128,7 @@ Nota de Venta
                         <div class="form-group col-xs-12 col-sm-4" classorig="form-group col-xs-12 col-sm-4">
                             <label for="cotizacion_idM" class="control-label">Nro. Cotización</label>
                             <div class="input-group">
+                                @csrf @method("put")
                                 <input type="text" name="cotizacion_idM" id="cotizacion_idM" tipoval='numerico' class="form-control requeridos" required placeholder="Num Cotización"/>
                                 <span class="input-group-btn">
                                     <button class="btn btn-default" type="button" id="btnbuscarcotizacion" name="btnbuscarcotizacion">Buscar</button>

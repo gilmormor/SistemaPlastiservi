@@ -282,12 +282,30 @@ class NotaVentaController extends Controller
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $giros = Giro::orderBy('id')->get();
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
+
         $aux_sta=3;
         session(['aux_aproNV' => '1']);
         
         $aux_statusPant = 0;
         //dd($aux_aproNV);
-        return view('notaventa.crear', compact('data','clienteselec','clientedirecs','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant'));
+        return view('notaventa.crear', compact('data','clienteselec','clientedirecs','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant'));
 
 
     }
