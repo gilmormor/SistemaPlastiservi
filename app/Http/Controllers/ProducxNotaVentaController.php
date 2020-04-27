@@ -93,6 +93,16 @@ class ProducxNotaVentaController extends Controller
             $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
             ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
                     })
+            ->select([
+                'categoriaProd.id',
+                'categoriaProd.nombre',
+                'categoriaProd.descripcion',
+                'categoriaProd.precio',
+                'categoriaProd.areaproduccion_id',
+                'categoriaProd.sta_precioxkilo',
+                'categoriaProd.unidadmedida_id',
+                'categoriaProd.unidadmedidafact_id'
+            ])
             ->get();
 
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();

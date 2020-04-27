@@ -43,6 +43,16 @@ class ProductoController extends Controller
             $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
             ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
                     })
+            ->select([
+                'categoriaProd.id',
+                'categoriaProd.nombre',
+                'categoriaProd.descripcion',
+                'categoriaProd.precio',
+                'categoriaProd.areaproduccion_id',
+                'categoriaProd.sta_precioxkilo',
+                'categoriaProd.unidadmedida_id',
+                'categoriaProd.unidadmedidafact_id'
+            ])
             ->get();
         $colores = Color::orderBy('id')->get();
         $aux_sta=1;
@@ -92,6 +102,16 @@ class ProductoController extends Controller
             $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
             ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
                     })
+            ->select([
+                'categoriaProd.id',
+                'categoriaProd.nombre',
+                'categoriaProd.descripcion',
+                'categoriaProd.precio',
+                'categoriaProd.areaproduccion_id',
+                'categoriaProd.sta_precioxkilo',
+                'categoriaProd.unidadmedida_id',
+                'categoriaProd.unidadmedidafact_id'
+            ])
             ->get();
 
         $claseprods = ClaseProd::where('categoriaprod_id',$data->categoriaprod_id)->orderBy('id')->get();

@@ -13,6 +13,7 @@ $(document).ready(function () {
 $('.categoriaprod_id').on('change', function () {
     $(".claseprod_id").empty();
     $(".claseprod_id").append("<option value=''>Seleccione...</option>");
+    //alert($(this).val());
     var data = {
         categoriaprod_id: $(this).val(),
         _token: $('input[name=_token]').val()
