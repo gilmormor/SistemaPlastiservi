@@ -25,6 +25,7 @@ class Producto extends Model
         'categoriaprod_id',
         'claseprod_id',
         'grupoprod_id',
+        'color_id',
         'usuariodel_id'
     ];
 
@@ -47,6 +48,11 @@ class Producto extends Model
     public function grupoprod()
     {
         return $this->belongsTo(GrupoProd::class);
+    }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
     }
 
 }

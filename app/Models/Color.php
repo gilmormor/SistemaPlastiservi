@@ -23,4 +23,8 @@ class Color extends Model
     {
         return $this->hasMany(AcuerdoTecTemp::class,'impresocolor_id');
     }
+    public function producto()
+    {
+        return $this->hasMany(Producto::class);
+    }
 }

@@ -210,4 +210,22 @@
             </div>
         </div>
     @endif
+    <div class="form-group col-xs-12 col-sm-6">
+        <label for="color_id" class="col-lg-3 control-label" data-toggle='tooltip' title="Color">Color</label>
+        <div class="col-lg-9">
+            <select name="color_id" id="color_id" class="selectpicker form-control color_id" data-live-search='true' title='Seleccione...'>
+                @foreach($colores as $color)
+                    <option data-content="<span class='badge' style='background: {{$color->codcolor}}; color: #fff;'>{{$color->nombre}}</span>"
+                        value="{{$color->id}}"
+                        @if (($aux_sta==2) and ($data->color_id==$color->id))
+                            {{'selected'}}
+                        @endif
+                        >
+                    </option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+
 </div>

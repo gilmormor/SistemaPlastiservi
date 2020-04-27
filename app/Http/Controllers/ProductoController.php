@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarProducto;
 use App\Models\CategoriaProd;
 use App\Models\ClaseProd;
+use App\Models\Color;
 use App\Models\Empresa;
 use App\Models\GrupoProd;
 use App\Models\Producto;
@@ -43,9 +44,9 @@ class ProductoController extends Controller
             ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
                     })
             ->get();
-
+        $colores = Color::orderBy('id')->get();
         $aux_sta=1;
-        return view('producto.crear',compact('categoriaprods','aux_sta'));
+        return view('producto.crear',compact('categoriaprods','colores','aux_sta'));
     }
 
     /**
@@ -96,8 +97,9 @@ class ProductoController extends Controller
         $claseprods = ClaseProd::where('categoriaprod_id',$data->categoriaprod_id)->orderBy('id')->get();
         $grupoprods = GrupoProd::where('categoriaprod_id',$data->categoriaprod_id)->orderBy('id')->get();
         //dd($claseprods);
+        $colores = Color::orderBy('id')->get();
         $aux_sta=2;
-        return view('producto.editar', compact('data','categoriaprods','claseprods','grupoprods','aux_sta'));
+        return view('producto.editar', compact('data','categoriaprods','claseprods','grupoprods','colores','aux_sta'));
     }
 
     /**

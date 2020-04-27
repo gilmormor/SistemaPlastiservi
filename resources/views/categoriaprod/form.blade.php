@@ -34,6 +34,11 @@
                     {{'selected'}}
                 @endif            
             >Asignar Precio al Vender</option>
+            <option value="3"
+                @if (($aux_sta==3) and ($data->sta_precioxkilo=="3"))
+                    {{'selected'}}
+                @endif            
+            >Precio por Metro</option>
         </select>
     </div>
 </div>
