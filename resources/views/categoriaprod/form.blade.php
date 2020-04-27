@@ -35,7 +35,7 @@
                 @endif            
             >Asignar Precio al Vender</option>
             <option value="3"
-                @if (($aux_sta==3) and ($data->sta_precioxkilo=="3"))
+                @if (($aux_sta==2) and ($data->sta_precioxkilo=="3"))
                     {{'selected'}}
                 @endif            
             >Precio por Metro</option>
@@ -100,7 +100,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label for="unidadmedidafact_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad de Medida">Unidad de Medida</label>
+    <label for="unidadmedidafact_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad Medida de Factura">Uni Medida Factura</label>
     <div class="col-lg-8">
         <select name="unidadmedidafact_id" id="unidadmedidafact_id" class="form-control select2 unidadmedidafact_id" required>
             <option value="">Seleccione...</option>
