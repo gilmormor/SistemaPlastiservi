@@ -166,7 +166,7 @@ class CategoriaProdController extends Controller
                     'gru_nombre' => $request->gru_nombre[$i],
                     'gru_descripcion' => $request->gru_descripcion[$i]
                 );
-                DB::table('GrupoProd')->updateOrInsert(
+                DB::table('grupoprod')->updateOrInsert(
                     ['id' => $request->gru_id[$i], 'categoriaprod_id' => $id],
                     [
                         'gru_nombre' => $request->gru_nombre[$i],
