@@ -124,7 +124,6 @@ class CategoriaProdController extends Controller
      */
     public function actualizar(ValidarCategoriaProd $request, $id)
     {
-        
         can('guardar-categoriaprod');
         $categoriaprod = CategoriaProd::findOrFail($id);
         $categoriaprod->update($request->all());
@@ -144,7 +143,7 @@ class CategoriaProdController extends Controller
                     'cla_descripcion' => $request->cla_descripcion[$i],
                     'cla_longitud' => $request->cla_longitud[$i]
                 );
-                DB::table('ClaseProd')->updateOrInsert(
+                DB::table('claseprod')->updateOrInsert(
                     ['id' => $request->cla_id[$i], 'categoriaprod_id' => $id],
                     [
                         'cla_nombre' => $request->cla_nombre[$i],
