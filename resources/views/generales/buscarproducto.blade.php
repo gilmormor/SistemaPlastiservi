@@ -14,7 +14,7 @@
                 <div class="table-responsive">
                     
                     <!--<table class="table table-striped table-bordered table-hover display tablas" id="tabla-data-productos" style="width:100%">-->
-                    <table id="tabla-data-productos" class="table-striped table-hover displayr" style="width:100%">
+                    <table id="tabla-data-productos" class="table-striped table-hover display" style="width:100%">
                         
                         <thead>
                             <tr>
@@ -23,12 +23,12 @@
                                 <th>Clase</th>
                                 <th>Codigo</th>
                                 <th>Diametro</th>
-                                <th>Esp</th>
-                                <th>Long</th>
-                                <th>Peso</th>
-                                <th>TipU</th>
-                                <th>PrecN</th>
-                                <th>Prec</th>
+                                <th style="text-align:right">Esp</th>
+                                <th style="text-align:right">Long</th>
+                                <th style="text-align:right">Peso</th>
+                                <th style="text-align:center">TipU</th>
+                                <th style="text-align:right">PrecN</th>
+                                <th style="text-align:right">Prec</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,23 +51,23 @@
                                     <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
                                         {{$producto->diamextmm}}mm - {{$producto->diamextpg}}
                                     </td>
-                                    <td name="productoespesorBtd{{$aux_nfila}}" id="productoespesorBtd{{$aux_nfila}}">
-                                        {{$producto->espesor}}
+                                    <td name="productoespesorBtd{{$aux_nfila}}" id="productoespesorBtd{{$aux_nfila}}" style="text-align:right">
+                                        {{number_format($producto->espesor, 2, ",", ".")}}
                                     </td>
-                                    <td name="productolongBtd{{$aux_nfila}}" id="productolongBtd{{$aux_nfila}}">
+                                    <td name="productolongBtd{{$aux_nfila}}" id="productolongBtd{{$aux_nfila}}" style="text-align:center">
                                         {{$producto->long}}
                                     </td>
-                                    <td name="productopesoBtd{{$aux_nfila}}" id="productopesoBtd{{$aux_nfila}}">
-                                        {{$producto->peso}}
+                                    <td name="productopesoBtd{{$aux_nfila}}" id="productopesoBtd{{$aux_nfila}}" style="text-align:right">
+                                        {{number_format($producto->peso, 2, ",", ".")}}
                                     </td>
-                                    <td name="productotipounionBtd{{$aux_nfila}}" id="productotipounionBtd{{$aux_nfila}}">
+                                    <td name="productotipounionBtd{{$aux_nfila}}" id="productotipounionBtd{{$aux_nfila}}" style="text-align:center">
                                         {{$producto->tipounion}}
                                     </td>
-                                    <td name="productoprecionetoBtd{{$aux_nfila}}" id="productoprecionetoBtd{{$aux_nfila}}">
-                                        {{$producto->precioneto}}
+                                    <td name="productoprecionetoBtd{{$aux_nfila}}" id="productoprecionetoBtd{{$aux_nfila}}" style="text-align:right">
+                                        {{number_format($producto->precioneto, 2, ",", ".")}}
                                     </td>
-                                    <td name="productoprecioBtd{{$aux_nfila}}" id="productoprecioBtd{{$aux_nfila}}">
-                                        {{$producto->precio}}
+                                    <td name="productoprecioBtd{{$aux_nfila}}" id="productoprecioBtd{{$aux_nfila}}" style="text-align:right">
+                                        {{number_format($producto->precio, 2, ",", ".")}}
                                     </td>
                                 </tr>
                                 <?php $i++;?>

@@ -38,11 +38,57 @@ $(document).ready(function () {
         generateBarcode();
     });
 
-    aux_nfila=parseInt($("#tabla-data >tbody >tr").length);
+    aux_nfila=parseInt($("#tabla-data-productos >tbody >tr").length);
     for(i=1; i<=aux_nfila; i++){
         codbar = $("#barcodeTarget" + i).html();
         generateBarcode(codbar,i);
     }
     //alert(aux_nfila);
+
+    $('#tabla-data-productos').DataTable( {
+        "language": {
+			"decimal": ",",
+			"emptyTable": "No hay información",
+			"info": "Mostrando _START_ a _END_ de _TOTAL_ Registros",
+			"infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+			"infoFiltered": "(Filtrado de _MAX_ total registros)",
+			"infoPostFix": "",
+			"thousands": ".",
+			"lengthMenu": "Mostrar _MENU_ registros",
+			"loadingRecords": "Cargando...",
+			"processing": "Procesando...",
+			"search": "Buscar:",
+			"zeroRecords": "Sin resultados encontrados",
+			"paginate": {
+				"first": "Primero",
+				"last": "Ultimo",
+				"next": "Siguiente",
+				"previous": "Anterior"
+			}
+
+        }
+    } );
+
+
+	$('#tabla-data-productos tfoot th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Buscar '+title+'" />' );
+    } );
+ 
+    // DataTable
+    var table = $('#tabla-data-productos').DataTable();
+ 
+    // Apply the search
+    table.columns().every( function () {
+        var that = this;
+ 
+        $( 'input', this.footer() ).on( 'keyup change clear', function () {
+            if ( that.search() !== this.value ) {
+                that
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
 
 });

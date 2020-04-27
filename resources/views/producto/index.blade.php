@@ -24,7 +24,8 @@ Productos
             </div>
             <div class="box-body">
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                    <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
+                    <table id="tabla-data-productos" class="table-striped table-hover display" style="width:100%">
                         <thead>
                             <tr>
                                 <th class="width70">ID</th>
@@ -74,6 +75,23 @@ Productos
                             @endforeach
 
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Categoria</th>
+                                <th>Cod-Int</th>
+                                <th>Cod Barra</th>
+                                <th>DiamExt</th>
+                                <th>DiaPulg</th>
+                                <th>Espesor mm</th>
+                                <th>Longitud</th>
+                                <th>Peso</th>
+                                <th>Tipo Union</th>
+                                <th>Precio</th>
+                            </tr>
+                        </tfoot>
+
                     </table>
                 </div>
             </div>
