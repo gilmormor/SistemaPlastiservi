@@ -94,14 +94,14 @@ class ProducxNotaVentaController extends Controller
             ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
                     })
             ->select([
-                'categoriaProd.id',
-                'categoriaProd.nombre',
-                'categoriaProd.descripcion',
-                'categoriaProd.precio',
-                'categoriaProd.areaproduccion_id',
-                'categoriaProd.sta_precioxkilo',
-                'categoriaProd.unidadmedida_id',
-                'categoriaProd.unidadmedidafact_id'
+                'categoriaprod.id',
+                'categoriaprod.nombre',
+                'categoriaprod.descripcion',
+                'categoriaprod.precio',
+                'categoriaprod.areaproduccion_id',
+                'categoriaprod.sta_precioxkilo',
+                'categoriaprod.unidadmedida_id',
+                'categoriaprod.unidadmedidafact_id'
             ])
             ->get();
 
