@@ -39,7 +39,7 @@
 						<th style='text-align:left'>Descripción</th>
 						<th style='text-align:left'>Diametro</th>
 						<th style='text-align:left'>Clase</th>
-						<th style='text-align:left'>Long</th>
+						<th style='text-align:center'>Long</th>
 						<th style='text-align:right'>Peso x Unidad</th>
 						<th style='text-align:center'>U</th>
 						<th style='text-align:right'>$</th>
@@ -90,7 +90,7 @@
 								{{$aum_uniMed}}
 							</td>
 							<td>{{$notaventa->cla_nombre}}</td>
-							<td>{{$notaventa->long}}</td>
+							<td style='text-align:center'>{{$notaventa->long}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->peso, 2, ",", ".")}}</td>
 							<td style='text-align:center'>{{$notaventa->tipounion}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->sumsubtotal, 2, ",", ".")}}</td>
