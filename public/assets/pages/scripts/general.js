@@ -22,7 +22,8 @@ $(document).ready(function () {
 				"previous": "Anterior"
 			}
 
-        }
+		},
+		stateSave: false
     } );
 
 
@@ -497,7 +498,8 @@ function totalizarItem(aux_estprec){
 		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
 		$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
 	}
-	aux_total = ($("#cantM").val() * aux_peso * $("#precioM").val()) * ($("#descuentoM").val());
+	//aux_total = ($("#cantM").val() * aux_peso * $("#precioM").val()) * ($("#descuentoM").val());
+	aux_total = ($("#cantM").val() * $("#precionetoM").val()) * ($("#descuentoM").val());
 	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-##,###,##0.00',1));
 	$("#subtotalM").attr('valor',aux_total.toFixed(2));
 	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();

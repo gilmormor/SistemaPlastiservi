@@ -101,7 +101,7 @@ class NotaVentaConsultaController extends Controller
 
         if($request->ajax()){
             $datas = consulta($request);
-
+/*
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons'>
 			<thead>
 				<tr>
@@ -123,6 +123,23 @@ class NotaVentaConsultaController extends Controller
 				</tr>
 			</thead>
             <tbody>";
+*/
+            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Fecha</th>
+					<th>RUT</th>
+                    <th>Razón Social</th>
+                    <th class='tooltipsC' title='Número Orden de Compra'>OC</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
+                    <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
+                    <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                    <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+				</tr>
+			</thead>
+            <tbody>";
             $i = 0;
             $aux_Tpvckg = 0;
             $aux_Tpvcpesos= 0;
@@ -130,6 +147,7 @@ class NotaVentaConsultaController extends Controller
             $aux_Tcanpesos = 0;
             $aux_totalKG = 0;
             $aux_totalps = 0;
+            $aux_prom = 0;
             foreach ($datas as $data) {
                 $colorFila = "";
                 $aux_data_toggle = "";
@@ -149,6 +167,10 @@ class NotaVentaConsultaController extends Controller
                 if($data->cankg!=0){
                     $promcan = $data->canpesos / $data->cankg;
                 }
+                if($data->totalkilos>0){
+                    $aux_prom = $data->subtotal / $data->totalkilos;
+                }
+                /*
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id</td>
@@ -175,15 +197,40 @@ class NotaVentaConsultaController extends Controller
                         </a>
                     </td>
                 </tr>";
+                */
+                $respuesta['tabla'] .= "
+                <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
+                    <td id='id$i' name='id$i'>$data->id</td>
+                    <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                    <td id='rut$i' name='rut$i'>$rut</td>
+                    <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                    <td id='oc_id$i' name='oc_id$i'>$data->oc_id</td>
+                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
+                    <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
+                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
+                    <td>
+                        <a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                        </a>
+                    </td>
+                    <td>
+                        <a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2']) . "' class='btn-accion-tabla tooltipsC' title='Precio x Kg' target='_blank'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                        </a>
+                    </td>
+                </tr>";
+
+
                 $aux_Tpvckg += $data->pvckg;
                 $aux_Tpvcpesos += $data->pvcpesos;
                 $aux_Tcankg += $data->cankg;
                 $aux_Tcanpesos += $data->canpesos;
                 $aux_totalKG += $data->totalkilos;
-                $aux_totalps += $data->totalps;
+                $aux_totalps += $data->subtotal;
     
                 //dd($data->contacto);
             }
+            /*
             $respuesta['tabla'] .= "
             </tbody>
             <tfoot>
@@ -197,6 +244,24 @@ class NotaVentaConsultaController extends Controller
                     <th style='text-align:right'></th>
                     <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
+                    <th style='text-align:right'></th>
+                </tr>
+            </tfoot>
+
+            </table>";
+            */
+            $aux_promGeneral = 0;
+            if($aux_totalKG>0){
+                $aux_promGeneral = $aux_totalps / $aux_totalKG;
+            }
+            $respuesta['tabla'] .= "
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='5' style='text-align:left'>TOTAL</th>
+                    <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>
                     <th style='text-align:right'></th>
                 </tr>
             </tfoot>
@@ -297,16 +362,21 @@ class NotaVentaConsultaController extends Controller
         //$cotizaciones = consulta('','');
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
-        $nomvendedor = "";
+        $nomvendedor = "Todos";
         if(!empty($request->vendedor_id)){
             $vendedor = Vendedor::findOrFail($request->vendedor_id);
             $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
         }
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
 
         if($notaventas){
-            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion'));
         
-            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
+            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream();
         }else{
