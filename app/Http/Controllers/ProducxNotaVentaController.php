@@ -10,6 +10,7 @@ use App\Models\ClienteVendedor;
 use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\NotaVentaDetalle;
+use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -121,20 +122,21 @@ class ProducxNotaVentaController extends Controller
         if($request->ajax()){
             $datas = consulta($request);
 
-            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons'>
+            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
 					<th>Descripción</th>
 					<th>Diametro</th>
-					<th>Long</th>
                     <th>Clase</th>
+					<th>Long</th>
                     <th style='text-align:right' class='tooltipsC' title='Peso x Unidad'>Peso x Unidad</th>
-                    <th style='text-align:right' class='tooltipsC' title='Tipo de Unión'>TU</th>
+                    <th style='text-align:right' class='tooltipsC' title='Tipo de Unión'>U</th>
                     <th style='text-align:right' class='tooltipsC' title='Precio $'>$</th>
-                    <th style='text-align:right' class='tooltipsC' title='Unidades'>Unid</th>
                     <th style='text-align:right' class='tooltipsC' title='Precio promedio por Unidad'>Precio Prom Unit</th>
-                    <th style='text-align:right' class='tooltipsC' title='Kg'>KG</th>
                     <th style='text-align:right' class='tooltipsC' title='Precio promedio por Kg'>Precio Prom Kilo</th>
+                    <th style='text-align:right' class='tooltipsC' title='Unidades'>Unid</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total Kg'>Total KG</th>
+                    <th style='text-align:right' class='tooltipsC' title='%'>%</th>
 				</tr>
 			</thead>
             <tbody>";
@@ -142,25 +144,41 @@ class ProducxNotaVentaController extends Controller
             $aux_totalkilos = 0;
             $totalsumsubtotal = 0;
             $totalsumcant = 0;
+            $aux_totalkilosP = 0;
+            $aux_totalporcenkg = 0;
+            foreach ($datas as $data) {
+                $aux_totalkilosP += $data->sumtotalkilos;
+            }
             foreach ($datas as $data) {
                 $colorFila = 'background-color: #87CEEB;';
                 $aux_totalkilos = $aux_totalkilos + $data->sumtotalkilos;
                 $totalsumsubtotal += $data->sumsubtotal;
                 $totalsumcant += $data->sumcant;
-    
+                
+                $producto = Producto::findOrFail($data->producto_id);
+                $aum_uniMed = '';
+                if ($producto->categoriaprod->unidadmedida_id==3){
+                    $aum_uniMed = $producto->diamextpg;
+                }
+                else{
+                    $aum_uniMed = $producto->diamextmm . 'mm';
+                }
+                $porcentajeKg = ($data->sumtotalkilos * 100) / $aux_totalkilosP;
+                $aux_totalporcenkg += $porcentajeKg;
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                     <td id='nombre$i' name='nombre$i'>$data->nombre</td>
-                    <td id='diamextmm$i' name='diamextmm$i'>$data->diamextmm</td>
-                    <td id='long$i' name='long$i'>$data->long</td>
+                    <td id='diamextmm$i' name='diamextmm$i'>$aum_uniMed</td>
                     <td id='cla_nombre$i' name='cla_nombre$i'>$data->cla_nombre</td>
+                    <td id='long$i' name='long$i'>$data->long</td>
                     <td id='peso$i' name='peso$i' style='text-align:right'>".number_format($data->peso, 2, ",", ".") ."</td>
                     <td id='tipounion$i' name='tipounion$i' style='text-align:right'>$data->tipounion</td>
                     <td id='subtotal$i' name='subtotal$i' style='text-align:right'>".number_format($data->sumsubtotal, 2, ",", ".") ."</td>
-                    <td id='sumcant$i' name='sumcant$i' style='text-align:right'>".number_format($data->sumcant, 2, ",", ".") ."</td>
                     <td id='prompreciounit$i' name='prompreciounit$i' style='text-align:right'>".number_format($data->prompreciounit, 2, ",", ".") ."</td>
-                    <td id='sumtotalkilos$i' name='sumtotalkilos$i' style='text-align:right'>".number_format($data->sumtotalkilos, 2, ",", ".") ."</td>
                     <td id='promprecioxkilo$i' name='promprecioxkilo$i' style='text-align:right'>".number_format($data->promprecioxkilo, 2, ",", ".") ."</td>
+                    <td id='sumcant$i' name='sumcant$i' style='text-align:right'>".number_format($data->sumcant, 0, ",", ".") ."</td>
+                    <td id='sumtotalkilos$i' name='sumtotalkilos$i' style='text-align:right'>".number_format($data->sumtotalkilos, 2, ",", ".") ."</td>
+                    <td id='aux_procent$i' name='aux_procent$i' style='text-align:right'>".number_format($porcentajeKg, 2, ",", ".") ."</td>
                 </tr>";
 
                 //dd($data->contacto);
@@ -182,10 +200,11 @@ class ProducxNotaVentaController extends Controller
                             <th style='text-align:right'></th>
                             <th style='text-align:right'></th>
                             <th style='text-align:right'>". number_format($totalsumsubtotal, 2, ",", ".") ."</th>
-                            <th style='text-align:right'>". number_format($totalsumcant, 2, ",", ".") ."</th>
                             <th style='text-align:right'>". number_format($totalsumsubtotal/$totalsumcant, 2, ",", ".") ."</th>
-                            <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
                             <th style='text-align:right'>". number_format($totalsumsubtotal/$aux_totalkilos, 2, ",", ".") ."</th>
+                            <th style='text-align:right'>". number_format($totalsumcant, 0, ",", ".") ."</th>
+                            <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
+                            <th style='text-align:right'>". number_format($aux_totalporcenkg, 2, ",", ".") ."</th>
                         </tr>
                     </tfoot>
                 
@@ -285,15 +304,33 @@ class ProducxNotaVentaController extends Controller
         //$cotizaciones = consulta('','');
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
-        $nomvendedor = "";
+
+        $nomvendedor = "Todos";
         if(!empty($request->vendedor_id)){
             $vendedor = Vendedor::findOrFail($request->vendedor_id);
             $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
         }
+        $nombreCategoria = "Todos";
+        if($request->categoriaprod_id){
+            $categoriaprod = CategoriaProd::findOrFail($request->categoriaprod_id);
+            $nombreCategoria=$categoriaprod->nombre;
+        }
+
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+
         if($notaventas){
-            //return view('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
+            //return view('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreCategoria','nombreAreaproduccion','nombreGiro'));
         
-            $pdf = PDF::loadView('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
+            $pdf = PDF::loadView('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreCategoria','nombreAreaproduccion','nombreGiro'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream("prueba");
         }else{

@@ -372,11 +372,21 @@ class NotaVentaConsultaController extends Controller
             $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
             $nombreAreaproduccion=$areaProduccion->nombre;
         }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+        $nombreTipoEntrega = "Todos";
+        if($request->tipoentrega_id){
+            $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
+            $nombreTipoEntrega=$tipoentrega->nombre;
+        }
 
         if($notaventas){
-            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion'));
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
         
-            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion'));
+            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream();
         }else{
