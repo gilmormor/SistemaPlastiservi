@@ -12,18 +12,13 @@
 				</div>
 			</td>
 			<td class="info_empresa">
-				<!--
-				<div>
-					<span class="h2">COTIZACIÓN</span>
-                    <p>{{$notaventa->sucursal->direccion}}</p>
-					<p>Teléfono: {{$notaventa->sucursal->telefono1}}</p>
-					<p>Email: {{$notaventa->sucursal->email}}</p>
-				</div>-->
+				<img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png")}}" style="max-width:1400%;width:auto;height:auto;">
+				<p>RUT: {{$empresa[0]['rut']}}</p>
 			</td>
 			<td class="info_factura">
 				<div>
 					<span class="h3">Nota de Venta Interna</span>
-					<p>No. Nota Venta: <strong> {{ str_pad($notaventa->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
+					<p>Nro: <strong> {{ str_pad($notaventa->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
 					<p>Fecha Act: {{date('d-m-Y h:i:s A')}}</p>
 					<p>Fecha: {{date('d-m-Y', strtotime($notaventa->fechahora))}}</p>
 					<p>Hora: {{date("h:i:s A", strtotime($notaventa->fechahora))}}</p>

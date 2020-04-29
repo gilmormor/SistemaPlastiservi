@@ -28,7 +28,7 @@
 			<td class="info_factura">
 				<div class="round">
 					<span class="h3">Nota de Venta</span>
-					<p>No. Nota Venta: <strong> {{ str_pad($notaventa->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
+					<p>Nro: <strong> {{ str_pad($notaventa->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
 					<p>Fecha: {{date('d-m-Y', strtotime($notaventa->fechahora))}}</p>
 					<p>Hora: {{date("h:i:s A", strtotime($notaventa->fechahora))}}</p>
 					<p>Vendedor: {{$notaventa->vendedor->persona->nombre . " " . $notaventa->vendedor->persona->apellido}} </p>
