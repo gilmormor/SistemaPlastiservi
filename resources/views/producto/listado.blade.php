@@ -38,14 +38,6 @@
 									<td class="textright">{{$producto->tipounion}}</td>
 									<td class="textright">{{number_format($producto->precioneto, 2, ",", ".")}}</td>
 								</tr>
-<!--								
-								@if ($i==30)
-									<?php $i=0; ?>
-									<br>
-										<tr style="page-break-after:always;"></tr>
-									<br>
-								@endif
--->								
 							@endforeach
 						</tbody>
 					</table>
