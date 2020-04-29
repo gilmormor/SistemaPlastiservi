@@ -4,8 +4,6 @@
 <br>
 <br>
 <div id="page_pdf">
-	<table id="factura_cliente">
-		<tr>
 			<td class="info_cliente">
 				<div class="round">
 					<span class="h3">Listado de Productos</span>
@@ -56,7 +54,4 @@
 
 
 			</td>
-
-		</tr>
-	</table>
 </div>
