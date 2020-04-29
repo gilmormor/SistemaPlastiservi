@@ -44,9 +44,9 @@
 						<th style='text-align:center'>U</th>
 						<th style='text-align:right'>$</th>
 						<th style='text-align:right'>Precio Prom Unit</th>
-						<th style='text-align:right'>Precio Prom Kilo</th>	
+						<th style='text-align:right'>Precio Prom Kg</th>	
 						<th style='text-align:right'>Unid</th>
-						<th style='text-align:right'>Total KG</th>
+						<th style='text-align:right'>Total Kg</th>
 						<th style='text-align:right'>%</th>
 					</tr>
 				</thead>
