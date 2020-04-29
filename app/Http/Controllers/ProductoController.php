@@ -231,7 +231,7 @@ class ProductoController extends Controller
         $productos = Producto::orderBy('id')->get();;
         $empresa = Empresa::orderBy('id')->get();
         //dd($productos);
-        return view('producto.listado', compact('productos','empresa'));
+        //return view('producto.listado', compact('productos','empresa'));
         
         $pdf = PDF::loadView('producto.listado', compact('productos','empresa'));
         //return $pdf->download('cotizacion.pdf');

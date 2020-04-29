@@ -24,8 +24,8 @@ Productos
             </div>
             <div class="box-body">
                 <div class="table-responsive">
-                    <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
-                    <table id="tabla-data-productos" class="table-striped table-hover display" style="width:100%">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                    <!--<table id="tabla-data-productos" class="table-striped table-hover display" style="width:100%">-->
                         <thead>
                             <tr>
                                 <th class="width70">ID</th>
