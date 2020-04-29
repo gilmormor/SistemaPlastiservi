@@ -75,22 +75,6 @@ Productos
                             @endforeach
 
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Categoria</th>
-                                <th>Cod-Int</th>
-                                <th>Cod Barra</th>
-                                <th>DiamExt</th>
-                                <th>DiaPulg</th>
-                                <th>Espesor mm</th>
-                                <th>Longitud</th>
-                                <th>Peso</th>
-                                <th>Tipo Union</th>
-                                <th>Precio</th>
-                            </tr>
-                        </tfoot>
 
                     </table>
                 </div>
