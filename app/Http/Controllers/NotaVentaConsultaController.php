@@ -460,6 +460,26 @@ function consulta($request){
         $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
     }
 
+    if(empty($request->aprobstatus)){
+        $aux_aprobstatus = " true";
+    }else{
+        switch ($request->aprobstatus) {
+            case 1:
+                $aux_aprobstatus = "notaventa.aprobstatus='0'";
+                break;
+            case 2:
+                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                break;    
+            case 3:
+                $aux_aprobstatus = "notaventa.aprobstatus='1' or notaventa.aprobstatus='3'";
+                break;
+            case 4:
+                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                break;
+        }
+        
+    }
+
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,
             sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
@@ -488,6 +508,7 @@ function consulta($request){
             " and " . $aux_condareaproduccion_id .
             " and " . $aux_condtipoentrega_id .
             " and " . $aux_condnotaventa_id .
+            " and " . $aux_aprobstatus .
             " and notaventa.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial;";

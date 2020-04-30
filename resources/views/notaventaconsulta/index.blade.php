@@ -149,6 +149,20 @@ Cotización
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Nota de Venta">
+                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                        <label>Estatus:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                        <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus">
+                                            <option value="0">Seleccione...</option>
+                                            <option value="1">Emitidas sin aprobar</option>
+                                            <option value="2">Por debajo precio en tabla</option>
+                                            <option value="3">Aprobadas</option>
+                                            <option value="4">Rechazadas</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-4 col-sm-4">

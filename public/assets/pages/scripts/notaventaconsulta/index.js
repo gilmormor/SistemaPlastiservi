@@ -80,16 +80,17 @@ function ajaxRequest(data,url,funcion) {
 
 function consultar(){
     var data = {
-        fechad     : $("#fechad").val(),
-        fechah     : $("#fechah").val(),
-        rut        : eliminarFormatoRutret($("#rut").val()),
-        vendedor_id: $("#vendedor_id").val(),
-        oc_id      : $("#oc_id").val(),
-        giro_id    : $("#giro_id").val(),
-        areaproduccion_id: $("#areaproduccion_id").val(),
-        tipoentrega_id: $("#tipoentrega_id").val(),
-        notaventa_id  : $("#notaventa_id").val(),
-        _token: $('input[name=_token]').val()
+        fechad            : $("#fechad").val(),
+        fechah            : $("#fechah").val(),
+        rut               : eliminarFormatoRutret($("#rut").val()),
+        vendedor_id       : $("#vendedor_id").val(),
+        oc_id             : $("#oc_id").val(),
+        giro_id           : $("#giro_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
+        tipoentrega_id    : $("#tipoentrega_id").val(),
+        notaventa_id      : $("#notaventa_id").val(),
+        aprobstatus       : $("#aprobstatus").val(),
+        _token            : $('input[name=_token]').val()
     };
     $.ajax({
         url: '/notaventaconsulta/reporte',
@@ -106,15 +107,16 @@ function consultar(){
 
 function consultarpdf(){
     var data = {
-        fechad     : $("#fechad").val(),
-        fechah     : $("#fechah").val(),
-        rut        : eliminarFormatoRutret($("#rut").val()),
-        vendedor_id: $("#vendedor_id").val(),
-        oc_id      : $("#oc_id").val(),
-        giro_id    : $("#giro_id").val(),
-        areaproduccion_id: $("#areaproduccion_id").val(),
-        tipoentrega_id: $("#tipoentrega_id").val(),
-        _token: $('input[name=_token]').val()
+        fechad            : $("#fechad").val(),
+        fechah            : $("#fechah").val(),
+        rut               : eliminarFormatoRutret($("#rut").val()),
+        vendedor_id       : $("#vendedor_id").val(),
+        oc_id             : $("#oc_id").val(),
+        giro_id           : $("#giro_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
+        tipoentrega_id    : $("#tipoentrega_id").val(),
+        aprobstatus       : $("#aprobstatus").val(),
+        _token            : $('input[name=_token]').val()
     };
     $.ajax({
         url: '/cotizacionconsulta/exportPdf',

@@ -428,12 +428,12 @@ function ajaxRequest(data,url,funcion) {
 				$('#myModal .modal-body').html(respuesta);
 				$("#myModal").modal('show');
 			}
-			if(funcion=='aprobarcotsup'){
+			if(funcion=='aprobarnvsup'){
 				if (respuesta.mensaje == "ok") {
 					Biblioteca.notificaciones('El registro fue actualizado correctamente', 'Plastiservi', 'success');
 					// *** REDIRECCIONA A UNA RUTA*** 
 					var loc = window.location;
-    				window.location = loc.protocol+"//"+loc.hostname+"/cotizacionaprobar";
+    				window.location = loc.protocol+"//"+loc.hostname+"/notaventaaprobar";
 					// ****************************** 
 				} else {
 					if (respuesta.mensaje == "sp"){
@@ -787,9 +787,9 @@ $("#btnaprobarM").click(function(event)
 		obs   : $("#aprobobs").val(),
         _token: $('input[name=_token]').val()
 	};
-	var ruta = '/cotizacion/aprobarcotsup/'+data['id'];
+	var ruta = '/notaventa/aprobarnvsup/'+data['id'];
 	swal({
-		title: '¿ Está seguro que desea Aprobar la Cotización ?',
+		title: '¿ Está seguro que desea Aprobar la Nota de Venta ?',
 		text: "Esta acción no se puede deshacer!",
 		icon: 'warning',
 		buttons: {
@@ -798,7 +798,7 @@ $("#btnaprobarM").click(function(event)
 		},
 	}).then((value) => {
 		if (value) {
-			ajaxRequest(data,ruta,'aprobarcotsup');
+			ajaxRequest(data,ruta,'aprobarnvsup');
 		}
 	});
 });
@@ -814,9 +814,9 @@ $("#btnrechazarM").click(function(event)
 			obs   : $("#aprobobs").val(),
 			_token: $('input[name=_token]').val()
 		};
-		var ruta = '/cotizacion/aprobarcotsup/'+data['id'];
+		var ruta = '/notaventa/aprobarnvsup/'+data['id'];
 		swal({
-			title: '¿ Está seguro que desea Rechazar la Cotización ?',
+			title: '¿ Está seguro que desea Rechazar la Nota de Venta ?',
 			text: "Esta acción no se puede deshacer!",
 			icon: 'warning',
 			buttons: {
@@ -825,7 +825,7 @@ $("#btnrechazarM").click(function(event)
 			},
 		}).then((value) => {
 			if (value) {
-				ajaxRequest(data,ruta,'aprobarcotsup');
+				ajaxRequest(data,ruta,'aprobarnvsup');
 			}
 		});
 

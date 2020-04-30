@@ -297,7 +297,7 @@ Route::put('notaventa/{id}', 'NotaVentaController@actualizar')->name('actualizar
 Route::delete('notaventa/{id}', 'NotaVentaController@eliminar')->name('eliminar_notaventa');
 Route::post('notaventa/eliminarCotizacionDetalle/{id}', 'NotaVentaController@eliminarCotizacionDetalle')->name('eliminar_notaventadetalle');
 Route::post('notaventa/aprobarcotvend/{id}', 'NotaVentaController@aprobarcotvend')->name('aprobarcotvend');
-Route::post('notaventa/aprobarcotsup/{id}', 'NotaVentaController@aprobarcotsup')->name('aprobarcotsup');
+Route::post('notaventa/aprobarnvsup/{id}', 'NotaVentaController@aprobarnvsup')->name('aprobarnvsup');
 Route::get('notaventa/{id}/{stareport}/exportPdf', 'NotaVentaController@exportPdf')->name('exportPdf_notaventa');
 
 Route::post('notaventa/aprobarnotaventa/{id}', 'NotaVentaController@aprobarnotaventa')->name('aprobar_notaventa');
@@ -362,3 +362,7 @@ Route::delete('areaproduccion/{id}', 'AreaProduccionController@eliminar')->name(
 Route::get('nvindicadorxvend', 'NVIndicadorxVendController@index')->name('nvindicadorxvend');
 Route::post('nvindicadorxvend/reporte', 'NVIndicadorxVendController@reporte')->name('nvindicadorxvend_reporte');
 Route::get('nvindicadorxvend/exportPdf', 'NVIndicadorxVendController@exportPdf')->name('nvindicadorxvend_exportPdf');
+
+/*RUTAS APROBAR NotaVenta*/
+Route::get('notaventaaprobar', 'NotaventaAprobarController@index')->name('notaventaaprobar');
+Route::get('notaventaaprobar/{id}/editar', 'NotaventaAprobarController@editar')->name('editar_notaventaaprobar');

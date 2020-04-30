@@ -386,7 +386,7 @@ class NotaVentaController extends Controller
         $detalles = $data->notaventadetalles()->get();
         $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
-        session(['aux_aprocot' => '0']);
+        //session(['aux_aprocot' => '0']);
         //dd($clienteselec[0]->rut);
 
         $user = Usuario::findOrFail(auth()->id());
@@ -641,18 +641,18 @@ class NotaVentaController extends Controller
 
     }
 
-    public function aprobarcotsup(Request $request)
+    public function aprobarnvsup(Request $request)
     {
         //dd($request);
         can('guardar-notaventa');
         if ($request->ajax()) {
-            $cotizacion = Cotizacion::findOrFail($request->id);
-            $cotizacion->aprobstatus = $request->valor;
-            $cotizacion->aprobusu_id = auth()->id();
-            $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
-            $cotizacion->aprobobs = $request->obs;
+            $notaventa = NotaVenta::findOrFail($request->id);
+            $notaventa->aprobstatus = $request->valor;
+            $notaventa->aprobusu_id = auth()->id();
+            $notaventa->aprobfechahora = date("Y-m-d H:i:s");
+            $notaventa->aprobobs = $request->obs;
             
-            if ($cotizacion->save()) {
+            if ($notaventa->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -745,7 +745,7 @@ class NotaVentaController extends Controller
                 on notaventa.cliente_id = cliente.id
                 where ' . $aux_condvend . 
                 ' and anulada is null
-                and aprobstatus=1
+                and (aprobstatus=1 or aprobstatus=3)
                 and notaventa.deleted_at is null;';
         //where usuario_id='.auth()->id();
         //dd($sql);
