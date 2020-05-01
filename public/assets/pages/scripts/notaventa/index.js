@@ -518,7 +518,7 @@ function quitarVerificar()
 }
 
 function genpdf(id,stareport){
-	$('#contpdf').attr('src', '');
+	$('#contpdf').attr('src', 'zz');
 	$("#myModalpdf").modal('show')
 	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
 }
