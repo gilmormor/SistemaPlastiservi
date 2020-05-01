@@ -868,4 +868,4 @@ $('#form-general').submit(function() {
 	$("#lugarentrega").prop('disabled', false);
 	$("#tipoentrega_id").prop('disabled', false);
     //Rest of code
-    })
+})

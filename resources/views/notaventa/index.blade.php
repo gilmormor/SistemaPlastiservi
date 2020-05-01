@@ -82,17 +82,19 @@ Nota de Venta
                                     </td>
                                 @endif
                                 <td>
-                                    <a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="Nota de Venta" target="_blank">
+                                    <!--<a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="Nota de Venta" target="_blank">-->
+                                    <a class='btn-accion-tabla btn-sm' onclick='genpdf({{$data->id}},{{"1"}})' title='Nota de venta' data-toggle='tooltip'>
                                         <i class="fa fa-fw fa-file-pdf-o"></i>                                    
                                     </a>
-                                    <a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2'])}}" class="btn-accion-tabla tooltipsC" title="Precio x Kg" target="_blank">
-                                        <i class="fa fa-fw fa-file-pdf-o"></i>                                    
+                                    <!--<a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2'])}}" class="btn-accion-tabla tooltipsC" title="Precio x Kg" target="_blank">-->
+                                    <a class='btn-accion-tabla btn-sm' onclick='genpdf({{$data->id}},{{"2"}})' title='Precio x Kg' data-toggle='tooltip'>
+                                        <i class="fa fa-fw fa-file-pdf-o"></i>
                                     </a>
-                                </td>
+                            </td>
                                 <td>
                                     @if (session('aux_aproNV')=='0' and $aux_statusPant==0)    
                                         <a href="{{route('editar_notaventa', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                            <i class="fa fa-fw fa-pencil"></i>                                    
+                                            <i class="fa fa-fw fa-pencil"></i>
                                         </a>
                                         @if (session('aux_aproNV')=='0')
                                             <form action="{{route('eliminar_notaventa', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
@@ -204,4 +206,8 @@ Nota de Venta
         </div>
     </div>
 </div>
+
+@include('generales.modalpdf')
+
+
 @endsection

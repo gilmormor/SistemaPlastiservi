@@ -60,6 +60,10 @@ $(document).ready(function () {
     $('.form-group').css({'margin-bottom':'0px','margin-left': '0px','margin-right': '0px'});
     $( "#myModalnumcot" ).draggable({opacity: 0.80, handle: ".modal-header"});
 	$( "#myModalBusquedaCot" ).draggable({opacity: 0.80, handle: ".modal-header"});
+
+	$('#myModalpdf').on('show.bs.modal', function () {
+		$('.modal-body').css('height',$( window ).height()*0.75);
+		});
 	
 });
 
@@ -511,4 +515,10 @@ function quitarVerificar()
 	$(".requeridos").each(function() {
 		quitarValidacion($(this).prop('name'),$(this).attr('tipoval'),$(this).parent().parent().attr('classorig'));
 	});
+}
+
+function genpdf(id,stareport){
+	$('#contpdf').attr('src', '');
+	$("#myModalpdf").modal('show')
+	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
 }
