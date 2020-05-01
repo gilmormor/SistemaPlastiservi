@@ -19,11 +19,9 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Nombre</th>
+                                <th style="width:100px;">Nombre</th>
                                 <th>Clase</th>
-                                <th>Codigo</th>
                                 <th>Diametro</th>
-                                <th style="text-align:right">Esp</th>
                                 <th style="text-align:right">Long</th>
                                 <th style="text-align:right">Peso</th>
                                 <th style="text-align:center">TipU</th>
@@ -45,14 +43,8 @@
                                     <td name="productocla_nombreBtd{{$aux_nfila}}" id="productocla_nombreBtd{{$aux_nfila}}">
                                         {{$producto->cla_nombre}}
                                     </td>
-                                    <td name="productocodintprodBtd{{$aux_nfila}}" id="productocodintprodBtd{{$aux_nfila}}">
-                                        {{$producto->codintprod}}
-                                    </td>
                                     <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
                                         {{$producto->diamextmm}}mm - {{$producto->diamextpg}}
-                                    </td>
-                                    <td name="productoespesorBtd{{$aux_nfila}}" id="productoespesorBtd{{$aux_nfila}}" style="text-align:right">
-                                        {{number_format($producto->espesor, 2, ",", ".")}}
                                     </td>
                                     <td name="productolongBtd{{$aux_nfila}}" id="productolongBtd{{$aux_nfila}}" style="text-align:center">
                                         {{$producto->long}}
@@ -78,9 +70,7 @@
                                 <th>ID</th>
                                 <th>Nombre</th>
                                 <th>Clase</th>
-                                <th>Codigo</th>
                                 <th>Diametro</th>
-                                <th>Esp</th>
                                 <th>Long</th>
                                 <th>Peso</th>
                                 <th>TipU</th>
