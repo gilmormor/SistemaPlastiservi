@@ -675,7 +675,7 @@ class NotaVentaController extends Controller
         
             $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
             //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf')->set_paper("A4", "portrait");
+            return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
     
         }else{
             if($stareport == '2'){
@@ -683,7 +683,7 @@ class NotaVentaController extends Controller
         
                 $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
                 //return $pdf->download('cotizacion.pdf');
-                return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf')->set_paper("A4", "portrait");
+                return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
     
             }
         }
