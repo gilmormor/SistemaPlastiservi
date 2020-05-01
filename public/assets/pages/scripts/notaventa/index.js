@@ -516,9 +516,3 @@ function quitarVerificar()
 		quitarValidacion($(this).prop('name'),$(this).attr('tipoval'),$(this).parent().parent().attr('classorig'));
 	});
 }
-
-function genpdf(id,stareport){
-	$('#contpdf').attr('src', 'zz');
-	$("#myModalpdf").modal('show')
-	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
-}

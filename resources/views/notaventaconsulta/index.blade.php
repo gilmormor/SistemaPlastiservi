@@ -202,4 +202,5 @@ Cotización
     </div>
 </div>
 @include('generales.buscarcliente')
+@include('generales.modalpdf')
 @endsection

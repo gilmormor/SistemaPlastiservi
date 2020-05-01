@@ -543,6 +543,8 @@
     @include('generales.aprobarcotnv')
 @endif
 
+@include('generales.modalpdf')
+
 
 <div class="modal fade" id="myModalFotoOC" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">

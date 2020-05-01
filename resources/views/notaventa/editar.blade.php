@@ -48,7 +48,8 @@
                         <button type="reset" class="btn btn-default">Cancel</button>
                         <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Aprobar</button>
                     @endif
-                    <a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="PDF" target="_blank">
+                    <!--<a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="PDF" target="_blank">-->
+                    <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"1"}})' title='Nota de venta' data-toggle='tooltip'>
                         <i class="fa fa-fw fa-file-pdf-o"></i>                                    
                     </a>
                 </div>

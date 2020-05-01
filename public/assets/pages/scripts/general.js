@@ -738,3 +738,10 @@ function llenarComuna(obj,i){
     });
 }
 //FIN FUNCIONES DE COTIZACION Y NOTA DE VENTA
+
+
+function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
+	$('#contpdf').attr('src', 'zz');
+	$("#myModalpdf").modal('show')
+	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
+}

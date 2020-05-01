@@ -83,11 +83,11 @@ Nota de Venta
                                 @endif
                                 <td>
                                     <!--<a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="Nota de Venta" target="_blank">-->
-                                    <a class='btn-accion-tabla btn-sm' onclick='genpdf({{$data->id}},{{"1"}})' title='Nota de venta' data-toggle='tooltip'>
+                                    <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"1"}})' title='Nota de venta' data-toggle='tooltip'>
                                         <i class="fa fa-fw fa-file-pdf-o"></i>                                    
                                     </a>
                                     <!--<a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2'])}}" class="btn-accion-tabla tooltipsC" title="Precio x Kg" target="_blank">-->
-                                    <a class='btn-accion-tabla btn-sm' onclick='genpdf({{$data->id}},{{"2"}})' title='Precio x Kg' data-toggle='tooltip'>
+                                    <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"2"}})' title='Precio x Kg' data-toggle='tooltip'>
                                         <i class="fa fa-fw fa-file-pdf-o"></i>
                                     </a>
                             </td>
@@ -208,6 +208,4 @@ Nota de Venta
 </div>
 
 @include('generales.modalpdf')
-
-
 @endsection
