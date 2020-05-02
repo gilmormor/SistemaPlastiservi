@@ -746,13 +746,6 @@ function llenarComuna(obj,i){
 
 
 function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
-	alert('notaventa/'+id+'/'+stareport+'/exportPdf');
-	$("#myModalpdf").modal('show')
-	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
-}
-
-function genpdfNVC(id,stareport){ //GENERAR PDF NOTA DE VENTA
-	alert('notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
 }
