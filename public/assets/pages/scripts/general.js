@@ -46,7 +46,12 @@ $(document).ready(function () {
                     .draw();
             }
         } );
-    } );
+	} );
+	
+	$('#myModalpdf').on('show.bs.modal', function () {
+		$('.modal-body').css('height',$( window ).height()*0.75);
+		});
+
 
 });
 
@@ -741,7 +746,13 @@ function llenarComuna(obj,i){
 
 
 function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
-	$('#contpdf').attr('src', 'zz');
+	alert('notaventa/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
+}
+
+function genpdfNVC(id,stareport){ //GENERAR PDF NOTA DE VENTA
+	alert('notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
 }

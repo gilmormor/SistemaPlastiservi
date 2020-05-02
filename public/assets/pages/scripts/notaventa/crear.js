@@ -173,6 +173,8 @@ $(document).ready(function () {
 		//alert($("#vendedor_idD").val());
 		$("#vendedor_id").val($("#vendedor_idD").val());
 	});
+
+
 });
 
 
@@ -869,3 +871,5 @@ $('#form-general').submit(function() {
 	$("#tipoentrega_id").prop('disabled', false);
     //Rest of code
 })
+
+
