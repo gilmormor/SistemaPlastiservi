@@ -227,18 +227,18 @@ class NotaVentaConsultaController extends Controller
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
                     </td>
-                    <td class='tooltipsC'>
-
-                    </td>
 
                 </tr>";
 /*
-                <div class='checkbox'>
-                <label style='font-size: 1.2em'>
-                    <input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$data->visto)' title='Marcar aprobar Guia de Despacho'>
-                    <span class='cr'><i class='cr-icon fa fa-check'></i></span>
-                </label>
-            </div>
+                    <td class='tooltipsC'>
+                        <div class='checkbox'>
+                            <label style='font-size: 1.2em'>
+                                <input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$data->visto)' title='Marcar aprobar Guia de Despacho'>
+                                <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                            </label>
+                        </div>
+                    </td>
+
 */
 
                 $aux_Tpvckg += $data->pvckg;
@@ -531,7 +531,7 @@ function consulta($request){
             " and " . $aux_aprobstatus .
             " and notaventa.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial;";
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus;";
     //dd("$sql");
     $datas = DB::select($sql);
     return $datas;
