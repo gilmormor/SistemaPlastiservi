@@ -778,8 +778,10 @@ class NotaVentaController extends Controller
         can('guardar-notaventa');
         if ($request->ajax()) {
             $notaventa = NotaVenta::findOrFail($request->id);
-            if($request->aprobstatus=='1' or $request->aprobstatus=='3'){
-                $notaventa->visto = '1';
+            if(empty($notaventa->visto)){
+                $notaventa->visto = date("Y-m-d H:i:s");
+            }else{
+                $notaventa->visto = NULL;                
             }
             if ($notaventa->save()) {
                 return response()->json(['mensaje' => 'ok']);

@@ -124,6 +124,11 @@ class NotaVentaConsultaController extends Controller
 			</thead>
             <tbody>";
 */
+            $aux_colvistoth = "";
+            if(auth()->id()==1 or auth()->id()==2){
+                $aux_colvistoth = "<th class='tooltipsC' title='Aprobar Guia despacho'>Visto</th>";
+            }
+
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
@@ -137,10 +142,10 @@ class NotaVentaConsultaController extends Controller
                     <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
                     <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                    $aux_colvistoth
 				</tr>
 			</thead>
             <tbody>";
-//            <th class='tooltipsC' title='Aprobar Guia despacho'>Visto</th>
 
             $i = 0;
             $aux_Tpvckg = 0;
@@ -200,11 +205,25 @@ class NotaVentaConsultaController extends Controller
                     </td>
                 </tr>";
                 */
-                /*
-                $Visto      = $data->visto;
-                $checkVisto  = '';
-                if($data->visto==1)
-                    $checkVisto = 'checked';*/
+
+                $Visto       = $data->visto;
+                $checkVisto  = 'checked';
+                if(empty($data->visto))
+                    $checkVisto = '';
+
+                $aux_colvistotd = "";
+                if(auth()->id()==1 or auth()->id()==2){
+                    $aux_colvistotd = "
+                    <td class='tooltipsC'>
+                        <div class='checkbox'>
+                            <label style='font-size: 1.2em'>
+                                <input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)' title='Marcar aprobar Guia de Despacho'>
+                                <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                            </label>
+                        </div>
+                    </td>";
+                }
+    
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id</td>
@@ -227,19 +246,8 @@ class NotaVentaConsultaController extends Controller
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
                     </td>
-
+                    $aux_colvistotd
                 </tr>";
-/*
-                    <td class='tooltipsC'>
-                        <div class='checkbox'>
-                            <label style='font-size: 1.2em'>
-                                <input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$data->visto)' title='Marcar aprobar Guia de Despacho'>
-                                <span class='cr'><i class='cr-icon fa fa-check'></i></span>
-                            </label>
-                        </div>
-                    </td>
-
-*/
 
                 $aux_Tpvckg += $data->pvckg;
                 $aux_Tpvcpesos += $data->pvcpesos;
@@ -501,7 +509,7 @@ function consulta($request){
     }
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,
             sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
             sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
             sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
@@ -531,7 +539,7 @@ function consulta($request){
             " and " . $aux_aprobstatus .
             " and notaventa.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus;";
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto;";
     //dd("$sql");
     $datas = DB::select($sql);
     return $datas;

@@ -219,10 +219,9 @@ function copiar_rut(id,rut){
 	$("#rut").blur();
 }
 
-function visto(id,aprobstatus){
+function visto(id,visto){
     var data = {
         id          : id,
-        aprobstatus : aprobstatus,
         _token: $('input[name=_token]').val()
     };
     var ruta = '/notaventa/visto/' + id;

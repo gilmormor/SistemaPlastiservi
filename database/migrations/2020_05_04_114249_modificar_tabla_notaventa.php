@@ -14,7 +14,7 @@ class ModificarTablaNotaventa extends Migration
     public function up()
     {
         Schema::table('notaventa', function (Blueprint $table) {
-            $table->boolean('visto')->comment('Estatus Visto por el jefe de Vendedores')->nullable()->after('anulada');;
+            $table->dateTime('visto')->comment('Estatus Visto por el jefe de Vendedores. Fecha hora')->nullable()->after('anulada');;
         });
     }
 

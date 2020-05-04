@@ -46,6 +46,7 @@ class NotaVenta extends Model
         'aprobstatus',
         'aprobusu_id',
         'aprobfechahora',
+        'visto',
         'usuariodel_id'
     ];
 
