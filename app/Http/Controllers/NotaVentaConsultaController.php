@@ -140,6 +140,8 @@ class NotaVentaConsultaController extends Controller
 				</tr>
 			</thead>
             <tbody>";
+//            <th class='tooltipsC' title='Aprobar Guia despacho'>Visto</th>
+
             $i = 0;
             $aux_Tpvckg = 0;
             $aux_Tpvcpesos= 0;
@@ -198,6 +200,11 @@ class NotaVentaConsultaController extends Controller
                     </td>
                 </tr>";
                 */
+                /*
+                $Visto      = $data->visto;
+                $checkVisto  = '';
+                if($data->visto==1)
+                    $checkVisto = 'checked';*/
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id</td>
@@ -220,8 +227,19 @@ class NotaVentaConsultaController extends Controller
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
                     </td>
-                </tr>";
+                    <td class='tooltipsC'>
 
+                    </td>
+
+                </tr>";
+/*
+                <div class='checkbox'>
+                <label style='font-size: 1.2em'>
+                    <input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$data->visto)' title='Marcar aprobar Guia de Despacho'>
+                    <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                </label>
+            </div>
+*/
 
                 $aux_Tpvckg += $data->pvckg;
                 $aux_Tpvcpesos += $data->pvcpesos;
@@ -483,7 +501,7 @@ function consulta($request){
     }
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,
             sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
             sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
             sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,

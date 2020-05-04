@@ -71,7 +71,20 @@ function ajaxRequest(data,url,funcion) {
 						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
 					}
 				}
+            }
+            if(funcion=='vistonotaventa'){
+				if (respuesta.mensaje == "ok") {
+					//$("#fila"+data['nfila']).remove();
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+					if (respuesta.mensaje == "sp"){
+						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+					}else{
+						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+					}
+				}
 			}
+
 		},
 		error: function () {
 		}
@@ -204,4 +217,14 @@ function copiar_rut(id,rut){
 	$("#rut").val(rut);
 	//$("#rut").focus();
 	$("#rut").blur();
+}
+
+function visto(id,aprobstatus){
+    var data = {
+        id          : id,
+        aprobstatus : aprobstatus,
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/notaventa/visto/' + id;
+    ajaxRequest(data,ruta,'vistonotaventa');
 }

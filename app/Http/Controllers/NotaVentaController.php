@@ -772,5 +772,26 @@ class NotaVentaController extends Controller
         return view('notaventa.index', compact('datas','cotizaciones','aux_statusPant'));
     }
 
+    public function visto(Request $request)
+    {
+        //dd($request);
+        can('guardar-notaventa');
+        if ($request->ajax()) {
+            $notaventa = NotaVenta::findOrFail($request->id);
+            if($request->aprobstatus=='1' or $request->aprobstatus=='3'){
+                $notaventa->visto = '1';
+            }
+            if ($notaventa->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+
+    }
+
+
 
 }

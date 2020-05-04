@@ -757,9 +757,13 @@ function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
 
 
 $("#precionetoM").blur(function(event){
-	aux_preciokilo = $("#precionetoM").val()/$("#pesoM").val();
-	$("#precioM").val(aux_preciokilo.toFixed(2));
-	$("#precioM").attr('valor',aux_preciokilo.toFixed(2));
+	if($("#pesoM").val()==0){
+		aux_preciokilo = $("#precionetoM").val();
+	}else{
+		aux_preciokilo = $("#precionetoM").val()/$("#pesoM").val();
+		$("#precioM").val(aux_preciokilo.toFixed(2));
+		$("#precioM").attr('valor',aux_preciokilo.toFixed(2));	
+	}
 	totalizarItem(0);
 });
 

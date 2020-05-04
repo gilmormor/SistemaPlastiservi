@@ -304,6 +304,7 @@ Route::post('notaventa/{id}/{stareport}/exportPdfh', 'NotaVentaController@export
 Route::post('notaventa/aprobarnotaventa/{id}', 'NotaVentaController@aprobarnotaventa')->name('aprobar_notaventa');
 Route::post('notaventa/anularnotaventa/{id}', 'NotaVentaController@anularnotaventa')->name('anular_notaventa');
 Route::get('notaventacerr', 'NotaVentaController@notaventacerr')->name('notaventacerr');
+Route::post('notaventa/visto/{id}', 'NotaVentaController@visto')->name('visto_notaventa');
 
 /*RUTAS CONSULTAR NOTA DE VENTA*/
 Route::get('notaventaconsulta', 'NotaVentaConsultaController@index')->name('notaventaconsulta');
