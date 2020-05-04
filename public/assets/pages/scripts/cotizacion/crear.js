@@ -52,6 +52,7 @@ $(document).ready(function () {
 	*/
 	$("#cantM").numeric();
 	$("#precioM").numeric({decimalPlaces: 2});
+	$(".numerico").numeric();
 	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});

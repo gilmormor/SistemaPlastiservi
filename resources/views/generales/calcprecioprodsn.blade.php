@@ -73,9 +73,9 @@
                     <input type="text" name="precioM" id="precioM" class="form-control" style="text-align:right" value="{{old('precioM', $data->precio ?? '')}}" valor="0.00" placeholder="Precio Kg"/>
                     <span class="help-block"></span>
                 </div>
-                <div class="col-xs-12 col-sm-2">
+                <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="precionetoM" class="control-label" data-toggle='tooltip'>PrecioUnit</label>
-                    <input type="text" name="precionetoM" style="text-align:right" id="precionetoM" class="form-control" value="{{old('precionetoM', $data->precioneto ?? '')}}" placeholder="PrecioUnit" valor="0.00" readonly Disabled/>
+                    <input type="text" name="precionetoM" style="text-align:right" id="precionetoM" class="form-control numerico" value="{{old('precionetoM', $data->precioneto ?? '')}}" placeholder="PrecioUnit" valor="0.00"/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">

@@ -508,11 +508,15 @@ function totalizarItem(aux_estprec){
 	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-##,###,##0.00',1));
 	$("#subtotalM").attr('valor',aux_total.toFixed(2));
 	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();
+//	$("#precioM").val(MASK(0, aux_precdesc, '-##,###,##0.00',1));
 	$("#precioM").val(aux_precdesc);
 	$("#precioM").attr('valor',aux_precdesc);
+
 	aux_precioUnit = aux_precdesc * aux_peso;
-	$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
+	//$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
+	$("#precionetoM").val(Math.round(aux_precioUnit));
 	$("#precionetoM").attr('valor',Math.round(aux_precioUnit));
+
 }
 
 function insertarModificar(){
@@ -658,7 +662,8 @@ function verificar()
 {
 	var v1=0,v2=0,v3=0,v4=0,v5=0,v6=0,v7=0,v8=0,v9=0,v10=0,v11=0,v12=0,v13,v14=0;
 	
-	v4=validacion('precioM','numerico');
+	v5=validacion('precionetoM','texto');
+	v4=validacion('precioM','texto');
 	v3=validacion('descuentoM','combobox');
 	v2=validacion('cantM','texto');
 	v1=validacion('producto_idM','textootro');
@@ -749,3 +754,12 @@ function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
 	$("#myModalpdf").modal('show')
 	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
 }
+
+
+$("#precionetoM").blur(function(event){
+	aux_preciokilo = $("#precionetoM").val()/$("#pesoM").val();
+	$("#precioM").val(aux_preciokilo.toFixed(2));
+	$("#precioM").attr('valor',aux_preciokilo.toFixed(2));
+	totalizarItem(0);
+});
+

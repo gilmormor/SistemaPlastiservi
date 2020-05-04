@@ -666,6 +666,7 @@ $("#producto_idM").blur(function(){
 			data: data,
 			success: function (respuesta) {
 				if(respuesta.length>0){
+
 					$("#nombreprodM").val(respuesta[0]['nombre']);
 					$("#codintprodM").val(respuesta[0]['codintprod']);
 					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
@@ -677,16 +678,16 @@ $("#producto_idM").blur(function(){
 					$("#precioM").val(respuesta[0]['precio']);
 					$("#precioM").attr('valor',respuesta[0]['precio']);
 					$("#precioxkilorealM").val(respuesta[0]['precio']);
-					$("#precioxkilorealM").attr(respuesta[0]['precio']);
+					$("#precioxkilorealM").attr('valor',respuesta[0]['precio']);
 					$("#precionetoM").val(respuesta[0]['precioneto']);
-					$("#precionetoM").attr(respuesta[0]['precioneto']);
+					$("#precionetoM").attr('valor',respuesta[0]['precioneto']);
 					//alert(respuesta[0]['precio']);
 					
 					
 					//$("#cantM").change();
 					$("#cantM").focus();
-			
 					totalizarItem(1);
+					
 				}else{
 					swal({
 						title: 'Producto no existe.',
