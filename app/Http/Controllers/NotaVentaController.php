@@ -671,7 +671,7 @@ class NotaVentaController extends Controller
         $rut = number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
         if($stareport == '1'){
-            //return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
+            return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
         
             $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
             //return $pdf->download('cotizacion.pdf');
@@ -679,7 +679,7 @@ class NotaVentaController extends Controller
     
         }else{
             if($stareport == '2'){
-                //return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
         
                 $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
                 //return $pdf->download('cotizacion.pdf');

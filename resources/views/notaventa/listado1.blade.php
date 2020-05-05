@@ -80,11 +80,18 @@
 					<?php
 						$aux_sumprecioxkilo = 0;
 						$aux_sumtotalkilos = 0;
+						$aux_promPonderadoPrecioxkilo = 0;
 					?>
 					@foreach($notaventaDetalles as $notaventaDetalle)
 						<?php
 							$aux_sumprecioxkilo += $notaventaDetalle->precioxkilo;
 							$aux_sumtotalkilos += $notaventaDetalle->totalkilos;
+						?>
+					@endforeach
+					@foreach($notaventaDetalles as $notaventaDetalle)
+						<?php
+							$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
+							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
 						?>
 						<tr class="headt" style="height:150%;">
 							<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
@@ -110,7 +117,7 @@
 				<tfoot>
 					<tr>
 						<td colspan="7" class="textright"><span><strong>Totales</strong></span></td>
-						<td class="textright"><span><strong>{{number_format($aux_sumprecioxkilo, 2, ",", ".")}}</strong></span></td>
+						<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
 					</tr>
 				</tfoot>
