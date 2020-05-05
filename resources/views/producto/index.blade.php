@@ -36,7 +36,7 @@ Productos
                                 <th>DiamExt</th>
                                 <th>DiaPulg</th>
                                 <th>Espesor mm</th>
-                                <th>Longitud</th>
+                                <th>Largo</th>
                                 <th>Peso</th>
                                 <th>Tipo Union</th>
                                 <th>Precio</th>

@@ -100,12 +100,10 @@ Cotización
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <select name="areaproduccion_id" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id">
+                                            <option value="">Seleccione...</option>
                                             @foreach($areaproduccions as $areaproduccion)
                                                 <option
                                                     value="{{$areaproduccion->id}}"
-                                                    @if ($areaproduccion->id==1)
-                                                        {{'selected'}}
-                                                    @endif
                                                     >
                                                     {{$areaproduccion->nombre}}
                                                 </option>

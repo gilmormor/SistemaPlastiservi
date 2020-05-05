@@ -49,7 +49,7 @@
         </div>
     </div>
     <div class="form-group col-xs-12 col-sm-6">
-        <label for="long" class="col-lg-3 control-label requerido" title="Longitud Mts" data-toggle='tooltip'>Longitud</label>
+        <label for="long" class="col-lg-3 control-label requerido" title="Largo Mts" data-toggle='tooltip'>Largo</label>
         <div class="col-lg-9">
         <input type="text" name="long" id="long" class="form-control" value="{{old('long', $data->long ?? '')}}" required/>
         </div>
