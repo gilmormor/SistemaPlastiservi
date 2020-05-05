@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <iframe id="contpdf" name="contpdf" src="" frameborder="0" allowfullscreen width="100%" height="100%" scrolling="no"></iframe>
+                <iframe id="contpdf" name="contpdf" src="" frameborder="0" allowfullscreen width="100%" height="100%" scrolling="yes"></iframe>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
