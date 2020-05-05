@@ -5,7 +5,9 @@ $(document).ready(function () {
     $("#diamextmm").blur(function(){
         //$("#diamextpg").val($(this).val()*0.039370);
         $("#diamextpg").val(mmAPg($(this).val()));
-	});
+    });
+    
+    $(".numerico").numeric();
     
 });
 

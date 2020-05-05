@@ -31,7 +31,7 @@
     <div class="form-group col-xs-12 col-sm-6">
         <label for="diamextmm" class="col-lg-3 control-label requerido" title="Diámetro Ext mm" data-toggle='tooltip' title="Diámetro">Diámetro mm</label>
         <div class="col-lg-9">
-        <input type="text" name="diamextmm" id="diamextmm" class="form-control" value="{{old('diamextmm', $data->diamextmm ?? '')}}" required/>
+        <input type="text" name="diamextmm" id="diamextmm" class="form-control numerico" value="{{old('diamextmm', $data->diamextmm ?? '')}}" required/>
         </div>
     </div>
     <div class="form-group col-xs-12 col-sm-6">
@@ -45,13 +45,13 @@
     <div class="form-group col-xs-12 col-sm-6">
         <label for="espesor" class="col-lg-3 control-label requerido" title="Espesor mm" data-toggle='tooltip'>Espesor</label>
         <div class="col-lg-9">
-        <input type="text" name="espesor" id="espesor" class="form-control" value="{{old('espesor', $data->espesor ?? '')}}" required/>
+        <input type="text" name="espesor" id="espesor" class="form-control numerico" value="{{old('espesor', $data->espesor ?? '')}}" required/>
         </div>
     </div>
     <div class="form-group col-xs-12 col-sm-6">
         <label for="long" class="col-lg-3 control-label requerido" title="Largo Mts" data-toggle='tooltip'>Largo</label>
         <div class="col-lg-9">
-        <input type="text" name="long" id="long" class="form-control" value="{{old('long', $data->long ?? '')}}" required/>
+        <input type="text" name="long" id="long" class="form-control numerico" value="{{old('long', $data->long ?? '')}}" required/>
         </div>
     </div>
 </div>
@@ -59,7 +59,7 @@
     <div class="form-group col-xs-12 col-sm-6">
         <label for="peso" class="col-lg-3 control-label requerido" title="Peso Kgs" data-toggle='tooltip'>Peso</label>
         <div class="col-lg-9">
-        <input type="text" name="peso" id="peso" class="form-control" value="{{old('peso', $data->peso ?? '')}}" required/>
+        <input type="text" name="peso" id="peso" class="form-control numerico" value="{{old('peso', $data->peso ?? '')}}" required/>
         </div>
     </div>
     <div class="form-group col-xs-12 col-sm-6">
@@ -178,7 +178,7 @@
     <div class="form-group col-xs-12 col-sm-6">
         <label for="precioneto" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Precio Neto">Precio Neto</label>
         <div class="col-lg-9">
-        <input type="text" name="precioneto" id="precioneto" class="form-control" value="{{old('precioneto', $data->precioneto ?? '')}}" required/>
+        <input type="text" name="precioneto" id="precioneto" class="form-control numerico" value="{{old('precioneto', $data->precioneto ?? '')}}" required/>
         </div>
     </div>
 

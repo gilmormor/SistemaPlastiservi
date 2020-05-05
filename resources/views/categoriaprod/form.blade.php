@@ -82,7 +82,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label for="unidadmedida_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad de Medida">Unidad de Medida</label>
+    <label for="unidadmedida_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad de Medida Diametro">Unidad de Medida Diametro</label>
     <div class="col-lg-8">
         <select name="unidadmedida_id" id="unidadmedida_id" class="form-control select2 unidadmedida_id" required>
             <option value="">Seleccione...</option>
@@ -100,7 +100,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label for="unidadmedidafact_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad Medida de Factura">Uni Medida Factura</label>
+    <label for="unidadmedidafact_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad Medida de Factura">Unidad Medida Factura</label>
     <div class="col-lg-8">
         <select name="unidadmedidafact_id" id="unidadmedidafact_id" class="form-control select2 unidadmedidafact_id" required>
             <option value="">Seleccione...</option>
