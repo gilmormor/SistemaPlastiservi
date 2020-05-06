@@ -20,9 +20,9 @@
                             <tr>
                                 <th>ID</th>
                                 <th style="width:100px;">Nombre</th>
-                                <th>Clase</th>
                                 <th>Diametro</th>
-                                <th style="text-align:right">Long</th>
+                                <th>Clase</th>
+                                <th style="text-align:right">Largo</th>
                                 <th style="text-align:right">Peso</th>
                                 <th style="text-align:center">TipU</th>
                                 <th style="text-align:right">PrecN</th>
@@ -40,11 +40,15 @@
                                     <td name="productonombreBtd{{$aux_nfila}}" id="productonombreBtd{{$aux_nfila}}">
                                         <a href="#" class="copiar_id" onclick="copiar_codprod({{$producto->id}},'{{$producto->codintprod}}')"> {{$producto->nombre}} </a>
                                     </td>
+                                    <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
+                                        @if ($producto->unidadmedida_id==3)
+                                            {{$producto->diamextpg}}
+                                        @else
+                                            {{$producto->diamextmm}}mm
+                                        @endif
+                                    </td>
                                     <td name="productocla_nombreBtd{{$aux_nfila}}" id="productocla_nombreBtd{{$aux_nfila}}">
                                         {{$producto->cla_nombre}}
-                                    </td>
-                                    <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
-                                        {{$producto->diamextmm}}mm - {{$producto->diamextpg}}
                                     </td>
                                     <td name="productolongBtd{{$aux_nfila}}" id="productolongBtd{{$aux_nfila}}" style="text-align:center">
                                         {{$producto->long}}
@@ -69,9 +73,9 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nombre</th>
-                                <th>Clase</th>
                                 <th>Diametro</th>
-                                <th>Long</th>
+                                <th>Clase</th>
+                                <th>Largo</th>
                                 <th>Peso</th>
                                 <th>TipU</th>
                                 <th>PrecN</th>

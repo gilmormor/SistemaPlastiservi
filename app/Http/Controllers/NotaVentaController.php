@@ -156,6 +156,7 @@ class NotaVentaController extends Controller
                 'producto.tipounion',
                 'producto.precioneto',
                 'categoriaprod.precio',
+                'categoriaprod.unidadmedida_id',
                 'categoriaprodsuc.sucursal_id'
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
