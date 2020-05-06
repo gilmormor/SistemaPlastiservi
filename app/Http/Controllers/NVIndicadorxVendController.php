@@ -166,7 +166,7 @@ class NVIndicadorxVendController extends Controller
             </tbody>
                 <tfoot>
                     <tr>
-                        <th>Total</th>";
+                        <th>TOTAL KG</th>";
 
             foreach($datas['vendedores'] as $vendedor){
                 $respuesta['tabla'] .= "
@@ -178,87 +178,7 @@ class NVIndicadorxVendController extends Controller
                     </tr>
                 </tfoot>
             </table>";
-
             return $respuesta;
-
-            $i = 0;
-            $aux_totalkilos = 0;
-            $totalsumsubtotal = 0;
-            $totalsumcant = 0;
-            $aux_totalkilosP = 0;
-            $aux_totalporcenkg = 0;
-            foreach ($datas as $data) {
-                $aux_totalkilosP += $data->sumtotalkilos;
-            }
-            foreach ($datas as $data) {
-                $colorFila = 'background-color: #87CEEB;';
-                $aux_totalkilos = $aux_totalkilos + $data->sumtotalkilos;
-                $totalsumsubtotal += $data->sumsubtotal;
-                $totalsumcant += $data->sumcant;
-                
-                $producto = Producto::findOrFail($data->producto_id);
-                $aum_uniMed = '';
-                if ($producto->categoriaprod->unidadmedida_id==3){
-                    $aum_uniMed = $producto->diamextpg;
-                }
-                else{
-                    $aum_uniMed = $producto->diamextmm . 'mm';
-                }
-                $porcentajeKg = ($data->sumtotalkilos * 100) / $aux_totalkilosP;
-                $aux_totalporcenkg += $porcentajeKg;
-                $respuesta['tabla'] .= "
-                <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                    <td id='nombre$i' name='nombre$i'>$data->nombre</td>
-                    <td id='diamextmm$i' name='diamextmm$i'>$aum_uniMed</td>
-                    <td id='cla_nombre$i' name='cla_nombre$i'>$data->cla_nombre</td>
-                    <td id='long$i' name='long$i'>$data->long</td>
-                    <td id='peso$i' name='peso$i' style='text-align:right'>".number_format($data->peso, 2, ",", ".") ."</td>
-                    <td id='tipounion$i' name='tipounion$i' style='text-align:right'>$data->tipounion</td>
-                    <td id='subtotal$i' name='subtotal$i' style='text-align:right'>".number_format($data->sumsubtotal, 2, ",", ".") ."</td>
-                    <td id='prompreciounit$i' name='prompreciounit$i' style='text-align:right'>".number_format($data->prompreciounit, 2, ",", ".") ."</td>
-                    <td id='promprecioxkilo$i' name='promprecioxkilo$i' style='text-align:right'>".number_format($data->promprecioxkilo, 2, ",", ".") ."</td>
-                    <td id='sumcant$i' name='sumcant$i' style='text-align:right'>".number_format($data->sumcant, 0, ",", ".") ."</td>
-                    <td id='sumtotalkilos$i' name='sumtotalkilos$i' style='text-align:right'>".number_format($data->sumtotalkilos, 2, ",", ".") ."</td>
-                    <td id='aux_procent$i' name='aux_procent$i' style='text-align:right'>".number_format($porcentajeKg, 2, ",", ".") ."</td>
-                </tr>";
-
-                //dd($data->contacto);
-            }
-            if($totalsumcant==0){
-                $totalsumcant = 1;
-            }
-            if($aux_totalkilos==0){
-                $aux_totalkilos = 1;
-            }
-            $respuesta['tabla'] .= "
-                </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Total</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th style='text-align:right'></th>
-                            <th style='text-align:right'></th>
-                            <th style='text-align:right'>". number_format($totalsumsubtotal, 2, ",", ".") ."</th>
-                            <th style='text-align:right'>". number_format($totalsumsubtotal/$totalsumcant, 2, ",", ".") ."</th>
-                            <th style='text-align:right'>". number_format($totalsumsubtotal/$aux_totalkilos, 2, ",", ".") ."</th>
-                            <th style='text-align:right'>". number_format($totalsumcant, 0, ",", ".") ."</th>
-                            <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
-                            <th style='text-align:right'>". number_format($aux_totalporcenkg, 2, ",", ".") ."</th>
-                        </tr>
-                    </tfoot>
-                
-                </table>";
-            //dd($respuesta);
-            //dd(compact('datas'));
-            //dd($clientedirecs->get());
-            //dd($datas->get());
-            /*$cotizacion = Cotizacion::where('fechahora', '>=', $aux_fechad)
-                                    ->where('fechahora', '<=', $aux_fechah);*/
-            //echo json_encode($respuesta);
-            return $respuesta;
-            //return response()->json($respuesta);
         }
     }
 
