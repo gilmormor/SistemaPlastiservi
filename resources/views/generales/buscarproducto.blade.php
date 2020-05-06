@@ -20,7 +20,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th style="width:100px;">Nombre</th>
-                                <th>Diametro</th>
+                                <th>Diámetro</th>
                                 <th>Clase</th>
                                 <th style="text-align:right">Largo</th>
                                 <th style="text-align:right">Peso</th>
@@ -73,7 +73,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nombre</th>
-                                <th>Diametro</th>
+                                <th>Diámetro</th>
                                 <th>Clase</th>
                                 <th>Largo</th>
                                 <th>Peso</th>

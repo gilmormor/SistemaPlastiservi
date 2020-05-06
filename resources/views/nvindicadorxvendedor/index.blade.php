@@ -7,7 +7,7 @@ Productos Notas de Venta
     <script type="text/javascript" src="{{asset("assets/js/jquery-barcode.js")}}"></script>
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/prodxnotaventa/index.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/nvindicadorxvendedor/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
