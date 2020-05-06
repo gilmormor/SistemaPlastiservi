@@ -28,28 +28,28 @@ Productos Notas de Venta
                         <div class="col-xs-12 col-md-8 col-sm-8">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
-                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="fecha">Fecha Ini:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Fin">
-                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="dep_fecha">Fecha Fin:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" class="form-control datepicker" name="fechah" id="fechah" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="RUT">
-                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="rut">RUT:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
                                             <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut')}}" title="F2 Buscar" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12"/>
                                             <span class="input-group-btn">
@@ -59,10 +59,10 @@ Productos Notas de Venta
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Vendedor">
-                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label>Vendedor</label>
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Vendedor:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
                                             <option value="">Todos</option>
                                             @foreach($vendedores1 as $vendedor)
@@ -78,10 +78,10 @@ Productos Notas de Venta
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Categoria">
-                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label>Categoría</label>
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Categoría:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="categoriaprod_id" id="categoriaprod_id" class="form-control selectpicker categoriaprod_id">
                                             <option value="">Todos</option>
                                             @foreach($categoriaprods as $categoriaprod)
@@ -94,10 +94,10 @@ Productos Notas de Venta
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6" data-toggle='tooltip' title="Giro">
-                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
-                                        <label for="giro_id">Giro</label>
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="giro_id">Giro:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="giro_id" id="giro_id" class="form-control selectpicker giro_id">
                                             <option value="">Todos</option>
                                             @foreach($giros as $giro)
@@ -114,10 +114,10 @@ Productos Notas de Venta
 
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
-                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label >Area Prod:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="areaproduccion_id" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id">
                                             @foreach($areaproduccions as $areaproduccion)
                                                 <option
