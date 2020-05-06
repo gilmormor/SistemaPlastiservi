@@ -214,7 +214,7 @@ class NotaVentaConsultaController extends Controller
                 $aux_colvistotd = "";
                 if(auth()->id()==1 or auth()->id()==2){
                     $aux_colvistotd = "
-                    <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar como despachadoo'>
+                    <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar como despachado'>
                         <div class='checkbox'>
                             <label style='font-size: 1.2em'>
                                 <input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>
