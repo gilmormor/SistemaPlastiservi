@@ -58,9 +58,9 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
     <link rel="shortcut icon" href="{{asset("assets/$theme/dist/img/logoShor.png")}}">
     </head>
-    <!--<body class="sidebar-mini wysihtml5-supported skin-black fixed"> con esta clase el menu permanece completo abierto-->
+    <body class="sidebar-mini wysihtml5-supported skin-black fixed"> <!--con esta clase el menu permanece completo abierto-->
                  
-    <body class="sidebar-mini wysihtml5-supported skin-black sidebar-collapse"> <!-- Con esta clase el menu permanece cerrado -->
+    <!--<body class="sidebar-mini wysihtml5-supported skin-black sidebar-collapse">--> <!-- Con esta clase el menu permanece cerrado -->
         <!-- Site wrapper -->
         <div class="wrapper">
             <!--Inicio de Header-->

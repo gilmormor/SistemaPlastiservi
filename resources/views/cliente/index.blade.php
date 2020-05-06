@@ -18,7 +18,7 @@ Clientes
                 <h3 class="box-title">Clientes</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('crear_cliente')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo registro
+                        <i class="fa fa-fw fa-plus-circle"></i> Crear Cliente
                     </a>
                 </div>
             </div>

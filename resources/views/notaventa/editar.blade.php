@@ -46,7 +46,7 @@
                         @include('includes.boton-form-editar')
                     @else
                         <button type="reset" class="btn btn-default">Cancel</button>
-                        <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Aprobar</button>
+                        <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Aprobar/Rechazar</button>
                     @endif
                     <a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="PDF" target="_blank">
                     <!--<a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"1"}})' title='Nota de venta' data-toggle='tooltip'>-->

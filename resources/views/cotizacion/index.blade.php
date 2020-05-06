@@ -19,7 +19,7 @@ Cotización
                 <!--@if (session('aux_aprocot') == '0')-->
                     <div class="box-tools pull-right">
                         <a href="{{route('crear_cotizacion')}}" class="btn btn-block btn-success btn-sm">
-                            <i class="fa fa-fw fa-plus-circle"></i> Nuevo registro
+                            <i class="fa fa-fw fa-plus-circle"></i> Crear Cotización
                         </a>
                     </div>                        
                 <!--@endif-->

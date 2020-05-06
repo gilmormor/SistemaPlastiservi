@@ -126,7 +126,7 @@ class NotaVentaConsultaController extends Controller
 */
             $aux_colvistoth = "";
             if(auth()->id()==1 or auth()->id()==2){
-                $aux_colvistoth = "<th class='tooltipsC' title='Aprobar Guia despacho'>Visto</th>";
+                $aux_colvistoth = "<th class='tooltipsC' title='Despachado'>Despachado</th>";
             }
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
@@ -214,10 +214,10 @@ class NotaVentaConsultaController extends Controller
                 $aux_colvistotd = "";
                 if(auth()->id()==1 or auth()->id()==2){
                     $aux_colvistotd = "
-                    <td class='tooltipsC'>
+                    <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar como despachadoo'>
                         <div class='checkbox'>
                             <label style='font-size: 1.2em'>
-                                <input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)' title='Marcar aprobar Guia de Despacho'>
+                                <input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>
                                 <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                             </label>
                         </div>

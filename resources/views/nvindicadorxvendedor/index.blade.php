@@ -51,7 +51,7 @@ Productos Notas de Venta
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
-                                            <option value="">Seleccione...</option>
+                                            <option value="">Todos</option>
                                             @foreach($vendedores1 as $vendedor)
                                                 <option
                                                     value="{{$vendedor->id}}"
@@ -68,7 +68,7 @@ Productos Notas de Venta
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <select name="giro_id" id="giro_id" class="form-control selectpicker giro_id">
-                                            <option value="">Seleccione...</option>
+                                            <option value="">Todos</option>
                                             @foreach($giros as $giro)
                                                 <option
                                                     value="{{$giro->id}}"
@@ -87,7 +87,7 @@ Productos Notas de Venta
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
                                         <select name="categoriaprod_id" id="categoriaprod_id" class="form-control selectpicker categoriaprod_id">
-                                            <option value="">Seleccione...</option>
+                                            <option value="">Todos</option>
                                             @foreach($categoriaprods as $categoriaprod)
                                                 <option
                                                     value="{{$categoriaprod->id}}">

@@ -16,14 +16,14 @@ Nota de Venta
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Nota de Venta</h3>
-                <!--@if (session('aux_aproNV') == '0')-->
+                @if ($aux_statusPant == '0')
                     <div class="box-tools pull-right">
                         <!--<a href="{{route('crear_notaventa')}}" class="btn btn-block btn-success btn-sm" id="btnnuevaNV">-->
                         <a href="#" class="btn btn-block btn-success btn-sm" id="btnnuevaNV">
-                            <i class="fa fa-fw fa-plus-circle"></i> Nuevo registro
+                            <i class="fa fa-fw fa-plus-circle"></i> Crear Nota Venta
                         </a>
                     </div>                        
-                <!--@endif-->
+                @endif
             </div>
             <div class="box-body">
                 <div class="table-responsive">
