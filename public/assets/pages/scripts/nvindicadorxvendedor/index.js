@@ -137,8 +137,8 @@ function grafico(datos){
                     window.chartColors.blue,
                     window.chartColors.orange,
                     window.chartColors.red,
-                    window.chartColors.yellow,
                     window.chartColors.purple,
+                    window.chartColors.yellow,  
                 ],
                 label: 'Dataset 1'
             }],
