@@ -120,6 +120,9 @@ class NVIndicadorxVendController extends Controller
 
         if($request->ajax()){
             $datas = consulta($request);
+            $respuesta['nombre'] = array_column($datas['vendedores'], 'nombre');
+            $respuesta['totalkilos'] = array_column($datas['vendedores'], 'totalkilos');
+            //dd($respuesta['totalkilos']);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>

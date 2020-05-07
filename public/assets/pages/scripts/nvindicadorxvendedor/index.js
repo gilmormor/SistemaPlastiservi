@@ -92,6 +92,7 @@ function ajaxRequest(data,url,funcion) {
 }
 
 function consultar(data){
+    $("#graficos").hide();
     $.ajax({
         url: '/nvindicadorxvend/reporte',
         type: 'POST',
@@ -100,6 +101,7 @@ function consultar(data){
             if(datos['tabla'].length>0){
                 $("#tablaconsulta").html(datos['tabla']);
                 configurarTabla('.tablascons');
+                grafico(datos);
             }
         }
     });
@@ -120,4 +122,38 @@ function consultarpdf(data){
             */
         }
     });
+}
+
+
+function grafico(datos){
+    $("#graficos").show();
+    $('.resultadosPie1').html('<canvas id="graficoPie1"></canvas>');
+    var config1 = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: datos['totalkilos'],
+                backgroundColor: [
+                    window.chartColors.blue,
+                    window.chartColors.orange,
+                    window.chartColors.red,
+                    window.chartColors.yellow,
+                    window.chartColors.purple,
+                ],
+                label: 'Dataset 1'
+            }],
+            labels: datos['nombre']
+        },
+        options: {
+            responsive: true
+        }
+    };
+
+    var ctxPie1 = document.getElementById('graficoPie1').getContext('2d');
+    window.myPie1 = new Chart(ctxPie1, config1);
+    myPie1.clear();
+
+    $("#tituloPie1").html("FACTURA POR VENDEDOR");
+	$("#graficos").show();
+
 }

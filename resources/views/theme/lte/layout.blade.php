@@ -134,6 +134,11 @@
         <script src="{{asset("assets/$theme/plugins/timepicker/bootstrap-timepicker.min.js")}}"></script>
         <!-- SlimScroll -->
         <script src="{{asset("assets/$theme/bower_components/jquery-slimscroll/jquery.slimscroll.min.js")}}"></script>
+        <!-- ChartJS -->
+        <!--<script src="{{asset("assets/$theme/bower_components/chart.js/Chart.js")}}"></script>-->
+        <!-- ChartJS -->
+        <script src="{{asset("assets/$theme/bower_components/chart/Chart.js")}}"></script>
+        <script src="{{asset("assets/$theme/bower_components/chart/utils.js")}}"></script>
         <!-- iCheck 1.0.1 -->
         <script src="{{asset("assets/$theme/plugins/iCheck/icheck.min.js")}}"></script>
         <!-- FastClick -->
