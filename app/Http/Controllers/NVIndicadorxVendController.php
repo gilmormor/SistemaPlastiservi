@@ -120,8 +120,6 @@ class NVIndicadorxVendController extends Controller
 
         if($request->ajax()){
             $datas = consulta($request);
-            $respuesta['nombre'] = array_column($datas['vendedores'], 'nombre');
-            $respuesta['totalkilos'] = array_column($datas['vendedores'], 'totalkilos');
             //dd($respuesta['totalkilos']);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
@@ -181,6 +179,16 @@ class NVIndicadorxVendController extends Controller
                     </tr>
                 </tfoot>
             </table>";
+            $respuesta['nombre'] = array_column($datas['vendedores'], 'nombre');
+            $respuesta['totalkilos'] = array_column($datas['vendedores'], 'totalkilos');
+            $i = 0;
+            foreach($respuesta['totalkilos'] as &$kilos){
+                $kilos = round($kilos,2);
+                $kilos1 = round(($kilos / $totalgeneral) * 100,2);
+                $respuesta['nombre'][$i] .= number_format($kilos1, 2, ",", ".") . "%";
+                $i++;
+            }
+
             return $respuesta;
         }
     }
