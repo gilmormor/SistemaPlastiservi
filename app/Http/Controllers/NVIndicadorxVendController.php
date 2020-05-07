@@ -185,7 +185,7 @@ class NVIndicadorxVendController extends Controller
             foreach($respuesta['totalkilos'] as &$kilos){
                 $kilos = round($kilos,2);
                 $kilos1 = round(($kilos / $totalgeneral) * 100,2);
-                $respuesta['nombre'][$i] .= number_format($kilos1, 2, ",", ".") . "%";
+                $respuesta['nombre'][$i] .= " " . number_format($kilos1, 2, ",", ".") . "%";
                 $i++;
             }
 
