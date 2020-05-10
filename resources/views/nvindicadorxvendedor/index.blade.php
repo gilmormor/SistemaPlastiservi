@@ -50,8 +50,7 @@ Productos Notas de Venta
                                         <label>Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
-                                            <option value="">Todos</option>
+                                        <select name="vendedor_id" id="vendedor_id" multiple class="selectpicker form-control vendedor_id" title='Todos...'>
                                             @foreach($vendedores1 as $vendedor)
                                                 <option
                                                     value="{{$vendedor->id}}"

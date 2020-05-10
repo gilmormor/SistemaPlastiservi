@@ -113,6 +113,7 @@ class NVIndicadorxVendController extends Controller
     }
 
     public function reporte(Request $request){
+        //dd($request);
         $respuesta = array();
 		$respuesta['exito'] = true;
 		$respuesta['mensaje'] = "Código encontrado";
@@ -249,36 +250,24 @@ class NVIndicadorxVendController extends Controller
 
 
 function consulta($request){
-
+    $array = array('apellido', 'email', 'teléfono');
+    $separado_por_comas = implode(",", $array);
+    //dd(json_decode($request->vendedor_id));
+    $aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
+    //dd($aux_vendedor);
     $respuesta = array();
     $respuesta['exito'] = true;
     $respuesta['mensaje'] = "Código encontrado";
     $respuesta['productos'] = "";
     $respuesta['vendedores'] = "";
 
-    if(empty($request->vendedor_id)){
-        $user = Usuario::findOrFail(auth()->id());
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
-            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-            $sucurArray = $user->sucursales->pluck('id')->toArray();
-        }else{
+    if(empty($aux_vendedor )){
             $vendedorcond = " true ";
-            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
-        }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
     }
-
-     if(empty($request->fechad) or empty($request->fechah)){
+    //dd($vendedorcond);
+    if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
     }else{
         $fecha = date_create_from_format('d/m/Y', $request->fechad);

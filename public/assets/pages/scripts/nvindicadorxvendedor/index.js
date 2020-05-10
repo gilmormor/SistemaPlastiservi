@@ -43,7 +43,7 @@ function datos(){
     var data = {
         fechad: $("#fechad").val(),
         fechah: $("#fechah").val(),
-        vendedor_id: $("#vendedor_id").val(),
+        vendedor_id: JSON.stringify($("#vendedor_id").val()),
         giro_id: $("#giro_id").val(),
         categoriaprod_id: $("#categoriaprod_id").val(),
         areaproduccion_id : $("#areaproduccion_id").val(),
