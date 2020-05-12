@@ -776,7 +776,7 @@ $("#precionetoM").blur(function(event){
 function verpdf2(nameFile,stareport){ //GENERAR PDF NOTA DE VENTA
 	if(nameFile==""){
 		swal({
-			title: 'Archivo Orden de Compra no existe.',
+			title: 'Archivo Orden de Compra no fue Adjuntado a la Nota de Venta.',
 			text: "",
 			icon: 'error',
 			buttons: {
