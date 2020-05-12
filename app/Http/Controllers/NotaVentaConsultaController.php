@@ -136,7 +136,7 @@ class NotaVentaConsultaController extends Controller
 					<th>Fecha</th>
 					<th>RUT</th>
                     <th>Razón Social</th>
-                    <th class='tooltipsC' title='Número Orden de Compra'>OC</th>
+                    <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
                     <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
                     <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
@@ -230,7 +230,7 @@ class NotaVentaConsultaController extends Controller
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
-                    <td id='oc_id$i' name='oc_id$i'>$data->oc_id</td>
+                    <td id='oc_id$i' name='oc_id$i'><a onclick='verpdf2(\"$data->oc_file\",2)')>$data->oc_id</a></td>
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
                     <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
                     <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
@@ -509,7 +509,7 @@ function consulta($request){
     }
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
             sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
             sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
             sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
@@ -539,7 +539,7 @@ function consulta($request){
             " and " . $aux_aprobstatus .
             " and notaventa.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto;";
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file;";
     //dd("$sql");
     $datas = DB::select($sql);
     return $datas;

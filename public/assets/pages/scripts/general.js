@@ -52,6 +52,10 @@ $(document).ready(function () {
 		$('.modal-body').css('height',$( window ).height()*0.75);
 		});
 
+	$('#myModalverpdf').on('show.bs.modal', function () {
+		$('.modal-body').css('height',$( window ).height()*0.75);
+		});
+	
 
 });
 
@@ -768,3 +772,11 @@ $("#precionetoM").blur(function(event){
 	totalizarItem(0);
 });
 
+//FUNCIONES NOTA DE VENTA CONSULTA
+function verpdf2(id,stareport){ //GENERAR PDF NOTA DE VENTA
+	$('#contpdf').attr('src', 'about:blank');
+	$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+id);
+	$("#myModalpdf").modal('show')
+
+}
+//
