@@ -776,24 +776,13 @@ $("#precionetoM").blur(function(event){
 function verpdf2(id,stareport){ //GENERAR PDF NOTA DE VENTA
 	if(id==""){
 		swal({
-			title: '¿ Hacer nota de venta con Nro. Cotización ?',
+			title: 'Archivo Orden de Compra no existe',
 			text: "",
 			icon: 'success',
 			buttons: {
-				confirm: "Si",
-				cancel: "No"
+				confirm: "Cerrar",
 			},
 		}).then((value) => {
-			if (value) {
-				limpiarCampos();
-				$("#myModalnumcot").modal('show');
-			}else{
-				//alert('Sin Cotizacion');
-				// *** REDIRECCIONA A UNA RUTA*** 
-				//var loc = window.location;
-				//window.location = loc.protocol+"//"+loc.hostname+"/notaventa/crear";
-				// ******************************
-			}
 		});
 	}else{
 		$('#contpdf').attr('src', 'about:blank');
