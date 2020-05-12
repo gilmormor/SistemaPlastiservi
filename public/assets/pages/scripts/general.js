@@ -774,9 +774,33 @@ $("#precionetoM").blur(function(event){
 
 //FUNCIONES NOTA DE VENTA CONSULTA
 function verpdf2(id,stareport){ //GENERAR PDF NOTA DE VENTA
-	$('#contpdf').attr('src', 'about:blank');
-	$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+id);
-	$("#myModalpdf").modal('show')
+	if(id==""){
+		swal({
+			title: '¿ Hacer nota de venta con Nro. Cotización ?',
+			text: "",
+			icon: 'success',
+			buttons: {
+				confirm: "Si",
+				cancel: "No"
+			},
+		}).then((value) => {
+			if (value) {
+				limpiarCampos();
+				$("#myModalnumcot").modal('show');
+			}else{
+				//alert('Sin Cotizacion');
+				// *** REDIRECCIONA A UNA RUTA*** 
+				//var loc = window.location;
+				//window.location = loc.protocol+"//"+loc.hostname+"/notaventa/crear";
+				// ******************************
+			}
+		});
+	}else{
+		$('#contpdf').attr('src', 'about:blank');
+		$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+id);
+		$("#myModalpdf").modal('show')
+	}
+	
 
 }
 //
