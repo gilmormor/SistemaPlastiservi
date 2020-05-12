@@ -773,12 +773,12 @@ $("#precionetoM").blur(function(event){
 });
 
 //FUNCIONES NOTA DE VENTA CONSULTA
-function verpdf2(id,stareport){ //GENERAR PDF NOTA DE VENTA
-	if(id==""){
+function verpdf2(nameFile,stareport){ //GENERAR PDF NOTA DE VENTA
+	if(nameFile==""){
 		swal({
-			title: 'Archivo Orden de Compra no existe',
+			title: 'Archivo Orden de Compra no existe.',
 			text: "",
-			icon: 'success',
+			icon: 'error',
 			buttons: {
 				confirm: "Cerrar",
 			},
@@ -786,8 +786,10 @@ function verpdf2(id,stareport){ //GENERAR PDF NOTA DE VENTA
 		});
 	}else{
 		$('#contpdf').attr('src', 'about:blank');
-		$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+id);
-		$("#myModalpdf").modal('show')
+		$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile);
+		if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
+			$("#myModalpdf").modal('show');
+		}
 	}
 	
 
