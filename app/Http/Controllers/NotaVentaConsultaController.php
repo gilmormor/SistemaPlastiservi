@@ -126,8 +126,9 @@ class NotaVentaConsultaController extends Controller
 */
             $aux_colvistoth = "";
             if(auth()->id()==1 or auth()->id()==2){
-                $aux_colvistoth = "<th class='tooltipsC' title='Despachado'>Despachado</th>";
+                $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
             }
+            $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
@@ -212,17 +213,25 @@ class NotaVentaConsultaController extends Controller
                     $checkVisto = '';
 
                 $aux_colvistotd = "";
-                if(auth()->id()==1 or auth()->id()==2){
-                    $aux_colvistotd = "
-                    <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar como despachado'>
-                        <div class='checkbox'>
-                            <label style='font-size: 1.2em'>
-                                <input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>
-                                <span class='cr'><i class='cr-icon fa fa-check'></i></span>
-                            </label>
-                        </div>
-                    </td>";
+                if(empty($data->visto)){
+                    $fechavisto = '';
+                }else{
+                    $fechavisto = 'Leido:' . date('d-m-Y h:i:s A', strtotime($data->visto));
                 }
+                
+                $aux_colvistotd = "
+                <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='$fechavisto'>
+                    <div class='checkbox'>
+                        <label style='font-size: 1.2em'>";
+                        if(auth()->id()==1 or auth()->id()==2){
+                            $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>";
+                        }else{
+                            $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
+                        }
+                        $aux_colvistotd .= "<span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                        </label>
+                    </div>
+                </td>";
     
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>

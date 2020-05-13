@@ -75,7 +75,8 @@ function ajaxRequest(data,url,funcion) {
             if(funcion=='vistonotaventa'){
 				if (respuesta.mensaje == "ok") {
 					//$("#fila"+data['nfila']).remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                    Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                    
 				} else {
 					if (respuesta.mensaje == "sp"){
 						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
@@ -220,9 +221,10 @@ function copiar_rut(id,rut){
 }
 
 function visto(id,visto){
+    //alert($(this).attr("value"));
     var data = {
-        id          : id,
-        _token: $('input[name=_token]').val()
+        id     : id,
+        _token : $('input[name=_token]').val()
     };
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
