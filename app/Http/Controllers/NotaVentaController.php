@@ -419,7 +419,6 @@ class NotaVentaController extends Controller
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $users = Usuario::findOrFail(auth()->id());
 
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
@@ -479,8 +478,20 @@ class NotaVentaController extends Controller
         $giros = Giro::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
+
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+        }
         //dd($clientedirecs);
-        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant'));
+        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
     }
 
     /**

@@ -42,15 +42,17 @@
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer text-center">
-                    @if (session('aux_aproNV')=='0')
-                        @include('includes.boton-form-editar')
-                    @else
-                        <button type="reset" class="btn btn-default">Cancel</button>
-                        <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Aprobar/Rechazar</button>
-                    @endif
+                    @if (($data->vendedor_id == $vendedor_id) or ($data->usuario_id == auth()->id())) <!-- Solo deja modificar si el el mismo vendedor o si fue el usuario que creo el registro -->
+                        @if (session('aux_aproNV')=='0')
+                            @include('includes.boton-form-editar')
+                        @else
+                                <button type="reset" class="btn btn-default">Cancel</button>
+                                <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Aprobar/Rechazar</button>
+                        @endif
+                    @endif    
                     <a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="PDF" target="_blank">
                     <!--<a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"1"}})' title='Nota de venta' data-toggle='tooltip'>-->
-                        <i class="fa fa-fw fa-file-pdf-o"></i>                                    
+                    <i class="fa fa-fw fa-file-pdf-o"></i>                                    
                     </a>
                 </div>
                 <!-- /.box-footer -->
