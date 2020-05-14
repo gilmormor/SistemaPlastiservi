@@ -109,12 +109,14 @@ class UsuarioController extends Controller
         */
         
         //Storage::disk('public')->put($location, $imagen1->stream());
-
-        $image = $request->file('foto_up');
-        $filename = $request->usuario . '.' . $image->getClientOriginalExtension();
-        $image->storeAs('public/imagenes/usuario',$filename);
+        if(!is_null($request->file('foto_up'))){
+            $image = $request->file('foto_up');
+            $filename = $request->usuario . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/imagenes/usuario',$filename);
+            $request->request->add(['foto' => $filename]);
+        }
         //$request->file('foto_up')->storeAs('public/imagenes/usuario',$request->usuario . '.jpg');
-        $request->request->add(['foto' => $filename]);
+        
         $usuario = Usuario::findOrFail($id);
         $usuario->update(array_filter($request->all()));
         $usuario->roles()->sync($request->rol_id);
@@ -180,12 +182,13 @@ class UsuarioController extends Controller
 
     public function actualizarbasicos(ValidarUsuarioBasicos $request){
         //dd($request);
-        $image = $request->file('foto_up');
-        $filename = $request->usuario . '.' . $image->getClientOriginalExtension();
-        $image->storeAs('public/imagenes/usuario',$filename);
-        //$request->file('foto_up')->storeAs('public/imagenes/usuario',$request->usuario . '.jpg');
-        $request->request->add(['foto' => $filename]);
-
+        if(is_null($request->file('foto_up'))){
+            $image = $request->file('foto_up');
+            $filename = $request->usuario . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/imagenes/usuario',$filename);
+            //$request->file('foto_up')->storeAs('public/imagenes/usuario',$request->usuario . '.jpg');
+            $request->request->add(['foto' => $filename]);
+        }
         $id = auth()->id();
         $usuario = Usuario::findOrFail($id);
         $usuario->update(array_filter($request->all()));
