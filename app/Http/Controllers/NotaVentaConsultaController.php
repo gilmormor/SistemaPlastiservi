@@ -508,7 +508,7 @@ function consulta($request){
                 $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
                 break;    
             case 3:
-                $aux_aprobstatus = "notaventa.aprobstatus='1' or notaventa.aprobstatus='3'";
+                $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
                 break;
             case 4:
                 $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
