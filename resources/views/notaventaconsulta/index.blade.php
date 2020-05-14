@@ -156,7 +156,7 @@ Cotización
                                             <option value="0">Todos</option>
                                             <option value="1">Emitidas sin aprobar</option>
                                             <option value="2">Por debajo precio en tabla</option>
-                                            <option value="3">Aprobadas</option>
+                                            <option value="3" selected>Aprobadas</option>
                                             <option value="4">Rechazadas</option>
                                         </select>
                                     </div>
