@@ -182,7 +182,7 @@ class UsuarioController extends Controller
 
     public function actualizarbasicos(ValidarUsuarioBasicos $request){
         //dd($request);
-        if(is_null($request->file('foto_up'))){
+        if(!is_null($request->file('foto_up'))){
             $image = $request->file('foto_up');
             $filename = $request->usuario . '.' . $image->getClientOriginalExtension();
             $image->storeAs('public/imagenes/usuario',$filename);
