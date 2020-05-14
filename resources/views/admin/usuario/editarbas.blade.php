@@ -25,11 +25,6 @@
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Editar Usuario</h3>
-                <div class="box-tools pull-right">
-                    <a href="{{route('usuario')}}" class="btn btn-block btn-info btn-sm">
-                        <i class="fa fa-fw fa-reply-all"></i> Volver al listado
-                    </a>
-                </div>
             </div>
             <form action="{{route('actualizarbasicos_usuario')}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
                 @csrf @method("put")
