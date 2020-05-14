@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-    Nota de Venta
+    Usuario
 @endsection
 
 @section("styles")
@@ -13,9 +13,8 @@
     <script src="{{asset("assets/js/bootstrap-fileinput/themes/fas/theme.min.js")}}" type="text/javascript"></script>
 @endsection
 
-@section("scripts")
-    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/notaventa/crear.js")}}" type="text/javascript"></script>
+@section('scripts')
+    <script src="{{asset("assets/pages/scripts/admin/usuario/crear.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -25,23 +24,25 @@
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Crear Nota de Venta</h3>
+                <h3 class="box-title">Editar Usuario</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('notaventa')}}" class="btn btn-block btn-info btn-sm">
+                    <a href="{{route('usuario')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>
             </div>
-            <form action="{{route('guardar_notaventa')}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
-                @csrf
+            <form action="{{route('actualizarbasicos_usuario')}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
+                @csrf @method("put")
                 <div class="box-body">
-                    @include('notaventa.form')
+                    @include('admin.usuario.formbas')
                 </div>
+                <!-- /.box-body -->
                 <div class="box-footer text-center">
-                    @include('includes.boton-form-crear')
+                    @include('includes.boton-form-editar')
                 </div>
+                <!-- /.box-footer -->
             </form>
         </div>
     </div>
-</div> 
+</div>
 @endsection

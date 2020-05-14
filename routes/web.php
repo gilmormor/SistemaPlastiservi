@@ -38,6 +38,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['aut
     Route::put('usuario/{id}', 'UsuarioController@actualizar')->name('actualizar_usuario');
     Route::delete('usuario/{id}', 'UsuarioController@eliminar')->name('eliminar_usuario');
     Route::post('usuario/{id}/ver', 'UsuarioController@ver')->name('ver_usuario');
+
     /*RUTAS DEL PERMISO*/
     Route::get('permiso', 'PermisoController@index')->name('permiso');
     Route::get('permiso/crear', 'PermisoController@crear')->name('crear_permiso');
@@ -328,6 +329,8 @@ Route::get('pasarDatosDeDirecAClientes', 'ImportController@pasarDatosDeDirecACli
 /*CAMBIAR CLAVE USUARIO*/
 Route::get('usuario/cambclave', 'Admin\UsuarioController@cambclave')->name('cambclave_usuario');
 Route::put('usuario/actualizarclave', 'Admin\UsuarioController@actualizarclave')->name('actualizarclave_usuario');
+Route::get('usuario/datosbasicos', 'Admin\UsuarioController@datosbasicos')->name('datosbasicos_usuario'); //Editar Datos Basicos
+Route::put('usuario/actualizarbasicos', 'Admin\UsuarioController@actualizarbasicos')->name('actualizarbasicos_usuario'); //Actualizar Datos Basicos
 
 /*RUTAS CotizacionAutorizarCliente*/
 Route::get('CotizacionAprobarCliente', 'CotizacionAprobarClienteController@index')->name('CotizacionAprobarCliente');

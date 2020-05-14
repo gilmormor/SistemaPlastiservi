@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ValidarUsuario;
+use App\Http\Requests\ValidarUsuarioBasicos;
 use App\Http\Requests\ValidarUsuarioClave;
 use App\Models\Admin\Rol;
 use App\Models\Seguridad\Usuario;
@@ -166,4 +167,30 @@ class UsuarioController extends Controller
         }
 
     }
+    
+    public function datosbasicos()
+    {
+        $id = auth()->id();
+        $rols = Rol::orderBy('id')->pluck('nombre', 'id')->toArray();
+        $data = Usuario::with('roles')->findOrFail($id);
+        $sucursales = Sucursal::orderBy('id')->pluck('nombre', 'id')->toArray();
+        //dd($data);
+        return view('admin.usuario.editarbas', compact('data','rols','sucursales'));
+    }
+
+    public function actualizarbasicos(ValidarUsuarioBasicos $request){
+        //dd($request);
+        $image = $request->file('foto_up');
+        $filename = $request->usuario . '.' . $image->getClientOriginalExtension();
+        $image->storeAs('public/imagenes/usuario',$filename);
+        //$request->file('foto_up')->storeAs('public/imagenes/usuario',$request->usuario . '.jpg');
+        $request->request->add(['foto' => $filename]);
+
+        $id = auth()->id();
+        $usuario = Usuario::findOrFail($id);
+        $usuario->update(array_filter($request->all()));
+        return redirect('/')->with('mensaje','Usuario actualizado con exito');    
+
+    }
+
 }

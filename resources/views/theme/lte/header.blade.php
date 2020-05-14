@@ -148,7 +148,10 @@
                 <a href="{{route('login')}}" class="btn btn-default btn-flat">Login</a>
               </div>-->
               <div class="pull-left">
-                <a href="{{route('cambclave_usuario')}}" class="btn btn-default btn-flat">Cambiar clave</a>
+                <a href="{{route('cambclave_usuario')}}" class="btn btn-default btn-flat">Contraseña</a>
+              </div>
+              <div class="pull-left">
+                <a href="{{route('datosbasicos_usuario')}}" class="btn btn-default btn-flat">Editar</a>
               </div>
               <div class="pull-right">
                 <a href="{{route('logout')}}" class="btn btn-default btn-flat">Salir</a>
