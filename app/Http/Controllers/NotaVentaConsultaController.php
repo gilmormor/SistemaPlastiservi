@@ -525,7 +525,6 @@ function consulta($request){
             sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
             sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
             sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
-            sum(notaventadetalle.totalkilos) AS totalkilos,
             sum(notaventadetalle.subtotal) AS totalps
             FROM notaventa INNER JOIN notaventadetalle
             ON notaventa.id=notaventadetalle.notaventa_id
@@ -537,16 +536,16 @@ function consulta($request){
             ON areaproduccion.id=categoriaprod.areaproduccion_id
             INNER JOIN cliente
             ON cliente.id=notaventa.cliente_id
-            WHERE " . $vendedorcond .
-            " and " . $aux_condFecha .
-            " and " . $aux_condrut .
-            " and " . $aux_condoc_id .
-            " and " . $aux_condgiro_id .
-            " and " . $aux_condareaproduccion_id .
-            " and " . $aux_condtipoentrega_id .
-            " and " . $aux_condnotaventa_id .
-            " and " . $aux_aprobstatus .
-            " and notaventa.deleted_at is null
+            WHERE $vendedorcond
+            and $aux_condFecha
+            and $aux_condrut
+            and $aux_condoc_id
+            and $aux_condgiro_id
+            and $aux_condareaproduccion_id
+            and $aux_condtipoentrega_id
+            and $aux_condnotaventa_id
+            and $aux_aprobstatus
+            and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file;";
     //dd("$sql");

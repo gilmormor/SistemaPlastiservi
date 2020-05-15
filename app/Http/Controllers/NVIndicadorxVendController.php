@@ -338,7 +338,7 @@ function consulta($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
-    and notaventadetalle.deleted_at is null
+    and notaventadetalle.deleted_at is null and notaventa.deleted_at is null
     GROUP BY persona.id,persona.nombre;";
 
     $datas = DB::select($sql);
