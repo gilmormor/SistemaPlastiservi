@@ -306,6 +306,7 @@ Route::post('notaventa/aprobarnotaventa/{id}', 'NotaVentaController@aprobarnotav
 Route::post('notaventa/anularnotaventa/{id}', 'NotaVentaController@anularnotaventa')->name('anular_notaventa');
 Route::get('notaventacerr', 'NotaVentaController@notaventacerr')->name('notaventacerr');
 Route::post('notaventa/visto/{id}', 'NotaVentaController@visto')->name('visto_notaventa');
+Route::post('notaventa/inidespacho/{id}', 'NotaVentaController@inidespacho')->name('inidespacho_notaventa');
 
 /*RUTAS CONSULTAR NOTA DE VENTA*/
 Route::get('notaventaconsulta', 'NotaVentaConsultaController@index')->name('notaventaconsulta');
@@ -371,3 +372,8 @@ Route::get('nvindicadorxvend/exportPdf', 'NVIndicadorxVendController@exportPdf')
 /*RUTAS APROBAR NotaVenta*/
 Route::get('notaventaaprobar', 'NotaventaAprobarController@index')->name('notaventaaprobar');
 Route::get('notaventaaprobar/{id}/editar', 'NotaventaAprobarController@editar')->name('editar_notaventaaprobar');
+
+/*RUTAS DESPACHO TEMPORAL NOTA DE VENTA*/
+Route::get('despachotempnotaventa', 'DespachoTempNotaVentaController@index')->name('despachotempnotaventa');
+Route::post('despachotempnotaventa/reporte', 'DespachoTempNotaVentaController@reporte')->name('despachotempnotaventa_reporte');
+Route::get('despachotempnotaventa/exportPdf', 'DespachoTempNotaVentaController@exportPdf')->name('exportPdf_despachotempnotaventa');

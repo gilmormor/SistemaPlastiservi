@@ -12,10 +12,11 @@ use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
-class NotaVentaConsultaController extends Controller
+
+class DespachoTempNotaVentaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,7 +25,7 @@ class NotaVentaConsultaController extends Controller
      */
     public function index()
     {
-        can('consulta-nota-de-venta');
+        can('despacho-temp');
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
@@ -89,7 +90,7 @@ class NotaVentaConsultaController extends Controller
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
 
-        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas'));
+        return view('despachoTemp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas'));
 
     }
 
@@ -101,12 +102,6 @@ class NotaVentaConsultaController extends Controller
 
         if($request->ajax()){
             $datas = consulta($request);
-            $aux_colvistoth = "";
-            if(auth()->id()==1 or auth()->id()==2){
-                $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
-            }
-            $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
-
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
@@ -119,8 +114,10 @@ class NotaVentaConsultaController extends Controller
                     <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
                     <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                    <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
-                    $aux_colvistoth
+                    <th class='tooltipsC' title='Leido'>Leido</th>
+                    <th class='tooltipsC' title='Inicio de despacho'>Ini</th>
+                    <th style='display:none;'></th>
+                    <th class='tooltipsC' title='Guia de despacho'>Guia Despacho</th>
 				</tr>
 			</thead>
             <tbody>";
@@ -156,28 +153,30 @@ class NotaVentaConsultaController extends Controller
                     $aux_prom = $data->subtotal / $data->totalkilos;
                 }
 
-                $Visto       = $data->visto;
-                $checkVisto  = 'checked';
-                if(empty($data->visto))
-                    $checkVisto = '';
+                $inidespacho       = $data->inidespacho;
+                $checkinidespacho  = 'checked';
+                if(empty($data->inidespacho))
+                    $checkinidespacho = '';
 
-                $aux_colvistotd = "";
-                if(empty($data->visto)){
-                    $fechavisto = '';
+                $aux_inidespacho = "";
+                $aux_dbotonid = "";
+                if(empty($data->inidespacho)){
+                    $fechainidespacho = '';
+                    $aux_dbotonid = "disabled";
                 }else{
-                    $fechavisto = 'Leido:' . date('d-m-Y h:i:s A', strtotime($data->visto));
+                    $fechainidespacho = 'Ini:' . date('d-m-Y h:i:s A', strtotime($data->inidespacho));
                 }
                 
-                $aux_colvistotd = "
-                <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='$fechavisto'>
+                $aux_inidespacho = "
+                <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='$fechainidespacho'>
                     <div class='checkbox'>
                         <label style='font-size: 1.2em'>";
                         if(auth()->id()==1 or auth()->id()==2){
-                            $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>";
+                            $aux_inidespacho .= "<input type='checkbox' id='visto$i' name='visto$i' value='$inidespacho' $checkinidespacho onclick='visto($data->id,$i)'>";
                         }else{
-                            $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
+                            $aux_inidespacho .= "<input type='checkbox' id='visto$i' name='visto$i' value='$inidespacho' $checkinidespacho disabled>";
                         }
-                        $aux_colvistotd .= "<span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                        $aux_inidespacho .= "<span class='cr'><i class='cr-icon fa fa-check'></i></span>
                         </label>
                     </div>
                 </td>";
@@ -193,26 +192,33 @@ class NotaVentaConsultaController extends Controller
                     <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
                     <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                     <td>
-                        <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
                         <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
                     </td>
-                    <td>
-                        <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2']) . "' class='btn-accion-tabla tooltipsC' title='Precio x Kg' target='_blank'>-->
-                        <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,2)' title='Nota de venta' data-toggle='tooltip'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
-                        </a>
+                    <td id='visto$i' name='visto$i' style='text-align:left'>".date('d-m-Y', strtotime($data->visto)) ."</td>
+                    <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='$fechainidespacho'>
+                        <div class='checkbox'>
+                            <label style='font-size: 1.2em'>
+                                <input type='checkbox' id='inidespacho$i' name='inidespacho$i' value='$inidespacho' $checkinidespacho  onclick='inidespacho($data->id,$i)'>
+                            <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                            </label>
+                        </div>
                     </td>
-                    $aux_colvistotd
+                    <td id='finidespacho$i' name='finidespacho$i' style='display:none;'>
+                        $data->inidespacho
+                    </td>
+                    <td style='text-align:center'>
+						<a id='guiadespacho$i' name='guiadespacho$i' class='btn btn-primary btn-sm' data-toggle='modal' data-target='#ModalCenter' onclick='guiadespacho($i)' title='Guia Despacho.' data-toggle='tooltip' $aux_dbotonid><span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span></a>
+                    </td>
                 </tr>";
-
                 $aux_Tpvckg += $data->pvckg;
                 $aux_Tpvcpesos += $data->pvcpesos;
                 $aux_Tcankg += $data->cankg;
                 $aux_Tcanpesos += $data->canpesos;
                 $aux_totalKG += $data->totalkilos;
                 $aux_totalps += $data->subtotal;
+                $i++;
     
                 //dd($data->contacto);
             }
@@ -237,72 +243,6 @@ class NotaVentaConsultaController extends Controller
 
             return $respuesta;
         }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 
     public function exportPdf(Request $request)
@@ -353,9 +293,9 @@ class NotaVentaConsultaController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         }
     }
-
     
 }
+
 
 function consulta($request){
     if(empty($request->vendedor_id)){
@@ -441,7 +381,7 @@ function consulta($request){
     }
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,inidespacho,
             sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
             sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
             sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
@@ -468,9 +408,10 @@ function consulta($request){
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
             and $aux_aprobstatus
+            and !(visto is null)
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file;";
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,inidespacho;";
     //dd("$sql");
     $datas = DB::select($sql);
     return $datas;

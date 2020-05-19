@@ -806,6 +806,27 @@ class NotaVentaController extends Controller
 
     }
 
+    public function inidespacho(Request $request)
+    {
+        //dd($request);
+        if ($request->ajax()) {
+            $notaventa = NotaVenta::findOrFail($request->id);
+            if(empty($notaventa->inidespacho)){
+                $notaventa->inidespacho = date("Y-m-d H:i:s");
+            }else{
+                $notaventa->inidespacho = NULL;                
+            }
+            if ($notaventa->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+
+    }
+
 
 
 }

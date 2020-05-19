@@ -72,9 +72,12 @@ function ajaxRequest(data,url,funcion) {
 					}
 				}
             }
-            if(funcion=='vistonotaventa'){
+            if(funcion=='inidespacho'){
 				if (respuesta.mensaje == "ok") {
-					//$("#fila"+data['nfila']).remove();
+                    //$("#fila"+data['nfila']).remove();
+                    //alert(data['i']);
+                    $("guiadespacho"+data['i']).removeAttr('disabled');
+                    this.disabled = false;
                     Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                     
 				} else {
@@ -85,12 +88,12 @@ function ajaxRequest(data,url,funcion) {
 					}
 				}
 			}
-
 		},
 		error: function () {
 		}
 	});
 }
+
 
 function datos(){
     var data = {
@@ -103,7 +106,6 @@ function datos(){
         areaproduccion_id : $("#areaproduccion_id").val(),
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
-        aprobstatus       : $("#aprobstatus").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -111,7 +113,7 @@ function datos(){
 
 function consultar(data){
     $.ajax({
-        url: '/notaventaconsulta/reporte',
+        url: '/despachotempnotaventa/reporte',
         type: 'POST',
         data: data,
         success: function (datos) {
@@ -123,9 +125,10 @@ function consultar(data){
     });
 }
 
+
 function consultarpdf(data){
     $.ajax({
-        url: '/notaventaconsulta/exportPdf',
+        url: '/despachotempnotaventa/exportPdf',
         type: 'GET',
         data: data,
         success: function (datos) {
@@ -212,12 +215,14 @@ function copiar_rut(id,rut){
 	$("#rut").blur();
 }
 
-function visto(id,visto){
-    //alert($(this).attr("value"));
+function inidespacho(id,i){
+    //alert($('inidespacho'+i).attr('value'));
+    //alert($("#finidespacho"+i).html());
     var data = {
         id     : id,
+        i      : i,
         _token : $('input[name=_token]').val()
     };
-    var ruta = '/notaventa/visto/' + id;
-    ajaxRequest(data,ruta,'vistonotaventa');
+    var ruta = '/notaventa/inidespacho/' + id;
+    ajaxRequest(data,ruta,'inidespacho');
 }
