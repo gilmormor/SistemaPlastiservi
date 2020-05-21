@@ -98,10 +98,12 @@ class DespachoTempNotaVentaController extends Controller
         $respuesta = array();
 		$respuesta['exito'] = false;
 		$respuesta['mensaje'] = "Código no Existe";
-		$respuesta['tabla'] = "";
+        $respuesta['tabla'] = "";
+        $respuesta['tabla2'] = "";
 
         if($request->ajax()){
-            $datas = consulta($request);
+            $datas = consulta($request,1);
+            //dd($consulta['datas1']);
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
@@ -115,9 +117,7 @@ class DespachoTempNotaVentaController extends Controller
                     <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
                     <th class='tooltipsC' title='Leido'>Leido</th>
-                    <th class='tooltipsC' title='Inicio de despacho'>Ini</th>
-                    <th style='display:none;'></th>
-                    <th class='tooltipsC' title='Guia de despacho'>Guia Despacho</th>
+                    <th class='tooltipsC' title='Acción' style='text-align:center'>Acción</th>
 				</tr>
 			</thead>
             <tbody>";
@@ -152,35 +152,19 @@ class DespachoTempNotaVentaController extends Controller
                 if($data->totalkilos>0){
                     $aux_prom = $data->subtotal / $data->totalkilos;
                 }
-
-                $inidespacho       = $data->inidespacho;
-                $checkinidespacho  = 'checked';
-                if(empty($data->inidespacho))
-                    $checkinidespacho = '';
-
-                $aux_inidespacho = "";
+                if(empty($data->inidespacho)){
+                    $botoninidespacho = "<a id='initdespacho$i' name='initdespacho$i' class='btn btn-success btn-sm' onclick='inidespacho($data->id,$i)'>
+                                            <span id='glypcnbtnInitdespacho$i' class='glyphicon glyphicon-play' style='bottom: 0px;top: 2px;' class='tooltipsC'></span>
+                                        </a>";
+                }else{
+                    $botoninidespacho = "<a id='initdespacho$i' name='initdespacho$i' class='btn btn-warning btn-sm' onclick='findespacho($i)'>
+                                            <span id='glypcnbtnInitdespacho$i' class='glyphicon glyphicon-stop' style='bottom: 0px;top: 2px;' class='tooltipsC'></span>
+                                        </a>";
+                }
                 $aux_dbotonid = "";
                 if(empty($data->inidespacho)){
-                    $fechainidespacho = '';
                     $aux_dbotonid = "disabled";
-                }else{
-                    $fechainidespacho = 'Ini:' . date('d-m-Y h:i:s A', strtotime($data->inidespacho));
-                }
-                
-                $aux_inidespacho = "
-                <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='$fechainidespacho'>
-                    <div class='checkbox'>
-                        <label style='font-size: 1.2em'>";
-                        if(auth()->id()==1 or auth()->id()==2){
-                            $aux_inidespacho .= "<input type='checkbox' id='visto$i' name='visto$i' value='$inidespacho' $checkinidespacho onclick='visto($data->id,$i)'>";
-                        }else{
-                            $aux_inidespacho .= "<input type='checkbox' id='visto$i' name='visto$i' value='$inidespacho' $checkinidespacho disabled>";
-                        }
-                        $aux_inidespacho .= "<span class='cr'><i class='cr-icon fa fa-check'></i></span>
-                        </label>
-                    </div>
-                </td>";
-    
+                }  
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id</td>
@@ -197,19 +181,9 @@ class DespachoTempNotaVentaController extends Controller
                         </a>
                     </td>
                     <td id='visto$i' name='visto$i' style='text-align:left'>".date('d-m-Y', strtotime($data->visto)) ."</td>
-                    <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='$fechainidespacho'>
-                        <div class='checkbox'>
-                            <label style='font-size: 1.2em'>
-                                <input type='checkbox' id='inidespacho$i' name='inidespacho$i' value='$inidespacho' $checkinidespacho  onclick='inidespacho($data->id,$i)'>
-                            <span class='cr'><i class='cr-icon fa fa-check'></i></span>
-                            </label>
-                        </div>
-                    </td>
-                    <td id='finidespacho$i' name='finidespacho$i' style='display:none;'>
-                        $data->inidespacho
-                    </td>
                     <td style='text-align:center'>
-						<a id='guiadespacho$i' name='guiadespacho$i' class='btn btn-primary btn-sm' data-toggle='modal' data-target='#ModalCenter' onclick='guiadespacho($i)' title='Guia Despacho.' data-toggle='tooltip' $aux_dbotonid><span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span></a>
+                        $botoninidespacho
+						<a id='guiadespacho$i' name='guiadespacho$i' class='btn btn-primary btn-sm $aux_dbotonid guiadespacho' onclick='guiadespacho($data->id,$i)'data-toggle='tooltip'><span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span></a>
                     </td>
                 </tr>";
                 $aux_Tpvckg += $data->pvckg;
@@ -227,6 +201,7 @@ class DespachoTempNotaVentaController extends Controller
             if($aux_totalKG>0){
                 $aux_promGeneral = $aux_totalps / $aux_totalKG;
             }
+/*
             $respuesta['tabla'] .= "
             </tbody>
             <tfoot>
@@ -239,6 +214,127 @@ class DespachoTempNotaVentaController extends Controller
                 </tr>
             </tfoot>
 
+            </table>";
+*/
+            $respuesta['tabla'] .= "
+            </tbody>
+            </table>";
+
+            $datas = consulta($request,2);
+            $respuesta['tabla2'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Fecha</th>
+					<th>RUT</th>
+                    <th>Razón Social</th>
+                    <th class='tooltipsC' title='Orden de Compra'>OC</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
+                    <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
+                    <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                    <th class='tooltipsC' title='Leido'>Leido</th>
+                    <th class='tooltipsC' title='Inicio'>Inicio</th>
+                    <th class='tooltipsC' title='Fin'>Fin</th>
+                    <th class='tooltipsC' title='Guia Despacho'>Guia Despacho</th>
+				</tr>
+			</thead>
+            <tbody>";
+
+            $i = 0;
+            $aux_Tpvckg = 0;
+            $aux_Tpvcpesos= 0;
+            $aux_Tcankg = 0;
+            $aux_Tcanpesos = 0;
+            $aux_totalKG = 0;
+            $aux_totalps = 0;
+            $aux_prom = 0;
+            foreach ($datas as $data) {
+                $colorFila = "";
+                $aux_data_toggle = "";
+                $aux_title = "";
+                if(!empty($data->anulada)){
+                    $colorFila = 'background-color: #87CEEB;';
+                    $aux_data_toggle = "tooltip";
+                    $aux_title = "Anulada Fecha:" . $data->anulada;
+                }
+                $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
+                $prompvc = 0;
+                if($data->pvckg!=0){
+                    $prompvc = $data->pvcpesos / $data->pvckg;
+                }
+                $promcan = 0;
+                if($data->cankg!=0){
+                    $promcan = $data->canpesos / $data->cankg;
+                }
+                if($data->totalkilos>0){
+                    $aux_prom = $data->subtotal / $data->totalkilos;
+                }
+                if(empty($data->inidespacho)){
+                    $botoninidespacho = "<a id='initdespacho$i' name='initdespacho$i' class='btn btn-success btn-sm' onclick='inidespacho($data->id,$i)'>
+                                            <span id='glypcnbtnInitdespacho$i' class='glyphicon glyphicon-play' style='bottom: 0px;top: 2px;' class='tooltipsC'></span>
+                                        </a>";
+                }else{
+                    $botoninidespacho = "<a id='initdespacho$i' name='initdespacho$i' class='btn btn-warning btn-sm' onclick='findespacho($i)'>
+                                            <span id='glypcnbtnInitdespacho$i' class='glyphicon glyphicon-stop' style='bottom: 0px;top: 2px;' class='tooltipsC'></span>
+                                        </a>";
+                }
+                $aux_dbotonid = "";
+                if(empty($data->inidespacho)){
+                    $aux_dbotonid = "disabled";
+                }  
+                $respuesta['tabla2'] .= "
+                <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
+                    <td id='id$i' name='id$i'>$data->id</td>
+                    <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                    <td id='rut$i' name='rut$i'>$rut</td>
+                    <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                    <td id='oc_id$i' name='oc_id$i'><a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a></td>
+                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
+                    <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
+                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
+                    <td>
+                        <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                        </a>
+                    </td>
+                    <td id='visto$i' name='visto$i' style='text-align:left'>".date('d-m-Y', strtotime($data->visto)) ."</td>
+                    <td style='text-align:left'>".date('d-m-Y', strtotime($data->inidespacho)) ."</td>
+                    <td style='text-align:left'>".date('d-m-Y', strtotime($data->findespacho)) ."</td>
+                    <td style='text-align:left'>$data->guiasdespacho</td>
+                </tr>";
+                $aux_Tpvckg += $data->pvckg;
+                $aux_Tpvcpesos += $data->pvcpesos;
+                $aux_Tcankg += $data->cankg;
+                $aux_Tcanpesos += $data->canpesos;
+                $aux_totalKG += $data->totalkilos;
+                $aux_totalps += $data->subtotal;
+                $i++;
+    
+                //dd($data->contacto);
+            }
+
+            $aux_promGeneral = 0;
+            if($aux_totalKG>0){
+                $aux_promGeneral = $aux_totalps / $aux_totalKG;
+            }
+/*
+            $respuesta['tabla'] .= "
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='5' style='text-align:left'>TOTAL</th>
+                    <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>
+                    <th style='text-align:right'></th>
+                </tr>
+            </tfoot>
+
+            </table>";
+*/
+            $respuesta['tabla2'] .= "
+            </tbody>
             </table>";
 
             return $respuesta;
@@ -297,7 +393,7 @@ class DespachoTempNotaVentaController extends Controller
 }
 
 
-function consulta($request){
+function consulta($request,$band){
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -376,12 +472,17 @@ function consulta($request){
             case 4:
                 $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
                 break;
-        }
-        
+        }        
+    }
+    if($band==1){
+        $aux_tipoconsulta = " findespacho is null";
+    }else{
+        $aux_tipoconsulta = " !(findespacho is null)";
     }
 
+
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,inidespacho,
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,inidespacho,findespacho,guiasdespacho,
             sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
             sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
             sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
@@ -408,10 +509,11 @@ function consulta($request){
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
             and $aux_aprobstatus
-            and !(visto is null)
+            and !(visto is null) 
+            and $aux_tipoconsulta
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,inidespacho;";
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,inidespacho,findespacho,guiasdespacho;";
     //dd("$sql");
     $datas = DB::select($sql);
     return $datas;

@@ -817,6 +817,38 @@ class NotaVentaController extends Controller
                 $notaventa->inidespacho = NULL;                
             }
             if ($notaventa->save()) {
+                return response()->json(['mensaje' => 'ok',
+                                         'inidespacho' => $notaventa->inidespacho
+                                         ]
+                                        );
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+
+    }
+
+    public function buscarguiadespacho(Request $request)
+    {
+        //dd($request);
+        if ($request->ajax()) {
+            $notaventa = NotaVenta::findOrFail($request->id);
+            return response()->json(['mensaje' => 'ok',
+                                         'guiasdespacho' => $notaventa->guiasdespacho
+                                        ]
+                                        );
+        }
+    }
+
+    public function actguiadespacho(Request $request)
+    {
+        //dd($request);
+        if ($request->ajax()) {
+            $notaventa = NotaVenta::findOrFail($request->id);
+            $notaventa->guiasdespacho = $request->guiasdespacho;
+            if ($notaventa->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -827,6 +859,29 @@ class NotaVentaController extends Controller
 
     }
 
+    public function findespacho(Request $request)
+    {
+        //dd($request);
+        if ($request->ajax()) {
+            $notaventa = NotaVenta::findOrFail($request->id);
+            if(empty($notaventa->findespacho)){
+                $notaventa->findespacho = date("Y-m-d H:i:s");
+            }else{
+                $notaventa->findespacho = NULL;                
+            }
+            if ($notaventa->save()) {
+                return response()->json(['mensaje' => 'ok',
+                                         'findespacho' => $notaventa->findespacho
+                                         ]
+                                        );
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+
+    }
 
 
 }

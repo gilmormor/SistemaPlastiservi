@@ -91,6 +91,16 @@
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-2">
+                    <label for="diamextmmM" class="control-label" data-toggle='tooltip'>Diametro</label>
+                    <input type="text" name="diamextmmM" id="diamextmmM" class="form-control" value="{{old('diamextmmM', $data->diamextmmM ?? '')}}" placeholder="Diametro" readonly Disabled/>
+                    <span class="help-block"></span>
+                </div>
+                <div class="col-xs-12 col-sm-2">
+                    <label for="longM" class="control-label" data-toggle='tooltip'>Largo</label>
+                    <input type="text" name="longM" id="longM" class="form-control" value="{{old('longM', $data->longM ?? '')}}" placeholder="Largo" readonly Disabled/>
+                    <span class="help-block"></span>
+                </div>
+                <div class="col-xs-12 col-sm-2">
                     <label for="cla_nombreM" class="control-label" data-toggle='tooltip'>Clase</label>
                     <input type="text" name="cla_nombreM" id="cla_nombreM" class="form-control" value="{{old('cla_nombreM', $data->cla_nombreM ?? '')}}" placeholder="Clase" readonly Disabled/>
                     <span class="help-block"></span>
@@ -101,23 +111,13 @@
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">
-                    <label for="diamextmmM" class="control-label" data-toggle='tooltip'>Diametro</label>
-                    <input type="text" name="diamextmmM" id="diamextmmM" class="form-control" value="{{old('diamextmmM', $data->diamextmmM ?? '')}}" placeholder="Diametro" readonly Disabled/>
+                    <label for="pesoM" class="control-label" data-toggle='tooltip'>Peso</label>
+                    <input type="text" name="pesoM" id="pesoM" class="form-control" value="{{old('pesoM', $data->pesoM ?? '')}}" placeholder="Peso" readonly Disabled/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">
                     <label for="espesorM" class="control-label" data-toggle='tooltip'>Espesor</label>
                     <input type="text" name="espesorM" id="espesorM" class="form-control" value="{{old('espesorM', $data->espesorM ?? '')}}" placeholder="Espesor" readonly Disabled/>
-                    <span class="help-block"></span>
-                </div>
-                <div class="col-xs-12 col-sm-2">
-                    <label for="longM" class="control-label" data-toggle='tooltip'>Largo</label>
-                    <input type="text" name="longM" id="longM" class="form-control" value="{{old('longM', $data->longM ?? '')}}" placeholder="Largo" readonly Disabled/>
-                    <span class="help-block"></span>
-                </div>
-                <div class="col-xs-12 col-sm-2">
-                    <label for="pesoM" class="control-label" data-toggle='tooltip'>Peso</label>
-                    <input type="text" name="pesoM" id="pesoM" class="form-control" value="{{old('pesoM', $data->pesoM ?? '')}}" placeholder="Peso" readonly Disabled/>
                     <span class="help-block"></span>
                 </div>
             </div>

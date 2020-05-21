@@ -15,7 +15,7 @@ Cotización
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Consultar Nota de Venta</h3>
+                <h3 class="box-title">Despacho</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
@@ -184,6 +184,8 @@ Cotización
                                 </div>
                             </div>
                             <div class="tab-pane" id="tab_2">
+                                <div class="table-responsive" id="tablaconsulta2">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -208,4 +210,34 @@ Cotización
 @include('generales.buscarcliente')
 @include('generales.modalpdf')
 @include('generales.verpdf')
+
+<div class="modal fade" id="myModalguiadespacho" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" id="mdialTamanio">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title" id="titulomodal" name="titulomodal">Guias Despacho</h3>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="notaventa_idhide" id="notaventa_idhide" value="">
+                <div class="row">
+                    <div class="form-group col-xs-12 col-sm-12" classorig="form-group col-xs-12 col-sm-12">
+                        <label for="guiasdespacho" class="control-label">Guias</label>
+                        <textarea name="guiasdespacho" id="guiasdespacho" class="form-control requeridos" tipoval="texto" value="" placeholder="Guias Despacho"></textarea>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" id="guardarGD" name="guardarGD" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
 @endsection
