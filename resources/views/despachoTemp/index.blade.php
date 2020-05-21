@@ -154,9 +154,9 @@ Cotización
                                 <div class="col-xs-12 col-sm-12">
                                     <div class="col-xs-12 col-md-8 col-sm-8 text-center">
                                         <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                                        <button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
+                                        <!--<button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
                                             <i class="fa fa-fw fa-file-pdf-o"></i>
-                                        </button>
+                                        </button>-->
                                     </div>
                                 </div>
                             </div>
@@ -175,8 +175,8 @@ Cotización
                   <!-- Custom Tabs -->
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
-                            <li class="active"><a href="#tab_1" data-toggle="tab">Inicio Despacho</a></li>
-                            <li><a href="#tab_2" data-toggle="tab">Fin Despacho</a></li>
+                            <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Inicio Despacho</a></li>
+                            <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Fin Despacho</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="tab_1">

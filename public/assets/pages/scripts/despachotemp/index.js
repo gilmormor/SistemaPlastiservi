@@ -18,6 +18,10 @@ $(document).ready(function () {
     {
         consultar(datos());
     });
+    $("#tab2").click(function()
+    {
+        consultar(datos());
+    });
 
     $("#btnpdf1").click(function()
     {
