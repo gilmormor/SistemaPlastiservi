@@ -866,8 +866,9 @@ class NotaVentaController extends Controller
             $notaventa = NotaVenta::findOrFail($request->id);
             if(empty($notaventa->findespacho)){
                 $notaventa->findespacho = date("Y-m-d H:i:s");
-            }else{
-                $notaventa->findespacho = NULL;                
+            }
+            if(empty($notaventa->guiasdespacho)){
+                return response()->json(['mensaje' => 'empty']);
             }
             if ($notaventa->save()) {
                 return response()->json(['mensaje' => 'ok',

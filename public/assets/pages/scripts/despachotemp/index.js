@@ -325,11 +325,23 @@ function ajaxRequest(data,url,funcion) {
                     $("#fila" + i).fadeOut(2000);
                     Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', "success");                    
 				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
+                    if(respuesta.mensaje == "empty"){
+                        swal({
+                            title: 'Registro no fue procesado',
+                            text: "El campo Guia de despacho esta Vacio.",
+                            icon: 'error',
+                            buttons: {
+                                cancel: "Salir"
+                            },
+                        }).then((value) => {
+                        });
+                    }else{
+                        if (respuesta.mensaje == "sp"){
+                            Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                        }else{
+                            Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                        }    
+                    }
 				}
             }
 

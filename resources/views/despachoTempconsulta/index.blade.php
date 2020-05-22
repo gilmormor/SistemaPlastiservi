@@ -6,7 +6,7 @@ Cotización
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/despachotemp/index.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/despachotempconsulta/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -172,74 +172,20 @@ Cotización
 				</div>
 			</div>
 
-            <div class="row">
-                <div class="col-md-12">
-                  <!-- Custom Tabs -->
-                    <div class="nav-tabs-custom">
-                        <ul class="nav nav-tabs">
-                            <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Inicio Despacho</a></li>
-                            <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Fin Despacho</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="tab_1">
-                                <div class="table-responsive" id="tablaconsulta">
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tab_2">
-                                <div class="table-responsive" id="tablaconsulta2">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            
-            <!--
             <div class="container">
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="table-responsive" id="tablaconsulta">
+                        <div class="row" id="tablaconsulta">
                         </div>			
                     </div>
                 </div>
             </div>
-            -->
+
         </div>
     </div>
 </div>
 @include('generales.buscarcliente')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-
-<div class="modal fade" id="myModalguiadespacho" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" id="mdialTamanio">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h3 class="modal-title" id="titulomodal" name="titulomodal">Guias Despacho</h3>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" name="notaventa_idhide" id="notaventa_idhide" value="">
-                <div class="row">
-                    <div class="form-group col-xs-12 col-sm-12" classorig="form-group col-xs-12 col-sm-12">
-                        <label for="guiasdespacho" class="control-label">Guias</label>
-                        <textarea name="guiasdespacho" id="guiasdespacho" class="form-control requeridos" tipoval="texto" value="" placeholder="Guias Despacho"></textarea>
-                        <span class="help-block"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <button type="button" id="guardarGD" name="guardarGD" class="btn btn-primary">Guardar</button>
-            </div>
-        </div>
-        
-    </div>
-</div>
 
 @endsection
