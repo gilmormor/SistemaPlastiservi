@@ -32,6 +32,7 @@ class ValidarPersona extends FormRequest
             'ext' => 'required|max:10',
             'email' => 'required|max:100|email|unique:persona,email,' . $this->route('id'),
             'cargo_id' => 'required|max:20',
+            'activo' => 'required|max:1',
             //'usuario_id' => 'max:20|unique:persona,usuario_id,' . $this->route('id'),
         ];
     }

@@ -11,6 +11,7 @@ class Jefatura extends Model
     protected $table = "jefatura";
     protected $fillable = ['nombre','descripcion'];
 
+    //RELACION MUCHOS A MUCHOS A TRAVES DE jefatura_sucursal_area
     public function sucursalAreas()
     {
         return $this->belongsToMany(SucursalArea::class, 'jefatura_sucursal_area');

@@ -20,8 +20,10 @@ class Persona extends Model
         'ext',
         'email',
         'cargo_id',
-        'usuario_id'
+        'usuario_id',
+        'activo'
     ];
+    //RELACION DE MUCHOS A MUCHOS TABLA INTERMEDIA jefatura_sucursal_area_persona ENTRE JefaturaSucursalArea Y persona
     public function jefaturasucursalareas()
     {
         return $this->belongsToMany(JefaturaSucursalArea::class, 'jefatura_sucursal_area_persona','persona_id');
@@ -46,5 +48,11 @@ class Persona extends Model
     {
         return $this->belongsTo(Usuario::class);
     }
+    //RELACION DE UNO A MUCHOS jefaturasucursalareas
+    public function jefaturasucursalarea()
+    {
+        return $this->hasMany(JefaturaSucursalArea::class);
+    }
+    
     
 }

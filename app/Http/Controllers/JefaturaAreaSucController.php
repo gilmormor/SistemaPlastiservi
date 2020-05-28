@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Area;
+use App\Models\ClienteVendedor;
 use App\Models\Jefatura;
 use App\Models\JefaturaSucursalArea;
+use App\Models\Persona;
+use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\SucursalArea;
 use Illuminate\Http\Request;
@@ -79,7 +82,27 @@ class JefaturaAreaSucController extends Controller
         $jefaturas = Jefatura::orderBy('id')->pluck('nombre', 'id')->toArray();
         //dd($jefaturas);
         //dd($sucursales);
-        return view('jefaturaAreaSuc.editar',compact('sucursales','jefaturas'));
+        $jefaturasucursalareas = JefaturaSucursalArea::where('sucursal_area_id', '=', $id)->get();
+        //dd($jefaturasucursalareas);
+        $user = Usuario::findOrFail(auth()->id());
+        $personas = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->select([
+                'persona.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
+        $personas = Persona::orderBy('id')
+                    ->where('activo', '=', 1)
+                    ->get();
+        //dd($personas);
+        return view('jefaturaAreaSuc.editar',compact('sucursales','jefaturas','jefaturasucursalareas','personas'));
 
     }
 
@@ -141,4 +164,33 @@ class JefaturaAreaSucController extends Controller
             return response()->json($areasArray);
         }
     }
+
+    public function asignarjefe(Request $request)
+    {
+        //dd($request->aux_vectorJ[0][1]);
+        if ($request->ajax()) {
+            $respuesta = ['mensaje' => 'ng'];
+            for ( $i = 0; $i < $request->cont; $i++ ){
+                $id = $request->aux_vectorJ[$i][0];
+                $persona_id = $request->aux_vectorJ[$i][1];
+                if(!is_null($persona_id)){
+                    $jefaturasucursalarea = JefaturaSucursalArea::findOrFail($id);
+                    $jefaturasucursalarea->persona_id = $persona_id;
+                    if ($jefaturasucursalarea->save()) {
+                        $respuesta = ['mensaje' => 'ok'];
+                    } else {
+                        $respuesta = ['mensaje' => 'ng'];
+                        return response()->json(['mensaje' => 'ng']);
+                    }    
+                }
+    
+            }
+            return response()->json($respuesta);
+    
+        } else {
+            abort(404);
+        }
+    }
+
+
 }

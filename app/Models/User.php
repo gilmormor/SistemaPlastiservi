@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\NoConformidad;
 use App\Models\Persona;
 use App\Models\Sucursal;
 use Illuminate\Notifications\Notifiable;
@@ -52,5 +53,11 @@ class User extends Authenticatable
     public function sucursales()
     {
         return $this->belongsToMany(Sucursal::class, 'sucursal_usuario');
+    }
+
+    //RELACION DE UNO A MUCHOS noconformidad
+    public function noconformidad()
+    {
+        return $this->hasMany(NoConformidad::class);
     }
 }

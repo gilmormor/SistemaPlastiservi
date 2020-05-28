@@ -184,7 +184,7 @@ class DespachoTempNotaVentaController extends Controller
                     <td id='visto$i' name='visto$i' style='text-align:left'>".date('d-m-Y', strtotime($data->visto)) ."</td>
                     <td style='text-align:center'>
                         $botoninidespacho | 
-						<a id='guiadespacho$i' name='guiadespacho$i' class='btn btn-primary btn-sm $aux_dbotonid guiadespacho' onclick='guiadespacho($data->id,$i)'data-toggle='tooltip'><span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span></a>
+						<a id='guiadespacho$i' name='guiadespacho$i' class='btn btn-primary btn-sm $aux_dbotonid guiadespacho' onclick='guiadespacho($data->id,$i)' data-toggle='tooltip'><span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span></a>
                     </td>
                 </tr>";
                 $aux_Tpvckg += $data->pvckg;

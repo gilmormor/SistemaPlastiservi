@@ -90,3 +90,21 @@
         </select>
     </div>
 </div>
+<div class="form-group">
+    <label for="activo" class="col-lg-3 control-label requerido">Activo</label>
+    <div class="col-lg-8">
+        <select name="activo" id="activo" class="select2 form-control activo"  data-live-search='true' required>
+            <option value="">Seleccione...</option>
+            <option value="1"
+                @if (($aux_sta==2) and ($data->activo=="1"))
+                    {{'selected'}}
+                @endif
+            >Si</option>
+            <option value="0"
+                @if (($aux_sta==2) and ($data->activo=="0"))
+                    {{'selected'}}
+                @endif            
+            >No</option>
+        </select>
+    </div>
+</div>

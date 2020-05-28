@@ -3,6 +3,7 @@
 namespace App\Models\Seguridad;
 
 use App\Models\Admin\Rol;
+use App\Models\NoConformidad;
 use App\Models\Persona;
 use App\Models\Sucursal;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -79,5 +80,11 @@ class Usuario extends Authenticatable
     public function persona()
     {
         return $this->hasOne(Persona::class);
+    }
+
+    //RELACION DE UNO A MUCHOS noconformidad
+    public function noconformidad()
+    {
+        return $this->hasMany(NoConformidad::class);
     }
 }
