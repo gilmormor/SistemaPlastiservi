@@ -25,8 +25,8 @@ class JefaturaAreaSucController extends Controller
         //return view('jefaturaAreaSuc.index', compact('datas'));
         //$sucursales = Sucursal::with('areas')->orderBy('id')->get(); //->pluck('nombre', 'id')->toArray();
         //$jefaturas = Jefatura::orderBy('id')->get();
-        $sucursales  = SucursalArea::join('Sucursal','Sucursal_area.Sucursal_id','=','Sucursal.id')
-                                    ->join('Area','Sucursal_area.area_id','=','Area.id')
+        $sucursales  = SucursalArea::join('sucursal','sucursal_area.sucursal_id','=','sucursal.id')
+                                    ->join('srea','sucursal_area.area_id','=','area.id')
                                     ->select(['sucursal_area.id as id','sucursal.nombre as suc_nombre','area.nombre as are_nombre'])
                                     ->get();
         //dd($sucursales);
