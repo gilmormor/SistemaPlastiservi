@@ -134,7 +134,7 @@ class JefaturaAreaSucController extends Controller
     public function ObtAreas1()
     {
         $areas  = SucursalArea::where('sucursal_id',2)
-                                  ->join('Area','sucursal_area.area_id','=','Area.id')
+                                  ->join('area','sucursal_area.area_id','=','area.id')
                                   ->get();
         $sucursales = SucursalArea::with('SucursalArea:id,area_id,sucursal_id')->where('sucursal_id',2)->get();
         //dd($sucursales);
@@ -146,7 +146,7 @@ class JefaturaAreaSucController extends Controller
             //$areas = Area::where('id', 1)->get();  //$request->area_id
             
             $areas  = SucursalArea::where('sucursal_id',$request->sucursal_id)
-                                  ->join('Area','sucursal_area.area_id','=','Area.id')
+                                  ->join('area','sucursal_area.area_id','=','area.id')
                                   ->select(['sucursal_area.id as id','area.nombre as nombre'])
                                   ->get();
             
