@@ -75,8 +75,8 @@ class JefaturaAreaSucController extends Controller
     {
         //findOrFail($id)
         $sucursales = SucursalArea::where('sucursal_area.id', '=', $id)
-                                    ->join('Sucursal','Sucursal_area.Sucursal_id','=','Sucursal.id')
-                                    ->join('Area','Sucursal_area.area_id','=','Area.id')
+                                    ->join('sucursal','sucursal_area.sucursal_id','=','sucursal.id')
+                                    ->join('area','sucursal_area.area_id','=','area.id')
                                     ->select(['sucursal_area.id as id','sucursal.nombre as suc_nombre','area.nombre as are_nombre'])
                                     ->get();
         $jefaturas = Jefatura::orderBy('id')->pluck('nombre', 'id')->toArray();
