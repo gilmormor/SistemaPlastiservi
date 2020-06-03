@@ -23,5 +23,6 @@ class VerifyCsrfToken extends Middleware
         'cotizacion/eliminarCotizacionDetalle/*', //Pasa por alto token de eliminar detalle Cotizacion
         'noconformidad/*', //Pasa por alto token de eliminar detalle No Conformidad
         'eliminarfotonc/*', //Pasa por alto token de eliminar detalle No Conformidad
+        'jefaturaAreaSuc/asignarjefe/*',
     ];
 }
