@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ValidarSucursal extends FormRequest
+class ValidarJefatura extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,9 @@ class ValidarSucursal extends FormRequest
     public function rules()
     {
         return [
-            'nombre' => 'required|max:100|unique:sucursal,nombre,' . $this->route('id'),
-            'abrev' => 'required|max:5|unique:sucursal,abrev,' . $this->route('id'),
-            'direccion' => 'required|max:250',
-            'telefono1' => 'required|max:14',
-            'telefono2' => 'max:14',
-            'telefono3' => 'max:14',
-            'email' => 'required|max:50',
+            'nombre' => 'required|max:255|unique:jefatura,nombre,' . $this->route('id'),
+            'descripcion' => 'required|max:255',
+            'abrev' => 'required|max:5|unique:jefatura,abrev,' . $this->route('id')
         ];
     }
 }

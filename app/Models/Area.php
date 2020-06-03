@@ -9,5 +9,16 @@ class Area extends Model
 {
     use SoftDeletes;
     protected $table = "area";
-    protected $fillable = ['nombre','descripcion','usuariodel_id'];
+    protected $fillable = [
+                            'nombre',
+                            'abrev',
+                            'descripcion',
+                            'usuariodel_id'
+                        ];
+                        
+    //RELACION DE UNO A MUCHOS sucursal_area
+    public function sucursalareas()
+    {
+        return $this->hasMany(SucursalArea::class);
+    }
 }

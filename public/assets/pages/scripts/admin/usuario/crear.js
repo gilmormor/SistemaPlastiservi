@@ -29,6 +29,7 @@ $(document).ready(function () {
         showClose: false,
         initialPreviewAsData: true,
         dropZoneEnabled: false,
+        maxFileCount: 5,
         theme: "fa",
     });
 });

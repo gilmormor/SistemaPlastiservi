@@ -10,7 +10,19 @@ class Sucursal extends Model
 {
     use SoftDeletes;
     protected $table = "sucursal";
-    protected $fillable = ['nombre','region_id','provincia_id','comuna_id','direccion','telefono1','telefono2','telefono3','email','usuariodel_id'];
+    protected $fillable = [
+            'nombre',
+            'abrev',
+            'region_id',
+            'provincia_id',
+            'comuna_id',
+            'direccion',
+            'telefono1',
+            'telefono2',
+            'telefono3',
+            'email',
+            'usuariodel_id'
+        ];
 
     public function empresa()
     {

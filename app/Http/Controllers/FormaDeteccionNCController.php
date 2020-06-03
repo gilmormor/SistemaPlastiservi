@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ValidarJefatura;
-use App\Models\Jefatura;
+use App\Http\Requests\ValidarFormaDeteccionNC;
+use App\Models\FormaDeteccionNC;
 use Illuminate\Http\Request;
 
-class JefaturaController extends Controller
+class FormaDeteccionNCController extends Controller
 {
-    /**
+        /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        can('listar-jefatura');
-        $datas = Jefatura::orderBy('id')->get();
-        return view('jefatura.index', compact('datas'));
+        can('listar-forma-deteccion-nc');
+        $datas = FormaDeteccionNC::orderBy('id')->get();
+        return view('formadeteccionnc.index', compact('datas'));
     }
 
     /**
@@ -27,8 +27,8 @@ class JefaturaController extends Controller
      */
     public function crear()
     {
-        can('crear-jefatura');
-        return view('jefatura.crear');
+        can('crear-forma-deteccion-nc');
+        return view('formadeteccionnc.crear');
     }
 
     /**
@@ -37,12 +37,11 @@ class JefaturaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function guardar(ValidarJefatura $request)
+    public function guardar(ValidarFormaDeteccionNC $request)
     {
-        //dd($request);
-        can('guardar-jefatura');
-        Jefatura::create($request->all());
-        return redirect('jefatura')->with('mensaje','Jefatura creado con éxito');
+        can('guardar-forma-deteccion-nc');
+        FormaDeteccionNC::create($request->all());
+        return redirect('formadeteccionnc')->with('mensaje','Creado con exito.');
     }
 
     /**
@@ -64,9 +63,9 @@ class JefaturaController extends Controller
      */
     public function editar($id)
     {
-        can('editar-jefatura');
-        $data = Jefatura::findOrFail($id);
-        return view('jefatura.editar', compact('data'));
+        can('editar-forma-deteccion-nc');
+        $data = FormaDeteccionNC::findOrFail($id);
+        return view('formadeteccionnc.editar', compact('data'));
     }
 
     /**
@@ -76,10 +75,10 @@ class JefaturaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function actualizar(ValidarJefatura $request, $id)
+    public function actualizar(ValidarFormaDeteccionNC $request, $id)
     {
-        Jefatura::findOrFail($id)->update($request->all());
-        return redirect('jefatura')->with('mensaje','Jefatura actualizado con éxito');
+        FormaDeteccionNC::findOrFail($id)->update($request->all());
+        return redirect('formadeteccionnc')->with('mensaje','MActualizado con exito.');
     }
 
     /**
@@ -90,9 +89,8 @@ class JefaturaController extends Controller
      */
     public function eliminar(Request $request, $id)
     {
-        can('eliminar-jefatura');
         if ($request->ajax()) {
-            if (Jefatura::destroy($id)) {
+            if (FormaDeteccionNC::destroy($id)) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -100,6 +98,5 @@ class JefaturaController extends Controller
         } else {
             abort(404);
         }
-
     }
 }

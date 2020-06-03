@@ -382,3 +382,32 @@ Route::get('despachotempnotaventa', 'DespachoTempNotaVentaController@index')->na
 Route::post('despachotempnotaventa/reporte', 'DespachoTempNotaVentaController@reporte')->name('despachotempnotaventa_reporte');
 Route::get('despachotempnotaventa/exportPdf', 'DespachoTempNotaVentaController@exportPdf')->name('exportPdf_despachotempnotaventa');
 Route::get('despachotempconsulta', 'DespachoTempNotaVentaController@despachotempconsulta')->name('despachotempconsulta');
+
+/*RUTAS NO CONFORMIDADES IMAGEN*/
+Route::get('noconformidadimagen', 'NoConformidadController@index')->name('noconformidadimagen');
+Route::post('noconformidadimagen/{id}', 'NoConformidadController@actualizar')->name('actualizar_noconformidadimagen');
+Route::post('eliminarfotoncimagen/{id}', 'NoConformidadController@eliminarfotonc')->name('eliminarfoto_noconformidadimagen');
+
+/*RUTAS Motivo No Conformidad */
+Route::get('motivonc', 'MotivoNCController@index')->name('motivonc');
+Route::get('motivonc/crear', 'MotivoNCController@crear')->name('crear_motivonc');
+Route::post('motivonc', 'MotivoNCController@guardar')->name('guardar_motivonc');
+Route::get('motivonc/{id}/editar', 'MotivoNCController@editar')->name('editar_motivonc');
+Route::put('motivonc/{id}', 'MotivoNCController@actualizar')->name('actualizar_motivonc');
+Route::delete('motivonc/{id}', 'MotivoNCController@eliminar')->name('eliminar_motivonc');
+
+/*RUTAS Forma deteccion No Conformidad */
+Route::get('formadeteccionnc', 'FormaDeteccionNCController@index')->name('formadeteccionnc');
+Route::get('formadeteccionnc/crear', 'FormaDeteccionNCController@crear')->name('crear_formadeteccionnc');
+Route::post('formadeteccionnc', 'FormaDeteccionNCController@guardar')->name('guardar_formadeteccionnc');
+Route::get('formadeteccionnc/{id}/editar', 'FormaDeteccionNCController@editar')->name('editar_formadeteccionnc');
+Route::put('formadeteccionnc/{id}', 'FormaDeteccionNCController@actualizar')->name('actualizar_formadeteccionnc');
+Route::delete('formadeteccionnc/{id}', 'FormaDeteccionNCController@eliminar')->name('eliminar_formadeteccionnc');
+
+/*RUTAS No Conformidad */
+Route::get('noconformidad', 'NoConformidadController@index')->name('noconformidad');
+Route::get('noconformidad/crear', 'NoConformidadController@crear')->name('crear_noconformidad');
+Route::post('noconformidad', 'NoConformidadController@guardar')->name('guardar_noconformidad');
+Route::get('noconformidad/{id}/editar', 'NoConformidadController@editar')->name('editar_noconformidad');
+Route::put('noconformidad/{id}', 'NoConformidadController@actualizar')->name('actualizar_noconformidad');
+Route::delete('noconformidad/{id}', 'NoConformidadController@eliminar')->name('eliminar_noconformidad');

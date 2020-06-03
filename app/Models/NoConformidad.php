@@ -24,9 +24,16 @@ class NoConformidad extends Model
         'fechaguardado',
         'cumplimiento',
         'fechacumplimiento',
-        'aprobado',
-        'fechaaprobado',
+        'aprobpaso2',
+        'fecaprobpaso2',
         'rechazonc_id',
+        'rechazoresmedtom_id',
+        'resmedtom',
+        'adjresmedtom',
+        'acepresmedtom',
+        'cierreaccorr',
+        'adjcierreaccorr',
+        'feccierreaccorr',
         'usuariodel_id'
     ];
 
@@ -59,21 +66,32 @@ class NoConformidad extends Model
         return $this->hasMany(RechazoNC::class);
     }
 
+    //RELACION INVERSA rechazoresmedtom PADRE
+    public function rechazoresmedtom()
+    {
+        return $this->belongsTo(RechazoResMedTom::class);
+    }
+    //RELACION DE UNO A MUCHOS rechazoresmedtom
+    public function rechazoresmedtoms()
+    {
+        return $this->hasMany(RechazoResMedTom::class);
+    }
+
     //RELACION MUCHOS A MUCHOS A TRAVES DE noconformidad_certificado
     public function certificados()
     {
-        return $this->belongsToMany(Certificado::class, 'noconformidad_certificado');
+        return $this->belongsToMany(Certificado::class, 'noconformidad_certificado','noconformidad_id');
     }
     
     //RELACION MUCHOS A MUCHOS A TRAVES DE noconformidad_jefsucarea
-    public function jefatura_sucursal_areas()
+    public function jefaturasucursalareas()
     {
-        return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_jefsucarea');
+        return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_jefsucarea','noconformidad_id');
     }
 
     //RELACION MUCHOS A MUCHOS A TRAVES DE noconformidad_responsable JEFE DE DPTO
-    public function jefatura_sucursal_area_responsables()
+    public function jefaturasucursalarearesponsables()
     {
-        return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_responsable');
+        return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_responsable','noconformidad_id');
     }
 }

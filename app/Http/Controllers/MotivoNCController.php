@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ValidarJefatura;
-use App\Models\Jefatura;
+use App\Http\Requests\ValidarMotivoNC;
+use App\Models\MotivoNc;
 use Illuminate\Http\Request;
 
-class JefaturaController extends Controller
+class MotivoNCController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +15,9 @@ class JefaturaController extends Controller
      */
     public function index()
     {
-        can('listar-jefatura');
-        $datas = Jefatura::orderBy('id')->get();
-        return view('jefatura.index', compact('datas'));
+        can('listar-motivonc');
+        $datas = MotivoNc::orderBy('id')->get();
+        return view('motivonc.index', compact('datas'));
     }
 
     /**
@@ -27,8 +27,8 @@ class JefaturaController extends Controller
      */
     public function crear()
     {
-        can('crear-jefatura');
-        return view('jefatura.crear');
+        can('crear-motivonc');
+        return view('motivonc.crear');
     }
 
     /**
@@ -37,12 +37,11 @@ class JefaturaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function guardar(ValidarJefatura $request)
+    public function guardar(ValidarMotivoNC $request)
     {
-        //dd($request);
-        can('guardar-jefatura');
-        Jefatura::create($request->all());
-        return redirect('jefatura')->with('mensaje','Jefatura creado con éxito');
+        can('guardar-motivonc');
+        MotivoNc::create($request->all());
+        return redirect('motivonc')->with('mensaje','Motivo no conformidad creado con exito');
     }
 
     /**
@@ -64,9 +63,9 @@ class JefaturaController extends Controller
      */
     public function editar($id)
     {
-        can('editar-jefatura');
-        $data = Jefatura::findOrFail($id);
-        return view('jefatura.editar', compact('data'));
+        can('editar-motivonc');
+        $data = MotivoNc::findOrFail($id);
+        return view('motivonc.editar', compact('data'));
     }
 
     /**
@@ -76,10 +75,10 @@ class JefaturaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function actualizar(ValidarJefatura $request, $id)
+    public function actualizar(ValidarMotivoNC $request, $id)
     {
-        Jefatura::findOrFail($id)->update($request->all());
-        return redirect('jefatura')->with('mensaje','Jefatura actualizado con éxito');
+        MotivoNc::findOrFail($id)->update($request->all());
+        return redirect('motivonc')->with('mensaje','Motivo no conformidad actualizado con exito');
     }
 
     /**
@@ -90,9 +89,8 @@ class JefaturaController extends Controller
      */
     public function eliminar(Request $request, $id)
     {
-        can('eliminar-jefatura');
         if ($request->ajax()) {
-            if (Jefatura::destroy($id)) {
+            if (MotivoNc::destroy($id)) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -100,6 +98,5 @@ class JefaturaController extends Controller
         } else {
             abort(404);
         }
-
     }
 }

@@ -5,15 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class RechazoNC extends Model
+class RechazoResMedTom extends Model
 {
     use SoftDeletes;
-    protected $table = "rechazonc";
+    protected $table = "rechazoresmedtom";
     protected $fillable = [
         'fecha',
-        'accioninmediata',
-        'analisiscausa',
-        'accioncorrectiva',
+        'descripcion',
         'noconformidad_id',
         'usuariodel_id'
     ];
@@ -29,5 +27,4 @@ class RechazoNC extends Model
     {
         return $this->belongsTo(NoConformidad::class);
     }
-
 }

@@ -21,5 +21,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'cliente/eliminarClienteDirec/*', //Pasa por alto token de eliminar direccion a clientes
         'cotizacion/eliminarCotizacionDetalle/*', //Pasa por alto token de eliminar detalle Cotizacion
+        'noconformidad/*', //Pasa por alto token de eliminar detalle No Conformidad
+        'eliminarfotonc/*', //Pasa por alto token de eliminar detalle No Conformidad
     ];
 }

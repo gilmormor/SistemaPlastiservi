@@ -9,7 +9,11 @@ class Jefatura extends Model
 {
     use SoftDeletes;
     protected $table = "jefatura";
-    protected $fillable = ['nombre','descripcion'];
+    protected $fillable = [
+                            'nombre',
+                            'abrev',
+                            'descripcion'
+                        ];
 
     //RELACION MUCHOS A MUCHOS A TRAVES DE jefatura_sucursal_area
     public function sucursalAreas()

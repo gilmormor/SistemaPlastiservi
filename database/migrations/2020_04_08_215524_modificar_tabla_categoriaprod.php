@@ -27,7 +27,11 @@ class ModificarTablaCategoriaprod extends Migration
     public function down()
     {
         Schema::table('categoriaprod', function (Blueprint $table) {
-            //
+            /*
+            Schema::disableForeignKeyConstraints();
+            $table->dropForeign(['fk_categoriaprod_unidadmedidafact']);
+            $table->dropColumn('unidadmedidafact_id');
+            */
         });
     }
 }

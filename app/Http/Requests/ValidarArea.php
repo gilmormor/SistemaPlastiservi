@@ -25,7 +25,8 @@ class ValidarArea extends FormRequest
     {
         return [
             'nombre' => 'required|max:100|unique:area,nombre,' . $this->route('id'),
-            'descripcion' => 'required|max:200' . $this->route('id'),
+            'abrev' => 'required|max:5|unique:area,abrev,' . $this->route('id'),
+            'descripcion' => 'required|max:200'
         ];
     }
 }
