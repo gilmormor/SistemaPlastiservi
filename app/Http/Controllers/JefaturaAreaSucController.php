@@ -165,7 +165,7 @@ class JefaturaAreaSucController extends Controller
         }
     }
 
-    public function asignarjefe(Request $request)
+    public function asignarjefej(Request $request)
     {
         //dd($request->aux_vectorJ[0][1]);
         if ($request->ajax()) {
@@ -190,6 +190,23 @@ class JefaturaAreaSucController extends Controller
         } else {
             abort(404);
         }
+    }
+
+    public function asignarjefe(Request $request)
+    {
+        //dd($request);
+        $cont_id = count($request->id);
+        if($cont_id>0){
+            for ($i=0; $i < $cont_id ; $i++){
+                if(is_null($request->personal_idD[$i])==false){
+                    $jefaturasucursalarea = JefaturaSucursalArea::findOrFail($request->id[$i]);
+                    $jefaturasucursalarea->persona_id = $request->personal_idD[$i];
+                    $jefaturasucursalarea->save();
+
+                }
+            }
+        }
+        return redirect('jefaturaAreaSuc')->with('mensaje','Se actualizó con exito.');
     }
 
 
