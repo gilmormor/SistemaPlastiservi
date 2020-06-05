@@ -710,13 +710,24 @@ class NotaVentaController extends Controller
         if ($request->ajax()) {
             $notaventa = NotaVenta::findOrFail($request->id);
             $notaventa->anulada = date("Y-m-d H:i:s");
-            $cotizacion = Cotizacion::findOrFail($notaventa->cotizacion_id);
-            $cotizacion->aprobstatus = 0;
-            if ($notaventa->save() and $cotizacion->save()) {
+            $sta_save = false;
+            if($notaventa->cotizacion_id>0){
+                $cotizacion = Cotizacion::findOrFail($notaventa->cotizacion_id);
+                $cotizacion->aprobstatus = 0;
+                if ($notaventa->save() and $cotizacion->save()) {
+                    $sta_save = true;
+                }
+            }else{
+                if ($notaventa->save()) {
+                    $sta_save = true;
+                }
+            }
+            if ($sta_save) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
-            }
+            }    
+
         } else {
             abort(404);
         }

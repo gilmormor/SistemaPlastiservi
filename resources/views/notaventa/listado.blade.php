@@ -123,6 +123,10 @@
 				<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($notaventa->plazoentrega))}}</span></td>
 			</tr>
 			<tr>
+				<td colspan="7" class="textleft" width="40%"><span><strong>Comuna: </strong></span></td>
+				<td class="textleft" width="50%"><span>{{$notaventa->comuna->nombre}}</span></td>
+			</tr>
+			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$notaventa->lugarentrega}}</span></td>
 			</tr>
