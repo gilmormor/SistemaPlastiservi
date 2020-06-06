@@ -39,7 +39,7 @@ Cotización
                                         <label for="dep_fecha">Fecha Fin:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" placeholder="DD/MM/AAAA" value="{{old('fechah', $fechaAct ?? '')}}" required readonly="">
                                     </div>
                                 </div>
                             </div>
@@ -123,6 +123,24 @@ Cotización
                                                     value="{{$tipoentrega->id}}"
                                                     >
                                                     {{$tipoentrega->nombre}}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Comunas: Puedes seleccionas mas de una comuna.">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Comunas:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="comunaentrega_id" id="comunaentrega_id" multiple class="selectpicker form-control comunaentrega_id" title='Todos...'  data-live-search='true'>
+                                            @foreach($comunas as $comuna)
+                                                <option
+                                                    value="{{$comuna->comunaentrega_id}}"
+                                                    >
+                                                    {{$comuna->comunaentrega->nombre}}
                                                 </option>
                                             @endforeach
                                         </select>

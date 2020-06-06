@@ -6,8 +6,10 @@ use App\Models\AreaProduccion;
 use App\Models\Cliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
+use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\NotaVenta;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
@@ -89,8 +91,14 @@ class DespachoTempNotaVentaController extends Controller
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
-
-        return view('despachoTemp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas'));
+        $comunas = NotaVenta::groupBy('comunaentrega_id')
+                ->whereNotNull('visto')
+                ->select([
+                    'comunaentrega_id'
+                    ])
+                ->get();
+        $fechaAct = date("d/m/Y");
+        return view('despachoTemp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
 
     }
 
@@ -114,9 +122,8 @@ class DespachoTempNotaVentaController extends Controller
                     <th>Razón Social</th>
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
-                    <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
-                    <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                    <th class='tooltipsC' title='Tipo de Entrega'>TE</th>
                     <th class='tooltipsC' title='Leido'>Leido</th>
                     <th class='tooltipsC' title='Acción' style='text-align:center'>Acción</th>
 				</tr>
@@ -174,12 +181,13 @@ class DespachoTempNotaVentaController extends Controller
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td id='oc_id$i' name='oc_id$i'><a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a></td>
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
-                    <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
-                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
+                    </td>
+                    <td>
+                        <i class='fa fa-fw $data->icono tooltipsC' title='$data->nombre'></i>
                     </td>
                     <td id='visto$i' name='visto$i' style='text-align:left'>".date('d-m-Y', strtotime($data->visto)) ."</td>
                     <td style='text-align:center'>
@@ -232,9 +240,8 @@ class DespachoTempNotaVentaController extends Controller
                     <th>Razón Social</th>
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
-                    <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
-                    <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                    <th class='tooltipsC' title='Tipo de Entrega'>TE</th>
                     <th class='tooltipsC' title='Leido'>Leido</th>
                     <th class='tooltipsC' title='Inicio'>Inicio</th>
                     <th class='tooltipsC' title='Fin'>Fin</th>
@@ -293,12 +300,13 @@ class DespachoTempNotaVentaController extends Controller
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td id='oc_id$i' name='oc_id$i'><a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a></td>
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
-                    <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
-                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
+                    </td>
+                    <td>
+                        <i class='fa fa-fw $data->icono tooltipsC' title='$data->nombre'></i>
                     </td>
                     <td id='visto$i' name='visto$i' style='text-align:left'>".date('d-m-Y', strtotime($data->visto)) ."</td>
                     <td style='text-align:left'>".date('d-m-Y', strtotime($data->inidespacho)) ."</td>
@@ -351,9 +359,8 @@ class DespachoTempNotaVentaController extends Controller
                     <th>Razón Social</th>
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
-                    <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
-                    <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                    <th class='tooltipsC' title='Tipo de Entrega'>TE</th>
                     <th class='tooltipsC' title='Leido'>Leido</th>
                     <th class='tooltipsC' title='Inicio despacho'>Inicio</th>
                     <th class='tooltipsC' title='Fin despacho'>Fin</th>
@@ -412,12 +419,13 @@ class DespachoTempNotaVentaController extends Controller
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td id='oc_id$i' name='oc_id$i'><a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a></td>
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
-                    <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
-                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
+                    </td>
+                    <td>
+                        <i class='fa fa-fw $data->icono tooltipsC' title='$data->nombre'></i>
                     </td>
                     <td id='visto$i' name='visto$i' style='text-align:left'>".date('d-m-Y', strtotime($data->visto)) ."</td>
                     <td style='text-align:left'>". (empty($data->inidespacho) ? "" : date('d-m-Y', strtotime($data->inidespacho))) ."</td>
@@ -578,8 +586,14 @@ class DespachoTempNotaVentaController extends Controller
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
-
-        return view('despachoTempconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas'));
+        $comunas = NotaVenta::groupBy('comunaentrega_id')
+                ->whereNotNull('visto')
+                ->select([
+                    'comunaentrega_id'
+                    ])
+                ->get();
+        $fechaAct = date("d/m/Y");
+        return view('despachoTempconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
 
     }
     
@@ -683,11 +697,17 @@ function consulta($request,$band){
         case 3:
             $aux_tipoconsulta = " true";
             break;
-    }  
-
+    }
+    $comunaentrega_id = implode ( ',' , json_decode($request->comunaentrega_id));
+    if(empty($comunaentrega_id )){
+        $comunacond = " true ";
+    }else{
+        $comunacond = " notaventa.comunaentrega_id in ($comunaentrega_id) ";
+    }
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,inidespacho,findespacho,guiasdespacho,
+            tipoentrega.nombre,tipoentrega.icono,
             sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
             sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
             sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
@@ -705,6 +725,8 @@ function consulta($request,$band){
             ON areaproduccion.id=categoriaprod.areaproduccion_id
             INNER JOIN cliente
             ON cliente.id=notaventa.cliente_id
+            INNER JOIN tipoentrega
+            ON tipoentrega.id=notaventa.tipoentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -716,9 +738,11 @@ function consulta($request,$band){
             and $aux_aprobstatus
             and !(visto is null) 
             and $aux_tipoconsulta
+            and $comunacond
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,inidespacho,findespacho,guiasdespacho;";
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,inidespacho,findespacho,guiasdespacho,
+            tipoentrega.nombre,tipoentrega.icono;";
     //dd("$sql");
     $datas = DB::select($sql);
     return $datas;

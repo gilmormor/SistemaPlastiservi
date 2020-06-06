@@ -88,8 +88,8 @@ class NotaVentaConsultaController extends Controller
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
-
-        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas'));
+        $fechaAct = date("d/m/Y");
+        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaAct'));
 
     }
 

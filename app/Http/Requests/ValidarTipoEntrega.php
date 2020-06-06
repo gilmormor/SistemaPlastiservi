@@ -24,7 +24,9 @@ class ValidarTipoEntrega extends FormRequest
     public function rules()
     {
         return [
-            'nombre' => 'required|max:100|unique:tipoentrega,nombre,' . $this->route('id')
+            'nombre' => 'required|max:100|unique:tipoentrega,nombre,' . $this->route('id'),
+            'abrev' => 'required|max:5|unique:tipoentrega,abrev,' . $this->route('id'),
+            'icono' => 'required|max:30|unique:tipoentrega,icono,' . $this->route('id'),
         ];
     }
 }

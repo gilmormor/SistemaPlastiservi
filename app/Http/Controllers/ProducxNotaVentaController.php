@@ -108,8 +108,8 @@ class ProducxNotaVentaController extends Controller
 
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
-
-        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions'));
+        $fechaAct = date("d/m/Y");
+        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaAct'));
     }
 
     

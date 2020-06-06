@@ -40,7 +40,7 @@ Cotización
                                         <label for="dep_fecha">Fecha Fin:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
-                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" placeholder="DD/MM/AAAA" value="{{old('fechah', $fechaAct ?? '')}}" required readonly="">
                                     </div>
                                 </div>
                             </div>

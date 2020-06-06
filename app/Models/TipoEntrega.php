@@ -9,7 +9,12 @@ class TipoEntrega extends Model
 {
     use SoftDeletes;
     protected $table = "tipoentrega";
-    protected $fillable = ['nombre','usuariodel_id'];
+    protected $fillable = [
+                    'nombre',
+                    'abrev',
+                    'icono',
+                    'usuariodel_id'
+                ];
 
     public function cotizacion()
     {

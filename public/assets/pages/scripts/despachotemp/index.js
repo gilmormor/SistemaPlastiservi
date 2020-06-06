@@ -69,6 +69,7 @@ function datos(){
         areaproduccion_id : $("#areaproduccion_id").val(),
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
+        comunaentrega_id  : JSON.stringify($("#comunaentrega_id").val()),
         _token            : $('input[name=_token]').val()
     };
     return data;
