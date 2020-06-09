@@ -88,10 +88,10 @@ class NoConformidadController extends Controller
             $formadeteccionncs = FormaDeteccionNC::orderBy('id')->pluck('descripcion', 'id')->toArray();
             $jefaturasucursalareas = JefaturaSucursalArea::orderBy('id')->get();
             $jefaturasucursalareasR = JefaturaSucursalArea::orderBy('id')
-                                    ->whereNotNull('updated_at')
+                                    ->whereNotNull('persona_id')
                                     ->get();
             $certificados = Certificado::orderBy('id')->get();
-            //dd($data->jefaturasucursalareas);
+            //dd($jefaturasucursalareasR);
             return view('noconformidad.editar',compact('data','motivoncs','formadeteccionncs','jefaturasucursalareas','jefaturasucursalareasR','certificados'));
         }else{
             return redirect('noconformidad')->with('mensaje','Registro creado por otro Usuario.'); 
