@@ -588,46 +588,64 @@ $("#rut").blur(function(){
 				success: function (respuesta) {
 					if(respuesta.length>0){
 						//alert(respuesta[0]['vendedor_id']);
-						$("#razonsocial").val(respuesta[0]['razonsocial']);
-						$("#telefono").val(respuesta[0]['telefono']);
-						$("#email").val(respuesta[0]['email']);
-						$("#direccion").val(respuesta[0]['direccion']);
-						$("#direccioncot").val(respuesta[0]['direccion']);
-						$("#cliente_id").val(respuesta[0]['id'])
-						$("#contacto").val(respuesta[0]['contactonombre']);
-						/*
-						$("#vendedor_id").val(respuesta[0]['vendedor_id']);
-						$("#vendedor_idD").val(respuesta[0]['vendedor_id']);
-						*/
-						$("#region_id").val(respuesta[0]['regionp_id']);
-						//alert($("#region_id").val());
-						$("#provincia_id").val(respuesta[0]['provinciap_id']);
-						$("#comuna_id").val(respuesta[0]['comunap_id']);
-						$("#comuna_idD").val(respuesta[0]['comunap_id']);
-						$("#giro_id").val(respuesta[0]['giro_id']);
-						$("#giro_idD").val(respuesta[0]['giro_id']);
-						$("#plazopago_id").val(respuesta[0]['plazopago_id']);
-						$("#plazopago_idD").val(respuesta[0]['plazopago_id']);
-						$("#formapago_id").val(respuesta[0]['formapago_id']);
-						$("#formapago_idD").val(respuesta[0]['formapago_id']);
-
-
-						$("#clientedirec_id option").remove();
-						if(respuesta[0]['direcciondetalle']!=null){
-							$("#clientedirec_id").prop("disabled",false);
-							$("#clientedirec_id").prop("readonly",false);	
-							$('#lblclientedirec_id').attr("class", 'requerido');
-							$('#clientedirec_id').attr("required", true);
-							$("#clientedirec_id").append("<option value=''>Seleccione...</option>")
-
-							for(var i=0;i<respuesta.length;i++){
-								//alert(respuesta[i]['direccion']);
-								$("#clientedirec_id").append("<option provincia_id='" + respuesta[i]['provincia_id'] + "' region_id='" + respuesta[i]['region_id'] + "' comuna_id='" + respuesta[i]['comuna_id'] + "' formapago_id='" + respuesta[i]['formapago_id'] + "' plazopago_id='" + respuesta[i]['plazopago_id'] + "' value='" + respuesta[i]['direc_id'] + "'>" + respuesta[i]['direcciondetalle'] + "</option>")
+						if(respuesta[0]['descripcion']==null){
+							$("#razonsocial").val(respuesta[0]['razonsocial']);
+							$("#telefono").val(respuesta[0]['telefono']);
+							$("#email").val(respuesta[0]['email']);
+							$("#direccion").val(respuesta[0]['direccion']);
+							$("#direccioncot").val(respuesta[0]['direccion']);
+							$("#cliente_id").val(respuesta[0]['id'])
+							$("#contacto").val(respuesta[0]['contactonombre']);
+							/*
+							$("#vendedor_id").val(respuesta[0]['vendedor_id']);
+							$("#vendedor_idD").val(respuesta[0]['vendedor_id']);
+							*/
+							$("#region_id").val(respuesta[0]['regionp_id']);
+							//alert($("#region_id").val());
+							$("#provincia_id").val(respuesta[0]['provinciap_id']);
+							$("#comuna_id").val(respuesta[0]['comunap_id']);
+							$("#comuna_idD").val(respuesta[0]['comunap_id']);
+							$("#giro_id").val(respuesta[0]['giro_id']);
+							$("#giro_idD").val(respuesta[0]['giro_id']);
+							$("#plazopago_id").val(respuesta[0]['plazopago_id']);
+							$("#plazopago_idD").val(respuesta[0]['plazopago_id']);
+							$("#formapago_id").val(respuesta[0]['formapago_id']);
+							$("#formapago_idD").val(respuesta[0]['formapago_id']);
+	
+	
+							$("#clientedirec_id option").remove();
+							if(respuesta[0]['direcciondetalle']!=null){
+								$("#clientedirec_id").prop("disabled",false);
+								$("#clientedirec_id").prop("readonly",false);	
+								$('#lblclientedirec_id').attr("class", 'requerido');
+								$('#clientedirec_id').attr("required", true);
+								$("#clientedirec_id").append("<option value=''>Seleccione...</option>")
+	
+								for(var i=0;i<respuesta.length;i++){
+									//alert(respuesta[i]['direccion']);
+									$("#clientedirec_id").append("<option provincia_id='" + respuesta[i]['provincia_id'] + "' region_id='" + respuesta[i]['region_id'] + "' comuna_id='" + respuesta[i]['comuna_id'] + "' formapago_id='" + respuesta[i]['formapago_id'] + "' plazopago_id='" + respuesta[i]['plazopago_id'] + "' value='" + respuesta[i]['direc_id'] + "'>" + respuesta[i]['direcciondetalle'] + "</option>")
+								}
 							}
+							activar_controles();
+	
+							$(".selectpicker").selectpicker('refresh');
+						}else{
+							swal({
+								title: 'Cliente Bloqueado.',
+								text: respuesta[0]['descripcion'],
+								icon: 'error',
+								buttons: {
+									confirm: "Aceptar"
+								},
+							}).then((value) => {
+								if (value) {
+									//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+									$("#rut").val('');
+									$("#rut").focus();
+								}
+							});
 						}
-						activar_controles();
 
-						$(".selectpicker").selectpicker('refresh');
 					}else{
 						swal({
 							title: 'Cliente no existe.',

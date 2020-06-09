@@ -175,6 +175,7 @@ Nota de Venta
                             <tr>
                                 <th class="width30">ID</th>
                                 <th>Razon Social</th>
+                                <th style="display:none;">B</th>
                                 <th class="width70">Total</th>
                             </tr>
                         </thead>
@@ -188,6 +189,9 @@ Nota de Venta
                                     </td>
                                     <td name="razonzocialBtd{{$aux_nfila}}" id="razonzocialBtd{{$aux_nfila}}">
                                         <a href="#" class="copiar_id" onclick="copiar_numcot({{$cotizacion->id}})"> {{$cotizacion->razonsocial}} </a>
+                                    </td>
+                                    <td style="display:none;">
+                                        <input type="text" name="descripbloqueo[]" id="descripbloqueo{{$aux_nfila}}" class="form-control" value="{{$cotizacion->descripbloqueo}}" style="display:none;"/>
                                     </td>
                                     <td name="totalBtd{{$aux_nfila}}" id="totalBtd{{$aux_nfila}}" style="text-align:right">
                                         {{number_format($cotizacion->total, 2, '.', ',')}}

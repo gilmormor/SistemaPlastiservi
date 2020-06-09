@@ -59,7 +59,7 @@ class NotaVentaController extends Controller
         }
 
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = 'SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs, 
+        $sql = 'SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,
                     (SELECT COUNT(*) 
                     FROM notaventadetalle 
                     WHERE notaventadetalle.notaventa_id=notaventa.id and 
@@ -75,13 +75,16 @@ class NotaVentaController extends Controller
         $datas = DB::select($sql);
 
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = 'SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total, 
+        $sql = 'SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
+                    clientebloqueado.descripcion as descripbloqueo,
                     (SELECT COUNT(*) 
                     FROM cotizaciondetalle 
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
                     cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador
                 FROM cotizacion inner join cliente
                 on cotizacion.cliente_id = cliente.id
+                LEFT join clientebloqueado
+                on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
                 where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3) and 
                 cotizacion.id not in (SELECT cotizacion_id from notaventa WHERE !(cotizacion_id is NULL) and (anulada is null))
                 and cotizacion.deleted_at is null;';

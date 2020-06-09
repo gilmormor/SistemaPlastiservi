@@ -338,6 +338,7 @@ class ClienteController extends Controller
     }
 
     public function buscarCli(Request $request){
+        //dd($request);
         if($request->ajax()){
             //dd($request);
             $user = Usuario::findOrFail(auth()->id());
@@ -345,9 +346,14 @@ class ClienteController extends Controller
             $clientedirecs = Cliente::where('rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
-                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                    ->leftjoin('clientebloqueado', function ($join) {
+                        $join->on('cliente.id', '=', 'clientebloqueado.cliente_id')
+                        ->whereNull('clientebloqueado.deleted_at');
+                    })
+                    ->whereNull('clientebloqueado.deleted_at')
                     ->select([
                                 'cliente.id',
+                                'cliente.rut',
                                 'cliente.razonsocial',
                                 'cliente.telefono',
                                 'cliente.email',
@@ -361,9 +367,10 @@ class ClienteController extends Controller
                                 'cliente.provinciap_id',
                                 'cliente.comunap_id',
                                 'clientedirec.id as direc_id',
-                                'clientedirec.direcciondetalle'
+                                'clientedirec.direcciondetalle',
+                                'clientebloqueado.descripcion'
                             ]);
-            //dd($clientedirecs->get());
+            //dd($clientedirecs->clientebloqueado->cliente_id);
             return response()->json($clientedirecs->get());
         }
     }
@@ -431,6 +438,38 @@ class ClienteController extends Controller
             $cliente = Cliente::findOrFail($clientegiro->cliente_id);
             $cliente->giro_id=$clientegiro->giro_id;
             $cliente->save();
+        }
+    }
+
+    public function buscarCliId(Request $request){
+        if($request->ajax()){
+            //dd($request);
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $clientedirecs = Cliente::where('cliente.id', $request->id)
+                    ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
+                    ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                    ->select([
+                                'cliente.id',
+                                'cliente.rut',
+                                'cliente.razonsocial',
+                                'cliente.telefono',
+                                'cliente.email',
+                                'cliente.direccion',
+                                'cliente.vendedor_id',
+                                'cliente.contactonombre',
+                                'cliente.formapago_id',
+                                'cliente.plazopago_id',
+                                'cliente.giro_id',
+                                'cliente.regionp_id',
+                                'cliente.provinciap_id',
+                                'cliente.comunap_id',
+                                'clientedirec.id as direc_id',
+                                'clientedirec.direcciondetalle'
+                            ]);
+            //dd($clientedirecs->get());
+            return response()->json($clientedirecs->get());
         }
     }
 

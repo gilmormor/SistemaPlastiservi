@@ -15,7 +15,7 @@ class ClienteBloqueado extends Model
     ];
 
     //RELACION INVERSA CLIENTE
-    public function ciente()
+    public function cliente()
     {
         return $this->belongsTo(Cliente::class);
     }

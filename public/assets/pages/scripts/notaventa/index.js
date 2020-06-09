@@ -202,7 +202,26 @@ $("#cotizacion_idM").blur(function(){
 			data: data,
 			success: function (respuesta) {
 				if(respuesta.length>0){
-					$("#razonsocialM").val(respuesta[0]['razonsocial']);
+					if(respuesta[0]['descripbloqueo']==null){
+						$("#razonsocialM").val(respuesta[0]['razonsocial']);
+					}else{
+						swal({
+							title: 'Cliente Bloqueado.',
+							text: respuesta[0]['descripbloqueo'],
+							icon: 'error',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+								$("#cotizacion_idM").val('');
+								$("#cotizacion_idM").focus();
+							}
+						});
+	
+					}
+					
 				}else{
 					$('#cotizacion_idM').val('');
 					$('#razonsocialM').val('');

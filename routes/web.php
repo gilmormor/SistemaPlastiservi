@@ -165,6 +165,7 @@ Route::put('cliente/{id}', 'ClienteController@actualizar')->name('actualizar_cli
 Route::delete('cliente/{id}', 'ClienteController@eliminar')->name('eliminar_cliente');
 Route::post('cliente/eliminarClienteDirec/{id}', 'ClienteController@eliminarClienteDirec')->name('eliminar_clienteDirec');
 Route::post('cliente/buscarCli', 'ClienteController@buscarCli')->name('buscarCli');
+Route::post('cliente/buscarCliID', 'ClienteController@buscarCliID')->name('buscarCliID');
 Route::post('cliente/buscarClisinsuc', 'ClienteController@buscarClisinsuc')->name('buscarClisinsuc');
 Route::post('cliente/guardarclientetemp', 'ClienteController@guardarclientetemp')->name('guardarclientetemp');
 //Ruta para actualizar el campo giro_id en la tabla clientes
@@ -412,3 +413,11 @@ Route::post('noconformidad', 'NoConformidadController@guardar')->name('guardar_n
 Route::get('noconformidad/{id}/editar', 'NoConformidadController@editar')->name('editar_noconformidad');
 Route::put('noconformidad/{id}', 'NoConformidadController@actualizar')->name('actualizar_noconformidad');
 Route::delete('noconformidad/{id}', 'NoConformidadController@eliminar')->name('eliminar_noconformidad');
+
+/*RUTAS Bloquear Cliente */
+Route::get('clientebloqueado', 'ClienteBloqueadoController@index')->name('clientebloqueado');
+Route::get('clientebloqueado/crear', 'ClienteBloqueadoController@crear')->name('crear_clientebloqueado');
+Route::post('clientebloqueado', 'ClienteBloqueadoController@guardar')->name('guardar_clientebloqueado');
+Route::get('clientebloqueado/{id}/editar', 'ClienteBloqueadoController@editar')->name('editar_clientebloqueado');
+Route::put('clientebloqueado/{id}', 'ClienteBloqueadoController@actualizar')->name('actualizar_clientebloqueado');
+Route::delete('clientebloqueado/{id}', 'ClienteBloqueadoController@eliminar')->name('eliminar_clientebloqueado');
