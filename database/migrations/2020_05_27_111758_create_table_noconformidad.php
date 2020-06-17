@@ -15,6 +15,7 @@ class CreateTableNoconformidad extends Migration
     {
         Schema::create('noconformidad', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->dateTime('fechahora')->comment('Fecha creacion.')->nullable();
             $table->unsignedBigInteger('usuario_id')->comment('Usuario quien creo el registro.');
             $table->foreign('usuario_id','fk_noconformidad_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('motivonc_id')->comment('Id Motivo no conformidad.');

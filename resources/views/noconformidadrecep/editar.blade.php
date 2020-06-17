@@ -27,12 +27,9 @@ No Conformidad
                     @include('noconformidad.form')
                 </div>
                 <!-- /.box-body -->
-                @if (empty($data->accioninmediata))
-                    <div class="box-footer text-center">
-                        @include('includes.boton-form-editar')
-                    </div>
-                @endif
-                    
+                <div class="box-footer text-center">
+                    @include('includes.boton-form-editar')
+                </div>
                 <!-- /.box-footer -->
             </form>
         </div>

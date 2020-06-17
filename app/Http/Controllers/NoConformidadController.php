@@ -55,6 +55,8 @@ class NoConformidadController extends Controller
         can('guardar-no-conformidad');
         //dd($request);
         $request->request->add(['usuario_id' => auth()->id()]);
+        $hoy = date("Y-m-d H:i:s");
+        $request->request->add(['fechahora' => $hoy]);
         $noconformidad = NoConformidad::create($request->all());
         $noconformidad->jefaturasucursalareas()->sync($request->jefatura_sucursal_area_id);
         $noconformidad->jefaturasucursalarearesponsables()->sync($request->jefatura_sucursal_areaR_id);

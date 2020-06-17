@@ -25,7 +25,8 @@ No Conformidad
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
-                            <th>Descripción</th>
+                            <th>Fecha</th>
+                            <th>Punto Normativo Hallazgo</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
@@ -33,6 +34,7 @@ No Conformidad
                         @foreach ($datas as $data)
                         <tr>
                             <td>{{$data->id}}</td>
+                            <td>{{$data->fechahora}}</td>
                             <td>{{$data->hallazgo}}</td>
                             <td>
                                 <a href="{{route('editar_noconformidad', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">

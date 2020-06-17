@@ -252,7 +252,12 @@ function validacion(campo,tipo)
 			} 
 		break 
 		default: 
-		
+			$("#glypcn"+campo).remove();
+			$('#'+campo).parent().attr("class", columnas+"");
+			$('#'+campo).parent().children('span').hide();
+			//$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
+			return true;				
+
 	}
 }
 

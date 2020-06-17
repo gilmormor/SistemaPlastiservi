@@ -1,9 +1,9 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-No Conformidad
+Crear No Conformidad
 @endsection
 
-@section('scripts')
+@section("scripts")
     <script src="{{asset("assets/pages/scripts/noconformidad/crear.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -14,28 +14,23 @@ No Conformidad
         @include('includes.mensaje')
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Editar No Conformidad</h3>
+                <h3 class="box-title">Crear No Conformidad</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('noconformidad')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>
             </div>
-            <form action="{{route('actualizar_noconformidad', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
-                @csrf @method("put")
+            <form action="{{route('guardar_noconformidad')}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
+                @csrf
                 <div class="box-body">
                     @include('noconformidad.form')
                 </div>
-                <!-- /.box-body -->
-                @if (empty($data->accioninmediata))
-                    <div class="box-footer text-center">
-                        @include('includes.boton-form-editar')
-                    </div>
-                @endif
-                    
-                <!-- /.box-footer -->
+                <div class="box-footer text-center">
+                    @include('includes.boton-form-crear')
+                </div>
             </form>
         </div>
     </div>
-</div>
+</div> 
 @endsection

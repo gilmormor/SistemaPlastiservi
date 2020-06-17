@@ -11,6 +11,7 @@ class NoConformidad extends Model
     use SoftDeletes;
     protected $table = "noconformidad";
     protected $fillable = [
+        'fechahora',
         'usuario_id',
         'motivonc_id',
         'puntonormativo',

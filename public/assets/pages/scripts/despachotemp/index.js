@@ -233,7 +233,6 @@ $("#guardarGD").click(function(event){
     id = $("#notaventa_idhide").val();
     var data = {
         id            : id,
-        i             : i,
         guiasdespacho : $("#guiasdespacho").val(),
         _token : $('input[name=_token]').val()
     };

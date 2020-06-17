@@ -421,3 +421,16 @@ Route::post('clientebloqueado', 'ClienteBloqueadoController@guardar')->name('gua
 Route::get('clientebloqueado/{id}/editar', 'ClienteBloqueadoController@editar')->name('editar_clientebloqueado');
 Route::put('clientebloqueado/{id}', 'ClienteBloqueadoController@actualizar')->name('actualizar_clientebloqueado');
 Route::delete('clientebloqueado/{id}', 'ClienteBloqueadoController@eliminar')->name('eliminar_clientebloqueado');
+
+/*RUTAS Recepcion No Conformidad */
+Route::get('noconformidadrecep', 'NoConformidadrecepController@index')->name('noconformidadrecep');
+Route::get('noconformidadrecep/crear', 'NoConformidadrecepController@crear')->name('crear_noconformidadrecep');
+Route::post('noconformidadrecep', 'NoConformidadrecepController@guardar')->name('guardar_noconformidadrecep');
+Route::get('noconformidadrecep/{id}/editar', 'NoConformidadrecepController@editar')->name('editar_noconformidadrecep');
+Route::put('noconformidadrecep/{id}', 'NoConformidadrecepController@actualizar')->name('actualizar_noconformidadrecep');
+Route::delete('noconformidadrecep/{id}', 'NoConformidadrecepController@eliminar')->name('eliminar_noconformidadrecep');
+
+Route::post('noconformidadrecep/buscar/{id}', 'NoConformidadrecepController@buscar')->name('buscar_noconformidadrecep');
+Route::post('noconformidadrecep/actai/{id}', 'NoConformidadrecepController@actai')->name('actai_noconformidadrecep');
+Route::post('noconformidadrecep/actacausa/{id}', 'NoConformidadrecepController@actacausa')->name('actacausa_noconformidadrecep');
+Route::post('noconformidadrecep/actacorr/{id}', 'NoConformidadrecepController@actacorr')->name('actacorr_noconformidadrecep');
