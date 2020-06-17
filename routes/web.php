@@ -430,7 +430,7 @@ Route::get('noconformidadrecep/{id}/editar', 'NoConformidadrecepController@edita
 Route::put('noconformidadrecep/{id}', 'NoConformidadrecepController@actualizar')->name('actualizar_noconformidadrecep');
 Route::delete('noconformidadrecep/{id}', 'NoConformidadrecepController@eliminar')->name('eliminar_noconformidadrecep');
 
-Route::post('noconformidadrecep/buscar/{id}', 'NoConformidadrecepController@buscar')->name('buscar_noconformidadrecep');
-Route::post('noconformidadrecep/actai/{id}', 'NoConformidadrecepController@actai')->name('actai_noconformidadrecep');
-Route::post('noconformidadrecep/actacausa/{id}', 'NoConformidadrecepController@actacausa')->name('actacausa_noconformidadrecep');
-Route::post('noconformidadrecep/actacorr/{id}', 'NoConformidadrecepController@actacorr')->name('actacorr_noconformidadrecep');
+Route::post('noconformidadrecep/buscar/{id}', 'NoConformidadRecepController@buscar')->name('buscar_noconformidadrecep');
+Route::post('noconformidadrecep/actai/{id}', 'NoConformidadRecepController@actai')->name('actai_noconformidadrecep');
+Route::post('noconformidadrecep/actacausa/{id}', 'NoConformidadRecepController@actacausa')->name('actacausa_noconformidadrecep');
+Route::post('noconformidadrecep/actacorr/{id}', 'NoConformidadRecepController@actacorr')->name('actacorr_noconformidadrecep');
