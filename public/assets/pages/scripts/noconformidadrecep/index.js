@@ -190,7 +190,7 @@ function ajaxRequest(data,url,funcion) {
                 inactAI();
                 inactAC();
                 inactACorr();
-                buscarpasos(data['id'],data['i'],respuesta.noconformidad);
+                buscarpasos(data['id'],data['i'],respuesta);
 
                 $("#myModalDatos").modal('show');
                 //$(".selectpicker").selectpicker('refresh');
@@ -198,7 +198,7 @@ function ajaxRequest(data,url,funcion) {
                 return 0;
             }
             if(funcion=='buscarpasos'){
-                validarpasos(respuesta.noconformidad);
+                validarpasos(respuesta);
                 return 0;
             }
             if(funcion=='guardarAI'){
@@ -291,7 +291,7 @@ function actACorr(){
     $("#linebodyacorr2").fadeIn(500);
 }
 function inactACorr(){
-    $("#accorrectxt").html('<a href="#">Acción correctiva</a>' + $("#accorrec").val());
+    $("#accorrectxt").html('<a href="#">Acción correctiva: </a>' + $("#accorrec").val());
     $("#accorrec").prop("readonly",true);
     $("#accorrec").fadeOut(500);
     $("#guardarACorr").fadeOut(500);
@@ -349,19 +349,15 @@ function actdatosACorr(fecha,accorrec){
 }
 
 function actdatosfechacompromiso(fecha,fechacompromiso){
-    alert(fecha.toLocaleDateString("es-ES", options));
+    //alert(fechacompromiso);
     $("#fechafechacompromiso").html(fecha.toLocaleDateString("es-ES", options));
-    $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
-    var day = fecha.getDate();
-    var month = fecha.getMonth();
-    var year = fecha.getFullYear();
-    alert(month);
-//    $("#fechacompromiso").val(fecha.toLocaleDateString());
-    $("#fechacompromiso").val(day + '/' + month + '/' + year);
+    //$("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
+    $("#fechacompromiso").val(fechacompromiso);
     //$(".fechacompromiso").fadeIn(500);
 }
 
-function validarpasos(noconformidad){
+function validarpasos(respuesta){
+    noconformidad=respuesta.noconformidad;
     if(noconformidad.accioninmediata==null || noconformidad.accioninmediata==""){
         $("#fechaai").html('.::.  <i class="fa fa-calendar"></i>  .::.');
         $("#horaai").html('<i class="fa fa-clock-o"></i> ');
@@ -395,7 +391,7 @@ function validarpasos(noconformidad){
                 }else{
                     inactACorr();
                     var fecha = new Date(noconformidad.fechacompromiso);
-                    actdatosfechacompromiso(fecha,noconformidad.fechacompromiso);
+                    actdatosfechacompromiso(fecha,respuesta.feccomp);
                 }
             }
         }                        
