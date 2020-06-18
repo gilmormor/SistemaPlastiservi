@@ -48,6 +48,12 @@ class NoConformidad extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    //RELACION INVERSA User PADRE usuario que modifico paso 2 
+    public function usermp2()
+    {
+        return $this->belongsTo(User::class,'usuario_idmp2');
+    }
     
     //RELACION INVERSA formadeteccionnc PADRE
     public function formadeteccionnc()
@@ -95,4 +101,7 @@ class NoConformidad extends Model
     {
         return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_responsable','noconformidad_id');
     }
+
+    
+    
 }

@@ -60,4 +60,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(NoConformidad::class);
     }
+
+    //RELACION DE UNO A MUCHOS noconformidad con usuario quien modifico el paso 2
+    public function noconformidad_mp2()
+    {
+        return $this->hasMany(NoConformidad::class,'usuario_idmp2');
+    }
+
 }

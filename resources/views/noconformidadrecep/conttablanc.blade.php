@@ -13,10 +13,12 @@
         }
     ?>
     <td>
-        <a id='accioninmediata{{$i}}' name='accioninmediata{{$i}}' class='btn {{$aux_btn}} btn-sm tooltipsC' title='Acción Inmediata' onclick='accioninmediata({{$data->id}},{{$i}})'>
+        @csrf @method("delete")
+        <a id='accioninmediata{{$i}}' name='accioninmediata{{$i}}' class='btn {{$aux_btn}} btn-sm tooltipsC' title='Acción Inmediata' onclick='paso2({{$data->id}},{{$i}})'>
             <span id='iconoai{{$i}}' name='iconoai{{$i}}' class='glyphicon {{$aux_icono}}' style='bottom: 0px;top: 2px;' class='tooltipsC'></span>
         </a>
     </td>
+    <!--
     <td>
         <a href="{{route('editar_noconformidad', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
             <i class="fa fa-fw fa-pencil"></i>
@@ -28,6 +30,7 @@
             </button>
         </form>
     </td>
+    -->
 </tr>
 <?php
     $i++;

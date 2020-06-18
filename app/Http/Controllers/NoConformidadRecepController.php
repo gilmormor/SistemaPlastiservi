@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarNoCAccionCorrectiva;
 use App\Http\Requests\ValidarNoCAccionInmediata;
 use App\Http\Requests\ValidarNoCAnalisisDeCausa;
+use App\Http\Requests\ValidarNoCFechaCompromiso;
 use App\Models\Certificado;
 use App\Models\FormaDeteccionNC;
 use App\Models\JefaturaSucursalArea;
@@ -41,12 +42,13 @@ class NoConformidadRecepController extends Controller
                 ->get();
         $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
         noconformidad.accioninmediata,
-        jefatura_sucursal_area.persona_id
+        jefatura_sucursal_area.persona_id,usuario_idmp2
         FROM noconformidad INNER JOIN noconformidad_responsable
         ON noconformidad.id=noconformidad_responsable.noconformidad_id
         INNER JOIN jefatura_sucursal_area
         ON noconformidad_responsable.jefatura_sucursal_area_id=jefatura_sucursal_area.id
-        ORDER BY noconformidad.id;";
+        WHERE jefatura_sucursal_area.persona_id=" . $usuario->persona->id .
+        " ORDER BY noconformidad.id;";
 
 /*
 WHERE jefatura_sucursal_area.persona_id=" .$usuario->persona->id .
@@ -58,14 +60,16 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
 
         $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
         noconformidad.accioninmediata,
-        jefatura_sucursal_area.persona_id
+        jefatura_sucursal_area.persona_id,usuario_idmp2
         FROM noconformidad INNER JOIN noconformidad_jefsucarea
         ON noconformidad.id=noconformidad_jefsucarea.noconformidad_id
         INNER JOIN jefatura_sucursal_area
         ON noconformidad_jefsucarea.jefatura_sucursal_area_id=jefatura_sucursal_area.id
-        ORDER BY noconformidad.id;";
+        WHERE jefatura_sucursal_area.persona_id=" . $usuario->persona->id .
+        " ORDER BY noconformidad.id;";
 
         $arearesps = DB::select($sql); //Area responsable
+        //dd($arearesps);
 
 
         $motivoncs = MotivoNc::orderBy('id')->pluck('descripcion', 'id')->toArray();
@@ -152,6 +156,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         //dd($request);
         if ($request->ajax()) {
             $noconformidad = NoConformidad::findOrFail($request->id);
+            
             //dd($noconformidad->jefaturasucursalareas->jefatura->get());
             $jefaturas = array();
             foreach ($noconformidad->jefaturasucursalareas as $jefatura) {
@@ -165,6 +170,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             foreach ($noconformidad->jefaturasucursalarearesponsables as $responsable) {
                 $responsables[] = $responsable->persona->nombre . " " .$responsable->persona->apellido;
             }
+            $feccomp = date("d/m/Y", strtotime( $noconformidad->fechacompromiso));
+            
             return response()->json([
                                         'mensaje' => 'ok',
                                         'noconformidad' => $noconformidad,
@@ -173,17 +180,18 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                                         'jefaturas' => $jefaturas,
                                         'certificados' => $certificados,
                                         'responsables' => $responsables,
+                                        'feccomp' => $feccomp
                                     ]);
         }
     }
 
     public function actai(ValidarNoCAccionInmediata $request)
     {
-        //dd($request);
         if ($request->ajax()) {
             $noconformidad = NoConformidad::findOrFail($request->id);
             $noconformidad->accioninmediata = $request->accioninmediata;
             $noconformidad->accioninmediatafec = date("Y-m-d H:i:s");
+            $noconformidad->usuario_idmp2 = auth()->id();
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
@@ -192,12 +200,10 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         } else {
             abort(404);
         }
-
     }
 
     public function actacausa(ValidarNoCAnalisisDeCausa $request)
     {
-        //dd($request);
         if ($request->ajax()) {
             $noconformidad = NoConformidad::findOrFail($request->id);
             $noconformidad->analisisdecausa = $request->analisisdecausa;
@@ -210,12 +216,10 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         } else {
             abort(404);
         }
-
     }
 
     public function actacorr(ValidarNoCAccionCorrectiva $request)
     {
-        //dd($request);
         if ($request->ajax()) {
             $noconformidad = NoConformidad::findOrFail($request->id);
             $noconformidad->accorrec = $request->accorrec;
@@ -228,6 +232,22 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         } else {
             abort(404);
         }
+    }
 
+    public function actfeccomp(ValidarNoCFechaCompromiso $request)
+    {
+        if ($request->ajax()) {
+            $noconformidad = NoConformidad::findOrFail($request->id);
+            $dateInput = explode('/',$request->fechacompromiso);
+            $request["fechacompromiso"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+            $noconformidad->fechacompromiso = $request->fechacompromiso;
+            if ($noconformidad->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
     }
 }

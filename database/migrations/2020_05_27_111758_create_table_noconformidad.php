@@ -29,7 +29,7 @@ class CreateTableNoconformidad extends Migration
             $table->string('analisisdecausa',250)->comment('Descripción Análisis de causa.')->nullable();
             $table->string('accorrec',250)->comment('Descripción Acción correctiva. Letra M')->nullable();
             $table->string('adjaccorrec',250)->comment('Archivos adjuntos Acción correctiva.')->nullable();
-            $table->date('fechacompromiso')->comment('Fecha de compromiso.')->nullable();
+            $table->dateTime('fechacompromiso')->comment('Fecha de compromiso.')->nullable();
             $table->dateTime('fechaguardado')->comment('Fecha hora en que se guarda o se envia.')->nullable();
             $table->integer('cumplimiento')->comment('1 = Cumplimiento, 0= Incumplimiento Esto lo hace el dueño de la noconformidad.')->nullable();
             $table->dateTime('fechacumplimiento')->comment('Fecha hora de cumplimiento.')->nullable();

@@ -1,8 +1,13 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
+    $('.datepicker').datepicker({
+		language: "es",
+		autoclose: true,
+		todayHighlight: true
+    }).datepicker("setDate");
 });
 
-function accioninmediata(id,i){
+function paso2(id,i){
     $(".input-sm").val('');
     $("#titulomodal").html("No Conformidad Id: " + id);
     $("#lbldatos").html("Acción Inmediata")
@@ -12,7 +17,7 @@ function accioninmediata(id,i){
         _token : $('input[name=_token]').val()
     };
     var ruta = '/noconformidadrecep/buscar/' + id;
-    ajaxRequest(data,ruta,'accioninmediata');
+    ajaxRequest(data,ruta,'paso2');
 }
 
 function buscarpasos(id,i,noconformidad){
@@ -33,9 +38,8 @@ function buscarpasos(id,i,noconformidad){
 $("#guardarAI").click(function(event)
 {
     event.preventDefault();
-	if(verificarAI())
+	if(verificar('accioninmediata','texto'))
 	{
-        //$("#myModalDatos").modal('hide');
         id = $("#idhide").val();
         var data = {
             id            : id,
@@ -43,32 +47,18 @@ $("#guardarAI").click(function(event)
             _token : $('input[name=_token]').val()
         };
         var ruta = '/noconformidadrecep/actai/' + id;
-
-        swal({
-			title: '¿ Está seguro que desea Guardar ?',
-			text: "Esta acción no se puede deshacer!",
-			icon: 'warning',
-			buttons: {
-				cancel: "Cancelar",
-				confirm: "Aceptar"
-			},
-		}).then((value) => {
-			if (value) {
-                ajaxRequest(data,ruta,'guardarAI');
-			}
-		});
-
+        funcion = 'guardarAI';
+        ejecutarAjax(data,ruta,funcion);
 	}else{
 		alertify.error("Falta incluir informacion");
 	}
 	
 });
 
-
 $("#guardarACausa").click(function(event)
 {
     event.preventDefault();
-	if(verificarACausa())
+	if(verificar('analisisdecausa','texto'))
 	{
         //$("#myModalDatos").modal('hide');
         id = $("#idhide").val();
@@ -78,21 +68,8 @@ $("#guardarACausa").click(function(event)
             _token : $('input[name=_token]').val()
         };
         var ruta = '/noconformidadrecep/actacausa/' + id;
-
-        swal({
-			title: '¿ Está seguro que desea Guardar ?',
-			text: "Esta acción no se puede deshacer!",
-			icon: 'warning',
-			buttons: {
-				cancel: "Cancelar",
-				confirm: "Aceptar"
-			},
-		}).then((value) => {
-			if (value) {
-                ajaxRequest(data,ruta,'guardarACausa');
-			}
-		});
-
+        funcion = 'guardarACausa';
+        ejecutarAjax(data,ruta,funcion);
 	}else{
 		alertify.error("Falta incluir informacion");
 	}
@@ -102,9 +79,8 @@ $("#guardarACausa").click(function(event)
 $("#guardarACorr").click(function(event)
 {
     event.preventDefault();
-	if(verificarACorr())
+	if(verificar('accorrec','texto'))
 	{
-        //$("#myModalDatos").modal('hide');
         id = $("#idhide").val();
         var data = {
             id            : id,
@@ -112,60 +88,60 @@ $("#guardarACorr").click(function(event)
             _token : $('input[name=_token]').val()
         };
         var ruta = '/noconformidadrecep/actacorr/' + id;
-
-        swal({
-			title: '¿ Está seguro que desea Guardar ?',
-			text: "Esta acción no se puede deshacer!",
-			icon: 'warning',
-			buttons: {
-				cancel: "Cancelar",
-				confirm: "Aceptar"
-			},
-		}).then((value) => {
-			if (value) {
-                ajaxRequest(data,ruta,'guardarACorr');
-			}
-		});
-
+        funcion = 'guardarACorr';
+        ejecutarAjax(data,ruta,funcion);
 	}else{
 		alertify.error("Falta incluir informacion");
 	}
 	
 });
 
+
+$("#guardarfechacompromiso").click(function(event)
+{
+    event.preventDefault();
+    if(verificar('fechacompromiso','texto'))
+	{
+        id = $("#idhide").val();
+        var data = {
+            id            : id,
+            fechacompromiso : $("#fechacompromiso").val(),
+            _token : $('input[name=_token]').val()
+        };
+        var ruta = '/noconformidadrecep/actfeccomp/' + id;
+        funcion = 'guardarfechacompromiso';
+        ejecutarAjax(data,ruta,funcion);
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+	
+});
+
+function ejecutarAjax(data,ruta,funcion){
+    swal({
+        title: '¿ Está seguro que desea Guardar ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequest(data,ruta,funcion);
+        }
+    });
+}
+
 $(".requeridos").keyup(function(){
 	//alert($(this).parent().attr('class'));
 	validacion($(this).prop('name'),$(this).attr('tipoval'));
 });
-function verificarAI()
+function verificar(nomcampo,tipo)
 {
 	var v1=0;
 	
-	v1=validacion('accioninmediata','texto');
-	if (v1===false)
-	{
-		return false;
-	}else{
-		return true;
-	}
-}
-
-function verificarACausa()
-{
-	var v1=0;
-	v1=validacion('analisisdecausa','texto');
-	if (v1===false)
-	{
-		return false;
-	}else{
-		return true;
-	}
-}
-
-function verificarACorr()
-{
-	var v1=0;
-	v1=validacion('accorrec','texto');
+	v1=validacion(nomcampo,tipo);
 	if (v1===false)
 	{
 		return false;
@@ -180,7 +156,7 @@ function ajaxRequest(data,url,funcion) {
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-            if(funcion=='accioninmediata'){
+            if(funcion=='paso2'){
                 $("#ihide").val(data['i']);
                 $("#idhide").val(data['id']);
                 //$("#motivonc_id").val(respuesta.motivonc);
@@ -219,53 +195,45 @@ function ajaxRequest(data,url,funcion) {
                 $("#myModalDatos").modal('show');
                 //$(".selectpicker").selectpicker('refresh');
                 validacion('accioninmediata','');
+                return 0;
             }
             if(funcion=='buscarpasos'){
                 validarpasos(respuesta.noconformidad);
+                return 0;
             }
             if(funcion=='guardarAI'){
 				if (respuesta.mensaje == "ok") {
-                    Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                     i = $("#ihide").val();
                     $('#accioninmediata' + i).attr("class","btn btn-warning btn-sm tooltipsC");
                     $('#iconoai' + i).attr("class","glyphicon glyphicon-ok");
                     buscarpasos(data['id'],data['i']);
-                    /*
-                    mostrarACausa();
-                    var fecha = new Date();
-                    actdatosai(fecha,$("#accioninmediata").val());*/
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
 				}
             }
             if(funcion=='guardarACausa'){
 				if (respuesta.mensaje == "ok") {
-                    Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                     buscarpasos(data['id'],data['i']);
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
 				}
             }
             if(funcion=='guardarACorr'){
 				if (respuesta.mensaje == "ok") {
-                    Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                     buscarpasos(data['id'],data['i']);
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
 				}
             }
+            if(funcion=='guardarfechacompromiso'){
+				if (respuesta.mensaje == "ok") {
+                    buscarpasos(data['id'],data['i']);
+				}
+            }
+            if (respuesta.mensaje == "ok") {
+                Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+            } else {
+                if (respuesta.mensaje == "sp"){
+                    Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                }else{
+                    Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                }
+            }
+
         },
 		error: function () {
 		}
@@ -274,9 +242,6 @@ function ajaxRequest(data,url,funcion) {
 
 function ocultarACausa(){
     $(".acausa").hide();
-}
-function mostrarACausa(){
-    $(".acausa").show();
 }
 
 function actAI(){
@@ -334,6 +299,25 @@ function inactACorr(){
     $("#linebodyacorr2").fadeOut(500);
 }
 
+
+function actfechacompromiso(){
+    $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>');
+    //$("#fechacompromiso").prop("readonly",false);
+    $("#fechacompromiso").fadeIn(500);
+    $("#guardarfechacompromiso").fadeIn(500);
+    $("#linebodyfechacompromiso1").fadeIn(500);
+    $("#linebodyfechacompromiso2").fadeIn(500);
+}
+function inactfechacompromiso(){
+    $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>' + $("#accorrec").val());
+    $("#fechacompromiso").prop("readonly",true);
+    $("#fechacompromiso").fadeOut(500);
+    $("#guardarfechacompromiso").fadeOut(500);
+    $("#linebodyfechacompromiso1").fadeOut(500);
+    $("#linebodyfechacompromiso2").fadeOut(500);
+}
+
+
 function ocultaracorrect(){
     $(".acorrect").hide();
     $("#accioninmediata").prop("readonly",false);
@@ -341,34 +325,8 @@ function ocultaracorrect(){
     $("#guardarAI").fadeIn(500);
     $(".linebodyai").fadeIn(500);
 }
-function mostraracorrect(){
-    $(".acorrect").show();
-    $("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
-    $("#accioninmediata").prop("readonly",true);
-    $("#accioninmediata").fadeOut(500);
-    $("#guardarAI").fadeOut(500);
-    $(".linebodyai").fadeOut(500);
-}
 
-
-function mostrarcDocAcorrect(){
-    $(".docacorrect").show();
-    $("#analisisdecausatxt").html('<a href="#">Acción Inmediata: </a>' + $("#analisisdecausa").val());
-    $("#analisisdecausa").prop("readonly",true);
-    $("#analisisdecausa").fadeOut(500);
-    $("#guardarACausa").fadeOut(500);
-    $(".linebodyac").fadeOut(500);
-}
-/*
-function ocultarAC(){
-    $(".acausa").hide();
-    $("#accioninmediata").prop("readonly",false);
-    $("#accioninmediata").fadeIn(500);
-    $("#guardarAI").fadeIn(500);
-    $(".linebodyai").fadeIn(500);
-}*/
-
-var options = { year: 'numeric', month: 'short', day: 'numeric' };
+var options = { year: 'numeric', month: 'short', day: 'numeric', literal: '/' };
 function actdatosai(fecha,accioninmediata){
     $("#fechaai").html(fecha.toLocaleDateString("es-ES", options));
     $("#horaai").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
@@ -387,7 +345,20 @@ function actdatosACorr(fecha,accorrec){
     $("#fechaacorr").html(fecha.toLocaleDateString("es-ES", options));
     $("#horaacorr").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
     $("#accorrec").val(accorrec);
-    //$(".acorrect").fadeIn(500);
+    $(".fechacompromiso").fadeIn(500);
+}
+
+function actdatosfechacompromiso(fecha,fechacompromiso){
+    alert(fecha.toLocaleDateString("es-ES", options));
+    $("#fechafechacompromiso").html(fecha.toLocaleDateString("es-ES", options));
+    $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
+    var day = fecha.getDate();
+    var month = fecha.getMonth();
+    var year = fecha.getFullYear();
+    alert(month);
+//    $("#fechacompromiso").val(fecha.toLocaleDateString());
+    $("#fechacompromiso").val(day + '/' + month + '/' + year);
+    //$(".fechacompromiso").fadeIn(500);
 }
 
 function validarpasos(noconformidad){
@@ -416,6 +387,16 @@ function validarpasos(noconformidad){
                 inactAC();
                 var fecha = new Date(noconformidad.accorrecfec);
                 actdatosACorr(fecha,noconformidad.accorrec);
+                actfechacompromiso();
+                if(noconformidad.fechacompromiso==null || noconformidad.fechacompromiso==""){
+                    $("#fechafechacompromiso").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                    $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ');
+                    actACorr();
+                }else{
+                    inactACorr();
+                    var fecha = new Date(noconformidad.fechacompromiso);
+                    actdatosfechacompromiso(fecha,noconformidad.fechacompromiso);
+                }
             }
         }                        
     }    

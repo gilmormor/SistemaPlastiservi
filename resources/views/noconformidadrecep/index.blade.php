@@ -27,8 +27,7 @@ Recepción No Conformidad
                             <th>Fecha</th>
                             <th>persona_id</th>
                             <th>Punto Normativo Hallazgo</th>
-                            <th class='tooltipsC' title='Acción Inmediata'>AI</th>
-                            <th class="width70"></th>
+                            <th class='tooltipsC' title='Editar'>Editar</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,23 +35,37 @@ Recepción No Conformidad
                             $i=0;
                         ?>
                         @foreach ($datas as $data)
-                            @if ($data->persona_id== $usuario_id AND (NOW()<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
+                            @if ((NOW()<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
                                 OR (!is_null($data->accioninmediata) and $data->accioninmediata!='')))
                                 <?php
                                     $recibido = "fa-mail-reply";
+                                    $aux_mostrar = false;
+                                    if(is_null($data->usuario_idmp2)){
+                                        $aux_mostrar = true;
+                                    }else{
+                                        if($data->usuario_idmp2==auth()->id()){
+                                            $aux_mostrar = true;
+                                        }
+                                    }
                                 ?>
-                                @include('noconformidadrecep.conttablanc')
+                                @if ($aux_mostrar)
+                                    @include('noconformidadrecep.conttablanc')    
+                                @endif
+                                
                             @endif
                         @endforeach
+                        <?php
+                            $recibido = "fa-mail-reply-all";
+                        ?>
 
                         @foreach ($arearesps as $data)
-                            @if ($data->persona_id== $usuario_id AND (NOW()>= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
+                            @if ((NOW()>= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
                                 AND (is_null($data->accioninmediata) or $data->accioninmediata=='')))
-                                <?php
-                                    $recibido = "fa-mail-reply-all";
-                                ?>
-                                
                                 @include('noconformidadrecep.conttablanc')
+                            @else
+                                @if ($data->usuario_idmp2==auth()->id())
+                                    @include('noconformidadrecep.conttablanc')
+                                @endif
                             @endif
                         @endforeach
 

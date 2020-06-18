@@ -242,6 +242,7 @@ class ClienteController extends Controller
         //dd($request);
         
         $cliente->vendedores()->sync($request->vendedor_id);
+        $cliente->sucursales()->sync($request->sucursalp_id);
         if(isset($request->direccion_id)){
             $auxDirCli=ClienteDirec::where('cliente_id',$id)->whereNotIn('id', $request->direccion_id)->pluck('id')->toArray(); //->destroy();
             for ($i=0; $i < count($auxDirCli) ; $i++){

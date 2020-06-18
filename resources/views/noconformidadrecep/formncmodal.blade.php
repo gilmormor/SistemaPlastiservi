@@ -128,6 +128,35 @@
                             <!-- END timeline item -->
                             <!-- timeline item -->
 
+                            <!-- timeline item -->
+                            <!-- timeline time label -->
+                            <li class="time-label fechacompromiso" style="display:none;">
+                                <span class="bg-purple" id="fechafechacompromiso" name="fechafechacompromiso">
+                                
+                                </span>
+                            </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                            <li class="fechacompromiso" style="display:none;">
+                                <i class="fa fa-edit bg-blue"></i>
+                
+                                <div class="timeline-item">
+                                <span class="time" id="horafechacompromiso" name="horafechacompromiso"></span>
+                
+                                <h3 class="timeline-header" name="fechacompromisotxt" id="fechacompromisotxt"><a href="#">Fecha de compromiso</a></h3>
+                
+                                <div class="timeline-body" id="linebodyfeccomp1">
+                                    <!--<textarea name="fechacompromiso" id="fechacompromiso" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>-->
+                                    <input type="text" bsDaterangepicker class="form-control datepicker requeridos" name="fechacompromiso" id="fechacompromiso" placeholder="DD/MM/AAAA" readonly>
+                                </div>
+                                <div class="timeline-footer" id="linebodyfeccomp2">
+                                    <a id="guardarfechacompromiso" name="guardarfechacompromiso" class="btn btn-primary btn-xs">Guardar</a>
+                                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                                </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline item -->
 
                             <!-- END timeline item -->
                             <!-- timeline time label -->
