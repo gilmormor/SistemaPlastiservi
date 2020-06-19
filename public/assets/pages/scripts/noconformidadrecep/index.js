@@ -190,6 +190,7 @@ function ajaxRequest(data,url,funcion) {
                 inactAI();
                 inactAC();
                 inactACorr();
+                inactfechacompromiso()
                 buscarpasos(data['id'],data['i'],respuesta);
 
                 $("#myModalDatos").modal('show');
@@ -299,7 +300,6 @@ function inactACorr(){
     $("#linebodyacorr2").fadeOut(500);
 }
 
-
 function actfechacompromiso(){
     $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>');
     //$("#fechacompromiso").prop("readonly",false);
@@ -349,6 +349,10 @@ function actdatosACorr(fecha,accorrec){
 }
 
 function actdatosfechacompromiso(fecha,fechacompromiso){
+    $("#fechafechacompromiso").html(fecha.toLocaleDateString("es-ES", options));
+    $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
+    $("#accorrec").val(fechacompromiso);
+
     //alert(fechacompromiso);
     $("#fechafechacompromiso").html(fecha.toLocaleDateString("es-ES", options));
     //$("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
@@ -390,7 +394,7 @@ function validarpasos(respuesta){
                     actACorr();
                 }else{
                     inactACorr();
-                    var fecha = new Date(noconformidad.fechacompromiso);
+                    var fecha = new Date(noconformidad.fechacompromisofec);
                     actdatosfechacompromiso(fecha,respuesta.feccomp);
                 }
             }

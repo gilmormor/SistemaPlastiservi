@@ -241,6 +241,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $dateInput = explode('/',$request->fechacompromiso);
             $request["fechacompromiso"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
             $noconformidad->fechacompromiso = $request->fechacompromiso;
+            $noconformidad->fechacompromisofec = date("Y-m-d H:i:s");
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
