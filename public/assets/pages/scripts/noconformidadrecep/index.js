@@ -309,7 +309,7 @@ function actfechacompromiso(){
     $("#linebodyfechacompromiso2").fadeIn(500);
 }
 function inactfechacompromiso(){
-    $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>' + $("#accorrec").val());
+    $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>' + $("#fechacompromiso").val());
     $("#fechacompromiso").prop("readonly",true);
     $("#fechacompromiso").fadeOut(500);
     $("#guardarfechacompromiso").fadeOut(500);
