@@ -8,6 +8,7 @@ $(document).ready(function () {
 });
 
 function paso2(id,i){
+    
     $(".input-sm").val('');
     $("#titulomodal").html("No Conformidad Id: " + id);
     $("#lbldatos").html("Acción Inmediata")
@@ -54,6 +55,27 @@ $("#guardarAI").click(function(event)
 	}
 	
 });
+
+function apre(aux_val){
+    event.preventDefault();
+	if(verificar('obsvalai','texto'))
+	{
+        id = $("#idhide").val();
+        var data = {
+            id       : id,
+            obsvalai : $("#obsvalai").val(),
+            stavalai : aux_val,
+            _token   : $('input[name=_token]').val()
+        };
+        var ruta = '/noconformidadrecep/actobsvalai/' + id;
+        funcion = 'apre';
+        ejecutarAjax(data,ruta,funcion);
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+
+}
+
 
 $("#guardarACausa").click(function(event)
 {
@@ -170,6 +192,12 @@ function ajaxRequest(data,url,funcion) {
                 ocultarACausa();
                 ocultaracorrect();
 
+                inactAI('');
+                inactvalAI();
+                inactAC();
+                inactACorr();
+                inactfechacompromiso();
+
                 $("#fechanc").html(fecha.toLocaleDateString("es-ES", options));
                 $("#horanc").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
                 $("#motivonc_id").html('<a href="#">Motivo de la no conformidad: </a>' + respuesta.motivonc);
@@ -187,10 +215,6 @@ function ajaxRequest(data,url,funcion) {
                 $("#analisisdecausa").val(respuesta.noconformidad.analisisdecausa);
                 $("#accorrec").val(respuesta.noconformidad.accorrec);
                 
-                inactAI();
-                inactAC();
-                inactACorr();
-                inactfechacompromiso()
                 buscarpasos(data['id'],data['i'],respuesta);
 
                 $("#myModalDatos").modal('show');
@@ -210,6 +234,13 @@ function ajaxRequest(data,url,funcion) {
                     buscarpasos(data['id'],data['i']);
 				}
             }
+            if(funcion=='apre'){
+				if (respuesta.mensaje == "ok") {
+                    i = $("#ihide").val();
+                    buscarpasos(data['id'],data['i']);
+				}
+            }
+
             if(funcion=='guardarACausa'){
 				if (respuesta.mensaje == "ok") {
                     buscarpasos(data['id'],data['i']);
@@ -225,6 +256,26 @@ function ajaxRequest(data,url,funcion) {
                     buscarpasos(data['id'],data['i']);
 				}
             }
+            if(funcion=='btnaprobarAI'){
+				if (respuesta.mensaje == "ok") {
+                    $("#myModalValidarai").modal('hide');
+                    $("#myModalDatos").modal('hide');
+                    //buscarpasos(data['id'],data['i']);
+				}
+            }
+            if(funcion=='buscarAI'){
+				if (respuesta.mensaje == "ok") {
+                    $("#funcvalidarai").val('class="tooltipsC" title="Validar Accion Inmediata No conformidad" onclick="validarai()"');
+                    $("#obsvalai").val(respuesta.noconformidad.obsvalai);
+                    //$("#obsvalai").val('');
+                    verificar('obsvalai','');
+                    //$("#myModalDatos").modal('hide');
+                    $("#myModalValidarai").modal('show');
+                    //$( "#dialog" ).dialog();  
+                    return 0;              
+				}
+            }
+
             if (respuesta.mensaje == "ok") {
                 Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
             } else {
@@ -252,26 +303,62 @@ function actAI(){
     $("#guardarAI").fadeIn(500);
     $("#linebodyai1").fadeIn(500);
     $("#linebodyai2").fadeIn(500);
+    if($("#funcvalidarai").val()!=''){
+        inactAI('');
+    }
 }
 
 
-function inactAI(){
-    $("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
+function inactAI(aux_ac){
+    //SI AANALISIS DE CAUDA ESTA EN BLANCO ACTIVE EL ENLACE A VALIDAR NO CONFORMIDAD, SIEMPRE y CUANDO LA CONSULRA VENGA DE NoConformidadValidarController
+    if(aux_ac==null || aux_ac==""){
+        $("#accioninmediatatxt").html('<a href="#"  ' + $("#funcvalidarai").val() + '>Acción Inmediata: </a>' + $("#accioninmediata").val());
+    }else{
+        $("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
+    }
     $("#accioninmediata").prop("readonly",true);
     $("#accioninmediata").fadeOut(500);
     $("#guardarAI").fadeOut(500);
     $("#linebodyai1").fadeOut(500);
     $("#linebodyai2").fadeOut(500);
+    $("#circuloedidAI").attr('class', 'fa fa-edit bg-blue')
     //alert('respuesta.noconformidad.accioninmediata');
 }
 
+function actvalAI(){
+    if($("#funcvalidarai").val()!=""){
+        $("#obsvalaitxt").html('<a href="#">Validación No conformidad </a>');
+        $("#obsvalai").prop("readonly",false);
+        $("#obsvalai").fadeIn(500);
+        $("#guardarvalAI").fadeIn(500);
+        $("#linebodyvalai1").fadeIn(500);
+        $("#linebodyvalai2").fadeIn(500);
+    
+    }else{
+        inactvalAI();
+    }
+}
+
+function inactvalAI(){
+    $("#obsvalaitxt").html('<a href="#">Validación No conformidad: </a>' + $("#obsvalai").val());
+    $("#obsvalai").prop("readonly",true);
+    $("#obsvalai").fadeOut(500);
+    $("#guardarvalAI").fadeOut(500);
+    $("#linebodyvalai1").fadeOut(500);
+    $("#linebodyvalai2").fadeOut(500);    
+}
+
 function actAC(){
-    $("#analisisdecausatxt").html('<a href="#">Analisis de causa</a>');
-    $("#analisisdecausa").prop("readonly",false);
-    $("#analisisdecausa").fadeIn(500);
-    $("#guardarAC").fadeIn(500);
-    $("#linebodyac1").fadeIn(500);
-    $("#linebodyac2").fadeIn(500);
+    if($("#funcvalidarai").val()==''){
+        $("#analisisdecausatxt").html('<a href="#">Analisis de causa</a>');
+        $("#analisisdecausa").prop("readonly",false);
+        $("#analisisdecausa").fadeIn(500);
+        $("#guardarAC").fadeIn(500);
+        $("#linebodyac1").fadeIn(500);
+        $("#linebodyac2").fadeIn(500);    
+    }else{
+        inactAC();
+    }
 }
 function inactAC(){
     $("#analisisdecausatxt").html('<a href="#">Analisis de causa: </a>' + $("#analisisdecausa").val());
@@ -284,12 +371,16 @@ function inactAC(){
 
 
 function actACorr(){
-    $("#accorrectxt").html('<a href="#">Acción correctiva</a>');
-    $("#accorrec").prop("readonly",false);
-    $("#accorrec").fadeIn(500);
-    $("#guardarACorr").fadeIn(500);
-    $("#linebodyacorr1").fadeIn(500);
-    $("#linebodyacorr2").fadeIn(500);
+    if($("#funcvalidarai").val()==''){
+        $("#accorrectxt").html('<a href="#">Acción correctiva</a>');
+        $("#accorrec").prop("readonly",false);
+        $("#accorrec").fadeIn(500);
+        $("#guardarACorr").fadeIn(500);
+        $("#linebodyacorr1").fadeIn(500);
+        $("#linebodyacorr2").fadeIn(500);
+    }else{
+        inactACorr();
+    }
 }
 function inactACorr(){
     $("#accorrectxt").html('<a href="#">Acción correctiva: </a>' + $("#accorrec").val());
@@ -297,24 +388,30 @@ function inactACorr(){
     $("#accorrec").fadeOut(500);
     $("#guardarACorr").fadeOut(500);
     $("#linebodyacorr1").fadeOut(500);
-    $("#linebodyacorr2").fadeOut(500);
+    $("#linebodyacorr2").fadeOut(500);    
 }
 
 function actfechacompromiso(){
-    $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>');
-    //$("#fechacompromiso").prop("readonly",false);
-    $("#fechacompromiso").fadeIn(500);
-    $("#guardarfechacompromiso").fadeIn(500);
-    $("#linebodyfechacompromiso1").fadeIn(500);
-    $("#linebodyfechacompromiso2").fadeIn(500);
+    if($("#funcvalidarai").val()==''){
+        $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>');
+        //$("#fechacompromiso").prop("readonly",false);
+        $("#fechacompromiso").fadeIn(500);
+        $("#guardarfechacompromiso").fadeIn(500);
+        $("#linebodyfeccomp1").fadeIn(500);
+        $("#linebodyfeccomp2").fadeIn(500);    
+    }else{
+        inactfechacompromiso();
+    }
 }
 function inactfechacompromiso(){
-    $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>' + $("#fechacompromiso").val());
+    $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso: </a>' + $("#fechacompromiso").val());
     $("#fechacompromiso").prop("readonly",true);
     $("#fechacompromiso").fadeOut(500);
     $("#guardarfechacompromiso").fadeOut(500);
-    $("#linebodyfechacompromiso1").fadeOut(500);
-    $("#linebodyfechacompromiso2").fadeOut(500);
+    $("#linebodyfeccomp1").fadeOut(500);
+    $("#linebodyfeccomp2").fadeOut(500);
+    //$(".fechacompromiso").fadeOut(500);
+    //$("#fechacompromiso").val('');
 }
 
 
@@ -326,13 +423,32 @@ function ocultaracorrect(){
     $(".linebodyai").fadeIn(500);
 }
 
+function ocultarobsvalai(){
+    $(".obsvalai").hide();
+    /*
+    $("#accioninmediata").prop("readonly",false);
+    $("#accioninmediata").fadeIn(500);
+    $("#guardarAI").fadeIn(500);
+    $(".linebodyai").fadeIn(500);*/
+}
+
 var options = { year: 'numeric', month: 'short', day: 'numeric', literal: '/' };
 function actdatosai(fecha,accioninmediata){
     $("#fechaai").html(fecha.toLocaleDateString("es-ES", options));
     $("#horaai").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
     $("#accioninmediata").val(accioninmediata);
+    $(".obsvalai").fadeIn(500);
     $(".acausa").fadeIn(500);
 }
+
+function actdatosvalai(fecha,obsvalai){
+    $("#fechavalai").html(fecha.toLocaleDateString("es-ES", options));
+    $("#horavalai").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
+    $("#obsvalai").val(obsvalai);
+    //alert($("#obsvalai").val());
+    //$(".acausa").fadeIn(500);
+}
+
 
 function actdatosac(fecha,analisisdecausa){
     $("#fechaac").html(fecha.toLocaleDateString("es-ES", options));
@@ -351,53 +467,118 @@ function actdatosACorr(fecha,accorrec){
 function actdatosfechacompromiso(fecha,fechacompromiso){
     $("#fechafechacompromiso").html(fecha.toLocaleDateString("es-ES", options));
     $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
-    $("#accorrec").val(fechacompromiso);
-
-    //alert(fechacompromiso);
-    $("#fechafechacompromiso").html(fecha.toLocaleDateString("es-ES", options));
-    //$("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
     $("#fechacompromiso").val(fechacompromiso);
-    //$(".fechacompromiso").fadeIn(500);
 }
 
 function validarpasos(respuesta){
+    inactAI('');
+    inactvalAI();
+    inactAC();
+    inactACorr();
+    inactfechacompromiso()
+
     noconformidad=respuesta.noconformidad;
     if(noconformidad.accioninmediata==null || noconformidad.accioninmediata==""){
         $("#fechaai").html('.::.  <i class="fa fa-calendar"></i>  .::.');
         $("#horaai").html('<i class="fa fa-clock-o"></i> ');
         actAI();
+        inactvalAI();
     }else{
         var fecha = new Date(noconformidad.accioninmediatafec);
         actdatosai(fecha,noconformidad.accioninmediata);
-        if(noconformidad.analisisdecausa==null || noconformidad.analisisdecausa==""){
-            $("#fechaac").html('.::.  <i class="fa fa-calendar"></i>  .::.');
-            $("#horaac").html('<i class="fa fa-clock-o"></i> ');
+        if(noconformidad.obsvalai==null || noconformidad.obsvalai==""){
+            $("#fechavalai").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+            $("#horavalai").html('<i class="fa fa-clock-o"></i> ');
             actAI();
-            actAC();
-        }else{
-            inactAI();
-            var fecha = new Date(noconformidad.analisisdecausafec);
-            actdatosac(fecha,noconformidad.analisisdecausa);
-            actACorr();
-            if(noconformidad.accorrec==null || noconformidad.accorrec==""){
-                $("#fechaacorr").html('.::.  <i class="fa fa-calendar"></i>  .::.');
-                $("#horaacorr").html('<i class="fa fa-clock-o"></i> ');
-                actAC();
+            
+            $(".acausa").hide();
+            actvalAI();
+            //ocultarobsvalai();
+            alert('entro');
+            
+            if($("#funcvalidarai").val()==''){
+                inactvalAI();
+                $("#obsvalaitxt").html('<a href="#">Validación No conformidad: </a>Esperando Validación de supervisor.');
             }else{
-                inactAC();
-                var fecha = new Date(noconformidad.accorrecfec);
-                actdatosACorr(fecha,noconformidad.accorrec);
-                actfechacompromiso();
-                if(noconformidad.fechacompromiso==null || noconformidad.fechacompromiso==""){
-                    $("#fechafechacompromiso").html('.::.  <i class="fa fa-calendar"></i>  .::.');
-                    $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ');
-                    actACorr();
+                actvalAI();
+            }
+        }else{
+            inactAI(noconformidad.analisisdecausa);
+            var fecha = new Date(noconformidad.fechavalai);
+            //alert(noconformidad.obsvalai);
+            actdatosvalai(fecha,noconformidad.obsvalai);
+            inactvalAI();
+            if(noconformidad.stavalai=='0'){
+                ocultarACausa();
+            }else{
+                if(noconformidad.analisisdecausa==null || noconformidad.analisisdecausa==""){
+                    $("#fechaac").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                    $("#horaac").html('<i class="fa fa-clock-o"></i> ');
+                    //actAI();
+                    actAC();
                 }else{
-                    inactACorr();
-                    var fecha = new Date(noconformidad.fechacompromisofec);
-                    actdatosfechacompromiso(fecha,respuesta.feccomp);
+                    inactAI(noconformidad.analisisdecausa);
+                    var fecha = new Date(noconformidad.analisisdecausafec);
+                    actdatosac(fecha,noconformidad.analisisdecausa);
+                    if(noconformidad.accorrec==null || noconformidad.accorrec==""){
+                        $("#fechaacorr").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                        $("#horaacorr").html('<i class="fa fa-clock-o"></i> ');
+                        actAC();
+                        actACorr();
+                    }else{
+                        inactAC();
+                        var fecha = new Date(noconformidad.accorrecfec);
+                        actdatosACorr(fecha,noconformidad.accorrec);
+                        //actfechacompromiso();
+                        if(noconformidad.fechacompromiso==null || noconformidad.fechacompromiso==""){
+                            $("#fechafechacompromiso").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                            $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ');
+                            actACorr();
+                            actfechacompromiso();
+                        }else{
+                            //inactACorr();
+                            var fecha = new Date(noconformidad.fechacompromisofec);
+                            actdatosfechacompromiso(fecha,respuesta.feccomp);
+                            actfechacompromiso();
+                        }
+                    }
                 }
             }
-        }                        
+
+        }
     }    
+}
+
+function validarai(){
+    event.preventDefault();
+	verificar('obsvalai','');
+    id = $("#idhide").val();
+    $("#funcvalidarai").val('');
+    var data = {
+        id     : $("#idhide").val(),
+        i      : $("#ihide").val(),
+        _token : $('input[name=_token]').val()
+    };
+    var ruta = '/noconformidadrecep/buscar/' + id;
+    funcion = 'buscarAI';
+    ajaxRequest(data,ruta,funcion);
+}
+
+function guardarvalai(aux_status){
+    event.preventDefault();
+	if(verificar('obsvalai','texto'))
+	{
+        id = $("#idhide").val();
+        var data = {
+            id       : $("#idhide").val(),
+            stavalai : aux_status,
+            obsvalai : $("#obsvalai").val(),
+            _token : $('input[name=_token]').val()
+        };
+        var ruta = '/noconformidadrecep/actvalai/' + id;
+        funcion = 'btnaprobarAI';
+        ejecutarAjax(data,ruta,funcion);
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
 }

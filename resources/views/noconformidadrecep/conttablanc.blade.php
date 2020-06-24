@@ -2,7 +2,6 @@
     <td>{{$data->id}}</td>
     <td><i class="fa {{$recibido}}"></i></td>
     <td></i>{{$data->fechahora}}</td>
-    <td>{{$data->persona_id}}</td>
     <td>{{$data->hallazgo}}</td>
     <?php
         $aux_btn = "btn-warning";
@@ -14,7 +13,7 @@
     ?>
     <td>
         @csrf @method("delete")
-        <a id='accioninmediata{{$i}}' name='accioninmediata{{$i}}' class='btn {{$aux_btn}} btn-sm tooltipsC' title='Acción Inmediata' onclick='paso2({{$data->id}},{{$i}})'>
+        <a id='accioninmediata{{$i}}' name='accioninmediata{{$i}}' class='btn {{$aux_btn}} btn-sm tooltipsC' title='Editar' onclick='paso2({{$data->id}},{{$i}})'>
             <span id='iconoai{{$i}}' name='iconoai{{$i}}' class='glyphicon {{$aux_icono}}' style='bottom: 0px;top: 2px;' class='tooltipsC'></span>
         </a>
     </td>

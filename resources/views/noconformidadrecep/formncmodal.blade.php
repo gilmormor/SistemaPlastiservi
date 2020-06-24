@@ -1,4 +1,4 @@
-<div class="modal fade" id="myModalDatos" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="myModalDatos" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true"  data-focus-on="input:first">
     <div class="modal-dialog modal-dialog-centered modal-lg" id="mdialTamanio" role="document">
         <!-- Modal content-->
         <div class="modal-content">
@@ -53,12 +53,12 @@
                             <!-- /.timeline-label -->
                             <!-- timeline item -->
                             <li>
-                                <i class="fa fa-edit bg-blue"></i>
+                                <i class="fa fa-edit bg-blue" id="circuloedidAI" name="circuloedidAI"></i>
                 
                                 <div class="timeline-item">
                                 <span class="time" id="horaai" name="horaai"></span>
                 
-                                <h3 class="timeline-header" name="accioninmediatatxt" id="accioninmediatatxt"><a href="#">Acción Inmediata</a></h3>
+                                <h3 class="timeline-header" name="accioninmediatatxt" id="accioninmediatatxt"><a href="validarai()">Acción Inmediata</a></h3>
                 
                                 <div class="timeline-body" id="linebodyai1">
                                     <textarea name="accioninmediata" id="accioninmediata" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
@@ -70,6 +70,35 @@
                                 </div>
                             </li>
                             <!-- END timeline item -->
+
+                            <!-- timeline time label -->
+                            <li class="time-label obsvalai" style="display:none;">
+                                <span class="bg-aqua" id="fechavalai" name="fechavalai">
+                                </span>
+                            </li>
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <li class="obsvalai" style="display:none;">
+                                <i class="fa fa-edit bg-blue"></i>
+
+                                <div class="timeline-item">
+                                <span class="time" id="horavalai" name="horavalai"></span>
+
+                                <h3 class="timeline-header" name="obsvalaitxt" id="obsvalaitxt"><a href="validarai()">Validación No conformidad</a></h3>
+
+                                <div class="timeline-body" id="linebodyvalai1">
+                                    <textarea name="obsvalai" id="obsvalai" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                                </div>
+                                <div class="timeline-footer" id="linebodyvalai2">
+                                    <a id="guardarvalAIAp" name="guardarvalAIAp" class="btn btn-primary btn-xs" onclick="apre(1)">Aprobar</a>
+                                    <a id="guardarvalAIRe" name="guardarvalAIRe" class="btn btn-danger btn-xs" onclick="apre(0)">Rechazar</a>
+                                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                                </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+
+
                             <!-- timeline item -->
                             <!-- timeline time label -->
                             <li class="time-label acausa" style="display:none;">
@@ -131,14 +160,14 @@
                             <!-- timeline item -->
                             <!-- timeline time label -->
                             <li class="time-label fechacompromiso" style="display:none;">
-                                <span class="bg-purple" id="fechafechacompromiso" name="fechafechacompromiso">
+                                <span class="bg-yellow" id="fechafechacompromiso" name="fechafechacompromiso">
                                 
                                 </span>
                             </li>
                                 <!-- /.timeline-label -->
                                 <!-- timeline item -->
                             <li class="fechacompromiso" style="display:none;">
-                                <i class="fa fa-edit bg-blue"></i>
+                                <i class="fa fa-edit bg-aqua" id="circuloedidFC" name="circuloedidFC"></i>
                 
                                 <div class="timeline-item">
                                 <span class="time" id="horafechacompromiso" name="horafechacompromiso"></span>

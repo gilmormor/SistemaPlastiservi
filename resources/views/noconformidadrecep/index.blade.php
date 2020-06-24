@@ -19,13 +19,13 @@ Recepción No Conformidad
                 <h3 class="box-title">Recepción No Conformidad</h3>
             </div>
             <div class="box-body">
+                <input type="hidden" name="funcvalidarai" id="funcvalidarai" value="{{old('funcvalidarai', $funcvalidarai ?? '')}}">
                 <table class="table display AllDataTables table-hover table-condensed tablascons" id="tabla-data">
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
                             <th class="width30">Rec</th>
                             <th>Fecha</th>
-                            <th>persona_id</th>
                             <th>Punto Normativo Hallazgo</th>
                             <th class='tooltipsC' title='Editar'>Editar</th>
                         </tr>
@@ -43,7 +43,7 @@ Recepción No Conformidad
                                     if(is_null($data->usuario_idmp2)){
                                         $aux_mostrar = true;
                                     }else{
-                                        if($data->usuario_idmp2==auth()->id()){
+                                        if(($data->usuario_idmp2==auth()->id()) AND ($data->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")))){
                                             $aux_mostrar = true;
                                         }
                                     }

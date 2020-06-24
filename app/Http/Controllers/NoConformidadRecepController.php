@@ -6,6 +6,7 @@ use App\Http\Requests\ValidarNoCAccionCorrectiva;
 use App\Http\Requests\ValidarNoCAccionInmediata;
 use App\Http\Requests\ValidarNoCAnalisisDeCausa;
 use App\Http\Requests\ValidarNoCFechaCompromiso;
+use App\Http\Requests\ValidarNoCobsvalai;
 use App\Models\Certificado;
 use App\Models\FormaDeteccionNC;
 use App\Models\JefaturaSucursalArea;
@@ -26,7 +27,6 @@ class NoConformidadRecepController extends Controller
     {
         can('listar-recepcion-no-conformidad');
         $usuario = Usuario::with('roles')->findOrFail(auth()->id());
-        $noconformidad = NoConformidad::findOrFail(1);
         //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
         $fecha = date("d-m-Y H:i:s");
         //dd($fecha);
@@ -41,14 +41,15 @@ class NoConformidadRecepController extends Controller
                     ])
                 ->get();
         $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
-        noconformidad.accioninmediata,
+        noconformidad.accioninmediata,accioninmediatafec,
         jefatura_sucursal_area.persona_id,usuario_idmp2
         FROM noconformidad INNER JOIN noconformidad_responsable
         ON noconformidad.id=noconformidad_responsable.noconformidad_id
         INNER JOIN jefatura_sucursal_area
         ON noconformidad_responsable.jefatura_sucursal_area_id=jefatura_sucursal_area.id
         WHERE jefatura_sucursal_area.persona_id=" . $usuario->persona->id .
-        " ORDER BY noconformidad.id;";
+        " and noconformidad.deleted_at is null 
+        ORDER BY noconformidad.id;";
 
 /*
 WHERE jefatura_sucursal_area.persona_id=" .$usuario->persona->id .
@@ -59,14 +60,15 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         $datas = DB::select($sql);
 
         $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
-        noconformidad.accioninmediata,
+        noconformidad.accioninmediata,accioninmediatafec,
         jefatura_sucursal_area.persona_id,usuario_idmp2
         FROM noconformidad INNER JOIN noconformidad_jefsucarea
         ON noconformidad.id=noconformidad_jefsucarea.noconformidad_id
         INNER JOIN jefatura_sucursal_area
         ON noconformidad_jefsucarea.jefatura_sucursal_area_id=jefatura_sucursal_area.id
         WHERE jefatura_sucursal_area.persona_id=" . $usuario->persona->id .
-        " ORDER BY noconformidad.id;";
+        " and noconformidad.deleted_at is null 
+        ORDER BY noconformidad.id;";
 
         $arearesps = DB::select($sql); //Area responsable
         //dd($arearesps);
@@ -80,9 +82,10 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                                 ->get();
         $certificados = Certificado::orderBy('id')->get();
         $usuario_id = $usuario->persona->id;
+        $funcvalidarai = '';
 
         //dd($sql);
-        return view('noconformidadrecep.index', compact('datas','arearesps','motivoncs','formadeteccionncs','jefaturasucursalareas','jefaturasucursalareasR','usuario_id'));
+        return view('noconformidadrecep.index', compact('datas','arearesps','motivoncs','formadeteccionncs','jefaturasucursalareas','jefaturasucursalareasR','usuario_id','funcvalidarai'));
     }
 
     /**
@@ -202,6 +205,25 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         }
     }
 
+    public function actobsvalai(ValidarNoCobsvalai $request)
+    {
+        if ($request->ajax()) {
+            $noconformidad = NoConformidad::findOrFail($request->id);
+            $noconformidad->stavalai = $request->stavalai;
+            $noconformidad->obsvalai = $request->obsvalai;
+            $noconformidad->fechavalai = date("Y-m-d H:i:s");
+            $noconformidad->usuario_idvalai = auth()->id();
+            if ($noconformidad->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+
+    }
+
     public function actacausa(ValidarNoCAnalisisDeCausa $request)
     {
         if ($request->ajax()) {
@@ -251,4 +273,37 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             abort(404);
         }
     }
+
+    public function actvalai(Request $request)
+    {
+        if ($request->ajax()) {
+            $noconformidad = NoConformidad::findOrFail($request->id);
+            $noconformidad->stavalai = $request->stavalai;
+            $noconformidad->obsvalai = $request->obsvalai;
+            $noconformidad->fechavalai = date("Y-m-d H:i:s");
+            $noconformidad->usuario_idvalai = auth()->id();
+            if ($noconformidad->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+    public function consvalai(Request $request)
+    {
+        if ($request->ajax()) {
+            $noconformidad = NoConformidad::findOrFail($request->id);
+            return response()->json([
+                                        'mensaje' => 'ok',
+                                        'noconformidad' => $noconformidad
+                                    ]);
+        } else {
+            abort(404);
+        }
+    }
+
+
 }
