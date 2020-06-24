@@ -189,8 +189,10 @@ function ajaxRequest(data,url,funcion) {
                 $("#analisisdecausa").val('');
                 $("#accorrec").val('');
 
+                ocultarobsvalai()
                 ocultarACausa();
                 ocultaracorrect();
+                ocultarfechacompromiso();
 
                 inactAI('');
                 inactvalAI();
@@ -432,6 +434,11 @@ function ocultarobsvalai(){
     $(".linebodyai").fadeIn(500);*/
 }
 
+
+function ocultarfechacompromiso(){
+    $(".fechacompromiso").hide();
+}
+
 var options = { year: 'numeric', month: 'short', day: 'numeric', literal: '/' };
 function actdatosai(fecha,accioninmediata){
     $("#fechaai").html(fecha.toLocaleDateString("es-ES", options));
@@ -468,6 +475,29 @@ function actdatosfechacompromiso(fecha,fechacompromiso){
     $("#fechafechacompromiso").html(fecha.toLocaleDateString("es-ES", options));
     $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
     $("#fechacompromiso").val(fechacompromiso);
+}
+
+function banquearcampos(){
+    $("#fechaai").html('');
+    $("#horaai").html('<i class="fa fa-clock-o"></i> ');
+    $("#accioninmediata").val('');
+
+    $("#fechavalai").html('');
+    $("#horavalai").html('<i class="fa fa-clock-o"></i> ');
+    $("#obsvalai").val('');
+
+    $("#fechaac").html('');
+    $("#horaac").html('<i class="fa fa-clock-o"></i> ');
+    $("#analisisdecausa").val('');
+
+    $("#fechaacorr").html('');
+    $("#horaacorr").html('<i class="fa fa-clock-o"></i> ');
+    $("#accorrec").val('');
+
+    $("#fechafechacompromiso").html('');
+    $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ');
+    $("#fechacompromiso").val('');
+
 }
 
 function validarpasos(respuesta){
