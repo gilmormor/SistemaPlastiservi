@@ -494,7 +494,7 @@ function validarpasos(respuesta){
             $(".acausa").hide();
             actvalAI();
             //ocultarobsvalai();
-            alert('entro');
+            //alert('entro');
             
             if($("#funcvalidarai").val()==''){
                 inactvalAI();
