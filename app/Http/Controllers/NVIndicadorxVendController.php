@@ -311,7 +311,8 @@ function consulta($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
-    and notaventadetalle.deleted_at is null
+    and notaventa.anulada is null
+    and notaventadetalle.deleted_at is null and notaventa.deleted_at is null
     GROUP BY grupoprod.id,grupoprod.gru_nombre;";
     //dd($sql);
     //" and " . $aux_condrut .
@@ -338,6 +339,7 @@ function consulta($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
+    and notaventa.anulada is null
     and notaventadetalle.deleted_at is null and notaventa.deleted_at is null
     GROUP BY persona.id,persona.nombre;";
 
@@ -364,7 +366,8 @@ function consulta($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
-    and notaventadetalle.deleted_at is null
+    and notaventa.anulada is null
+    and notaventadetalle.deleted_at is null and notaventa.deleted_at is null
     GROUP BY grupoprod.id,grupoprod.gru_nombre,persona.id,persona.nombre;";
 
     $datas = DB::select($sql);

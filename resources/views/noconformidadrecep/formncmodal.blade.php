@@ -157,6 +157,29 @@
                             <!-- END timeline item -->
                             <!-- timeline item -->
 
+
+                            <!-- END timeline item -->
+                            <!-- timeline time label -->
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <li class="acorrect" style="display:none;">
+                                <i class="fa fa-camera bg-purple"></i>
+                
+                                <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
+                
+                                <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
+                
+                                <div class="timeline-body">
+                                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+
                             <!-- timeline item -->
                             <!-- timeline time label -->
                             <li class="time-label fechacompromiso" style="display:none;">
@@ -187,32 +210,6 @@
                             <!-- END timeline item -->
                             <!-- timeline item -->
 
-                            <!-- END timeline item -->
-                            <!-- timeline time label -->
-                            <li class="time-label" style="display:none;">
-                                    <span class="bg-green">
-                                    3 Jan. 2014
-                                    </span>
-                            </li>
-                            <!-- /.timeline-label -->
-                            <!-- timeline item -->
-                            <li style="display:none;">
-                                <i class="fa fa-camera bg-purple"></i>
-                
-                                <div class="timeline-item">
-                                <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
-                
-                                <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
-                
-                                <div class="timeline-body">
-                                    <img src="http://placehold.it/150x100" alt="..." class="margin">
-                                    <img src="http://placehold.it/150x100" alt="..." class="margin">
-                                    <img src="http://placehold.it/150x100" alt="..." class="margin">
-                                    <img src="http://placehold.it/150x100" alt="..." class="margin">
-                                </div>
-                                </div>
-                            </li>
-                            <!-- END timeline item -->
                             <!-- timeline item -->
                             <li>
                                 <i class="fa fa-clock-o bg-gray"></i>

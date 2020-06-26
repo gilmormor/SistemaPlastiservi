@@ -145,10 +145,11 @@ class NotaVentaConsultaController extends Controller
     
                 $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
                 $prompvc = 0;
+                $promcan = 0;
+                $aux_prom = 0;
                 if($data->pvckg!=0){
                     $prompvc = $data->pvcpesos / $data->pvckg;
                 }
-                $promcan = 0;
                 if($data->cankg!=0){
                     $promcan = $data->canpesos / $data->cankg;
                 }
@@ -172,15 +173,19 @@ class NotaVentaConsultaController extends Controller
                 <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='$fechavisto'>
                     <div class='checkbox'>
                         <label style='font-size: 1.2em'>";
-                        if(auth()->id()==1 or auth()->id()==2){
-                            $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>";
-                        }else{
+                        if(!empty($data->anulada)){
                             $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
+                        }else{
+                            if(auth()->id()==1 or auth()->id()==2){
+                                $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>";
+                            }else{
+                                $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
+                            }
                         }
                         $aux_colvistotd .= "<span class='cr'><i class='cr-icon fa fa-check'></i></span>
                         </label>
                     </div>
-                </td>";
+                </td>";    
     
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
@@ -207,12 +212,15 @@ class NotaVentaConsultaController extends Controller
                     $aux_colvistotd
                 </tr>";
 
-                $aux_Tpvckg += $data->pvckg;
-                $aux_Tpvcpesos += $data->pvcpesos;
-                $aux_Tcankg += $data->cankg;
-                $aux_Tcanpesos += $data->canpesos;
-                $aux_totalKG += $data->totalkilos;
-                $aux_totalps += $data->subtotal;
+                if(empty($data->anulada)){
+                    $aux_Tpvckg += $data->pvckg;
+                    $aux_Tpvcpesos += $data->pvcpesos;
+                    $aux_Tcankg += $data->cankg;
+                    $aux_Tcanpesos += $data->canpesos;
+                    $aux_totalKG += $data->totalkilos;
+                    $aux_totalps += $data->subtotal;    
+                }
+
     
                 //dd($data->contacto);
             }

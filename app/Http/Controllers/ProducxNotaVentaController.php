@@ -351,13 +351,14 @@ function consulta($request){
     ON claseprod.id=producto.claseprod_id
     INNER JOIN categoriaprod
     ON categoriaprod.id=producto.categoriaprod_id
-    WHERE " . $vendedorcond .
-    " and " . $aux_condFecha .
-    " and " . $aux_condcategoriaprod_id .
-    " and " . $aux_condgiro_id .
-    " and " . $aux_condrut .
-    " and " . $aux_condareaproduccion_id .
-    " and notaventadetalle.deleted_at is null
+    WHERE $vendedorcond
+    and $aux_condFecha
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condrut
+    and $aux_condareaproduccion_id
+    and notaventa.anulada is null
+    and notaventa.deleted_at and notaventadetalle.deleted_at is null
     GROUP BY notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,producto.diamextmm,claseprod.cla_nombre,
     producto.long,producto.peso,producto.tipounion;";
