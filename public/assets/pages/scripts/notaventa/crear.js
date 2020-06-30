@@ -148,21 +148,75 @@ $(document).ready(function () {
 	if(aux_sta==2 || aux_sta==3){
 		totalizar();
 	}
+	aux_nomarc = $("#imagen").val();
+	//alert(aux_nomarc.indexOf("."));
+	//alert(aux_nomarc.substr(aux_nomarc.indexOf(".") + 1, 6));
 
 	$("#btnguardaraprob").click(function(event){
 		//alert('Entro');
 		$("#myModalaprobcot").modal('show');
 	});
-
+	aux_imagen = $("#imagen").val();
 	$('#oc_file').fileinput({
+		language: 'es',
+		allowedFileExtensions: ['jpg', 'jpeg', 'png', "pdf"],
+		maxFileSize: 4000,
+		initialPreview: [
+			// PDF DATA
+			'/storage/imagenes/notaventa/'+$("#imagen").val(),
+		],
+		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
+		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
+		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
+		initialPreviewConfig: [
+			{type: "pdf", size: 8000, caption: $("#imagen").val(), url: "/file-upload-batch/2", key: 10, downloadUrl: false}, // disable download
+		],
+        showUpload: false,
+        showClose: false,
+        initialPreviewAsData: true,
+		dropZoneEnabled: false,
+		maxFileCount: 5,
+        theme: "fa",
+	});
+
+	$("#input-pd").fileinput({
+		uploadUrl: "/file-upload-batch/1",
+		uploadAsync: false,
+		minFileCount: 2,
+		maxFileCount: 5,
+		overwriteInitial: false,
+		initialPreview: [
+			// PDF DATA
+			'/storage/imagenes/notaventa/238.pdf',
+		],
+		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
+		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
+		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
+		initialPreviewConfig: [
+			{type: "pdf", size: 8000, caption: "238.pdf", url: "/file-upload-batch/2", key: 10, downloadUrl: false}, // disable download
+		],
+		purifyHtml: true, // this by default purifies HTML data for preview
+		uploadExtraData: {
+			img_key: "1000",
+			img_keywords: "happy, places"
+		}
+	}).on('filesorted', function(e, params) {
+		console.log('File sorted params', params);
+	}).on('fileuploaded', function(e, params) {
+		console.log('File uploaded params', params);
+	});
+
+	$('#foto').fileinput({
         language: 'es',
+        allowedFileExtensions: ['jpg', 'jpeg', 'png'],
         maxFileSize: 4000,
         showUpload: false,
         showClose: false,
         initialPreviewAsData: true,
         dropZoneEnabled: false,
+        maxFileCount: 5,
         theme: "fa",
-	});
+    });
 
 	if($("#vendedor_id").val() == '0'){
 		$("#vendedor_idD").removeAttr("disabled");
@@ -174,7 +228,23 @@ $(document).ready(function () {
 		$("#vendedor_id").val($("#vendedor_idD").val());
 	});
 
-
+/*
+	$("#oc_file").fileinput({
+		autoReplace: true,
+		overwriteInitial: true,
+		showUploadedThumbs: false,
+		maxFileCount: 1,
+		initialPreview: [
+			"<img class='kv-preview-data file-preview-image' src='/storage/imagenes/notaventa/238.pdf'>"
+		],
+		initialCaption: '238.pdf',
+		initialPreviewShowDelete: false,
+		showRemove: false,
+		showClose: false,
+		layoutTemplates: {actionDelete: ''}, // disable thumbnail deletion
+		allowedFileExtensions: ["jpg", "png", "gif", "pdf"]
+	});
+*/
 });
 
 

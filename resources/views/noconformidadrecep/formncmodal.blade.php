@@ -171,10 +171,27 @@
                                 <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
                 
                                 <div class="timeline-body">
+                                    <!--
                                     <img src="http://placehold.it/150x100" alt="..." class="margin">
                                     <img src="http://placehold.it/150x100" alt="..." class="margin">
                                     <img src="http://placehold.it/150x100" alt="..." class="margin">
                                     <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                    -->
+                                    <DIV id="PANEL_0" class="panel panel-primary text-justify">
+                                        <DIV class="panel-heading">
+                                            <H3 class="panel-title">Envio de solicitud</H3>
+                                        </DIV>
+                                        <DIV class="panel-body">
+                                            <FORM id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
+                                                <label for="file-es" role="button">Seleccionar Archivos</label>
+                                                <input id="file-es" name="file-es[]" type="file" multiple>
+                                                <SMALL class="form-text text-muted">Seleccionar archivos de Office 201X: docx, xlsx, pptx y pdf hasta un máximo de 5.</SMALL>
+                                            </form>
+                                            <p>&nbsp;</p>
+                                            <div class="alert alert-success" role="alert"></div>
+                                        </DIV>
+                                    </DIV>
+
                                 </div>
                                 </div>
                             </li>

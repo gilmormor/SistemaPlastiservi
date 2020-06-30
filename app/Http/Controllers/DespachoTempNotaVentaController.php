@@ -410,14 +410,19 @@ class DespachoTempNotaVentaController extends Controller
                 $aux_dbotonid = "";
                 if(empty($data->inidespacho)){
                     $aux_dbotonid = "disabled";
-                }  
+                }
+                if(empty($data->oc_file)){
+                    $aux_enlaceoc = $data->oc_id;
+                }else{
+                    $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
+                }
                 $respuesta['tabla3'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id</td>
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
-                    <td id='oc_id$i' name='oc_id$i'><a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a></td>
+                    <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
