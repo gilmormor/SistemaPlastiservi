@@ -191,10 +191,23 @@ class NotaVentaConsultaController extends Controller
                 }else{
                     $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
                 }
-                
+                $aux_icodespacho = "fa-star-o";
+                $aux_obsdespacho = "No ha iniciado el despacho";
+                if(!empty($data->inidespacho)){
+                    $aux_icodespacho = "fa-star-half-o";
+                    $aux_obsdespacho = "Ini Desp: " . date('d-m-Y', strtotime($data->inidespacho)) . " Guia: " . $data->guiasdespacho;
+                }
+                if(!empty($data->findespacho)){
+                    $aux_icodespacho = " fa-star";
+                    $aux_obsdespacho = "Fin Desp: " . date('d-m-Y', strtotime($data->findespacho)) . " Guia: " . $data->guiasdespacho;
+                }
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
-                    <td id='id$i' name='id$i'>$data->id</td>
+                    <td id='id$i' name='id$i'>$data->id
+                        <a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_obsdespacho' data-toggle='tooltip'>
+                            <i class='fa fa-fw $aux_icodespacho'></i>                                    
+                        </a>
+                    </td>
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
@@ -461,7 +474,8 @@ function consulta($request){
             sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
             sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
             sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
-            sum(notaventadetalle.subtotal) AS totalps
+            sum(notaventadetalle.subtotal) AS totalps,
+            inidespacho,guiasdespacho,findespacho
             FROM notaventa INNER JOIN notaventadetalle
             ON notaventa.id=notaventadetalle.notaventa_id
             INNER JOIN producto
