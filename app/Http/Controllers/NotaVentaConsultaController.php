@@ -497,7 +497,8 @@ function consulta($request){
             and $aux_aprobstatus
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file;";
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
     //dd("$sql");
     $datas = DB::select($sql);
     return $datas;
