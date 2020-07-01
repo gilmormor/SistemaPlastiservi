@@ -191,10 +191,10 @@ class NotaVentaConsultaController extends Controller
                 }else{
                     $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
                 }
-                $aux_icodespacho = "fa-star-o";
+                $aux_icodespacho = "";
                 $aux_obsdespacho = "No ha iniciado el despacho";
                 if(!empty($data->inidespacho)){
-                    $aux_icodespacho = "fa-star-half-o";
+                    $aux_icodespacho = "fa-star-o";
                     $aux_obsdespacho = "Ini Desp: " . date('d-m-Y', strtotime($data->inidespacho)) . " Guia: " . $data->guiasdespacho;
                 }
                 if(!empty($data->findespacho)){
