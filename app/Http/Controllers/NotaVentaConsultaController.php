@@ -475,7 +475,7 @@ function consulta($request){
             sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
             sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
             sum(notaventadetalle.subtotal) AS totalps,
-            inidespacho,guiasdespacho,findespacho
+            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
             FROM notaventa INNER JOIN notaventadetalle
             ON notaventa.id=notaventadetalle.notaventa_id
             INNER JOIN producto
