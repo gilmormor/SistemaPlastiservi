@@ -1,97 +1,227 @@
-<div class="form-group">
-    <label for="motivonc_id" class="col-lg-2 control-label requerido" data-toggle='tooltip' title="Motivo de la no conformidad">Motivo</label>
-    <div class="col-lg-10">
-        <select name="motivonc_id" id="motivonc_id" class="form-control select2 motivonc_id" required>
-            <option value="">Seleccione...</option>
-            @foreach($motivoncs as $id => $descripcion)
-                <option
-                    value="{{$id}}"
-                    {{(isset($data->motivonc_id) ? ($data->motivonc_id==$id ? 'selected' : '') : '')}}
-                    >
-                    {{$descripcion}}
-                </option>
-            @endforeach
-        </select>
+<input type="hidden" name="funcvalidarai" id="funcvalidarai" value="{{old('funcvalidarai', $funcvalidarai ?? '')}}">
+<input type="hidden" name="idhide" id="idhide" value="{{old('puntonormativo', $id ?? '')}}">
+
+<section class="content" style="display:none;" id="paso2time">
+    <!-- row -->
+    <div class="row">
+      <div class="col-md-12">
+        <!-- The time line -->
+        <ul class="timeline">
+            <li class="time-label">
+                <span class="bg-red" id="fechanc" name="fechanc">
+                </span>
+            </li>
+            <!-- /.timeline-label -->
+            <!-- timeline item -->
+            <li>
+                <i class="fa fa-envelope bg-blue"></i>
+                <div class="timeline-item">
+                    <span class="time" id="horanc" name="horanc"></span>
+                    <h3 class="timeline-header" id="motivonc_id" name="motivonc_id"></h3>
+                    <h3 class="timeline-header" id="puntonormativo" name="puntonormativo"></h3>
+                    <h3 class="timeline-header" id="formadeteccionnc" name="formadeteccionnc"></h3>
+                    <h3 class="timeline-header" id="hallazgo" name="hallazgo"></h3>
+                    <h3 class="timeline-header" id="jefaturas" name="jefaturas"></h3>
+                    <h3 class="timeline-header" id="certificados" name="certificados"></h3>
+                    <h3 class="timeline-header" id="puntonorma" name="puntonorma"></h3>
+                    <h3 class="timeline-header" id="responsables" name="responsables"></h3>
+                </div>
+            </li>
+            <!-- END timeline item -->
+            <!-- timeline item -->
+
+
+
+            <!-- timeline time label -->
+            <li class="time-label">
+                    <span class="bg-aqua" id="fechaai" name="fechaai">
+                    </span>
+            </li>
+            <!-- /.timeline-label -->
+            <!-- timeline item -->
+            <li>
+                <i class="fa fa-edit bg-blue" id="circuloedidAI" name="circuloedidAI"></i>
+
+                <div class="timeline-item">
+                <span class="time" id="horaai" name="horaai"></span>
+
+                <h3 class="timeline-header" name="accioninmediatatxt" id="accioninmediatatxt"><a href="validarai()">Acción Inmediata</a></h3>
+
+                <div class="timeline-body" id="linebodyai1">
+                    <textarea name="accioninmediata" id="accioninmediata" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                </div>
+                <div class="timeline-footer" id="linebodyai2">
+                    <a id="guardarAI" name="guardarAI" class="btn btn-primary btn-xs">Guardar</a>
+                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
+
+            <!-- timeline time label -->
+            <li class="time-label obsvalai" style="display:none;">
+                <span class="bg-aqua" id="fechavalai" name="fechavalai">
+                </span>
+            </li>
+            <!-- /.timeline-label -->
+            <!-- timeline item -->
+            <li class="obsvalai" style="display:none;">
+                <i class="fa fa-edit bg-blue"></i>
+
+                <div class="timeline-item">
+                <span class="time" id="horavalai" name="horavalai"></span>
+
+                <h3 class="timeline-header" name="obsvalaitxt" id="obsvalaitxt"><a href="validarai()">Validación No conformidad</a></h3>
+
+                <div class="timeline-body" id="linebodyvalai1">
+                    <textarea name="obsvalai" id="obsvalai" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                </div>
+                <div class="timeline-footer" id="linebodyvalai2">
+                    <a id="guardarvalAIAp" name="guardarvalAIAp" class="btn btn-primary btn-xs" onclick="apre(1)">Aprobar</a>
+                    <a id="guardarvalAIRe" name="guardarvalAIRe" class="btn btn-danger btn-xs" onclick="apre(0)">Rechazar</a>
+                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
+
+
+            <!-- timeline item -->
+            <!-- timeline time label -->
+            <li class="time-label acausa" style="display:none;">
+                <span class="bg-green" id="fechaac" name="fechaac">
+                
+                </span>
+            </li>
+                <!-- /.timeline-label -->
+                <!-- timeline item -->
+            <li class="acausa" style="display:none;">
+                <i class="fa fa-edit bg-blue"></i>
+
+                <div class="timeline-item">
+                <span class="time" id="horaac" name="horaac"></span>
+
+                <h3 class="timeline-header" name="analisisdecausatxt" id="analisisdecausatxt"><a href="#">Análisis de causa</a></h3>
+
+                <div class="timeline-body" id="linebodyac1">
+                    <textarea name="analisisdecausa" id="analisisdecausa" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                </div>
+                <div class="timeline-footer" id="linebodyac2">
+                    <a id="guardarACausa" name="guardarACausa" class="btn btn-primary btn-xs">Guardar</a>
+                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
+            <!-- timeline item -->
+
+            <!-- timeline item -->
+            <!-- timeline time label -->
+            <li class="time-label acorrect" style="display:none;">
+                <span class="bg-purple" id="fechaacorr" name="fechaacorr">
+                
+                </span>
+            </li>
+                <!-- /.timeline-label -->
+                <!-- timeline item -->
+            <li class="acorrect" style="display:none;">
+                <i class="fa fa-edit bg-blue"></i>
+
+                <div class="timeline-item">
+                <span class="time" id="horaacorr" name="horaacorr"></span>
+
+                <h3 class="timeline-header" name="accorrectxt" id="accorrectxt"><a href="#">Acción Correctiva</a></h3>
+
+                <div class="timeline-body" id="linebodyacorr1">
+                    <textarea name="accorrec" id="accorrec" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                </div>
+                <div class="timeline-footer" id="linebodyacorr2">
+                    <a id="guardarACorr" name="guardarACorr" class="btn btn-primary btn-xs">Guardar</a>
+                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
+            <!-- timeline item -->
+
+
+            <!-- END timeline item -->
+            <!-- timeline time label -->
+            <!-- /.timeline-label -->
+            <!-- timeline item -->
+            <li class="acorrect" style="display:none;">
+                <i class="fa fa-camera bg-purple"></i>
+
+                <div class="timeline-item">
+                <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
+
+                <h3 class="timeline-header"><a href="#">Adjuntar Archivos <i class="glyphicon glyphicon-paperclip"></i></a></h3>
+
+                <div class="timeline-body">
+                    <!--
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    -->
+                    <DIV id="PANEL_0" class="panel panel-primary text-justify">
+                        <DIV class="panel-heading">
+                            <H3 class="panel-title">Envio de solicitud</H3>
+                        </DIV>
+                        <DIV class="panel-body">
+                            <FORM id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
+                                @csrf @method("put")
+                                <label for="file-ess" role="button">Seleccionar Archivos</label>
+                                <input id="file-ess" name="file-ess[]" type="file" multiple>
+                                <SMALL class="form-text text-muted">Seleccionar archivos de Office 201X: docx, xlsx, pptx y pdf hasta un máximo de 5.</SMALL>
+                            </form>
+                            <p>&nbsp;</p>
+                            <div class="alert alert-success" role="alert"></div>
+                        </DIV>
+                    </DIV>
+
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
+
+            <!-- timeline item -->
+            <!-- timeline time label -->
+            <li class="time-label fechacompromiso" style="display:none;">
+                <span class="bg-yellow" id="fechafechacompromiso" name="fechafechacompromiso">
+                
+                </span>
+            </li>
+                <!-- /.timeline-label -->
+                <!-- timeline item -->
+            <li class="fechacompromiso" style="display:none;">
+                <i class="fa fa-edit bg-aqua" id="circuloedidFC" name="circuloedidFC"></i>
+
+                <div class="timeline-item">
+                <span class="time" id="horafechacompromiso" name="horafechacompromiso"></span>
+
+                <h3 class="timeline-header" name="fechacompromisotxt" id="fechacompromisotxt"><a href="#">Fecha de compromiso</a></h3>
+
+                <div class="timeline-body" id="linebodyfeccomp1">
+                    <!--<textarea name="fechacompromiso" id="fechacompromiso" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>-->
+                    <input type="text" bsDaterangepicker class="form-control datepicker requeridos" name="fechacompromiso" id="fechacompromiso" placeholder="DD/MM/AAAA" readonly>
+                </div>
+                <div class="timeline-footer" id="linebodyfeccomp2">
+                    <a id="guardarfechacompromiso" name="guardarfechacompromiso" class="btn btn-primary btn-xs">Guardar</a>
+                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
+            <!-- timeline item -->
+
+            <!-- timeline item -->
+            <li>
+                <i class="fa fa-clock-o bg-gray"></i>
+            </li>
+        </ul>
+      </div>
+      <!-- /.col -->
     </div>
-</div>
-<div class="form-group">
-    <label for="puntonormativo" class="col-lg-2 control-label" data-toggle='tooltip' title="Descripción punto normativo">Punto normativo</label>
-    <div class="col-lg-10">
-        <textarea name="puntonormativo" id="puntonormativo" class="form-control" value="{{old('puntonormativo', $data->puntonormativo ?? '')}}">{{old('puntonormativo', $data->puntonormativo ?? '')}}</textarea>
-    </div>
-</div>
-<div class="form-group">
-    <label for="hallazgo" class="col-lg-2 control-label requerido" data-toggle='tooltip' title="Descripción de la observación o hallazgo">Hallazgo</label>
-    <div class="col-lg-10">
-        <textarea name="hallazgo" id="hallazgo" class="form-control" value="{{old('hallazgo', $data->hallazgo ?? '')}}" required>{{old('hallazgo', $data->hallazgo ?? '')}}</textarea>
-    </div>
-</div>
-<div class="form-group">
-    <label for="formadeteccionnc_id" class="col-lg-2 control-label requerido" data-toggle='tooltip' title="Forma detección No Conformidad">Forma detección</label>
-    <div class="col-lg-10">
-        <select name="formadeteccionnc_id" id="formadeteccionnc_id" class="form-control select2 formadeteccionnc_id" required>
-            <option value="">Seleccione...</option>
-            @foreach($formadeteccionncs as $id => $descripcion)
-                <option
-                    value="{{$id}}"
-                    {{(isset($data->formadeteccionnc_id) ? ($data->formadeteccionnc_id==$id ? 'selected' : '') : '')}}
-                    >
-                    {{$descripcion}}
-                </option>
-            @endforeach
-        </select>
-    </div>
-</div>
-<div class="form-group">
-    <label for="jefatura_sucursal_area_id" class="col-lg-2 control-label requerido" data-toggle='tooltip' title="Area responsable">Area responsable</label>
-    <div class="col-lg-10">
-        <select name="jefatura_sucursal_area_id[]" id="jefatura_sucursal_area_id" class="form-control select2" multiple required>
-            @foreach($jefaturasucursalareas as $jefaturasucursalarea)
-                <option
-                    value="{{$jefaturasucursalarea->id}}"
-                    {{is_array(old('jefatura_sucursal_area_id')) ? (in_array($jefaturasucursalarea->id, old('jefatura_sucursal_area_id')) ? 'selected' : '') : (isset($data) ? ($data->jefaturasucursalareas->firstWhere('id', $jefaturasucursalarea->id) ? 'selected' : '') : '')}}
-                    >
-                    <!--{{$jefaturasucursalarea->sucursal_area->sucursal->abrev}}/{{$jefaturasucursalarea->sucursal_area->area->abrev}}/{{$jefaturasucursalarea->jefatura->nombre}}-->
-                    {{$jefaturasucursalarea->jefatura->nombre}}
-                </option>
-            @endforeach
-        </select>
-    </div>
-</div>
-<div class="form-group">
-    <label for="certificado_id" class="col-lg-2 control-label requerido" data-toggle='tooltip' title="Norma">Norma</label>
-    <div class="col-lg-10">
-        <select name="certificado_id[]" id="certificado_id" class="form-control select2" multiple required>
-            @foreach($certificados as $certificado)
-                <option
-                    value="{{$certificado->id}}"
-                    {{is_array(old('certificado_id')) ? (in_array($certificado->id, old('certificado_id')) ? 'selected' : '') : (isset($data) ? ($data->certificados->firstWhere('id', $certificado->id) ? 'selected' : '') : '')}}
-                    >
-                    {{$certificado->descripcion}}
-                </option>
-            @endforeach
-        </select>
-    </div>
-</div>
-<div class="form-group">
-    <label for="puntonorma" class="col-lg-2 control-label requerido" data-toggle='tooltip' title="Punto de la norma">Punto de la norma</label>
-    <div class="col-lg-10">
-        <textarea name="puntonorma" id="puntonorma" class="form-control" value="{{old('puntonorma', $data->puntonorma ?? '')}}" required>{{old('puntonorma', $data->puntonorma ?? '')}}</textarea>
-    </div>
-</div>
-<div class="form-group">
-    <label for="jefatura_sucursal_areaR_id" class="col-lg-2 control-label requerido" data-toggle='tooltip' title="Responsable">Responsable</label>
-    <div class="col-lg-10">
-        <select name="jefatura_sucursal_areaR_id[]" id="jefatura_sucursal_areaR_id" class="form-control select2" multiple required>
-            @foreach($jefaturasucursalareasR as $jefaturasucursalarea)
-                <option
-                    value="{{$jefaturasucursalarea->id}}"
-                    {{is_array(old('jefatura_sucursal_areaR_id')) ? (in_array($jefaturasucursalarea->id, old('jefatura_sucursal_areaR_id')) ? 'selected' : '') : (isset($data) ? ($data->jefaturasucursalarearesponsables->firstWhere('id', $jefaturasucursalarea->id) ? 'selected' : '') : '')}}
-                    >
-                    <!--{{$jefaturasucursalarea->sucursal_area->sucursal->abrev}}/{{$jefaturasucursalarea->jefatura->abrev}}/{{$jefaturasucursalarea->persona->nombre}} {{$jefaturasucursalarea->persona->apellido}}-->
-                    {{$jefaturasucursalarea->jefatura->nombre}}/{{$jefaturasucursalarea->persona->nombre}} {{$jefaturasucursalarea->persona->apellido}}
-                </option>
-            @endforeach
-        </select>
-    </div>
-</div>
+    <!-- /.row -->
+</section>

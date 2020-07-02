@@ -168,7 +168,7 @@
                                 <div class="timeline-item">
                                 <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
                 
-                                <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
+                                <h3 class="timeline-header"><a href="#">Adjuntar Archivos <i class="glyphicon glyphicon-paperclip"></i></a></h3>
                 
                                 <div class="timeline-body">
                                     <!--
@@ -183,8 +183,9 @@
                                         </DIV>
                                         <DIV class="panel-body">
                                             <FORM id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
-                                                <label for="file-es" role="button">Seleccionar Archivos</label>
-                                                <input id="file-es" name="file-es[]" type="file" multiple>
+                                                @csrf @method("put")
+                                                <label for="file-ess" role="button">Seleccionar Archivos</label>
+                                                <input id="file-ess" name="file-ess[]" type="file" multiple>
                                                 <SMALL class="form-text text-muted">Seleccionar archivos de Office 201X: docx, xlsx, pptx y pdf hasta un máximo de 5.</SMALL>
                                             </form>
                                             <p>&nbsp;</p>

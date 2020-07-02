@@ -39,7 +39,7 @@ Validar No Conformidad
                             <?php
                                 $recibido = "fa-mail-reply";
                             ?>
-                            @include('noconformidadrecep.conttablanc')
+                            @include('noconformidadvalidar.conttablanc')
                         @endforeach
                     </tbody>
                 </table>

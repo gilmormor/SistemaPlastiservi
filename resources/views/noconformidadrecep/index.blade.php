@@ -39,6 +39,7 @@ Recepción No Conformidad
                             <th>Fecha</th>
                             <th>Punto Normativo Hallazgo</th>
                             <th class='tooltipsC' title='Editar'>Editar</th>
+                            <th class='tooltipsC' title='Editar'>Editar</th>
                         </tr>
                     </thead>
                     <tbody>

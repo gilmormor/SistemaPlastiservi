@@ -143,7 +143,7 @@ class NoConformidadController extends Controller
         // **********************************************************************
 
         // Si no se ha llegado ha definir el array global $_FILES, cancelaremos el resto del proceso
-        if (empty($_FILES['file-es'])) {
+        if (empty($_FILES['file-ess'])) {
             // Devolvemos un array asociativo con la clave error en formato JSON como respuesta	
             echo json_encode(['error'=>'No hay ficheros para realizar upload.']); 
             // Cancelamos el resto del script
@@ -156,13 +156,16 @@ class NoConformidadController extends Controller
         // Definimos la constante con el directorio de destino de las descargas
         define('DIR_DESCARGAS',public_path() . "/storage/imagenes/noconformidad/");
         // Obtenemos el array de ficheros enviados
-        $ficheros = $_FILES['file-es'];
+        $ficheros = $_FILES['file-ess'];
         // Establecemos el indicador de proceso correcto (simplemente no indicando nada)
         $estado_proceso = NULL;
         // Paths para almacenar
         $paths= array();
         // Obtenemos los nombres de los ficheros
         $nombres_ficheros = $ficheros['name'];
+        //$respuestas = ['nombres_ficheros'=>$nombres_ficheros];
+        //$aux_tipofalla = implode ( ',' , $nombres_ficheros );
+        //dd($nombres_ficheros);
 
         // LÍNEAS ENCARGADAS DE REALIZAR EL PROCESO DE UPLOAD POR CADA FICHERO RECIBIDO
         // ****************************************************************************

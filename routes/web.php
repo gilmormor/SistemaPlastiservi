@@ -413,6 +413,7 @@ Route::post('noconformidad', 'NoConformidadController@guardar')->name('guardar_n
 Route::get('noconformidad/{id}/editar', 'NoConformidadController@editar')->name('editar_noconformidad');
 Route::put('noconformidad/{id}', 'NoConformidadController@actualizar')->name('actualizar_noconformidad');
 Route::delete('noconformidad/{id}', 'NoConformidadController@eliminar')->name('eliminar_noconformidad');
+Route::post('noconformidadup/{id}', 'NoConformidadController@actualizarImagen')->name('actualizarImagen_noconformidad');
 
 /*RUTAS Bloquear Cliente */
 Route::get('clientebloqueado', 'ClienteBloqueadoController@index')->name('clientebloqueado');
@@ -426,7 +427,7 @@ Route::delete('clientebloqueado/{id}', 'ClienteBloqueadoController@eliminar')->n
 Route::get('noconformidadrecep', 'NoConformidadRecepController@index')->name('noconformidadrecep');
 Route::get('noconformidadrecep/crear', 'NoConformidadRecepController@crear')->name('crear_noconformidadrecep');
 Route::post('noconformidadrecep', 'NoConformidadRecepController@guardar')->name('guardar_noconformidadrecep');
-Route::get('noconformidadrecep/{id}/editar', 'NoConformidadRecepController@editar')->name('editar_noconformidadrecep');
+Route::get('noconformidadrecep/{id}/{sta_val}/editar', 'NoConformidadRecepController@editar')->name('editar_noconformidadrecep');
 Route::put('noconformidadrecep/{id}', 'NoConformidadRecepController@actualizar')->name('actualizar_noconformidadrecep');
 Route::delete('noconformidadrecep/{id}', 'NoConformidadRecepController@eliminar')->name('eliminar_noconformidadrecep');
 
@@ -442,5 +443,5 @@ Route::post('noconformidadrecep/actvalai/{id}', 'NoConformidadRecepController@ac
 
 /*RUTAS Validar No Conformidad */
 Route::get('ncvalidar', 'NoConformidadValidarController@index')->name('ncvalidar');
-Route::get('ncvalidar/{id}/editar', 'NoConformidadValidarController@editar')->name('editar_ncvalidar');
+Route::get('ncvalidar/{id}/{sta_val}/editar', 'NoConformidadValidarController@editar')->name('editar_ncvalidar');
 Route::put('noconformidadvalidar/actvalAI/{id}', 'NoConformidadValidarController@actvalAI')->name('actvalAI_ncvalidar');

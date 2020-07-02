@@ -126,9 +126,16 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editar($id,$sta_val)
     {
-        //
+        //can('editar-no-conformidad');
+        if($sta_val == 0){
+            $funcvalidarai = '';
+        }else{
+            $funcvalidarai = '1';
+        }
+        
+        return view('noconformidadrecep.editar',compact('id','funcvalidarai'));
     }
 
     /**

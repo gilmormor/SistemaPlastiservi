@@ -18,7 +18,7 @@
         </a>
     </td>
     <td>
-        <a href="{{route('editar_noconformidadrecep', ['id' => $data->id, 'sta_val' => 0])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+        <a href="{{route('editar_ncvalidar', ['id' => $data->id, 'sta_val' => 1])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
             <i class="fa fa-fw fa-pencil"></i>
         </a>
     </td>
