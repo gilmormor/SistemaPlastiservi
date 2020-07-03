@@ -10,6 +10,32 @@ $(document).ready(function () {
     id = $("#idhide").val();
     paso2(id)
 
+    $("#file-ess").fileinput({
+        language: 'es',
+        uploadUrl: '/noconformidadup/11', 
+        uploadAsync: false,
+        minFileCount: 1,
+        maxFileCount: 20,
+        showUpload: false, 
+        showRemove: false,
+        }).on("filebatchselected", function(event, files) {
+        
+            $("#file-ess").fileinput("upload");
+        
+        });
+/*
+        initialPreview: [
+            foreach($images as image){
+               "<img src=" + image + "height='120px' class='file-preview-image'>",
+           }],
+           initialPreviewConfig: [
+               foreach($images as $image){ 
+                   $infoImagenes=explode("/",$image);
+                   {caption: "$infoImagenes[1]",  height: "120px", url: "borrar.php", key:"$infoImagenes[1]"},
+           ]
+*/
+
+
     // Tipos de archivos admitidos por su extensión
     //var tipos = ['docx','xlsx','pptx','pdf','jpg','bmp','png'];
     var tipos = ['pdf','jpg','bmp','png'];
@@ -38,12 +64,14 @@ $(document).ready(function () {
     //  Tamaño máximo en Kb de los ficheros que se pueden seleccionar
     //  no mostrar los errores de tipo de archivo (cuando el usuario selecciona un archivo no permitido)
     //  tipos de archivos permitidos por su extensión (array definido al principio del script)
-    $('#file-ess').fileinput({
+    $('#file-ess11').fileinput({
         language: 'es',
         uploadUrl: '/noconformidadup/' + id,
         uploadAsync: false,
         maxFileCount: 5,
         maxFileSize: 500,
+        showUpload: true,
+        showRemove: false,
         removeFromPreviewOnError: true,
         allowedFileExtensions : tipos,
         initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
@@ -51,7 +79,7 @@ $(document).ready(function () {
     });
     // Evento filecleared del plugin que se ejecuta cuando pulsamos el botón 'Quitar'
     //    Vaciamos y ocultamos el div de alerta
-    $('#file-ess').on('filecleared', function(event) {
+    $('#file-ess11').on('filecleared', function(event) {
         $('div.alert').empty();
         $('div.alert').hide();		
     });
@@ -60,7 +88,7 @@ $(document).ready(function () {
     //    Carpeta donde se han almacenado y total de archivos movidos
     //    Nombre y tamaño de cada archivo procesado
     //    Totales de archivos por tipo
-    $('#file-ess').on('filebatchuploadsuccess', function(event, data, previewId, index) {
+    $('#file-ess11').on('filebatchuploadsuccess', function(event, data, previewId, index) {
         var ficheros = data.files;
         var respuesta = data.response;
         var total = data.filescount;
@@ -313,6 +341,7 @@ function ajaxRequest(data,url,funcion) {
 
                 $("#myModalDatos").modal('show');
                 //$("#paso2time").show();
+
                 $('#paso2time').css('display','block');
                 //$(".selectpicker").selectpicker('refresh');
                 validacion('accioninmediata','');

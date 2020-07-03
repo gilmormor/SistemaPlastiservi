@@ -25,5 +25,6 @@ class VerifyCsrfToken extends Middleware
         'eliminarfotonc/*', //Pasa por alto token de eliminar detalle No Conformidad
         'jefaturaAreaSuc/asignarjefe/', //Pasa por alto token para modificar persona_id en jefaturaAreaSuc
         'noconformidadup/*',
+        'noconformidaddel/*'
     ];
 }

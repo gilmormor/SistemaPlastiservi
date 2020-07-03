@@ -1,5 +1,5 @@
 <input type="hidden" name="funcvalidarai" id="funcvalidarai" value="{{old('funcvalidarai', $funcvalidarai ?? '')}}">
-<input type="hidden" name="idhide" id="idhide" value="{{old('puntonormativo', $id ?? '')}}">
+<input type="hidden" name="idhide" id="idhide" value="{{old('puntonormativo', $data->id ?? '')}}">
 
 <section class="content" style="display:none;" id="paso2time">
     <!-- row -->
@@ -153,7 +153,7 @@
                 <i class="fa fa-camera bg-purple"></i>
 
                 <div class="timeline-item">
-                <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
+                <span class="time"></span>
 
                 <h3 class="timeline-header"><a href="#">Adjuntar Archivos <i class="glyphicon glyphicon-paperclip"></i></a></h3>
 
@@ -166,14 +166,12 @@
                     -->
                     <DIV id="PANEL_0" class="panel panel-primary text-justify">
                         <DIV class="panel-heading">
-                            <H3 class="panel-title">Envio de solicitud</H3>
+                            <H3 class="panel-title">Seleccionar Archivos</H3>
                         </DIV>
                         <DIV class="panel-body">
                             <FORM id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
-                                @csrf @method("put")
-                                <label for="file-ess" role="button">Seleccionar Archivos</label>
-                                <input id="file-ess" name="file-ess[]" type="file" multiple>
-                                <SMALL class="form-text text-muted">Seleccionar archivos de Office 201X: docx, xlsx, pptx y pdf hasta un máximo de 5.</SMALL>
+                                <input id="file-ess" name="imagenes[]" type="file" multiple>
+                                <SMALL class="form-text text-muted">Seleccionar archivos: pdf, jpg, bmp, png hasta un máximo de 5.</SMALL>
                             </form>
                             <p>&nbsp;</p>
                             <div class="alert alert-success" role="alert"></div>

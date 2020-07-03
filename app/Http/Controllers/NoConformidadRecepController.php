@@ -129,13 +129,15 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
     public function editar($id,$sta_val)
     {
         //can('editar-no-conformidad');
+        $data = NoConformidad::findOrFail($id);
         if($sta_val == 0){
             $funcvalidarai = '';
         }else{
             $funcvalidarai = '1';
         }
-        
-        return view('noconformidadrecep.editar',compact('id','funcvalidarai'));
+        $directory = "storage/imagenes/noconformidad/";      
+        $images = glob($directory . "*.*");
+        return view('noconformidadrecep.editar',compact('data','funcvalidarai','images'));
     }
 
     /**

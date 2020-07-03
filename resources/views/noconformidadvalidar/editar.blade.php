@@ -35,7 +35,7 @@ Editar No Conformidad
                     </a>
                 </div>
             </div>
-            <form action="{{route('actualizar_noconformidadrecep', ['id' => $id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
+            <form action="{{route('actualizar_noconformidadrecep', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
                 @csrf @method("put")
                 <div class="box-body">
                     @include('noconformidadrecep.form')

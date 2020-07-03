@@ -414,6 +414,7 @@ Route::get('noconformidad/{id}/editar', 'NoConformidadController@editar')->name(
 Route::put('noconformidad/{id}', 'NoConformidadController@actualizar')->name('actualizar_noconformidad');
 Route::delete('noconformidad/{id}', 'NoConformidadController@eliminar')->name('eliminar_noconformidad');
 Route::post('noconformidadup/{id}', 'NoConformidadController@actualizarImagen')->name('actualizarImagen_noconformidad');
+Route::post('noconformidaddel/{id}', 'NoConformidadController@delImagen')->name('delImagen_noconformidad');
 
 /*RUTAS Bloquear Cliente */
 Route::get('clientebloqueado', 'ClienteBloqueadoController@index')->name('clientebloqueado');

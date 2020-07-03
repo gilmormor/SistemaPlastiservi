@@ -59,13 +59,14 @@ class NoConformidadValidarController extends Controller
     public function editar($id,$sta_val)
     {
         //can('editar-no-conformidad');
+        $data = NoConformidad::findOrFail($id);
         if($sta_val == 0){
             $funcvalidarai = '';
         }else{
             $funcvalidarai = '1';
         }
         
-        return view('noconformidadvalidar.editar',compact('id','funcvalidarai'));
+        return view('noconformidadvalidar.editar',compact('data','funcvalidarai'));
     }
     
     
