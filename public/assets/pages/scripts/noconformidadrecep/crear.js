@@ -8,31 +8,42 @@ $(document).ready(function () {
     }).datepicker("setDate");
 
     id = $("#idhide").val();
-    paso2(id)
-
+    prevImagen(id);
+    paso2(id);
+/*
     $("#file-ess").fileinput({
         language: 'es',
-        uploadUrl: '/noconformidadup/11', 
+        uploadUrl: '/noconformidadup/'+$("#idhide").val(), 
         uploadAsync: false,
         minFileCount: 1,
         maxFileCount: 20,
         showUpload: false, 
         showRemove: false,
+        initialPreviewAsData: true,
+        initialPreviewFileType: 'image'
         }).on("filebatchselected", function(event, files) {
         
             $("#file-ess").fileinput("upload");
         
         });
+*/
+        //$("#file-ess").fileinput("refresh");
 /*
         initialPreview: [
-            foreach($images as image){
-               "<img src=" + image + "height='120px' class='file-preview-image'>",
-           }],
-           initialPreviewConfig: [
-               foreach($images as $image){ 
-                   $infoImagenes=explode("/",$image);
-                   {caption: "$infoImagenes[1]",  height: "120px", url: "borrar.php", key:"$infoImagenes[1]"},
-           ]
+        // IMAGE DATA
+        "/storage/imagenes/noconformidad/Sin título.jpg",
+        // IMAGE DATA
+        "/storage/imagenes/noconformidad/sample-2.jpg",
+        // OFFICE WORD DATA
+        "/storage/imagenes/noconformidad/pago raul romero.pdf",
+        ],
+        initialPreviewAsData: true,
+        initialPreviewFileType: 'image',
+        initialPreviewConfig: [
+            {type: "image", caption: "Sin título.jpg", size: 827000, width: "120px", url: "/delImagen_noconformidad/11", key: 1},
+            {type: "image", caption: "sample-2.jpg", size: 549000, width: "120px", url: "/delImagen_noconformidad/11", key: 2},
+            {type: "pdf", size: 8000, caption: "pago raul romero.pdf", url: "/delImagen_noconformidad/11", key: 3, downloadUrl: false},
+        ]
 */
 
 
@@ -129,6 +140,21 @@ $(document).ready(function () {
     $('div.alert').hide();
 
 });
+
+$("#Prueba").click(function(event)
+{
+    event.preventDefault();
+    id = $("#idhide").val();
+    prevImagen(id);
+});
+
+function prevImagen(id){
+    var data = {
+        id     : id
+    };
+    var ruta = '/noconformidadprevImg/' + id;
+    ajaxRequest(data,ruta,'prevImagen');    
+}
 
 function paso2(id){
     
@@ -396,6 +422,50 @@ function ajaxRequest(data,url,funcion) {
                     return 0;              
 				}
             }
+            if(funcion=='prevImagen'){
+                //alert(respuesta);
+                if(respuesta.i>0){
+                    $("#file-ess").fileinput({
+                        language: 'es',
+                        uploadUrl: '/noconformidadup/'+$("#idhide").val(), 
+                        uploadAsync: false,
+                        minFileCount: 1,
+                        maxFileCount: 5,
+                        maxFileSize: 500,
+                        showUpload: false, 
+                        showRemove: false,
+                        allowedFileExtensions: ['pdf','jpg','bmp','png'],
+                        overwriteInitial: respuesta.overwriteInitial,
+                        initialPreview: respuesta.initialPreview,
+                        initialPreviewConfig: respuesta.initialPreviewConfig,    
+                        initialPreviewAsData: true,
+                        initialPreviewFileType: 'image'
+                        }).on("filebatchselected", function(event, files) {
+                        
+                            $("#file-ess").fileinput("upload");
+                        
+                        });
+                }else{
+                    $("#file-ess").fileinput({
+                        language: 'es',
+                        uploadUrl: '/noconformidadup/'+$("#idhide").val(), 
+                        uploadAsync: false,
+                        minFileCount: 1,
+                        maxFileCount: 5,
+                        maxFileSize: 500,
+                        showUpload: false, 
+                        showRemove: false,
+                        allowedFileExtensions: ['pdf','jpg','bmp','png'],
+                        initialPreviewAsData: true,
+                        initialPreviewFileType: 'image'
+                        }).on("filebatchselected", function(event, files) {
+                        
+                            $("#file-ess").fileinput("upload");
+                        
+                        });
+                }
+            }
+            
 
             if (respuesta.mensaje == "ok") {
                 Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
@@ -403,7 +473,11 @@ function ajaxRequest(data,url,funcion) {
                 if (respuesta.mensaje == "sp"){
                     Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
                 }else{
-                    Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                    if(respuesta.mensaje=="img"){
+
+                    }else{
+                        Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                    }
                 }
             }
 
