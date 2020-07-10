@@ -445,7 +445,7 @@ function ajaxRequest(data,url,funcion) {
                             $("#file-ess").fileinput("upload");
                         });
                 }else{
-                    alert('entro');
+                    //alert('entro');
                     $("#file-ess").fileinput({
                         language: 'es',
                         uploadUrl: '/noconformidadup/'+$("#idhide").val(), 
