@@ -443,9 +443,9 @@ function ajaxRequest(data,url,funcion) {
                         }).on("filebatchselected", function(event, files) {
                         
                             $("#file-ess").fileinput("upload");
-                        
                         });
                 }else{
+                    alert('entro');
                     $("#file-ess").fileinput({
                         language: 'es',
                         uploadUrl: '/noconformidadup/'+$("#idhide").val(), 
@@ -461,7 +461,6 @@ function ajaxRequest(data,url,funcion) {
                         }).on("filebatchselected", function(event, files) {
                         
                             $("#file-ess").fileinput("upload");
-                        
                         });
                 }
             }

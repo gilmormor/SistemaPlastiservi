@@ -10,6 +10,7 @@ use App\Models\MotivoNc;
 use App\Models\NoConformidad;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use SplFileInfo;
 
 class NoConformidadController extends Controller
 {
@@ -149,9 +150,10 @@ class NoConformidadController extends Controller
         $i = 0;
         foreach($images as $image){
             $initialPreview = Storage::url("imagenes/noconformidad/$image");
+            $tamano = filesize($image);
             $infoImagenes=explode("/",$image);
             //dd($infoImagenes);
-            $infoImagenesSubidas[$i]=array("type"=>"pdf","caption"=>"$infoImagenes[3]","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$infoImagenes[3]);
+            $infoImagenesSubidas[$i]=array("type"=>"pdf","caption"=>"$infoImagenes[3]","size"=>"$tamano","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$infoImagenes[3]);
             $ImagenesSubidas[$i]=array("/$directory$infoImagenes[3]");
             $i++;
         }
@@ -176,18 +178,6 @@ class NoConformidadController extends Controller
 
     public function actualizarImagen(Request $request, $id)
     {
-
-        $directory = "storage/imagenes/noconformidad/";
-        $images = glob($directory . $id."-*.*");
-        $infoImagenesSubidas = array();
-        $i = 0;
-        foreach($images as $image){
-            $infoImagenes=explode("/",$image);
-            $infoImagenesSubidas[$i]=array("type"=>"pdf","caption"=>"$infoImagenes[3]","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$infoImagenes[3]);
-            $ImagenesSubidas[$i]=array("/$directory$infoImagenes[3]");
-            $i++;
-        }
-        $cont = $i;
         $carpetaAdjunta="storage/imagenes/noconformidad/";
         // Contar envían por el plugin
         $Imagenes =count(isset($_FILES['imagenes']['name'])?$_FILES['imagenes']['name']:0);
@@ -200,13 +190,30 @@ class NoConformidadController extends Controller
             $rutaArchivo=$carpetaAdjunta.$nombreArchivo;
             
             move_uploaded_file($nombreTemporal,$rutaArchivo);
-            
-            $infoImagenesSubidas[$cont]=array("type"=>"pdf","caption"=>"$nombreArchivo","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$nombreArchivo);
+            /*
+            $tamano = filesize($image);
+            $infoImagenesSubidas[$cont]=array("type"=>"pdf","caption"=>"$nombreArchivo","size"=>"$tamano","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$nombreArchivo);
             //$ImagenesSubidas[$i]="<img  height='120px'  src='/$rutaArchivo' class='file-preview-image'>";
             $ImagenesSubidas[$cont]=array("/$rutaArchivo");
             $cont++;
-        
-            }
+            */
+        }
+
+        $directory = "storage/imagenes/noconformidad/";
+        $images = glob($directory . $id."-*.*");
+        $infoImagenesSubidas = array();
+        $i = 0;
+        foreach($images as $image){
+            $infoImagenes=explode("/",$image);
+            $info = new SplFileInfo($infoImagenes[3]);
+            $extension = $info->getExtension();
+            $tamano = filesize($image);
+            $infoImagenesSubidas[$i]=array("type"=>"pdf","caption"=>"$infoImagenes[3]","size"=>"$tamano","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$infoImagenes[3]);
+            $ImagenesSubidas[$i]=array("/$directory$infoImagenes[3]");
+            $i++;
+        }
+
+
         
         $arr = array("file_id"=>0,"overwriteInitial"=>true,"initialPreviewConfig"=>$infoImagenesSubidas,
                      "initialPreview"=>$ImagenesSubidas);
