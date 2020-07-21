@@ -138,7 +138,7 @@ class NoConformidadController extends Controller
         }
     }
 
-    public function prevImagen($id)
+    public function prevImagen($id,$sta_val)
     {
         $directory = "storage/imagenes/noconformidad/"; //Storage::url("imagenes/noconformidad/");
         //dd($directory);     
@@ -176,29 +176,35 @@ class NoConformidadController extends Controller
         return response()->json($arr);
     }
 
-    public function actualizarImagen(Request $request, $id)
-    {
-        $carpetaAdjunta="storage/imagenes/noconformidad/";
-        // Contar envían por el plugin
-        $Imagenes =count(isset($_FILES['imagenes']['name'])?$_FILES['imagenes']['name']:0);
-        //$infoImagenesSubidas = array();
-        for($i = 0; $i < $Imagenes; $i++) {
-            // El nombre y nombre temporal del archivo que vamos para adjuntar
-            $nombreArchivo=isset($_FILES['imagenes']['name'][$i])?$id.'-'.$_FILES['imagenes']['name'][$i]:null;
-            $nombreTemporal=isset($_FILES['imagenes']['tmp_name'][$i])?$_FILES['imagenes']['tmp_name'][$i]:null;
-            
-            $rutaArchivo=$carpetaAdjunta.$nombreArchivo;
-            
-            move_uploaded_file($nombreTemporal,$rutaArchivo);
-            /*
-            $tamano = filesize($image);
-            $infoImagenesSubidas[$cont]=array("type"=>"pdf","caption"=>"$nombreArchivo","size"=>"$tamano","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$nombreArchivo);
-            //$ImagenesSubidas[$i]="<img  height='120px'  src='/$rutaArchivo' class='file-preview-image'>";
-            $ImagenesSubidas[$cont]=array("/$rutaArchivo");
-            $cont++;
-            */
-        }
 
+
+    public function actualizarImagen(Request $request, $id,$sta_val)
+    {
+        //dd($request);
+        if($sta_val=="0") //Si es 0 no puede guardar archivo
+        {
+            //dd($request);
+            $carpetaAdjunta="storage/imagenes/noconformidad/";
+            // Contar envían por el plugin
+            $Imagenes =count(isset($_FILES['imagenes']['name'])?$_FILES['imagenes']['name']:0);
+            //$infoImagenesSubidas = array();
+            for($i = 0; $i < $Imagenes; $i++) {
+                // El nombre y nombre temporal del archivo que vamos para adjuntar
+                $nombreArchivo=isset($_FILES['imagenes']['name'][$i])?$id.'-'.$_FILES['imagenes']['name'][$i]:null;
+                $nombreTemporal=isset($_FILES['imagenes']['tmp_name'][$i])?$_FILES['imagenes']['tmp_name'][$i]:null;
+                
+                $rutaArchivo=$carpetaAdjunta.$nombreArchivo;
+                
+                move_uploaded_file($nombreTemporal,$rutaArchivo);
+                /*
+                $tamano = filesize($image);
+                $infoImagenesSubidas[$cont]=array("type"=>"pdf","caption"=>"$nombreArchivo","size"=>"$tamano","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$nombreArchivo);
+                //$ImagenesSubidas[$i]="<img  height='120px'  src='/$rutaArchivo' class='file-preview-image'>";
+                $ImagenesSubidas[$cont]=array("/$rutaArchivo");
+                $cont++;
+                */
+            }
+        }
         $directory = "storage/imagenes/noconformidad/";
         $images = glob($directory . $id."-*.*");
         $infoImagenesSubidas = array();
@@ -212,9 +218,6 @@ class NoConformidadController extends Controller
             $ImagenesSubidas[$i]=array("/$directory$infoImagenes[3]");
             $i++;
         }
-
-
-        
         $arr = array("file_id"=>0,"overwriteInitial"=>true,"initialPreviewConfig"=>$infoImagenesSubidas,
                      "initialPreview"=>$ImagenesSubidas);
         echo json_encode($arr);
@@ -342,4 +345,16 @@ class NoConformidadController extends Controller
         // Devolvemos el array asociativo en formato JSON como respuesta
         echo json_encode($respuestas);
     }
+
+
+    public function ver($id,$sta_val)
+    {
+        //can('editar-no-conformidad');
+        $data = NoConformidad::findOrFail($id);
+        $funcvalidarai = $sta_val;
+        $directory = "storage/imagenes/noconformidad/";      
+        $images = glob($directory . "*.*");
+        return view('noconformidadrecep.editar',compact('data','funcvalidarai','images'));
+    }
+
 }

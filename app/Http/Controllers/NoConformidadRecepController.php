@@ -6,6 +6,7 @@ use App\Http\Requests\ValidarNoCAccionCorrectiva;
 use App\Http\Requests\ValidarNoCAccionInmediata;
 use App\Http\Requests\ValidarNoCAnalisisDeCausa;
 use App\Http\Requests\ValidarNoCFechaCompromiso;
+use App\Http\Requests\ValidarNoCFechaGuardado;
 use App\Http\Requests\ValidarNoCobsvalai;
 use App\Models\Certificado;
 use App\Models\FormaDeteccionNC;
@@ -129,12 +130,9 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
     public function editar($id,$sta_val)
     {
         //can('editar-no-conformidad');
+        //dd($sta_val);
         $data = NoConformidad::findOrFail($id);
-        if($sta_val == 0){
-            $funcvalidarai = '';
-        }else{
-            $funcvalidarai = '1';
-        }
+        $funcvalidarai = $sta_val;
         $directory = "storage/imagenes/noconformidad/";      
         $images = glob($directory . "*.*");
         return view('noconformidadrecep.editar',compact('data','funcvalidarai','images'));
@@ -273,6 +271,21 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $request["fechacompromiso"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
             $noconformidad->fechacompromiso = $request->fechacompromiso;
             $noconformidad->fechacompromisofec = date("Y-m-d H:i:s");
+            if ($noconformidad->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+    public function actfechaguardado(ValidarNoCFechaGuardado $request)
+    {
+        if ($request->ajax()) {
+            $noconformidad = NoConformidad::findOrFail($request->id);
+            $noconformidad->fechaguardado = date("Y-m-d H:i:s");
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {

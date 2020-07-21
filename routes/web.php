@@ -413,9 +413,10 @@ Route::post('noconformidad', 'NoConformidadController@guardar')->name('guardar_n
 Route::get('noconformidad/{id}/editar', 'NoConformidadController@editar')->name('editar_noconformidad');
 Route::put('noconformidad/{id}', 'NoConformidadController@actualizar')->name('actualizar_noconformidad');
 Route::delete('noconformidad/{id}', 'NoConformidadController@eliminar')->name('eliminar_noconformidad');
-Route::post('noconformidadup/{id}', 'NoConformidadController@actualizarImagen')->name('actualizarImagen_noconformidad');
+Route::post('noconformidadup/{id}/{sta_val}', 'NoConformidadController@actualizarImagen')->name('actualizarImagen_noconformidad');
 Route::post('noconformidaddel/{id}', 'NoConformidadController@delImagen')->name('delImagen_noconformidad');
-Route::post('noconformidadprevImg/{id}', 'NoConformidadController@prevImagen')->name('prevImagen_noconformidad');
+Route::post('noconformidadprevImg/{id}/{sta_val}', 'NoConformidadController@prevImagen')->name('prevImagen_noconformidad');
+Route::get('noconformidadpver/{id}/{sta_val}', 'NoConformidadController@ver')->name('ver_noconformidad');
 
 /*RUTAS Bloquear Cliente */
 Route::get('clientebloqueado', 'ClienteBloqueadoController@index')->name('clientebloqueado');
@@ -440,6 +441,7 @@ Route::post('noconformidadrecep/actobsvalai/{id}', 'NoConformidadRecepController
 Route::post('noconformidadrecep/actacausa/{id}', 'NoConformidadRecepController@actacausa')->name('actacausa_noconformidadrecep');
 Route::post('noconformidadrecep/actacorr/{id}', 'NoConformidadRecepController@actacorr')->name('actacorr_noconformidadrecep');
 Route::post('noconformidadrecep/actfeccomp/{id}', 'NoConformidadRecepController@actfeccomp')->name('actfeccomp_noconformidadrecep');
+Route::post('noconformidadrecep/actfechaguardado/{id}', 'NoConformidadRecepController@actfechaguardado')->name('actfechaguardado_noconformidadrecep');
 Route::post('noconformidadrecep/actvalai/{id}', 'NoConformidadRecepController@actvalai')->name('actvalai_noconformidadrecep');
 
 

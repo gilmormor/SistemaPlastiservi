@@ -171,7 +171,7 @@
                         <DIV class="panel-body">
                             <FORM id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
                                 <input id="file-ess" name="imagenes[]" type="file" multiple>
-                                <SMALL class="form-text text-muted">Seleccionar archivos: pdf, jpg, bmp, png hasta un máximo de 5.</SMALL>
+                                <SMALL id="textmensajearc" class="form-text text-muted">Seleccionar archivos: pdf, jpg, bmp, png.</SMALL>
                             </form>
                             <p>&nbsp;</p>
                             <div class="alert alert-success" role="alert"></div>
@@ -196,20 +196,39 @@
                 <i class="fa fa-edit bg-aqua" id="circuloedidFC" name="circuloedidFC"></i>
 
                 <div class="timeline-item">
-                <span class="time" id="horafechacompromiso" name="horafechacompromiso"></span>
+                    <span class="time" id="horafechacompromiso" name="horafechacompromiso"></span>
 
-                <h3 class="timeline-header" name="fechacompromisotxt" id="fechacompromisotxt"><a href="#">Fecha de compromiso</a></h3>
+                    <h3 class="timeline-header" name="fechacompromisotxt" id="fechacompromisotxt"><a href="#">Fecha de compromiso</a></h3>
 
-                <div class="timeline-body" id="linebodyfeccomp1">
-                    <!--<textarea name="fechacompromiso" id="fechacompromiso" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>-->
-                    <input type="text" bsDaterangepicker class="form-control datepicker requeridos" name="fechacompromiso" id="fechacompromiso" placeholder="DD/MM/AAAA" readonly>
-                </div>
-                <div class="timeline-footer" id="linebodyfeccomp2">
-                    <a id="guardarfechacompromiso" name="guardarfechacompromiso" class="btn btn-primary btn-xs">Guardar</a>
-                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
-                </div>
+                    <div class="timeline-body" id="linebodyfeccomp1">
+                        <!--<textarea name="fechacompromiso" id="fechacompromiso" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>-->
+                        <input type="text" bsDaterangepicker class="form-control datepicker requeridos" name="fechacompromiso" id="fechacompromiso" placeholder="DD/MM/AAAA" readonly>
+                    </div>
+                    <div class="timeline-footer" id="linebodyfeccomp2">
+                        <a id="guardarfechacompromiso" name="guardarfechacompromiso" class="btn btn-primary btn-xs">Guardar</a>
+                        <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                    </div>
                 </div>
             </li>
+            <li class="fechaguardado" style="display:none;">
+                <i class="fa fa-cloud-upload bg-aqua" id="circuloedidFC" name="circuloedidFC"></i>
+
+                <div class="timeline-item">
+                    <span class="time" id="horafechaguardado" name="horafechaguardado"></span>
+
+                    <h3 class="timeline-header" name="fechaguardadotxt" id="fechaguardadotxt"><a href="#">Fecha Guardado</a></h3>
+
+                    <div class="timeline-body" id="linebodyfechaguardado1">
+                        <!--<textarea name="fechaguardado" id="fechaguardado" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>-->
+                        <input type="text" class="form-control requeridos" name="fechaguardado" id="fechaguardado" placeholder="DD/MM/AAAA" readonly>
+                    </div>
+                    <div class="timeline-footer" id="linebodyfechaguardado2">
+                        <a id="guardarfechaguardado" name="guardarfechaguardado" class="btn btn-primary btn-xs">Guardar</a>
+                        <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                    </div>
+                </div>
+            </li>
+
             <!-- END timeline item -->
             <!-- timeline item -->
 
@@ -221,6 +240,6 @@
       </div>
       <!-- /.col -->
     </div>
-    <a id="Prueba" name="Prueba" class="btn btn-primary btn-xs">Prueba</a>
+    <!--<a id="Prueba" name="Prueba" class="btn btn-primary btn-xs">Prueba</a>-->
     <!-- /.row -->
 </section>

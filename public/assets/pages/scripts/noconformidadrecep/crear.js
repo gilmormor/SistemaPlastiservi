@@ -75,6 +75,7 @@ $(document).ready(function () {
     //  Tamaño máximo en Kb de los ficheros que se pueden seleccionar
     //  no mostrar los errores de tipo de archivo (cuando el usuario selecciona un archivo no permitido)
     //  tipos de archivos permitidos por su extensión (array definido al principio del script)
+    /*
     $('#file-ess11').fileinput({
         language: 'es',
         uploadUrl: '/noconformidadup/' + id,
@@ -88,6 +89,7 @@ $(document).ready(function () {
         initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
         initialPreviewFileType: 'image', // image is the default and can be overridden in config below
     });
+    */
     // Evento filecleared del plugin que se ejecuta cuando pulsamos el botón 'Quitar'
     //    Vaciamos y ocultamos el div de alerta
     $('#file-ess11').on('filecleared', function(event) {
@@ -149,10 +151,11 @@ $("#Prueba").click(function(event)
 });
 
 function prevImagen(id){
+    sta_val=$("#funcvalidarai").val();
     var data = {
         id     : id
     };
-    var ruta = '/noconformidadprevImg/' + id;
+    var ruta = '/noconformidadprevImg/' + id + '/' + sta_val;
     ajaxRequest(data,ruta,'prevImagen');    
 }
 
@@ -286,6 +289,26 @@ $("#guardarfechacompromiso").click(function(event)
 	
 });
 
+$("#guardarfechaguardado").click(function(event)
+{
+    event.preventDefault();
+    if(verificar('fechaguardado','texto'))
+	{
+        id = $("#idhide").val();
+        var data = {
+            id            : id,
+            fechaguardado : $("#fechaguardado").val(),
+            _token : $('input[name=_token]').val()
+        };
+        var ruta = '/noconformidadrecep/actfechaguardado/' + id;
+        funcion = 'guardarfechaguardado';
+        ejecutarAjax(data,ruta,funcion);
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+	
+});
+
 function ejecutarAjax(data,ruta,funcion){
     swal({
         title: '¿ Está seguro que desea Guardar ?',
@@ -403,6 +426,11 @@ function ajaxRequest(data,url,funcion) {
                     buscarpasos(data['id']);
 				}
             }
+            if(funcion=='guardarfechaguardado'){
+				if (respuesta.mensaje == "ok") {
+                    buscarpasos(data['id']);
+				}
+            }
             if(funcion=='btnaprobarAI'){
 				if (respuesta.mensaje == "ok") {
                     $("#myModalValidarai").modal('hide');
@@ -424,38 +452,38 @@ function ajaxRequest(data,url,funcion) {
             }
             if(funcion=='prevImagen'){
                 //alert(respuesta);
+                sta_val = $("#funcvalidarai").val();
                 if(respuesta.i>0){
                     $("#file-ess").fileinput({
                         language: 'es',
-                        uploadUrl: '/noconformidadup/'+$("#idhide").val(), 
+                        uploadUrl: '/noconformidadup/'+$("#idhide").val()+'/'+sta_val,
                         uploadAsync: false,
                         minFileCount: 1,
                         maxFileCount: 5,
                         maxFileSize: 500,
                         showUpload: false, 
                         showRemove: false,
-                        allowedFileExtensions: ['pdf','jpg','bmp','png'],
+                        allowedFileExtensions: ["pdf","jpg","bmp","png"],
                         overwriteInitial: respuesta.overwriteInitial,
                         initialPreview: respuesta.initialPreview,
                         initialPreviewConfig: respuesta.initialPreviewConfig,    
                         initialPreviewAsData: true,
                         initialPreviewFileType: 'image'
                         }).on("filebatchselected", function(event, files) {
-                        
                             $("#file-ess").fileinput("upload");
                         });
                 }else{
                     //alert('entro');
                     $("#file-ess").fileinput({
                         language: 'es',
-                        uploadUrl: '/noconformidadup/'+$("#idhide").val(), 
+                        uploadUrl: '/noconformidadup/'+$("#idhide").val()+'/'+sta_val,
                         uploadAsync: false,
                         minFileCount: 1,
                         maxFileCount: 5,
                         maxFileSize: 500,
                         showUpload: false, 
                         showRemove: false,
-                        allowedFileExtensions: ['pdf','jpg','bmp','png'],
+                        allowedFileExtensions: ["pdf","jpg","bmp","png"],
                         initialPreviewAsData: true,
                         initialPreviewFileType: 'image'
                         }).on("filebatchselected", function(event, files) {
@@ -463,8 +491,10 @@ function ajaxRequest(data,url,funcion) {
                             $("#file-ess").fileinput("upload");
                         });
                 }
+                if($("#funcvalidarai").val()=='1'){
+                    inactivarsubirarchivos();                    
+                }
             }
-            
 
             if (respuesta.mensaje == "ok") {
                 Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
@@ -479,7 +509,6 @@ function ajaxRequest(data,url,funcion) {
                     }
                 }
             }
-
         },
 		error: function () {
 		}
@@ -497,7 +526,7 @@ function actAI(){
     $("#guardarAI").fadeIn(500);
     $("#linebodyai1").fadeIn(500);
     $("#linebodyai2").fadeIn(500);
-    if($("#funcvalidarai").val()!=''){
+    if($("#funcvalidarai").val()!='0'){
         inactAI('');
     }
 }
@@ -506,7 +535,7 @@ function actAI(){
 function inactAI(aux_ac){
     //SI AANALISIS DE CAUDA ESTA EN BLANCO ACTIVE EL ENLACE A VALIDAR NO CONFORMIDAD, SIEMPRE y CUANDO LA CONSULRA VENGA DE NoConformidadValidarController
     if(aux_ac==null || aux_ac==""){
-        $("#accioninmediatatxt").html('<a href="#"  ' + $("#funcvalidarai").val() + '>Acción Inmediata: </a>' + $("#accioninmediata").val());
+        $("#accioninmediatatxt").html('<a href="#"  ' + '>Acción Inmediata: </a>' + $("#accioninmediata").val());
     }else{
         $("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
     }
@@ -520,7 +549,7 @@ function inactAI(aux_ac){
 }
 
 function actvalAI(){
-    if($("#funcvalidarai").val()!=""){
+    if($("#funcvalidarai").val()!='0'){
         $("#obsvalaitxt").html('<a href="#">Validación No conformidad </a>');
         $("#obsvalai").prop("readonly",false);
         $("#obsvalai").fadeIn(500);
@@ -543,7 +572,7 @@ function inactvalAI(){
 }
 
 function actAC(){
-    if($("#funcvalidarai").val()==''){
+    if($("#funcvalidarai").val()=='0'){
         $("#analisisdecausatxt").html('<a href="#">Analisis de causa</a>');
         $("#analisisdecausa").prop("readonly",false);
         $("#analisisdecausa").fadeIn(500);
@@ -565,13 +594,14 @@ function inactAC(){
 
 
 function actACorr(){
-    if($("#funcvalidarai").val()==''){
+    if($("#funcvalidarai").val()=='0'){
         $("#accorrectxt").html('<a href="#">Acción correctiva</a>');
         $("#accorrec").prop("readonly",false);
         $("#accorrec").fadeIn(500);
         $("#guardarACorr").fadeIn(500);
         $("#linebodyacorr1").fadeIn(500);
         $("#linebodyacorr2").fadeIn(500);
+        activarsubirarchivos();
     }else{
         inactACorr();
     }
@@ -582,11 +612,17 @@ function inactACorr(){
     $("#accorrec").fadeOut(500);
     $("#guardarACorr").fadeOut(500);
     $("#linebodyacorr1").fadeOut(500);
-    $("#linebodyacorr2").fadeOut(500);    
+    $("#linebodyacorr2").fadeOut(500);
+/*
+    $("#file-ess").prop("readonly",true);
+    $("#file-ess").prop('disabled',true);
+*/
+    inactivarsubirarchivos();
+    //alert('entro');
 }
 
 function actfechacompromiso(){
-    if($("#funcvalidarai").val()==''){
+    if($("#funcvalidarai").val()=='0'){
         $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>');
         //$("#fechacompromiso").prop("readonly",false);
         $("#fechacompromiso").fadeIn(500);
@@ -608,6 +644,28 @@ function inactfechacompromiso(){
     //$("#fechacompromiso").val('');
 }
 
+function actfechaguardado(){
+    if($("#funcvalidarai").val()=='0'){
+        $("#fechaguardadotxt").html('<a href="#">Fecha de Guardado</a>');
+        //$("#fechacompromiso").prop("readonly",false);
+        var f = new Date();
+        $("#fechaguardado").val(fechaddmmaaaa(f));
+        $("#fechaguardado").fadeIn(500);
+        $("#guardarfechaguardado").fadeIn(500);
+        $("#linebodyfechaguardado1").fadeIn(500);
+        $("#linebodyfechaguardado2").fadeIn(500);    
+    }else{
+        inactfechaguardado();
+    }
+}
+function inactfechaguardado(){
+    $("#fechaguardadotxt").html('<a href="#">Fecha Guardado: </a>' + $("#fechaguardado").val());
+    $("#fechaguardado").prop("readonly",true);
+    $("#fechaguardado").fadeOut(500);
+    $("#guardarfechaguardado").fadeOut(500);
+    $("#linebodyfechaguardado1").fadeOut(500);
+    $("#linebodyfechaguardado2").fadeOut(500);
+}
 
 function ocultaracorrect(){
     $(".acorrect").hide();
@@ -667,6 +725,14 @@ function actdatosfechacompromiso(fecha,fechacompromiso){
     $("#fechafechacompromiso").html(fecha.toLocaleDateString("es-ES", options));
     $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
     $("#fechacompromiso").val(fechacompromiso);
+    $(".fechaguardado").fadeIn(500);
+}
+
+function actdatosfechaguardado(fecha,fechaguardado){
+    $("#fechafechaguardado").html(fecha.toLocaleDateString("es-ES", options));
+    $("#horafechaguardado").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
+    $("#fechaguardado").val(fechaddmmaaaa(fecha));
+    //alert($("#fechaguardado").val());
 }
 
 function banquearcampos(){
@@ -693,6 +759,7 @@ function banquearcampos(){
 }
 
 function validarpasos(respuesta){
+    //alert($("#funcvalidarai").val());
     inactAI('');
     inactvalAI();
     inactAC();
@@ -718,7 +785,7 @@ function validarpasos(respuesta){
             //ocultarobsvalai();
             //alert('entro');
             
-            if($("#funcvalidarai").val()==''){
+            if($("#funcvalidarai").val()=='0'){
                 inactvalAI();
                 $("#obsvalaitxt").html('<a href="#">Validación No conformidad: </a>Esperando Validación de supervisor.');
             }else{
@@ -758,10 +825,22 @@ function validarpasos(respuesta){
                             actACorr();
                             actfechacompromiso();
                         }else{
-                            //inactACorr();
+                            inactACorr();
                             var fecha = new Date(noconformidad.fechacompromisofec);
                             actdatosfechacompromiso(fecha,respuesta.feccomp);
                             actfechacompromiso();
+                            if(noconformidad.fechaguardado==null || noconformidad.fechaguardado==""){
+                                $("#fechafechaguardado").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                                $("#horafechaguardado").html('<i class="fa fa-clock-o"></i> ');
+                                //actfechacompromiso();
+                                actfechaguardado();
+                            }else{
+                                inactfechacompromiso();
+                                var fecha = new Date(noconformidad.fechaguardado);
+                                actdatosfechaguardado(fecha,noconformidad.fechaguardado);
+                                actfechaguardado();
+                                inactfechaguardado();
+                            }
                         }
                     }
                 }
@@ -802,4 +881,29 @@ function guardarvalai(aux_status){
 	}else{
 		alertify.error("Falta incluir informacion");
 	}
+}
+
+
+function activarsubirarchivos(){
+    $(".kv-file-remove").show();
+    $(".input-group").show();
+    $(".fileinput-remove").show();
+    $(".form-text").show();
+}
+function inactivarsubirarchivos(){
+    $(".kv-file-remove").hide();
+    $(".input-group").hide();
+    $(".fileinput-remove").hide();
+    $(".form-text").hide();
+}
+
+function fechaddmmaaaa(f){
+    dia = f.getDate();
+    d = dia.toString();
+    d = d.padStart(2, 0);
+    mes = f.getMonth();
+    m = mes.toString();
+    m = m.padStart(2, 0);
+    fecha = d + "/" + m + "/" + f.getFullYear();
+    return fecha; 
 }

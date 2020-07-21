@@ -37,15 +37,27 @@ No Conformidad
                             <td>{{$data->fechahora}}</td>
                             <td>{{$data->hallazgo}}</td>
                             <td>
-                                <a href="{{route('editar_noconformidad', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                    <i class="fa fa-fw fa-pencil"></i>
-                                </a>
+                                @if (empty($data->accioninmediata))
+                                    <a href="{{route('editar_noconformidad', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+                                        <i class="fa fa-fw fa-pencil"></i>
+                                    </a>
+                                @else
+                                    <a href="#" class="btn-accion-tabla tooltipsC" title="No se puede editar (Iniciado proceso NC)">
+                                        <i class="fa fa-fw fa-pencil"></i>
+                                    </a>
+                                    <a href="{{route('ver_noconformidad', ['id' => $data->id, 'sta_val' => '2'])}}" class="btn-accion-tabla tooltipsC" title="Ver Proceso NC">
+                                        <i class="fa fa-fw fa-eye"></i>
+                                    </a>
+
+                                @endif
+                                <!--
                                 <form action="{{route('eliminar_noconformidad', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
                                     @csrf @method("delete")
                                     <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
                                         <i class="fa fa-fw fa-trash text-danger"></i>
                                     </button>
                                 </form>
+                                -->
                             </td>
                         </tr>
                         @endforeach

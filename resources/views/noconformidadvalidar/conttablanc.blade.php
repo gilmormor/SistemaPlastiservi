@@ -13,12 +13,7 @@
     ?>
     <td>
         @csrf @method("delete")
-        <a id='accioninmediata{{$i}}' name='accioninmediata{{$i}}' class='btn {{$aux_btn}} btn-sm tooltipsC' title='Editar' onclick='paso2({{$data->id}},{{$i}})'>
-            <span id='iconoai{{$i}}' name='iconoai{{$i}}' class='glyphicon {{$aux_icono}}' style='bottom: 0px;top: 2px;' class='tooltipsC'></span>
-        </a>
-    </td>
-    <td>
-        <a href="{{route('editar_ncvalidar', ['id' => $data->id, 'sta_val' => 1])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+        <a href="{{route('editar_ncvalidar', ['id' => $data->id, 'sta_val' => '1'])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
             <i class="fa fa-fw fa-pencil"></i>
         </a>
     </td>
