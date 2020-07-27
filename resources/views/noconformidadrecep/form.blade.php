@@ -232,6 +232,58 @@
             <!-- END timeline item -->
             <!-- timeline item -->
 
+            <!-- timeline time label -->
+            <li class="time-label cumplimiento" style="display:none;">
+                <span class="bg-aqua" id="fechacumplimiento" name="fechacumplimiento">
+                </span>
+            </li>
+            <!-- /.timeline-label -->
+            <!-- timeline item -->
+            <li class="cumplimiento" style="display:none;">
+                <i class="fa fa-edit bg-blue"></i>
+
+                <div class="timeline-item">
+                <span class="time" id="horacumplimiento" name="horacumplimiento"></span>
+
+                <h3 class="timeline-header" name="cumplimientotxt" id="cumplimientotxt"><a href="validarai()">Validar Cumplimiento</a></h3>
+                <div class="timeline-body" id="linebodycumplimiento1">
+                    <textarea name="cumplimiento" id="cumplimiento" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                </div>
+                <div class="timeline-footer" id="linebodycumplimiento2">
+                    <a id="guardarcumplimientoSi" name="guardarcumplimientoSi" class="btn btn-primary btn-xs" onclick="cumplimientoSN(1)">Si </a>
+                    <a id="guardarcumplimientoNo" name="guardarcumplimientoNo" class="btn btn-danger btn-xs" onclick="cumplimientoSN(0)">No</a>
+                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
+
+            <!-- timeline time label -->
+            <li class="time-label revisionpaso3" style="display:none;">
+                <span class="bg-aqua" id="fecharevisionpaso3" name="fecharevisionpaso3">
+                </span>
+            </li>
+            <!-- /.timeline-label -->
+            <!-- timeline item -->
+            <li class="revisionpaso3" style="display:none;">
+                <i class="fa fa-edit bg-blue"></i>
+
+                <div class="timeline-item">
+                <span class="time" id="horarevisionpaso3" name="horarevisionpaso3"></span>
+
+                <h3 class="timeline-header" name="revisionpaso3txt" id="revisionpaso3txt"><a href="validarai()">Validar Cumplimiento</a></h3>
+                <div class="timeline-body" id="linebodyrevisionpaso31">
+                    <textarea name="revisionpaso3" id="revisionpaso3" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                </div>
+                <div class="timeline-footer" id="linebodyrevisionpaso32">
+                    <a id="guardarrevisionpaso3Si" name="guardarrevisionpaso3Si" class="btn btn-primary btn-xs" onclick="revisionpaso3SN(1)">Si </a>
+                    <a id="guardarrevisionpaso3No" name="guardarrevisionpaso3No" class="btn btn-danger btn-xs" onclick="revisionpaso3SN(0)">No</a>
+                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
+
             <!-- timeline item -->
             <li>
                 <i class="fa fa-clock-o bg-gray"></i>
@@ -242,4 +294,5 @@
     </div>
     <!--<a id="Prueba" name="Prueba" class="btn btn-primary btn-xs">Prueba</a>-->
     <!-- /.row -->
+    @include('generales.obsincumplimientonc')
 </section>

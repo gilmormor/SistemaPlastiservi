@@ -50,12 +50,17 @@ Recepción No Conformidad
                             @if ((NOW()<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
                                 OR (!is_null($data->accioninmediata) and $data->accioninmediata!='')))
                                 <?php
+                                    if($data->id==15){
+                                        //dd($data);
+                                    }
+                                    
                                     $recibido = "fa-mail-reply";
                                     $aux_mostrar = false;
                                     if(is_null($data->usuario_idmp2)){
                                         $aux_mostrar = true;
                                     }else{
-                                        if(($data->usuario_idmp2==auth()->id()) AND ($data->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")))){
+                                        //Esta ultima validacion es para que cuando se rachazada la NC por el dueño permita mostrarla sin importar la fecha que fue hecha a accion inmediata -> or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))
+                                        if(($data->usuario_idmp2==auth()->id()) AND (( $data->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) or $data->cumplimiento==1 or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento)) ))){
                                             $aux_mostrar = true;
                                         }
                                     }

@@ -416,7 +416,7 @@ Route::delete('noconformidad/{id}', 'NoConformidadController@eliminar')->name('e
 Route::post('noconformidadup/{id}/{sta_val}', 'NoConformidadController@actualizarImagen')->name('actualizarImagen_noconformidad');
 Route::post('noconformidaddel/{id}', 'NoConformidadController@delImagen')->name('delImagen_noconformidad');
 Route::post('noconformidadprevImg/{id}/{sta_val}', 'NoConformidadController@prevImagen')->name('prevImagen_noconformidad');
-Route::get('noconformidadpver/{id}/{sta_val}', 'NoConformidadController@ver')->name('ver_noconformidad');
+Route::get('noconformidadver/{id}/{sta_val}', 'NoConformidadController@ver')->name('ver_noconformidad');
 
 /*RUTAS Bloquear Cliente */
 Route::get('clientebloqueado', 'ClienteBloqueadoController@index')->name('clientebloqueado');
@@ -437,6 +437,8 @@ Route::delete('noconformidadrecep/{id}', 'NoConformidadRecepController@eliminar'
 Route::post('noconformidadrecep/buscar/{id}', 'NoConformidadRecepController@buscar')->name('buscar_noconformidadrecep');
 Route::post('noconformidadrecep/actai/{id}', 'NoConformidadRecepController@actai')->name('actai_noconformidadrecep');
 Route::post('noconformidadrecep/actobsvalai/{id}', 'NoConformidadRecepController@actobsvalai')->name('actobsvalai_noconformidadrecep');
+Route::post('noconformidadrecep/cumplimiento/{id}', 'NoConformidadRecepController@cumplimiento')->name('cumplimiento_noconformidadrecep');
+Route::post('noconformidadrecep/incumplimiento/{id}', 'NoConformidadRecepController@incumplimiento')->name('incumplimiento_noconformidadrecep');
 
 Route::post('noconformidadrecep/actacausa/{id}', 'NoConformidadRecepController@actacausa')->name('actacausa_noconformidadrecep');
 Route::post('noconformidadrecep/actacorr/{id}', 'NoConformidadRecepController@actacorr')->name('actacorr_noconformidadrecep');

@@ -349,12 +349,12 @@ class NoConformidadController extends Controller
 
     public function ver($id,$sta_val)
     {
-        //can('editar-no-conformidad');
+        can('editar-no-conformidad');
         $data = NoConformidad::findOrFail($id);
         $funcvalidarai = $sta_val;
         $directory = "storage/imagenes/noconformidad/";      
         $images = glob($directory . "*.*");
-        return view('noconformidadrecep.editar',compact('data','funcvalidarai','images'));
+        return view('noconformidad.editarver',compact('data','funcvalidarai','images'));
     }
 
 }

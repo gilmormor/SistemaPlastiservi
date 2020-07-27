@@ -108,7 +108,6 @@ $(document).ready(function () {
         var mensaje;
         var archivo;
         var total_tipos='';
-        alert('entro');
         
         reset_contadores(); // Resetamos los contadores de tipo de archivo
         // Comenzamos a crear el mensaje que se mostrará en el DIV de alerta
@@ -223,8 +222,63 @@ function apre(aux_val){
 	}else{
 		alertify.error("Falta incluir informacion");
 	}
-
 }
+
+function cumplimientoSN(aux_val){
+    event.preventDefault();
+    /*
+    if(aux_val==0){
+        $("#obsaccioninmediata").val($("#accioninmediata").val());
+        $("#obsanalisisdecausa").val($("#analisisdecausa").val());
+        $("#obsaccioncorrectiva").val($("#accorrec").val());
+        $("#myModalincumplimientonc").modal('show');
+    }
+    if(aux_val==1){
+        id = $("#idhide").val();
+        var data = {
+            id           : id,
+            cumplimiento : aux_val,
+            _token       : $('input[name=_token]').val()
+        };
+        var ruta = '/noconformidadrecep/cumplimiento/' + id;
+        funcion = 'cumplimiento';
+        ejecutarAjax(data,ruta,funcion);    
+    }
+    */
+    id = $("#idhide").val();
+    var data = {
+        id           : id,
+        cumplimiento : aux_val,
+        _token       : $('input[name=_token]').val()
+    };
+    var ruta = '/noconformidadrecep/cumplimiento/' + id;
+    funcion = 'cumplimiento';
+    ejecutarAjax(data,ruta,funcion); 
+}
+
+
+$("#btnguardarincumplimiento").click(function(event)
+{
+    event.preventDefault();
+	if(verificar('obsaccioninmediata','texto') && verificar('obsanalisisdecausa','texto') && verificar('obsaccioncorrectiva','texto'))
+	{
+        //$("#myModalDatos").modal('hide');
+        id = $("#idhide").val();
+        var data = {
+            id               : id,
+            cumplimiento     : 0,
+            accioninmediata  : $("#obsaccioninmediata").val(),
+            analisisdecausa  : $("#obsanalisisdecausa").val(),
+            accorrec         : $("#obsaccioncorrectiva").val(),
+            _token : $('input[name=_token]').val()
+        };
+        var ruta = '/noconformidadrecep/incumplimiento/' + id;
+        funcion = 'incumplimiento';
+        ejecutarAjax(data,ruta,funcion);
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+});
 
 
 $("#guardarACausa").click(function(event)
@@ -362,12 +416,14 @@ function ajaxRequest(data,url,funcion) {
                 ocultarACausa();
                 ocultaracorrect();
                 ocultarfechacompromiso();
+                ocultarcumplimiento();
 
                 inactAI('');
                 inactvalAI();
-                inactAC();
+                inactACausa();
                 inactACorr();
                 inactfechacompromiso();
+                inactcumplimiento()
 
                 $("#fechanc").html(fecha.toLocaleDateString("es-ES", options));
                 $("#horanc").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
@@ -410,7 +466,12 @@ function ajaxRequest(data,url,funcion) {
                     buscarpasos(data['id']);
 				}
             }
-
+            if(funcion=='cumplimiento' || funcion=='incumplimiento'){
+				if (respuesta.mensaje == "ok") {
+                    buscarpasos(data['id']);
+                    $("#myModalincumplimientonc").modal('hide');
+				}
+            }
             if(funcion=='guardarACausa'){
 				if (respuesta.mensaje == "ok") {
                     buscarpasos(data['id']);
@@ -473,7 +534,6 @@ function ajaxRequest(data,url,funcion) {
                             $("#file-ess").fileinput("upload");
                         });
                 }else{
-                    //alert('entro');
                     $("#file-ess").fileinput({
                         language: 'es',
                         uploadUrl: '/noconformidadup/'+$("#idhide").val()+'/'+sta_val,
@@ -571,7 +631,8 @@ function inactvalAI(){
     $("#linebodyvalai2").fadeOut(500);    
 }
 
-function actAC(){
+function actACausa(){
+    //alert($("#funcvalidarai").val());
     if($("#funcvalidarai").val()=='0'){
         $("#analisisdecausatxt").html('<a href="#">Analisis de causa</a>');
         $("#analisisdecausa").prop("readonly",false);
@@ -580,10 +641,10 @@ function actAC(){
         $("#linebodyac1").fadeIn(500);
         $("#linebodyac2").fadeIn(500);    
     }else{
-        inactAC();
+        inactACausa();
     }
 }
-function inactAC(){
+function inactACausa(){
     $("#analisisdecausatxt").html('<a href="#">Analisis de causa: </a>' + $("#analisisdecausa").val());
     $("#analisisdecausa").prop("readonly",true);
     $("#analisisdecausa").fadeOut(500);
@@ -618,7 +679,6 @@ function inactACorr(){
     $("#file-ess").prop('disabled',true);
 */
     inactivarsubirarchivos();
-    //alert('entro');
 }
 
 function actfechacompromiso(){
@@ -667,6 +727,31 @@ function inactfechaguardado(){
     $("#linebodyfechaguardado2").fadeOut(500);
 }
 
+function actcumplimiento(){
+    if($("#funcvalidarai").val()=='2'){
+        $("#cumplimientotxt").html('<a href="#">Validar cumplimiento</a>');
+        /*$("#cumplimiento").prop("readonly",false);
+        $("#cumplimiento").fadeIn(500);*/
+        $("#guardarcumplimiento").fadeIn(500);
+        $("#linebodycumplimiento1").fadeIn(500);
+        $("#linebodycumplimiento2").fadeIn(500);
+    }else{
+        inactcumplimiento();
+    }
+}
+
+function inactcumplimiento(){
+    $("#cumplimientotxt").html('<a href="#">Validar cumplimiento: </a>' + $("#cumplimiento").val());
+    $("#cumplimiento").prop("readonly",true);
+    $("#cumplimiento").fadeOut(500);
+    $("#guardarcumplimiento").fadeOut(500);
+    $("#linebodycumplimiento1").fadeOut(500);
+    $("#linebodycumplimiento2").fadeOut(500);    
+}
+
+
+
+
 function ocultaracorrect(){
     $(".acorrect").hide();
     $("#accioninmediata").prop("readonly",false);
@@ -677,16 +762,22 @@ function ocultaracorrect(){
 
 function ocultarobsvalai(){
     $(".obsvalai").hide();
-    /*
-    $("#accioninmediata").prop("readonly",false);
-    $("#accioninmediata").fadeIn(500);
-    $("#guardarAI").fadeIn(500);
-    $(".linebodyai").fadeIn(500);*/
+}
+
+function ocultarcumplimiento(){
+    $(".cumplimiento").hide();
 }
 
 
 function ocultarfechacompromiso(){
     $(".fechacompromiso").hide();
+}
+function ocultarfechaguardado(){
+    $(".fechaguardado").hide();
+}
+
+function ocultarcumplimiento(){
+    $(".cumplimiento").hide();
 }
 
 var options = { year: 'numeric', month: 'short', day: 'numeric', literal: '/' };
@@ -707,7 +798,7 @@ function actdatosvalai(fecha,obsvalai){
 }
 
 
-function actdatosac(fecha,analisisdecausa){
+function actdatosacausa(fecha,analisisdecausa){
     $("#fechaac").html(fecha.toLocaleDateString("es-ES", options));
     $("#horaac").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
     $("#analisisdecausa").val(analisisdecausa);
@@ -732,7 +823,26 @@ function actdatosfechaguardado(fecha,fechaguardado){
     $("#fechafechaguardado").html(fecha.toLocaleDateString("es-ES", options));
     $("#horafechaguardado").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
     $("#fechaguardado").val(fechaddmmaaaa(fecha));
+    $(".cumplimiento").fadeIn(500);
     //alert($("#fechaguardado").val());
+}
+
+function actdatoscumplimiento(fecha,cumplimiento){
+    $("#fechacumplimiento").html(fecha.toLocaleDateString("es-ES", options));
+    $("#horacumplimiento").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
+    if(cumplimiento=="1")
+        $("#cumplimiento").val('Si');
+    if(cumplimiento=="0")
+        $("#cumplimiento").val('No');
+    //Cuando es = -6 es porque el dueño de la NC marco como incumplimiento de la misma
+    if(cumplimiento == -6){
+        $("#cumplimiento").val('No: Revalidación');
+        $("#cumplimientotxt").html('<a href="#">Validar cumplimiento: </a>' + $("#cumplimiento").val());
+    } 
+        
+
+    //alert($("#obsvalai").val());
+    //$(".acausa").fadeIn(500);
 }
 
 function banquearcampos(){
@@ -762,9 +872,10 @@ function validarpasos(respuesta){
     //alert($("#funcvalidarai").val());
     inactAI('');
     inactvalAI();
-    inactAC();
+    inactACausa();
     inactACorr();
     inactfechacompromiso()
+    inactcumplimiento();
 
     noconformidad=respuesta.noconformidad;
     if(noconformidad.accioninmediata==null || noconformidad.accioninmediata==""){
@@ -775,77 +886,132 @@ function validarpasos(respuesta){
     }else{
         var fecha = new Date(noconformidad.accioninmediatafec);
         actdatosai(fecha,noconformidad.accioninmediata);
-        if(noconformidad.obsvalai==null || noconformidad.obsvalai==""){
-            $("#fechavalai").html('.::.  <i class="fa fa-calendar"></i>  .::.');
-            $("#horavalai").html('<i class="fa fa-clock-o"></i> ');
+        if(noconformidad.cumplimiento===0){// Si es === 0 entonces hay incumplimiento 
             actAI();
-            
-            $(".acausa").hide();
-            actvalAI();
-            //ocultarobsvalai();
-            //alert('entro');
-            
-            if($("#funcvalidarai").val()=='0'){
-                inactvalAI();
-                $("#obsvalaitxt").html('<a href="#">Validación No conformidad: </a>Esperando Validación de supervisor.');
-            }else{
-                actvalAI();
-            }
+            ocultarobsvalai();
+            ocultarACausa();
         }else{
-            inactAI(noconformidad.analisisdecausa);
-            var fecha = new Date(noconformidad.fechavalai);
-            //alert(noconformidad.obsvalai);
-            actdatosvalai(fecha,noconformidad.obsvalai);
-            inactvalAI();
-            if(noconformidad.stavalai=='0'){
-                ocultarACausa();
-            }else{
-                if(noconformidad.analisisdecausa==null || noconformidad.analisisdecausa==""){
-                    $("#fechaac").html('.::.  <i class="fa fa-calendar"></i>  .::.');
-                    $("#horaac").html('<i class="fa fa-clock-o"></i> ');
-                    //actAI();
-                    actAC();
+            if(noconformidad.obsvalai==null || noconformidad.obsvalai==""){
+                $("#fechavalai").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                $("#horavalai").html('<i class="fa fa-clock-o"></i> ');
+                actAI();
+                
+                $(".acausa").hide();
+                actvalAI();
+                //ocultarobsvalai();
+                
+                if($("#funcvalidarai").val()=='1'){
+                    actvalAI();
                 }else{
-                    inactAI(noconformidad.analisisdecausa);
-                    var fecha = new Date(noconformidad.analisisdecausafec);
-                    actdatosac(fecha,noconformidad.analisisdecausa);
-                    if(noconformidad.accorrec==null || noconformidad.accorrec==""){
-                        $("#fechaacorr").html('.::.  <i class="fa fa-calendar"></i>  .::.');
-                        $("#horaacorr").html('<i class="fa fa-clock-o"></i> ');
-                        actAC();
-                        actACorr();
+                    inactvalAI();
+                    $("#obsvalaitxt").html('<a href="#">Validación No conformidad: </a>Esperando Validación de supervisor.');                
+                }
+            }else{
+                inactAI(noconformidad.analisisdecausa);
+                var fecha = new Date(noconformidad.fechavalai);
+                //alert(noconformidad.obsvalai);
+                actdatosvalai(fecha,noconformidad.obsvalai);
+                inactvalAI();
+                if(noconformidad.stavalai=='0'){
+                    ocultarACausa();
+                }else{
+                    if(noconformidad.cumplimiento===-1){
+                        ocultarACausa();
+                        actdatosvalai(fecha,noconformidad.obsvalai);
+                        actvalAI();
                     }else{
-                        inactAC();
-                        var fecha = new Date(noconformidad.accorrecfec);
-                        actdatosACorr(fecha,noconformidad.accorrec);
-                        //actfechacompromiso();
-                        if(noconformidad.fechacompromiso==null || noconformidad.fechacompromiso==""){
-                            $("#fechafechacompromiso").html('.::.  <i class="fa fa-calendar"></i>  .::.');
-                            $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ');
-                            actACorr();
-                            actfechacompromiso();
+                        if(noconformidad.analisisdecausa==null || noconformidad.analisisdecausa==""){
+                            $("#fechaac").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                            $("#horaac").html('<i class="fa fa-clock-o"></i> ');
+                            //actAI();
+                            actACausa();
                         }else{
-                            inactACorr();
-                            var fecha = new Date(noconformidad.fechacompromisofec);
-                            actdatosfechacompromiso(fecha,respuesta.feccomp);
-                            actfechacompromiso();
-                            if(noconformidad.fechaguardado==null || noconformidad.fechaguardado==""){
-                                $("#fechafechaguardado").html('.::.  <i class="fa fa-calendar"></i>  .::.');
-                                $("#horafechaguardado").html('<i class="fa fa-clock-o"></i> ');
-                                //actfechacompromiso();
-                                actfechaguardado();
+                            inactAI(noconformidad.analisisdecausa);
+                            var fecha = new Date(noconformidad.analisisdecausafec);
+                            actdatosacausa(fecha,noconformidad.analisisdecausa);
+                            if(noconformidad.cumplimiento===-2){
+                                inactACorr();
+                                ocultaracorrect();
+                                actACausa();
                             }else{
-                                inactfechacompromiso();
-                                var fecha = new Date(noconformidad.fechaguardado);
-                                actdatosfechaguardado(fecha,noconformidad.fechaguardado);
-                                actfechaguardado();
-                                inactfechaguardado();
+                                if(noconformidad.accorrec==null || noconformidad.accorrec==""){
+                                    $("#fechaacorr").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                                    $("#horaacorr").html('<i class="fa fa-clock-o"></i> ');
+                                    actACausa();
+                                    actACorr();
+                                }else{
+                                    inactACausa();
+                                    var fecha = new Date(noconformidad.accorrecfec);
+                                    actdatosACorr(fecha,noconformidad.accorrec);
+                                    //actfechacompromiso();
+                                    if(noconformidad.cumplimiento===-3){
+                                        inactfechacompromiso();
+                                        ocultarfechacompromiso();
+                                        actACorr();
+                                    }else{
+                                        if(noconformidad.fechacompromiso==null || noconformidad.fechacompromiso==""){
+                                            $("#fechafechacompromiso").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                                            $("#horafechacompromiso").html('<i class="fa fa-clock-o"></i> ');
+                                            actACorr();
+                                            actfechacompromiso();
+                                        }else{
+                                            inactACorr();
+                                            var fecha = new Date(noconformidad.fechacompromisofec);
+                                            actdatosfechacompromiso(fecha,respuesta.feccomp);
+                                            actfechacompromiso();
+                                            if(noconformidad.cumplimiento===-4){
+                                                inactfechaguardado();
+                                                ocultarfechaguardado();
+                                                actfechacompromiso();
+                                            }else{
+                                                if(noconformidad.fechaguardado==null || noconformidad.fechaguardado==""){
+                                                    $("#fechafechaguardado").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                                                    $("#horafechaguardado").html('<i class="fa fa-clock-o"></i> ');
+                                                    //actfechacompromiso();
+                                                    actfechaguardado();
+                                                }else{
+                                                    inactfechacompromiso();
+                                                    var fecha = new Date(noconformidad.fechaguardado);
+                                                    actdatosfechaguardado(fecha,noconformidad.fechaguardado);
+                                                    //actfechaguardado();
+                                                    inactfechaguardado();
+                                                    if(noconformidad.cumplimiento===-5){
+                                                        inactcumplimiento();
+                                                        ocultarcumplimiento();
+                                                        actfechaguardado();
+                                                    }else{
+                                                        if(noconformidad.cumplimiento==null){
+                                                            //alert('prueba');
+                                                            $("#fechacumplimiento").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                                                            $("#horacumplimiento").html('<i class="fa fa-clock-o"></i> ');
+                                                            //actcumplimiento();
+                                                            if($("#funcvalidarai").val()=='2'){
+                                                                actcumplimiento();
+                                                            }else{
+                                                                inactcumplimiento();
+                                                                $("#cumplimientotxt").html('<a href="#">Validar Cumplimiento: </a>Esperando Validación del Dueño NC.');                
+                                                            }                        
+                                                        }else{
+                                                            var fecha = new Date(noconformidad.fechacumplimiento);
+                                                            actdatoscumplimiento(fecha,noconformidad.cumplimiento);
+                                                            actcumplimiento();
+                                                            inactcumplimiento();
+                                                            if(noconformidad.cumplimiento===-6){
+                                                                actcumplimiento();
+                                                                actdatoscumplimiento(fecha,noconformidad.cumplimiento);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-
         }
     }    
 }
