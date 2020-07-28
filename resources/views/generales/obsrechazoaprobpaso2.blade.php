@@ -1,4 +1,4 @@
-<div class="modal fade" id="myModalincumplimientonc" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="myModalrechazoaprobpaso2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" id="mdialTamanio">
         <!-- Modal content-->
         <div class="modal-content">
@@ -6,7 +6,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h3 class="modal-title">Observacion por Incumplimiento</h3>
+                <h3 class="modal-title">Observación</h3>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -26,7 +26,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <button type="button" id="btnguardarincumplimiento" name="btnguardarincumplimiento" class="btn btn-primary">Guardar</button>
+                <button type="button" id="btnguardarrechazoaprobpaso2" name="btnguardarrechazoaprobpaso2" class="btn btn-primary">Guardar</button>
             </div>
         </div>
         

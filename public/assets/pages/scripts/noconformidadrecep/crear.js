@@ -8,6 +8,7 @@ $(document).ready(function () {
     }).datepicker("setDate");
 
     id = $("#idhide").val();
+    aux_textvai="Validar accion inmediata";
     prevImagen(id);
     paso2(id);
 /*
@@ -226,25 +227,6 @@ function apre(aux_val){
 
 function cumplimientoSN(aux_val){
     event.preventDefault();
-    /*
-    if(aux_val==0){
-        $("#obsaccioninmediata").val($("#accioninmediata").val());
-        $("#obsanalisisdecausa").val($("#analisisdecausa").val());
-        $("#obsaccioncorrectiva").val($("#accorrec").val());
-        $("#myModalincumplimientonc").modal('show');
-    }
-    if(aux_val==1){
-        id = $("#idhide").val();
-        var data = {
-            id           : id,
-            cumplimiento : aux_val,
-            _token       : $('input[name=_token]').val()
-        };
-        var ruta = '/noconformidadrecep/cumplimiento/' + id;
-        funcion = 'cumplimiento';
-        ejecutarAjax(data,ruta,funcion);    
-    }
-    */
     id = $("#idhide").val();
     var data = {
         id           : id,
@@ -256,8 +238,29 @@ function cumplimientoSN(aux_val){
     ejecutarAjax(data,ruta,funcion); 
 }
 
+function aprobpaso2(aux_val){
+    event.preventDefault();
+    if(aux_val==0){
+        $("#obsaccioninmediata").val($("#accioninmediata").val());
+        $("#obsanalisisdecausa").val($("#analisisdecausa").val());
+        $("#obsaccioncorrectiva").val($("#accorrec").val());
+        $("#myModalrechazoaprobpaso2").modal('show');
+    }
+    if(aux_val==1){
+        id = $("#idhide").val();
+        var data = {
+            id         : id,
+            aprobpaso2 : aux_val,
+            _token     : $('input[name=_token]').val()
+        };
+        var ruta = '/noconformidadrecep/aprobpaso2/' + id;
+        funcion = 'aprobpaso2';
+        ejecutarAjax(data,ruta,funcion);
+    }
+}
 
-$("#btnguardarincumplimiento").click(function(event)
+
+$("#btnguardarrechazoaprobpaso2").click(function(event)
 {
     event.preventDefault();
 	if(verificar('obsaccioninmediata','texto') && verificar('obsanalisisdecausa','texto') && verificar('obsaccioncorrectiva','texto'))
@@ -266,14 +269,14 @@ $("#btnguardarincumplimiento").click(function(event)
         id = $("#idhide").val();
         var data = {
             id               : id,
-            cumplimiento     : 0,
+            aprobpaso2       : 0,
             accioninmediata  : $("#obsaccioninmediata").val(),
             analisisdecausa  : $("#obsanalisisdecausa").val(),
             accorrec         : $("#obsaccioncorrectiva").val(),
             _token : $('input[name=_token]').val()
         };
-        var ruta = '/noconformidadrecep/incumplimiento/' + id;
-        funcion = 'incumplimiento';
+        var ruta = '/noconformidadrecep/aprobpaso2/' + id;
+        funcion = 'aprobpaso2';
         ejecutarAjax(data,ruta,funcion);
 	}else{
 		alertify.error("Falta incluir informacion");
@@ -417,6 +420,7 @@ function ajaxRequest(data,url,funcion) {
                 ocultaracorrect();
                 ocultarfechacompromiso();
                 ocultarcumplimiento();
+                ocultaraprobpaso2();
 
                 inactAI('');
                 inactvalAI();
@@ -469,7 +473,6 @@ function ajaxRequest(data,url,funcion) {
             if(funcion=='cumplimiento' || funcion=='incumplimiento'){
 				if (respuesta.mensaje == "ok") {
                     buscarpasos(data['id']);
-                    $("#myModalincumplimientonc").modal('hide');
 				}
             }
             if(funcion=='guardarACausa'){
@@ -497,6 +500,12 @@ function ajaxRequest(data,url,funcion) {
                     $("#myModalValidarai").modal('hide');
                     $("#myModalDatos").modal('hide');
                     //buscarpasos(data['id'],data['i']);
+				}
+            }
+            if(funcion=='aprobpaso2'){
+				if (respuesta.mensaje == "ok") {
+                    buscarpasos(data['id']);
+                    $("#myModalrechazoaprobpaso2").modal('hide');
 				}
             }
             if(funcion=='buscarAI'){
@@ -610,25 +619,35 @@ function inactAI(aux_ac){
 
 function actvalAI(){
     if($("#funcvalidarai").val()!='0'){
-        $("#obsvalaitxt").html('<a href="#">Validación No conformidad </a>');
+        $("#obsvalaitxt").html('<a href="#">' + aux_textvai + ' </a>');
         $("#obsvalai").prop("readonly",false);
         $("#obsvalai").fadeIn(500);
         $("#guardarvalAI").fadeIn(500);
         $("#linebodyvalai1").fadeIn(500);
         $("#linebodyvalai2").fadeIn(500);
-    
+        if($("#funcvalidarai").val()!='1'){
+            inactvalAI();
+            esperavalidarai();
+        }
+        
     }else{
         inactvalAI();
     }
 }
+function esperavalidarai(){
+    $("#obsvalaitxt").html('<a href="#">' + aux_textvai + ': </a>Esperando Validación de SGI.');     
+}
 
 function inactvalAI(){
-    $("#obsvalaitxt").html('<a href="#">Validación No conformidad: </a>' + $("#obsvalai").val());
+    $("#obsvalaitxt").html('<a href="#">' + aux_textvai + ': </a>' + $("#obsvalai").val());
     $("#obsvalai").prop("readonly",true);
     $("#obsvalai").fadeOut(500);
     $("#guardarvalAI").fadeOut(500);
     $("#linebodyvalai1").fadeOut(500);
-    $("#linebodyvalai2").fadeOut(500);    
+    $("#linebodyvalai2").fadeOut(500);
+    if($("#funcvalidarai").val()!='1'){
+        esperavalidarai();
+    }
 }
 
 function actACausa(){
@@ -729,7 +748,7 @@ function inactfechaguardado(){
 
 function actcumplimiento(){
     if($("#funcvalidarai").val()=='2'){
-        $("#cumplimientotxt").html('<a href="#">Validar cumplimiento</a>');
+        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado</a>');
         /*$("#cumplimiento").prop("readonly",false);
         $("#cumplimiento").fadeIn(500);*/
         $("#guardarcumplimiento").fadeIn(500);
@@ -737,11 +756,12 @@ function actcumplimiento(){
         $("#linebodycumplimiento2").fadeIn(500);
     }else{
         inactcumplimiento();
+        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>Esperando Validación del Dueño NC.');                
     }
 }
 
 function inactcumplimiento(){
-    $("#cumplimientotxt").html('<a href="#">Validar cumplimiento: </a>' + $("#cumplimiento").val());
+    $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>' + $("#cumplimiento").val());
     $("#cumplimiento").prop("readonly",true);
     $("#cumplimiento").fadeOut(500);
     $("#guardarcumplimiento").fadeOut(500);
@@ -750,6 +770,28 @@ function inactcumplimiento(){
 }
 
 
+function actaprobpaso2(){
+    if($("#funcvalidarai").val()!='0'){
+        //$("#lblaprobpaso2").html('<a href="#">Revisión  </a>');
+        $("#aprobpaso2").prop("readonly",true);
+        $("#aprobpaso2").fadeOut(500);
+        $("#guardaraprobpaso2").fadeIn(500);
+        $("#linebodyaprobpaso21").fadeIn(500);
+        $("#linebodyaprobpaso22").fadeIn(500);
+    
+    }else{
+        inactaprobpaso2();
+    }
+}
+
+function inactaprobpaso2(){
+    $("#aprobpaso2txt").html('<a href="#">Revisión SGI: </a>' + $("#aprobpaso2").val());
+    $("#aprobpaso2").prop("readonly",true);
+    $("#aprobpaso2").fadeOut(500);
+    $("#guardaraprobpaso2").fadeOut(500);
+    $("#linebodyaprobpaso21").fadeOut(500);
+    $("#linebodyaprobpaso22").fadeOut(500);
+}
 
 
 function ocultaracorrect(){
@@ -764,11 +806,6 @@ function ocultarobsvalai(){
     $(".obsvalai").hide();
 }
 
-function ocultarcumplimiento(){
-    $(".cumplimiento").hide();
-}
-
-
 function ocultarfechacompromiso(){
     $(".fechacompromiso").hide();
 }
@@ -778,6 +815,11 @@ function ocultarfechaguardado(){
 
 function ocultarcumplimiento(){
     $(".cumplimiento").hide();
+}
+
+function ocultaraprobpaso2(){
+    $(".aprobpaso2").hide();
+    $(".aprobpaso2").fadeOut(1);
 }
 
 var options = { year: 'numeric', month: 'short', day: 'numeric', literal: '/' };
@@ -837,12 +879,24 @@ function actdatoscumplimiento(fecha,cumplimiento){
     //Cuando es = -6 es porque el dueño de la NC marco como incumplimiento de la misma
     if(cumplimiento == -6){
         $("#cumplimiento").val('No: Revalidación');
-        $("#cumplimientotxt").html('<a href="#">Validar cumplimiento: </a>' + $("#cumplimiento").val());
+        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>' + $("#cumplimiento").val());
     } 
+    $(".aprobpaso2").fadeIn(500);
         
 
     //alert($("#obsvalai").val());
     //$(".acausa").fadeIn(500);
+}
+
+function actdatosaprobpaso2(fecha,aprobpaso2){
+    $("#fechaaprobpaso2").html(fecha.toLocaleDateString("es-ES", options));
+    $("#horaaprobpaso2").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
+    if(aprobpaso2=="1")
+        $("#aprobpaso2").val('Aprobado');
+    if(aprobpaso2=="0")
+        $("#aprobpaso2").val('Rechazado');
+    if(aprobpaso2=="-7")
+        $("#aprobpaso2").val('Esperando Revisión');
 }
 
 function banquearcampos(){
@@ -886,7 +940,7 @@ function validarpasos(respuesta){
     }else{
         var fecha = new Date(noconformidad.accioninmediatafec);
         actdatosai(fecha,noconformidad.accioninmediata);
-        if(noconformidad.cumplimiento===0){// Si es === 0 entonces hay incumplimiento 
+        if(noconformidad.cumplimiento===0 || noconformidad.aprobpaso2===0){// Si es === 0 entonces hay incumplimiento 
             actAI();
             ocultarobsvalai();
             ocultarACausa();
@@ -899,13 +953,13 @@ function validarpasos(respuesta){
                 $(".acausa").hide();
                 actvalAI();
                 //ocultarobsvalai();
-                
+/*                
                 if($("#funcvalidarai").val()=='1'){
                     actvalAI();
                 }else{
                     inactvalAI();
                     $("#obsvalaitxt").html('<a href="#">Validación No conformidad: </a>Esperando Validación de supervisor.');                
-                }
+                }*/
             }else{
                 inactAI(noconformidad.analisisdecausa);
                 var fecha = new Date(noconformidad.fechavalai);
@@ -915,7 +969,7 @@ function validarpasos(respuesta){
                 if(noconformidad.stavalai=='0'){
                     ocultarACausa();
                 }else{
-                    if(noconformidad.cumplimiento===-1){
+                    if(noconformidad.cumplimiento===-1 || noconformidad.aprobpaso2===-1){
                         ocultarACausa();
                         actdatosvalai(fecha,noconformidad.obsvalai);
                         actvalAI();
@@ -929,7 +983,7 @@ function validarpasos(respuesta){
                             inactAI(noconformidad.analisisdecausa);
                             var fecha = new Date(noconformidad.analisisdecausafec);
                             actdatosacausa(fecha,noconformidad.analisisdecausa);
-                            if(noconformidad.cumplimiento===-2){
+                            if(noconformidad.cumplimiento===-2 || noconformidad.aprobpaso2===-2){
                                 inactACorr();
                                 ocultaracorrect();
                                 actACausa();
@@ -944,7 +998,7 @@ function validarpasos(respuesta){
                                     var fecha = new Date(noconformidad.accorrecfec);
                                     actdatosACorr(fecha,noconformidad.accorrec);
                                     //actfechacompromiso();
-                                    if(noconformidad.cumplimiento===-3){
+                                    if(noconformidad.cumplimiento===-3 || noconformidad.aprobpaso2===-3){
                                         inactfechacompromiso();
                                         ocultarfechacompromiso();
                                         actACorr();
@@ -959,7 +1013,7 @@ function validarpasos(respuesta){
                                             var fecha = new Date(noconformidad.fechacompromisofec);
                                             actdatosfechacompromiso(fecha,respuesta.feccomp);
                                             actfechacompromiso();
-                                            if(noconformidad.cumplimiento===-4){
+                                            if(noconformidad.cumplimiento===-4 || noconformidad.aprobpaso2===-4){
                                                 inactfechaguardado();
                                                 ocultarfechaguardado();
                                                 actfechacompromiso();
@@ -975,7 +1029,7 @@ function validarpasos(respuesta){
                                                     actdatosfechaguardado(fecha,noconformidad.fechaguardado);
                                                     //actfechaguardado();
                                                     inactfechaguardado();
-                                                    if(noconformidad.cumplimiento===-5){
+                                                    if(noconformidad.cumplimiento===-5 || noconformidad.aprobpaso2===-5){
                                                         inactcumplimiento();
                                                         ocultarcumplimiento();
                                                         actfechaguardado();
@@ -984,21 +1038,52 @@ function validarpasos(respuesta){
                                                             //alert('prueba');
                                                             $("#fechacumplimiento").html('.::.  <i class="fa fa-calendar"></i>  .::.');
                                                             $("#horacumplimiento").html('<i class="fa fa-clock-o"></i> ');
-                                                            //actcumplimiento();
-                                                            if($("#funcvalidarai").val()=='2'){
+                                                            actcumplimiento();
+                                                            /*if($("#funcvalidarai").val()=='2'){
                                                                 actcumplimiento();
                                                             }else{
                                                                 inactcumplimiento();
-                                                                $("#cumplimientotxt").html('<a href="#">Validar Cumplimiento: </a>Esperando Validación del Dueño NC.');                
-                                                            }                        
+                                                                $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>Esperando Validación del Dueño NC.');                
+                                                            }*/
                                                         }else{
                                                             var fecha = new Date(noconformidad.fechacumplimiento);
                                                             actdatoscumplimiento(fecha,noconformidad.cumplimiento);
                                                             actcumplimiento();
                                                             inactcumplimiento();
-                                                            if(noconformidad.cumplimiento===-6){
+                                                            if(noconformidad.cumplimiento===-6 || noconformidad.aprobpaso2===-6){
                                                                 actcumplimiento();
                                                                 actdatoscumplimiento(fecha,noconformidad.cumplimiento);
+                                                                //alert('entro1');
+                                                                ocultaraprobpaso2();
+                                                                //inactaprobpaso2();
+                                                            }else{
+                                                                if(noconformidad.aprobpaso2===null || noconformidad.aprobpaso20==="" || noconformidad.aprobpaso2===-7){
+                                                                    
+                                                                    $("#fechaaprobpaso2").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                                                                    $("#horaaprobpaso2").html('<i class="fa fa-clock-o"></i> ');
+                                                                    //actAI();
+                                                                    
+                                                                    $(".aprobpaso2").show();
+                                                                    actaprobpaso2();
+                                                                    //ocultarobsvalai();
+                                                                    
+                                                                    if($("#funcvalidarai").val()=='1'){
+                                                                        actaprobpaso2();
+                                                                    }else{
+                                                                        inactaprobpaso2();
+                                                                        $("#aprobpaso2txt").html('<a href="#">Revisión SGI: </a>Esperando revisión SGI.');                
+                                                                    }
+                                                                }else{
+                                                                    var fecha = new Date(noconformidad.fecaprobpaso2);
+                                                                    actdatosaprobpaso2(fecha,noconformidad.aprobpaso2);
+                                                                    actaprobpaso2();
+                                                                    inactaprobpaso2();
+                                                                    /*
+                                                                    if(noconformidad.aprobpaso2===-7){
+                                                                        actaprobpaso2();
+                                                                        actdatosaprobpaso2(fecha,noconformidad.aprobpaso2);
+                                                                    }*/
+                                                                }
                                                             }
                                                         }
                                                     }

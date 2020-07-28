@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarNoCAccionCorrectiva;
 use App\Http\Requests\ValidarNoCAccionInmediata;
 use App\Http\Requests\ValidarNoCAnalisisDeCausa;
+use App\Http\Requests\ValidarNoCAprobpaso2;
 use App\Http\Requests\ValidarNoCCumplimiento;
 use App\Http\Requests\ValidarNoCFechaCompromiso;
 use App\Http\Requests\ValidarNoCFechaGuardado;
@@ -45,7 +46,7 @@ class NoConformidadRecepController extends Controller
                 ->get();
         $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
         noconformidad.accioninmediata,accioninmediatafec,
-        jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento
+        jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento,noconformidad.aprobpaso2
         FROM noconformidad INNER JOIN noconformidad_responsable
         ON noconformidad.id=noconformidad_responsable.noconformidad_id
         INNER JOIN jefatura_sucursal_area
@@ -208,6 +209,10 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             if($noconformidad->cumplimiento===0){ //Si es === 0 es porque fue rechazado el cumplimiento de la NC entonces cuando guarda cambia a -1 para la autorizacion de
                 $noconformidad->cumplimiento = -1;
             }
+            if($noconformidad->aprobpaso2===0){ //Si es === 0 es porque fue rechazada la revision SGI de la NC entonces cuando guarda cambia a -1 para la autorizacion del siguiente valor
+                $noconformidad->aprobpaso2 = -1;
+            }
+
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
@@ -226,9 +231,13 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $noconformidad->obsvalai = $request->obsvalai;
             $noconformidad->fechavalai = date("Y-m-d H:i:s");
             $noconformidad->usuario_idvalai = auth()->id();
-            if($noconformidad->cumplimiento===-1){ //Si es === -1 es porque fue aceptado la modificacion de la accion inmediata que habia sido incumplida y pasa al siguiente nivel analisis de causa
+            if($noconformidad->cumplimiento===-1){ //Si es === -1 es porque fue aceptada la modificacion de la accion inmediata que habia sido incumplida y pasa al siguiente nivel analisis de causa
                 $noconformidad->cumplimiento = -2;
             }
+            if($noconformidad->aprobpaso2===-1){ //Si es === -1 es porque fue aceptada la modificacion de la accion inmediata que habia sido rechazada y pasa al siguiente nivel analisis de causa
+                $noconformidad->aprobpaso2 = -2;
+            }
+
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
@@ -249,6 +258,10 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             if($noconformidad->cumplimiento===-2){ //Si es === -2 es porque guardo el analisis de causa y pasa al siguiente nivel que es accion correctiva
                 $noconformidad->cumplimiento = -3;
             }
+            if($noconformidad->aprobpaso2===-2){ //Si es === -2 es porque guardo el analisis de causa y pasa al siguiente nivel que es accion correctiva
+                $noconformidad->aprobpaso2 = -3;
+            }
+
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
@@ -267,6 +280,9 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $noconformidad->accorrecfec = date("Y-m-d H:i:s");
             if($noconformidad->cumplimiento===-3){ //Si es === -3 es porque guardo Accion Correctiva y pasa al siguiente nivel que es fecha de compromiso.
                 $noconformidad->cumplimiento = -4;
+            }
+            if($noconformidad->aprobpaso2===-3){ //Si es === -3 es porque guardo el analisis de causa y pasa al siguiente nivel que es accion correctiva
+                $noconformidad->aprobpaso2 = -4;
             }
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
@@ -289,6 +305,9 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             if($noconformidad->cumplimiento===-4){ //Si es === -4 es porque guardo fecha de compromiso y pasa al siguiente nivel que es Guardar y terminar edicion de la NC.
                 $noconformidad->cumplimiento = -5;
             }
+            if($noconformidad->aprobpaso2===-4){ //Si es === -4 es porque guardo fecha de compromiso y pasa al siguiente nivel que es Guardar y terminar edicion de la NC.
+                $noconformidad->aprobpaso2 = -5;
+            }
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
@@ -307,6 +326,10 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             if($noconformidad->cumplimiento===-5){ //Si es === -5 es porque guardo y terminó la edición de la NC y pasa al siguiente nivel que es Validar Cumplimiento que esto lo hace el dueño del la NC .
                 $noconformidad->cumplimiento = -6;
             }
+            if($noconformidad->aprobpaso2===-5){ //Si es === -5 es porque guardo y terminó la edición de la NC y pasa al siguiente nivel que es Validar Cumplimiento que esto lo hace el dueño del la NC .
+                $noconformidad->aprobpaso2 = -6;
+            }
+
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
@@ -339,8 +362,11 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
     {
         if ($request->ajax()) {
             $noconformidad = NoConformidad::findOrFail($request->id);
-            $noconformidad->cumplimiento = 1;
+            $noconformidad->cumplimiento = $request->cumplimiento;
             $noconformidad->fechacumplimiento = date("Y-m-d H:i:s");
+            if($noconformidad->aprobpaso2===-6){ //Si es === -6 es porque guardo y paso el cumplimiento y pasa al siguiente nivel que es aceptacion o rechaso de revición SGI .
+                $noconformidad->aprobpaso2 = -7;
+            }
             if ($noconformidad->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
@@ -355,9 +381,6 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
     {
         if ($request->ajax()) {
             $noconformidad = NoConformidad::findOrFail($request->id);
-            $noconformidad->accioninmediata = $request->accioninmediata;
-            $noconformidad->analisisdecausa = $request->analisisdecausa;
-            $noconformidad->accorrec = $request->accorrec;
             $noconformidad->cumplimiento = 0;
             $noconformidad->fechacumplimiento = date("Y-m-d H:i:s");
             if ($noconformidad->save()) {
@@ -384,5 +407,27 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         }
     }
 
+    public function aprobpaso2(ValidarNoCAprobpaso2 $request)
+    {
+        if ($request->ajax()) {
+            $noconformidad = NoConformidad::findOrFail($request->id);
+            $noconformidad->aprobpaso2 = $request->aprobpaso2;
+            $noconformidad->fecaprobpaso2 = date("Y-m-d H:i:s");
+            if($request->aprobpaso2 == 0){
+                $noconformidad->cumplimiento = null;
+                $noconformidad->fechacumplimiento = null;
+                $noconformidad->accioninmediata = $request->accioninmediata;
+                $noconformidad->analisisdecausa = $request->analisisdecausa;
+                $noconformidad->accorrec = $request->accorrec;
+            }
+            if ($noconformidad->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
 
 }

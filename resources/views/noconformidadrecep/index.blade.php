@@ -31,7 +31,7 @@ Recepción No Conformidad
             </div>
             <div class="box-body">
                 <input type="hidden" name="funcvalidarai" id="funcvalidarai" value="{{old('funcvalidarai', $funcvalidarai ?? '')}}">
-                <table class="table display AllDataTables table-hover table-condensed tablascons" id="tabla-data">
+                <table class="table display AllDataTables table-hover table-condensed tablascons" id="tabla-data" data-page-length='30'>
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
@@ -60,7 +60,14 @@ Recepción No Conformidad
                                         $aux_mostrar = true;
                                     }else{
                                         //Esta ultima validacion es para que cuando se rachazada la NC por el dueño permita mostrarla sin importar la fecha que fue hecha a accion inmediata -> or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))
-                                        if(($data->usuario_idmp2==auth()->id()) AND (( $data->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) or $data->cumplimiento==1 or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento)) ))){
+                                        $aux_mostrarCP = false;
+                                        if($data->cumplimiento==1 or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))){
+                                            $aux_mostrarCP = true;
+                                        }
+                                        if($data->aprobpaso2==1 or ($data->aprobpaso2 <= 0 and !is_null($data->aprobpaso2))){
+                                            $aux_mostrarCP = true;
+                                        }
+                                        if(($data->usuario_idmp2==auth()->id()) AND ( $data->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) or $aux_mostrarCP )){
                                             $aux_mostrar = true;
                                         }
                                     }

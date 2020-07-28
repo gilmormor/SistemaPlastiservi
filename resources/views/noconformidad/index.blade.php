@@ -21,7 +21,8 @@ No Conformidad
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                <table class="table display AllDataTables table-hover table-condensed tablascons" id="tabla-data" data-page-length='30'>
+                <!--<table class="table table-striped table-bordered table-hover" id="tabla-data" data-page-length='30'>-->
                     <thead>
                         <tr>
                             <th class="width70">ID</th>

@@ -259,25 +259,26 @@
             <!-- END timeline item -->
 
             <!-- timeline time label -->
-            <li class="time-label revisionpaso3" style="display:none;">
-                <span class="bg-aqua" id="fecharevisionpaso3" name="fecharevisionpaso3">
+            <li class="time-label aprobpaso2" style="display:none;">
+                <span class="bg-maroon" id="fechaaprobpaso2" name="fechaaprobpaso2">
                 </span>
             </li>
             <!-- /.timeline-label -->
             <!-- timeline item -->
-            <li class="revisionpaso3" style="display:none;">
-                <i class="fa fa-edit bg-blue"></i>
+            <li class="aprobpaso2" style="display:none;">
+                <i class="fa fa-edit bg-yellow"></i>
 
                 <div class="timeline-item">
-                <span class="time" id="horarevisionpaso3" name="horarevisionpaso3"></span>
+                <span class="time" id="horaaprobpaso2" name="horaaprobpaso2"></span>
 
-                <h3 class="timeline-header" name="revisionpaso3txt" id="revisionpaso3txt"><a href="validarai()">Validar Cumplimiento</a></h3>
-                <div class="timeline-body" id="linebodyrevisionpaso31">
-                    <textarea name="revisionpaso3" id="revisionpaso3" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                <h3 class="timeline-header" name="aprobpaso2txt" id="aprobpaso2txt"><a href="#" id="lblaprobpaso2" name="lblaprobpaso2">En revisión SGI</a></h3>
+                <div class="timeline-body" id="linebodyaprobpaso21">
+                    <h4 class="timeline-header" name="aprubaprobpaso2" id="aprubaprobpaso2">Aprueba?</h3>
+                    <textarea name="aprobpaso2" id="aprobpaso2" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
                 </div>
-                <div class="timeline-footer" id="linebodyrevisionpaso32">
-                    <a id="guardarrevisionpaso3Si" name="guardarrevisionpaso3Si" class="btn btn-primary btn-xs" onclick="revisionpaso3SN(1)">Si </a>
-                    <a id="guardarrevisionpaso3No" name="guardarrevisionpaso3No" class="btn btn-danger btn-xs" onclick="revisionpaso3SN(0)">No</a>
+                <div class="timeline-footer" id="linebodyaprobpaso22">
+                    <a id="guardaraprobpaso2Si" name="guardaraprobpaso2Si" class="btn btn-primary btn-xs" onclick="aprobpaso2(1)">Si </a>
+                    <a id="guardaraprobpaso2No" name="guardaraprobpaso2No" class="btn btn-danger btn-xs" onclick="aprobpaso2(0)">No</a>
                     <!--<a class="btn btn-danger btn-xs">Delete</a>-->
                 </div>
                 </div>
@@ -294,5 +295,5 @@
     </div>
     <!--<a id="Prueba" name="Prueba" class="btn btn-primary btn-xs">Prueba</a>-->
     <!-- /.row -->
-    @include('generales.obsincumplimientonc')
+    @include('generales.obsrechazoaprobpaso2')
 </section>

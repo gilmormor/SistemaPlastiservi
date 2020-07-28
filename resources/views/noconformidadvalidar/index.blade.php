@@ -21,7 +21,7 @@ Validar No Conformidad
             </div>
             <div class="box-body">
                 <input type="hidden" name="funcvalidarai" id="funcvalidarai" value="{{old('funcvalidarai', $funcvalidarai ?? '')}}">
-                <table class="table display AllDataTables table-hover table-condensed tablascons" id="tabla-data">
+                <table class="table display AllDataTables table-hover table-condensed tablascons" id="tabla-data" data-page-length='30'>
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
