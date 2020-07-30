@@ -1,7 +1,7 @@
 <tr>
     <td>{{$data->id}}</td>
     <td><i class="fa {{$recibido}}"></i></td>
-    <td></i>{{$data->fechahora}}</td>
+    <td></i>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
     <td>{{$data->hallazgo}}</td>
     <?php
         $aux_btn = "btn-warning";

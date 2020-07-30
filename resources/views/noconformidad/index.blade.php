@@ -35,7 +35,7 @@ No Conformidad
                         @foreach ($datas as $data)
                         <tr>
                             <td>{{$data->id}}</td>
-                            <td>{{$data->fechahora}}</td>
+                            <td>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
                             <td>{{$data->hallazgo}}</td>
                             <td>
                                 @if (empty($data->accioninmediata))

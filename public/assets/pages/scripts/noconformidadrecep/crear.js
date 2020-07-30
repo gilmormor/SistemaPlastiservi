@@ -8,139 +8,9 @@ $(document).ready(function () {
     }).datepicker("setDate");
 
     id = $("#idhide").val();
-    aux_textvai="Validar accion inmediata";
+    aux_textvai="Validar acción inmediata";
     prevImagen(id);
     paso2(id);
-/*
-    $("#file-ess").fileinput({
-        language: 'es',
-        uploadUrl: '/noconformidadup/'+$("#idhide").val(), 
-        uploadAsync: false,
-        minFileCount: 1,
-        maxFileCount: 20,
-        showUpload: false, 
-        showRemove: false,
-        initialPreviewAsData: true,
-        initialPreviewFileType: 'image'
-        }).on("filebatchselected", function(event, files) {
-        
-            $("#file-ess").fileinput("upload");
-        
-        });
-*/
-        //$("#file-ess").fileinput("refresh");
-/*
-        initialPreview: [
-        // IMAGE DATA
-        "/storage/imagenes/noconformidad/Sin título.jpg",
-        // IMAGE DATA
-        "/storage/imagenes/noconformidad/sample-2.jpg",
-        // OFFICE WORD DATA
-        "/storage/imagenes/noconformidad/pago raul romero.pdf",
-        ],
-        initialPreviewAsData: true,
-        initialPreviewFileType: 'image',
-        initialPreviewConfig: [
-            {type: "image", caption: "Sin título.jpg", size: 827000, width: "120px", url: "/delImagen_noconformidad/11", key: 1},
-            {type: "image", caption: "sample-2.jpg", size: 549000, width: "120px", url: "/delImagen_noconformidad/11", key: 2},
-            {type: "pdf", size: 8000, caption: "pago raul romero.pdf", url: "/delImagen_noconformidad/11", key: 3, downloadUrl: false},
-        ]
-*/
-
-
-    // Tipos de archivos admitidos por su extensión
-    //var tipos = ['docx','xlsx','pptx','pdf','jpg','bmp','png'];
-    var tipos = ['pdf','jpg','bmp','png'];
-    // Contadores de archivos subidos por tipo
-    var contadores=[0,0,0,0];
-    // Reinicia los contadores de tipos subidos
-    var reset_contadores = function() {
-        for(var i=0; i<tipos.length;i++) {
-        contadores[i]=0;
-        }
-    };
-    // Incrementa el contador de tipo según la extensión del archivo subido	
-    var contadores_tipos = function(archivo) {
-        for(var i=0; i<tipos.length;i++) {
-        if(archivo.indexOf(tipos[i])!=-1) {
-            contadores[i]+=1;
-            break;	
-        }
-        }
-    };
-    // Inicializamos el plugin fileinput:
-    //  traducción al español
-    //  script para procesar las peticiones de subida
-    //  desactivar la subida asíncrona
-    //  máximo de ficheros que se pueden seleccionar	
-    //  Tamaño máximo en Kb de los ficheros que se pueden seleccionar
-    //  no mostrar los errores de tipo de archivo (cuando el usuario selecciona un archivo no permitido)
-    //  tipos de archivos permitidos por su extensión (array definido al principio del script)
-    /*
-    $('#file-ess11').fileinput({
-        language: 'es',
-        uploadUrl: '/noconformidadup/' + id,
-        uploadAsync: false,
-        maxFileCount: 5,
-        maxFileSize: 500,
-        showUpload: true,
-        showRemove: false,
-        removeFromPreviewOnError: true,
-        allowedFileExtensions : tipos,
-        initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
-        initialPreviewFileType: 'image', // image is the default and can be overridden in config below
-    });
-    */
-    // Evento filecleared del plugin que se ejecuta cuando pulsamos el botón 'Quitar'
-    //    Vaciamos y ocultamos el div de alerta
-    $('#file-ess11').on('filecleared', function(event) {
-        $('div.alert').empty();
-        $('div.alert').hide();		
-    });
-    // Evento filebatchuploadsuccess del plugin que se ejecuta cuando se han enviado todos los archivos al servidor
-    //    Mostramos un resumen del proceso realizado
-    //    Carpeta donde se han almacenado y total de archivos movidos
-    //    Nombre y tamaño de cada archivo procesado
-    //    Totales de archivos por tipo
-    $('#file-ess11').on('filebatchuploadsuccess', function(event, data, previewId, index) {
-        var ficheros = data.files;
-        var respuesta = data.response;
-        var total = data.filescount;
-        var mensaje;
-        var archivo;
-        var total_tipos='';
-        
-        reset_contadores(); // Resetamos los contadores de tipo de archivo
-        // Comenzamos a crear el mensaje que se mostrará en el DIV de alerta
-        mensaje='<p>'+total+ ' ficheros almacenados en la carpeta: '+respuesta.dirupload+'<br><br>';
-        mensaje+='Ficheros procesados:</p><ul>';
-        // Procesamos la lista de ficheros para crear las líneas con sus nombres y tamaños
-        for(var i=0;i<ficheros.length;i++) {
-        if(ficheros[i]!=undefined) {
-            archivo=ficheros[i];				
-            tam=archivo.size / 1024;
-            mensaje+='<li>'+archivo.name+' ('+Math.ceil(tam)+'Kb)'+'</li>';
-            contadores_tipos(archivo.name);  // Incrementamos el contador para el tipo de archivo subido
-        } 
-        };
-            
-        mensaje+='</ul><br/>';
-        // Línea que muestra el total de ficheros por tipo que se han subido
-        for(var i=0; i<contadores.length; i++)  total_tipos+='('+contadores[i]+') '+tipos[i]+', ';
-        // Apaño para eliminar la coma y el espacio (, ) que se queda en el último procesado
-        total_tipos=total_tipos.substr(0,total_tipos.length-2);
-        mensaje+='<p>'+total_tipos+'</p>';
-        // Si el total de archivos indicados por el plugin coincide con el total que hemos recibido en la respuesta del script PHP
-        // mostramos mensaje de proceso correcto
-        if(respuesta.total==total) mensaje+='<p>Coinciden con el total de archivos procesados en el servidor.</p>';
-        else mensaje+='<p>No coinciden los archivos enviados con el total de archivos procesados en el servidor.</p>';
-        // Una vez creado todo el mensaje lo cargamos en el DIV de alerta y lo mostramos
-        $('div.alert').html(mensaje);
-        $('div.alert').show();
-    });
-    // Ocultamos el div de alerta donde se muestra un resumen del proceso
-    $('div.alert').hide();
-
 });
 
 $("#Prueba").click(function(event)
@@ -510,7 +380,7 @@ function ajaxRequest(data,url,funcion) {
             }
             if(funcion=='buscarAI'){
 				if (respuesta.mensaje == "ok") {
-                    $("#funcvalidarai").val('class="tooltipsC" title="Validar Accion Inmediata No conformidad" onclick="validarai()"');
+                    $("#funcvalidarai").val('class="tooltipsC" title="Validar Acción Inmediata No conformidad" onclick="validarai()"');
                     $("#obsvalai").val(respuesta.noconformidad.obsvalai);
                     //$("#obsvalai").val('');
                     verificar('obsvalai','');
@@ -602,7 +472,7 @@ function actAI(){
 
 
 function inactAI(aux_ac){
-    //SI AANALISIS DE CAUDA ESTA EN BLANCO ACTIVE EL ENLACE A VALIDAR NO CONFORMIDAD, SIEMPRE y CUANDO LA CONSULRA VENGA DE NoConformidadValidarController
+    //SI AANALISIS DE CAUSA ESTA EN BLANCO ACTIVE EL ENLACE A VALIDAR NO CONFORMIDAD, SIEMPRE y CUANDO LA CONSULRA VENGA DE NoConformidadValidarController
     if(aux_ac==null || aux_ac==""){
         $("#accioninmediatatxt").html('<a href="#"  ' + '>Acción Inmediata: </a>' + $("#accioninmediata").val());
     }else{
@@ -638,7 +508,7 @@ function esperavalidarai(){
     $("#obsvalaitxt").html('<a href="#">' + aux_textvai + ': </a>Esperando Validación de SGI.');     
 }
 
-function inactvalAI(){
+function inactvalAI(aux_stavalai,aux_cumplimiento,aux_aprobpaso2){
     $("#obsvalaitxt").html('<a href="#">' + aux_textvai + ': </a>' + $("#obsvalai").val());
     $("#obsvalai").prop("readonly",true);
     $("#obsvalai").fadeOut(500);
@@ -646,14 +516,16 @@ function inactvalAI(){
     $("#linebodyvalai1").fadeOut(500);
     $("#linebodyvalai2").fadeOut(500);
     if($("#funcvalidarai").val()!='1'){
-        esperavalidarai();
+        if(!aux_stavalai || aux_stavalai===null || aux_cumplimiento==-1 || aux_aprobpaso2==-1){
+            esperavalidarai();    
+        }
     }
 }
 
 function actACausa(){
     //alert($("#funcvalidarai").val());
     if($("#funcvalidarai").val()=='0'){
-        $("#analisisdecausatxt").html('<a href="#">Analisis de causa</a>');
+        $("#analisisdecausatxt").html('<a href="#">Análisis de causa</a>');
         $("#analisisdecausa").prop("readonly",false);
         $("#analisisdecausa").fadeIn(500);
         $("#guardarAC").fadeIn(500);
@@ -664,7 +536,7 @@ function actACausa(){
     }
 }
 function inactACausa(){
-    $("#analisisdecausatxt").html('<a href="#">Analisis de causa: </a>' + $("#analisisdecausa").val());
+    $("#analisisdecausatxt").html('<a href="#">Análisis de causa: </a>' + $("#analisisdecausa").val());
     $("#analisisdecausa").prop("readonly",true);
     $("#analisisdecausa").fadeOut(500);
     $("#guardarAC").fadeOut(500);
@@ -756,7 +628,7 @@ function actcumplimiento(){
         $("#linebodycumplimiento2").fadeIn(500);
     }else{
         inactcumplimiento();
-        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>Esperando Validación del Dueño NC.');                
+        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>Esperando Validación Dueño NC.');                
     }
 }
 
@@ -878,7 +750,7 @@ function actdatoscumplimiento(fecha,cumplimiento){
         $("#cumplimiento").val('No');
     //Cuando es = -6 es porque el dueño de la NC marco como incumplimiento de la misma
     if(cumplimiento == -6){
-        $("#cumplimiento").val('No: Revalidación');
+        $("#cumplimiento").val('Esperando Validación Dueño NC.');
         $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>' + $("#cumplimiento").val());
     } 
     $(".aprobpaso2").fadeIn(500);
@@ -945,12 +817,13 @@ function validarpasos(respuesta){
             ocultarobsvalai();
             ocultarACausa();
         }else{
-            if(noconformidad.obsvalai==null || noconformidad.obsvalai==""){
+            if(noconformidad.obsvalai===null || noconformidad.obsvalai===""){
                 $("#fechavalai").html('.::.  <i class="fa fa-calendar"></i>  .::.');
                 $("#horavalai").html('<i class="fa fa-clock-o"></i> ');
                 actAI();
                 
                 $(".acausa").hide();
+                //alert("entro");
                 actvalAI();
                 //ocultarobsvalai();
 /*                
@@ -965,9 +838,10 @@ function validarpasos(respuesta){
                 var fecha = new Date(noconformidad.fechavalai);
                 //alert(noconformidad.obsvalai);
                 actdatosvalai(fecha,noconformidad.obsvalai);
-                inactvalAI();
+                inactvalAI(noconformidad.stavalai,noconformidad.cumplimiento,noconformidad.aprobpaso2);
                 if(noconformidad.stavalai=='0'){
                     ocultarACausa();
+                    actvalAI();
                 }else{
                     if(noconformidad.cumplimiento===-1 || noconformidad.aprobpaso2===-1){
                         ocultarACausa();
