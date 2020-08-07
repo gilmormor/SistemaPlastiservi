@@ -446,6 +446,7 @@ Route::post('noconformidadrecep/actacorr/{id}', 'NoConformidadRecepController@ac
 Route::post('noconformidadrecep/actfeccomp/{id}', 'NoConformidadRecepController@actfeccomp')->name('actfeccomp_noconformidadrecep');
 Route::post('noconformidadrecep/actfechaguardado/{id}', 'NoConformidadRecepController@actfechaguardado')->name('actfechaguardado_noconformidadrecep');
 Route::post('noconformidadrecep/actvalai/{id}', 'NoConformidadRecepController@actvalai')->name('actvalai_noconformidadrecep');
+Route::post('noconformidadrecep/notificaciones', 'NoConformidadRecepController@notificaciones')->name('notificaciones_noconformidadrecep');
 
 
 /*RUTAS Validar No Conformidad */

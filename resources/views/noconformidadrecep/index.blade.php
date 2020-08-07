@@ -45,6 +45,7 @@ Recepción No Conformidad
                     <tbody>
                         <?php
                             $i=0;
+                            $cont=0;
                         ?>
                         @foreach ($datas as $data)
                             @if ((NOW()<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
@@ -73,7 +74,7 @@ Recepción No Conformidad
                                     }
                                 ?>
                                 @if ($aux_mostrar)
-                                    @include('noconformidadrecep.conttablanc')    
+                                    @include('noconformidadrecep.conttablanc')  
                                 @endif
                                 
                             @endif

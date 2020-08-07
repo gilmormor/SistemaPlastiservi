@@ -430,4 +430,172 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         }
     }
 
+
+    public function notificaciones(Request $request)
+    {
+        if ($request->ajax()) {
+            $totalNotif = 0;
+            $contRecepNC = 0;
+            $contnotivalai = 0;
+            $contnoticumpl = 0;
+            $usuario = Usuario::with('roles')->findOrFail(auth()->id());
+            //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
+            $fecha = date("d-m-Y H:i:s");
+            //dd($fecha);
+            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
+            noconformidad.accioninmediata,accioninmediatafec,
+            jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento,noconformidad.aprobpaso2,
+            fechacompromiso
+            FROM noconformidad INNER JOIN noconformidad_responsable
+            ON noconformidad.id=noconformidad_responsable.noconformidad_id
+            INNER JOIN jefatura_sucursal_area
+            ON noconformidad_responsable.jefatura_sucursal_area_id=jefatura_sucursal_area.id
+            WHERE jefatura_sucursal_area.persona_id=" . $usuario->persona->id .
+            " and isnull(noconformidad.notirecep)
+            and noconformidad.deleted_at is null 
+            ORDER BY noconformidad.id;";
+
+            //and isnull(noconformidad.notificacion)
+
+            $notfNoConformidades = DB::select($sql);
+            
+            foreach ($notfNoConformidades as $NC) {
+                if ((NOW()<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) 
+                    OR (!is_null($NC->accioninmediata) and $NC->accioninmediata!=''))){
+                        $aux_mostrar = false;
+                        if(is_null($NC->usuario_idmp2)){
+                            $aux_mostrar = true;
+                        }else{
+                            //Esta ultima validacion es para que cuando se rachazada la NC por el dueño permita mostrarla sin importar la fecha que fue hecha a accion inmediata -> or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))
+                            $aux_mostrarCP = false;
+                            if($NC->cumplimiento==1 or ($NC->cumplimiento <= 0 and !is_null($NC->cumplimiento))){
+                                $aux_mostrarCP = true;
+                            }
+                            if($NC->aprobpaso2==1 or ($NC->aprobpaso2 <= 0 and !is_null($NC->aprobpaso2))){
+                                $aux_mostrarCP = true;
+                            }
+                            if(($NC->usuario_idmp2==auth()->id()) AND ( $NC->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) or $aux_mostrarCP )){
+                                $aux_mostrar = true;
+                            }
+                        }
+                        if ($aux_mostrar){
+                            $contRecepNC++;
+                        }
+                }
+                if($NC->fechacompromiso != null and $NC->cumplimiento === null){
+                    $contnoticumpl++;
+                }
+            }
+            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
+            noconformidad.accioninmediata,accioninmediatafec,
+            jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento
+            FROM noconformidad INNER JOIN noconformidad_jefsucarea
+            ON noconformidad.id=noconformidad_jefsucarea.noconformidad_id
+            INNER JOIN jefatura_sucursal_area
+            ON noconformidad_jefsucarea.jefatura_sucursal_area_id=jefatura_sucursal_area.id
+            WHERE jefatura_sucursal_area.persona_id=" . $usuario->persona->id .
+            " and isnull(noconformidad.notirecep)
+            and noconformidad.deleted_at is null 
+            ORDER BY noconformidad.id;";
+    
+            $arearesps = DB::select($sql); //Area responsable
+    
+            foreach ($arearesps as $data){
+                if ((NOW()>= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
+                    AND (is_null($data->accioninmediata) or $data->accioninmediata=='')))
+                    {
+                        $contRecepNC++;
+                    }
+                else
+                    if ($data->usuario_idmp2==auth()->id()){
+                        $contRecepNC++;
+                    }
+            }
+
+
+            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
+            noconformidad.accioninmediata,accioninmediatafec,stavalai,
+            usuario_idmp2
+            FROM noconformidad
+            WHERE !(accioninmediata is null) 
+            and isnull(noconformidad.notivalai)
+            and noconformidad.deleted_at is null 
+            ORDER BY noconformidad.id;";
+            $datas = DB::select($sql); //Area responsable
+            foreach ($datas as $data){
+                if($data->accioninmediata != null and $data->stavalai === null){
+                    $contnotivalai++;
+                }
+            }
+            $totalNotif = $totalNotif + $contRecepNC + $contnotivalai + $contnoticumpl;
+            $htmlNotif="
+            <li class='header'>Tienes $totalNotif Notificaciones</li>
+            <li>
+              <!-- inner menu: contains the actual data -->
+              <ul class='menu'>";
+            if($contRecepNC>0){
+                $htmlNotif .= "
+                <li>
+                  <a href='" . route('noconformidadrecep') ."'>
+                    <i class='fa fa-thumbs-o-down text-aqua'></i> $contRecepNC nuevas no conformidades
+                  </a>
+                </li>";
+            }
+            if($contRecepNC>0){
+                $htmlNotif .= "
+                <li>
+                  <a href='#'>
+                    <i class='fa fa-warning text-yellow'></i> $contnotivalai nuevas Validar Accion Inmediata
+                  </a>
+                </li>";
+            }
+            if($contnoticumpl>0){
+                $htmlNotif .= "
+                <li>
+                  <a href='#'>
+                    <i class='fa fa-user text-red'></i> $contnoticumpl nuevas Validar Cumplimiento
+                  </a>
+                </li>";
+            }
+
+            /*
+                <li>
+                  <a href='#'>
+                    <i class='fa fa-users text-red'></i> 5 new members joined
+                  </a>
+                </li>
+                <li>
+                  <a href='#'>
+                    <i class='fa fa-shopping-cart text-green'></i> 25 sales made
+                  </a>
+                </li>
+                <li>
+                  <a href='#'>
+                    <i class='fa fa-user text-red'></i> You changed your username
+                  </a>
+                </li>
+            */
+            $htmlNotif .= "
+              </ul>
+            </li>
+            <li class='footer'><a href='#'>View all</a></li>
+            ";
+
+
+            return response()->json([
+                                        'mensaje' => 'ok',
+                                        'notfNoConformidad' => $notfNoConformidades,
+                                        'htmlNotif' => $htmlNotif,
+                                        'totalNotif' => $totalNotif
+                                    ]);
+        } else {
+            abort(404);
+        }
+
+
+        //dd($sql);
+        //return view('noconformidadrecep.index', compact('datas','arearesps','motivoncs','formadeteccionncs','jefaturasucursalareas','jefaturasucursalareasR','usuario_id','funcvalidarai'));
+    }
+
+
 }

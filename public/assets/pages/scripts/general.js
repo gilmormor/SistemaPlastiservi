@@ -54,8 +54,7 @@ $(document).ready(function () {
 
 	$('#myModalverpdf').on('show.bs.modal', function () {
 		$('.modal-body').css('height',$( window ).height()*0.75);
-		});
-	
+	});
 
 });
 

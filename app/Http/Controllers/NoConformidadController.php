@@ -98,7 +98,7 @@ class NoConformidadController extends Controller
             //dd($jefaturasucursalareasR);
             return view('noconformidad.editar',compact('data','motivoncs','formadeteccionncs','jefaturasucursalareas','jefaturasucursalareasR','certificados'));
         }else{
-            return redirect('noconformidad')->with('mensaje','Registro creado por otro Usuario.'); 
+            return redirect('noconformidad')->with('mensaje','Registro creado por otro Usuario.');
         }
     }
 

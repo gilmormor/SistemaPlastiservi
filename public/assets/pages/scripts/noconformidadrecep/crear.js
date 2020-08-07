@@ -619,7 +619,7 @@ function inactfechaguardado(){
 }
 
 function actcumplimiento(){
-    if($("#funcvalidarai").val()=='2'){
+    if($("#funcvalidarai").val()=='0'){
         $("#cumplimientotxt").html('<a href="#">Cumplimiento validado</a>');
         /*$("#cumplimiento").prop("readonly",false);
         $("#cumplimiento").fadeIn(500);*/
@@ -628,7 +628,7 @@ function actcumplimiento(){
         $("#linebodycumplimiento2").fadeIn(500);
     }else{
         inactcumplimiento();
-        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>Esperando Validación Dueño NC.');                
+        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>Esperando Validación Dueño NC.');
     }
 }
 
