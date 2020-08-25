@@ -158,6 +158,10 @@
 				<td colspan="7" class="textleft" width="40%"><span><strong>No. Cotización: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{str_pad($notaventa->cotizacion_id, 10, "0", STR_PAD_LEFT)}}</span></td>
 			</tr>
+			<tr>
+				<td colspan="7" class="textleft" width="40%"><span><strong>Pago a Nombre de: </strong></span></td>
+				<td class="textleft" width="50%"><span>{{strtoupper($empresa[0]['nombre'])}}</span></td>
+			</tr>
 		</table>
 	</div>
 	<br>

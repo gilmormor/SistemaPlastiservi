@@ -544,7 +544,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             if($contRecepNC>0){
                 $htmlNotif .= "
                 <li>
-                  <a href='#'>
+                  <a href='" . route('ncvalidar') ."'>
                     <i class='fa fa-warning text-yellow'></i> $contnotivalai nuevas Validar Accion Inmediata
                   </a>
                 </li>";
@@ -552,7 +552,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             if($contnoticumpl>0){
                 $htmlNotif .= "
                 <li>
-                  <a href='#'>
+                  <a href='" . route('noconformidad') ."'>
                     <i class='fa fa-user text-red'></i> $contnoticumpl nuevas Validar Cumplimiento
                   </a>
                 </li>";
