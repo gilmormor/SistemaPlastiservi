@@ -51,16 +51,12 @@ Recepción No Conformidad
                             @if ((NOW()<= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
                                 OR (!is_null($data->accioninmediata) and $data->accioninmediata!='')))
                                 <?php
-                                    if($data->id==15){
-                                        //dd($data);
-                                    }
-                                    
                                     $recibido = "fa-mail-reply";
                                     $aux_mostrar = false;
                                     if(is_null($data->usuario_idmp2)){
                                         $aux_mostrar = true;
                                     }else{
-                                        //Esta ultima validacion es para que cuando se rachazada la NC por el dueño permita mostrarla sin importar la fecha que fue hecha a accion inmediata -> or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))
+                                        //Esta ultima validacion es para que cuando sea rechazada la NC por el dueño permita mostrarla sin importar la fecha que fue hecha a accion inmediata -> or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))
                                         $aux_mostrarCP = false;
                                         if($data->cumplimiento==1 or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))){
                                             $aux_mostrarCP = true;
@@ -74,7 +70,7 @@ Recepción No Conformidad
                                     }
                                 ?>
                                 @if ($aux_mostrar)
-                                    @include('noconformidadrecep.conttablanc')  
+                                    @include('noconformidadrecep.conttablanc')
                                 @endif
                                 
                             @endif

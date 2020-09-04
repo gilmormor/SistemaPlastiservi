@@ -333,6 +333,7 @@ function ajaxRequest(data,url,funcion) {
             if(funcion=='guardarAI'){
 				if (respuesta.mensaje == "ok") {
                     buscarpasos(data['id']);
+                    Biblioteca.actNotificaciones(); //aqui quede 04/09/2020
 				}
             }
             if(funcion=='apre'){
@@ -1027,8 +1028,9 @@ function fechaddmmaaaa(f){
     d = dia.toString();
     d = d.padStart(2, 0);
     mes = f.getMonth();
-    m = mes.toString();
+    m = f.toLocaleString('es', { month: '2-digit' }); //mes.toString();
     m = m.padStart(2, 0);
     fecha = d + "/" + m + "/" + f.getFullYear();
+    
     return fecha; 
 }

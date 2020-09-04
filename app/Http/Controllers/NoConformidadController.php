@@ -25,6 +25,7 @@ class NoConformidadController extends Controller
         $datas = NoConformidad::orderBy('id')
                 ->where('usuario_id','=',auth()->id())
                 ->get();
+        //dd($datas);
         return view('noconformidad.index', compact('datas'));
     }
 

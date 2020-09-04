@@ -26,7 +26,7 @@ class NoConformidadValidarController extends Controller
         $fecha = date("d-m-Y H:i:s");
         //dd($fecha);
         $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
-        noconformidad.accioninmediata,accioninmediatafec,
+        noconformidad.accioninmediata,accioninmediatafec,stavalai,notivalai,
         usuario_idmp2
         FROM noconformidad
         WHERE !(accioninmediata is null) 

@@ -34,7 +34,7 @@ class NoConformidadRecepController extends Controller
         //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
         $fecha = date("d-m-Y H:i:s");
         //dd($fecha);
-        $datas = NoConformidad::orderBy('noconformidad.id')
+        $datas1 = NoConformidad::orderBy('noconformidad.id')
                 ->join('noconformidad_responsable', 'noconformidad.id', '=', 'noconformidad_responsable.noconformidad_id')
                 ->join('jefatura_sucursal_area', 'noconformidad_responsable.jefatura_sucursal_area_id', '=', 'jefatura_sucursal_area.id')
                 ->where('jefatura_sucursal_area.persona_id','=',$usuario->persona->id)
@@ -44,9 +44,13 @@ class NoConformidadRecepController extends Controller
                     'noconformidad.hallazgo'
                     ])
                 ->get();
+        
+        
+        /*
         $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
         noconformidad.accioninmediata,accioninmediatafec,
-        jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento,noconformidad.aprobpaso2
+        jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento,noconformidad.aprobpaso2,
+        noconformidad.fechacompromiso,notirecep,notivalai,noticumpl,notiresgi
         FROM noconformidad INNER JOIN noconformidad_responsable
         ON noconformidad.id=noconformidad_responsable.noconformidad_id
         INNER JOIN jefatura_sucursal_area
@@ -54,19 +58,21 @@ class NoConformidadRecepController extends Controller
         WHERE jefatura_sucursal_area.persona_id=" . $usuario->persona->id .
         " and noconformidad.deleted_at is null 
         ORDER BY noconformidad.id;";
-
+*/
 /*
 WHERE jefatura_sucursal_area.persona_id=" .$usuario->persona->id .
 " AND (NOW()<=DATE_ADD(fechahora, INTERVAL 1 DAY)
 OR (!ISNULL(accioninmediata) and accioninmediata!=''))
 */
-
-        $datas = DB::select($sql);
+/*
+        $datas = DB::select($sql);*/
+        $datas = consultaSQL(1,$usuario->persona->id);
         //dd($datas);
-
+/*
         $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
         noconformidad.accioninmediata,accioninmediatafec,
-        jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento
+        jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento,noconformidad.aprobpaso2,
+        noconformidad.fechacompromiso,notirecep,notivalai,noticumpl,notiresgi
         FROM noconformidad INNER JOIN noconformidad_jefsucarea
         ON noconformidad.id=noconformidad_jefsucarea.noconformidad_id
         INNER JOIN jefatura_sucursal_area
@@ -76,6 +82,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         ORDER BY noconformidad.id;";
 
         $arearesps = DB::select($sql); //Area responsable
+        */
+        $arearesps = consultaSQL(2,$usuario->persona->id);
         //dd($arearesps);
 
 
@@ -89,7 +97,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         $usuario_id = $usuario->persona->id;
         $funcvalidarai = '';
 
-        //dd($sql);
+        //dd($datas);
         return view('noconformidadrecep.index', compact('datas','arearesps','motivoncs','formadeteccionncs','jefaturasucursalareas','jefaturasucursalareasR','usuario_id','funcvalidarai'));
     }
 
@@ -231,6 +239,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $noconformidad->obsvalai = $request->obsvalai;
             $noconformidad->fechavalai = date("Y-m-d H:i:s");
             $noconformidad->usuario_idvalai = auth()->id();
+            $noconformidad->notivalai = 1;
             if($noconformidad->cumplimiento===-1){ //Si es === -1 es porque fue aceptada la modificacion de la accion inmediata que habia sido incumplida y pasa al siguiente nivel analisis de causa
                 $noconformidad->cumplimiento = -2;
             }
@@ -441,26 +450,11 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $usuario = Usuario::with('roles')->findOrFail(auth()->id());
             //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
             $fecha = date("d-m-Y H:i:s");
-            //dd($fecha);
-            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
-            noconformidad.accioninmediata,accioninmediatafec,
-            jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento,noconformidad.aprobpaso2,
-            fechacompromiso
-            FROM noconformidad INNER JOIN noconformidad_responsable
-            ON noconformidad.id=noconformidad_responsable.noconformidad_id
-            INNER JOIN jefatura_sucursal_area
-            ON noconformidad_responsable.jefatura_sucursal_area_id=jefatura_sucursal_area.id
-            WHERE jefatura_sucursal_area.persona_id=" . $usuario->persona->id .
-            " and isnull(noconformidad.notirecep)
-            and noconformidad.deleted_at is null 
-            ORDER BY noconformidad.id;";
+            $notfNoConformidades = consultaSQL(1,$usuario->persona->id);
 
-            //and isnull(noconformidad.notificacion)
-
-            $notfNoConformidades = DB::select($sql);
-            
             foreach ($notfNoConformidades as $NC) {
-                if ((NOW()<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) 
+                if($NC->notirecep === null){
+                    if ((NOW()<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) 
                     OR (!is_null($NC->accioninmediata) and $NC->accioninmediata!=''))){
                         $aux_mostrar = false;
                         if(is_null($NC->usuario_idmp2)){
@@ -481,27 +475,14 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                         if ($aux_mostrar){
                             $contRecepNC++;
                         }
-                }
-                if($NC->fechacompromiso != null and $NC->cumplimiento === null){
-                    $contnoticumpl++;
+                    }
+
                 }
             }
-            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
-            noconformidad.accioninmediata,accioninmediatafec,
-            jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento
-            FROM noconformidad INNER JOIN noconformidad_jefsucarea
-            ON noconformidad.id=noconformidad_jefsucarea.noconformidad_id
-            INNER JOIN jefatura_sucursal_area
-            ON noconformidad_jefsucarea.jefatura_sucursal_area_id=jefatura_sucursal_area.id
-            WHERE jefatura_sucursal_area.persona_id=" . $usuario->persona->id .
-            " and isnull(noconformidad.notirecep)
-            and noconformidad.deleted_at is null 
-            ORDER BY noconformidad.id;";
-    
-            $arearesps = DB::select($sql); //Area responsable
-    
+            $arearesps = consultaSQL(2,$usuario->persona->id);
             foreach ($arearesps as $data){
-                if ((NOW()>= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
+                if($data->notirecep === null){
+                    if ((NOW()>= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
                     AND (is_null($data->accioninmediata) or $data->accioninmediata=='')))
                     {
                         $contRecepNC++;
@@ -510,18 +491,22 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                     if ($data->usuario_idmp2==auth()->id()){
                         $contRecepNC++;
                     }
+
+                }
+            }
+            $datas = NoConformidad::orderBy('id')
+                ->where('usuario_id','=',auth()->id())
+                ->get();
+            foreach ($datas as $data){
+                if(!empty($data->fechaguardado) and empty($data->cumplimiento)){
+                    if($data->noticumpl===null){ //($NC->fechacompromiso != null and $NC->cumplimiento === null){
+                        $contnoticumpl++;
+                    }    
+                }
             }
 
-
-            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
-            noconformidad.accioninmediata,accioninmediatafec,stavalai,
-            usuario_idmp2
-            FROM noconformidad
-            WHERE !(accioninmediata is null) 
-            and isnull(noconformidad.notivalai)
-            and noconformidad.deleted_at is null 
-            ORDER BY noconformidad.id;";
-            $datas = DB::select($sql); //Area responsable
+            $datas = consultaSQL(3,$usuario->persona->id);
+            //$datas = DB::select($sql); //Area responsable
             foreach ($datas as $data){
                 if($data->accioninmediata != null and $data->stavalai === null){
                     $contnotivalai++;
@@ -533,11 +518,19 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             <li>
               <!-- inner menu: contains the actual data -->
               <ul class='menu'>";
+              if($contnoticumpl>0){
+                $htmlNotif .= "
+                <li>
+                  <a href='" . route('noconformidad') ."'>
+                    <i class='fa fa-user text-red'></i> $contnoticumpl nuevas Validar Cumplimiento
+                  </a>
+                </li>";
+            }
             if($contRecepNC>0){
                 $htmlNotif .= "
                 <li>
                   <a href='" . route('noconformidadrecep') ."'>
-                    <i class='fa fa-thumbs-o-down text-aqua'></i> $contRecepNC nuevas no conformidades
+                    <i class='fa fa-thumbs-o-down text-aqua'></i> $contRecepNC nuevas Recep no conformidades
                   </a>
                 </li>";
             }
@@ -546,14 +539,6 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 <li>
                   <a href='" . route('ncvalidar') ."'>
                     <i class='fa fa-warning text-yellow'></i> $contnotivalai nuevas Validar Accion Inmediata
-                  </a>
-                </li>";
-            }
-            if($contnoticumpl>0){
-                $htmlNotif .= "
-                <li>
-                  <a href='" . route('noconformidad') ."'>
-                    <i class='fa fa-user text-red'></i> $contnoticumpl nuevas Validar Cumplimiento
                   </a>
                 </li>";
             }
@@ -598,4 +583,51 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
     }
 
 
+}
+
+
+function consultaSQL($idconsulta,$usuario_id){
+    switch ($idconsulta) {
+        case 1:
+            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
+            noconformidad.accioninmediata,accioninmediatafec,
+            jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento,noconformidad.aprobpaso2,
+            noconformidad.fechacompromiso,notirecep,notivalai,noticumpl,notiresgi
+            FROM noconformidad INNER JOIN noconformidad_responsable
+            ON noconformidad.id=noconformidad_responsable.noconformidad_id
+            INNER JOIN jefatura_sucursal_area
+            ON noconformidad_responsable.jefatura_sucursal_area_id=jefatura_sucursal_area.id
+            WHERE jefatura_sucursal_area.persona_id=" . $usuario_id .
+            " and noconformidad.deleted_at is null 
+            ORDER BY noconformidad.id;";
+        break;
+        case 2:
+            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
+            noconformidad.accioninmediata,accioninmediatafec,
+            jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento,noconformidad.aprobpaso2,
+            noconformidad.fechacompromiso,notirecep,notivalai,noticumpl,notiresgi
+            FROM noconformidad INNER JOIN noconformidad_jefsucarea
+            ON noconformidad.id=noconformidad_jefsucarea.noconformidad_id
+            INNER JOIN jefatura_sucursal_area
+            ON noconformidad_jefsucarea.jefatura_sucursal_area_id=jefatura_sucursal_area.id
+            WHERE jefatura_sucursal_area.persona_id=" . $usuario_id .
+            " and noconformidad.deleted_at is null 
+            ORDER BY noconformidad.id;";
+        break;
+        case 3:
+            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
+                noconformidad.accioninmediata,accioninmediatafec,stavalai,
+                usuario_idmp2
+                FROM noconformidad
+                WHERE !(accioninmediata is null) 
+                and isnull(noconformidad.notivalai)
+                and noconformidad.deleted_at is null 
+                ORDER BY noconformidad.id;";
+        break;
+    }
+
+    $datas = DB::select($sql);
+    return $datas;
+
+    
 }

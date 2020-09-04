@@ -35,6 +35,10 @@ class NoConformidad extends Model
         'cierreaccorr',
         'adjcierreaccorr',
         'feccierreaccorr',
+        "notirecep",
+        "notivalai",
+        "noticumpl",
+        "notiresgi",
         'usuariodel_id'
     ];
 

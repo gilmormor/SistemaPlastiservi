@@ -1,7 +1,14 @@
 <tr>
     <td>{{$data->id}}</td>
     <td><i class="fa {{$recibido}}"></i></td>
-    <td></i>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
+    <td>
+        {{date('d-m-Y', strtotime($data->fechahora))}}
+        @if ($data->notirecep === null)
+            <span class="pull-right-container">
+                <small class="label bg-red">new</small>
+            </span>                                    
+        @endif
+    </td>
     <td>{{$data->hallazgo}}</td>
     <?php
         $aux_btn = "btn-warning";

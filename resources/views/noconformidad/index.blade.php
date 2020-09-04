@@ -34,9 +34,22 @@ No Conformidad
                     <tbody>
                         @foreach ($datas as $data)
                         <tr>
-                            <td>{{$data->id}}</td>
-                            <td>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
-                            <td>{{$data->hallazgo}}</td>
+                            <td>{{$data->id}}
+                            </td>
+                            <td>
+                                {{date('d-m-Y', strtotime($data->fechahora))}}
+                                @if (!empty($data->fechaguardado) and empty($data->cumplimiento))
+                                    @if ($data->noticumpl === null)
+                                        <span class="pull-right-container">
+                                            <small class="label bg-red">new</small>
+                                        </span>                                    
+                                    @endif    
+                                @endif
+                                
+                            </td>
+                            <td>
+                                {{$data->hallazgo}}
+                            </td>
                             <td>
                                 @if (empty($data->accioninmediata))
                                     <a href="{{route('editar_noconformidad', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
