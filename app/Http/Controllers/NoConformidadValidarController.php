@@ -58,7 +58,7 @@ class NoConformidadValidarController extends Controller
      */
     public function editar($id,$sta_val)
     {
-        can('editar-validar-ia-nc');
+        can('editar-validar-ai-nc');
         $data = NoConformidad::findOrFail($id);
 
         $funcvalidarai = $sta_val;
