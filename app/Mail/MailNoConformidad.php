@@ -32,6 +32,6 @@ class MailNoConformidad extends Mailable
      */
     public function build()
     {
-        return $this->view('mails.NoConformidad');
+        return $this->view('mails.noconformidad');
     }
 }
