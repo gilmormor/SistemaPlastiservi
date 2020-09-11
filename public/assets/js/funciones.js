@@ -66,11 +66,16 @@ var Biblioteca = function(){
 notificaciones();
 
 function notificaciones(){
+    var data = {
+        prueba : 'prueba1',
+        _token : $('input[name=_token]').val()
+    };
     var url = '/noconformidadrecep/notificaciones/';
     funcion = 'notificaciones';
     $.ajax({
         url: url,
         type: 'POST',
+        data: data,
         success: function (respuesta) {
             if(funcion=='notificaciones'){
                 $("#notificaciones").html(respuesta.htmlNotif);
