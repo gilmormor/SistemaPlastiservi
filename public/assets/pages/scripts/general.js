@@ -802,6 +802,7 @@ function verpdf2(nameFile,stareport){ //GENERAR PDF NOTA DE VENTA
 
 notificaciones();
 
+
 function notificaciones(){
     var data = {
         prueba : 'prueba1',
