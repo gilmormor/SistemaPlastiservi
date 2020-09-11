@@ -439,11 +439,14 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             abort(404);
         }
     }
-
-
+/*
     public function notificaciones(Request $request)
     {
         if ($request->ajax()) {
+*/
+
+    public function notificaciones()
+    {
             $totalNotif = 0;
             $contRecepNC = 0;
             $contnotivalai = 0;
@@ -592,9 +595,6 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                                         'htmlNotif' => $htmlNotif,
                                         'totalNotif' => $totalNotif
                                     ]);
-        } else {
-            abort(404);
-        }
 
 
         //dd($sql);
