@@ -74,7 +74,7 @@ function notificaciones(){
     funcion = 'notificaciones';
     $.ajax({
         url: url,
-        type: 'POST',
+        type: 'PUT',
         data: data,
         success: function (respuesta) {
             if(funcion=='notificaciones'){
