@@ -63,42 +63,4 @@ var Biblioteca = function(){
     }
 }();
 
-notificaciones();
 
-function notificaciones(){
-    var data = {
-        prueba : 'prueba1',
-        _token : $('input[name=_token]').val()
-    };
-    var url = '/noconformidadrecep/notificaciones/';
-    funcion = 'notificaciones';
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        success: function (respuesta) {
-            if(funcion=='notificaciones'){
-                $("#notificaciones").html(respuesta.htmlNotif);
-                $("#idnotifnum").html(respuesta.totalNotif);
-                //alert(respuesta.htmlNotif)
-    
-                return 0;
-            }
-            if (respuesta.mensaje == "ok") {
-                Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-            } else {
-                if (respuesta.mensaje == "sp"){
-                    Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-                }else{
-                    if(respuesta.mensaje=="img"){
-    
-                    }else{
-                        Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-                    }
-                }
-            }
-        },
-        error: function () {
-        }
-    });
-}
