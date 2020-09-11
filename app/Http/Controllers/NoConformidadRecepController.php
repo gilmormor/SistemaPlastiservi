@@ -589,7 +589,6 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
 
             return response()->json([
                                         'mensaje' => 'ok',
-                                        'notfNoConformidad' => $notfNoConformidades,
                                         'htmlNotif' => $htmlNotif,
                                         'totalNotif' => $totalNotif
                                     ]);

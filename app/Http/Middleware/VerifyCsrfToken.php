@@ -26,6 +26,7 @@ class VerifyCsrfToken extends Middleware
         'jefaturaAreaSuc/asignarjefe/', //Pasa por alto token para modificar persona_id en jefaturaAreaSuc
         'noconformidadup/*',
         'noconformidaddel/*',
-        'noconformidadprevImg/*'
+        'noconformidadprevImg/*',
+        'noconformidadrecep/notificaciones'
     ];
 }

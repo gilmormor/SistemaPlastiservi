@@ -67,8 +67,7 @@ notificaciones();
 
 function notificaciones(){
     var data = {
-        prueba : 'prueba1',
-        _token : $('input[name=_token]').val()
+        prueba : 'prueba1'
     };
     var url = '/noconformidadrecep/notificaciones/';
     funcion = 'notificaciones';
