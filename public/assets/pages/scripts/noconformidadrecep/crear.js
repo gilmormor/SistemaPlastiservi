@@ -333,7 +333,7 @@ function ajaxRequest(data,url,funcion) {
             if(funcion=='guardarAI'){
 				if (respuesta.mensaje == "ok") {
                     buscarpasos(data['id']);
-                    Biblioteca.actNotificaciones(); //aqui quede 04/09/2020
+                    //Biblioteca.actNotificaciones(); //aqui quede 04/09/2020
 				}
             }
             if(funcion=='apre'){

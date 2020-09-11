@@ -60,10 +60,6 @@ var Biblioteca = function(){
                 alertify.warning(mensaje);
             }
         },
-        actNotificaciones: function (mensaje, titulo, tipo) {
-            //alert('entro');
-            notificaciones();
-        },
     }
 }();
 
