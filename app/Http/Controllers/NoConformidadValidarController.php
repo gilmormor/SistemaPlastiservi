@@ -20,14 +20,14 @@ class NoConformidadValidarController extends Controller
      */
     public function index()
     {
-        can('listar-recepcion-no-conformidad');
+        can('listar-validar-ai-nc');
         $usuario = Usuario::with('roles')->findOrFail(auth()->id());
         //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
         $fecha = date("d-m-Y H:i:s");
         //dd($fecha);
         $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
         noconformidad.accioninmediata,accioninmediatafec,stavalai,notivalai,
-        usuario_idmp2
+        usuario_idmp2,cumplimiento,aprobpaso2,notiresgi
         FROM noconformidad
         WHERE !(accioninmediata is null) 
         and noconformidad.deleted_at is null 
@@ -58,7 +58,7 @@ class NoConformidadValidarController extends Controller
      */
     public function editar($id,$sta_val)
     {
-        //can('editar-no-conformidad');
+        can('editar-validar-ia-nc');
         $data = NoConformidad::findOrFail($id);
 
         $funcvalidarai = $sta_val;

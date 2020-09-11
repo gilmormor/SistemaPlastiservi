@@ -5,9 +5,17 @@
         {{date('d-m-Y', strtotime($data->fechahora))}}
         @if ($data->notirecep === null)
             <span class="pull-right-container">
-                <small class="label bg-red">new</small>
+                <small class="label bg-red tooltipsC" title="Nueva noConformidad">new</small>
             </span>                                    
         @endif
+        @if (!empty($data->fechaguardado) and empty($data->cumplimiento))
+            @if ($data->noticumpl === null)
+                <span class="pull-right-container">
+                    <small class="label bg-green tooltipsC" title="Validar cumplimiento">new</small>
+                </span>                                    
+            @endif    
+        @endif
+
     </td>
     <td>{{$data->hallazgo}}</td>
     <?php

@@ -214,6 +214,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $noconformidad->accioninmediata = $request->accioninmediata;
             $noconformidad->accioninmediatafec = date("Y-m-d H:i:s");
             $noconformidad->usuario_idmp2 = auth()->id();
+            $noconformidad->notirecep = 1;
             if($noconformidad->cumplimiento===0){ //Si es === 0 es porque fue rechazado el cumplimiento de la NC entonces cuando guarda cambia a -1 para la autorizacion de
                 $noconformidad->cumplimiento = -1;
             }
@@ -447,6 +448,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $contRecepNC = 0;
             $contnotivalai = 0;
             $contnoticumpl = 0;
+            $contnoRevSGI = 0;
             $usuario = Usuario::with('roles')->findOrFail(auth()->id());
             //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
             $fecha = date("d-m-Y H:i:s");
@@ -512,6 +514,15 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                     $contnotivalai++;
                 }
             }
+            if(can('listar-validar-ai-nc',false)){
+                $datas = consultaSQL(4,$usuario->persona->id);
+                foreach($datas as $data){
+                   if($data->cumplimiento != null and $data->aprobpaso2 === null){
+                    $contnoRevSGI++;
+                   } 
+                }
+                
+            }
             $totalNotif = $totalNotif + $contRecepNC + $contnotivalai + $contnoticumpl;
             $htmlNotif="
             <li class='header'>Tienes $totalNotif Notificaciones</li>
@@ -521,8 +532,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
               if($contnoticumpl>0){
                 $htmlNotif .= "
                 <li>
-                  <a href='" . route('noconformidad') ."'>
-                    <i class='fa fa-user text-red'></i> $contnoticumpl nuevas Validar Cumplimiento
+                  <a href='" . route('noconformidadrecep') ."'>
+                    <i class='fa fa-user text-green'></i> $contnoticumpl nuevas Validar Cumplimiento
                   </a>
                 </li>";
             }
@@ -534,11 +545,19 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                   </a>
                 </li>";
             }
-            if($contRecepNC>0){
+            if($contnotivalai>0){
                 $htmlNotif .= "
                 <li>
                   <a href='" . route('ncvalidar') ."'>
-                    <i class='fa fa-warning text-yellow'></i> $contnotivalai nuevas Validar Accion Inmediata
+                    <i class='fa fa-warning text-red'></i> $contnotivalai nuevas Validar Acción Inmediata
+                  </a>
+                </li>";
+            }
+            if($contnoRevSGI>0){
+                $htmlNotif .= "
+                <li>
+                  <a href='" . route('ncvalidar') ."'>
+                    <i class='fa fa-warning text-green'></i> $contnoRevSGI nuevas Revisión SGI
                   </a>
                 </li>";
             }
@@ -560,12 +579,13 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                   </a>
                 </li>
             */
+/*
             $htmlNotif .= "
               </ul>
             </li>
             <li class='footer'><a href='#'>View all</a></li>
             ";
-
+*/
 
             return response()->json([
                                         'mensaje' => 'ok',
@@ -592,7 +612,8 @@ function consultaSQL($idconsulta,$usuario_id){
             $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
             noconformidad.accioninmediata,accioninmediatafec,
             jefatura_sucursal_area.persona_id,usuario_idmp2,noconformidad.cumplimiento,noconformidad.aprobpaso2,
-            noconformidad.fechacompromiso,notirecep,notivalai,noticumpl,notiresgi
+            noconformidad.fechacompromiso,notirecep,notivalai,noticumpl,notiresgi,
+            noconformidad.fechaguardado
             FROM noconformidad INNER JOIN noconformidad_responsable
             ON noconformidad.id=noconformidad_responsable.noconformidad_id
             INNER JOIN jefatura_sucursal_area
@@ -621,6 +642,15 @@ function consultaSQL($idconsulta,$usuario_id){
                 FROM noconformidad
                 WHERE !(accioninmediata is null) 
                 and isnull(noconformidad.notivalai)
+                and noconformidad.deleted_at is null 
+                ORDER BY noconformidad.id;";
+        break;
+        case 4:
+            $sql = "SELECT noconformidad.id,noconformidad.fechahora,DATE_ADD(fechahora, INTERVAL 1 DAY) AS cfecha,noconformidad.hallazgo,
+                noconformidad.accioninmediata,accioninmediatafec,stavalai,notivalai,
+                usuario_idmp2,cumplimiento,aprobpaso2
+                FROM noconformidad
+                WHERE !(accioninmediata is null) 
                 and noconformidad.deleted_at is null 
                 ORDER BY noconformidad.id;";
         break;

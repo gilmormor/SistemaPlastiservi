@@ -6,9 +6,16 @@
         @if ($data->accioninmediata != null and $data->stavalai === null)
             @if ($data->notivalai === null)
                 <span class="pull-right-container">
-                    <small class="label bg-red">new</small>
+                    <small class="label bg-red tooltipsC" title="Validar Acción Inmediata">new</small>
                 </span>                
             @endif
+        @endif
+        @if ($data->cumplimiento != null and $data->aprobpaso2 === null)
+            @if ($data->notiresgi === null)
+                <span class="pull-right-container">
+                    <small class="label bg-green tooltipsC" title="Revisión SGI">new</small>
+                </span>                                    
+            @endif    
         @endif
     </td>
     <td>{{$data->hallazgo}}</td>

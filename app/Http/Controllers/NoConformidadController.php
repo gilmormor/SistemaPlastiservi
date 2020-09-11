@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarNoConformidad;
+use App\Mail\MailNoConformidad;
 use App\Models\Certificado;
 use App\Models\FormaDeteccionNC;
 use App\Models\JefaturaSucursalArea;
 use App\Models\MotivoNc;
 use App\Models\NoConformidad;
+use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use SplFileInfo;
 
 class NoConformidadController extends Controller
@@ -64,6 +67,10 @@ class NoConformidadController extends Controller
         $noconformidad->jefaturasucursalareas()->sync($request->jefatura_sucursal_area_id);
         $noconformidad->jefaturasucursalarearesponsables()->sync($request->jefatura_sucursal_areaR_id);
         $noconformidad->certificados()->sync($request->certificado_id);
+        foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+            Mail::to($usuario->persona->email)->send(new MailNoConformidad($noconformidad));
+        }
+
         return redirect('noconformidad')->with('mensaje','Creado con exito');
     }
 
@@ -117,6 +124,12 @@ class NoConformidadController extends Controller
         $noconformidad->jefaturasucursalareas()->sync($request->jefatura_sucursal_area_id);
         $noconformidad->jefaturasucursalarearesponsables()->sync($request->jefatura_sucursal_areaR_id);
         $noconformidad->certificados()->sync($request->certificado_id);
+        //dd($usuario);
+        //dd($noconformidad);
+        foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+            Mail::to($usuario->persona->email)->send(new MailNoConformidad($noconformidad));
+        }
+
         return redirect('noconformidad')->with('mensaje','Actualizado con exito');
     }
 

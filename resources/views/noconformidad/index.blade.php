@@ -38,14 +38,6 @@ No Conformidad
                             </td>
                             <td>
                                 {{date('d-m-Y', strtotime($data->fechahora))}}
-                                @if (!empty($data->fechaguardado) and empty($data->cumplimiento))
-                                    @if ($data->noticumpl === null)
-                                        <span class="pull-right-container">
-                                            <small class="label bg-red">new</small>
-                                        </span>                                    
-                                    @endif    
-                                @endif
-                                
                             </td>
                             <td>
                                 {{$data->hallazgo}}
