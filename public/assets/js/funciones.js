@@ -64,3 +64,40 @@ var Biblioteca = function(){
 }();
 
 
+notificaciones();
+
+function notificaciones(){
+    var data = {
+        prueba : 'prueba1',
+    };
+    var url = '/noconformidadrecep/notificaciones/';
+    funcion = 'notificaciones';
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function (respuesta) {
+            if(funcion=='notificaciones'){
+                $("#notificaciones").html(respuesta.htmlNotif);
+                $("#idnotifnum").html(respuesta.totalNotif);
+                //alert(respuesta.htmlNotif)
+    
+                return 0;
+            }
+            if (respuesta.mensaje == "ok") {
+                Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+            } else {
+                if (respuesta.mensaje == "sp"){
+                    Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                }else{
+                    if(respuesta.mensaje=="img"){
+    
+                    }else{
+                        Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                    }
+                }
+            }
+        },
+        error: function () {
+        }
+    });
+}
