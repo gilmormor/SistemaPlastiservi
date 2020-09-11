@@ -49,6 +49,7 @@
         </li>-->
         <!-- Notifications: style can be found in dropdown.less -->
         @csrf @method("put")
+        @csrf @method("POST")
         <li class="dropdown notifications-menu" id="idnotificaciones" name="idnotificaciones">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-bell-o"></i>
