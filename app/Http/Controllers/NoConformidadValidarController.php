@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MailValidarAccionInmediata;
+use App\Models\admin\UsuarioRol;
 use App\Models\Certificado;
 use App\Models\FormaDeteccionNC;
 use App\Models\JefaturaSucursalArea;
@@ -10,6 +12,7 @@ use App\Models\NoConformidad;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class NoConformidadValidarController extends Controller
 {
@@ -60,7 +63,6 @@ class NoConformidadValidarController extends Controller
     {
         can('editar-validar-ai-nc');
         $data = NoConformidad::findOrFail($id);
-
         $funcvalidarai = $sta_val;
         
         return view('noconformidadvalidar.editar',compact('data','funcvalidarai'));

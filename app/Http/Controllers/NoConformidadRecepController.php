@@ -11,6 +11,7 @@ use App\Http\Requests\ValidarNoCFechaCompromiso;
 use App\Http\Requests\ValidarNoCFechaGuardado;
 use App\Http\Requests\ValidarNoCIncumplimiento;
 use App\Http\Requests\ValidarNoCobsvalai;
+use App\Mail\MailValidarAccionInmediata;
 use App\Models\Certificado;
 use App\Models\FormaDeteccionNC;
 use App\Models\JefaturaSucursalArea;
@@ -19,6 +20,7 @@ use App\Models\NoConformidad;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class NoConformidadRecepController extends Controller
 {
@@ -147,6 +149,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         $funcvalidarai = $sta_val;
         $directory = "storage/imagenes/noconformidad/";      
         $images = glob($directory . "*.*");
+        
         return view('noconformidadrecep.editar',compact('data','funcvalidarai','images'));
     }
 
@@ -220,9 +223,22 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             }
             if($noconformidad->aprobpaso2===0){ //Si es === 0 es porque fue rechazada la revision SGI de la NC entonces cuando guarda cambia a -1 para la autorizacion del siguiente valor
                 $noconformidad->aprobpaso2 = -1;
-            }
+            }    
 
             if ($noconformidad->save()) {
+                $sql = "SELECT *
+                FROM usuario_rol INNER JOIN usuario
+                ON usuario_rol.usuario_id = usuario.id
+                WHERE usuario_rol.rol_id=9
+                and usuario.deleted_at is null;";
+        
+                $datas = DB::select($sql);
+                $asunto = 'No Conformidad: Validar Acción Inmediata';
+                $cuerpo = 'Hola! Has recibido una nueva No Conformidad (Acción Inmediata) para ser validada FechaHora: ';
+                foreach ($datas as $data1) {
+                    Mail::to($data1->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
+                }
+    
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -249,6 +265,11 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             }
 
             if ($noconformidad->save()) {
+                $asunto = 'No Conformidad: Acción Inmediata Validada';
+                $cuerpo = 'Hola! Acción Inmediata Validada FechaHora: ';
+                foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+                    Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
+                }
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -378,6 +399,18 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 $noconformidad->aprobpaso2 = -7;
             }
             if ($noconformidad->save()) {
+                $sql = "SELECT *
+                FROM usuario_rol INNER JOIN usuario
+                ON usuario_rol.usuario_id = usuario.id
+                WHERE usuario_rol.rol_id=9
+                and usuario.deleted_at is null;";
+        
+                $datas = DB::select($sql);
+                $asunto = 'No Conformidad: Cumplimiento Validado';
+                $cuerpo = 'Hola! Se Valido Cumplimiento No Conformidad FechaHora ';
+                foreach ($datas as $data1) {
+                    Mail::to($data1->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
+                }
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -394,6 +427,17 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $noconformidad->cumplimiento = 0;
             $noconformidad->fechacumplimiento = date("Y-m-d H:i:s");
             if ($noconformidad->save()) {
+                $sql = "SELECT *
+                FROM usuario_rol INNER JOIN usuario
+                ON usuario_rol.usuario_id = usuario.id
+                WHERE usuario_rol.rol_id=9
+                and usuario.deleted_at is null;";
+                $datas = DB::select($sql);
+                $asunto = 'No Conformidad:  Incumplimiento Validado';
+                $cuerpo = 'Hola! Se Valido Incumplimiento No Conformidad FechaHora: ';
+                foreach ($datas as $data1) {
+                    Mail::to($data1->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
+                }
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -402,7 +446,6 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             abort(404);
         }
     }
-
 
     public function consvalai(Request $request)
     {
@@ -431,6 +474,17 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 $noconformidad->accorrec = $request->accorrec;
             }
             if ($noconformidad->save()) {
+                if ($request->aprobpaso2=1){
+                    $asunto = 'No Conformidad: Revisión apropada SGI';
+                    $cuerpo = 'Hola! Revisión apropada SGI FechaHora: ';
+                }else{
+                    $asunto = 'No Conformidad: Revisión no apropada SGI';
+                    $cuerpo = 'Hola! Revisión no apropada SGI: ';
+                }
+                foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+                    Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
+                }
+
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -502,6 +556,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $datas = NoConformidad::orderBy('id')
                 ->where('usuario_id','=',auth()->id())
                 ->get();
+            $datas = consultaSQL(1,$usuario->persona->id);
             foreach ($datas as $data){
                 if(!empty($data->fechaguardado) and empty($data->cumplimiento)){
                     if($data->noticumpl===null){ //($NC->fechacompromiso != null and $NC->cumplimiento === null){
@@ -526,44 +581,48 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 }
                 
             }
-            $totalNotif = $totalNotif + $contRecepNC + $contnotivalai + $contnoticumpl;
-            $htmlNotif="
-            <li class='header'>Tienes $totalNotif Notificaciones</li>
-            <li>
-              <!-- inner menu: contains the actual data -->
-              <ul class='menu'>";
-              if($contnoticumpl>0){
-                $htmlNotif .= "
+            $totalNotif = $contRecepNC + $contnotivalai + $contnoticumpl + $contnoRevSGI;
+            $htmlNotif = "";
+            if ($totalNotif > 0){
+                $htmlNotif="
+                <li class='header'>Tienes $totalNotif Notificaciones</li>
                 <li>
-                  <a href='" . route('noconformidadrecep') ."'>
-                    <i class='fa fa-user text-green'></i> $contnoticumpl nuevas Validar Cumplimiento
-                  </a>
-                </li>";
+                  <!-- inner menu: contains the actual data -->
+                  <ul class='menu'>";
+                  if($contnoticumpl>0){
+                    $htmlNotif .= "
+                    <li>
+                      <a href='" . route('noconformidadrecep') ."'>
+                        <i class='fa fa-user text-green'></i> $contnoticumpl nuevas Validar Cumplimiento
+                      </a>
+                    </li>";
+                }
+                if($contRecepNC>0){
+                    $htmlNotif .= "
+                    <li>
+                      <a href='" . route('noconformidadrecep') ."'>
+                        <i class='fa fa-thumbs-o-down text-aqua'></i> $contRecepNC nuevas Recep no conformidades
+                      </a>
+                    </li>";
+                }
+                if($contnotivalai>0){
+                    $htmlNotif .= "
+                    <li>
+                      <a href='" . route('ncvalidar') ."'>
+                        <i class='fa fa-warning text-red'></i> $contnotivalai nuevas Validar Acción Inmediata
+                      </a>
+                    </li>";
+                }
+                if($contnoRevSGI>0){
+                    $htmlNotif .= "
+                    <li>
+                      <a href='" . route('ncvalidar') ."'>
+                        <i class='fa fa-warning text-green'></i> $contnoRevSGI nuevas Revisión SGI
+                      </a>
+                    </li>";
+                }
             }
-            if($contRecepNC>0){
-                $htmlNotif .= "
-                <li>
-                  <a href='" . route('noconformidadrecep') ."'>
-                    <i class='fa fa-thumbs-o-down text-aqua'></i> $contRecepNC nuevas Recep no conformidades
-                  </a>
-                </li>";
-            }
-            if($contnotivalai>0){
-                $htmlNotif .= "
-                <li>
-                  <a href='" . route('ncvalidar') ."'>
-                    <i class='fa fa-warning text-red'></i> $contnotivalai nuevas Validar Acción Inmediata
-                  </a>
-                </li>";
-            }
-            if($contnoRevSGI>0){
-                $htmlNotif .= "
-                <li>
-                  <a href='" . route('ncvalidar') ."'>
-                    <i class='fa fa-warning text-green'></i> $contnoRevSGI nuevas Revisión SGI
-                  </a>
-                </li>";
-            }
+
 
             /*
                 <li>
