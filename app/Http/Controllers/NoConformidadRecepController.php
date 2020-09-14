@@ -218,6 +218,12 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $noconformidad->accioninmediatafec = date("Y-m-d H:i:s");
             $noconformidad->usuario_idmp2 = auth()->id();
             $noconformidad->notirecep = 1;
+
+            $noconformidad->stavalai = null;
+            $noconformidad->obsvalai = null;
+            $noconformidad->fechavalai = null;
+            $noconformidad->usuario_idvalai = null;
+
             if($noconformidad->cumplimiento===0){ //Si es === 0 es porque fue rechazado el cumplimiento de la NC entonces cuando guarda cambia a -1 para la autorizacion de
                 $noconformidad->cumplimiento = -1;
             }
@@ -234,7 +240,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         
                 $datas = DB::select($sql);
                 $asunto = 'No Conformidad: Validar Acción Inmediata';
-                $cuerpo = 'Hola! Has recibido una nueva No Conformidad (Acción Inmediata) para ser validada FechaHora: ';
+                $cuerpo = 'Hola! Has recibido una nueva Validar Acción Inmediata FechaHora: ';
                 foreach ($datas as $data1) {
                     Mail::to($data1->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
@@ -257,6 +263,16 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $noconformidad->fechavalai = date("Y-m-d H:i:s");
             $noconformidad->usuario_idvalai = auth()->id();
             $noconformidad->notivalai = 1;
+            $asunto = 'No Conformidad: Acción Inmediata Validada';
+            $cuerpo = 'Hola! Acción Inmediata Validada FechaHora: ';
+
+            if($request->stavalai == "0"){
+                $noconformidad->accioninmediata = $noconformidad->accioninmediata . ". " . $request->obsvalai; 
+                $noconformidad->notirecep = null;
+                $noconformidad->notivalai = null;
+                $asunto = 'No Conformidad: Acción Inmediata Rechazada';
+                $cuerpo = 'Hola! Acción Inmediata Rechazada FechaHora: ';
+            }
             if($noconformidad->cumplimiento===-1){ //Si es === -1 es porque fue aceptada la modificacion de la accion inmediata que habia sido incumplida y pasa al siguiente nivel analisis de causa
                 $noconformidad->cumplimiento = -2;
             }
@@ -265,8 +281,6 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             }
 
             if ($noconformidad->save()) {
-                $asunto = 'No Conformidad: Acción Inmediata Validada';
-                $cuerpo = 'Hola! Acción Inmediata Validada FechaHora: ';
                 foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
                     Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
@@ -408,6 +422,11 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 $datas = DB::select($sql);
                 $asunto = 'No Conformidad: Cumplimiento Validado';
                 $cuerpo = 'Hola! Se Valido Cumplimiento No Conformidad FechaHora ';
+                if($request->cumplimiento == "0"){
+                    $asunto = 'No Conformidad:  Incumplimiento Validado';
+                    $cuerpo = 'Hola! Se Valido Incumplimiento No Conformidad FechaHora: ';
+                }
+
                 foreach ($datas as $data1) {
                     Mail::to($data1->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }

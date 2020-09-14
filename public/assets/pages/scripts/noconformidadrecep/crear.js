@@ -805,11 +805,15 @@ function validarpasos(respuesta){
     inactcumplimiento();
 
     noconformidad=respuesta.noconformidad;
-    if(noconformidad.accioninmediata==null || noconformidad.accioninmediata==""){
+    if(noconformidad.accioninmediata==null || noconformidad.accioninmediata=="" || noconformidad.stavalai=="0"){
         $("#fechaai").html('.::.  <i class="fa fa-calendar"></i>  .::.');
         $("#horaai").html('<i class="fa fa-clock-o"></i> ');
         actAI();
         inactvalAI();
+        $('#accioninmediata').val(noconformidad.accioninmediata);
+        $("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
+        if(noconformidad.stavalai=="0"){
+        }
     }else{
         var fecha = new Date(noconformidad.accioninmediatafec);
         actdatosai(fecha,noconformidad.accioninmediata);
