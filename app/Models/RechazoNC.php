@@ -12,8 +12,18 @@ class RechazoNC extends Model
     protected $fillable = [
         'fecha',
         'accioninmediata',
+        'accioninmediatafec',
         'analisiscausa',
+        'analisisdecausafec',
         'accioncorrectiva',
+        'accorrecfec',
+        'fechacompromiso',
+        'fechacompromisofec',
+        'fechaguardado',
+        'cumplimiento',
+        'fechacumplimiento',
+        'aprobpaso2',
+        'fecaprobpaso2',
         'noconformidad_id',
         'usuariodel_id'
     ];

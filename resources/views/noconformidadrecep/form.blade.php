@@ -285,6 +285,36 @@
             </li>
             <!-- END timeline item -->
 
+
+            <!-- timeline time label -->
+            <li class="time-label paso4" style="display:none;">
+                <span class="bg-maroon" id="fechapaso4" name="fechapaso4">
+                </span>
+            </li>
+            <!-- /.timeline-label -->
+            <!-- timeline item -->
+            <li class="paso4" style="display:none;">
+                <i class="fa fa-edit bg-yellow"></i>
+
+                <div class="timeline-item">
+                <span class="time" id="horapaso4" name="horapaso4"></span>
+
+                <h3 class="timeline-header" name="paso4txt" id="paso4txt"><a href="#" id="lblpaso4" name="lblpaso4">Resultado de medidas tomadas</a></h3>
+                <div class="timeline-body" id="linebodypaso41">
+                    <h4 class="timeline-header" name="aprubpaso4" id="aprubpaso4">Aprueba?</h3>
+                    <textarea name="paso4" id="paso4" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                </div>
+                <div class="timeline-footer" id="linebodypaso42">
+                    <a id="guardarpaso4Si" name="guardarpaso4Si" class="btn btn-primary btn-xs" onclick="paso4(1)">Si </a>
+                    <a id="guardarpaso4No" name="guardarpaso4No" class="btn btn-danger btn-xs" onclick="paso4(0)">No</a>
+                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
+
+
+
             <!-- timeline item -->
             <li>
                 <i class="fa fa-clock-o bg-gray"></i>

@@ -18,7 +18,7 @@ class CreateTableRechazonc extends Migration
             $table->dateTime('fecha')->comment('Fecha y hora rechazo.');
             $table->string('accioninmediata',250)->comment('Observación Accion inmediata No Conformidad.');
             $table->string('analisiscausa',250)->comment('Observación Analisis de Causa No Conformidad.');
-            $table->string('accioncorrectiva',250)->comment('Observacion Accion Correctiva.');
+            $table->string('accorrec',250)->comment('Observacion Accion Correctiva.');
             $table->unsignedBigInteger('noconformidad_id')->comment('Id No conformidad.');
             $table->foreign('noconformidad_id','fk_rechazonc_noconformidad')->references('id')->on('noconformidad')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();

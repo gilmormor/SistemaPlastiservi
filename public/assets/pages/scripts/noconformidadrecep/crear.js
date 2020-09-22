@@ -811,8 +811,15 @@ function validarpasos(respuesta){
         actAI();
         inactvalAI();
         $('#accioninmediata').val(noconformidad.accioninmediata);
-        $("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
+        //$("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
         if(noconformidad.stavalai=="0"){
+            ocultarobsvalai();
+            ocultarACausa();
+            ocultaracorrect();
+            ocultarfechacompromiso();
+            ocultarfechaguardado();
+            ocultarcumplimiento();
+            ocultaraprobpaso2();
         }
     }else{
         var fecha = new Date(noconformidad.accioninmediatafec);
@@ -936,7 +943,7 @@ function validarpasos(respuesta){
                                                                 ocultaraprobpaso2();
                                                                 //inactaprobpaso2();
                                                             }else{
-                                                                if(noconformidad.aprobpaso2===null || noconformidad.aprobpaso20==="" || noconformidad.aprobpaso2===-7){
+                                                                if(noconformidad.aprobpaso2===null || noconformidad.aprobpaso2==="" || noconformidad.aprobpaso2===-7){
                                                                     
                                                                     $("#fechaaprobpaso2").html('.::.  <i class="fa fa-calendar"></i>  .::.');
                                                                     $("#horaaprobpaso2").html('<i class="fa fa-clock-o"></i> ');

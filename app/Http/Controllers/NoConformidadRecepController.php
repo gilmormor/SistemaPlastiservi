@@ -17,6 +17,7 @@ use App\Models\FormaDeteccionNC;
 use App\Models\JefaturaSucursalArea;
 use App\Models\MotivoNc;
 use App\Models\NoConformidad;
+use App\Models\RechazoNC;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -409,6 +410,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $noconformidad = NoConformidad::findOrFail($request->id);
             $noconformidad->cumplimiento = $request->cumplimiento;
             $noconformidad->fechacumplimiento = date("Y-m-d H:i:s");
+            $noconformidad->noticumpl = 1;
             if($noconformidad->aprobpaso2===-6){ //Si es === -6 es porque guardo y paso el cumplimiento y pasa al siguiente nivel que es aceptacion o rechaso de revición SGI .
                 $noconformidad->aprobpaso2 = -7;
             }
@@ -452,7 +454,7 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 WHERE usuario_rol.rol_id=9
                 and usuario.deleted_at is null;";
                 $datas = DB::select($sql);
-                $asunto = 'No Conformidad:  Incumplimiento Validado';
+                $asunto = 'No Conformidad: Incumplimiento Validado';
                 $cuerpo = 'Hola! Se Valido Incumplimiento No Conformidad FechaHora: ';
                 foreach ($datas as $data1) {
                     Mail::to($data1->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
@@ -485,25 +487,49 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $noconformidad = NoConformidad::findOrFail($request->id);
             $noconformidad->aprobpaso2 = $request->aprobpaso2;
             $noconformidad->fecaprobpaso2 = date("Y-m-d H:i:s");
+            $noconformidad->notiresgi = 1;
+            $asunto = 'No Conformidad: Revisión apropada SGI';
+            $cuerpo = 'Hola! Revisión apropada SGI FechaHora: ';
             if($request->aprobpaso2 == 0){
-                $noconformidad->cumplimiento = null;
-                $noconformidad->fechacumplimiento = null;
+                $asunto = 'No Conformidad: Revisión no apropada SGI';
+                $cuerpo = 'Hola! Revisión no apropada SGI: ';
+
+                $rechazonc = new RechazoNC;
+                $rechazonc->accioninmediata    = $noconformidad->accioninmediata;
+                $rechazonc->accioninmediatafec = $noconformidad->accioninmediatafec;
+                $rechazonc->analisiscausa      = $noconformidad->analisisdecausa;
+                $rechazonc->analisisdecausafec = $noconformidad->analisisdecausafec;
+                $rechazonc->accorrec           = $noconformidad->accorrec;
+                $rechazonc->accorrecfec        = $noconformidad->accorrecfec;
+                $rechazonc->fechacompromiso    = $noconformidad->fechacompromiso;
+                $rechazonc->fechacompromisofec = $noconformidad->fechacompromisofec;
+                $rechazonc->fechaguardado      = $noconformidad->fechaguardado;
+                $rechazonc->cumplimiento       = $noconformidad->cumplimiento;
+                $rechazonc->fechacumplimiento  = $noconformidad->fechacumplimiento;
+                $rechazonc->aprobpaso2         = $noconformidad->aprobpaso2;
+                $rechazonc->fecaprobpaso2      = $noconformidad->fecaprobpaso2;
+                $rechazonc->noconformidad_id   = $request->id;
+
                 $noconformidad->accioninmediata = $request->accioninmediata;
                 $noconformidad->analisisdecausa = $request->analisisdecausa;
                 $noconformidad->accorrec = $request->accorrec;
+                $noconformidad->cumplimiento = null;
+                $noconformidad->fechacumplimiento = null;
+                $noconformidad->notirecep = null;
+                $noconformidad->notivalai = null;
+                $noconformidad->noticumpl = null;
+                $noconformidad->notiresgi = null;
+                $noconformidad->obsvalai = null;
+                $noconformidad->stavalai = 0;
             }
+
             if ($noconformidad->save()) {
-                if ($request->aprobpaso2=1){
-                    $asunto = 'No Conformidad: Revisión apropada SGI';
-                    $cuerpo = 'Hola! Revisión apropada SGI FechaHora: ';
-                }else{
-                    $asunto = 'No Conformidad: Revisión no apropada SGI';
-                    $cuerpo = 'Hola! Revisión no apropada SGI: ';
-                }
                 foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
                     Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
-
+                if($request->aprobpaso2 == 0){
+                    $rechazonc->save();
+                }
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
