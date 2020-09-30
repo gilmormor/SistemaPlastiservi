@@ -152,11 +152,12 @@ class NoConformidadController extends Controller
         }
     }
 
-    public function prevImagen($id,$sta_val)
+    public function prevImagen(Request $request,$id,$sta_val)
     {
+        //dd($request->ininom);
         $directory = "storage/imagenes/noconformidad/"; //Storage::url("imagenes/noconformidad/");
         //dd($directory);     
-        $images = glob($directory . $id."-*.*");
+        $images = glob($directory . $id.$request->ininom."-*.*");
         //dd($images);
         $initialPreview = array();
         $initialPreviewConfig = array();
@@ -178,12 +179,14 @@ class NoConformidadController extends Controller
                 "overwriteInitial"=>true,
                 "initialPreviewConfig"=>$infoImagenesSubidas,
                 "initialPreview"=>$ImagenesSubidas,
-                "mensaje"=>"img"
+                "mensaje"=>"img",
+                "ininom"=>$request->ininom
                 ];
         }else{
             $arr = [
                 "i"=>$i,
-                "mensaje"=>"img"
+                "mensaje"=>"img",
+                "ininom"=>$request->ininom
                 ];
         }
         //dd($arr);
@@ -192,35 +195,47 @@ class NoConformidadController extends Controller
 
 
 
-    public function actualizarImagen(Request $request, $id,$sta_val)
+    public function actualizarImagen(Request $request, $id,$sta_val,$ininom)
     {
-        //dd($request);
+        //dd($sta_val.":".$ininom);
+        
+
         if($sta_val=="0") //Si es 0 no puede guardar archivo
         {
             //dd($request);
-            $carpetaAdjunta="storage/imagenes/noconformidad/";
-            // Contar envían por el plugin
-            $Imagenes =count(isset($_FILES['imagenes']['name'])?$_FILES['imagenes']['name']:0);
-            //$infoImagenesSubidas = array();
-            for($i = 0; $i < $Imagenes; $i++) {
-                // El nombre y nombre temporal del archivo que vamos para adjuntar
-                $nombreArchivo=isset($_FILES['imagenes']['name'][$i])?$id.'-'.$_FILES['imagenes']['name'][$i]:null;
-                $nombreTemporal=isset($_FILES['imagenes']['tmp_name'][$i])?$_FILES['imagenes']['tmp_name'][$i]:null;
-                
-                $rutaArchivo=$carpetaAdjunta.$nombreArchivo;
-                
-                move_uploaded_file($nombreTemporal,$rutaArchivo);
-                /*
-                $tamano = filesize($image);
-                $infoImagenesSubidas[$cont]=array("type"=>"pdf","caption"=>"$nombreArchivo","size"=>"$tamano","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$nombreArchivo);
-                //$ImagenesSubidas[$i]="<img  height='120px'  src='/$rutaArchivo' class='file-preview-image'>";
-                $ImagenesSubidas[$cont]=array("/$rutaArchivo");
-                $cont++;
-                */
+            $aux_staguardar = true;
+            $noconformidad = NoConformidad::findOrFail($id);
+            if($ininom == "MT" and $noconformidad->resmedtom != null){
+                $aux_staguardar = false; //Si Medidas tomadas tiene un valor no guarda la imagen
+            }
+            if($ininom == "CV" and $noconformidad->cierreaccorr != null){
+                $aux_staguardar = false; //Si Cierre de la eficacia tiene un valor no guarda la imagen
+            }
+            if($aux_staguardar){
+                $carpetaAdjunta="storage/imagenes/noconformidad/";
+                // Contar envían por el plugin
+                $Imagenes =count(isset($_FILES['imagenes'.$ininom]['name'])?$_FILES['imagenes'.$ininom]['name']:0);
+                //$infoImagenesSubidas = array();
+                for($i = 0; $i < $Imagenes; $i++) {
+                    // El nombre y nombre temporal del archivo que vamos para adjuntar
+                    $nombreArchivo=isset($_FILES['imagenes'.$ininom]['name'][$i])?$id.$ininom.'-'.$_FILES['imagenes'.$ininom]['name'][$i]:null;
+                    $nombreTemporal=isset($_FILES['imagenes'.$ininom]['tmp_name'][$i])?$_FILES['imagenes'.$ininom]['tmp_name'][$i]:null;
+                    
+                    $rutaArchivo=$carpetaAdjunta.$nombreArchivo;
+                    
+                    move_uploaded_file($nombreTemporal,$rutaArchivo);
+                    /*
+                    $tamano = filesize($image);
+                    $infoImagenesSubidas[$cont]=array("type"=>"pdf","caption"=>"$nombreArchivo","size"=>"$tamano","height"=>"120px","width"=>"120px","url"=> route('delImagen_noconformidad', ['id' => $id]) ,"key"=>$nombreArchivo);
+                    //$ImagenesSubidas[$i]="<img  height='120px'  src='/$rutaArchivo' class='file-preview-image'>";
+                    $ImagenesSubidas[$cont]=array("/$rutaArchivo");
+                    $cont++;
+                    */
+                }    
             }
         }
         $directory = "storage/imagenes/noconformidad/";
-        $images = glob($directory . $id."-*.*");
+        $images = glob($directory . $id.$ininom."-*.*");
         $infoImagenesSubidas = array();
         $i = 0;
         foreach($images as $image){
@@ -232,8 +247,20 @@ class NoConformidadController extends Controller
             $ImagenesSubidas[$i]=array("/$directory$infoImagenes[3]");
             $i++;
         }
-        $arr = array("file_id"=>0,"overwriteInitial"=>true,"initialPreviewConfig"=>$infoImagenesSubidas,
-                     "initialPreview"=>$ImagenesSubidas);
+        if($i > 0){
+            $arr = array(
+                    "file_id"=>0,"overwriteInitial"=>true,
+                    "initialPreviewConfig"=>$infoImagenesSubidas,
+                    "initialPreview"=>$ImagenesSubidas
+                );
+        }else{
+            $arr = [
+                "i"=>$i,
+                "mensaje"=>"img",
+                "ininom"=>$request->ininom
+                ];
+        }
+        //return response()->json($arr);
         echo json_encode($arr);
     }
 

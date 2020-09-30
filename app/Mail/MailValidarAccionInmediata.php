@@ -22,7 +22,7 @@ class MailValidarAccionInmediata extends Mailable
      */
     public function __construct($msg,$asunto,$cuerpo)
     {
-        $this->subject = $asunto . " ID: " . $msg->id;
+        $this->subject = " ID: " . $msg->id ." ". $asunto;
         $this->cuerpo = $cuerpo;
         $this->msg = $msg;
     }

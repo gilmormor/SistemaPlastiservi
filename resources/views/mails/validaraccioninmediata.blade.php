@@ -9,7 +9,7 @@
 <body>
 
     <p>{{ $cuerpo }} {{ $msg->updated_at }}.</p>
-    <p>Estos son los datos del usuario que la realizó:</p>
+    <p>Datos del usuario que emitio la No Conformidad:</p>
     <ul>
         <li>Nombre: {{session()->get('nombre_usuario') }}</li>
         <li>Email: {{Auth::user()->email}}</li>

@@ -11,6 +11,8 @@ use App\Http\Requests\ValidarNoCFechaCompromiso;
 use App\Http\Requests\ValidarNoCFechaGuardado;
 use App\Http\Requests\ValidarNoCIncumplimiento;
 use App\Http\Requests\ValidarNoCobsvalai;
+use App\Http\Requests\ValidarPaso4;
+use App\Http\Requests\ValidarPaso5;
 use App\Mail\MailValidarAccionInmediata;
 use App\Models\Certificado;
 use App\Models\FormaDeteccionNC;
@@ -18,6 +20,7 @@ use App\Models\JefaturaSucursalArea;
 use App\Models\MotivoNc;
 use App\Models\NoConformidad;
 use App\Models\RechazoNC;
+use App\Models\RechazoResMedTom;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -544,161 +547,245 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
         if ($request->ajax()) {
 */
 
+
+    public function paso4(ValidarPaso4 $request)
+    {
+        if ($request->ajax()) {
+            $noconformidad = NoConformidad::findOrFail($request->id);
+            $noconformidad->resmedtom = $request->resmedtom;
+            $noconformidad->fecharesmedtom = date("Y-m-d H:i:s");
+            $noconformidad->acepresmedtom = $request->acepresmedtom;
+            $asunto = 'No Conformidad: Se aceptaron las medidas tomadas y documentos';
+            $cuerpo = 'Hola! Se aceptaron las medidas tomadas y documentos: ';
+            if($request->acepresmedtom == 0){
+                $asunto = 'No Conformidad: No se aceptaron las medidas tomadas y documentos';
+                $cuerpo = 'Hola! No se aceptaron las medidas tomadas y documentos: ';
+                $rechazoresmedtom = new RechazoResMedTom();
+                $rechazoresmedtom->accorrec           = $noconformidad->accorrec;
+                $rechazoresmedtom->accorrecfec        = $noconformidad->accorrecfec;
+                $rechazoresmedtom->fechacompromiso    = $noconformidad->fechacompromiso;
+                $rechazoresmedtom->fechacompromisofec = $noconformidad->fechacompromisofec;
+                $rechazoresmedtom->fechaguardado      = $noconformidad->fechaguardado;
+                $rechazoresmedtom->cumplimiento       = $noconformidad->cumplimiento;
+                $rechazoresmedtom->fechacumplimiento  = $noconformidad->fechacumplimiento;
+                $rechazoresmedtom->aprobpaso2         = $noconformidad->aprobpaso2;
+                $rechazoresmedtom->fecaprobpaso2      = $noconformidad->fecaprobpaso2;
+                $rechazoresmedtom->resmedtom          = $noconformidad->resmedtom;
+                $rechazoresmedtom->fecharesmedtom     = $noconformidad->fecharesmedtom;
+                $rechazoresmedtom->fecha              = $noconformidad->fecharesmedtom;
+                $rechazoresmedtom->descripcion        = $noconformidad->resmedtom;
+                $rechazoresmedtom->noconformidad_id   = $request->id;
+
+                $noconformidad->resmedtom = null;
+                $noconformidad->fecharesmedtom = null;
+                $noconformidad->acepresmedtom = null;
+                $noconformidad->fecaprobpaso2 = null;
+                $noconformidad->aprobpaso2 = null;
+                $noconformidad->fechacumplimiento = null;
+                $noconformidad->cumplimiento = null;
+                $noconformidad->fechaguardado = null;
+                $noconformidad->fechacompromisofec = null;
+                $noconformidad->fechacompromiso = null;
+                $noconformidad->adjaccorrec = null;
+                $noconformidad->accorrecfec = null;
+                $noconformidad->accorrec = null;
+                $noconformidad->noticumpl = null;
+                $noconformidad->notiresgi = null;
+            }
+
+            if ($noconformidad->save()) {
+                foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+                    Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
+                }
+                if($request->acepresmedtom == 0){
+                    $rechazoresmedtom->save();
+                }
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+    public function paso5(ValidarPaso5 $request)
+    {
+        if ($request->ajax()) {
+            $noconformidad = NoConformidad::findOrFail($request->id);
+            $noconformidad->cierreaccorr = $request->cierreaccorr;
+            $noconformidad->feccierreaccorr = date("Y-m-d H:i:s");
+            $asunto = 'No Conformidad: Cierre de la eficacia de la accion correctiva';
+            $cuerpo = 'Hola! Cierre de la eficacia de la accion correctiva: ';
+            if ($noconformidad->save()) {
+                foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+                    Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
+                }
+                return response()->json(['mensaje' => 'ok']);
+            }else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+
     public function notificaciones()
     {
-            $totalNotif = 0;
-            $contRecepNC = 0;
-            $contnotivalai = 0;
-            $contnoticumpl = 0;
-            $contnoRevSGI = 0;
-            $usuario = Usuario::with('roles')->findOrFail(auth()->id());
-            //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
-            $fecha = date("d-m-Y H:i:s");
-            $notfNoConformidades = consultaSQL(1,$usuario->persona->id);
+        $totalNotif = 0;
+        $contRecepNC = 0;
+        $contnotivalai = 0;
+        $contnoticumpl = 0;
+        $contnoRevSGI = 0;
+        $usuario = Usuario::with('roles')->findOrFail(auth()->id());
+        //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
+        $fecha = date("d-m-Y H:i:s");
+        $notfNoConformidades = consultaSQL(1,$usuario->persona->id);
 
-            foreach ($notfNoConformidades as $NC) {
-                if($NC->notirecep === null){
-                    if ((NOW()<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) 
-                    OR (!is_null($NC->accioninmediata) and $NC->accioninmediata!=''))){
-                        $aux_mostrar = false;
-                        if(is_null($NC->usuario_idmp2)){
+        foreach ($notfNoConformidades as $NC) {
+            if($NC->notirecep === null){
+                if ((NOW()<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) 
+                OR (!is_null($NC->accioninmediata) and $NC->accioninmediata!=''))){
+                    $aux_mostrar = false;
+                    if(is_null($NC->usuario_idmp2)){
+                        $aux_mostrar = true;
+                    }else{
+                        //Esta ultima validacion es para que cuando se rachazada la NC por el dueño permita mostrarla sin importar la fecha que fue hecha a accion inmediata -> or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))
+                        $aux_mostrarCP = false;
+                        if($NC->cumplimiento==1 or ($NC->cumplimiento <= 0 and !is_null($NC->cumplimiento))){
+                            $aux_mostrarCP = true;
+                        }
+                        if($NC->aprobpaso2==1 or ($NC->aprobpaso2 <= 0 and !is_null($NC->aprobpaso2))){
+                            $aux_mostrarCP = true;
+                        }
+                        if(($NC->usuario_idmp2==auth()->id()) AND ( $NC->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) or $aux_mostrarCP )){
                             $aux_mostrar = true;
-                        }else{
-                            //Esta ultima validacion es para que cuando se rachazada la NC por el dueño permita mostrarla sin importar la fecha que fue hecha a accion inmediata -> or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))
-                            $aux_mostrarCP = false;
-                            if($NC->cumplimiento==1 or ($NC->cumplimiento <= 0 and !is_null($NC->cumplimiento))){
-                                $aux_mostrarCP = true;
-                            }
-                            if($NC->aprobpaso2==1 or ($NC->aprobpaso2 <= 0 and !is_null($NC->aprobpaso2))){
-                                $aux_mostrarCP = true;
-                            }
-                            if(($NC->usuario_idmp2==auth()->id()) AND ( $NC->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) or $aux_mostrarCP )){
-                                $aux_mostrar = true;
-                            }
-                        }
-                        if ($aux_mostrar){
-                            $contRecepNC++;
                         }
                     }
-
-                }
-            }
-            $arearesps = consultaSQL(2,$usuario->persona->id);
-            foreach ($arearesps as $data){
-                if($data->notirecep === null){
-                    if ((NOW()>= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
-                    AND (is_null($data->accioninmediata) or $data->accioninmediata=='')))
-                    {
+                    if ($aux_mostrar){
                         $contRecepNC++;
                     }
-                else
-                    if ($data->usuario_idmp2==auth()->id()){
-                        $contRecepNC++;
-                    }
+                }
 
-                }
             }
-            $datas = NoConformidad::orderBy('id')
-                ->where('usuario_id','=',auth()->id())
-                ->get();
-            $datas = consultaSQL(1,$usuario->persona->id);
-            foreach ($datas as $data){
-                if(!empty($data->fechaguardado) and empty($data->cumplimiento)){
-                    if($data->noticumpl===null){ //($NC->fechacompromiso != null and $NC->cumplimiento === null){
-                        $contnoticumpl++;
-                    }    
+        }
+        $arearesps = consultaSQL(2,$usuario->persona->id);
+        foreach ($arearesps as $data){
+            if($data->notirecep === null){
+                if ((NOW()>= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
+                AND (is_null($data->accioninmediata) or $data->accioninmediata=='')))
+                {
+                    $contRecepNC++;
                 }
-            }
+            else
+                if ($data->usuario_idmp2==auth()->id()){
+                    $contRecepNC++;
+                }
 
-            $datas = consultaSQL(3,$usuario->persona->id);
-            //$datas = DB::select($sql); //Area responsable
-            foreach ($datas as $data){
-                if($data->accioninmediata != null and $data->stavalai === null){
-                    $contnotivalai++;
-                }
             }
-            if(can('listar-validar-ai-nc',false)){
-                $datas = consultaSQL(4,$usuario->persona->id);
-                foreach($datas as $data){
-                   if($data->cumplimiento != null and $data->aprobpaso2 === null){
-                    $contnoRevSGI++;
-                   } 
-                }
-                
+        }
+        $datas = NoConformidad::orderBy('id')
+            ->where('usuario_id','=',auth()->id())
+            ->get();
+        $datas = consultaSQL(1,$usuario->persona->id);
+        foreach ($datas as $data){
+            if(!empty($data->fechaguardado) and empty($data->cumplimiento)){
+                if($data->noticumpl===null){ //($NC->fechacompromiso != null and $NC->cumplimiento === null){
+                    $contnoticumpl++;
+                }    
             }
-            $totalNotif = $contRecepNC + $contnotivalai + $contnoticumpl + $contnoRevSGI;
-            $htmlNotif = "";
-            if ($totalNotif > 0){
-                $htmlNotif="
-                <li class='header'>Tienes $totalNotif Notificaciones</li>
+        }
+
+        $datas = consultaSQL(3,$usuario->persona->id);
+        //$datas = DB::select($sql); //Area responsable
+        foreach ($datas as $data){
+            if($data->accioninmediata != null and $data->stavalai === null){
+                $contnotivalai++;
+            }
+        }
+        if(can('listar-validar-ai-nc',false)){
+            $datas = consultaSQL(4,$usuario->persona->id);
+            foreach($datas as $data){
+                if($data->cumplimiento != null and $data->aprobpaso2 === null){
+                $contnoRevSGI++;
+                } 
+            }
+            
+        }
+        $totalNotif = $contRecepNC + $contnotivalai + $contnoticumpl + $contnoRevSGI;
+        $htmlNotif = "";
+        if ($totalNotif > 0){
+            $htmlNotif="
+            <li class='header'>Tienes $totalNotif Notificaciones</li>
+            <li>
+                <!-- inner menu: contains the actual data -->
+                <ul class='menu'>";
+                if($contnoticumpl>0){
+                $htmlNotif .= "
                 <li>
-                  <!-- inner menu: contains the actual data -->
-                  <ul class='menu'>";
-                  if($contnoticumpl>0){
-                    $htmlNotif .= "
-                    <li>
-                      <a href='" . route('noconformidadrecep') ."'>
-                        <i class='fa fa-user text-green'></i> $contnoticumpl nuevas Validar Cumplimiento
-                      </a>
-                    </li>";
-                }
-                if($contRecepNC>0){
-                    $htmlNotif .= "
-                    <li>
-                      <a href='" . route('noconformidadrecep') ."'>
-                        <i class='fa fa-thumbs-o-down text-aqua'></i> $contRecepNC nuevas Recep no conformidades
-                      </a>
-                    </li>";
-                }
-                if($contnotivalai>0){
-                    $htmlNotif .= "
-                    <li>
-                      <a href='" . route('ncvalidar') ."'>
-                        <i class='fa fa-warning text-red'></i> $contnotivalai nuevas Validar Acción Inmediata
-                      </a>
-                    </li>";
-                }
-                if($contnoRevSGI>0){
-                    $htmlNotif .= "
-                    <li>
-                      <a href='" . route('ncvalidar') ."'>
-                        <i class='fa fa-warning text-green'></i> $contnoRevSGI nuevas Revisión SGI
-                      </a>
-                    </li>";
-                }
+                    <a href='" . route('noconformidadrecep') ."'>
+                    <i class='fa fa-user text-green'></i> $contnoticumpl nuevas Validar Cumplimiento
+                    </a>
+                </li>";
             }
+            if($contRecepNC>0){
+                $htmlNotif .= "
+                <li>
+                    <a href='" . route('noconformidadrecep') ."'>
+                    <i class='fa fa-thumbs-o-down text-aqua'></i> $contRecepNC nuevas Recep no conformidades
+                    </a>
+                </li>";
+            }
+            if($contnotivalai>0){
+                $htmlNotif .= "
+                <li>
+                    <a href='" . route('ncvalidar') ."'>
+                    <i class='fa fa-warning text-red'></i> $contnotivalai nuevas Validar Acción Inmediata
+                    </a>
+                </li>";
+            }
+            if($contnoRevSGI>0){
+                $htmlNotif .= "
+                <li>
+                    <a href='" . route('ncvalidar') ."'>
+                    <i class='fa fa-warning text-green'></i> $contnoRevSGI nuevas Revisión SGI
+                    </a>
+                </li>";
+            }
+        }
 
 
-            /*
-                <li>
-                  <a href='#'>
-                    <i class='fa fa-users text-red'></i> 5 new members joined
-                  </a>
-                </li>
-                <li>
-                  <a href='#'>
-                    <i class='fa fa-shopping-cart text-green'></i> 25 sales made
-                  </a>
-                </li>
-                <li>
-                  <a href='#'>
-                    <i class='fa fa-user text-red'></i> You changed your username
-                  </a>
-                </li>
-            */
-/*
-            $htmlNotif .= "
-              </ul>
+        /*
+            <li>
+                <a href='#'>
+                <i class='fa fa-users text-red'></i> 5 new members joined
+                </a>
             </li>
-            <li class='footer'><a href='#'>View all</a></li>
-            ";
+            <li>
+                <a href='#'>
+                <i class='fa fa-shopping-cart text-green'></i> 25 sales made
+                </a>
+            </li>
+            <li>
+                <a href='#'>
+                <i class='fa fa-user text-red'></i> You changed your username
+                </a>
+            </li>
+        */
+/*
+        $htmlNotif .= "
+            </ul>
+        </li>
+        <li class='footer'><a href='#'>View all</a></li>
+        ";
 */
 
-            return response()->json([
-                                        'mensaje' => 'ok',
-                                        'htmlNotif' => $htmlNotif,
-                                        'totalNotif' => $totalNotif
-                                    ]);
+        return response()->json([
+                                    'mensaje' => 'ok',
+                                    'htmlNotif' => $htmlNotif,
+                                    'totalNotif' => $totalNotif
+                                ]);
 
 
         //dd($sql);

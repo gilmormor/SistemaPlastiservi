@@ -10,6 +10,18 @@ class RechazoResMedTom extends Model
     use SoftDeletes;
     protected $table = "rechazoresmedtom";
     protected $fillable = [
+        'accorrec',
+        'accorrecfec',
+        'fechacompromiso',
+        'fechacompromisofec',
+        'fechaguardado',
+        'cumplimiento',
+        'fechacumplimiento',
+        'aprobpaso2',
+        'aprobpaso2',
+        'fecaprobpaso2',
+        'resmedtom',
+        'fecharesmedtom',
         'fecha',
         'descripcion',
         'noconformidad_id',

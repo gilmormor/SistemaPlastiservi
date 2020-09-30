@@ -1,5 +1,6 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
+    Biblioteca.validacionGeneral('form-generalMT');
     
     $('.datepicker').datepicker({
 		language: "es",
@@ -9,24 +10,25 @@ $(document).ready(function () {
 
     id = $("#idhide").val();
     aux_textvai="Validar acción inmediata";
-    prevImagen(id);
+    prevImagen(id,'AC');
+    prevImagen(id,'MT');
+    prevImagen(id,'CV');
+    //$('#file-essCV').prop('disabled', true);
+    //prevImagen(id,'AC');
+    //$('.PANEL_0CV #file-essCV').prop('disabled', true);
+    //$("#PANEL_0CV #file-essCV").attr("disabled", true);
     paso2(id);
 });
 
-$("#Prueba").click(function(event)
-{
-    event.preventDefault();
-    id = $("#idhide").val();
-    prevImagen(id);
-});
 
-function prevImagen(id){
+function prevImagen(id,ininom){
     sta_val=$("#funcvalidarai").val();
     var data = {
-        id     : id
+        id     : id,
+        ininom : ininom
     };
     var ruta = '/noconformidadprevImg/' + id + '/' + sta_val;
-    ajaxRequest(data,ruta,'prevImagen');    
+    ajaxRequest(data,ruta,'prevImagen');
 }
 
 function paso2(id){
@@ -42,6 +44,9 @@ function paso2(id){
     ajaxRequest(data,ruta,'paso2');
 }
 
+
+
+
 function buscarpasos(id,noconformidad){
     if(noconformidad==null){
         var data = {
@@ -55,6 +60,13 @@ function buscarpasos(id,noconformidad){
         validarpasos(noconformidad);
     }
 }
+
+$("#Prueba").click(function(event)
+{
+    $("#PANEL_0CV #file-essCV").attr("disabled", false);
+    alert('entro');	
+});
+
 
 $("#guardarAI").click(function(event)
 {
@@ -128,6 +140,45 @@ function aprobpaso2(aux_val){
         ejecutarAjax(data,ruta,funcion);
     }
 }
+
+function paso4(aux_val){
+    event.preventDefault();
+	if(verificar('paso4','texto'))
+	{
+        id = $("#idhide").val();
+        var data = {
+            id            : id,
+            acepresmedtom : aux_val,
+            resmedtom     : $("#paso4").val(),
+            _token    : $('input[name=_token]').val()
+        };
+        var ruta = '/noconformidadrecep/paso4/' + id;
+        funcion = 'paso4';
+        ejecutarAjax(data,ruta,funcion);    
+    }else{
+		alertify.error("Falta incluir informacion");
+	}
+
+}
+function paso5(aux_val){
+    event.preventDefault();
+	if(verificar('paso5','texto'))
+	{
+        id = $("#idhide").val();
+        var data = {
+            id            : id,
+            cierreaccorr  : $("#paso5").val(),
+            _token    : $('input[name=_token]').val()
+        };
+        var ruta = '/noconformidadrecep/paso5/' + id;
+        funcion = 'paso5';
+        ejecutarAjax(data,ruta,funcion);    
+    }else{
+		alertify.error("Falta incluir informacion");
+	}
+
+}
+
 
 
 $("#btnguardarrechazoaprobpaso2").click(function(event)
@@ -289,8 +340,11 @@ function ajaxRequest(data,url,funcion) {
                 ocultarACausa();
                 ocultaracorrect();
                 ocultarfechacompromiso();
+                ocultarfechaguardado();
                 ocultarcumplimiento();
                 ocultaraprobpaso2();
+                ocultarpaso4();
+                ocultarpaso5();
 
                 inactAI('');
                 inactvalAI();
@@ -394,47 +448,29 @@ function ajaxRequest(data,url,funcion) {
             if(funcion=='prevImagen'){
                 //alert(respuesta);
                 sta_val = $("#funcvalidarai").val();
-                if(respuesta.i>0){
-                    $("#file-ess").fileinput({
-                        language: 'es',
-                        uploadUrl: '/noconformidadup/'+$("#idhide").val()+'/'+sta_val,
-                        uploadAsync: false,
-                        minFileCount: 1,
-                        maxFileCount: 5,
-                        maxFileSize: 500,
-                        showUpload: false, 
-                        showRemove: false,
-                        allowedFileExtensions: ["pdf","jpg","bmp","png"],
-                        overwriteInitial: respuesta.overwriteInitial,
-                        initialPreview: respuesta.initialPreview,
-                        initialPreviewConfig: respuesta.initialPreviewConfig,    
-                        initialPreviewAsData: true,
-                        initialPreviewFileType: 'image'
-                        }).on("filebatchselected", function(event, files) {
-                            $("#file-ess").fileinput("upload");
-                        });
-                }else{
-                    $("#file-ess").fileinput({
-                        language: 'es',
-                        uploadUrl: '/noconformidadup/'+$("#idhide").val()+'/'+sta_val,
-                        uploadAsync: false,
-                        minFileCount: 1,
-                        maxFileCount: 5,
-                        maxFileSize: 500,
-                        showUpload: false, 
-                        showRemove: false,
-                        allowedFileExtensions: ["pdf","jpg","bmp","png"],
-                        initialPreviewAsData: true,
-                        initialPreviewFileType: 'image'
-                        }).on("filebatchselected", function(event, files) {
-                        
-                            $("#file-ess").fileinput("upload");
-                        });
-                }
-                if($("#funcvalidarai").val()=='1'){
-                    inactivarsubirarchivos();                    
-                }
+                //alert(sta_val);
+                vistaPrevia(respuesta,sta_val); //Archisvos Acción Inmediata
+                //vistaPrevia(respuesta,'file-ess',sta_val,'MT'); //Archisvos Acción Inmediata
+
             }
+            if(funcion=='paso4'){
+				if (respuesta.mensaje == "ok") {
+                    if(data['acepresmedtom'] == 0){
+                        ocultarfechacompromiso();
+                        ocultarfechaguardado();
+                        ocultarcumplimiento();
+                        ocultaraprobpaso2();
+                        ocultarpaso4();        
+                    }
+                    buscarpasos(data['id']);
+				}
+            }
+            if(funcion=='paso5'){
+				if (respuesta.mensaje == "ok") {
+                    buscarpasos(data['id']);
+				}
+            }
+
 
             if (respuesta.mensaje == "ok") {
                 Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
@@ -554,7 +590,7 @@ function actACorr(){
         $("#guardarACorr").fadeIn(500);
         $("#linebodyacorr1").fadeIn(500);
         $("#linebodyacorr2").fadeIn(500);
-        activarsubirarchivos();
+        activarsubirarchivos('PANEL_0'); 
     }else{
         inactACorr();
     }
@@ -570,7 +606,7 @@ function inactACorr(){
     $("#file-ess").prop("readonly",true);
     $("#file-ess").prop('disabled',true);
 */
-    inactivarsubirarchivos();
+    inactivarsubirarchivos('PANEL_0');
 }
 
 function actfechacompromiso(){
@@ -666,6 +702,52 @@ function inactaprobpaso2(){
     $("#linebodyaprobpaso22").fadeOut(500);
 }
 
+function actpaso4(){
+    if($("#funcvalidarai").val()!='0'){
+        //$("#lblaprobpaso2").html('<a href="#">Revisión  </a>');
+        //$("#paso4").prop("readonly",true);
+        //$("#paso4").fadeOut(500);
+        $(".paso4").fadeIn(500);
+        $("#guardarpaso4").fadeIn(500);
+        $("#linebodypaso41").fadeIn(500);
+        //$("#linebodypaso42").fadeIn(500);
+    
+    }else{
+        inactpaso4();
+    }
+}
+
+function inactpaso4(){
+    $("#paso4txt").html('<a href="#">Resultado de medidas tomadas: </a>' + $("#paso4").val());
+    $("#paso4").prop("readonly",true);
+    $("#paso4").fadeOut(500);
+    $("#guardarpaso4").fadeOut(500);
+    $("#linebodypaso41").fadeOut(500);
+    inactivarsubirarchivos('PANEL_0MT')
+    //$("#linebodypaso42").fadeOut(500);
+}
+
+function actpaso5(){
+    if($("#funcvalidarai").val()!='0'){
+        $(".paso5").fadeIn(500);
+        $("#guardarpaso5").fadeIn(500);
+        $("#linebodypaso51").fadeIn(500);
+    
+    }else{
+        inactpaso5();
+    }
+}
+
+function inactpaso5(){
+    $("#paso5txt").html('<a href="#">Cierre y verificación de la eficacia de la acción correctiva: </a>' + $("#paso5").val());
+    $("#paso5").prop("readonly",true);
+    $("#paso5").fadeOut(500);
+    $("#guardarpaso5").fadeOut(500);
+    $("#linebodypaso51").fadeOut(500);
+    inactivarsubirarchivos('PANEL_0CV')
+}
+
+
 
 function ocultaracorrect(){
     $(".acorrect").hide();
@@ -694,6 +776,16 @@ function ocultaraprobpaso2(){
     $(".aprobpaso2").hide();
     $(".aprobpaso2").fadeOut(1);
 }
+
+function ocultarpaso4(){
+    $(".paso4").hide();
+    $(".paso4").fadeOut(1);
+}
+function ocultarpaso5(){
+    $(".paso5").hide();
+    $(".paso5").fadeOut(1);
+}
+
 
 var options = { year: 'numeric', month: 'short', day: 'numeric', literal: '/' };
 function actdatosai(fecha,accioninmediata){
@@ -772,6 +864,20 @@ function actdatosaprobpaso2(fecha,aprobpaso2){
         $("#aprobpaso2").val('Esperando Revisión');
 }
 
+function actdatospaso4(fecha,paso4){
+    $("#fechapaso4").html(fecha.toLocaleDateString("es-ES", options));
+    $("#horapaso4").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
+    $("#paso4").val(paso4);
+    $("#paso4txt").html('<a href="#">Resultado de medidas tomadas: </a>' + paso4);
+}
+
+function actdatospaso5(fecha,paso5){
+    $("#fechapaso5").html(fecha.toLocaleDateString("es-ES", options));
+    $("#horapaso5").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
+    $("#paso5").val(paso5);
+    $("#paso5txt").html('<a href="#">Resultado de medidas tomadas: </a>' + paso5);
+}
+
 function banquearcampos(){
     $("#fechaai").html('');
     $("#horaai").html('<i class="fa fa-clock-o"></i> ');
@@ -803,7 +909,6 @@ function validarpasos(respuesta){
     inactACorr();
     inactfechacompromiso()
     inactcumplimiento();
-
     noconformidad=respuesta.noconformidad;
     if(noconformidad.accioninmediata==null || noconformidad.accioninmediata=="" || noconformidad.stavalai=="0"){
         $("#fechaai").html('.::.  <i class="fa fa-calendar"></i>  .::.');
@@ -835,7 +940,6 @@ function validarpasos(respuesta){
                 actAI();
                 
                 $(".acausa").hide();
-                //alert("entro");
                 actvalAI();
                 //ocultarobsvalai();
 /*                
@@ -939,7 +1043,6 @@ function validarpasos(respuesta){
                                                             if(noconformidad.cumplimiento===-6 || noconformidad.aprobpaso2===-6){
                                                                 actcumplimiento();
                                                                 actdatoscumplimiento(fecha,noconformidad.cumplimiento);
-                                                                //alert('entro1');
                                                                 ocultaraprobpaso2();
                                                                 //inactaprobpaso2();
                                                             }else{
@@ -969,6 +1072,51 @@ function validarpasos(respuesta){
                                                                         actaprobpaso2();
                                                                         actdatosaprobpaso2(fecha,noconformidad.aprobpaso2);
                                                                     }*/
+                                                                    if(noconformidad.resmedtom===null || noconformidad.resmedtom==="" || noconformidad.resmedtom===-7){
+                                                                    
+                                                                        $("#fechapaso4").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                                                                        $("#horapaso4").html('<i class="fa fa-clock-o"></i> ');
+                                                                        //actAI();
+                                                                        
+                                                                        $(".paso4").show();
+                                                                        actpaso4();
+                                                                        //ocultarobsvalai();
+                                                                        
+                                                                        if($("#funcvalidarai").val()=='1'){
+                                                                            actpaso4();
+                                                                        }else{
+                                                                            inactpaso4();
+                                                                            $("#paso4txt").html('<a href="#">Resultado de medidas tomadas: </a>Esperando revisión SGI.');                
+                                                                        }
+                                                                    }else{
+                                                                        var fecha = new Date(noconformidad.fecharesmedtom);
+                                                                        actdatospaso4(fecha,noconformidad.resmedtom);
+                                                                        actpaso4();
+                                                                        inactpaso4();
+
+                                                                        if(noconformidad.cierreaccorr===null || noconformidad.cierreaccorr===""){
+                                                                    
+                                                                            $("#fechapaso5").html('.::.  <i class="fa fa-calendar"></i>  .::.');
+                                                                            $("#horapaso5").html('<i class="fa fa-clock-o"></i> ');
+                                                                            //actAI();
+
+                                                                            $(".paso5").show();
+                                                                            actpaso5();
+                                                                            //ocultarobsvalai();
+
+                                                                            if($("#funcvalidarai").val()=='1'){
+                                                                                actpaso5();
+                                                                            }else{
+                                                                                inactpaso5();
+                                                                                $("#paso5txt").html('<a href="#">Cierre y verificación de la eficacia de la acción correctiva: </a>Esperando revisión SGI.');                
+                                                                            }
+                                                                        }else{
+                                                                            var fecha = new Date(noconformidad.feccierreaccorr);
+                                                                            actdatospaso5(fecha,noconformidad.cierreaccorr);
+                                                                            actpaso5();
+                                                                            inactpaso5();
+                                                                        }
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -1021,17 +1169,28 @@ function guardarvalai(aux_status){
 }
 
 
-function activarsubirarchivos(){
-    $(".kv-file-remove").show();
-    $(".input-group").show();
-    $(".fileinput-remove").show();
-    $(".form-text").show();
+function activarsubirarchivos(obj){
+    $("#"+obj+" .kv-file-remove").show();
+    $("#"+obj+" .input-group").show();
+    $("#"+obj+" .fileinput-remove").show();
+    $("#"+obj+" .form-text").show();
 }
-function inactivarsubirarchivos(){
-    $(".kv-file-remove").hide();
-    $(".input-group").hide();
-    $(".fileinput-remove").hide();
-    $(".form-text").hide();
+function inactivarsubirarchivos(obj){
+    $("#"+obj+" .kv-file-remove").hide();
+    $("#"+obj+" .input-group").hide();
+    $("#"+obj+" .fileinput-remove").hide();
+    $("#"+obj+" .form-text").hide();
+    //if(obj == "PANEL_0CV"){
+        //alert(obj);
+        //$('#PANEL_0CV #file-essCV').prop('disabled', false);
+        //$("#PANEL_0CV #file-essCV").attr("disabled", true);
+        //$("#PANEL_0CV #file-essCV").attr('disabled','enabled');
+        //$("#PANEL_0CV #file-essCV").attr("disabled", false);
+        //$("#file-essCV").attr("disabled", true);
+        $("#"+obj+" .file-drop-zone-title").html("Registro guardado. No permite subir archivos."); 
+        
+    //}
+
 }
 
 function fechaddmmaaaa(f){
@@ -1045,3 +1204,53 @@ function fechaddmmaaaa(f){
     
     return fecha; 
 }
+
+
+function vistaPrevia(respuesta,sta_val){
+    //alert(respuesta.i);
+    if((respuesta.ininom == "MT" && sta_val == "1") || (respuesta.ininom == "CV" && sta_val == "1")){
+        sta_val = 0;
+    }
+    //alert(respuesta.ininom + "-" + sta_val);
+    if(respuesta.i>0){
+        $("#file-ess"+respuesta.ininom).fileinput({
+            language: 'es',
+            uploadUrl: '/noconformidadup/'+$("#idhide").val()+'/'+sta_val+'/'+respuesta.ininom,
+            uploadAsync: false,
+            minFileCount: 1,
+            maxFileCount: 5,
+            maxFileSize: 500,
+            showUpload: false, 
+            showRemove: false,
+            allowedFileExtensions: ["pdf","jpg","bmp","png"],
+            overwriteInitial: respuesta.overwriteInitial,
+            initialPreview: respuesta.initialPreview,
+            initialPreviewConfig: respuesta.initialPreviewConfig,    
+            initialPreviewAsData: true,
+            initialPreviewFileType: 'image'
+            }).on("filebatchselected", function(event, files) {
+                $("#file-ess"+respuesta.ininom).fileinput("upload");
+            });
+    }else{
+        $("#file-ess"+respuesta.ininom).fileinput({
+            language: 'es',
+            uploadUrl: '/noconformidadup/'+$("#idhide").val()+'/'+sta_val+'/'+respuesta.ininom,
+            uploadAsync: false,
+            minFileCount: 1,
+            maxFileCount: 5,
+            maxFileSize: 500,
+            showUpload: false, 
+            showRemove: false,
+            allowedFileExtensions: ["pdf","jpg","bmp","png"],
+            initialPreviewAsData: true,
+            initialPreviewFileType: 'image'
+            }).on("filebatchselected", function(event, files) {
+            
+                $("#file-ess"+respuesta.ininom).fileinput("upload");
+            });
+    }
+    if($("#funcvalidarai").val()=='1'){
+        inactivarsubirarchivos('PANEL_0');                    
+    }
+}
+

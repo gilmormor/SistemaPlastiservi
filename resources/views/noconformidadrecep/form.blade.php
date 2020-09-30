@@ -170,7 +170,7 @@
                         </DIV>
                         <DIV class="panel-body">
                             <FORM id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
-                                <input id="file-ess" name="imagenes[]" type="file" multiple>
+                                <input id="file-essAC" name="imagenesAC[]" type="file" multiple>
                                 <SMALL id="textmensajearc" class="form-text text-muted">Seleccionar archivos: pdf, jpg, bmp, png.</SMALL>
                             </form>
                             <p>&nbsp;</p>
@@ -297,22 +297,112 @@
                 <i class="fa fa-edit bg-yellow"></i>
 
                 <div class="timeline-item">
-                <span class="time" id="horapaso4" name="horapaso4"></span>
+                    <span class="time" id="horapaso4" name="horapaso4"></span>
 
-                <h3 class="timeline-header" name="paso4txt" id="paso4txt"><a href="#" id="lblpaso4" name="lblpaso4">Resultado de medidas tomadas</a></h3>
-                <div class="timeline-body" id="linebodypaso41">
-                    <h4 class="timeline-header" name="aprubpaso4" id="aprubpaso4">Aprueba?</h3>
-                    <textarea name="paso4" id="paso4" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                    <h3 class="timeline-header" name="paso4txt" id="paso4txt"><a href="#" id="lblpaso4" name="lblpaso4">Resultado de medidas tomadas</a></h3>
+                    <div class="timeline-body" id="linebodypaso41">
+                        <textarea name="paso4" id="paso4" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                        <h4 class="timeline-header" name="aprubpaso4" id="aprubpaso4">Aprueba?</h3>
+                        <a id="guardarpaso4Si" name="guardarpaso4Si" class="btn btn-primary btn-xs" onclick="paso4(1)">Si </a>
+                        <a id="guardarpaso4No" name="guardarpaso4No" class="btn btn-danger btn-xs" onclick="paso4(0)">No</a>
+                        <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                    </div>
                 </div>
-                <div class="timeline-footer" id="linebodypaso42">
-                    <a id="guardarpaso4Si" name="guardarpaso4Si" class="btn btn-primary btn-xs" onclick="paso4(1)">Si </a>
-                    <a id="guardarpaso4No" name="guardarpaso4No" class="btn btn-danger btn-xs" onclick="paso4(0)">No</a>
-                    <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+            </li>
+
+            <!-- timeline item -->
+            <li class="paso4" style="display:none;">
+                <i class="fa fa-camera bg-purple"></i>
+
+                <div class="timeline-item">
+                <span class="time"></span>
+
+                <h3 class="timeline-header"><a href="#">Adjuntar Archivos <i class="glyphicon glyphicon-paperclip"></i></a></h3>
+
+                <div class="timeline-body">
+                    <!--
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    -->
+                    <DIV id="PANEL_0MT" class="panel panel-primary text-justify">
+                        <DIV class="panel-heading">
+                            <H3 class="panel-title">Seleccionar Archivos</H3>
+                        </DIV>
+                        <DIV class="panel-body">
+                            <FORM id="form-generalMT" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
+                                <input id="file-essMT" name="imagenesMT[]" type="file" multiple>
+                                <SMALL id="textmensajearc" class="form-text text-muted">Seleccionar archivos: pdf, jpg, bmp, png.</SMALL>
+                            </form>
+                            <p>&nbsp;</p>
+                            <div class="alert alert-success" role="alert"></div>
+                        </DIV>
+                    </DIV>
+
                 </div>
                 </div>
             </li>
             <!-- END timeline item -->
+            <!-- END timeline item -->
 
+
+            <!-- timeline time label -->
+            <li class="time-label paso5" style="display:none;">
+                <span class="bg-maroon" id="fechapaso5" name="fechapaso5">
+                </span>
+            </li>
+            <!-- /.timeline-label -->
+            <!-- timeline item -->
+            <li class="paso5" style="display:none;">
+                <i class="fa fa-edit bg-yellow"></i>
+
+                <div class="timeline-item">
+                    <span class="time" id="horapaso5" name="horapaso5"></span>
+
+                    <h3 class="timeline-header" name="paso5txt" id="paso5txt"><a href="#" id="lblpaso5" name="lblpaso5">Cierre y verificación de la eficacia de la acción correctiva</a></h3>
+                    <div class="timeline-body" id="linebodypaso51">
+                        <textarea name="paso5" id="paso5" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
+                        <a id="guardarpaso5Si" name="guardarpaso5Si" class="btn btn-primary btn-xs" onclick="paso5(1)">Guardar</a>
+                        <!--<a class="btn btn-danger btn-xs">Delete</a>-->
+                    </div>
+                </div>
+            </li>
+
+            <!-- timeline item -->
+            <li class="paso5" style="display:none;">
+                <i class="fa fa-camera bg-purple"></i>
+
+                <div class="timeline-item">
+                <span class="time"></span>
+
+                <h3 class="timeline-header"><a href="#">Adjuntar Archivos <i class="glyphicon glyphicon-paperclip"></i></a></h3>
+
+                <div class="timeline-body">
+                    <!--
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    -->
+                    <DIV id="PANEL_0CV" class="panel panel-primary text-justify PANEL_0CV">
+                        <DIV class="panel-heading">
+                            <H3 class="panel-title">Seleccionar Archivos</H3>
+                        </DIV>
+                        <DIV class="panel-body">
+                            <FORM id="form-generalMT" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
+                                <input id="file-essCV" name="imagenesCV[]" type="file" class="file-essCV" multiple>
+                                <SMALL id="textmensajearc" class="form-text text-muted">Seleccionar archivos: pdf, jpg, bmp, png.</SMALL>
+                            </form>
+                            <p>&nbsp;</p>
+                            <div class="alert alert-success" role="alert"></div>
+                        </DIV>
+                    </DIV>
+
+                </div>
+                </div>
+            </li>
+            <!-- END timeline item -->
 
 
             <!-- timeline item -->

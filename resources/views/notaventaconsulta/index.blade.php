@@ -24,7 +24,7 @@ Cotización
                 <div class="row">
                     <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
-                        <div class="col-xs-12 col-md-8 col-sm-8">
+                        <div class="col-xs-12 col-md-10 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
@@ -163,7 +163,7 @@ Cotización
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-md-4 col-sm-4">
+                        <div class="col-xs-12 col-md-2 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-12">
                                     <div class="col-xs-12 col-md-8 col-sm-8 text-center">
