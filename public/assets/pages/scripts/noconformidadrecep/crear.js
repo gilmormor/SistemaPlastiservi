@@ -1,7 +1,8 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
     Biblioteca.validacionGeneral('form-generalMT');
-    
+
+
     $('.datepicker').datepicker({
 		language: "es",
 		autoclose: true,
@@ -382,6 +383,20 @@ function ajaxRequest(data,url,funcion) {
             }
             if(funcion=='buscarpasos'){
                 validarpasos(respuesta);
+                $("#tablaRAI").html(respuesta.respuesta.tablarechazoAI);
+                $("#tablaRMT").html(respuesta.respuesta.tablarechazoMT);
+                configurarTabla('.tablasrech');
+                if(respuesta.respuesta.tablarechazoAI === ""){
+                    $("#TabRecAI").hide();    
+                }else{
+                    $("#TabRecAI").show();
+                }
+                if(respuesta.respuesta.tablarechazoMT === ""){
+                    $("#TabRecMT").hide();    
+                }else{
+                    $("#TabRecMT").show();
+                }
+                //alert(respuesta.respuesta.tablarechazonc);
                 return 0;
             }
             if(funcion=='guardarAI'){
@@ -496,7 +511,8 @@ function ocultarACausa(){
 }
 
 function actAI(){
-    $("#accioninmediatatxt").html('<a href="#">Acción Inmediata </a>');
+    //$("#accioninmediatatxt").html('<a href="#">Acción Inmediata </a>');
+    $("#aitxtp").html('');
     $("#accioninmediata").prop("readonly",false);
     $("#accioninmediata").fadeIn(500);
     $("#guardarAI").fadeIn(500);
@@ -510,11 +526,14 @@ function actAI(){
 
 function inactAI(aux_ac){
     //SI AANALISIS DE CAUSA ESTA EN BLANCO ACTIVE EL ENLACE A VALIDAR NO CONFORMIDAD, SIEMPRE y CUANDO LA CONSULRA VENGA DE NoConformidadValidarController
-    if(aux_ac==null || aux_ac==""){
-        $("#accioninmediatatxt").html('<a href="#"  ' + '>Acción Inmediata: </a>' + $("#accioninmediata").val());
+/*    if(aux_ac==null || aux_ac==""){
+        $("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
     }else{
         $("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
-    }
+    }*/
+    //$("#accioninmediatatxt").html('<a href="#">Acción Inmediata: </a>' + $("#accioninmediata").val());
+    $("#aitxtp").html($("#accioninmediata").val());
+
     $("#accioninmediata").prop("readonly",true);
     $("#accioninmediata").fadeOut(500);
     $("#guardarAI").fadeOut(500);
@@ -526,7 +545,8 @@ function inactAI(aux_ac){
 
 function actvalAI(){
     if($("#funcvalidarai").val()!='0'){
-        $("#obsvalaitxt").html('<a href="#">' + aux_textvai + ' </a>');
+        //$("#obsvalaitxt").html('<a href="#">' + aux_textvai + ' </a>');
+        $("#vaitxtp").html('');
         $("#obsvalai").prop("readonly",false);
         $("#obsvalai").fadeIn(500);
         $("#guardarvalAI").fadeIn(500);
@@ -542,11 +562,13 @@ function actvalAI(){
     }
 }
 function esperavalidarai(){
-    $("#obsvalaitxt").html('<a href="#">' + aux_textvai + ': </a>Esperando Validación de SGI.');     
+    //$("#obsvalaitxt").html('<a href="#">' + aux_textvai + ': </a>Esperando Validación de SGI.');
+    $("#vaitxtp").html('Esperando Validación de SGI.');
 }
 
 function inactvalAI(aux_stavalai,aux_cumplimiento,aux_aprobpaso2){
-    $("#obsvalaitxt").html('<a href="#">' + aux_textvai + ': </a>' + $("#obsvalai").val());
+    //$("#obsvalaitxt").html('<a href="#">' + aux_textvai + ': </a>' + $("#obsvalai").val());
+    $("#vaitxtp").html($("#obsvalai").val());
     $("#obsvalai").prop("readonly",true);
     $("#obsvalai").fadeOut(500);
     $("#guardarvalAI").fadeOut(500);
@@ -562,7 +584,8 @@ function inactvalAI(aux_stavalai,aux_cumplimiento,aux_aprobpaso2){
 function actACausa(){
     //alert($("#funcvalidarai").val());
     if($("#funcvalidarai").val()=='0'){
-        $("#analisisdecausatxt").html('<a href="#">Análisis de causa</a>');
+        //$("#analisisdecausatxt").html('<a href="#">Análisis de causa</a>');
+        $("#ACtxtp").html('');
         $("#analisisdecausa").prop("readonly",false);
         $("#analisisdecausa").fadeIn(500);
         $("#guardarAC").fadeIn(500);
@@ -573,7 +596,8 @@ function actACausa(){
     }
 }
 function inactACausa(){
-    $("#analisisdecausatxt").html('<a href="#">Análisis de causa: </a>' + $("#analisisdecausa").val());
+    //$("#analisisdecausatxt").html('<a href="#">Análisis de causa: </a>' + $("#analisisdecausa").val());
+    $("#ACtxtp").html($("#analisisdecausa").val());
     $("#analisisdecausa").prop("readonly",true);
     $("#analisisdecausa").fadeOut(500);
     $("#guardarAC").fadeOut(500);
@@ -584,7 +608,8 @@ function inactACausa(){
 
 function actACorr(){
     if($("#funcvalidarai").val()=='0'){
-        $("#accorrectxt").html('<a href="#">Acción correctiva</a>');
+        //$("#accorrectxt").html('<a href="#">Acción correctiva</a>');
+        $("#ACRtxtp").html('');
         $("#accorrec").prop("readonly",false);
         $("#accorrec").fadeIn(500);
         $("#guardarACorr").fadeIn(500);
@@ -596,7 +621,8 @@ function actACorr(){
     }
 }
 function inactACorr(){
-    $("#accorrectxt").html('<a href="#">Acción correctiva: </a>' + $("#accorrec").val());
+    //$("#accorrectxt").html('<a href="#">Acción correctiva: </a>' + $("#accorrec").val());
+    $("#ACRtxtp").html($("#accorrec").val());
     $("#accorrec").prop("readonly",true);
     $("#accorrec").fadeOut(500);
     $("#guardarACorr").fadeOut(500);
@@ -611,7 +637,8 @@ function inactACorr(){
 
 function actfechacompromiso(){
     if($("#funcvalidarai").val()=='0'){
-        $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>');
+        //$("#fechacompromisotxt").html('<a href="#">Fecha de compromiso</a>');
+        $("#FCtxtp").html('');
         //$("#fechacompromiso").prop("readonly",false);
         $("#fechacompromiso").fadeIn(500);
         $("#guardarfechacompromiso").fadeIn(500);
@@ -622,7 +649,8 @@ function actfechacompromiso(){
     }
 }
 function inactfechacompromiso(){
-    $("#fechacompromisotxt").html('<a href="#">Fecha de compromiso: </a>' + $("#fechacompromiso").val());
+    //$("#fechacompromisotxt").html('<a href="#">Fecha de compromiso: </a>' + $("#fechacompromiso").val());
+    $("#FCtxtp").html($("#fechacompromiso").val());
     $("#fechacompromiso").prop("readonly",true);
     $("#fechacompromiso").fadeOut(500);
     $("#guardarfechacompromiso").fadeOut(500);
@@ -635,6 +663,7 @@ function inactfechacompromiso(){
 function actfechaguardado(){
     if($("#funcvalidarai").val()=='0'){
         $("#fechaguardadotxt").html('<a href="#">Fecha de Guardado</a>');
+        $("#FGtxtp").html('');
         //$("#fechacompromiso").prop("readonly",false);
         var f = new Date();
         $("#fechaguardado").val(fechaddmmaaaa(f));
@@ -647,7 +676,8 @@ function actfechaguardado(){
     }
 }
 function inactfechaguardado(){
-    $("#fechaguardadotxt").html('<a href="#">Fecha Guardado: </a>' + $("#fechaguardado").val());
+    //$("#fechaguardadotxt").html('<a href="#">Fecha Guardado: </a>' + $("#fechaguardado").val());
+    $("#FGtxtp").html($("#fechaguardado").val());
     $("#fechaguardado").prop("readonly",true);
     $("#fechaguardado").fadeOut(500);
     $("#guardarfechaguardado").fadeOut(500);
@@ -657,7 +687,8 @@ function inactfechaguardado(){
 
 function actcumplimiento(){
     if($("#funcvalidarai").val()=='0'){
-        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado</a>');
+        //$("#cumplimientotxt").html('<a href="#">Cumplimiento validado</a>');
+        $("#VCtxtp").html('');
         /*$("#cumplimiento").prop("readonly",false);
         $("#cumplimiento").fadeIn(500);*/
         $("#guardarcumplimiento").fadeIn(500);
@@ -665,12 +696,14 @@ function actcumplimiento(){
         $("#linebodycumplimiento2").fadeIn(500);
     }else{
         inactcumplimiento();
-        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>Esperando Validación Dueño NC.');
+        //$("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>Esperando Validación Dueño NC.');
+        $("#VCtxtp").html('Esperando Validación Dueño NC.');
     }
 }
 
 function inactcumplimiento(){
-    $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>' + $("#cumplimiento").val());
+    //$("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>' + $("#cumplimiento").val());
+    $("#VCtxtp").html($("#cumplimiento").val());
     $("#cumplimiento").prop("readonly",true);
     $("#cumplimiento").fadeOut(500);
     $("#guardarcumplimiento").fadeOut(500);
@@ -694,7 +727,8 @@ function actaprobpaso2(){
 }
 
 function inactaprobpaso2(){
-    $("#aprobpaso2txt").html('<a href="#">Revisión SGI: </a>' + $("#aprobpaso2").val());
+    //$("#aprobpaso2txt").html('<a href="#">Revisión SGI: </a>' + $("#aprobpaso2").val());
+    $("#AP2txtp").html($("#aprobpaso2").val());
     $("#aprobpaso2").prop("readonly",true);
     $("#aprobpaso2").fadeOut(500);
     $("#guardaraprobpaso2").fadeOut(500);
@@ -718,7 +752,8 @@ function actpaso4(){
 }
 
 function inactpaso4(){
-    $("#paso4txt").html('<a href="#">Resultado de medidas tomadas: </a>' + $("#paso4").val());
+    //$("#paso4txt").html('<a href="#">Resultado de medidas tomadas: </a>' + $("#paso4").val());
+    $("#mttxtp").html($("#paso4").val());
     $("#paso4").prop("readonly",true);
     $("#paso4").fadeOut(500);
     $("#guardarpaso4").fadeOut(500);
@@ -739,7 +774,8 @@ function actpaso5(){
 }
 
 function inactpaso5(){
-    $("#paso5txt").html('<a href="#">Cierre y verificación de la eficacia de la acción correctiva: </a>' + $("#paso5").val());
+    //$("#paso5txt").html('<a href="#">Cierre y verificación de la eficacia de la acción correctiva: </a>' + $("#paso5").val());
+    $("#cvemttxtp").html($("#paso5").val());
     $("#paso5").prop("readonly",true);
     $("#paso5").fadeOut(500);
     $("#guardarpaso5").fadeOut(500);
@@ -844,7 +880,8 @@ function actdatoscumplimiento(fecha,cumplimiento){
     //Cuando es = -6 es porque el dueño de la NC marco como incumplimiento de la misma
     if(cumplimiento == -6){
         $("#cumplimiento").val('Esperando Validación Dueño NC.');
-        $("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>' + $("#cumplimiento").val());
+        //$("#cumplimientotxt").html('<a href="#">Cumplimiento validado: </a>' + $("#cumplimiento").val());
+        $("#VCtxtp").html($("#cumplimiento").val());
     } 
     $(".aprobpaso2").fadeIn(500);
         
@@ -868,14 +905,18 @@ function actdatospaso4(fecha,paso4){
     $("#fechapaso4").html(fecha.toLocaleDateString("es-ES", options));
     $("#horapaso4").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
     $("#paso4").val(paso4);
-    $("#paso4txt").html('<a href="#">Resultado de medidas tomadas: </a>' + paso4);
+    //$("#paso4txt").html('<a href="#">Resultado de medidas tomadas: </a>' + paso4);
+    $("#mttxtp").html(paso4);
 }
 
 function actdatospaso5(fecha,paso5){
     $("#fechapaso5").html(fecha.toLocaleDateString("es-ES", options));
     $("#horapaso5").html('<i class="fa fa-clock-o"></i> ' + fecha.toLocaleTimeString('en-US'));
     $("#paso5").val(paso5);
-    $("#paso5txt").html('<a href="#">Resultado de medidas tomadas: </a>' + paso5);
+    //$("#paso5txt").html('<a href="#">Resultado de medidas tomadas: </a>' + paso5);
+    $("#cvemttxtp").html(paso5);
+    
+
 }
 
 function banquearcampos(){
@@ -1060,7 +1101,8 @@ function validarpasos(respuesta){
                                                                         actaprobpaso2();
                                                                     }else{
                                                                         inactaprobpaso2();
-                                                                        $("#aprobpaso2txt").html('<a href="#">Revisión SGI: </a>Esperando revisión SGI.');                
+                                                                        //$("#aprobpaso2txt").html('<a href="#">Revisión SGI: </a>Esperando revisión SGI.');
+                                                                        $("#AP2txtp").html('Esperando revisión SGI.');
                                                                     }
                                                                 }else{
                                                                     var fecha = new Date(noconformidad.fecaprobpaso2);
@@ -1086,7 +1128,8 @@ function validarpasos(respuesta){
                                                                             actpaso4();
                                                                         }else{
                                                                             inactpaso4();
-                                                                            $("#paso4txt").html('<a href="#">Resultado de medidas tomadas: </a>Esperando revisión SGI.');                
+                                                                            //$("#paso4txt").html('<a href="#">Resultado de medidas tomadas: </a>Esperando revisión SGI.');
+                                                                            $("#mttxtp").html('Esperando revisión SGI.');
                                                                         }
                                                                     }else{
                                                                         var fecha = new Date(noconformidad.fecharesmedtom);
@@ -1108,7 +1151,7 @@ function validarpasos(respuesta){
                                                                                 actpaso5();
                                                                             }else{
                                                                                 inactpaso5();
-                                                                                $("#paso5txt").html('<a href="#">Cierre y verificación de la eficacia de la acción correctiva: </a>Esperando revisión SGI.');                
+                                                                                $("#paso5txt").html('Esperando revisión SGI.');             
                                                                             }
                                                                         }else{
                                                                             var fecha = new Date(noconformidad.feccierreaccorr);
@@ -1254,3 +1297,16 @@ function vistaPrevia(respuesta,sta_val){
     }
 }
 
+function configurarTabla(aux_tabla){
+    $(aux_tabla).DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+    });    
+}

@@ -74,7 +74,7 @@ class NoConformidad extends Model
     //RELACION DE UNO A MUCHOS rechazonc
     public function rechazoncs()
     {
-        return $this->hasMany(RechazoNC::class);
+        return $this->hasMany(RechazoNC::class,'noconformidad_id');
     }
 
     //RELACION INVERSA rechazoresmedtom PADRE

@@ -183,6 +183,9 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
     public function buscar(Request $request)
     {
         //dd($request);
+        $respuesta = array();
+        $respuesta['tablarechazoAI'] = ""; //Tabla Rechazo Acción Inmediata
+        $respuesta['tablarechazoMT'] = ""; //Tabla Rechazo Medidas Tomadas
         if ($request->ajax()) {
             $noconformidad = NoConformidad::findOrFail($request->id);
             
@@ -200,7 +203,97 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 $responsables[] = $responsable->persona->nombre . " " .$responsable->persona->apellido;
             }
             $feccomp = date("d/m/Y", strtotime( $noconformidad->fechacompromiso));
+
+            $rechazoncs = RechazoNC::where("noconformidad_id","=",$request->id)->get();
             
+            //dd($rechazonc);
+            //
+/*
+                        <th>Analisis de Causa</th>
+                        <th>Fecha AC</th>
+                        <th>Acción Correctiva</th>
+                        <th>Fecha AC</th>
+                        <th>Fecha Compromiso</th>
+                        <th>Fecha C</th>
+                        <th>Fecha Guardado</th>
+                        <th>Cumplimiento</th>
+                        <th>Fecha Cumpl</th>
+                        <th>Paso2</th>
+                        <th>Fecha Aprob Paso2</th>
+                */
+
+            if(count($rechazoncs)>0){
+                $respuesta['tablarechazoAI'] .= "
+                <div class='table-responsive'>
+                <table id='tabla-data' class='table display AllDataTables table-hover table-condensed tablasrech' data-page-length='10'>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Accion Inmediata</th>
+                        <th>Fecha AI</th>
+                    </tr>
+                </thead>
+                <tbody>";    
+                $i = 0;
+                foreach ($rechazoncs as $rechazonc) {
+                    $respuesta['tablarechazoAI'] .= "
+                    <tr>
+                        <td>$rechazonc->id</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->fecha)) . "</td>
+                        <td>$rechazonc->accioninmediata</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->accioninmediatafec)) . "</td>
+                    </tr>";
+                    $i++;
+                }
+                $respuesta['tablarechazoAI'] .= "
+                </tbody>
+                </table>
+                </div>";
+            }
+/*
+                        <td>$rechazonc->analisisdecausa</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->analisisdecausafec)) . "</td>
+                        <td>$rechazonc->accorrec</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->accorrecfec)) . "</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->fechacompromiso)) . "</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->fechacompromisofec)) . "</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->fechaguardado)) . "</td>
+                        <td>$rechazonc->cumplimiento</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->fechacumplimiento)) . "</td>
+                        <td>$rechazonc->aprobpaso2</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->fecaprobpaso2)) . "</td>
+*/
+
+            $rechazoncs = RechazoResMedTom::where("noconformidad_id","=",$request->id)->get();
+            if(count($rechazoncs)>0){
+                $respuesta['tablarechazoMT'] .= "
+                <div class='table-responsive'>
+                <table id='tabla-data' class='table display AllDataTables table-hover table-condensed tablasrech' data-page-length='10'>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Descripcion</th>
+                    </tr>
+                </thead>
+                <tbody>";    
+                $i = 0;
+                foreach ($rechazoncs as $rechazonc) {
+                    $respuesta['tablarechazoMT'] .= "
+                    <tr>
+                        <td>$rechazonc->id</td>
+                        <td>" . date('d-m-Y', strtotime($rechazonc->fecha)) . "</td>
+                        <td>$rechazonc->descripcion</td>
+                    </tr>";
+                    $i++;
+                }
+                $respuesta['tablarechazoMT'] .= "
+                </tbody>
+                </table>
+                </div>";
+            }
+            //dd($respuesta['tabla']);
             return response()->json([
                                         'mensaje' => 'ok',
                                         'noconformidad' => $noconformidad,
@@ -209,7 +302,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                                         'jefaturas' => $jefaturas,
                                         'certificados' => $certificados,
                                         'responsables' => $responsables,
-                                        'feccomp' => $feccomp
+                                        'feccomp' => $feccomp,
+                                        'respuesta' => $respuesta
                                     ]);
         }
     }

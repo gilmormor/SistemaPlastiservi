@@ -45,13 +45,13 @@
                 <div class="timeline-item">
                 <span class="time" id="horaai" name="horaai"></span>
 
-                <h3 class="timeline-header" name="accioninmediatatxt" id="accioninmediatatxt"><a href="validarai()">Acción Inmediata</a></h3>
+                <h3 class="timeline-header" name="accioninmediatatxt" id="accioninmediatatxt"><a href="#">Acción Inmediata: </a><a href="#" class="fa fa-table text-red tooltipsC" data-toggle="modal" data-target="#myModalTablaRAI" style="display:none;" id="TabRecAI" name="TabRecAI" data-original-title='Rechazos Acción inmediata'></a><p name="aitxtp" id="aitxtp"></p></h3>
 
                 <div class="timeline-body" id="linebodyai1">
                     <textarea name="accioninmediata" id="accioninmediata" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
                 </div>
                 <div class="timeline-footer" id="linebodyai2">
-                    <a id="guardarAI" name="guardarAI" class="btn btn-primary btn-xs">Guardar</a>
+                    <a id="guardarAI" name="guardarAI" class="btn btn-primary btn-xs tooltipsC" data-original-title='Guardar'>Guardar</a>
                     <!--<a class="btn btn-danger btn-xs">Delete</a>-->
                 </div>
                 </div>
@@ -71,7 +71,7 @@
                 <div class="timeline-item">
                 <span class="time" id="horavalai" name="horavalai"></span>
 
-                <h3 class="timeline-header" name="obsvalaitxt" id="obsvalaitxt"><a href="validarai()">Validación No conformidad</a></h3>
+                <h3 class="timeline-header" name="obsvalaitxt" id="obsvalaitxt"><a href="validarai()">Validar acción inmediata:</a><p name="vaitxtp" id="vaitxtp"></p></h3>
 
                 <div class="timeline-body" id="linebodyvalai1">
                     <textarea name="obsvalai" id="obsvalai" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
@@ -101,7 +101,7 @@
                 <div class="timeline-item">
                 <span class="time" id="horaac" name="horaac"></span>
 
-                <h3 class="timeline-header" name="analisisdecausatxt" id="analisisdecausatxt"><a href="#">Análisis de causa</a></h3>
+                <h3 class="timeline-header" name="analisisdecausatxt" id="analisisdecausatxt"><a href="#">Análisis de causa:</a><p name="ACtxtp" id="ACtxtp"></p></h3>
 
                 <div class="timeline-body" id="linebodyac1">
                     <textarea name="analisisdecausa" id="analisisdecausa" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
@@ -130,7 +130,7 @@
                 <div class="timeline-item">
                 <span class="time" id="horaacorr" name="horaacorr"></span>
 
-                <h3 class="timeline-header" name="accorrectxt" id="accorrectxt"><a href="#">Acción Correctiva</a></h3>
+                <h3 class="timeline-header" name="accorrectxt" id="accorrectxt"><a href="#">Acción Correctiva:</a><p name="ACRtxtp" id="ACRtxtp"></p></h3>
 
                 <div class="timeline-body" id="linebodyacorr1">
                     <textarea name="accorrec" id="accorrec" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
@@ -198,7 +198,7 @@
                 <div class="timeline-item">
                     <span class="time" id="horafechacompromiso" name="horafechacompromiso"></span>
 
-                    <h3 class="timeline-header" name="fechacompromisotxt" id="fechacompromisotxt"><a href="#">Fecha de compromiso</a></h3>
+                    <h3 class="timeline-header" name="fechacompromisotxt" id="fechacompromisotxt"><a href="#">Fecha de compromiso:</a><p name="FCtxtp" id="FCtxtp"></p></h3>
 
                     <div class="timeline-body" id="linebodyfeccomp1">
                         <!--<textarea name="fechacompromiso" id="fechacompromiso" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>-->
@@ -216,7 +216,7 @@
                 <div class="timeline-item">
                     <span class="time" id="horafechaguardado" name="horafechaguardado"></span>
 
-                    <h3 class="timeline-header" name="fechaguardadotxt" id="fechaguardadotxt"><a href="#">Fecha Guardado</a></h3>
+                    <h3 class="timeline-header" name="fechaguardadotxt" id="fechaguardadotxt"><a href="#">Fecha Guardado:</a><p name="FGtxtp" id="FGtxtp"></p></h3>
 
                     <div class="timeline-body" id="linebodyfechaguardado1">
                         <!--<textarea name="fechaguardado" id="fechaguardado" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>-->
@@ -245,7 +245,7 @@
                 <div class="timeline-item">
                 <span class="time" id="horacumplimiento" name="horacumplimiento"></span>
 
-                <h3 class="timeline-header" name="cumplimientotxt" id="cumplimientotxt"><a href="validarai()">Validar Cumplimiento</a></h3>
+                <h3 class="timeline-header" name="cumplimientotxt" id="cumplimientotxt"><a href="#">Validar Cumplimiento</a><p name="VCtxtp" id="VCtxtp"></p></h3>
                 <div class="timeline-body" id="linebodycumplimiento1">
                     <textarea name="cumplimiento" id="cumplimiento" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
                 </div>
@@ -271,7 +271,7 @@
                 <div class="timeline-item">
                 <span class="time" id="horaaprobpaso2" name="horaaprobpaso2"></span>
 
-                <h3 class="timeline-header" name="aprobpaso2txt" id="aprobpaso2txt"><a href="#" id="lblaprobpaso2" name="lblaprobpaso2">En revisión SGI</a></h3>
+                <h3 class="timeline-header" name="aprobpaso2txt" id="aprobpaso2txt"><a href="#" id="lblaprobpaso2" name="lblaprobpaso2">En revisión SGI</a><p name="AP2txtp" id="AP2txtp"></p></h3>
                 <div class="timeline-body" id="linebodyaprobpaso21">
                     <h4 class="timeline-header" name="aprubaprobpaso2" id="aprubaprobpaso2">Aprueba?</h3>
                     <textarea name="aprobpaso2" id="aprobpaso2" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
@@ -299,7 +299,7 @@
                 <div class="timeline-item">
                     <span class="time" id="horapaso4" name="horapaso4"></span>
 
-                    <h3 class="timeline-header" name="paso4txt" id="paso4txt"><a href="#" id="lblpaso4" name="lblpaso4">Resultado de medidas tomadas</a></h3>
+                    <h3 class="timeline-header" name="paso4txt" id="paso4txt"><a href="#" id="lblpaso4" name="lblpaso4">Resultado de medidas tomadas: </a><a href="#" class="fa fa-table text-red tooltipsC" data-toggle="modal" data-target="#myModalTablaRMT" style="display:none;" id="TabRecMT" name="TabRecMT" data-original-title='Rechazos medidas tomadas'></a><p name="mttxtp" id="mttxtp"></p></h3>
                     <div class="timeline-body" id="linebodypaso41">
                         <textarea name="paso4" id="paso4" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
                         <h4 class="timeline-header" name="aprubpaso4" id="aprubpaso4">Aprueba?</h3>
@@ -360,7 +360,7 @@
                 <div class="timeline-item">
                     <span class="time" id="horapaso5" name="horapaso5"></span>
 
-                    <h3 class="timeline-header" name="paso5txt" id="paso5txt"><a href="#" id="lblpaso5" name="lblpaso5">Cierre y verificación de la eficacia de la acción correctiva</a></h3>
+                    <h3 class="timeline-header" name="paso5txt" id="paso5txt"><a href="#" id="lblpaso5" name="lblpaso5">Cierre y verificación de la eficacia de la acción correctiva: </a><a href="#" class="fa fa-table text-red tooltipsC" data-toggle="modal" data-target="#myModalTablaRAI" style="display:none;" id="TabRecCVEAC" name="TabRecCVEAC" data-original-title='Rechazos medidas tomadas'></a><p name="cvemttxtp" id="cvemttxtp"></p></h3>
                     <div class="timeline-body" id="linebodypaso51">
                         <textarea name="paso5" id="paso5" class="form-control requeridos" tipoval="texto" value="" placeholder="Descripción"></textarea>
                         <a id="guardarpaso5Si" name="guardarpaso5Si" class="btn btn-primary btn-xs" onclick="paso5(1)">Guardar</a>
@@ -416,4 +416,5 @@
     <!--<a id="Prueba" name="Prueba" class="btn btn-primary btn-xs">Prueba</a>-->
     <!-- /.row -->
     @include('generales.obsrechazoaprobpaso2')
+    @include('generales.tablarai')
 </section>
