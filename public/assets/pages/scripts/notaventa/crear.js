@@ -125,11 +125,21 @@ $(document).ready(function () {
 			$("#myModalBuscarProd").modal('show');
 		}
 	});
-	$("#btnbuscarproducto").click(function(event){
+	$("#btnbuscarproducto").click(function(e){
+		e.preventDefault();
 		$(this).val("");
 		$(".input-sm").val('');
-		$("#myModal").modal('hide');
-		$("#myModalBuscarProd").modal('show');
+		//$("#myModal").modal('hide');
+		//$("#myModalBuscarProd").modal('show');
+
+		$('#myModal')
+               .modal('hide')
+               .on('hidden.bs.modal', function (e) {
+                   $('#myModalBuscarProd').modal('show');
+
+                   $(this).off('hidden.bs.modal'); // Remove the 'on' event binding
+               });
+
 	});
 
 	
@@ -614,8 +624,16 @@ $("#rut").focus(function(){
 });
 
 function copiar_codprod(id,codintprod){
-	$("#myModalBuscarProd").modal('hide');
-	$("#myModal").modal('show');
+	//$("#myModalBuscarProd").modal('hide');
+	//$("#myModal").modal('show');
+	$('#myModalBuscarProd')
+               .modal('hide')
+               .on('hidden.bs.modal', function (e) {
+                   $('#myModal').modal('show');
+
+                   $(this).off('hidden.bs.modal'); // Remove the 'on' event binding
+			   });
+			   
 	$("#producto_idM").val(id);
 	$("#producto_idM").blur();
 	$("#cantM").focus();
