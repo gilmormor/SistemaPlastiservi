@@ -12,7 +12,7 @@ $(document).ready(function () {
         consultarpdf($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val());
     });
 
-    //alert(aux_nfila);
+     //alert(aux_nfila);
     $('.datepicker').datepicker({
 		language: "es",
 		autoclose: true,

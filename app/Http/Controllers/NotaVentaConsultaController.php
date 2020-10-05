@@ -379,7 +379,6 @@ class NotaVentaConsultaController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         }
     }
-
     
 }
 
