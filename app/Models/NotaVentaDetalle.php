@@ -43,4 +43,16 @@ class NotaVentaDetalle extends Model
     {
         return $this->belongsTo(CotizacionDetalle::class);
     }
+
+    //RELACION DE UNO A MUCHOS DespachoSolDet
+    public function despachosoldets()
+    {
+        return $this->hasMany(DespachoSolDet::class);
+    }
+    //RELACION DE UNO A MUCHOS DespachoOrdDet
+    public function despachoorddets()
+    {
+        return $this->hasMany(DespachoOrdDet::class);
+    }
+    
 }

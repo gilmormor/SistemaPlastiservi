@@ -455,3 +455,13 @@ Route::get('noconformidadrecep/notificaciones', 'NoConformidadRecepController@no
 Route::get('ncvalidar', 'NoConformidadValidarController@index')->name('ncvalidar');
 Route::get('ncvalidar/{id}/{sta_val}/editar', 'NoConformidadValidarController@editar')->name('editar_ncvalidar');
 Route::put('noconformidadvalidar/actvalAI/{id}', 'NoConformidadValidarController@actvalAI')->name('actvalAI_ncvalidar');
+
+/*RUTAS Solicitud de Despacho*/
+Route::get('despachosol', 'DespachoSolController@index')->name('despachosol');
+Route::get('despachosol/listarnv', 'DespachoSolController@listarnv')->name('listarnv_despachosol');
+Route::get('despachosol/crear', 'DespachoSolController@crear')->name('crear_despachosol');
+Route::post('despachosol', 'DespachoSolController@guardar')->name('guardar_despachosol');
+Route::get('despachosol/{id}/editar', 'DespachoSolController@editar')->name('editar_despachosol');
+Route::put('despachosol/{id}', 'DespachoSolController@actualizar')->name('actualizar_despachosol');
+Route::delete('despachosol/{id}', 'DespachoSolController@eliminar')->name('eliminar_despachosol');
+Route::post('despachosol/reporte', 'DespachoSolController@reporte')->name('reporte_despachosol');

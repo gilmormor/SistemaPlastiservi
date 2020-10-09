@@ -2,8 +2,11 @@
 
 namespace App;
 
+use App\Models\Despacho;
+use App\Models\DespachoOrd;
 use App\Models\NoConformidad;
 use App\Models\Persona;
+use App\Models\SolDespacho;
 use App\Models\Sucursal;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -66,5 +69,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(NoConformidad::class,'usuario_idmp2');
     }
+
+    //RELACION DE UNO A MUCHOS DespachoSol
+    public function despachosols()
+    {
+        return $this->hasMany(DespachoSol::class);
+    }
+    //RELACION DE UNO A MUCHOS DespachoOrd
+    public function despachoOrds()
+    {
+        return $this->hasMany(DespachoOrd::class);
+    }
+
 
 }

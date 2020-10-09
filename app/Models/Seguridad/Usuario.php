@@ -93,4 +93,16 @@ class Usuario extends Authenticatable
     {
         return $this->hasMany(NoConformidad::class,'usuario_idmp2');
     }
+
+    //RELACION DE UNO A MUCHOS DespachoSol
+    public function despachosols()
+    {
+        return $this->hasMany(DespachoSol::class);
+    }
+    //RELACION DE UNO A MUCHOS DespachoOrd
+    public function despachoords()
+    {
+        return $this->hasMany(DespachoOrd::class);
+    }
+    
 }
