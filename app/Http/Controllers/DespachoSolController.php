@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CategoriaProd;
 use App\Models\Cliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
+use App\Models\Comuna;
 use App\Models\DespachoSol;
+use App\Models\Empresa;
+use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\NotaVenta;
+use App\Models\PlazoPago;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
@@ -120,9 +126,8 @@ class DespachoSolController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function crear()
+    public function crear($id)
     {
-        //
     }
 
     /**
@@ -153,9 +158,120 @@ class DespachoSolController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function crearsol($id)
     {
-        //
+        //can('editar-notaventa');
+        $data = NotaVenta::findOrFail($id);
+        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
+        $detalles = $data->notaventadetalles()->get();
+        $vendedor_id=$data->vendedor_id;
+        $clienteselec = $data->cliente()->get();
+        //session(['aux_aprocot' => '0']);
+        //dd($clienteselec[0]->rut);
+
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        //dd($sucurArray);
+        //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
+        //******************* */
+        $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
+        ->join('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
+        ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+        ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->select([
+                    'cliente.id as cliente_id',
+                    'cliente.razonsocial',
+                    'cliente.telefono',
+                    'cliente.email',
+                    'cliente.regionp_id',
+                    'cliente.provinciap_id',
+                    'cliente.comunap_id',
+                    'cliente.contactonombre',
+                    'cliente.direccion',
+                    'clientedirec.id',
+                    'clientedirec.direcciondetalle'
+                ])->get();
+        //dd($clientedirecs);
+        $clienteDirec = $data->clientedirec()->get();
+        $fecha = date("d/m/Y", strtotime($data->fechahora));
+        $formapagos = FormaPago::orderBy('id')->get();
+        $plazopagos = PlazoPago::orderBy('id')->get();
+        $vendedores = Vendedor::orderBy('id')->get();
+        $comunas = Comuna::orderBy('id')->get();
+
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
+        //******************* */
+        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
+        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
+        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
+        ->select([
+                'producto.id',
+                'producto.nombre',
+                'claseprod.cla_nombre',
+                'producto.codintprod',
+                'producto.diamextmm',
+                'producto.espesor',
+                'producto.long',
+                'producto.peso',
+                'producto.tipounion',
+                'producto.precioneto',
+                'categoriaprod.precio',
+                'categoriaprodsuc.sucursal_id'
+                ])
+                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+                ->get();
+        //****************** */
+        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        //* Filtro solos los clientes que esten asignados a la sucursal */
+        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
+        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->pluck('cliente_sucursal.cliente_id')->toArray())
+        ->whereIn('cliente.id',$clientevendedorArray)
+        ->get();
+
+        //dd($clientes);
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
+
+        $empresa = Empresa::findOrFail(1);
+        $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $giros = Giro::orderBy('id')->get();
+        $aux_sta=2;
+        $aux_statusPant = 0;
+
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+        }
+        //dd($clientedirecs);
+        return view('despachosol.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
+        
     }
 
     /**
@@ -335,7 +451,7 @@ function reporte1($request){
                 <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
-                $aux_colvistoth
+                <th class='tooltipsC' title='Solicitud Despacho'>Despacho</th>
             </tr>
         </thead>
         <tbody>";
@@ -406,22 +522,11 @@ function reporte1($request){
             }else{
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
             }
-            $aux_icodespacho = "";
-            $aux_obsdespacho = "No ha iniciado el despacho";
-            if(!empty($data->inidespacho)){
-                $aux_icodespacho = "fa-star-o";
-                $aux_obsdespacho = "Ini Desp: " . date('d-m-Y', strtotime($data->inidespacho)) . " Guia: " . $data->guiasdespacho;
-            }
-            if(!empty($data->findespacho)){
-                $aux_icodespacho = " fa-star";
-                $aux_obsdespacho = "Fin Desp: " . date('d-m-Y', strtotime($data->findespacho)) . " Guia: " . $data->guiasdespacho;
-            }
+            $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
+            //dd($ruta_nuevoSolDesp);
             $respuesta['tabla'] .= "
             <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                 <td id='id$i' name='id$i'>$data->id
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_obsdespacho' data-toggle='tooltip'>
-                        <i class='fa fa-fw $aux_icodespacho'></i>                                    
-                    </a>
                 </td>
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td id='rut$i' name='rut$i'>$rut</td>
@@ -433,7 +538,7 @@ function reporte1($request){
                 <td>
                     <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
                     <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                        <i class='fa fa-fw fa-file-pdf-o'></i>
                     </a>
                 </td>
                 <td>
@@ -442,7 +547,12 @@ function reporte1($request){
                         <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                     </a>
                 </td>
-                $aux_colvistotd
+                <td>
+                    <a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer Solicitud Despacho'>
+                        <i class='fa fa-fw fa-truck'></i>
+                    </a>
+
+                </td>
             </tr>";
 
             if(empty($data->anulada)){

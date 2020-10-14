@@ -4,6 +4,7 @@
 @endsection
 
 @section("scripts")
+    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/despachosol/crear.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -15,6 +16,10 @@
         <div class="box box-danger">
             <div class="box-header with-border">
                 <h3 class="box-title">Crear Solicitud de Despacho</h3>
+                <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},1)' title='Ver Nota venta' data-toggle='tooltip'>
+                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                </a>
+
                 <div class="box-tools pull-right">
                     <a href="{{route('despachosol')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
