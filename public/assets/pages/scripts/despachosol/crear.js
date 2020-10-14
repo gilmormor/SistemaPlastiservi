@@ -23,8 +23,8 @@ $(document).ready(function () {
 	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});
-	$(".modal-body label").css("margin-bottom", -2);
-	$(".help-block").css("margin-top", -2);
+	//$(".modal-body label").css("margin-bottom", -2);
+	//$(".help-block").css("margin-top", -2);
 	if($("#aux_fechaphp").val()!=''){
 		$("#fechahora").val($("#aux_fechaphp").val());
 	}
@@ -590,3 +590,10 @@ $('#form-general').submit(function() {
 	$("#tipoentrega_id").prop('disabled', false);
     //Rest of code
 })
+
+function saldo(s,i){
+	aux_saldo = s - $("#cantsol" + i).val();
+	//alert($("#cantsol" + i).val());
+	$("#saldocantF" + i).html(aux_saldo);
+	//alert(i);
+}

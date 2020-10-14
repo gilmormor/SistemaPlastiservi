@@ -17,7 +17,7 @@
             <div class="box-header with-border">
                 <h3 class="box-title">Crear Solicitud de Despacho</h3>
                 <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},1)' title='Ver Nota venta' data-toggle='tooltip'>
-                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                    Nota Venta: {{$data->id}} <i class='fa fa-fw fa-file-pdf-o'></i>
                 </a>
 
                 <div class="box-tools pull-right">
