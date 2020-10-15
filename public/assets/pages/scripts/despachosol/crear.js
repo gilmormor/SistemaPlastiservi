@@ -153,9 +153,6 @@ function insertarTabla(){
 			'<td name="producto_idTD'+ aux_nfila + '" id="producto_idTD'+ aux_nfila + '" style="display:none;">'+ 
 				'<input type="text" name="producto_id[]" id="producto_id'+ aux_nfila + '" class="form-control" value="'+ $("#producto_idM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="codintprodTD'+ aux_nfila + '" id="codintprodTD'+ aux_nfila + '">'+ 
-				codintprod+
-			'</td>'+
 			'<td style="display:none;">'+ 
 				'<input type="text" name="codintprod[]" id="codintprod'+ aux_nfila + '" class="form-control" value="'+ codintprod +'" style="display:none;"/>'+
 			'</td>'+
@@ -305,7 +302,7 @@ $('.provincia_id').on('change', function () {
 
 
 function eliminarRegistro(i){
-	event.preventDefault();
+	//event.preventDefault();
 	//alert($('input[name=_token]').val());
 	var data = {
 		id: $("#NVdet_idTD"+i).html(),
@@ -591,9 +588,37 @@ $('#form-general').submit(function() {
     //Rest of code
 })
 
-function saldo(s,i){
+function actSaldo(s,i){
 	aux_saldo = s - $("#cantsol" + i).val();
 	//alert($("#cantsol" + i).val());
 	$("#saldocantF" + i).html(aux_saldo);
 	//alert(i);
 }
+
+function llenarCantSol(i){
+	saldo = $("#saldocantF" + i).html();
+	//alert($("#llenarCantSol" + i + ":checked").val());
+	estaSeleccionado = $("#llenarCantSol" + i).is(":checked");
+	if (estaSeleccionado){
+		$("#cantsol" + i).val($.trim(saldo));
+	}else{
+		$("#cantsol" + i).val('');
+	}
+}
+
+$("#marcarTodo").change(function() {
+	nFilas = $("#tabla-data tr").length - 4;
+	estaSeleccionado = $("#marcarTodo").is(":checked");
+	for (var i = 1; i <= nFilas; i++) {
+		saldo = $("#saldocantOrigF" + i).html();
+		if (estaSeleccionado){
+			$("#llenarCantSol" + i).prop("checked", true);
+			$("#cantsol" + i).val($.trim(saldo));
+			$("#saldocantF" + i).html("0")
+		}else{
+			$("#llenarCantSol" + i).prop("checked", false);
+			$("#cantsol" + i).val('');
+			$("#saldocantF" + i).html($("#saldocantOrigF" + i).html())
+		}	
+	}
+});

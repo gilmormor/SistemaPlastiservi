@@ -792,7 +792,7 @@ function verpdf2(nameFile,stareport){ //GENERAR PDF NOTA DE VENTA
 	}else{
 		$('#contpdf').attr('src', 'about:blank');
 		$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile);
-		if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
+		if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
 			$("#myModalpdf").modal('show');
 		}
 	}

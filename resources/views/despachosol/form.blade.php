@@ -34,202 +34,232 @@
     if($aux_sta==3){
         $disabledReadOnly = ' disabled ';
     }
+    $disabledReadOnly = " readonly";
     $aux_concot = false;
     if ($aux_sta==2 and $data->cotizacion_id and $data->id){
         $disabledcliente = ' disabled ';
         $aux_concot = true;
     }
-    $disabledcliente = ' disabled ';
-    $enableCamposCot = ' disabled ';
+    $disabledcliente = " disabled";
 
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-12">
-        <div class="row">
-            <div class="form-group col-xs-12 col-sm-3">
-                <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
-                    <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" onkeyup="llevarMayus(this);" title="F2 Buscar" placeholder="F2 Buscar" maxlength="12" required {{$disabledReadOnly}} {{$disabledcliente}} readonly/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-7">
-                <label for="razonsocial" class="control-label requerido" data-toggle='tooltip' title="Razón Social">Razón Social</label>
-                <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', $clienteselec[0]->razonsocial ?? '')}}" readonly/>
-            </div>
-
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="fechahora" class="control-label">Fecha</label>
-                <input type="text" name="fechahora" id="fechahora" class="form-control" value="{{old('fechahora', $fecha ?? '')}}" style="padding-left: 0px;padding-right: 0px;" required readonly/>
-            </div>
-        </div>
-        <div class="row" style="display:none;">
-            <div class="form-group col-xs-12 col-sm-5">
-                <label for="direccion" class="control-label">Dirección Princ</label>
-                <input type="text" name="direccion" id="direccion" class="form-control" value="{{old('direccion', $clienteselec[0]->direccion ?? '')}}" required placeholder="Dirección principal" readonly/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="telefono" class="control-label requerido">Telefono</label>
-                <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', $data->telefono ?? '')}}" required readonly/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-3">
-                <label for="email" class="control-label requerido">Email</label>
-                <input type="text" name="email" id="email" class="form-control" value="{{old('email', $data->email ?? '')}}" required readonly/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="comuna_idD" class="control-label requerido">Comuna</label>
-                <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
-                    <option value="">Seleccione...</option>
-                    @foreach($comunas as $comuna)
-                        <option
-                            value="{{$comuna->id}}"
-                            @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comuna_id)
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$comuna->nombre}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="row" style="display:none;">
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
-                <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required readonly disabled>
-                    <option value="">Seleccione...</option>
-                    @foreach($vendedores1 as $vendedor)
-                        <option
-                            value="{{$vendedor->id}}"
-                            @if (($aux_sta==1) and ($vendedor_id==$vendedor->id))
-                                {{'selected'}}
-                            @endif
-                            @if (($aux_sta==2 or $aux_sta==3) and ($data->vendedor_id==$vendedor->id))
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$vendedor->nombre}} {{$vendedor->apellido}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="plazopago_idD" class="control-label requerido">Plazo</label>
-                <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
-                    <option value=''>Seleccione...</option>
-                    @foreach($plazopagos as $plazopago)
-                        <option
-                            value="{{$plazopago->id}}"
-                            @if (($aux_sta==2 or $aux_sta==3) and ($data->plazopago_id==$plazopago->id))
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$plazopago->descripcion}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="formapago_idD" class="control-label requerido">Forma de Pago</label>
-                <select name="formapago_idD" id="formapago_idD" class="form-control selectpicker formapago_idD" required readonly disabled>
-                    <option value=''>Seleccione...</option>
-                    @foreach($formapagos as $formapago)
-                        <option
-                            value="{{$formapago->id}}"
-                            @if (($aux_sta==2 or $aux_sta==3) and ($data->formapago_id==$formapago->id))
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$formapago->descripcion}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-
-
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="giro_idD" class="control-label requerido">Giro</label>
-                <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
-                    <option value=''>Seleccione...</option>
-                    @foreach($giros as $giro)
-                        <option
-                            value="{{$giro->id}}"
-                            @if (($aux_sta==2 or $aux_sta==3) and ($data->giro_id==$giro->id))
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$giro->nombre}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="tipoentrega_id" class="control-label requerido">Tipo Entrega</label>
-                <select name="tipoentrega_id" id="tipoentrega_id" class="form-control select2 tipoentrega_id" required {{$enableCamposCot}}>
-                    <option value=''>Seleccione...</option>
-                    @foreach($tipoentregas as $tipoentrega)
-                        <option
-                            value="{{$tipoentrega->id}}"
-                            @if (($aux_sta==2 or $aux_sta==3) and ($data->tipoentrega_id==$tipoentrega->id))
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$tipoentrega->nombre}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="plazoentrega" class="control-label requerido">Plazo Ent.</label>
-                <input type="text" name="plazoentrega" id="plazoentrega" class="form-control pull-right datepicker"  value="{{old('plazoentrega', $data->plazoentrega ?? '')}}" readonly required {{$enableCamposCot}}>
-            </div>
+        <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
+            <div class="box-header with-border">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="form-group col-xs-12 col-sm-3">
+                            <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
+                            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" maxlength="12" required {{$disabledReadOnly}} {{$disabledcliente}}/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-7">
+                            <label for="razonsocial" class="control-label requerido" data-toggle='tooltip' title="Razón Social">Razón Social</label>
+                            <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', $clienteselec[0]->razonsocial ?? '')}}" readonly/>
+                        </div>
             
-
-        </div>
-        <div class="row" style="display:none;">
-            <div class="form-group col-xs-12 col-sm-3">
-                <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
-                <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" {{$enableCamposCot}}/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-3">
-                <label for="comunaentrega_id" class="control-label requerido">Comuna Entrega</label>
-                <select name="comunaentrega_id" id="comunaentrega_id" class="form-control select2  comunaentrega_id" data-live-search='true' value="{{old('comunaentrega_id', $data->comunaentrega_id ?? '')}}" required {{$enableCamposCot}}>
-                    <option value="">Seleccione...</option>
-                    @foreach($comunas as $comuna)
-                        <option
-                            value="{{$comuna->id}}"
-                            @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comunaentrega_id)
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$comuna->nombre}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <!--
-            <div class="form-group col-xs-12 col-sm-3">
-                <label for="btnfotooc" class="control-label">Cargar OrdenCompra</label>
-                <button type="button" class="form-control btn btn-primary" id="btnfotooc" name="btnfotooc" title="Guardar">Cargar OrdenCompra</button>
-            </div>-->
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="fechahora" class="control-label">Fecha</label>
+                            <input type="text" name="fechahora" id="fechahora" class="form-control" value="{{old('fechahora', $fecha ?? '')}}" style="padding-left: 0px;padding-right: 0px;" required readonly/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xs-12 col-sm-5">
+                            <label for="direccion" class="control-label">Dirección Princ</label>
+                            <input type="text" name="direccion" id="direccion" class="form-control" value="{{old('direccion', $clienteselec[0]->direccion ?? '')}}" required placeholder="Dirección principal" readonly/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="telefono" class="control-label requerido">Telefono</label>
+                            <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', $data->telefono ?? '')}}" required readonly/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-3">
+                            <label for="email" class="control-label requerido">Email</label>
+                            <input type="text" name="email" id="email" class="form-control" value="{{old('email', $data->email ?? '')}}" required readonly/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="comuna_idD" class="control-label requerido">Comuna</label>
+                            <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
+                                <option value="">Seleccione...</option>
+                                @foreach($comunas as $comuna)
+                                    <option
+                                        value="{{$comuna->id}}"
+                                        @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comuna_id)
+                                            {{'selected'}}
+                                        @endif
+                                        >
+                                        {{$comuna->nombre}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
             
-            <div class="form-group col-xs-12 col-sm-3">
-                <label for="contacto" class="control-label requerido">Contacto</label>
-                <input type="text" name="contacto" id="contacto" class="form-control" value="{{old('contacto', $data->contacto ?? '')}}" required placeholder="Contacto Entrega" {{$enableCamposCot}}/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-3">
-                <label for="contactotelf" class="control-label requerido">Teléfono</label>
-                <input type="text" name="contactotelf" id="contactotelf" class="form-control" value="{{old('contactotelf', $data->contactotelf ?? '')}}" required placeholder="Teléfono Contacto Entrega" {{$enableCamposCot}}/>
+                    </div>
+            
+                    <div class="row">
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
+                            <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required readonly disabled>
+                                <option value="">Seleccione...</option>
+                                @foreach($vendedores1 as $vendedor)
+                                    <option
+                                        value="{{$vendedor->id}}"
+                                        @if (($aux_sta==1) and ($vendedor_id==$vendedor->id))
+                                            {{'selected'}}
+                                        @endif
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->vendedor_id==$vendedor->id))
+                                            {{'selected'}}
+                                        @endif
+                                        >
+                                        {{$vendedor->nombre}} {{$vendedor->apellido}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="plazopago_idD" class="control-label requerido">Plazo</label>
+                            <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
+                                <option value=''>Seleccione...</option>
+                                @foreach($plazopagos as $plazopago)
+                                    <option
+                                        value="{{$plazopago->id}}"
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->plazopago_id==$plazopago->id))
+                                            {{'selected'}}
+                                        @endif
+                                        >
+                                        {{$plazopago->descripcion}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+            
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="formapago_idD" class="control-label requerido">Forma de Pago</label>
+                            <select name="formapago_idD" id="formapago_idD" class="form-control selectpicker formapago_idD" required readonly disabled>
+                                <option value=''>Seleccione...</option>
+                                @foreach($formapagos as $formapago)
+                                    <option
+                                        value="{{$formapago->id}}"
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->formapago_id==$formapago->id))
+                                            {{'selected'}}
+                                        @endif
+                                        >
+                                        {{$formapago->descripcion}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+            
+            
+            
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="giro_idD" class="control-label requerido">Giro</label>
+                            <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
+                                <option value=''>Seleccione...</option>
+                                @foreach($giros as $giro)
+                                    <option
+                                        value="{{$giro->id}}"
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->giro_id==$giro->id))
+                                            {{'selected'}}
+                                        @endif
+                                        >
+                                        {{$giro->nombre}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+            
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="tipoentrega_id" class="control-label requerido">Tipo Entrega</label>
+                            <select name="tipoentrega_id" id="tipoentrega_id" class="form-control select2 tipoentrega_id" required {{$enableCamposCot}}>
+                                <option value=''>Seleccione...</option>
+                                @foreach($tipoentregas as $tipoentrega)
+                                    <option
+                                        value="{{$tipoentrega->id}}"
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->tipoentrega_id==$tipoentrega->id))
+                                            {{'selected'}}
+                                        @endif
+                                        >
+                                        {{$tipoentrega->nombre}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="plazoentrega" class="control-label requerido">Plazo Ent.</label>
+                            <input type="text" name="plazoentrega" id="plazoentrega" class="form-control pull-right datepicker"  value="{{old('plazoentrega', $data->plazoentrega ?? '')}}" readonly required {{$enableCamposCot}}>
+                        </div>
+                        
+            
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xs-12 col-sm-3">
+                            <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
+                            <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" {{$enableCamposCot}}/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-3">
+                            <label for="comunaentrega_id" class="control-label requerido">Comuna Entrega</label>
+                            <select name="comunaentrega_id" id="comunaentrega_id" class="form-control select2  comunaentrega_id" data-live-search='true' value="{{old('comunaentrega_id', $data->comunaentrega_id ?? '')}}" required {{$enableCamposCot}}>
+                                <option value="">Seleccione...</option>
+                                @foreach($comunas as $comuna)
+                                    <option
+                                        value="{{$comuna->id}}"
+                                        @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comunaentrega_id)
+                                            {{'selected'}}
+                                        @endif
+                                        >
+                                        {{$comuna->nombre}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <!--
+                        <div class="form-group col-xs-12 col-sm-3">
+                            <label for="btnfotooc" class="control-label">Cargar OrdenCompra</label>
+                            <button type="button" class="form-control btn btn-primary" id="btnfotooc" name="btnfotooc" title="Guardar">Cargar OrdenCompra</button>
+                        </div>-->
+                        
+                        <div class="form-group col-xs-12 col-sm-3">
+                            <label for="contacto" class="control-label requerido">Contacto</label>
+                            <input type="text" name="contacto" id="contacto" class="form-control" value="{{old('contacto', $data->contacto ?? '')}}" required placeholder="Contacto Entrega" {{$enableCamposCot}}/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-3">
+                            <label for="contactotelf" class="control-label requerido">Teléfono</label>
+                            <input type="text" name="contactotelf" id="contactotelf" class="form-control" value="{{old('contactotelf', $data->contactotelf ?? '')}}" required placeholder="Teléfono Contacto Entrega" {{$enableCamposCot}}/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xs-12 col-sm-6">
+                            <label for="contactoemail" class="control-label requerido">Email</label>
+                            <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-6">
+                            <label for="observacion" class="control-label">Observaciones</label>
+                            <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row" style="display:none;">
-            <div class="form-group col-xs-12 col-sm-6">
-                <label for="contactoemail" class="control-label requerido">Email</label>
-                <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-6">
-                <label for="observacion" class="control-label">Observaciones</label>
-                <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
+    </div>    
+    <div style="display:none;" class="col-xs-12 col-sm-3">
+        <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
+            <div class="box-header with-border">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="form-group col-xs-12 col-sm-12">
+                            <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label">Nro OrdenCompra</label>
+                            <div class="input-group">
+                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" {{$enableCamposCot}}/>
+                            </div>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-12">
+                            <label id="lboc_id" name="lboc_id" for="oc_file" class="control-label">Adjuntar OC</label>
+                            <div class="input-group">
+                                <input type="file" name="oc_file" id="oc_file" class="form-control" data-initial-preview='{{isset($data->oc_file) ? Storage::url("imagenes/notaventa/$data->oc_file") : ""}}' accept="image/*"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -240,44 +270,52 @@
         <h3 class="box-title">Detalle</h3>
         <div class="box-body">
             <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px;width:50%">
+                <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                     <thead>
                         <tr>
-                            <th style="width:50%">Nombre</th>
-                            <th style="display:none;" class="width30">ID</th>
+                            <th class="width30">ID</th>
                             <th style="display:none;">NotaVentaDetalle_ID</th>
                             <th style="display:none;">cotizacion_ID</th>
                             <th style="display:none;">Codigo Producto</th>
-                            <th style="display:none;">Cód Int</th>
                             <th style="display:none;">CódInterno</th>
+                            <th style="display:none;">Cant</th>
+                            <th>Nombre</th>
                             <th>Cant</th>
                             <th>Desp</th>
-                            <th>SolDesp</th>
+                            <!--<th>SolDesp</th>-->
                             <th>Saldo</th>
-                            <th>SolDesp</th>
+                            <th class='tooltipsC' title='Marcar todo'>
+                                <div class='checkbox'>
+                                    <label style='font-size: 1.2em'>
+                                        <input type='checkbox' id='marcarTodo' name='marcarTodo' onclick='visto($data->id,$i)'>
+                                        <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                                    </label>
+                                </div>
+                            </th>
+                            <th class="width70">SolicitudDesp</th>
                             <th style="display:none;">UnidadMedida</th>
-                            <th style="display:none;">Clase</th>
-                            <th style="display:none;">Diam</th>
+                            <th>Clase</th>
+                            <th>Diam</th>
                             <th style="display:none;">Diametro</th>
-                            <th style="display:none;">Esp</th>
+                            <th>Esp</th>
                             <th style="display:none;">Espesor</th>
+                            <th>Largo</th>
                             <th style="display:none;">Largo</th>
-                            <th style="display:none;">Largo</th>
+                            <th>Peso</th>
                             <th style="display:none;">Peso</th>
-                            <th style="display:none;">Peso</th>
-                            <th style="display:none;">TU</th>
+                            <th>TU</th>
                             <th style="display:none;">TUnion</th>
-                            <th style="display:none;">Desc</th>
+                            <th>Desc</th>
                             <th style="display:none;">DescPorc</th>
                             <th style="display:none;">DescVal</th>
-                            <th style="display:none;">P Neto Unit</th>
+                            <th>P Neto Unit</th>
                             <th style="display:none;">Precio Neto Unit</th>
-                            <th style="display:none;">V Kilo</th>
+                            <th>V Kilo</th>
                             <th style="display:none;">Precio X Kilo</th>
                             <th style="display:none;">Precio X Kilo Real</th>
+                            <th>Total Kilos</th>
                             <th style="display:none;">Total Kilos</th>
-                            <th style="display:none;">Total Kilos</th>
-                            <th style="display:none;">Sub Total</th>
+                            <th>Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
                         </tr>
@@ -288,10 +326,7 @@
                             @foreach($detalles as $detalle)
                                 <?php $aux_nfila++; ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                    <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                        {{$detalle->producto->nombre}}
-                                    </td>
-                                    <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
+                                    <td name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
                                         @if ($aux_sta==2)
                                             {{$detalle->id}}
                                         @else
@@ -315,26 +350,8 @@
                                     <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}" style="display:none;">
                                         <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$detalle->producto_id}}" style="display:none;"/>
                                     </td>
-                                    <td style="display:none;" name="codintprodTD{{$aux_nfila}}" id="codintprodTD{{$aux_nfila}}">
-                                        {{$detalle->producto->codintprod}}
-                                    </td>
                                     <td style="display:none;">
                                         <input type="text" name="codintprod[]" id="codintprod{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->codintprod}}" style="display:none;"/>
-                                    </td>
-                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->cant}}
-                                    </td>
-                                    <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->cantdesp}}
-                                    </td>
-                                    <td name="cantsoldespF{{$aux_nfila}}" id="cantsoldespF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->cantsoldesp}}
-                                    </td>
-                                    <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->cant - $detalle->cantsoldesp}}
-                                    </td>
-                                    <td name="cantsolF{{$aux_nfila}}" id="cantsolF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control" onkeyup="saldo({{$detalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})"/>
                                     </td>
                                     <td style="text-align:right;display:none;">
                                         @if ($aux_sta==2)
@@ -343,53 +360,83 @@
                                             <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->cant - $detalle->cantusada}}" style="display:none;"/>
                                         @endif
                                     </td>
-                                    <td style="text-align:right;display:none;">
-                                        <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantsoldesp}}" style="display:none;"/>
+                                    <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
+                                        {{$detalle->producto->nombre}}
                                     </td>
-                                    <td style="text-align:right;display:none;">
-                                        <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantsoldesp}}" style="display:none;"/>
+                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
+                                        @if ($aux_sta==2)
+                                            {{$detalle->cant}}
+                                        @else 
+                                            {{$detalle->cant - $detalle->cantusada}}
+                                        @endif
+                                    </td>
+                                    <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:right">
+                                        {{$detalle->cantdesp}}
+                                    </td>
+                                    <!--
+                                    <td name="cantsoldespF{{$aux_nfila}}" id="cantsoldespF{{$aux_nfila}}" style="text-align:right">
+                                        {{$detalle->cantsoldesp}}
+                                    </td>
+                                    -->
+                                    <td name="saldocantOrigF{{$aux_nfila}}" id="saldocantOrigF{{$aux_nfila}}" style="text-align:right;display:none;">
+                                        {{$detalle->cant - $detalle->cantsoldesp}}
+                                    </td>
+                                    <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
+                                        {{$detalle->cant - $detalle->cantsoldesp}}
+                                    </td>
+                                    <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
+                                        <div class='checkbox'>
+                                            <label style='font-size: 1.2em'>
+                                                <input type="checkbox" class="checkllenarCantSol" id="llenarCantSol{{$aux_nfila}}" name="llenarCantSol{{$aux_nfila}}" onclick="llenarCantSol({{$aux_nfila}})">
+                                                <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td name="cantsolF{{$aux_nfila}}" id="cantsolF{{$aux_nfila}}" style="text-align:right">
+                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control" onkeyup="actSaldo({{$detalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})" style="text-align:right;"/>
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="4" style="display:none;"/>
                                     </td>
-                                    <td style="display:none;" name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
+                                    <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
                                         {{$detalle->producto->claseprod->cla_nombre}}
                                     </td>
-                                    <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right;display:none;">
+                                    <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
                                         @if ($detalle->producto->categoriaprod->unidadmedida_id==3)
                                             {{$detalle->producto->diamextpg}}
                                         @else
                                             {{$detalle->producto->diamextmm}}mm
                                         @endif
+
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->diamextmm}}" style="display:none;"/>
                                     </td>
-                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right;display:none;">
+                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
                                         {{$detalle->producto->espesor}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->espesor}}" style="display:none;"/>
                                     </td>
-                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right;display:none;">
+                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
                                         {{$detalle->producto->long}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->long}}" style="display:none;"/>
                                     </td>
-                                    <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;display:none;">
+                                    <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
                                         {{$detalle->producto->peso}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->peso}}" style="display:none;"/>
                                     </td>
-                                    <td style="display:none;" name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
+                                    <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
                                         {{$detalle->producto->tipounion}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->tipounion}}" style="display:none;"/>
                                     </td>
-                                    <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right;display:none;">
+                                    <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right">
                                         <?php $aux_descPorc = $detalle->descuento * 100; ?>
                                         {{$aux_descPorc}}%
                                     </td>
@@ -400,13 +447,13 @@
                                         <?php $aux_descVal = 1 - $detalle->descuento; ?>
                                         <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                     </td>
-                                    <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right;display:none;"> 
+                                    <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
                                         {{number_format($detalle->preciounit, 2, '.', ',')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$detalle->preciounit}}" style="display:none;"/>
                                     </td>
-                                    <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right;display:none;"> 
+                                    <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
                                         {{number_format($detalle->precioxkilo, 2, '.', ',')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
@@ -415,13 +462,13 @@
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$detalle->precioxkiloreal}}" style="display:none;"/>
                                     </td>
-                                    <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right;display:none;">
+                                    <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
                                         {{number_format($detalle->totalkilos, 2, '.', ',')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$detalle->totalkilos}}" style="display:none;"/>
                                     </td>
-                                    <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right;display:none;"> 
+                                    <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
                                         {{number_format($detalle->subtotal, 2, '.', ',')}}
                                     </td>
                                     <td class="subtotalCF" style="text-align:right;display:none;"> 
@@ -433,16 +480,16 @@
                                 </tr>
                                 <?php $i++;?>
                             @endforeach
-                            <tr style="display:none;" id="trneto" name="trneto">
-                                <td colspan="14" style="text-align:right"><b>Neto</b></td>
+                            <tr id="trneto" name="trneto">
+                                <td colspan="17" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
-                            <tr style="display:none;" id="triva" name="triva">
-                                <td colspan="14" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                            <tr id="triva" name="triva">
+                                <td colspan="17" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
                             </tr>
-                            <tr style="display:none;" id="trtotal" name="trtotal">
-                                <td colspan="14" style="text-align:right"><b>Total</b></td>
+                            <tr id="trtotal" name="trtotal">
+                                <td colspan="17" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
                             </tr>
                         @endif

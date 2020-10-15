@@ -59,7 +59,7 @@ class NotaVenta extends Model
             $file = $request->file('oc_file');
             $nombre = $file->getClientOriginalName();
             $info = new SplFileInfo($nombre);
-            $ext = $info->getExtension(); //Obtener extencion de un archivo
+            $ext = strtolower($info->getExtension()); //Obtener extencion de un archivo
             //$imageName = Str::random(10) . '.jpg';
             $imageName = $notaventa_id . '.' . $ext;
             //dd($imageName);
