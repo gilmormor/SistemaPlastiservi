@@ -26,5 +26,21 @@ class Comuna extends Model
     {
         return $this->hasMany(ClienteTemp::class,'comunap_id','comuna_id');
     }
+    //Relacion de uno a Muchos con notaventa
+    public function notaventas()
+    {
+        return $this->hasMany(NotaVenta::class,'comunap_id','comunaentrega_id');
+    }
+    //Relacion de uno a Muchos con despachoSol
+    public function despachosols()
+    {
+        return $this->hasMany(DespachoSol::class,'comunap_id','comunaentrega_id');
+    }
+    //Relacion de uno a Muchos con despachoOrd
+    public function despachoords()
+    {
+        return $this->hasMany(DespachoOrd::class,'comunap_id','comunaentrega_id');
+    }
+
 
 }

@@ -47,4 +47,10 @@ class DespachoOrd extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function comunaentrega()
+    {
+        return $this->belongsTo(Comuna::class,'comunaentrega_id');
+    }
+
 }

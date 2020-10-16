@@ -592,6 +592,8 @@ function actSaldo(s,i){
 	aux_saldo = s - $("#cantsol" + i).val();
 	//alert($("#cantsol" + i).val());
 	$("#saldocantF" + i).html(aux_saldo);
+	$("#cantsoldesp" + i).val($("#cantsol" + i).val());
+	
 	//alert(i);
 }
 
@@ -601,8 +603,10 @@ function llenarCantSol(i){
 	estaSeleccionado = $("#llenarCantSol" + i).is(":checked");
 	if (estaSeleccionado){
 		$("#cantsol" + i).val($.trim(saldo));
+		$("#cantsoldesp" + i).val($.trim(saldo));
 	}else{
 		$("#cantsol" + i).val('');
+		$("#cantsoldesp" + i).val('');
 	}
 }
 
@@ -614,10 +618,12 @@ $("#marcarTodo").change(function() {
 		if (estaSeleccionado){
 			$("#llenarCantSol" + i).prop("checked", true);
 			$("#cantsol" + i).val($.trim(saldo));
+			$("#cantsoldesp" + i).val($.trim(saldo));
 			$("#saldocantF" + i).html("0")
 		}else{
 			$("#llenarCantSol" + i).prop("checked", false);
 			$("#cantsol" + i).val('');
+			$("#cantsoldesp" + i).val('');
 			$("#saldocantF" + i).html($("#saldocantOrigF" + i).html())
 		}	
 	}

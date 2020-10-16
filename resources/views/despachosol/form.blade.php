@@ -1,3 +1,4 @@
+<input type="hidden" name="notaventa_id" id="notaventa_id" value="{{$data->id}}">
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
 <input type="hidden" name="aux_iva" id="aux_iva" value="{{$empresa->iva}}">
@@ -49,11 +50,15 @@
             <div class="box-header with-border">
                 <div class="box-body">
                     <div class="row">
+                        <div class="form-group col-xs-12 col-sm-1">
+                            <label for="notaventa_id" class="control-label requerido" data-toggle='tooltip' title="Id Nota Venta">ID NotVenta</label>
+                            <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{$data->id}}" required disabled/>
+                        </div>
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
                             <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" maxlength="12" required {{$disabledReadOnly}} {{$disabledcliente}}/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-7">
+                        <div class="form-group col-xs-12 col-sm-6">
                             <label for="razonsocial" class="control-label requerido" data-toggle='tooltip' title="Razón Social">Razón Social</label>
                             <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', $clienteselec[0]->razonsocial ?? '')}}" readonly/>
                         </div>
@@ -228,13 +233,17 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xs-12 col-sm-6">
+                        <div class="form-group col-xs-12 col-sm-5">
                             <label for="contactoemail" class="control-label requerido">Email</label>
                             <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-6">
+                        <div class="form-group col-xs-12 col-sm-5">
                             <label for="observacion" class="control-label">Observaciones</label>
                             <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="fechaestdesp" class="control-label requerido" data-toggle='tooltip' title="Fecha estimada de Despacho">Fec Est Despacho</label>
+                            <input type="text" name="fechaestdesp" id="fechaestdesp" class="form-control pull-right datepicker" value="{{old('fechaestdesp', $data->fechaestdesp ?? '')}}" required readonly/>
                         </div>
                     </div>
                 </div>
@@ -387,13 +396,16 @@
                                     <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
                                         <div class='checkbox'>
                                             <label style='font-size: 1.2em'>
-                                                <input type="checkbox" class="checkllenarCantSol" id="llenarCantSol{{$aux_nfila}}" name="llenarCantSol{{$aux_nfila}}" onclick="llenarCantSol({{$aux_nfila}})">
+                                                <input type="checkbox" class="checkllenarCantSol" id="llenarCantSol{{$aux_nfila}}" name="llenarCantSol{{$aux_nfila}}" onclick="llenarCantSol({{$aux_nfila}})" readonly disabled>
                                                 <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                                             </label>
                                         </div>
                                     </td>
                                     <td name="cantsolF{{$aux_nfila}}" id="cantsolF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control" onkeyup="actSaldo({{$detalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})" style="text-align:right;"/>
+                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control" onkeyup="actSaldo({{$detalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})" style="text-align:right;" readonly disabled/>
+                                    </td>
+                                    <td name="cantsoldespF{{$aux_nfila}}" id="cantsoldespF{{$aux_nfila}}" style="text-align:right;display:none;">
+                                        <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" style="text-align:right;"/>
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="4" style="display:none;"/>

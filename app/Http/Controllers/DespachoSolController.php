@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidarDespachoSol;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Cliente;
@@ -9,10 +10,12 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoSol;
+use App\Models\DespachoSolDet;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\NotaVenta;
+use App\Models\NotaVentaDetalle;
 use App\Models\PlazoPago;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
@@ -132,13 +135,44 @@ class DespachoSolController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
+     * ValidarDespachoSol
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function guardar(Request $request)
     {
-        //
+        can('guardar-solicitud-despacho');
+        
+        $hoy = date("Y-m-d H:i:s");
+        $request->request->add(['fecha' => $hoy]);
+        $request->request->add(['usuario_id' => auth()->id()]);
+        $dateInput = explode('/',$request->plazoentrega);
+        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $dateInput = explode('/',$request->fechaestdesp);
+        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $comuna = Comuna::findOrFail($request->comuna_id);
+        $request->request->add(['provincia_id' => $comuna->provincia_id]);
+        $request->request->add(['region_id' => $comuna->provincia->region_id]);
+        $despachosol = DespachoSol::create($request->all());
+        $despachosolid = $despachosol->id;
+        $cont_producto = count($request->producto_id);
+        if($cont_producto>0){
+            for ($i=0; $i < $cont_producto ; $i++){
+                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                    $despachosol = new DespachoSolDet();
+                    $despachosol->despachosol_id = $despachosolid;
+                    $despachosol->notaventadetalle_id = $request->NVdet_id[$i];
+                    $despachosol->cantsoldesp = $request->cantsoldesp[$i];
+                    if($despachosol->save()){
+                        $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
+                        $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                        $notaventadetalle->save();
+                        //$despacho_id = $despachosol->id;    
+                    }
+                }
+            }
+        }
+        return redirect('despachosol')->with('mensaje','Nota de Venta creada con exito.');
     }
 
     /**

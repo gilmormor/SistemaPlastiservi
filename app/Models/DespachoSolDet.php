@@ -12,7 +12,6 @@ class DespachoSolDet extends Model
     protected $fillable = [
         'despachosol_id',
         'notaventadetalle_id',
-        'obs',
         'cantsoldesp',
         'cantdesp',
         'usuariodel_id'

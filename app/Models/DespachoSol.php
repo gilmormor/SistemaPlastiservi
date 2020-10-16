@@ -13,7 +13,14 @@ class DespachoSol extends Model
         'notaventa_id',
         'usuario_id',
         'fecha',
-        'obs',
+        'comunaentrega_id',
+        'plazoentrega',
+        'lugarentrega',
+        'contacto',
+        'contactoemail',
+        'contactotelf',
+        'observacion',
+        'fechaestdesp',
         'usuariodel_id'
     ];
 
@@ -40,4 +47,10 @@ class DespachoSol extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function comunaentrega()
+    {
+        return $this->belongsTo(Comuna::class,'comunaentrega_id');
+    }
+
 }

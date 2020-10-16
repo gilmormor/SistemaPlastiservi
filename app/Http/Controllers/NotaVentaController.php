@@ -386,7 +386,7 @@ class NotaVentaController extends Controller
     {
         can('editar-notaventa');
         $data = NotaVenta::findOrFail($id);
-        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
+        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $detalles = $data->notaventadetalles()->get();
         $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
