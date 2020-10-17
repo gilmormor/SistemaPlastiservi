@@ -4,6 +4,7 @@ Solicitud de despacho
 @endsection
 
 @section("scripts")
+    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -26,6 +27,9 @@ Solicitud de despacho
                         <tr>
                             <th class="width70">ID</th>
                             <th>Descripción</th>
+                            <th>OC</th>
+                            <th>NV</th>
+                            <th>NVK</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
@@ -33,7 +37,22 @@ Solicitud de despacho
                         @foreach ($datas as $data)
                         <tr>
                             <td>{{$data->id}}</td>
-                            <td>{{$data->descripcion}}</td>
+                            <td>{{$data->notaventa->cliente->razonsocial}}</td>
+                            <td>
+                                <a class='btn-accion-tabla btn-sm' onclick='verpdf2("{{$data->notaventa->oc_file}}",2)'>
+                                    {{$data->notaventa->oc_id}}
+                                </a>
+                            </td>
+                            <td>
+                                <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->notaventa_id}},1)' title='Nota de venta' data-toggle='tooltip'>
+                                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},2)' title='Nota de venta Kilos' data-toggle='tooltip'>
+                                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                                </a>
+                            </td>
                             <td>
                                 <a href="{{route('editar_despachosol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
                                     <i class="fa fa-fw fa-pencil"></i>
@@ -54,4 +73,5 @@ Solicitud de despacho
         </div>
     </div>
 </div>
+@include('generales.modalpdf')
 @endsection

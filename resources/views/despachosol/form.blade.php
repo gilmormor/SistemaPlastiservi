@@ -51,7 +51,7 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-1">
-                            <label for="notaventa_id" class="control-label requerido" data-toggle='tooltip' title="Id Nota Venta">ID NotVenta</label>
+                            <label for="notaventa_id" class="control-label requerido" data-toggle='tooltip' title="Id Nota Venta">NotVenta</label>
                             <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{$data->id}}" required disabled/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-3">
@@ -317,12 +317,12 @@
                             <th>Desc</th>
                             <th style="display:none;">DescPorc</th>
                             <th style="display:none;">DescVal</th>
-                            <th>P Neto Unit</th>
+                            <th>P Unit</th>
                             <th style="display:none;">Precio Neto Unit</th>
                             <th>V Kilo</th>
                             <th style="display:none;">Precio X Kilo</th>
                             <th style="display:none;">Precio X Kilo Real</th>
-                            <th>Total Kilos</th>
+                            <th>Kilos</th>
                             <th style="display:none;">Total Kilos</th>
                             <th>Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
@@ -417,7 +417,7 @@
                                         @if ($detalle->producto->categoriaprod->unidadmedida_id==3)
                                             {{$detalle->producto->diamextpg}}
                                         @else
-                                            {{$detalle->producto->diamextmm}}mm
+                                            {{$detalle->producto->diamextmm}}
                                         @endif
 
                                     </td>
@@ -493,7 +493,13 @@
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="17" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="6" style="text-align:right">
+                                    Total:
+                                </td>
+                                <td style="text-align:right">
+                                    <input type="text" name="cantsolTotal" id="cantsolTotal" class="form-control" style="text-align:right;" readonly required/>
+                                </td>
+                                <td colspan="10" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="triva" name="triva">

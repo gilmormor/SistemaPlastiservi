@@ -172,7 +172,7 @@ class DespachoSolController extends Controller
                 }
             }
         }
-        return redirect('despachosol')->with('mensaje','Nota de Venta creada con exito.');
+        return redirect('despachosol/index')->with('mensaje','Nota de Venta creada con exito.');
     }
 
     /**
@@ -565,7 +565,7 @@ function reporte1($request){
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td id='rut$i' name='rut$i'>$rut</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
-                <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</a></td>
+                <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
                 <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
                 <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>

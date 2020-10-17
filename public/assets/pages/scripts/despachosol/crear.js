@@ -613,6 +613,8 @@ function llenarCantSol(i){
 $("#marcarTodo").change(function() {
 	nFilas = $("#tabla-data tr").length - 4;
 	estaSeleccionado = $("#marcarTodo").is(":checked");
+	aux_total = 0;
+	$("#cantsolTotal").val('');
 	for (var i = 1; i <= nFilas; i++) {
 		saldo = $("#saldocantOrigF" + i).html();
 		if (estaSeleccionado){
@@ -620,11 +622,17 @@ $("#marcarTodo").change(function() {
 			$("#cantsol" + i).val($.trim(saldo));
 			$("#cantsoldesp" + i).val($.trim(saldo));
 			$("#saldocantF" + i).html("0")
+			aux_total = aux_total + parseInt($.trim(saldo));
 		}else{
 			$("#llenarCantSol" + i).prop("checked", false);
 			$("#cantsol" + i).val('');
 			$("#cantsoldesp" + i).val('');
 			$("#saldocantF" + i).html($("#saldocantOrigF" + i).html())
 		}	
+	}
+	if(aux_total == 0){
+		$("#cantsolTotal").val('');
+	}else{
+		$("#cantsolTotal").val(aux_total);
 	}
 });
