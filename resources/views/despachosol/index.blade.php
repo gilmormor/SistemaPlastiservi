@@ -17,19 +17,20 @@ Solicitud de despacho
                 <h3 class="box-title">Solicitud de Despacho</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('listarnv_despachosol')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo registro
+                        <i class="fa fa-fw fa-plus-circle"></i> Nueva Solicitud Despacho
                     </a>
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                <table id='tabla-data' name='tabla-data' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+                <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
                             <th>Descripción</th>
                             <th>OC</th>
-                            <th>NV</th>
-                            <th>NVK</th>
+                            <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                            <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
@@ -44,12 +45,12 @@ Solicitud de despacho
                                 </a>
                             </td>
                             <td>
-                                <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->notaventa_id}},1)' title='Nota de venta' data-toggle='tooltip'>
+                                <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV({{$data->notaventa_id}},1)'>
                                     <i class='fa fa-fw fa-file-pdf-o'></i>
                                 </a>
                             </td>
                             <td>
-                                <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},2)' title='Nota de venta Kilos' data-toggle='tooltip'>
+                                <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->id}},2)'>
                                     <i class='fa fa-fw fa-file-pdf-o'></i>
                                 </a>
                             </td>
