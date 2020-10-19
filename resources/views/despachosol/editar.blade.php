@@ -27,13 +27,11 @@
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Editar Solicitud Despacho Nro.: {{$data->id}}</h3>
-                @if (session('aux_aproNV')=='0')
                 <div class="box-tools pull-right">
                     <a href="{{route('despachosol')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>
-                @endif                    
             </div>
             <form action="{{route('actualizar_despachosol', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off"  enctype="multipart/form-data">
                 @csrf @method("put")

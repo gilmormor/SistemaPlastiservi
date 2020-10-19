@@ -46,7 +46,7 @@ Solicitud de despacho
                             </td>
                             <td>
                                 <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV({{$data->notaventa_id}},1)'>
-                                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                                    <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
                                 </a>
                             </td>
                             <td>

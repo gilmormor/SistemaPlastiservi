@@ -251,11 +251,11 @@ class DespachoSolController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * ValidarDespachoSol
+     * 
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function guardar(Request $request)
+    public function guardar(ValidarDespachoSol $request)
     {
         can('guardar-solicitud-despacho');
         
@@ -433,9 +433,40 @@ class DespachoSolController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function actualizar(ValidarDespachoSol $request, $id)
     {
-        //
+        can('guardar-solicitud-despacho');
+        $dateInput = explode('/',$request->plazoentrega);
+        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $dateInput = explode('/',$request->fechaestdesp);
+        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $despachosol = DespachoSol::findOrFail($id);
+        $despachosol->comunaentrega_id = $request->comunaentrega_id;
+        $despachosol->plazoentrega = $request->plazoentrega;
+        $despachosol->lugarentrega = $request->lugarentrega;
+        $despachosol->contacto = $request->contacto;
+        $despachosol->contactoemail = $request->contactoemail;
+        $despachosol->contactotelf = $request->contactotelf;
+        $despachosol->observacion = $request->observacion;
+        $despachosol->fechaestdesp = $request->fechaestdesp;
+        if($despachosol->save()){
+            $cont_producto = count($request->producto_id);
+            if($cont_producto>0){
+                for ($i=0; $i < $cont_producto ; $i++){
+                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                        $despachosol = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
+                        $despachosol->cantsoldesp = $request->cantsol[$i];
+                        if($despachosol->save()){
+                            $notaventadetalle = NotaVentaDetalle::findOrFail($despachosol->notaventadetalle_id);
+                            $notaventadetalle->cantsoldesp = $request->cantsol[$i];
+                            $notaventadetalle->save();
+                            //$despacho_id = $despachosol->id;    
+                        }
+                    }
+                }
+            }
+        }
+        return redirect('despachosol/index')->with('mensaje','Nota de Venta creada con exito.');
     }
 
     /**

@@ -317,7 +317,7 @@
                             <th>Desc</th>
                             <th style="display:none;">DescPorc</th>
                             <th style="display:none;">DescVal</th>
-                            <th>P Unit</th>
+                            <th>PUnit</th>
                             <th style="display:none;">Precio Neto Unit</th>
                             <th>V Kilo</th>
                             <th style="display:none;">Precio X Kilo</th>
