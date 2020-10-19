@@ -80,6 +80,7 @@ class ClienteBloqueadoController extends Controller
     public function guardar(ValidarClienteBloqueado $request)
     {
         can('guardar-cliente-bloqueado');
+        $request->request->add(['usuario_id' => auth()->id()]);
         ClienteBloqueado::create($request->all());
         return redirect('clientebloqueado')->with('mensaje','Creado con exito');
     }
