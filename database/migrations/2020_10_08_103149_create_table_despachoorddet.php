@@ -21,7 +21,6 @@ class CreateTableDespachoorddet extends Migration
             $table->foreign('despachosoldet_id','fk_despachoorddet_despachosoldet')->references('id')->on('despachosoldet')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('notaventadetalle_id');
             $table->foreign('notaventadetalle_id','fk_despachoorddet_notaventadetalle')->references('id')->on('notaventadetalle')->onDelete('restrict')->onUpdate('restrict');
-            $table->string('obs',250)->comment('Observación.')->nullable();
             $table->float('cantdesp',10,2)->comment('Cantidad despacho.')->nullable();
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();
