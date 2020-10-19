@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\ClienteBloqueado;
 use App\Models\Despacho;
 use App\Models\DespachoOrd;
 use App\Models\NoConformidad;
@@ -81,5 +82,11 @@ class User extends Authenticatable
         return $this->hasMany(DespachoOrd::class);
     }
 
+    //RELACION DE UNO A MUCHOS ClienteBloqueado
+    public function clientebloqueados()
+    {
+        return $this->hasMany(ClienteBloqueado::class);
+    }
+    
 
 }

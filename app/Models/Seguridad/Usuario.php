@@ -104,5 +104,12 @@ class Usuario extends Authenticatable
     {
         return $this->hasMany(DespachoOrd::class);
     }
+
+    
+    //RELACION DE UNO A MUCHOS ClienteBloqueado
+    public function clientebloqueados()
+    {
+        return $this->hasMany(ClienteBloqueado::class);
+    }
     
 }

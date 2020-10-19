@@ -19,6 +19,8 @@ class CrearTablaClientebloqueado extends Migration
             $table->string('descripcion',300);
             $table->unsignedBigInteger('cliente_id');
             $table->foreign('cliente_id','fk_clientebloqueado_cliente')->references('id')->on('cliente')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('usuario_id')->comment('Usuario que creo el registro');
+            $table->foreign('usuario_id','fk_clientebloqueado_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
             $table->timestamps();

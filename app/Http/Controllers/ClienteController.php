@@ -344,7 +344,7 @@ class ClienteController extends Controller
 
     public function buscarCli(Request $request){
         if($request->ajax()){
-            //dd($request);
+            dd($request);
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
             $clientedirecs = Cliente::where('rut', $request->rut)

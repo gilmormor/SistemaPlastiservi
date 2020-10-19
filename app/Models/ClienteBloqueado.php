@@ -19,4 +19,17 @@ class ClienteBloqueado extends Model
     {
         return $this->belongsTo(Cliente::class);
     }
+
+    //Relacion inversa a Usuario
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class);
+    }
+
+    //Relacion inversa a User
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
 }
