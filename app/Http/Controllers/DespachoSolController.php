@@ -10,6 +10,7 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoSol;
+use App\Models\DespachoSolAnul;
 use App\Models\DespachoSolDet;
 use App\Models\Empresa;
 use App\Models\FormaPago;
@@ -449,16 +450,17 @@ class DespachoSolController extends Controller
         $despachosol->contactotelf = $request->contactotelf;
         $despachosol->observacion = $request->observacion;
         $despachosol->fechaestdesp = $request->fechaestdesp;
+        //dd($request);
         if($despachosol->save()){
             $cont_producto = count($request->producto_id);
             if($cont_producto>0){
                 for ($i=0; $i < $cont_producto ; $i++){
                     if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
                         $despachosol = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
-                        $despachosol->cantsoldesp = $request->cantsol[$i];
+                        $despachosol->cantsoldesp = $request->cantsoldesp[$i];
                         if($despachosol->save()){
                             $notaventadetalle = NotaVentaDetalle::findOrFail($despachosol->notaventadetalle_id);
-                            $notaventadetalle->cantsoldesp = $request->cantsol[$i];
+                            $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
                             $notaventadetalle->save();
                             //$despacho_id = $despachosol->id;    
                         }
@@ -483,6 +485,30 @@ class DespachoSolController extends Controller
     public function reporte(Request $request){
         $respuesta = reporte1($request);
         return $respuesta;
+    }
+
+    public function anular(Request $request)
+    {
+        if ($request->ajax()) {
+            $despachosolanul = new DespachoSolAnul();
+            $despachosolanul->despachosol_id = $request->id;
+            $despachosolanul->usuario_id = auth()->id();
+            if ($despachosolanul->save()) {
+                $despachosol = DespachoSol::findOrFail($request->id);
+                $despachosoldets = $despachosol->despachosoldets;
+                foreach ($despachosoldets as $despachosoldet){
+                    $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
+                    $notaventadetalle->cantsoldesp = $notaventadetalle->cantsoldesp - $despachosoldet->cantsoldesp;
+                    $notaventadetalle->save();
+                }
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+
     }
 }
 

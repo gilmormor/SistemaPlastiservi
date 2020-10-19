@@ -6,6 +6,7 @@ Solicitud de despacho
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/despachosol/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -35,7 +36,9 @@ Solicitud de despacho
                         </tr>
                     </thead>
                     <tbody>
+                        <?php $aux_nfila = 0; ?>
                         @foreach ($datas as $data)
+                        <?php $aux_nfila++; ?>
                         <tr>
                             <td>{{$data->id}}</td>
                             <td>{{$data->notaventa->cliente->razonsocial}}</td>
@@ -54,16 +57,25 @@ Solicitud de despacho
                                     <i class='fa fa-fw fa-file-pdf-o'></i>
                                 </a>
                             </td>
-                            <td>
-                                <a href="{{route('editar_despachosol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                    <i class="fa fa-fw fa-pencil"></i>
-                                </a>
-                                <form action="{{route('eliminar_despachosol', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
-                                    @csrf @method("delete")
-                                    <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                        <i class="fa fa-fw fa-trash text-danger"></i>
-                                    </button>
-                                </form>
+                            <td id="accion{{$aux_nfila}}">
+                                @if ($data->despachosolanul)
+                                    <small class="label pull-left bg-red">Anulado</small>
+                                @else
+                                    <a href="{{route('editar_despachosol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+                                        <i class="fa fa-fw fa-pencil"></i>
+                                    </a>
+                                    <a id='btnanularnv$i' name='btnanularnv$i' class='btn-accion-tabla btn-sm' onclick='anular({{$aux_nfila}},{{$data->id}})' title='Anular Solicitud Despacho' data-toggle='tooltip'>
+                                        <span class='glyphicon glyphicon-remove text-danger'></span>
+                                    </a>
+                                    <!--
+                                    <form action="{{route('eliminar_despachosol', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
+                                        @csrf @method("delete")
+                                        <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
+                                            <i class="fa fa-fw fa-trash text-danger"></i>
+                                        </button>
+                                    </form>
+                                    -->
+                                @endif
                             </td>
                         </tr>
                         @endforeach

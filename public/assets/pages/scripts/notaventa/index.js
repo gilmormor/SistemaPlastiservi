@@ -92,7 +92,6 @@ function aprobarnv(i,id,aprobstatus){
 	});
 }
 function anularnv(i,id){
-	event.preventDefault();
 	//alert($('input[name=_token]').val());
 	var data = {
 		id: id,

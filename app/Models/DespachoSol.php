@@ -54,5 +54,10 @@ class DespachoSol extends Model
     {
         return $this->belongsTo(Comuna::class,'comunaentrega_id');
     }
+    //RELACION DE UNO A MUCHOS DespachoSolAnul
+    public function despachosolanul()
+    {
+        return $this->hasOne(DespachoSolAnul::class,'despachosol_id');
+    }
 
 }

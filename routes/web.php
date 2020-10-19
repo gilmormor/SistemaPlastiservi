@@ -466,3 +466,5 @@ Route::get('despachosol/{id}/editar', 'DespachoSolController@editar')->name('edi
 Route::put('despachosol/{id}', 'DespachoSolController@actualizar')->name('actualizar_despachosol');
 Route::delete('despachosol/{id}', 'DespachoSolController@eliminar')->name('eliminar_despachosol');
 Route::post('despachosol/reporte', 'DespachoSolController@reporte')->name('reporte_despachosol');
+Route::post('despachosol/anular/{id}', 'DespachoSolController@anular')->name('anular_despachosol');
+
