@@ -38,6 +38,12 @@ class DespachoSol extends Model
         return $this->belongsTo(NotaVenta::class);
     }
 
+    //RELACION DE UNO A MUCHOS DespachoSolOrd
+    public function despachoords()
+    {
+        return $this->hasMany(DespachoOrd::class,'despachosol_id');
+    }
+    
     //Relacion inversa a Usuario
     public function usuario()
     {

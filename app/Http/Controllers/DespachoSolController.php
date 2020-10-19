@@ -490,25 +490,28 @@ class DespachoSolController extends Controller
     public function anular(Request $request)
     {
         if ($request->ajax()) {
-            $despachosolanul = new DespachoSolAnul();
-            $despachosolanul->despachosol_id = $request->id;
-            $despachosolanul->usuario_id = auth()->id();
-            if ($despachosolanul->save()) {
-                $despachosol = DespachoSol::findOrFail($request->id);
-                $despachosoldets = $despachosol->despachosoldets;
-                foreach ($despachosoldets as $despachosoldet){
-                    $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
-                    $notaventadetalle->cantsoldesp = $notaventadetalle->cantsoldesp - $despachosoldet->cantsoldesp;
-                    $notaventadetalle->save();
+            $despachosol = DespachoSol::findOrFail($request->id);
+            if($despachosol->despachoords->count() == 0){
+                $despachosolanul = new DespachoSolAnul();
+                $despachosolanul->despachosol_id = $request->id;
+                $despachosolanul->usuario_id = auth()->id();
+                if ($despachosolanul->save()) {
+                    $despachosoldets = $despachosol->despachosoldets;
+                    foreach ($despachosoldets as $despachosoldet){
+                        $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
+                        $notaventadetalle->cantsoldesp = $notaventadetalle->cantsoldesp - $despachosoldet->cantsoldesp;
+                        $notaventadetalle->save();
+                    }
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
                 }
-                return response()->json(['mensaje' => 'ok']);
-            } else {
-                return response()->json(['mensaje' => 'ng']);
+            }else{
+                return response()->json(['mensaje' => 'hijo']);
             }
         } else {
             abort(404);
         }
-
     }
 }
 

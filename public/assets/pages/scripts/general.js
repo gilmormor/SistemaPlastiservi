@@ -766,6 +766,10 @@ function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
 }
 
 
+$("#myModalpdf").on("hidden.bs.modal", function () {
+	$('#contpdf').attr('src', 'about:blank');
+});
+
 $("#precionetoM").blur(function(event){
 	if($("#pesoM").val()==0){
 		aux_preciokilo = $("#precionetoM").val();

@@ -6,7 +6,7 @@ Cotización
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/despachosol/index.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/despachosol/listarnotaventa.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
