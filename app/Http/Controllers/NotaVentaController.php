@@ -194,7 +194,7 @@ class NotaVentaController extends Controller
 
     public function crearcot($id)
     {
-        can('editar-notaventa');
+        can('crear-notaventa');
         $data = Cotizacion::findOrFail($id);
         //dd($data);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;

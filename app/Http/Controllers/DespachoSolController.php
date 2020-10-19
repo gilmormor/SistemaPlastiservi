@@ -133,68 +133,9 @@ class DespachoSolController extends Controller
     {
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * ValidarDespachoSol
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function guardar(Request $request)
-    {
-        can('guardar-solicitud-despacho');
-        
-        $hoy = date("Y-m-d H:i:s");
-        $request->request->add(['fecha' => $hoy]);
-        $request->request->add(['usuario_id' => auth()->id()]);
-        $dateInput = explode('/',$request->plazoentrega);
-        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-        $dateInput = explode('/',$request->fechaestdesp);
-        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-        $comuna = Comuna::findOrFail($request->comuna_id);
-        $request->request->add(['provincia_id' => $comuna->provincia_id]);
-        $request->request->add(['region_id' => $comuna->provincia->region_id]);
-        $despachosol = DespachoSol::create($request->all());
-        $despachosolid = $despachosol->id;
-        $cont_producto = count($request->producto_id);
-        if($cont_producto>0){
-            for ($i=0; $i < $cont_producto ; $i++){
-                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                    $despachosol = new DespachoSolDet();
-                    $despachosol->despachosol_id = $despachosolid;
-                    $despachosol->notaventadetalle_id = $request->NVdet_id[$i];
-                    $despachosol->cantsoldesp = $request->cantsoldesp[$i];
-                    if($despachosol->save()){
-                        $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
-                        $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
-                        $notaventadetalle->save();
-                        //$despacho_id = $despachosol->id;    
-                    }
-                }
-            }
-        }
-        return redirect('despachosol')->with('mensaje','Nota de Venta creada con exito.');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function crearsol($id)
     {
-        //can('editar-notaventa');
+        can('crear-solicitud-despacho');
         $data = NotaVenta::findOrFail($id);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
         $detalles = $data->notaventadetalles()->get();
@@ -309,15 +250,223 @@ class DespachoSolController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function guardar(ValidarDespachoSol $request)
+    {
+        can('guardar-solicitud-despacho');
+        
+        $hoy = date("Y-m-d H:i:s");
+        $request->request->add(['fecha' => $hoy]);
+        $request->request->add(['usuario_id' => auth()->id()]);
+        $dateInput = explode('/',$request->plazoentrega);
+        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $dateInput = explode('/',$request->fechaestdesp);
+        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $comuna = Comuna::findOrFail($request->comuna_id);
+        $request->request->add(['provincia_id' => $comuna->provincia_id]);
+        $request->request->add(['region_id' => $comuna->provincia->region_id]);
+        $despachosol = DespachoSol::create($request->all());
+        $despachosolid = $despachosol->id;
+        $cont_producto = count($request->producto_id);
+        if($cont_producto>0){
+            for ($i=0; $i < $cont_producto ; $i++){
+                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                    $despachosol = new DespachoSolDet();
+                    $despachosol->despachosol_id = $despachosolid;
+                    $despachosol->notaventadetalle_id = $request->NVdet_id[$i];
+                    $despachosol->cantsoldesp = $request->cantsoldesp[$i];
+                    if($despachosol->save()){
+                        $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
+                        $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                        $notaventadetalle->save();
+                        //$despacho_id = $despachosol->id;    
+                    }
+                }
+            }
+        }
+        return redirect('despachosol/index')->with('mensaje','Nota de Venta creada con exito.');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function editar($id)
+    {
+        can('editar-solicitud-despacho');
+        $data = DespachoSol::findOrFail($id);
+        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
+        $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
+        $detalles = $data->despachosoldets()->get();
+        $vendedor_id=$data->notaventa->vendedor_id;
+        $clienteselec = $data->notaventa->cliente()->get();
+        //session(['aux_aprocot' => '0']);
+        //dd($clienteselec[0]->rut);
+
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        //dd($sucurArray);
+        //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
+        //******************* */
+        $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
+        ->join('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
+        ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+        ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->select([
+                    'cliente.id as cliente_id',
+                    'cliente.razonsocial',
+                    'cliente.telefono',
+                    'cliente.email',
+                    'cliente.regionp_id',
+                    'cliente.provinciap_id',
+                    'cliente.comunap_id',
+                    'cliente.contactonombre',
+                    'cliente.direccion',
+                    'clientedirec.id',
+                    'clientedirec.direcciondetalle'
+                ])->get();
+        //dd($clientedirecs);
+        $clienteDirec = $data->notaventa->clientedirec()->get();
+        $fecha = date("d/m/Y", strtotime($data->fecha));
+        $formapagos = FormaPago::orderBy('id')->get();
+        $plazopagos = PlazoPago::orderBy('id')->get();
+        $vendedores = Vendedor::orderBy('id')->get();
+        $comunas = Comuna::orderBy('id')->get();
+
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
+        //******************* */
+        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
+        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
+        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
+        ->select([
+                'producto.id',
+                'producto.nombre',
+                'claseprod.cla_nombre',
+                'producto.codintprod',
+                'producto.diamextmm',
+                'producto.espesor',
+                'producto.long',
+                'producto.peso',
+                'producto.tipounion',
+                'producto.precioneto',
+                'categoriaprod.precio',
+                'categoriaprodsuc.sucursal_id'
+                ])
+                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+                ->get();
+        //****************** */
+        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        //* Filtro solos los clientes que esten asignados a la sucursal */
+        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
+        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->pluck('cliente_sucursal.cliente_id')->toArray())
+        ->whereIn('cliente.id',$clientevendedorArray)
+        ->get();
+
+        //dd($clientes);
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
+
+        $empresa = Empresa::findOrFail(1);
+        $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $giros = Giro::orderBy('id')->get();
+        $aux_sta=2;
+        $aux_statusPant = 0;
+
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+        }
+        //dd($clientedirecs);
+        return view('despachosol.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
+  
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function actualizar(ValidarDespachoSol $request, $id)
     {
-        //
+        can('guardar-solicitud-despacho');
+        $dateInput = explode('/',$request->plazoentrega);
+        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $dateInput = explode('/',$request->fechaestdesp);
+        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $despachosol = DespachoSol::findOrFail($id);
+        $despachosol->comunaentrega_id = $request->comunaentrega_id;
+        $despachosol->plazoentrega = $request->plazoentrega;
+        $despachosol->lugarentrega = $request->lugarentrega;
+        $despachosol->contacto = $request->contacto;
+        $despachosol->contactoemail = $request->contactoemail;
+        $despachosol->contactotelf = $request->contactotelf;
+        $despachosol->observacion = $request->observacion;
+        $despachosol->fechaestdesp = $request->fechaestdesp;
+        if($despachosol->save()){
+            $cont_producto = count($request->producto_id);
+            if($cont_producto>0){
+                for ($i=0; $i < $cont_producto ; $i++){
+                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                        $despachosol = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
+                        $despachosol->cantsoldesp = $request->cantsol[$i];
+                        if($despachosol->save()){
+                            $notaventadetalle = NotaVentaDetalle::findOrFail($despachosol->notaventadetalle_id);
+                            $notaventadetalle->cantsoldesp = $request->cantsol[$i];
+                            $notaventadetalle->save();
+                            //$despacho_id = $despachosol->id;    
+                        }
+                    }
+                }
+            }
+        }
+        return redirect('despachosol/index')->with('mensaje','Nota de Venta creada con exito.');
     }
 
     /**
@@ -565,19 +714,19 @@ function reporte1($request){
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td id='rut$i' name='rut$i'>$rut</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
-                <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</a></td>
+                <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
                 <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
                 <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                 <td>
                     <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
-                    <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->id,1)'>
                         <i class='fa fa-fw fa-file-pdf-o'></i>
                     </a>
                 </td>
                 <td>
                     <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2']) . "' class='btn-accion-tabla tooltipsC' title='Precio x Kg' target='_blank'>-->
-                    <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,2)' title='Nota de venta' data-toggle='tooltip'>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV($data->id,2)'>
                         <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                     </a>
                 </td>

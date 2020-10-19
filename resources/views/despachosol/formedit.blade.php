@@ -1,4 +1,5 @@
-<input type="hidden" name="notaventa_id" id="notaventa_id" value="{{$data->id}}">
+<input type="hidden" name="id" id="id" value="{{$data->id}}">
+<input type="hidden" name="notaventa_id" id="notaventa_id" value="{{$data->notaventa_id}}">
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
 <input type="hidden" name="aux_iva" id="aux_iva" value="{{$empresa->iva}}">
@@ -51,8 +52,8 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-1">
-                            <label for="notaventa_id" class="control-label requerido" data-toggle='tooltip' title="Id Nota Venta">NotVenta</label>
-                            <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{$data->id}}" required disabled/>
+                            <label for="id" class="control-label requerido" data-toggle='tooltip' title="Id Solicitud Despacho">Id</label>
+                            <input type="text" name="id" id="id" class="form-control" value="{{$data->id}}" required disabled/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
@@ -75,11 +76,11 @@
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="telefono" class="control-label requerido">Telefono</label>
-                            <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', $data->telefono ?? '')}}" required readonly/>
+                            <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', $data->notaventa->telefono ?? '')}}" required readonly/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="email" class="control-label requerido">Email</label>
-                            <input type="text" name="email" id="email" class="form-control" value="{{old('email', $data->email ?? '')}}" required readonly/>
+                            <input type="text" name="email" id="email" class="form-control" value="{{old('email', $data->notaventa->email ?? '')}}" required readonly/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="comuna_idD" class="control-label requerido">Comuna</label>
@@ -88,7 +89,7 @@
                                 @foreach($comunas as $comuna)
                                     <option
                                         value="{{$comuna->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comuna_id)
+                                        @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->notaventa->comuna_id)
                                             {{'selected'}}
                                         @endif
                                         >
@@ -111,7 +112,7 @@
                                         @if (($aux_sta==1) and ($vendedor_id==$vendedor->id))
                                             {{'selected'}}
                                         @endif
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->vendedor_id==$vendedor->id))
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->notaventa->vendedor_id==$vendedor->id))
                                             {{'selected'}}
                                         @endif
                                         >
@@ -127,7 +128,7 @@
                                 @foreach($plazopagos as $plazopago)
                                     <option
                                         value="{{$plazopago->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->plazopago_id==$plazopago->id))
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->notaventa->plazopago_id==$plazopago->id))
                                             {{'selected'}}
                                         @endif
                                         >
@@ -144,7 +145,7 @@
                                 @foreach($formapagos as $formapago)
                                     <option
                                         value="{{$formapago->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->formapago_id==$formapago->id))
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->notaventa->formapago_id==$formapago->id))
                                             {{'selected'}}
                                         @endif
                                         >
@@ -163,7 +164,7 @@
                                 @foreach($giros as $giro)
                                     <option
                                         value="{{$giro->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->giro_id==$giro->id))
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->notaventa->giro_id==$giro->id))
                                             {{'selected'}}
                                         @endif
                                         >
@@ -180,7 +181,7 @@
                                 @foreach($tipoentregas as $tipoentrega)
                                     <option
                                         value="{{$tipoentrega->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->tipoentrega_id==$tipoentrega->id))
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->notaventa->tipoentrega_id==$tipoentrega->id))
                                             {{'selected'}}
                                         @endif
                                         >
@@ -296,7 +297,7 @@
                             <th class='tooltipsC' title='Marcar todo'>
                                 <div class='checkbox'>
                                     <label style='font-size: 1.2em'>
-                                        <input type='checkbox' id='marcarTodo' name='marcarTodo' onclick='visto($data->id,$i)'>
+                                        <input type='checkbox' id='marcarTodo' name='marcarTodo' onclick='visto($data->id,$i)' checked readonly disabled>
                                         <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                                     </label>
                                 </div>
@@ -331,9 +332,15 @@
                     </thead>
                     <tbody>
                         @if ($aux_sta==2 or $aux_sta==3)
-                            <?php $aux_nfila = 0; $i = 0;?>
+                            <?php 
+                                $aux_nfila = 0; $i = 0;
+                                $cantsolTotal = 0;
+                            ?>
                             @foreach($detalles as $detalle)
-                                <?php $aux_nfila++; ?>
+                                <?php 
+                                    $aux_nfila++;
+                                    $cantsolTotal = $cantsolTotal + $detalle->cantsoldesp;
+                                ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
                                         @if ($aux_sta==2)
@@ -351,32 +358,32 @@
                                     </td>
                                     <td style="display:none;">
                                         @if ($aux_sta==2)
-                                            <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->cotizaciondetalle_id}}" style="display:none;"/>
+                                            <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->cotizaciondetalle_id}}" style="display:none;"/>
                                         @else
                                             <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
                                         @endif
                                     </td>
                                     <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}" style="display:none;">
-                                        <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$detalle->producto_id}}" style="display:none;"/>
+                                        <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="codintprod[]" id="codintprod{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->codintprod}}" style="display:none;"/>
+                                        <input type="text" name="codintprod[]" id="codintprod{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->codintprod}}" style="display:none;"/>
                                     </td>
                                     <td style="text-align:right;display:none;">
                                         @if ($aux_sta==2)
-                                            <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->cant}}" style="display:none;"/>
+                                            <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->cant}}" style="display:none;"/>
                                         @else 
-                                            <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->cant - $detalle->cantusada}}" style="display:none;"/>
+                                            <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->cant - $detalle->notaventadetalle->cantusada}}" style="display:none;"/>
                                         @endif
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                        {{$detalle->producto->nombre}}
+                                        {{$detalle->notaventadetalle->producto->nombre}}
                                     </td>
                                     <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
                                         @if ($aux_sta==2)
-                                            {{$detalle->cant}}
+                                            {{$detalle->notaventadetalle->cant}}
                                         @else 
-                                            {{$detalle->cant - $detalle->cantusada}}
+                                            {{$detalle->notaventadetalle->cant - $detalle->notaventadetalle->cantusada}}
                                         @endif
                                     </td>
                                     <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:right">
@@ -388,106 +395,106 @@
                                     </td>
                                     -->
                                     <td name="saldocantOrigF{{$aux_nfila}}" id="saldocantOrigF{{$aux_nfila}}" style="text-align:right;display:none;">
-                                        {{$detalle->cant - $detalle->cantsoldesp}}
+                                        {{$detalle->notaventadetalle->cant - $detalle->cantsoldesp}}
                                     </td>
                                     <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->cant - $detalle->cantsoldesp}}
+                                        {{$detalle->notaventadetalle->cant - $detalle->cantsoldesp}}
                                     </td>
                                     <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
                                         <div class='checkbox'>
                                             <label style='font-size: 1.2em'>
-                                                <input type="checkbox" class="checkllenarCantSol" id="llenarCantSol{{$aux_nfila}}" name="llenarCantSol{{$aux_nfila}}" onclick="llenarCantSol({{$aux_nfila}})" readonly disabled>
+                                                <input type="checkbox" class="checkllenarCantSol" id="llenarCantSol{{$aux_nfila}}" name="llenarCantSol{{$aux_nfila}}" onclick="llenarCantSol({{$aux_nfila}})" readonly disabled checked>
                                                 <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                                             </label>
                                         </div>
                                     </td>
                                     <td name="cantsolF{{$aux_nfila}}" id="cantsolF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control" onkeyup="actSaldo({{$detalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})" style="text-align:right;" readonly disabled/>
+                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control" onkeyup="actSaldo({{$detalle->notaventadetalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})" value="{{$detalle->cantsoldesp}}" style="text-align:right;" readonly disabled/>
                                     </td>
                                     <td name="cantsoldespF{{$aux_nfila}}" id="cantsoldespF{{$aux_nfila}}" style="text-align:right;display:none;">
-                                        <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" style="text-align:right;"/>
+                                        <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantsoldesp}}" style="text-align:right;"/>
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="4" style="display:none;"/>
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
-                                        {{$detalle->producto->claseprod->cla_nombre}}
+                                        {{$detalle->notaventadetalle->producto->claseprod->cla_nombre}}
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                        @if ($detalle->producto->categoriaprod->unidadmedida_id==3)
-                                            {{$detalle->producto->diamextpg}}
+                                        @if ($detalle->notaventadetalle->producto->categoriaprod->unidadmedida_id==3)
+                                            {{$detalle->notaventadetalle->producto->diamextpg}}
                                         @else
-                                            {{$detalle->producto->diamextmm}}
+                                            {{$detalle->notaventadetalle->producto->diamextmm}}
                                         @endif
 
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->diamextmm}}" style="display:none;"/>
+                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->diamextmm}}" style="display:none;"/>
                                     </td>
                                     <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->producto->espesor}}
+                                        {{$detalle->notaventadetalle->producto->espesor}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->espesor}}" style="display:none;"/>
+                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->espesor}}" style="display:none;"/>
                                     </td>
                                     <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->producto->long}}
+                                        {{$detalle->notaventadetalle->producto->long}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->long}}" style="display:none;"/>
+                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->long}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
-                                        {{$detalle->producto->peso}}
+                                        {{$detalle->notaventadetalle->producto->peso}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->peso}}" style="display:none;"/>
+                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->peso}}" style="display:none;"/>
                                     </td>
                                     <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
-                                        {{$detalle->producto->tipounion}}
+                                        {{$detalle->notaventadetalle->producto->tipounion}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->tipounion}}" style="display:none;"/>
+                                        <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->tipounion}}" style="display:none;"/>
                                     </td>
                                     <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right">
-                                        <?php $aux_descPorc = $detalle->descuento * 100; ?>
+                                        <?php $aux_descPorc = $detalle->notaventadetalle->descuento * 100; ?>
                                         {{$aux_descPorc}}%
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="descuento[]" id="descuento{{$aux_nfila}}" class="form-control" value="{{$detalle->descuento}}" style="display:none;"/>
+                                        <input type="text" name="descuento[]" id="descuento{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->descuento}}" style="display:none;"/>
                                     </td>
                                     <td style="text-align:right;display:none;">
-                                        <?php $aux_descVal = 1 - $detalle->descuento; ?>
+                                        <?php $aux_descVal = 1 - $detalle->notaventadetalle->descuento; ?>
                                         <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                     </td>
                                     <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
-                                        {{number_format($detalle->preciounit, 2, '.', ',')}}
+                                        {{number_format($detalle->notaventadetalle->preciounit, 2, '.', ',')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$detalle->preciounit}}" style="display:none;"/>
+                                        <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->preciounit}}" style="display:none;"/>
                                     </td>
                                     <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
-                                        {{number_format($detalle->precioxkilo, 2, '.', ',')}}
+                                        {{number_format($detalle->notaventadetalle->precioxkilo, 2, '.', ',')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$detalle->precioxkilo}}" style="display:none;"/>
+                                        <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->precioxkilo}}" style="display:none;"/>
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$detalle->precioxkiloreal}}" style="display:none;"/>
+                                        <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->precioxkiloreal}}" style="display:none;"/>
                                     </td>
                                     <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
-                                        {{number_format($detalle->totalkilos, 2, '.', ',')}}
+                                        {{number_format($detalle->notaventadetalle->totalkilos, 2, '.', ',')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$detalle->totalkilos}}" style="display:none;"/>
+                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->totalkilos}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
-                                        {{number_format($detalle->subtotal, 2, '.', ',')}}
+                                        {{number_format($detalle->notaventadetalle->subtotal, 2, '.', ',')}}
                                     </td>
                                     <td class="subtotalCF" style="text-align:right;display:none;"> 
-                                        <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$detalle->subtotal}}" style="display:none;"/>
+                                        <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->subtotal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalSFTD{{$aux_nfila}}" id="subtotalSFTD{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
-                                        {{$detalle->subtotal}}
+                                        {{$detalle->notaventadetalle->subtotal}}
                                     </td>
                                 </tr>
                                 <?php $i++;?>
@@ -498,7 +505,7 @@
                                 </td>
                                 <td style="text-align:right">
                                     <div class="form-group col-xs-12 col-sm-12">
-                                        <input type="text" name="cantsolTotal" id="cantsolTotal" class="form-control" style="text-align:right;" readonly required/>
+                                        <input type="text" name="cantsolTotal" id="cantsolTotal" value={{$cantsolTotal}} class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>
                                 <td colspan="10" style="text-align:right"><b>Neto</b></td>

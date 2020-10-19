@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Seguridad\Usuario;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -27,7 +29,7 @@ class DespachoSol extends Model
     //RELACION DE UNO A MUCHOS DespachoSolDet
     public function despachosoldets()
     {
-        return $this->hasMany(DespachoSolDet::class);
+        return $this->hasMany(DespachoSolDet::class,'despachosol_id');
     }
 
     //Relacion inversa a NotaVenta

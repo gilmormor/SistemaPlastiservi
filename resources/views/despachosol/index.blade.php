@@ -4,6 +4,7 @@ Solicitud de despacho
 @endsection
 
 @section("scripts")
+    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -16,16 +17,20 @@ Solicitud de despacho
                 <h3 class="box-title">Solicitud de Despacho</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('listarnv_despachosol')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo registro
+                        <i class="fa fa-fw fa-plus-circle"></i> Nueva Solicitud Despacho
                     </a>
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                <table id='tabla-data' name='tabla-data' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+                <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
                             <th>Descripción</th>
+                            <th>OC</th>
+                            <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                            <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
@@ -33,7 +38,22 @@ Solicitud de despacho
                         @foreach ($datas as $data)
                         <tr>
                             <td>{{$data->id}}</td>
-                            <td>{{$data->descripcion}}</td>
+                            <td>{{$data->notaventa->cliente->razonsocial}}</td>
+                            <td>
+                                <a class='btn-accion-tabla btn-sm' onclick='verpdf2("{{$data->notaventa->oc_file}}",2)'>
+                                    {{$data->notaventa->oc_id}}
+                                </a>
+                            </td>
+                            <td>
+                                <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV({{$data->notaventa_id}},1)'>
+                                    <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
+                                </a>
+                            </td>
+                            <td>
+                                <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->id}},2)'>
+                                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                                </a>
+                            </td>
                             <td>
                                 <a href="{{route('editar_despachosol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
                                     <i class="fa fa-fw fa-pencil"></i>
@@ -54,4 +74,5 @@ Solicitud de despacho
         </div>
     </div>
 </div>
+@include('generales.modalpdf')
 @endsection
