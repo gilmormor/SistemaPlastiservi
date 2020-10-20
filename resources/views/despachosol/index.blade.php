@@ -29,7 +29,8 @@ Solicitud de despacho
                         <tr>
                             <th class="width70">ID</th>
                             <th>Descripción</th>
-                            <th>OC</th>
+                            <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
+                            <th class='tooltipsC' title='Orden de Compra'>OC</th>
                             <th class='tooltipsC' title='Nota de Venta'>NV</th>
                             <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                             <th class="width70"></th>
@@ -42,6 +43,11 @@ Solicitud de despacho
                         <tr>
                             <td>{{$data->id}}</td>
                             <td>{{$data->notaventa->cliente->razonsocial}}</td>
+                            <td>
+                                <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->id}},1)'>
+                                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                                </a>
+                            </td>
                             <td>
                                 <a class='btn-accion-tabla btn-sm' onclick='verpdf2("{{$data->notaventa->oc_file}}",2)'>
                                     {{$data->notaventa->oc_id}}

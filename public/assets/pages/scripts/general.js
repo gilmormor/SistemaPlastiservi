@@ -759,12 +759,15 @@ function llenarComuna(obj,i){
 
 
 function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
-	$('#contpdf').attr('src', 'about:blank');
-	$('#contpdf').attr('src', '');
 	$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 }
 
+
+function genpdfSD(id,stareport){ //GENERAR PDF Solicitud de Despacho
+	$('#contpdf').attr('src', '/despachosol/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+}
 
 $("#myModalpdf").on("hidden.bs.modal", function () {
 	$('#contpdf').attr('src', 'about:blank');
@@ -794,7 +797,6 @@ function verpdf2(nameFile,stareport){ //GENERAR PDF NOTA DE VENTA
 		}).then((value) => {
 		});
 	}else{
-		$('#contpdf').attr('src', 'about:blank');
 		$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile);
 		if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
 			$("#myModalpdf").modal('show');

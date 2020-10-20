@@ -21,6 +21,7 @@ use App\Models\PlazoPago;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -512,6 +513,34 @@ class DespachoSolController extends Controller
         } else {
             abort(404);
         }
+    }
+
+    public function exportPdf($id,$stareport = '1')
+    {
+        $despachosol = DespachoSol::findOrFail($id);
+        $despachosoldets = $despachosol->despachosoldets()->get();
+        $empresa = Empresa::orderBy('id')->get();
+        $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
+        //dd($empresa[0]['iva']);
+        if($stareport == '1'){
+            return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+        
+            $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+            //return $pdf->download('cotizacion.pdf');
+            return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
+    
+        }else{
+            if($stareport == '2'){
+                //return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
+        
+                $pdf = PDF::loadView('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
+                //return $pdf->download('cotizacion.pdf');
+                return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
+    
+            }
+        }
+        
+        
     }
 }
 
