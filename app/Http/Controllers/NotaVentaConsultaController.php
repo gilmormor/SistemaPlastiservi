@@ -195,11 +195,11 @@ class NotaVentaConsultaController extends Controller
                 $aux_obsdespacho = "No ha iniciado el despacho";
                 if(!empty($data->inidespacho)){
                     $aux_icodespacho = "fa-star-o";
-                    $aux_obsdespacho = "Ini Desp: " . date('d-m-Y', strtotime($data->inidespacho)) . " Guia: " . $data->guiasdespacho;
+                    $aux_obsdespacho = "Ini: " . date('d-m-Y', strtotime($data->inidespacho)) . " Guia: " . $data->guiasdespacho;
                 }
                 if(!empty($data->findespacho)){
                     $aux_icodespacho = " fa-star";
-                    $aux_obsdespacho = "Fin Desp: " . date('d-m-Y', strtotime($data->findespacho)) . " Guia: " . $data->guiasdespacho;
+                    $aux_obsdespacho = "Ini:" . date('d-m-Y', strtotime($data->inidespacho)) . " Fin:" . date('d-m-Y', strtotime($data->findespacho)) . " Guia: " . $data->guiasdespacho;
                 }
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
@@ -460,6 +460,12 @@ function consulta($request){
                 break;
             case 4:
                 $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                break;
+            case 5:
+                $aux_aprobstatus = "notaventa.inidespacho IS NOT NULL and notaventa.findespacho IS NULL";
+                break;
+            case 6:
+                $aux_aprobstatus = "notaventa.findespacho IS NOT NULL";
                 break;
         }
         

@@ -158,6 +158,8 @@ Cotización
                                             <option value="2">Por debajo precio en tabla</option>
                                             <option value="3" selected>Aprobadas</option>
                                             <option value="4">Rechazadas</option>
+                                            <option value="5">Activas</option>
+                                            <option value="6">Cerradas</option>
                                         </select>
                                     </div>
                                 </div>

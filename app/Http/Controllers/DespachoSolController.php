@@ -529,19 +529,15 @@ class DespachoSolController extends Controller
             $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
-    
         }else{
             if($stareport == '2'){
-                //return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
-        
+                return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));        
                 $pdf = PDF::loadView('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
     
             }
         }
-        
-        
     }
 }
 
@@ -628,10 +624,14 @@ function consulta($request){
         
     }
 
+    //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
+
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
-            sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
-            sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
+            sum(notaventadetalle.cant) AS cant,
+            sum(notaventadetalle.precioxkilo) AS precioxkilo,
+            sum(notaventadetalle.totalkilos) AS totalkilos,
+            sum(notaventadetalle.subtotal) AS subtotal,
             sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
             sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
             sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
@@ -663,6 +663,7 @@ function consulta($request){
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
     //dd("$sql");
     $datas = DB::select($sql);
+    //dd($datas);
     return $datas;
 }
 
