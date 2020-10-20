@@ -59,7 +59,7 @@ Solicitud de despacho
                                 </a>
                             </td>
                             <td>
-                                <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->id}},2)'>
+                                <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->notaventa_id}},2)'>
                                     <i class='fa fa-fw fa-file-pdf-o'></i>
                                 </a>
                             </td>
