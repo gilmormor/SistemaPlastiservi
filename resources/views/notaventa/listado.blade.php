@@ -144,7 +144,7 @@
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto email: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$notaventa->contactoemail}}</span></td>
+				<td class="textleft" width="50%"><span>{{strtolower($notaventa->contactoemail)}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto Teléfono: </strong></span></td>
