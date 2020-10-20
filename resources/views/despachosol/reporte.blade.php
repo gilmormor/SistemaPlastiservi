@@ -161,7 +161,7 @@
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$despachosol->notaventa->tipoentrega->nombre}}</span></td>
+				<td class="textleft" width="50%"><span>{{$despachosol->tipoentrega->nombre}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto: </strong></span></td>
@@ -177,7 +177,7 @@
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Nota de Venta: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$despachosol->notaventa_id}}</span></td>
+				<td class="textleft" width="50%"><span>{{ str_pad($despachosol->notaventa_id, 10, "0", STR_PAD_LEFT) }}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Orden de Compra: </strong></span></td>

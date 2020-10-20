@@ -181,7 +181,7 @@
                                 @foreach($tipoentregas as $tipoentrega)
                                     <option
                                         value="{{$tipoentrega->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->notaventa->tipoentrega_id==$tipoentrega->id))
+                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->tipoentrega_id==$tipoentrega->id))
                                             {{'selected'}}
                                         @endif
                                         >

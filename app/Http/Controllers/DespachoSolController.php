@@ -444,6 +444,7 @@ class DespachoSolController extends Controller
         $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
         $despachosol = DespachoSol::findOrFail($id);
         $despachosol->comunaentrega_id = $request->comunaentrega_id;
+        $despachosol->tipoentrega_id = $request->tipoentrega_id;
         $despachosol->plazoentrega = $request->plazoentrega;
         $despachosol->lugarentrega = $request->lugarentrega;
         $despachosol->contacto = $request->contacto;
@@ -523,7 +524,7 @@ class DespachoSolController extends Controller
         $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
         if($stareport == '1'){
-            // return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+            //return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
         
             $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
             //return $pdf->download('cotizacion.pdf');

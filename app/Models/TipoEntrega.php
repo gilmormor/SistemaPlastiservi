@@ -20,4 +20,26 @@ class TipoEntrega extends Model
     {
         return $this->hasOne(Cotizacion::class);
     }
+    //RELACION DE UNO A MUCHOS Cotizacion
+    public function cotizaciones()
+    {
+        return $this->hasMany(Cotizacion::class,'tipoentrega_id');
+    }
+    
+    //RELACION DE UNO A MUCHOS NotaVenta
+    public function notaventas()
+    {
+        return $this->hasMany(NotaVenta::class,'tipoentrega_id');
+    }
+
+    //RELACION DE UNO A MUCHOS DespachoSol
+    public function despachosols()
+    {
+        return $this->hasMany(DespachoSol::class,'tipoentrega_id');
+    }
+    //RELACION DE UNO A MUCHOS DespachoOrd
+    public function despachoords()
+    {
+        return $this->hasMany(DespachoOrd::class,'tipoentrega_id');
+    }
 }

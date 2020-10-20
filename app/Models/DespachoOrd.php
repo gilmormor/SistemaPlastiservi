@@ -14,7 +14,15 @@ class DespachoOrd extends Model
         'notaventa_id',
         'usuario_id',
         'fecha',
-        'obs',
+        'comunaentrega_id',
+        'tipoentrega_id',
+        'plazoentrega',
+        'lugarentrega',
+        'contacto',
+        'contactoemail',
+        'contactotelf',
+        'observacion',
+        'fechaestdesp',
         'usuariodel_id'
     ];
 
@@ -53,4 +61,9 @@ class DespachoOrd extends Model
         return $this->belongsTo(Comuna::class,'comunaentrega_id');
     }
 
+    //Relacion inversa a TipoEntrega
+    public function tipoentrega()
+    {
+        return $this->belongsTo(TipoEntrega::class);
+    }
 }

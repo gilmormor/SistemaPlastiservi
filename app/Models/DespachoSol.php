@@ -16,6 +16,7 @@ class DespachoSol extends Model
         'usuario_id',
         'fecha',
         'comunaentrega_id',
+        'tipoentrega_id',
         'plazoentrega',
         'lugarentrega',
         'contacto',
@@ -65,5 +66,12 @@ class DespachoSol extends Model
     {
         return $this->hasOne(DespachoSolAnul::class,'despachosol_id');
     }
+
+    //Relacion inversa a TipoEntrega
+    public function tipoentrega()
+    {
+        return $this->belongsTo(TipoEntrega::class);
+    }
+    
 
 }

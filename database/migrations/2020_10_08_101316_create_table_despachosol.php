@@ -22,6 +22,8 @@ class CreateTableDespachosol extends Migration
             $table->dateTime('fecha')->comment('Fecha y hora.');
             $table->unsignedBigInteger('comunaentrega_id')->comment('Comuna de entrega');
             $table->foreign('comunaentrega_id','fk_despachosol_comunaentrega')->references('id')->on('comuna')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('tipoentrega_id');
+            $table->foreign('tipoentrega_id','fk_despachosol_tipoentrega')->references('id')->on('tipoentrega')->onDelete('restrict')->onUpdate('restrict');
             $table->date('plazoentrega')->comment('Plazo de entrega fecha');
             $table->string('lugarentrega',100)->comment('Lugar de entrega');
             $table->string('contacto',50)->comment('Nombre de contacto');
