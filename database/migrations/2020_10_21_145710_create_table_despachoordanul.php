@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableDesopachosolanul extends Migration
+class CreateTableDespachoordanul extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateTableDesopachosolanul extends Migration
      */
     public function up()
     {
-        Schema::create('despachosolanul', function (Blueprint $table) {
+        Schema::create('despachoordanul', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('despachosol_id');
-            $table->foreign('despachosol_id','fk_despachosolanul_despachosol')->references('id')->on('despachosol')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('despachoord_id');
+            $table->foreign('despachoord_id','fk_despachoordanul_despachoord')->references('id')->on('despachoord')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuario_id')->comment('Usuario que creo el registro');
-            $table->foreign('usuario_id','fk_despachosolanul_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('usuario_id','fk_despachoordanul_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -35,6 +35,6 @@ class CreateTableDesopachosolanul extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('despachosolanul');
+        Schema::dropIfExists('despachoordanul');
     }
 }

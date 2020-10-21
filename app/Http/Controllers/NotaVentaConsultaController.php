@@ -462,7 +462,7 @@ function consulta($request){
                 $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
                 break;
             case 5:
-                $aux_aprobstatus = "notaventa.inidespacho IS NOT NULL and notaventa.findespacho IS NULL";
+                $aux_aprobstatus = "notaventa.findespacho IS NULL";
                 break;
             case 6:
                 $aux_aprobstatus = "notaventa.findespacho IS NOT NULL";

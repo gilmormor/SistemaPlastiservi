@@ -66,4 +66,10 @@ class DespachoOrd extends Model
     {
         return $this->belongsTo(TipoEntrega::class);
     }
+
+    //RELACION DE UNO A MUCHOS DespachoOrdAnul
+    public function despachoordanul()
+    {
+        return $this->hasOne(DespachoOrdAnul::class,'despachoord_id');
+    }
 }

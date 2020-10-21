@@ -14,6 +14,7 @@ class CreateTableDespachoord extends Migration
     public function up()
     {
         Schema::create('despachoord', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('despachosol_id');
             $table->foreign('despachosol_id','fk_despachoord_despachosol')->references('id')->on('despachosol')->onDelete('restrict')->onUpdate('restrict');

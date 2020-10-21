@@ -470,3 +470,15 @@ Route::post('despachosol/anular/{id}', 'DespachoSolController@anular')->name('an
 Route::get('despachosol/{id}/{stareport}/exportPdf', 'DespachoSolController@exportPdf')->name('exportPdf_despachosol');
 
 
+/*RUTAS Orden de Despacho*/
+Route::get('despachoord/index', 'DespachoOrdController@index')->name('despachoord');
+Route::get('despachoord', 'DespachoOrdController@listards')->name('listards_despachoord');
+Route::get('despachoord/crear', 'DespachoOrdController@crear')->name('crear_despachoord');
+Route::get('despachoord/{id}/crearsol', 'DespachoOrdController@crearsol')->name('crearsol_despachoord');
+Route::post('despachoord', 'DespachoOrdController@guardar')->name('guardar_despachoord');
+Route::get('despachoord/{id}/editar', 'DespachoOrdController@editar')->name('editar_despachoord');
+Route::put('despachoord/{id}', 'DespachoOrdController@actualizar')->name('actualizar_despachoord');
+Route::delete('despachoord/{id}', 'DespachoOrdController@eliminar')->name('eliminar_despachoord');
+Route::post('despachoord/reporte', 'DespachoOrdController@reporte')->name('reporte_despachoord');
+Route::post('despachoord/anular/{id}', 'DespachoOrdController@anular')->name('anular_despachoord');
+Route::get('despachoord/{id}/{stareport}/exportPdf', 'DespachoOrdController@exportPdf')->name('exportPdf_despachoord');
