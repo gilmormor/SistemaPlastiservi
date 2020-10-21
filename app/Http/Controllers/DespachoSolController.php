@@ -556,6 +556,7 @@ class DespachoSolController extends Controller
     {
         $despachosol = DespachoSol::findOrFail($id);
         $despachosoldets = $despachosol->despachosoldets()->get();
+        //dd($despachosol);
         $empresa = Empresa::orderBy('id')->get();
         $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
