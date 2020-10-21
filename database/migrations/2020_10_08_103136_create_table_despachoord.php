@@ -21,7 +21,7 @@ class CreateTableDespachoord extends Migration
             $table->foreign('notaventa_id','fk_despachoord_notaventa')->references('id')->on('notaventa')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuario_id')->comment('Usuario que creo el registro');
             $table->foreign('usuario_id','fk_despachoord_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
-            $table->dateTime('fecha')->comment('Fecha y hora.');
+            $table->dateTime('fechahora')->comment('Fecha y hora.');
             $table->unsignedBigInteger('comunaentrega_id')->comment('Comuna de entrega');
             $table->foreign('comunaentrega_id','fk_despachoord_comunaentrega')->references('id')->on('comuna')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('tipoentrega_id');

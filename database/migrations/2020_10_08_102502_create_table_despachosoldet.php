@@ -20,7 +20,6 @@ class CreateTableDespachosoldet extends Migration
             $table->unsignedBigInteger('notaventadetalle_id');
             $table->foreign('notaventadetalle_id','fk_despachosoldet_notaventadetalle')->references('id')->on('notaventadetalle')->onDelete('restrict')->onUpdate('restrict');
             $table->float('cantsoldesp',10,2)->comment('Cantidad solicitada para despacho.')->nullable();
-            $table->float('cantdesp',10,2)->comment('Suma total Cantidad Despachada.')->nullable();
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();
             $table->softDeletes();

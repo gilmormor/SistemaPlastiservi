@@ -13,7 +13,7 @@ class DespachoOrd extends Model
         'despachosol_id',
         'notaventa_id',
         'usuario_id',
-        'fecha',
+        'fechahora',
         'comunaentrega_id',
         'tipoentrega_id',
         'plazoentrega',

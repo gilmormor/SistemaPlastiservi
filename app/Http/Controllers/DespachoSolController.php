@@ -141,6 +141,22 @@ class DespachoSolController extends Controller
         $data = NotaVenta::findOrFail($id);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
         $detalles = $data->notaventadetalles()->get();
+        /*
+        foreach($detalles as $detalle){
+            dd($detalle);
+            $sql = "SELECT cantsoldesp
+                    FROM vista_sumsoldespdet
+                    WHERE notaventadetalle_id=$detalle->id";
+            $datasuma = DB::select($sql);
+            if(empty($datasuma)){
+                $sumacantsoldesp= 0;
+            }else{
+                $sumacantsoldesp= $datasuma[0]->cantsoldesp;
+            }
+            //if($detalle->cant > $sumacantsoldesp);
+            
+        } */
+        //dd($detalles);
         $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
         //session(['aux_aprocot' => '0']);
@@ -262,7 +278,7 @@ class DespachoSolController extends Controller
         can('guardar-solicitud-despacho');
         
         $hoy = date("Y-m-d H:i:s");
-        $request->request->add(['fecha' => $hoy]);
+        $request->request->add(['fechahora' => $hoy]);
         $request->request->add(['usuario_id' => auth()->id()]);
         $dateInput = explode('/',$request->plazoentrega);
         $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
@@ -277,14 +293,16 @@ class DespachoSolController extends Controller
         if($cont_producto>0){
             for ($i=0; $i < $cont_producto ; $i++){
                 if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                    $despachosol = new DespachoSolDet();
-                    $despachosol->despachosol_id = $despachosolid;
-                    $despachosol->notaventadetalle_id = $request->NVdet_id[$i];
-                    $despachosol->cantsoldesp = $request->cantsoldesp[$i];
-                    if($despachosol->save()){
+                    $despachosoldet = new DespachoSolDet();
+                    $despachosoldet->despachosol_id = $despachosolid;
+                    $despachosoldet->notaventadetalle_id = $request->NVdet_id[$i];
+                    $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
+                    if($despachosoldet->save()){
+                        /*
                         $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
                         $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
                         $notaventadetalle->save();
+                        */
                         //$despacho_id = $despachosol->id;    
                     }
                 }
@@ -318,6 +336,21 @@ class DespachoSolController extends Controller
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
+/*
+        foreach($detalles as $detalle){
+            dd($detalle);
+            $sql = "SELECT cantsoldesp
+                    FROM vista_sumsoldespdet
+                    WHERE notaventadetalle_id=$detalle->notaventadetalle_id";
+            $datasuma = DB::select($sql);
+            if(empty($datasuma)){
+                $sumacantsoldesp= 0;
+            }else{
+                $sumacantsoldesp= $datasuma[0]->cantsoldesp;
+            }
+            //if($detalle->cant > $sumacantsoldesp);
+            
+        }*/
         $vendedor_id=$data->notaventa->vendedor_id;
         $clienteselec = $data->notaventa->cliente()->get();
         //session(['aux_aprocot' => '0']);
@@ -347,7 +380,7 @@ class DespachoSolController extends Controller
                 ])->get();
         //dd($clientedirecs);
         $clienteDirec = $data->notaventa->clientedirec()->get();
-        $fecha = date("d/m/Y", strtotime($data->fecha));
+        $fecha = date("d/m/Y", strtotime($data->fechahora));
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
@@ -458,12 +491,14 @@ class DespachoSolController extends Controller
             if($cont_producto>0){
                 for ($i=0; $i < $cont_producto ; $i++){
                     if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                        $despachosol = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
-                        $despachosol->cantsoldesp = $request->cantsoldesp[$i];
-                        if($despachosol->save()){
-                            $notaventadetalle = NotaVentaDetalle::findOrFail($despachosol->notaventadetalle_id);
+                        $despachosoldet = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
+                        $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
+                        if($despachosoldet->save()){
+                            /*
+                            $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
                             $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
                             $notaventadetalle->save();
+                            */
                             //$despacho_id = $despachosol->id;    
                         }
                     }
@@ -498,12 +533,13 @@ class DespachoSolController extends Controller
                 $despachosolanul->despachosol_id = $request->id;
                 $despachosolanul->usuario_id = auth()->id();
                 if ($despachosolanul->save()) {
+                    /*
                     $despachosoldets = $despachosol->despachosoldets;
                     foreach ($despachosoldets as $despachosoldet){
                         $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
                         $notaventadetalle->cantsoldesp = $notaventadetalle->cantsoldesp - $despachosoldet->cantsoldesp;
                         $notaventadetalle->save();
-                    }
+                    }*/
                     return response()->json(['mensaje' => 'ok']);
                 } else {
                     return response()->json(['mensaje' => 'ng']);
@@ -639,6 +675,55 @@ function consulta($request){
             sum(notaventadetalle.subtotal) AS totalps,
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
             FROM notaventa INNER JOIN notaventadetalle
+            ON notaventa.id=notaventadetalle.notaventa_id and 
+            if((SELECT cantsoldesp
+                    FROM vista_sumsoldespdet
+                    WHERE notaventadetalle_id=notaventadetalle.id
+                    ) >= notaventadetalle.cant,false,true)
+            INNER JOIN producto
+            ON notaventadetalle.producto_id=producto.id
+            INNER JOIN categoriaprod
+            ON categoriaprod.id=producto.categoriaprod_id
+            INNER JOIN areaproduccion
+            ON areaproduccion.id=categoriaprod.areaproduccion_id
+            INNER JOIN cliente
+            ON cliente.id=notaventa.cliente_id
+            WHERE $vendedorcond
+            and $aux_condFecha
+            and $aux_condrut
+            and $aux_condoc_id
+            and $aux_condgiro_id
+            and $aux_condareaproduccion_id
+            and $aux_condtipoentrega_id
+            and $aux_condnotaventa_id
+            and $aux_aprobstatus
+            and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
+            GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
+/*
+(select sum(cantsoldesp) as cantsoldesp
+                    from despachosol inner join despachosoldet
+                    on despachosol.id=despachosoldet.despachosol_id
+                    where despachosol.id not in (select despachosol_id from despachosolanul)
+                    and despachosoldet.notaventadetalle_id=notaventadetalle.id
+                    despachosol.deleted_at is null
+                    group by notaventadetalle_id)
+*/
+/*
+    $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+            sum(notaventadetalle.cant) AS cant,
+            sum(notaventadetalle.precioxkilo) AS precioxkilo,
+            sum(notaventadetalle.totalkilos) AS totalkilos,
+            sum(notaventadetalle.subtotal) AS subtotal,
+            sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
+            sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
+            sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
+            sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
+            sum(notaventadetalle.subtotal) AS totalps,
+            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
+            FROM notaventa INNER JOIN notaventadetalle
             ON notaventa.id=notaventadetalle.notaventa_id and if(notaventadetalle.cantsoldesp >= notaventadetalle.cant,false, if(notaventadetalle.cantdesp >= notaventadetalle.cant,false,true))
             INNER JOIN producto
             ON notaventadetalle.producto_id=producto.id
@@ -661,6 +746,8 @@ function consulta($request){
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
+*/
+
     //dd("$sql");
     $datas = DB::select($sql);
     //dd($datas);

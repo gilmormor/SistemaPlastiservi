@@ -14,8 +14,6 @@ class NotaVentaDetalle extends Model
         'notaventa_id',
         'cotizaciondetalle_id',
         'cant',
-        'cantsoldesp',
-        'cantdesp',
         'unidadmedida_id',
         'preciounit',
         'precioneto',
