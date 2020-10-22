@@ -6,7 +6,7 @@ Solicitud Despacho
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/despachosol/listardespachosol.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/despachoord/listardespachosol.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
