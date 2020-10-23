@@ -589,50 +589,73 @@ $('#form-general').submit(function() {
 })
 
 function actSaldo(s,i){
-	aux_saldo = s - $("#cantsol" + i).val();
-	//alert($("#cantsol" + i).val());
+	aux_cantord = $.trim($("#cantord" + i).val());
+	$("#cantord" + i).val(aux_cantord);
+	aux_saldo = s - $("#cantord" + i).val();
+	//alert($("#cantord" + i).val());
 	$("#saldocantF" + i).html(aux_saldo);
-	$("#cantsoldesp" + i).val($("#cantsol" + i).val());
-	
-	//alert(i);
+	$("#cantorddesp" + i).val($("#cantord" + i).val());
+	if(aux_cantord.length == 0 || aux_cantord == " " || aux_cantord == null){
+		$("#llenarCantOrd" + i).prop("checked", false);
+	}else{
+		$("#llenarCantOrd" + i).prop("checked", true);
+	}
+	if(aux_saldo < 0){
+		$("#cantord" + i).val($("#cant" + i).val())
+		$("#saldocantF" + i).html('0');
+	}
+	aux_total = 0;
+	$("#tabla-data tr .cantordsum").each(function() {
+		valor = $(this).val() ;
+		valorNum = parseFloat(valor);
+		if(isNaN( valorNum )){
+			valorNum = 0;
+		}
+		aux_total += valorNum;
+	});
+	$("#cantordTotal").val(aux_total);
 }
 
-function llenarCantSol(i){
+function llenarCantOrd(i){
 	saldo = $("#saldocantF" + i).html();
-	//alert($("#llenarCantSol" + i + ":checked").val());
-	estaSeleccionado = $("#llenarCantSol" + i).is(":checked");
+	//alert($("#llenarCantOrd" + i + ":checked").val());
+	estaSeleccionado = $("#llenarCantOrd" + i).is(":checked");
 	if (estaSeleccionado){
-		$("#cantsol" + i).val($.trim(saldo));
-		$("#cantsoldesp" + i).val($.trim(saldo));
+		$("#cantord" + i).val($.trim(saldo));
+		$("#cantorddesp" + i).val($.trim(saldo));
 	}else{
-		$("#cantsol" + i).val('');
-		$("#cantsoldesp" + i).val('');
+		$("#cantord" + i).val('');
+		$("#cantorddesp" + i).val('');
 	}
 }
 
 $("#marcarTodo").change(function() {
-	nFilas = $("#tabla-data tr").length - 4;
 	estaSeleccionado = $("#marcarTodo").is(":checked");
+	sumarcant();
+});
+
+function sumarcant(){
+	nFilas = $("#tabla-data tr").length - 4;
 	aux_total = 0;
-	$("#cantsolTotal").val('');
+	$("#cantordTotal").val('');
 	for (var i = 1; i <= nFilas; i++) {
 		saldo = $("#saldocantOrigF" + i).html();
 		if (estaSeleccionado){
-			$("#llenarCantSol" + i).prop("checked", true);
-			$("#cantsol" + i).val($.trim(saldo));
-			$("#cantsoldesp" + i).val($.trim(saldo));
+			$("#llenarCantOrd" + i).prop("checked", true);
+			$("#cantord" + i).val($.trim(saldo));
+			$("#cantorddesp" + i).val($.trim(saldo));
 			$("#saldocantF" + i).html("0")
 			aux_total = aux_total + parseInt($.trim(saldo));
 		}else{
-			$("#llenarCantSol" + i).prop("checked", false);
-			$("#cantsol" + i).val('');
-			$("#cantsoldesp" + i).val('');
+			$("#llenarCantOrd" + i).prop("checked", false);
+			$("#cantord" + i).val('');
+			$("#cantorddesp" + i).val('');
 			$("#saldocantF" + i).html($("#saldocantOrigF" + i).html())
 		}	
 	}
 	if(aux_total == 0){
-		$("#cantsolTotal").val('');
+		$("#cantordTotal").val('');
 	}else{
-		$("#cantsolTotal").val(aux_total);
+		$("#cantordTotal").val(aux_total);
 	}
-});
+}

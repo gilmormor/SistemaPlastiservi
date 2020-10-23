@@ -297,7 +297,7 @@
                             <th class='tooltipsC' title='Marcar todo'>
                                 <div class='checkbox'>
                                     <label style='font-size: 1.2em'>
-                                        <input type='checkbox' id='marcarTodo' name='marcarTodo' onclick='visto($data->id,$i)' checked readonly disabled>
+                                        <input type='checkbox' id='marcarTodo' name='marcarTodo' checked readonly disabled>
                                         <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                                     </label>
                                 </div>

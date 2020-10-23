@@ -63,6 +63,15 @@ label.requerido:after{
 .width70{
     width: 70px !important;
 }
+.width80{
+    width: 80px !important;
+}
+.width90{
+    width: 90px !important;
+}
+.width100{
+    width: 100px !important;
+}
 .width200{
     width: 200px !important;
 }

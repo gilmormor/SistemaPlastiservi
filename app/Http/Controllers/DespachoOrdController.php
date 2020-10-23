@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidarDespachoOrd;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Cliente;
@@ -9,6 +10,7 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
+use App\Models\DespachoOrdDet;
 use App\Models\DespachoSol;
 use App\Models\Empresa;
 use App\Models\FormaPago;
@@ -132,9 +134,10 @@ class DespachoOrdController extends Controller
 
     public function crearord($id)
     {
-        can('crear-solicitud-despacho');
+        can('crear-orden-despacho');
         $data = DespachoSol::findOrFail($id);
-        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
+        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
+        $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
         /*
         foreach($detalles as $detalle){
@@ -180,7 +183,7 @@ class DespachoOrdController extends Controller
                     'clientedirec.direcciondetalle'
                 ])->get();
         //dd($clientedirecs);
-        $clienteDirec = $data->clientedirec()->get();
+        $clienteDirec = $data->notaventa->clientedirec()->get();
         $fecha = date("d/m/Y", strtotime($data->fechahora));
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
@@ -268,9 +271,40 @@ class DespachoOrdController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function guardar(ValidarDespachoOrd $request)
     {
-        //
+        can('guardar-orden-despacho');
+        dd($request);
+        
+        $hoy = date("Y-m-d H:i:s");
+        $request->request->add(['fechahora' => $hoy]);
+        $request->request->add(['usuario_id' => auth()->id()]);
+        $dateInput = explode('/',$request->plazoentrega);
+        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $dateInput = explode('/',$request->fechaestdesp);
+        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $despachoord = DespachoOrd::create($request->all());
+        $despachoordid = $despachoord->id;
+        $cont_producto = count($request->producto_id);
+        if($cont_producto>0){
+            for ($i=0; $i < $cont_producto ; $i++){
+                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                    $despachoorddet = new DespachoOrdDet();
+                    $despachoorddet->despachoord_id = $despachoordid;
+                    $despachoorddet->notaventadetalle_id = $request->NVdet_id[$i];
+                    $despachoorddet->cantsoldesp = $request->cantsoldesp[$i];
+                    if($despachoorddet->save()){
+                        /*
+                        $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
+                        $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                        $notaventadetalle->save();
+                        */
+                        //$despacho_id = $despachoord->id;    
+                    }
+                }
+            }
+        }
+        return redirect('despachoord/index')->with('mensaje','Nota de Venta creada con exito.');
     }
 
     /**

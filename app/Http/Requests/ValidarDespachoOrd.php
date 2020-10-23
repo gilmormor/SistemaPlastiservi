@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ValidarDespachoSol extends FormRequest
+class ValidarDespachoOrd extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,6 +24,7 @@ class ValidarDespachoSol extends FormRequest
     public function rules()
     {
         return [
+            'despachosol_id' => 'required',
             'notaventa_id' => 'required',
             'usuario_id' => 'required',
             'comunaentrega_id' => 'required',
