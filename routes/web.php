@@ -474,7 +474,7 @@ Route::get('despachosol/{id}/{stareport}/exportPdf', 'DespachoSolController@expo
 Route::get('despachoord/index', 'DespachoOrdController@index')->name('despachoord');
 Route::get('despachoord', 'DespachoOrdController@listards')->name('listards_despachoord');
 Route::get('despachoord/crear', 'DespachoOrdController@crear')->name('crear_despachoord');
-Route::get('despachoord/{id}/crearsol', 'DespachoOrdController@crearsol')->name('crearsol_despachoord');
+Route::get('despachoord/{id}/crearord', 'DespachoOrdController@crearord')->name('crearord_despachoord');
 Route::post('despachoord', 'DespachoOrdController@guardar')->name('guardar_despachoord');
 Route::get('despachoord/{id}/editar', 'DespachoOrdController@editar')->name('editar_despachoord');
 Route::put('despachoord/{id}', 'DespachoOrdController@actualizar')->name('actualizar_despachoord');

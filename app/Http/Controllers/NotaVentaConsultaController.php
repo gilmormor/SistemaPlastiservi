@@ -176,7 +176,7 @@ class NotaVentaConsultaController extends Controller
                         if(!empty($data->anulada)){
                             $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
                         }else{
-                            if(auth()->id()==1 or auth()->id()==2){
+                            if(auth()->id()==1 or auth()->id()==2 or auth()->id()==24){
                                 $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>";
                             }else{
                                 $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
