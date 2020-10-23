@@ -27,6 +27,12 @@
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Editar Solicitud Despacho Nro.: {{$data->id}}</h3>
+                <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},1)' title='Ver Nota venta' data-toggle='tooltip'>
+                    Nota Venta: {{$data->id}} <i class='fa fa-fw fa-file-pdf-o'></i>
+                </a>
+                <a class='btn-accion-tabla btn-sm' onclick='verpdf2("{{$data->oc_file}}",2)' title='Ver Nota venta' data-toggle='tooltip'>
+                    Orden Compra: {{$data->oc_id}} <i class='fa fa-fw fa-file-pdf-o'></i>
+                </a>
                 <div class="box-tools pull-right">
                     <a href="{{route('despachosol')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado

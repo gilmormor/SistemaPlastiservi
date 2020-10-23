@@ -159,6 +159,9 @@ class ClienteBloqueadoController extends Controller
     public function eliminar(Request $request, $id)
     {
         if ($request->ajax()) {
+            $data = ClienteBloqueado::findOrFail($id);
+            $data->usuariodel_id = auth()->id();
+            $data->save();
             if (ClienteBloqueado::destroy($id)) {
                 return response()->json(['mensaje' => 'ok']);
             } else {

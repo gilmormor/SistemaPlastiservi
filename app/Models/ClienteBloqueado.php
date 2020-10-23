@@ -11,7 +11,9 @@ class ClienteBloqueado extends Model
     protected $table = "clientebloqueado";
     protected $fillable = [
         'descripcion',
-        'cliente_id'
+        'cliente_id',
+        'usuario_id',
+        'usuariodel_id'
     ];
 
     //RELACION INVERSA CLIENTE

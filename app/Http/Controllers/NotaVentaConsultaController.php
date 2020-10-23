@@ -102,7 +102,7 @@ class NotaVentaConsultaController extends Controller
         if($request->ajax()){
             $datas = consulta($request);
             $aux_colvistoth = "";
-            if(auth()->id()==1 or auth()->id()==2){
+            if(auth()->id()==1 or auth()->id()==2 or auth()->id()==24){
                 $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
             }
             $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";

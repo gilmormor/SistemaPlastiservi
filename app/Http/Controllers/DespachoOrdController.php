@@ -231,14 +231,14 @@ function reporte1($request){
                 <td id='rut$i' name='rut$i'>$rut</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td>
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->id}},1)'>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->id,1)'>
                         <i class='fa fa-fw fa-file-pdf-o'></i>
                     </a>
                 </td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                    <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
                     </a>
                 </td>
                 <td>
@@ -247,7 +247,7 @@ function reporte1($request){
                     </a>
                 </td>
                 <td>
-                    <a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer Solicitud Despacho'>
+                    <a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer Orden Despacho'>
                         <i class='fa fa-fw fa-truck'></i>
                     </a>
 
