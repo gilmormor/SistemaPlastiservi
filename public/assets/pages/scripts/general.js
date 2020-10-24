@@ -769,6 +769,11 @@ function genpdfSD(id,stareport){ //GENERAR PDF Solicitud de Despacho
 	$("#myModalpdf").modal('show')
 }
 
+function genpdfOD(id,stareport){ //GENERAR PDF Orden de Despacho
+	$('#contpdf').attr('src', '/despachoord/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+}
+
 $("#myModalpdf").on("hidden.bs.modal", function () {
 	$('#contpdf').attr('src', 'about:blank');
 });

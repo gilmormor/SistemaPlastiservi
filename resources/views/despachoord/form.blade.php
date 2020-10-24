@@ -348,26 +348,15 @@
                                         $aux_nfila++;
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                    <td name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
-                                        @if ($aux_sta==2)
-                                            {{$detalle->id}}
-                                        @else
-                                            0
-                                        @endif
+                                    <td name="despachosoldet_id{{$aux_nfila}}" id="despachosoldet_id{{$aux_nfila}}">
+                                        {{$detalle->id}}
                                     </td>
                                     <td style="display:none;">
-                                        @if ($aux_sta==2)
-                                            <input type="text" name="NVdet_id[]" id="NVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
-                                        @else
-                                            <input type="text" name="NVdet_id[]" id="NVdet_id{{$aux_nfila}}" class="form-control" value="0" style="display:none;"/>
-                                        @endif
+                                        <input type="text" name="despachosoldet_id[]" id="despachosoldet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
+                                        <input type="text" name="notaventadetalle_id[]" id="notaventadetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->id}}" style="display:none;"/>
                                     </td>
                                     <td style="display:none;">
-                                        @if ($aux_sta==2)
-                                            <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->cotizaciondetalle_id}}" style="display:none;"/>
-                                        @else
-                                            <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
-                                        @endif
+                                        <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->cotizaciondetalle_id}}" style="display:none;"/>
                                     </td>
                                     <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}" style="display:none;">
                                         <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>

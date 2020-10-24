@@ -19,25 +19,25 @@
 				<!--
 				<div>
 					<span class="h2">COTIZACIÓN</span>
-                    <p>{{$despachosol->notaventa->sucursal->direccion}}</p>
-					<p>Teléfono: {{$despachosol->notaventa->sucursal->telefono1}}</p>
-					<p>Email: {{$despachosol->notaventa->sucursal->email}}</p>
+                    <p>{{$despachoord->notaventa->sucursal->direccion}}</p>
+					<p>Teléfono: {{$despachoord->notaventa->sucursal->telefono1}}</p>
+					<p>Email: {{$despachoord->notaventa->sucursal->email}}</p>
 				</div>-->
 			</td>
 			<td class="info_factura">
 				<div>
-					<span class="h3">Solicitud de Despacho</span>
-					<p>Nro: <strong> {{ str_pad($despachosol->id, 10, "0", STR_PAD_LEFT) }}</strong>
-						@if ($despachosol->despachosolanul)
+					<span class="h3">Orden de Despacho</span>
+					<p>Nro: <strong> {{ str_pad($despachoord->id, 10, "0", STR_PAD_LEFT) }}</strong>
+						@if ($despachoord->despachoordanul)
 							<small class="btn btn-danger btn-xs">Anulado</small>
 						@endif
 					</p>
 					<p>Fecha Act: {{date('d-m-Y h:i:s A')}}</p>
-					<p>Fecha: {{date('d-m-Y', strtotime($despachosol->fecha))}}</p>
-					<p>Hora: {{date("h:i:s A", strtotime($despachosol->fecha))}}</p>
-					<p>Vendedor: {{$despachosol->notaventa->vendedor->persona->nombre . " " . $despachosol->notaventa->vendedor->persona->apellido}} </p>
-					<p>Teléfono: {{$despachosol->notaventa->vendedor->persona->telefono}} </p>
-					<p>email: {{$despachosol->notaventa->vendedor->persona->email}} </p>
+					<p>Fecha: {{date('d-m-Y', strtotime($despachoord->fecha))}}</p>
+					<p>Hora: {{date("h:i:s A", strtotime($despachoord->fecha))}}</p>
+					<p>Vendedor: {{$despachoord->notaventa->vendedor->persona->nombre . " " . $despachoord->notaventa->vendedor->persona->apellido}} </p>
+					<p>Teléfono: {{$despachoord->notaventa->vendedor->persona->telefono}} </p>
+					<p>email: {{$despachoord->notaventa->vendedor->persona->email}} </p>
 				</div>
 			</td>
 		</tr>
@@ -49,16 +49,16 @@
 					<span class="h3">Cliente</span>
 					<table class="datos_cliente">
 						<tr class="headt">
-							<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 )}}</p></td>
-							<td><label>Teléfono:</label> <p>{{$despachosol->notaventa->cliente->telefono}}</p></td>
+							<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoord->notaventa->cliente->rut, strlen($despachoord->notaventa->cliente->rut) -1 , 1 )}}</p></td>
+							<td><label>Teléfono:</label> <p>{{$despachoord->notaventa->cliente->telefono}}</p></td>
 						</tr>
 						<tr class="headt">
-							<td><label>Nombre:</label> <p>{{$despachosol->notaventa->cliente->razonsocial}}</p></td>
-							<td><label>Dirección:</label> <p>{{$despachosol->notaventa->cliente->direccion}}</p></td>
+							<td><label>Nombre:</label> <p>{{$despachoord->notaventa->cliente->razonsocial}}</p></td>
+							<td><label>Dirección:</label> <p>{{$despachoord->notaventa->cliente->direccion}}</p></td>
 						</tr>
 						<tr class="headt">
-							<td><label>Contacto:</label> <p>{{$despachosol->notaventa->cliente->contactonombre}}</p></td>
-							<td><label>Comuna:</label> <p>{{$despachosol->notaventa->cliente->comuna->nombre}}</p></td>
+							<td><label>Contacto:</label> <p>{{$despachoord->notaventa->cliente->contactonombre}}</p></td>
+							<td><label>Comuna:</label> <p>{{$despachoord->notaventa->cliente->comuna->nombre}}</p></td>
 						</tr>
 					</table>
 				</div>
@@ -71,7 +71,7 @@
 				<thead>
 					<tr>
 						<th width="30px">Cant.</th>
-						<th width="30px">CantSD</th>
+						<th width="30px">CantOD</th>
 						<th class="textcenter">Unidad</th>
 						<th class="textleft">Descripción</th>
 						<th class="textleft">Diam</th>
@@ -90,35 +90,35 @@
 						$aux_sumtotalkilos = 0;
 						$aux_promPonderadoPrecioxkilo = 0;
 					?>
-					@foreach($despachosoldets as $despachosoldet)
+					@foreach($despachoorddets as $despachoorddet)
 						<?php
-							$aux_sumprecioxkilo += $despachosoldet->notaventadetalle->precioxkilo;
-							$aux_sumtotalkilos += $despachosoldet->notaventadetalle->totalkilos;
+							$aux_sumprecioxkilo += $despachoorddet->notaventadetalle->precioxkilo;
+							$aux_sumtotalkilos += $despachoorddet->notaventadetalle->totalkilos;
 						?>
 					@endforeach
-					@foreach($despachosoldets as $despachosoldet)
+					@foreach($despachoorddets as $despachoorddet)
 						<?php
-							$aux_promPonderadoPrecioxkilo += ($despachosoldet->notaventadetalle->precioxkilo * (($despachosoldet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
+							$aux_promPonderadoPrecioxkilo += ($despachoorddet->notaventadetalle->precioxkilo * (($despachoorddet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
 						?>
 						<tr class="headt" style="height:150%;">
-							<td class="textcenter">{{number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".")}}</td>
-							<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
-							<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
-							<td class="textleft">{{$despachosoldet->notaventadetalle->producto->nombre}}</td>
+							<td class="textcenter">{{number_format($despachoorddet->notaventadetalle->cant, 0, ",", ".")}}</td>
+							<td class="textcenter">{{number_format($despachoorddet->cantdesp, 0, ",", ".")}}</td>
+							<td class="textcenter">{{$despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
+							<td class="textleft">{{$despachoorddet->notaventadetalle->producto->nombre}}</td>
 							<td class="textleft">
-								@if ($despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedida_id==3)
-									{{$despachosoldet->notaventadetalle->producto->diamextpg}}								
+								@if ($despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedida_id==3)
+									{{$despachoorddet->notaventadetalle->producto->diamextpg}}								
 								@else
-									{{$despachosoldet->notaventadetalle->producto->diamextmm}}mm
+									{{$despachoorddet->notaventadetalle->producto->diamextmm}}mm
 								@endif
 							</td>
-							<td class="textleft">{{$despachosoldet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
-							<td class="textright">{{$despachosoldet->notaventadetalle->producto->long}} mts</td>
-							<td class="textright">{{number_format($despachosoldet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($despachosoldet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($despachosoldet->notaventadetalle->totalkilos, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($despachosoldet->notaventadetalle->preciounit, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($despachosoldet->notaventadetalle->subtotal, 2, ",", ".")}}</td>
+							<td class="textleft">{{$despachoorddet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
+							<td class="textright">{{$despachoorddet->notaventadetalle->producto->long}} mts</td>
+							<td class="textright">{{number_format($despachoorddet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($despachoorddet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($despachoorddet->notaventadetalle->totalkilos, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($despachoorddet->notaventadetalle->preciounit, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($despachoorddet->notaventadetalle->subtotal, 2, ",", ".")}}</td>
 						</tr>
 					@endforeach
 				</tbody>
@@ -136,15 +136,15 @@
 		<table id="factura_detalle">
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>NETO</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($despachosol->notaventa->neto, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($despachoord->notaventa->neto, 2, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$empresa[0]['iva']}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($despachosol->notaventa->iva, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($despachoord->notaventa->iva, 2, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($despachosol->notaventa->total, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($despachoord->notaventa->total, 2, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>
@@ -154,53 +154,57 @@
 		<table id="factura_detalle">
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($despachosol->plazoentrega))}}</span></td>
+				<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($despachoord->plazoentrega))}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Comuna: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$despachosol->comunaentrega->nombre}}</span></td>
+				<td class="textleft" width="50%"><span>{{$despachoord->comunaentrega->nombre}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$despachosol->lugarentrega}}</span></td>
+				<td class="textleft" width="50%"><span>{{$despachoord->lugarentrega}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$despachosol->notaventa->plazopago->descripcion}}</span></td>
+				<td class="textleft" width="50%"><span>{{$despachoord->notaventa->plazopago->descripcion}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$despachosol->tipoentrega->nombre}}</span></td>
+				<td class="textleft" width="50%"><span>{{$despachoord->tipoentrega->nombre}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$despachosol->contacto}}</span></td>
+				<td class="textleft" width="50%"><span>{{$despachoord->contacto}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto email: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{strtolower($despachosol->contactoemail)}}</span></td>
+				<td class="textleft" width="50%"><span>{{strtolower($despachoord->contactoemail)}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto Teléfono: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$despachosol->contactotelf}}</span></td>
+				<td class="textleft" width="50%"><span>{{$despachoord->contactotelf}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Nota de Venta: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{ str_pad($despachosol->notaventa_id, 10, "0", STR_PAD_LEFT) }}</span></td>
+				<td class="textleft" width="50%"><span>{{ str_pad($despachoord->notaventa_id, 10, "0", STR_PAD_LEFT) }}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Orden de Compra: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$despachosol->notaventa->oc_id}}</span></td>
+				<td class="textleft" width="50%"><span>{{$despachoord->notaventa->oc_id}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>No. Cotización: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{str_pad($despachosol->notaventa->cotizacion_id, 10, "0", STR_PAD_LEFT)}}</span></td>
+				<td class="textleft" width="50%"><span>{{str_pad($despachoord->notaventa->cotizacion_id, 10, "0", STR_PAD_LEFT)}}</span></td>
+			</tr>
+			<tr>
+				<td colspan="7" class="textleft" width="40%"><span><strong>Solicitud de Despacho: </strong></span></td>
+				<td class="textleft" width="50%"><span>{{str_pad($despachoord->despachosol_id, 10, "0", STR_PAD_LEFT)}}</span></td>
 			</tr>
 		</table>
 	</div>
 	<br>
 	<div>
-		<p class="nota"><strong>Observaciones: {{$despachosol->observacion}}</strong></p>
+		<p class="nota"><strong>Observaciones: {{$despachoord->observacion}}</strong></p>
 	</div>
 	<br>
 </div>

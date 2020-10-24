@@ -19,6 +19,7 @@ use App\Models\PlazoPago;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -274,7 +275,7 @@ class DespachoOrdController extends Controller
     public function guardar(ValidarDespachoOrd $request)
     {
         can('guardar-orden-despacho');
-        dd($request);
+        //dd($request);
         
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
@@ -284,27 +285,29 @@ class DespachoOrdController extends Controller
         $dateInput = explode('/',$request->fechaestdesp);
         $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
         $despachoord = DespachoOrd::create($request->all());
-        $despachoordid = $despachoord->id;
+        $despachoord_id = $despachoord->id;
         $cont_producto = count($request->producto_id);
         if($cont_producto>0){
             for ($i=0; $i < $cont_producto ; $i++){
                 if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
                     $despachoorddet = new DespachoOrdDet();
-                    $despachoorddet->despachoord_id = $despachoordid;
-                    $despachoorddet->notaventadetalle_id = $request->NVdet_id[$i];
-                    $despachoorddet->cantsoldesp = $request->cantsoldesp[$i];
+                    $despachoorddet->despachoord_id = $despachoord_id;
+                    $despachoorddet->despachosoldet_id = $request->despachosoldet_id[$i];
+                    $despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];
+                    $despachoorddet->cantdesp = $request->cantord[$i];
                     if($despachoorddet->save()){
                         /*
                         $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
                         $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
                         $notaventadetalle->save();
                         */
-                        //$despacho_id = $despachoord->id;    
+                        //$despacho_id = $despachoord->id;
+                        return redirect('despachoord/index')->with('mensaje','Nota de Venta creada con exito.'); 
                     }
                 }
             }
         }
-        return redirect('despachoord/index')->with('mensaje','Nota de Venta creada con exito.');
+        
     }
 
     /**
@@ -355,6 +358,32 @@ class DespachoOrdController extends Controller
     public function reporte(Request $request){
         $respuesta = reporte1($request);
         return $respuesta;
+    }
+
+    public function exportPdf($id,$stareport = '1')
+    {
+        $despachoord = DespachoOrd::findOrFail($id);
+        //dd($despachoord);
+        $despachoorddets = $despachoord->despachoorddets()->get();
+        //dd($despachoorddets);
+        $empresa = Empresa::orderBy('id')->get();
+        $rut = number_format( substr ( $despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoord->notaventa->cliente->rut, strlen($despachoord->notaventa->cliente->rut) -1 , 1 );
+        //dd($empresa[0]['iva']);
+        if($stareport == '1'){
+            return view('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
+        
+            $pdf = PDF::loadView('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
+            //return $pdf->download('cotizacion.pdf');
+            return $pdf->stream(str_pad($despachoord->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachoord->notaventa->cliente->razonsocial . '.pdf');
+        }else{
+            if($stareport == '2'){
+                return view('despachoord.listado1', compact('despachoord','despachoorddets','empresa'));        
+                $pdf = PDF::loadView('despachoord.listado1', compact('despachoord','despachoorddets','empresa'));
+                //return $pdf->download('cotizacion.pdf');
+                return $pdf->stream(str_pad($despachoord->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachoord->notaventa->cliente->razonsocial . '.pdf');
+    
+            }
+        }
     }
 
 }

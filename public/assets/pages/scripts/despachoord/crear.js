@@ -144,7 +144,7 @@ function insertarTabla(){
 
 
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
-			'<td name="NVdet_idTD'+ aux_nfila + '" id="NVdet_idTD'+ aux_nfila + '">'+ 
+			'<td name="despachosoldet_id'+ aux_nfila + '" id="despachosoldet_id'+ aux_nfila + '">'+ 
 				'0'+
 			'</td>'+
 			'<td style="display:none;">'+
@@ -305,7 +305,7 @@ function eliminarRegistro(i){
 	//event.preventDefault();
 	//alert($('input[name=_token]').val());
 	var data = {
-		id: $("#NVdet_idTD"+i).html(),
+		id: $("#despachosoldet_id"+i).html(),
 		nfila : i
 	};
 	var ruta = '/cotizacion/eliminarCotizacionDetalle/'+i;
