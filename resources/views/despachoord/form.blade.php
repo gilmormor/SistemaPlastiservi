@@ -315,10 +315,10 @@
                             <th style="display:none;">Peso</th>
                             <th>TU</th>
                             <th style="display:none;">TUnion</th>
-                            <th>Desc</th>
+                            <th style="display:none;">Desc</th>
                             <th style="display:none;">DescPorc</th>
                             <th style="display:none;">DescVal</th>
-                            <th>PUnit</th>
+                            <th style="display:none;">PUnit</th>
                             <th style="display:none;">Precio Neto Unit</th>
                             <th>V Kilo</th>
                             <th style="display:none;">Precio X Kilo</th>
@@ -442,7 +442,7 @@
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->tipounion}}" style="display:none;"/>
                                     </td>
-                                    <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right;display:none;">
                                         <?php $aux_descPorc = $detalle->notaventadetalle->descuento * 100; ?>
                                         {{$aux_descPorc}}%
                                     </td>
@@ -453,7 +453,7 @@
                                         <?php $aux_descVal = 1 - $detalle->notaventadetalle->descuento; ?>
                                         <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                     </td>
-                                    <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
+                                    <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right;display:none;"> 
                                         {{number_format($detalle->notaventadetalle->preciounit, 2, '.', ',')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
@@ -497,15 +497,15 @@
                                         <input type="text" name="cantordTotal" id="cantordTotal" class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>
-                                <td colspan="10" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="8" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="17" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="15" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="17" style="text-align:right"><b>Total</b></td>
+                                <td colspan="15" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
                             </tr>
                         @endif

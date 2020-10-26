@@ -52,7 +52,7 @@ Orden de despacho
                                 </td>
                                 <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->despachosol_id}},1)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                                        <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->despachosol_id}}
                                     </a>
                                 </td>
                                 <td>

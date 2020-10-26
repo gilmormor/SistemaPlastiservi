@@ -275,7 +275,7 @@ class DespachoOrdController extends Controller
     public function guardar(ValidarDespachoOrd $request)
     {
         can('guardar-orden-despacho');
-        //dd($request);
+        //dd(count($request->producto_id));
         
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
@@ -289,7 +289,8 @@ class DespachoOrdController extends Controller
         $cont_producto = count($request->producto_id);
         if($cont_producto>0){
             for ($i=0; $i < $cont_producto ; $i++){
-                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                $aux_cantord = $request->cantord[$i];
+                if(is_null($request->producto_id[$i])==false && is_null($aux_cantord)==false && $aux_cantord > 0){
                     $despachoorddet = new DespachoOrdDet();
                     $despachoorddet->despachoord_id = $despachoord_id;
                     $despachoorddet->despachosoldet_id = $request->despachosoldet_id[$i];
@@ -302,12 +303,11 @@ class DespachoOrdController extends Controller
                         $notaventadetalle->save();
                         */
                         //$despacho_id = $despachoord->id;
-                        return redirect('despachoord/index')->with('mensaje','Nota de Venta creada con exito.'); 
                     }
                 }
             }
         }
-        
+        return redirect('despachoord/index')->with('mensaje','Nota de Venta creada con exito.'); 
     }
 
     /**
