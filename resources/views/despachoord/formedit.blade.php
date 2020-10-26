@@ -334,12 +334,12 @@
                         @if ($aux_sta==2 or $aux_sta==3)
                             <?php 
                                 $aux_nfila = 0; $i = 0;
-                                $cantsolTotal = 0;
+                                $cantordTotal = 0;
                             ?>
                             @foreach($detalles as $detalle)
                                 <?php 
                                     $aux_nfila++;
-                                    $cantsolTotal = $cantsolTotal + $detalle->cantsoldesp;
+                                    $cantordTotal = $cantordTotal + $detalle->cantdesp;
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -395,10 +395,10 @@
                                     </td>
                                     -->
                                     <td name="saldocantOrigF{{$aux_nfila}}" id="saldocantOrigF{{$aux_nfila}}" style="text-align:right;display:none;">
-                                        {{$detalle->notaventadetalle->cant - $detalle->cantsoldesp}}
+                                        {{$detalle->notaventadetalle->cant - $detalle->cantdesp}}
                                     </td>
                                     <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->notaventadetalle->cant - $detalle->cantsoldesp}}
+                                        {{$detalle->notaventadetalle->cant - $detalle->cantdesp}}
                                     </td>
                                     <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
                                         <div class='checkbox'>
@@ -408,11 +408,11 @@
                                             </label>
                                         </div>
                                     </td>
-                                    <td name="cantsolF{{$aux_nfila}}" id="cantsolF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control" onkeyup="actSaldo({{$detalle->notaventadetalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})" value="{{$detalle->cantsoldesp}}" style="text-align:right;" readonly disabled/>
+                                    <td name="cantordF{{$aux_nfila}}" id="cantordF{{$aux_nfila}}" style="text-align:right">
+                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control" onkeyup="actSaldo({{$detalle->notaventadetalle->cant - $detalle->cantdesp}},{{$aux_nfila}})" value="{{$detalle->cantdesp}}" style="text-align:right;" readonly disabled/>
                                     </td>
-                                    <td name="cantsoldespF{{$aux_nfila}}" id="cantsoldespF{{$aux_nfila}}" style="text-align:right;display:none;">
-                                        <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantsoldesp}}" style="text-align:right;"/>
+                                    <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:right;display:none;">
+                                        <input type="text" name="cantdesp[]" id="cantdesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantdesp}}" style="text-align:right;"/>
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="4" style="display:none;"/>
@@ -505,7 +505,7 @@
                                 </td>
                                 <td style="text-align:right">
                                     <div class="form-group col-xs-12 col-sm-12">
-                                        <input type="text" name="cantsolTotal" id="cantsolTotal" value={{$cantsolTotal}} class="form-control" style="text-align:right;" readonly required/>
+                                        <input type="text" name="cantordTotal" id="cantordTotal" value={{$cantordTotal}} class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>
                                 <td colspan="10" style="text-align:right"><b>Neto</b></td>

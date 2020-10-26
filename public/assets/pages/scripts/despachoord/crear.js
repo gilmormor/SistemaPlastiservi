@@ -19,7 +19,7 @@ $(document).ready(function () {
 	//$("#rut").numeric();
 	$("#cantM").numeric();
 	$("#precioM").numeric({decimalPlaces: 2});
-	$(".numerico").numeric();
+	$(".numerico").numeric({ negative : false });
 	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});
@@ -601,19 +601,12 @@ function actSaldo(s,i){
 		$("#llenarCantOrd" + i).prop("checked", true);
 	}
 	if(aux_saldo < 0){
-		$("#cantord" + i).val($("#cant" + i).val())
+		aux_cant = parseFloat($("#cant" + i).val());
+		aux_cantorddesp = parseFloat($("#cantorddespF" + i).html());
+		$("#cantord" + i).val(aux_cant - aux_cantorddesp);
 		$("#saldocantF" + i).html('0');
 	}
-	aux_total = 0;
-	$("#tabla-data tr .cantordsum").each(function() {
-		valor = $(this).val() ;
-		valorNum = parseFloat(valor);
-		if(isNaN( valorNum )){
-			valorNum = 0;
-		}
-		aux_total += valorNum;
-	});
-	$("#cantordTotal").val(aux_total);
+	sumcant();
 }
 
 function llenarCantOrd(i){
@@ -623,10 +616,13 @@ function llenarCantOrd(i){
 	if (estaSeleccionado){
 		$("#cantord" + i).val($.trim(saldo));
 		$("#cantorddesp" + i).val($.trim(saldo));
+		$("#saldocantF" + i).html('0');
 	}else{
 		$("#cantord" + i).val('');
 		$("#cantorddesp" + i).val('');
+		$("#saldocantF" + i).html($("#saldocantOrigF" + i).html());
 	}
+	sumcant();
 }
 
 $("#marcarTodo").change(function() {
@@ -658,4 +654,17 @@ function sumarcant(){
 	}else{
 		$("#cantordTotal").val(aux_total);
 	}
+}
+
+function sumcant(){
+	aux_total = 0;
+	$("#tabla-data tr .cantordsum").each(function() {
+		valor = $(this).val() ;
+		valorNum = parseFloat(valor);
+		if(isNaN( valorNum )){
+			valorNum = 0;
+		}
+		aux_total += valorNum;
+	});
+	$("#cantordTotal").val(aux_total);	
 }

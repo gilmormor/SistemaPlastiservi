@@ -327,9 +327,137 @@ class DespachoOrdController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editar($id)
     {
-        //
+        can('editar-orden-despacho');
+        $data = DespachoOrd::findOrFail($id);
+        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
+        $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
+        $detalles = $data->despachoorddets()->get();
+        //dd($detalles);
+/*
+        foreach($detalles as $detalle){
+            dd($detalle);
+            $sql = "SELECT cantsoldesp
+                    FROM vista_sumsoldespdet
+                    WHERE notaventadetalle_id=$detalle->notaventadetalle_id";
+            $datasuma = DB::select($sql);
+            if(empty($datasuma)){
+                $sumacantsoldesp= 0;
+            }else{
+                $sumacantsoldesp= $datasuma[0]->cantsoldesp;
+            }
+            //if($detalle->cant > $sumacantsoldesp);
+            
+        }*/
+        $vendedor_id=$data->notaventa->vendedor_id;
+        $clienteselec = $data->notaventa->cliente()->get();
+        //session(['aux_aprocot' => '0']);
+        //dd($clienteselec[0]->rut);
+
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        //dd($sucurArray);
+        //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
+        //******************* */
+        $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
+        ->join('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
+        ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+        ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->select([
+                    'cliente.id as cliente_id',
+                    'cliente.razonsocial',
+                    'cliente.telefono',
+                    'cliente.email',
+                    'cliente.regionp_id',
+                    'cliente.provinciap_id',
+                    'cliente.comunap_id',
+                    'cliente.contactonombre',
+                    'cliente.direccion',
+                    'clientedirec.id',
+                    'clientedirec.direcciondetalle'
+                ])->get();
+        //dd($clientedirecs);
+        $clienteDirec = $data->notaventa->clientedirec()->get();
+        $fecha = date("d/m/Y", strtotime($data->fechahora));
+        $formapagos = FormaPago::orderBy('id')->get();
+        $plazopagos = PlazoPago::orderBy('id')->get();
+        $vendedores = Vendedor::orderBy('id')->get();
+        $comunas = Comuna::orderBy('id')->get();
+
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
+        //******************* */
+        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
+        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
+        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
+        ->select([
+                'producto.id',
+                'producto.nombre',
+                'claseprod.cla_nombre',
+                'producto.codintprod',
+                'producto.diamextmm',
+                'producto.espesor',
+                'producto.long',
+                'producto.peso',
+                'producto.tipounion',
+                'producto.precioneto',
+                'categoriaprod.precio',
+                'categoriaprodsuc.sucursal_id'
+                ])
+                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+                ->get();
+        //****************** */
+        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        //* Filtro solos los clientes que esten asignados a la sucursal */
+        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
+        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->pluck('cliente_sucursal.cliente_id')->toArray())
+        ->whereIn('cliente.id',$clientevendedorArray)
+        ->get();
+
+        //dd($clientes);
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
+
+        $empresa = Empresa::findOrFail(1);
+        $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $giros = Giro::orderBy('id')->get();
+        $aux_sta=2;
+        $aux_statusPant = 0;
+
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+        }
+        //dd($clientedirecs);
+        return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
+  
     }
 
     /**
