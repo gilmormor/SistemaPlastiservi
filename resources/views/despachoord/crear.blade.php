@@ -23,7 +23,7 @@
                     Orden Compra: {{$data->oc_id}} <i class='fa fa-fw fa-file-pdf-o'></i>
                 </a>
                 <div class="box-tools pull-right">
-                    <a href="{{route('despachoord')}}" class="btn btn-block btn-info btn-sm">
+                    <a href="{{route('listards_despachoord')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>

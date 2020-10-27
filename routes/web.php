@@ -482,3 +482,4 @@ Route::delete('despachoord/{id}', 'DespachoOrdController@eliminar')->name('elimi
 Route::post('despachoord/reporte', 'DespachoOrdController@reporte')->name('reporte_despachoord');
 Route::post('despachoord/anular/{id}', 'DespachoOrdController@anular')->name('anular_despachoord');
 Route::get('despachoord/{id}/{stareport}/exportPdf', 'DespachoOrdController@exportPdf')->name('exportPdf_despachoord');
+Route::get('despachoord/guiafact', 'DespachoOrdController@guiafact')->name('guiafact_despachoord');

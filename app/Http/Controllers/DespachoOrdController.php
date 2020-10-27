@@ -38,6 +38,20 @@ class DespachoOrdController extends Controller
         return view('despachoord.index', compact('datas'));
     }
 
+    
+
+    public function guiafact()
+    {
+        can('listar-orden-despacho');
+        $detalle = DespachoOrdAnul::select(['despachoord_id'])->get();
+        //dd($detalle);
+        $datas = DespachoOrd::orderBy('id')->whereNull('guiadespacho')
+                        ->whereNull('numfactura')
+                        ->whereNotIn('id',  $detalle)
+                        ->get();
+        return view('despachoord.indexguiafact', compact('datas'));
+    }
+
     public function listards() //Listar solicitudes de despacho
     {
         $user = Usuario::findOrFail(auth()->id());
@@ -588,6 +602,7 @@ function reporte1($request){
             <tr>
                 <th>ID</th>
                 <th>Fecha</th>
+                <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
                 <th>RUT</th>
                 <th>Razón Social</th>
                 <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
@@ -615,6 +630,7 @@ function reporte1($request){
                 <td id='id$i' name='id$i'>$data->id
                 </td>
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
                 <td id='rut$i' name='rut$i'>$rut</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td>
@@ -739,7 +755,7 @@ function consulta($request){
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
     $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
-            despachosol.notaventa_id
+            despachosol.notaventa_id,despachosol.fechaestdesp
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND if((SELECT cantdesp
