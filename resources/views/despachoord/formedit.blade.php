@@ -1,4 +1,5 @@
 <input type="hidden" name="id" id="id" value="{{$data->id}}">
+<input type="hidden" name="despachosol_id" id="despachosol_id" value="{{$data->despachosol_id}}">
 <input type="hidden" name="notaventa_id" id="notaventa_id" value="{{$data->notaventa_id}}">
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">

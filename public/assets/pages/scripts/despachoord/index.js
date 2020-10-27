@@ -10,7 +10,7 @@ function anular(i,id){
         nfila : i,
         _token: $('input[name=_token]').val()
 	};
-	var ruta = '/despachosol/anular/'+id;
+	var ruta = '/despachoord/anular/'+id;
 	swal({
 		title: '¿ Está seguro que desea anular Solicitud Despacho ?',
 		text: "Esta acción no se puede deshacer!",
@@ -21,7 +21,7 @@ function anular(i,id){
 		},
 	}).then((value) => {
 		if (value) {
-			ajaxRequest(data,ruta,'anularSD');
+			ajaxRequest(data,ruta,'anularOD');
 		}
 	});
 }
@@ -33,9 +33,9 @@ function ajaxRequest(data,url,funcion) {
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			if(funcion=='anularSD'){
-				if (respuesta.mensaje == "hijo") {
-					Biblioteca.notificaciones('Registro tiene Ordenes de Despacho Asociadas. No se puede anular.', 'Plastiservi', 'error');
+			if(funcion=='anularOD'){
+				if (respuesta.mensaje == "guidesp_factura") {
+					Biblioteca.notificaciones('Registro tiene Guia de despacho y Factura Asociadas. No se puede anular.', 'Plastiservi', 'error');
 					return 0;
 				}else{
 					if (respuesta.mensaje == "ok") {

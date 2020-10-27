@@ -10,6 +10,7 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
+use App\Models\DespachoOrdAnul;
 use App\Models\DespachoOrdDet;
 use App\Models\DespachoSol;
 use App\Models\Empresa;
@@ -33,7 +34,7 @@ class DespachoOrdController extends Controller
     public function index()
     {
         can('listar-orden-despacho');
-        $datas = DespachoOrd::orderBy('id')->get();
+        $datas = DespachoOrd::orderBy('id')->whereNull('guiadespacho')->whereNull('numfactura')->get();
         return view('despachoord.index', compact('datas'));
     }
 
@@ -467,9 +468,45 @@ class DespachoOrdController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function actualizar(ValidarDespachoOrd $request, $id)
     {
-        //
+        can('guardar-orden-despacho');
+        //dd($request);
+        $dateInput = explode('/',$request->plazoentrega);
+        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $dateInput = explode('/',$request->fechaestdesp);
+        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $despachoord = DespachoOrd::findOrFail($id);
+        $despachoord->comunaentrega_id = $request->comunaentrega_id;
+        $despachoord->tipoentrega_id = $request->tipoentrega_id;
+        $despachoord->plazoentrega = $request->plazoentrega;
+        $despachoord->lugarentrega = $request->lugarentrega;
+        $despachoord->contacto = $request->contacto;
+        $despachoord->contactoemail = $request->contactoemail;
+        $despachoord->contactotelf = $request->contactotelf;
+        $despachoord->observacion = $request->observacion;
+        $despachoord->fechaestdesp = $request->fechaestdesp;
+        //dd($request);
+        if($despachoord->save()){
+            $cont_producto = count($request->producto_id);
+            if($cont_producto>0){
+                for ($i=0; $i < $cont_producto ; $i++){
+                    if(is_null($request->producto_id[$i])==false && is_null($request->cantord[$i])==false){
+                        $despachoorddet = DespachoOrdDet::findOrFail($request->NVdet_id[$i]);
+                        $despachoorddet->cantord = $request->cantord[$i];
+                        if($despachoorddet->save()){
+                            /*
+                            $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
+                            $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                            $notaventadetalle->save();
+                            */
+                            //$despacho_id = $despachosol->id;    
+                        }
+                    }
+                }
+            }
+        }
+        return redirect('despachoord/index')->with('mensaje','Orden de Despacho actualizada con exito.');
     }
 
     /**
@@ -481,6 +518,27 @@ class DespachoOrdController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function anular(Request $request)
+    {
+        if ($request->ajax()) {
+            $despachoord = DespachoOrd::findOrFail($request->id);
+            if(empty($despachoord->guiadespacho) and empty($despachoord->numfactura)){
+                $despachoordanul = new DespachoOrdAnul();
+                $despachoordanul->despachoord_id = $request->id;
+                $despachoordanul->usuario_id = auth()->id();
+                if ($despachoordanul->save()) {
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }
+            }else{
+                return response()->json(['mensaje' => 'guidesp_factura']);
+            }
+        } else {
+            abort(404);
+        }
     }
 
     public function reporte(Request $request){

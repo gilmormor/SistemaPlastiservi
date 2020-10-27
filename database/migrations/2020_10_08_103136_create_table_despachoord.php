@@ -33,6 +33,9 @@ class CreateTableDespachoord extends Migration
             $table->string('contactoemail',50)->comment('Email de contacto de entrega')->nullable();
             $table->string('contactotelf',50)->comment('Telefono de contacto de entregao')->nullable();
             $table->string('observacion',200)->comment('Observaciones')->nullable();
+            $table->string('guiadespacho',50)->comment('Guia despacho')->nullable();
+            $table->string('numfactura',50)->comment('Número de Factura')->nullable();
+            $table->dateTime('fechguiafac')->comment('Fecha inclusion guia despacho y Numero de Factura');
             $table->date('fechaestdesp')->comment('Fecha estimada de Despacho.');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();
