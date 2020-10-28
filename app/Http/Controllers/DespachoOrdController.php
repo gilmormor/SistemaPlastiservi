@@ -34,22 +34,49 @@ class DespachoOrdController extends Controller
     public function index()
     {
         can('listar-orden-despacho');
-        $datas = DespachoOrd::orderBy('id')->whereNull('guiadespacho')->whereNull('numfactura')->get();
+        $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
+        $datas = DespachoOrd::orderBy('id')
+                ->whereNull('guiadespacho')->whereNull('numfactura')
+                ->whereNotIn('id',  $despachoordanul)
+                ->get();
         return view('despachoord.index', compact('datas'));
     }
 
     
 
-    public function guiafact()
+    public function indexguia()
     {
         can('listar-orden-despacho');
-        $detalle = DespachoOrdAnul::select(['despachoord_id'])->get();
+        $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
         //dd($detalle);
-        $datas = DespachoOrd::orderBy('id')->whereNull('guiadespacho')
-                        ->whereNull('numfactura')
-                        ->whereNotIn('id',  $detalle)
+/*
+        ->whereNull('guiadespacho')
+        ->whereNull('numfactura')
+*/
+        $datas = DespachoOrd::orderBy('id')
+                        ->whereNull('guiadespacho')
+                        ->whereNotIn('id',  $despachoordanul)
                         ->get();
-        return view('despachoord.indexguiafact', compact('datas'));
+        $aux_vista = 'G';
+        return view('despachoord.indexguiafact', compact('datas','aux_vista'));
+    }
+
+    public function indexfact()
+    {
+        can('listar-orden-despacho');
+        $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
+        //dd($detalle);
+/*
+        ->whereNull('guiadespacho')
+        ->whereNull('numfactura')
+*/
+        $datas = DespachoOrd::orderBy('id')
+                        ->whereNotNull('guiadespacho')
+                        ->whereNull('numfactura')
+                        ->whereNotIn('id',  $despachoordanul)
+                        ->get();
+        $aux_vista = 'F';
+        return view('despachoord.indexguiafact', compact('datas','aux_vista'));
     }
 
     public function listards() //Listar solicitudes de despacho
@@ -549,6 +576,57 @@ class DespachoOrdController extends Controller
                 }
             }else{
                 return response()->json(['mensaje' => 'guidesp_factura']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+    public function guardarguiadesp(Request $request)
+    {
+        if ($request->ajax()) {
+            //dd($request);
+            $despachoord = DespachoOrd::findOrFail($request->id);
+            $despachoord->guiadespacho = $request->guiadespacho;
+            $despachoord->guiadespachofec = date("Y-m-d H:i:s");
+            if ($despachoord->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+    public function guardarfactdesp(Request $request)
+    {
+        if ($request->ajax()) {
+            //dd($request);
+            $despachoord = DespachoOrd::findOrFail($request->id);
+            $despachoord->numfactura = $request->numfactura;
+            $despachoord->numfacturafec = date("Y-m-d H:i:s");
+            if ($despachoord->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+    
+    public function consultarod(Request $request)
+    {
+        if ($request->ajax()) {
+            $despachoord = DespachoOrd::findOrFail($request->id);
+            if ($despachoord) {
+                return response()->json([
+                                        'mensaje' => 'ok',
+                                        'despachoord' => $despachoord
+                                        ]);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
             }
         } else {
             abort(404);

@@ -50,9 +50,67 @@ function ajaxRequest(data,url,funcion) {
 						}
 					}
 				}
-            }
+			}
+			if(funcion=='guardarguiadesp'){
+				alert('entro');
+			}
+
 		},
 		error: function () {
 		}
 	});
+}
+
+
+function guiadesp(nfila,id){
+	$("#id").val(id);
+	$("#myModalguiadesp").modal('show');
+}
+
+$("#btnGuardarG").click(function(event)
+{
+	event.preventDefault();
+	if(verificarGuia())
+	{
+		var data = {
+			id    : $("#id").val(),
+			guiadespacho : $("#guiadespacho").val(),
+			_token: $('input[name=_token]').val()
+		};
+		var ruta = '/despachoord/guardarguiadesp/'+data['id'];
+		swal({
+			title: '¿ Está seguro desea continuar ?',
+			text: "Esta acción no se puede deshacer!",
+				icon: 'warning',
+			buttons: {
+				cancel: "Cancelar",
+				confirm: "Aceptar"
+			},
+		}).then((value) => {
+			if (value) {
+				ajaxRequest(data,ruta,'guardarguiadesp');
+			}
+		});
+
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+	
+});
+
+$(".requeridos").keyup(function(){
+	//alert($(this).parent().attr('class'));
+	validacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+function verificarGuia()
+{
+	var v1=0;
+	
+	v1=validacion('guiadespacho','texto');
+	if (v1===false)
+	{
+		return false;
+	}else{
+		return true;
+	}
 }
