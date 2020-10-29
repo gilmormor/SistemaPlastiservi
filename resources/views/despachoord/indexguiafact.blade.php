@@ -23,15 +23,23 @@ Orden de despacho
                     <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
                         <thead>
                             <tr>
-                                <th class="width70">ID</th>
-                                <th class='tooltipsC' title='fecha estimada de Despacho'>Fecha ED</th>
+                                <th>ID</th>
+                                <th class='tooltipsC' title='Fecha Orden despacho'>Fecha OD</th>
+                                <th class='tooltipsC' title='Fecha estimada de Despacho'>Fecha ED</th>
                                 <th>Descripción</th>
                                 <th class='tooltipsC' title='Orden Despacho'>OD</th>
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
-                                <th class="width100"></th>
+                                @if ($aux_vista != "C")
+                                    <th class="width100"></th>
+                                @else
+                                    <th class='tooltipsC' title='Num Guia'>NumGuia</th>
+                                    <th class='tooltipsC' title='Fecha Guia'>F Guia</th>
+                                    <th class='tooltipsC' title='Num Factura'>NumFact</th>
+                                    <th class='tooltipsC' title='Fecha Factura'>F Fact</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -40,7 +48,8 @@ Orden de despacho
                             <?php $aux_nfila++; ?>
                             <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
                                 <td>{{$data->id}}</td>
-                                <td>{{$data->fechaestdesp}}</td>
+                                <td>{{date("d/m/Y", strtotime($data->fechahora))}}</td>
+                                <td>{{date("d/m/Y", strtotime($data->fechaestdesp))}}</td>
                                 <td>{{$data->notaventa->cliente->razonsocial}}</td>
                                 <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD({{$data->id}},1)'>
@@ -67,21 +76,30 @@ Orden de despacho
                                         <i class='fa fa-fw fa-file-pdf-o'></i>
                                     </a>
                                 </td>
-                                <td id="accion{{$aux_nfila}}">
-                                    @if ($data->despachoordanul)
-                                        <small class="label pull-left bg-red">Anulado</small>
-                                    @else
-                                        @if ($aux_vista =="G")
-                                            <a onclick='guiadesp({{$aux_nfila}},{{$data->id}})' class="btn btn-info btn-xs tooltipsC" title="Guia de despacho">
-                                                Guia
-                                            </a>                                            
+                                @if ($aux_vista != "C")
+                                    <td id="accion{{$aux_nfila}}">
+                                        @if ($data->despachoordanul)
+                                            <small class="label pull-left bg-red">Anulado</small>
                                         @else
-                                            <a onclick='numfactura({{$aux_nfila}},{{$data->id}})' class='btn btn-warning btn-xs' title='Factura' data-toggle='tooltip'>
-                                                Fact
-                                            </a>                                            
+                                            @if ($aux_vista == "G")
+                                                <a onclick='guiadesp({{$aux_nfila}},{{$data->id}})' class="btn btn-danger btn-xs tooltipsC" title="Guia de despacho">
+                                                    Guia
+                                                </a>
+                                            @endif
+                                            @if ($aux_vista == "F")
+                                                <a onclick='numfactura({{$aux_nfila}},{{$data->id}})' class='btn btn-warning btn-xs' title='Factura' data-toggle='tooltip'>
+                                                    Fact
+                                                </a>
+                                            @endif
                                         @endif
-                                    @endif
-                                </td>
+                                    </td>
+                                @endif
+                                @if ($aux_vista == "C")
+                                    <td>{{$data->guiadespacho}}</td>
+                                    <td>{{date("d/m/Y", strtotime($data->fechahora))}}</td>
+                                    <td>{{$data->numfactura}}</td>
+                                    <td>{{date("d/m/Y", strtotime($data->fechaestdesp))}}</td>        
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>

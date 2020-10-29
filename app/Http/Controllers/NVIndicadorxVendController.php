@@ -120,7 +120,12 @@ class NVIndicadorxVendController extends Controller
 		$respuesta['tabla'] = "";
 
         if($request->ajax()){
-            $datas = consulta($request);
+            if($request->idcons == "1"){
+                $datas = consulta($request);
+            }
+            if($request->idcons == "2"){
+                $datas = consultaODcompetada($request);
+            }
             //dd($respuesta['totalkilos']);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
@@ -368,6 +373,154 @@ function consulta($request){
     and $aux_condareaproduccion_id
     and notaventa.anulada is null
     and notaventadetalle.deleted_at is null and notaventa.deleted_at is null
+    GROUP BY grupoprod.id,grupoprod.gru_nombre,persona.id,persona.nombre;";
+
+    $datas = DB::select($sql);
+    $respuesta['totales'] = $datas;
+    //dd($respuesta['totales']);
+    return $respuesta;
+}
+
+function consultaODcompetada($request){
+    $array = array('apellido', 'email', 'teléfono');
+    $separado_por_comas = implode(",", $array);
+    //dd(json_decode($request->vendedor_id));
+    $aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
+    //dd($aux_vendedor);
+    $respuesta = array();
+    $respuesta['exito'] = true;
+    $respuesta['mensaje'] = "Código encontrado";
+    $respuesta['productos'] = "";
+    $respuesta['vendedores'] = "";
+
+    if(empty($aux_vendedor )){
+            $vendedorcond = " true ";
+    }else{
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
+    }
+    //dd($vendedorcond);
+    if(empty($request->fechad) or empty($request->fechah)){
+        $aux_condFecha = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->fechad);
+        $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
+        $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+        $aux_condFecha = "despachoord.fechahora>='$fechad' and despachoord.fechahora<='$fechah'";
+    }
+    if(empty($request->categoriaprod_id)){
+        $aux_condcategoriaprod_id = " true";
+    }else{
+        $aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+    }
+    if(empty($request->giro_id)){
+        $aux_condgiro_id = " true";
+    }else{
+        $aux_condgiro_id = "cliente.giro_id='$request->giro_id'";
+    }
+
+    if(empty($request->areaproduccion_id)){
+        $aux_condareaproduccion_id = " true";
+    }else{
+        $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$request->areaproduccion_id'";
+    }
+
+
+    $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
+    sum(despachoorddet.cantdesp) AS totalkilos
+    FROM despachoorddet INNER JOIN notaventadetalle 
+    ON despachoorddet.notaventadetalle_id=notaventadetalle.id
+    INNER JOIN despachoord
+    ON despachoorddet.despachoord_id=despachoord.id
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condareaproduccion_id
+    and notaventa.anulada is null
+    and despachoord.deleted_at is null 
+    and notaventadetalle.deleted_at is null 
+    and notaventa.deleted_at is null
+    GROUP BY grupoprod.id,grupoprod.gru_nombre;";
+    //dd($sql);
+    //" and " . $aux_condrut .
+
+    $datas = DB::select($sql);
+    $respuesta['productos'] = $datas;
+
+    $sql = "SELECT persona.id,persona.nombre,
+    sum(despachoorddet.cantdesp) AS totalkilos
+    FROM despachoorddet INNER JOIN notaventadetalle 
+    ON despachoorddet.notaventadetalle_id=notaventadetalle.id
+    INNER JOIN despachoord
+    ON despachoorddet.despachoord_id=despachoord.id
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id
+    INNER JOIN vendedor 
+    ON notaventa.vendedor_id=vendedor.id
+    INNER JOIN persona
+    ON vendedor.persona_id=persona.id
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condareaproduccion_id
+    and notaventa.anulada is null
+    and despachoord.deleted_at is null 
+    and notaventadetalle.deleted_at is null 
+    and notaventa.deleted_at is null
+    GROUP BY persona.id,persona.nombre;";
+
+    $datas = DB::select($sql);
+    $respuesta['vendedores'] = $datas;
+
+
+    $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
+    sum(despachoorddet.cantdesp) AS totalkilos
+    FROM despachoorddet INNER JOIN notaventadetalle 
+    ON despachoorddet.notaventadetalle_id=notaventadetalle.id
+    INNER JOIN despachoord
+    ON despachoorddet.despachoord_id=despachoord.id
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id
+    INNER JOIN vendedor 
+    ON notaventa.vendedor_id=vendedor.id
+    INNER JOIN persona
+    ON vendedor.persona_id=persona.id
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condareaproduccion_id
+    and notaventa.anulada is null
+    and despachoord.deleted_at is null 
+    and notaventadetalle.deleted_at is null 
+    and notaventa.deleted_at is null
     GROUP BY grupoprod.id,grupoprod.gru_nombre,persona.id,persona.nombre;";
 
     $datas = DB::select($sql);

@@ -48,11 +48,6 @@ class DespachoOrdController extends Controller
     {
         can('listar-orden-despacho');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
-        //dd($detalle);
-/*
-        ->whereNull('guiadespacho')
-        ->whereNull('numfactura')
-*/
         $datas = DespachoOrd::orderBy('id')
                         ->whereNull('guiadespacho')
                         ->whereNotIn('id',  $despachoordanul)
@@ -65,17 +60,25 @@ class DespachoOrdController extends Controller
     {
         can('listar-orden-despacho');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
-        //dd($detalle);
-/*
-        ->whereNull('guiadespacho')
-        ->whereNull('numfactura')
-*/
         $datas = DespachoOrd::orderBy('id')
                         ->whereNotNull('guiadespacho')
                         ->whereNull('numfactura')
                         ->whereNotIn('id',  $despachoordanul)
                         ->get();
         $aux_vista = 'F';
+        return view('despachoord.indexguiafact', compact('datas','aux_vista'));
+    }
+
+        public function indexcompletado()
+    {
+        can('listar-orden-despacho');
+        $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
+        $datas = DespachoOrd::orderBy('id')
+                        ->whereNotNull('guiadespacho')
+                        ->whereNotNull('numfactura')
+                        ->whereNotIn('id',  $despachoordanul)
+                        ->get();
+        $aux_vista = 'C';
         return view('despachoord.indexguiafact', compact('datas','aux_vista'));
     }
 

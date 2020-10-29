@@ -17,7 +17,13 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datos(1));
+    });
+
+    
+    $("#btnconsultarOD").click(function()
+    {
+        consultar(datos(2));
     });
 
     $("#btnpdf1").click(function()
@@ -39,7 +45,7 @@ $(document).ready(function () {
 
 });
 
-function datos(){
+function datos(idcons){
     var data = {
         fechad: $("#fechad").val(),
         fechah: $("#fechah").val(),
@@ -47,6 +53,7 @@ function datos(){
         giro_id: $("#giro_id").val(),
         categoriaprod_id: $("#categoriaprod_id").val(),
         areaproduccion_id : $("#areaproduccion_id").val(),
+        idcons : idcons,
         _token: $('input[name=_token]').val()
     };
     return data;
