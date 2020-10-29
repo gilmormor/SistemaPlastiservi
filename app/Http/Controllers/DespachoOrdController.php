@@ -651,7 +651,7 @@ class DespachoOrdController extends Controller
         $rut = number_format( substr ( $despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoord->notaventa->cliente->rut, strlen($despachoord->notaventa->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
         if($stareport == '1'){
-            return view('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
+            //return view('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
         
             $pdf = PDF::loadView('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
             //return $pdf->download('cotizacion.pdf');
