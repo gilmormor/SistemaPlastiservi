@@ -637,6 +637,35 @@ function totalizar(){
 	$("#total").val(aux_total);
 }
 
+function totalizardespacho(){
+	total_neto = 0;
+
+	$("#tabla-data tr .subtotal").each(function() {
+		valor = $(this).html() ;
+		//alert(valor);
+		valorNum = parseFloat(valor);
+		total_neto += valorNum;
+	});
+	//alert(total_neto);
+	aux_porciva = $("#aux_iva").val()
+	aux_porciva = parseFloat(aux_porciva);
+	aux_iva = Math.round(total_neto * (aux_porciva/100));
+	aux_total = total_neto + aux_iva;
+	aux_netoform = MASK(0, total_neto, '-##,###,##0.00',1)
+	aux_ivaform = MASK(0, aux_iva, '-##,###,##0.00',1)
+	aux_tdtotalform = MASK(0, aux_total, '-##,###,##0.00',1)
+	
+	//$("#tdneto").html(total_neto.toFixed(2));
+	$("#tdneto").html(aux_netoform);
+	$("#tdiva").html(aux_ivaform);
+	$("#tdtotal").html(aux_tdtotalform);
+
+	$("#neto").val(total_neto);
+	$("#iva").val(aux_iva);
+	$("#total").val(aux_total);
+}
+
+
 $('.region_id').on('change', function () {
 	llenarProvincia(this,0);
 });

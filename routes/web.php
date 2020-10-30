@@ -489,3 +489,11 @@ Route::post('despachoord/guardarguiadesp', 'DespachoOrdController@guardarguiades
 Route::post('despachoord/guardarfactdesp', 'DespachoOrdController@guardarfactdesp')->name('guardarfactdesp_despachoord');
 Route::post('despachoord/consultarod', 'DespachoOrdController@consultarod')->name('consultarod_despachoord');
 
+
+/*RUTAS DESPACHOOBS*/
+Route::get('despachoobs', 'DespachoObsController@index')->name('despachoobs');
+Route::get('despachoobs/crear', 'DespachoObsController@crear')->name('crear_despachoobs');
+Route::post('despachoobs', 'DespachoObsController@guardar')->name('guardar_despachoobs');
+Route::get('despachoobs/{id}/editar', 'DespachoObsController@editar')->name('editar_despachoobs');
+Route::put('despachoobs/{id}', 'DespachoObsController@actualizar')->name('actualizar_despachoobs');
+Route::delete('despachoobs/{id}', 'DespachoObsController@eliminar')->name('eliminar_despachoobs');

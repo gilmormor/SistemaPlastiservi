@@ -600,13 +600,26 @@ function actSaldo(s,i){
 	}else{
 		$("#llenarCantOrd" + i).prop("checked", true);
 	}
+	aux_totalkilosTD = aux_cantord * $("#peso" + i).val();
+	aux_subtotalCFTD = aux_cantord * $("#peso" + i).val() * $("#precioxkilo" + i).val();
+	$("#totalkilosTD" + i).html(MASK(0, aux_totalkilosTD, '-##,###,##0.00',1));
+	$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-##,###,##0.00',1));
+	$("#subtotalSFTD" + i).html(aux_subtotalCFTD);
+	
+	
 	if(aux_saldo < 0){
 		aux_cant = parseFloat($("#cant" + i).val());
 		aux_cantorddesp = parseFloat($("#cantorddespF" + i).html());
 		$("#cantord" + i).val(aux_cant - aux_cantorddesp);
 		$("#saldocantF" + i).html('0');
+		aux_totalkilosTD = aux_cant * $("#peso" + i).val();
+		aux_subtotalCFTD = aux_cant * $("#peso" + i).val() * $("#precioxkilo" + i).val();
+		$("#totalkilosTD" + i).html(MASK(0, aux_totalkilosTD, '-##,###,##0.00',1));
+		$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-##,###,##0.00',1));
+		$("#subtotalSFTD" + i).html(aux_subtotalCFTD);
 	}
 	sumcant();
+	totalizardespacho();
 }
 
 function llenarCantOrd(i){
@@ -617,10 +630,12 @@ function llenarCantOrd(i){
 		$("#cantord" + i).val($.trim(saldo));
 		$("#cantorddesp" + i).val($.trim(saldo));
 		$("#saldocantF" + i).html('0');
+		actSaldo($("#cantord" + i).val(),i);
 	}else{
 		$("#cantord" + i).val('');
 		$("#cantorddesp" + i).val('');
 		$("#saldocantF" + i).html($("#saldocantOrigF" + i).html());
+		actSaldo($("#saldocantOrigF" + i).html(),i);
 	}
 	sumcant();
 }
@@ -628,11 +643,11 @@ function llenarCantOrd(i){
 $("#marcarTodo").change(function() {
 	estaSeleccionado = $("#marcarTodo").is(":checked");
 	sumarcant();
+	totalizardespacho();
 });
 
 function sumarcant(){
 	nFilas = $("#tabla-data tr").length - 4;
-	aux_total = 0;
 	$("#cantordTotal").val('');
 	for (var i = 1; i <= nFilas; i++) {
 		saldo = $("#saldocantOrigF" + i).html();
@@ -641,19 +656,16 @@ function sumarcant(){
 			$("#cantord" + i).val($.trim(saldo));
 			$("#cantorddesp" + i).val($.trim(saldo));
 			$("#saldocantF" + i).html("0")
-			aux_total = aux_total + parseInt($.trim(saldo));
+			actSaldo($("#cantord" + i).val(),i);
 		}else{
 			$("#llenarCantOrd" + i).prop("checked", false);
 			$("#cantord" + i).val('');
 			$("#cantorddesp" + i).val('');
 			$("#saldocantF" + i).html($("#saldocantOrigF" + i).html())
-		}	
+			actSaldo($("#saldocantOrigF" + i).html(),i);
+		}
 	}
-	if(aux_total == 0){
-		$("#cantordTotal").val('');
-	}else{
-		$("#cantordTotal").val(aux_total);
-	}
+	sumcant();
 }
 
 function sumcant(){

@@ -35,7 +35,7 @@ Orden de despacho
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                                <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                                <!--<th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>-->
                                 <th class="width70"></th>
                             </tr>
                         </thead>
@@ -67,11 +67,13 @@ Orden de despacho
                                         <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
                                     </a>
                                 </td>
+                                <!--
                                 <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->notaventa_id}},2)'>
                                         <i class='fa fa-fw fa-file-pdf-o'></i>
                                     </a>
                                 </td>
+                                -->
                                 <td id="accion{{$aux_nfila}}">
                                     @if ($data->despachoordanul)
                                         <small class="label pull-left bg-red">Anulado</small>

@@ -23,6 +23,12 @@ class DespachoOrd extends Model
         'contactotelf',
         'observacion',
         'fechaestdesp',
+        'guiadespacho',
+        'guiadespachofec',
+        'numfactura',
+        'fechafactura',
+        'numfacturafec',
+        'despachoobs_id',
         'usuariodel_id'
     ];
 
@@ -37,7 +43,7 @@ class DespachoOrd extends Model
     {
         return $this->belongsTo(DespachoSol::class);
     }
-    
+
     //Relacion inversa a NotaVenta
     public function notaventa()
     {

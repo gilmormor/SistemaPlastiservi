@@ -689,7 +689,7 @@ function reporte1($request){
                 <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                <!--<th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>-->
                 <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
             </tr>
         </thead>
@@ -725,11 +725,13 @@ function reporte1($request){
                     <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
                     </a>
                 </td>
+                <!--
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV($data->notaventa_id,2)'>
                         <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                     </a>
                 </td>
+                -->
                 <td>
                     <a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer Orden Despacho'>
                         <i class='fa fa-fw fa-truck'></i>
