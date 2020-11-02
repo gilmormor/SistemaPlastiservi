@@ -51,8 +51,44 @@ function ajaxRequest(data,url,funcion) {
 					}
 				}
             }
+			if(funcion=='aproborddesp'){
+				if (respuesta.mensaje == "ok") {
+					$("#fila"+data['nfila']).remove();
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+					if (respuesta.mensaje == "sp"){
+						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+					}else{
+						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+					}
+				}
+            }
 		},
 		error: function () {
+		}
+	});
+}
+
+
+function aprobarsol(i,id){
+	//alert($('input[name=_token]').val());
+	var data = {
+		id: id,
+        nfila : i,
+        _token: $('input[name=_token]').val()
+	};
+	var ruta = '/despachosol/aproborddesp/'+id;
+	swal({
+		title: '¿ Seguro desea aprobar Solicitud ?',
+		text: "Esta acción no se puede deshacer!",
+		icon: 'warning',
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+			ajaxRequest(data,ruta,'aproborddesp');
 		}
 	});
 }

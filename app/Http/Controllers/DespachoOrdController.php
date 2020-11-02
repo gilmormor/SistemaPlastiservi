@@ -9,6 +9,7 @@ use App\Models\Cliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
+use App\Models\DespachoObs;
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnul;
 use App\Models\DespachoOrdDet;
@@ -36,6 +37,7 @@ class DespachoOrdController extends Controller
         can('listar-orden-despacho');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
         $datas = DespachoOrd::orderBy('id')
+                ->whereNull('aprguiadesp')
                 ->whereNull('guiadespacho')->whereNull('numfactura')
                 ->whereNotIn('id',  $despachoordanul)
                 ->get();
@@ -49,6 +51,7 @@ class DespachoOrdController extends Controller
         can('listar-orden-despacho');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
         $datas = DespachoOrd::orderBy('id')
+                        ->where('aprguiadesp','1')
                         ->whereNull('guiadespacho')
                         ->whereNotIn('id',  $despachoordanul)
                         ->get();
@@ -147,6 +150,7 @@ class DespachoOrdController extends Controller
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
 
         /*
@@ -165,7 +169,7 @@ class DespachoOrdController extends Controller
         $respuesta = reporte1($request);
         */ 
 
-        return view('despachoord.listardespachosol', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaAct'));
+        return view('despachoord.listardespachosol', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
 
     }
     /**
@@ -292,6 +296,7 @@ class DespachoOrdController extends Controller
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $giros = Giro::orderBy('id')->get();
+        $despachoobss = DespachoObs::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
 
@@ -307,7 +312,7 @@ class DespachoOrdController extends Controller
             $vendedor_id=$user->persona->vendedor->id;
         }
         //dd($clientedirecs);
-        return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
+        return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
         
     }
 
@@ -320,7 +325,7 @@ class DespachoOrdController extends Controller
     public function guardar(ValidarDespachoOrd $request)
     {
         can('guardar-orden-despacho');
-        //dd(count($request->producto_id));
+        //dd($request);
         
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
@@ -486,6 +491,7 @@ class DespachoOrdController extends Controller
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $giros = Giro::orderBy('id')->get();
+        $despachoobss = DespachoObs::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
 
@@ -501,7 +507,7 @@ class DespachoOrdController extends Controller
             $vendedor_id=$user->persona->vendedor->id;
         }
         //dd($clientedirecs);
-        return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
+        return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
   
     }
 
@@ -530,6 +536,7 @@ class DespachoOrdController extends Controller
         $despachoord->contactotelf = $request->contactotelf;
         $despachoord->observacion = $request->observacion;
         $despachoord->fechaestdesp = $request->fechaestdesp;
+        $despachoord->despachoobs_id = $request->despachoobs_id;
         //dd($request);
         if($despachoord->save()){
             $cont_producto = count($request->producto_id);
@@ -636,6 +643,23 @@ class DespachoOrdController extends Controller
         }
     }
 
+    public function aproborddesp(Request $request)
+    {
+        if ($request->ajax()) {
+            $despachoord = DespachoOrd::findOrFail($request->id);
+            $despachoord->aprguiadesp = 1;
+            $despachoord->aprguiadespfh = date("Y-m-d H:i:s");;
+            if ($despachoord->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+
     public function reporte(Request $request){
         $respuesta = reporte1($request);
         return $respuesta;
@@ -684,11 +708,11 @@ function reporte1($request){
                 <th>ID</th>
                 <th>Fecha</th>
                 <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
-                <th>RUT</th>
                 <th>Razón Social</th>
                 <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                <th>Comuna</th>
                 <th class='tooltipsC' title='Total Kg'>Total Kg</th>
                 <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
             </tr>
@@ -712,7 +736,6 @@ function reporte1($request){
                 </td>
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
-                <td id='rut$i' name='rut$i'>$rut</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->id,1)'>
@@ -725,6 +748,7 @@ function reporte1($request){
                     <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
                     </a>
                 </td>
+                <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
                 <td style='text-align:right'>".
                     number_format($data->totalkilos, 2, ",", ".") .
                 "</td>
@@ -831,9 +855,19 @@ function consulta($request){
         
     }
 
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true";
+    }else{
+        $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
+    }
+
+    $aux_condaprobord = "despachosol.aprorddesp = 1";
+
+
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
     $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
+            comuna.nombre as comunanombre,
             despachosol.notaventa_id,despachosol.fechaestdesp,
             sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos
             FROM despachosol INNER JOIN despachosoldet
@@ -854,6 +888,8 @@ function consulta($request){
             ON areaproduccion.id=categoriaprod.areaproduccion_id
             INNER JOIN cliente
             ON cliente.id=notaventa.cliente_id
+            INNER JOIN comuna
+            ON comuna.id=despachosol.comunaentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -863,6 +899,8 @@ function consulta($request){
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
             and $aux_aprobstatus
+            and $aux_condcomuna_id
+            and $aux_condaprobord
             and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachosol.id;";
 /*

@@ -105,6 +105,7 @@ function datos(){
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
+        comuna_id         : $("#comuna_id").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;

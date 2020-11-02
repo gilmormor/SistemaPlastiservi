@@ -35,8 +35,8 @@ Orden de despacho
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                                <th class='tooltipsC' title='Comuna'>Comuna</th>
                                 <th class='tooltipsC' title='Total Kg'>Total Kg</th>
-                                <!--<th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>-->
                                 <th class="width70"></th>
                             </tr>
                         </thead>
@@ -50,7 +50,7 @@ Orden de despacho
                                     $aux_totalkg += $despachoorddet->cantdesp * ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant);
                                 }
                             ?>
-                            <tr>
+                            <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
                                 <td>{{$data->id}}</td>
                                 <td>{{$data->fechaestdesp}}</td>
                                 <td>{{$data->notaventa->cliente->razonsocial}}</td>
@@ -74,13 +74,7 @@ Orden de despacho
                                         <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
                                     </a>
                                 </td>
-                                <!--
-                                <td>
-                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->notaventa_id}},2)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i>
-                                    </a>
-                                </td>
-                                -->
+                                <td>{{$data->comunaentrega->nombre}}</td>
                                 <td style='text-align:right'>
                                     {{number_format($aux_totalkg, 2, ",", ".")}}
                                 </td>
@@ -88,6 +82,9 @@ Orden de despacho
                                     @if ($data->despachoordanul)
                                         <small class="label pull-left bg-red">Anulado</small>
                                     @else
+                                        <a id='bntaproord$i' name='bntaproord$i' class='btn-accion-tabla btn-sm' onclick='aprobarord({{$aux_nfila}},{{$data->id}})' title='Aprobar Orden Despacho' data-toggle='tooltip'>
+                                            <span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>
+                                        </a>
                                         <a href="{{route('editar_despachoord', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
                                             <i class="fa fa-fw fa-pencil"></i>
                                         </a>

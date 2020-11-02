@@ -34,6 +34,7 @@ Solicitud de despacho
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                                <th class='tooltipsC' title='Comuna'>Comuna</th>
                                 <th class='tooltipsC' title='Total Kg'>Total Kg</th>
                                 <th class="width70"></th>
                             </tr>
@@ -50,7 +51,7 @@ Solicitud de despacho
                                         $aux_totalkg += $despachosoldet->cantsoldesp * ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant);
                                     }
                                 ?>
-                                <tr>
+                                <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
                                     <td>{{$data->id}}</td>
                                     <td>{{$data->notaventa->cliente->razonsocial}}</td>
                                     <td>
@@ -73,6 +74,7 @@ Solicitud de despacho
                                             <i class='fa fa-fw fa-file-pdf-o'></i>
                                         </a>
                                     </td>
+                                    <td>{{$data->comunaentrega->nombre}}</td>
                                     <td style='text-align:right'>
                                         {{number_format($aux_totalkg, 2, ",", ".")}}
                                     </td>
@@ -80,6 +82,9 @@ Solicitud de despacho
                                         @if ($data->despachosolanul)
                                             <small class="label pull-left bg-red">Anulado</small>
                                         @else
+                                            <a id='bntaprosol$i' name='bntaprosol$i' class='btn-accion-tabla btn-sm' onclick='aprobarsol({{$aux_nfila}},{{$data->id}})' title='Aprobar Solicitud Despacho' data-toggle='tooltip'>
+                                                <span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>
+                                            </a>
                                             <a href="{{route('editar_despachosol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
                                                 <i class="fa fa-fw fa-pencil"></i>
                                             </a>

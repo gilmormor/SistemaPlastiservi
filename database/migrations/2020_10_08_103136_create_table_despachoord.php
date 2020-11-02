@@ -41,6 +41,8 @@ class CreateTableDespachoord extends Migration
             $table->dateTime('numfacturafec')->comment('Fecha inclusion numero de factura.')->nullable();
             $table->unsignedBigInteger('despachoobs_id')->nullable();
             $table->foreign('despachoobs_id','fk_despachoord_despachoobs')->references('id')->on('despachoobs')->onDelete('restrict')->onUpdate('restrict');
+            $table->boolean('aprguiadesp')->comment('Aprobar Guia Despacho (null o 0)=Sin aprobar, 1=Registro aprobado ingresar Guia Despacho.')->nullable();
+            $table->dateTime('aprguiadespfh')->comment('Aprobar Guia Despacho Fecha hora cuando fue aprobado para ingresar Guia de espacho.')->nullable();
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();
             $table->softDeletes();

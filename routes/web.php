@@ -468,6 +468,7 @@ Route::delete('despachosol/{id}', 'DespachoSolController@eliminar')->name('elimi
 Route::post('despachosol/reporte', 'DespachoSolController@reporte')->name('reporte_despachosol');
 Route::post('despachosol/anular/{id}', 'DespachoSolController@anular')->name('anular_despachosol');
 Route::get('despachosol/{id}/{stareport}/exportPdf', 'DespachoSolController@exportPdf')->name('exportPdf_despachosol');
+Route::post('despachosol/aproborddesp/{id}', 'DespachoSolController@aproborddesp')->name('aproborddesp_despachosol');
 
 
 /*RUTAS Orden de Despacho*/
@@ -488,6 +489,7 @@ Route::get('despachoord/indexcompletado', 'DespachoOrdController@indexcompletado
 Route::post('despachoord/guardarguiadesp', 'DespachoOrdController@guardarguiadesp')->name('guardarguiadesp_despachoord');
 Route::post('despachoord/guardarfactdesp', 'DespachoOrdController@guardarfactdesp')->name('guardarfactdesp_despachoord');
 Route::post('despachoord/consultarod', 'DespachoOrdController@consultarod')->name('consultarod_despachoord');
+Route::post('despachoord/aproborddesp/{id}', 'DespachoOrdController@aproborddesp')->name('aproborddesp_despachoord');
 
 
 /*RUTAS DESPACHOOBS*/

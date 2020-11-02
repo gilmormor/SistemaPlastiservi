@@ -32,6 +32,8 @@ class CreateTableDespachosol extends Migration
             $table->string('contactotelf',50)->comment('Telefono de contacto de entregao')->nullable();
             $table->string('observacion',200)->comment('Observaciones')->nullable();
             $table->date('fechaestdesp')->comment('Fecha estimada de Despacho.');
+            $table->boolean('aprorddesp')->comment('Aprobar hacer orden de Despacho (null o 0)=Sin aprobar, 1=Registro aprobado para hacer Orden Despacho.')->nullable();
+            $table->dateTime('aprorddespfh')->comment('Aprobar hacer orden de Despacho Fecha hora cuando fue aprobadopara hacer Orden Despacho.')->nullable();
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();
             $table->softDeletes();

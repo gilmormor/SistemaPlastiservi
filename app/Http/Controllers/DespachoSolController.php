@@ -104,6 +104,7 @@ class DespachoSolController extends Controller
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
 
         /*
@@ -122,7 +123,7 @@ class DespachoSolController extends Controller
         $respuesta = reporte1($request);
         */ 
 
-        return view('despachosol.listarnotaventa', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaAct'));
+        return view('despachosol.listarnotaventa', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
 
     }
 
@@ -553,6 +554,27 @@ class DespachoSolController extends Controller
         }
     }
 
+    public function aproborddesp(Request $request)
+    {
+        if ($request->ajax()) {
+            $despachosol = DespachoSol::findOrFail($request->id);
+            if($despachosol->despachoords->count() == 0){
+                $despachosol->aprorddesp = 1;
+                $despachosol->aprorddespfh = date("Y-m-d H:i:s");;
+                if ($despachosol->save()) {
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }
+            }else{
+                return response()->json(['mensaje' => 'hijo']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+
     public function exportPdf($id,$stareport = '1')
     {
         $despachosol = DespachoSol::findOrFail($id);
@@ -662,10 +684,17 @@ function consulta($request){
         
     }
 
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true";
+    }else{
+        $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
+    }
+
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+            comuna.nombre as comunanombre,
             sum(notaventadetalle.cant) AS cant,
             sum(notaventadetalle.precioxkilo) AS precioxkilo,
             sum(notaventadetalle.totalkilos) AS totalkilos,
@@ -690,6 +719,8 @@ function consulta($request){
             ON areaproduccion.id=categoriaprod.areaproduccion_id
             INNER JOIN cliente
             ON cliente.id=notaventa.cliente_id
+            INNER JOIN comuna
+            ON comuna.id=notaventa.comunaentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -699,6 +730,7 @@ function consulta($request){
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
             and $aux_aprobstatus
+            and $aux_condcomuna_id
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -775,7 +807,6 @@ function reporte1($request){
             <tr>
                 <th>ID</th>
                 <th>Fecha</th>
-                <th>RUT</th>
                 <th>Razón Social</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                 <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
@@ -783,6 +814,7 @@ function reporte1($request){
                 <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                <th>Comuna</th>
                 <th class='tooltipsC' title='Solicitud Despacho'>Despacho</th>
             </tr>
         </thead>
@@ -862,10 +894,8 @@ function reporte1($request){
             //dd($ruta_nuevoSolDesp);
             $respuesta['tabla'] .= "
             <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
-                <td id='id$i' name='id$i'>$data->id
-                </td>
+                <td id='id$i' name='id$i'>$data->id</td>
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                <td id='rut$i' name='rut$i'>$rut</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
@@ -883,9 +913,9 @@ function reporte1($request){
                         <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                     </a>
                 </td>
+                <td>$data->comunanombre</td>
                 <td>
                     $nuevoSolDesp
-
                 </td>
             </tr>";
 
