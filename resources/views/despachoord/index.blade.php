@@ -35,6 +35,7 @@ Orden de despacho
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                                <th class='tooltipsC' title='Total Kg'>Total Kg</th>
                                 <!--<th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>-->
                                 <th class="width70"></th>
                             </tr>
@@ -42,7 +43,13 @@ Orden de despacho
                         <tbody>
                             <?php $aux_nfila = 0; ?>
                             @foreach ($datas as $data)
-                            <?php $aux_nfila++; ?>
+                            <?php 
+                                $aux_nfila++; 
+                                $aux_totalkg = 0;
+                                foreach($data->despachoorddets as $despachoorddet){
+                                    $aux_totalkg += $despachoorddet->cantdesp * ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant);
+                                }
+                            ?>
                             <tr>
                                 <td>{{$data->id}}</td>
                                 <td>{{$data->fechaestdesp}}</td>
@@ -74,6 +81,9 @@ Orden de despacho
                                     </a>
                                 </td>
                                 -->
+                                <td style='text-align:right'>
+                                    {{number_format($aux_totalkg, 2, ",", ".")}}
+                                </td>
                                 <td id="accion{{$aux_nfila}}">
                                     @if ($data->despachoordanul)
                                         <small class="label pull-left bg-red">Anulado</small>

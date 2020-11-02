@@ -292,7 +292,8 @@ class DespachoSolController extends Controller
         $cont_producto = count($request->producto_id);
         if($cont_producto>0){
             for ($i=0; $i < $cont_producto ; $i++){
-                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                $aux_cantsol = $request->cantsol[$i];
+                if(is_null($request->producto_id[$i])==false && is_null($aux_cantsol)==false && $aux_cantsol > 0){
                     $despachosoldet = new DespachoSolDet();
                     $despachosoldet->despachosol_id = $despachosolid;
                     $despachosoldet->notaventadetalle_id = $request->NVdet_id[$i];
@@ -799,11 +800,6 @@ function reporte1($request){
             $colorFila = "";
             $aux_data_toggle = "";
             $aux_title = "";
-            if(!empty($data->anulada)){
-                $colorFila = 'background-color: #87CEEB;';
-                $aux_data_toggle = "tooltip";
-                $aux_title = "Anulada Fecha:" . $data->anulada;
-            }
 
             $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
             $prompvc = 0;
@@ -854,6 +850,15 @@ function reporte1($request){
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
             }
             $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
+            $nuevoSolDesp = "<a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer Solicitud Despacho'>
+                <i class='fa fa-fw fa-truck'></i>
+                </a>";
+            if(!empty($data->anulada)){
+                $colorFila = 'background-color: #87CEEB;';
+                $aux_data_toggle = "tooltip";
+                $aux_title = "Anulada Fecha:" . $data->anulada;
+                $nuevoSolDesp = "";
+            }
             //dd($ruta_nuevoSolDesp);
             $respuesta['tabla'] .= "
             <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
@@ -879,9 +884,7 @@ function reporte1($request){
                     </a>
                 </td>
                 <td>
-                    <a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer Solicitud Despacho'>
-                        <i class='fa fa-fw fa-truck'></i>
-                    </a>
+                    $nuevoSolDesp
 
                 </td>
             </tr>";

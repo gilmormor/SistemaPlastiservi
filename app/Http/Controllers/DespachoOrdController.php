@@ -689,7 +689,7 @@ function reporte1($request){
                 <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                <!--<th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>-->
+                <th class='tooltipsC' title='Total Kg'>Total Kg</th>
                 <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
             </tr>
         </thead>
@@ -725,13 +725,9 @@ function reporte1($request){
                     <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
                     </a>
                 </td>
-                <!--
-                <td>
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV($data->notaventa_id,2)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>                                    
-                    </a>
-                </td>
-                -->
+                <td style='text-align:right'>".
+                    number_format($data->totalkilos, 2, ",", ".") .
+                "</td>
                 <td>
                     <a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer Orden Despacho'>
                         <i class='fa fa-fw fa-truck'></i>
@@ -838,7 +834,8 @@ function consulta($request){
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
     $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
-            despachosol.notaventa_id,despachosol.fechaestdesp
+            despachosol.notaventa_id,despachosol.fechaestdesp,
+            sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND if((SELECT cantdesp
@@ -848,7 +845,7 @@ function consulta($request){
             INNER JOIN notaventa
             ON notaventa.id=despachosol.notaventa_id
             INNER JOIN notaventadetalle
-            ON notaventa.id=notaventadetalle.notaventa_id
+            ON despachosoldet.notaventadetalle_id=notaventadetalle.id
             INNER JOIN producto
             ON notaventadetalle.producto_id=producto.id
             INNER JOIN categoriaprod

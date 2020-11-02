@@ -31,7 +31,7 @@ Orden de despacho
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                                <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                                <th class='tooltipsC' title='Total Kg'>Total Kg</th>
                                 @if ($aux_vista != "C")
                                     <th class="width100"></th>
                                 @else
@@ -45,7 +45,13 @@ Orden de despacho
                         <tbody>
                             <?php $aux_nfila = 0; ?>
                             @foreach ($datas as $data)
-                            <?php $aux_nfila++; ?>
+                            <?php
+                                $aux_nfila++;
+                                $aux_totalkg = 0;
+                                foreach($data->despachoorddets as $despachoorddet){
+                                    $aux_totalkg += $despachoorddet->cantdesp * ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant);
+                                }
+                            ?>
                             <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
                                 <td>{{$data->id}}</td>
                                 <td>{{date("d/m/Y", strtotime($data->fechahora))}}</td>
@@ -71,10 +77,8 @@ Orden de despacho
                                         <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
                                     </a>
                                 </td>
-                                <td>
-                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->notaventa_id}},2)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i>
-                                    </a>
+                                <td style='text-align:right'>
+                                    {{number_format($aux_totalkg, 2, ",", ".")}}
                                 </td>
                                 @if ($aux_vista != "C")
                                     <td id="accion{{$aux_nfila}}">

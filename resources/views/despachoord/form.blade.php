@@ -53,7 +53,7 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-1">
                             <label for="notaventa_id" class="control-label requerido" data-toggle='tooltip' title="Id Nota Venta">NotVenta</label>
-                            <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{$data->id}}" required disabled/>
+                            <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{$data->notaventa_id}}" required disabled/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>

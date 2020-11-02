@@ -34,59 +34,71 @@ Solicitud de despacho
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                                <th class='tooltipsC' title='Total Kg'>Total Kg</th>
                                 <th class="width70"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php $aux_nfila = 0; ?>
                             @foreach ($datas as $data)
-                            <?php $aux_nfila++; ?>
-                            <tr>
-                                <td>{{$data->id}}</td>
-                                <td>{{$data->notaventa->cliente->razonsocial}}</td>
-                                <td>
-                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->id}},1)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a class='btn-accion-tabla btn-sm' onclick='verpdf2("{{$data->notaventa->oc_file}}",2)'>
-                                        {{$data->notaventa->oc_id}}
-                                    </a>
-                                </td>
-                                <td>
-                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV({{$data->notaventa_id}},1)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
-                                    </a>
-                                </td>
-                                <td>
-                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->notaventa_id}},2)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i>
-                                    </a>
-                                </td>
-                                <td id="accion{{$aux_nfila}}">
-                                    @if ($data->despachosolanul)
-                                        <small class="label pull-left bg-red">Anulado</small>
-                                    @else
-                                        <a href="{{route('editar_despachosol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                            <i class="fa fa-fw fa-pencil"></i>
+                                @if (count($data->despachoords) == 0)
+                                <?php
+                                    
+                                    $aux_nfila++; 
+                                    $aux_totalkg = 0;
+                                    foreach($data->despachosoldets as $despachosoldet){
+                                        $aux_totalkg += $despachosoldet->cantsoldesp * ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant);
+                                    }
+                                ?>
+                                <tr>
+                                    <td>{{$data->id}}</td>
+                                    <td>{{$data->notaventa->cliente->razonsocial}}</td>
+                                    <td>
+                                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->id}},1)'>
+                                            <i class='fa fa-fw fa-file-pdf-o'></i>
                                         </a>
-                                        <a id='btnanularnv$i' name='btnanularnv$i' class='btn-accion-tabla btn-sm' onclick='anular({{$aux_nfila}},{{$data->id}})' title='Anular Solicitud Despacho' data-toggle='tooltip'>
-                                            <span class='glyphicon glyphicon-remove text-danger'></span>
+                                    </td>
+                                    <td>
+                                        <a class='btn-accion-tabla btn-sm' onclick='verpdf2("{{$data->notaventa->oc_file}}",2)'>
+                                            {{$data->notaventa->oc_id}}
                                         </a>
-                                        <!--
-                                        <form action="{{route('eliminar_despachosol', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
-                                            @csrf @method("delete")
-                                            <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                                <i class="fa fa-fw fa-trash text-danger"></i>
-                                            </button>
-                                        </form>
-                                        -->
-                                    @endif
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td>
+                                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV({{$data->notaventa_id}},1)'>
+                                            <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->notaventa_id}},2)'>
+                                            <i class='fa fa-fw fa-file-pdf-o'></i>
+                                        </a>
+                                    </td>
+                                    <td style='text-align:right'>
+                                        {{number_format($aux_totalkg, 2, ",", ".")}}
+                                    </td>
+                                    <td id="accion{{$aux_nfila}}">
+                                        @if ($data->despachosolanul)
+                                            <small class="label pull-left bg-red">Anulado</small>
+                                        @else
+                                            <a href="{{route('editar_despachosol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+                                                <i class="fa fa-fw fa-pencil"></i>
+                                            </a>
+                                            <a id='btnanularnv$i' name='btnanularnv$i' class='btn-accion-tabla btn-sm' onclick='anular({{$aux_nfila}},{{$data->id}})' title='Anular Solicitud Despacho' data-toggle='tooltip'>
+                                                <span class='glyphicon glyphicon-remove text-danger'></span>
+                                            </a>
+                                            <!--
+                                            <form action="{{route('eliminar_despachosol', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
+                                                @csrf @method("delete")
+                                                <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
+                                                    <i class="fa fa-fw fa-trash text-danger"></i>
+                                                </button>
+                                            </form>
+                                            -->
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endif
                             @endforeach
-
                         </tbody>
                     </table>
                 </div>

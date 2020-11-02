@@ -35,11 +35,11 @@ class CreateTableDespachoord extends Migration
             $table->string('observacion',200)->comment('Observaciones')->nullable();
             $table->date('fechaestdesp')->comment('Fecha estimada de Despacho.');
             $table->string('guiadespacho',50)->comment('Guia despacho')->nullable();
-            $table->dateTime('guiadespachofec')->comment('Fecha inclusion guia despacho.');
+            $table->dateTime('guiadespachofec')->comment('Fecha inclusion guia despacho.')->nullable();
             $table->string('numfactura',50)->comment('Número de Factura')->nullable();
-            $table->date('fechafactura')->comment('Fecha de factura.');
-            $table->dateTime('numfacturafec')->comment('Fecha inclusion numero de factura.');
-            $table->unsignedBigInteger('despachoobs_id');
+            $table->date('fechafactura')->comment('Fecha de factura.')->nullable();
+            $table->dateTime('numfacturafec')->comment('Fecha inclusion numero de factura.')->nullable();
+            $table->unsignedBigInteger('despachoobs_id')->nullable();
             $table->foreign('despachoobs_id','fk_despachoord_despachoobs')->references('id')->on('despachoobs')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();

@@ -601,7 +601,14 @@ function actSaldo(s,i){
 		$("#llenarCantOrd" + i).prop("checked", true);
 	}
 	aux_totalkilosTD = aux_cantord * $("#peso" + i).val();
-	aux_subtotalCFTD = aux_cantord * $("#peso" + i).val() * $("#precioxkilo" + i).val();
+	
+	if($("#peso" + i).val() == 0){
+		//alert(aux_cantord);
+		aux_subtotalCFTD = aux_cantord * $("#preciounit" + i).val();
+	}else{
+		aux_subtotalCFTD = aux_cantord * $("#peso" + i).val() * $("#precioxkilo" + i).val();
+	}
+	//aux_subtotalCFTD = aux_cantord * $("#peso" + i).val() * $("#precioxkilo" + i).val();
 	$("#totalkilosTD" + i).html(MASK(0, aux_totalkilosTD, '-##,###,##0.00',1));
 	$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-##,###,##0.00',1));
 	$("#subtotalSFTD" + i).html(aux_subtotalCFTD);

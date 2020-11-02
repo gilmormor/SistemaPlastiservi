@@ -16,8 +16,8 @@
         <div class="box box-danger">
             <div class="box-header with-border">
                 <h3 class="box-title">Crear Orden de Despacho</h3>
-                <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},1)' title='Ver Nota venta' data-toggle='tooltip'>
-                    Nota Venta: {{$data->id}} <i class='fa fa-fw fa-file-pdf-o'></i>
+                <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->notaventa_id}},1)' title='Ver Nota venta' data-toggle='tooltip'>
+                    Nota Venta: {{$data->notaventa_id}} <i class='fa fa-fw fa-file-pdf-o'></i>
                 </a>
                 <a class='btn-accion-tabla btn-sm' onclick='verpdf2("{{$data->oc_file}}",2)' title='Ver Nota venta' data-toggle='tooltip'>
                     Orden Compra: {{$data->oc_id}} <i class='fa fa-fw fa-file-pdf-o'></i>
