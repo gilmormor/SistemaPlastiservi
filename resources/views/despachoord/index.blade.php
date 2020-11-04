@@ -17,7 +17,7 @@ Orden de despacho
             <div class="box-header with-border">
                 <h3 class="box-title">Orden de Despacho</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('listards_despachoord')}}" class="btn btn-block btn-success btn-sm">
+                    <a href="{{route('listarsoldesp_despachosol')}}" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i> Nueva Orden Despacho
                     </a>
                 </div>

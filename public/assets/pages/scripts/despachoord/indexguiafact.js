@@ -1,5 +1,11 @@
 $(document).ready(function () {
-    Biblioteca.validacionGeneral('form-general');
+	Biblioteca.validacionGeneral('form-general');
+	$('.datepicker').datepicker({
+		language: "es",
+		autoclose: true,
+		todayHighlight: true
+	}).datepicker("setDate");
+
 
 });
 
@@ -33,6 +39,7 @@ function ajaxRequest(data,url,funcion) {
 			if(funcion=='consultarguiadespachood'){
 				if (respuesta.mensaje == "ok") {
 					$("#guiadespacho").val(respuesta.despachoord.guiadespacho);
+					$(".requeridos").keyup();
 					$("#myModalguiadesp").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
@@ -42,6 +49,7 @@ function ajaxRequest(data,url,funcion) {
 				if (respuesta.mensaje == "ok") {
 					//alert(respuesta.despachoord.numfactura);
 					$("#numfactura").val(respuesta.despachoord.numfactura);
+					$(".requeridos").keyup();
 					$("#myModalnumfactura").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
@@ -119,7 +127,8 @@ $("#btnGuardarF").click(function(event)
 	{
 		var data = {
 			id    : $("#idf").val(),
-			numfactura : $("#numfactura").val(),
+			numfactura   : $("#numfactura").val(),
+			fechafactura : $("#fechafactura").val(),
 			nfila : $("#nfilaf").val(),
 			_token: $('input[name=_token]').val()
 		};
@@ -150,6 +159,10 @@ $(".requeridos").keyup(function(){
 	validacion($(this).prop('name'),$(this).attr('tipoval'));
 });
 
+function restablecerInput(){
+	
+}
+
 function verificarGuia()
 {
 	var v1=0;
@@ -166,9 +179,11 @@ function verificarGuia()
 function verificarFact()
 {
 	var v1=0;
+	var v2=0;
 	
 	v1=validacion('numfactura','texto');
-	if (v1===false)
+	v2=validacion('fechafactura','texto');
+	if (v1===false || v2===false)
 	{
 		return false;
 	}else{

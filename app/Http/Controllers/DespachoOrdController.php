@@ -48,7 +48,7 @@ class DespachoOrdController extends Controller
 
     public function indexguia()
     {
-        can('listar-orden-despacho');
+        can('listar-guia-despacho');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
         $datas = DespachoOrd::orderBy('id')
                         ->where('aprguiadesp','1')
@@ -61,7 +61,7 @@ class DespachoOrdController extends Controller
 
     public function indexfact()
     {
-        can('listar-orden-despacho');
+        can('listar-factura-despacho');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
         $datas = DespachoOrd::orderBy('id')
                         ->whereNotNull('guiadespacho')
@@ -72,9 +72,9 @@ class DespachoOrdController extends Controller
         return view('despachoord.indexguiafact', compact('datas','aux_vista'));
     }
 
-        public function indexcompletado()
+        public function indexcerrada()
     {
-        can('listar-orden-despacho');
+        can('listar-orden-despacho-cerrada');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
         $datas = DespachoOrd::orderBy('id')
                         ->whereNotNull('guiadespacho')
@@ -85,93 +85,7 @@ class DespachoOrdController extends Controller
         return view('despachoord.indexguiafact', compact('datas','aux_vista'));
     }
 
-    public function listards() //Listar solicitudes de despacho
-    {
-        $user = Usuario::findOrFail(auth()->id());
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->where('vendedor.id','=',$vendedor_id)
-                ->get();
-        }else{
-            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->get();
-        }
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
-        $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
-        $tipoentregas = TipoEntrega::orderBy('id')->get();
-        $comunas = Comuna::orderBy('id')->get();
-        $fechaAct = date("d/m/Y");
-
-        /*
-        $request = [
-            'fechad'            => '',
-            'fechah'            => '',
-            'rut'               => '',
-            'vendedor_id'       => '',
-            'oc_id'             => '',
-            'giro_id'           => '',
-            'areaproduccion_id' => '',
-            'tipoentrega_id'    => '',
-            'notaventa_id'      => '',
-            'aprobstatus'       => ''
-        ];
-        $respuesta = reporte1($request);
-        */ 
-
-        return view('despachoord.listardespachosol', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
-
-    }
     /**
      * Show the form for creating a new resource.
      *
@@ -615,6 +529,8 @@ class DespachoOrdController extends Controller
             //dd($request);
             $despachoord = DespachoOrd::findOrFail($request->id);
             $despachoord->numfactura = $request->numfactura;
+            $dateInput = explode('/',$request->fechafactura);
+            $despachoord->fechafactura = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
             $despachoord->numfacturafec = date("Y-m-d H:i:s");
             if ($despachoord->save()) {
                 return response()->json(['mensaje' => 'ok']);
@@ -661,8 +577,8 @@ class DespachoOrdController extends Controller
 
 
     public function reporte(Request $request){
-        $respuesta = reporte1($request);
-        return $respuesta;
+        //$respuesta = reportesol($request);
+        //return $respuesta;
     }
 
     public function exportPdf($id,$stareport = '1')
@@ -689,84 +605,6 @@ class DespachoOrdController extends Controller
     
             }
         }
-    }
-
-}
-
-function reporte1($request){
-    $respuesta = array();
-    $respuesta['exito'] = false;
-    $respuesta['mensaje'] = "Código no Existe";
-    $respuesta['tabla'] = "";
-
-    if($request->ajax()){
-        $datas = consulta($request);
-
-        $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
-                <th>Razón Social</th>
-                <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
-                <th class='tooltipsC' title='Orden de Compra'>OC</th>
-                <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                <th>Comuna</th>
-                <th class='tooltipsC' title='Total Kg'>Total Kg</th>
-                <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
-            </tr>
-        </thead>
-        <tbody>";
-
-        $i = 0;
-        foreach ($datas as $data) {
-
-            $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
-            if(empty($data->oc_file)){
-                $aux_enlaceoc = $data->oc_id;
-            }else{
-                $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
-            }
-            $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
-            //dd($ruta_nuevoSolDesp);
-            $respuesta['tabla'] .= "
-            <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                <td id='id$i' name='id$i'>$data->id
-                </td>
-                <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
-                <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
-                <td>
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>
-                    </a>
-                </td>
-                <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
-                <td>
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
-                    <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
-                    </a>
-                </td>
-                <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
-                <td style='text-align:right'>".
-                    number_format($data->totalkilos, 2, ",", ".") .
-                "</td>
-                <td>
-                    <a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer Orden Despacho'>
-                        <i class='fa fa-fw fa-truck'></i>
-                    </a>
-
-                </td>
-            </tr>";
-
-            //dd($data->contacto);
-        }
-
-        $respuesta['tabla'] .= "
-        </tbody>
-        </table>";
-        return $respuesta;
     }
 
 }
@@ -861,8 +699,17 @@ function consulta($request){
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
 
-    $aux_condaprobord = "despachosol.aprorddesp = 1";
-
+    $aux_condaprobord = "true";
+    switch ($request->filtro) {
+        case 1:
+            //Filtra solo las aprobadas. Esto es para la consulta para crear ordenes de Despacho
+            $aux_condaprobord = "despachosol.aprorddesp = 1";
+            break;
+        case 2:
+            //Muestra todo sin importar si fue aprobadada o no. Esto es para el reporte
+            $aux_condaprobord = "true";
+            break;
+    }
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 

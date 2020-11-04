@@ -35,7 +35,9 @@ class DespachoSolController extends Controller
     public function index()
     {
         can('listar-solicitud-despacho');
-        $datas = DespachoSol::orderBy('id')->get();
+        $datas = DespachoSol::orderBy('id')
+                ->whereNull('aprorddesp')
+                ->get();
         return view('despachosol.index', compact('datas'));
     }
 
@@ -521,8 +523,102 @@ class DespachoSolController extends Controller
         //
     }
 
+
+    public function listarsoldesp() //Listar solicitudes de despacho
+    {
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+                $user = Usuario::findOrFail(auth()->id());
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                        })
+                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+                ->join('vendedor', function ($join) {
+                    $join->on('persona.id', '=', 'vendedor.persona_id')
+                        ->where('vendedor.sta_activo', '=', 1);
+                })
+                ->select([
+                    'vendedor.id',
+                    'persona.nombre',
+                    'persona.apellido'
+                ])
+                ->where('vendedor.id','=',$vendedor_id)
+                ->get();
+        }else{
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+                $user = Usuario::findOrFail(auth()->id());
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                        })
+                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+                ->join('vendedor', function ($join) {
+                    $join->on('persona.id', '=', 'vendedor.persona_id')
+                        ->where('vendedor.sta_activo', '=', 1);
+                })
+                ->select([
+                    'vendedor.id',
+                    'persona.nombre',
+                    'persona.apellido'
+                ])
+                ->get();
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
+        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->pluck('cliente_sucursal.cliente_id')->toArray())
+        ->whereIn('cliente.id',$clientevendedorArray)
+        ->get();
+        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+
+        $giros = Giro::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $comunas = Comuna::orderBy('id')->get();
+        $fechaAct = date("d/m/Y");
+
+        /*
+        $request = [
+            'fechad'            => '',
+            'fechah'            => '',
+            'rut'               => '',
+            'vendedor_id'       => '',
+            'oc_id'             => '',
+            'giro_id'           => '',
+            'areaproduccion_id' => '',
+            'tipoentrega_id'    => '',
+            'notaventa_id'      => '',
+            'aprobstatus'       => ''
+        ];
+        $respuesta = reporte1($request);
+        */ 
+
+        return view('despachoord.listardespachosol', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
+
+    }
+
     public function reporte(Request $request){
         $respuesta = reporte1($request);
+        return $respuesta;
+    }
+
+    public function reportesoldesp(Request $request){
+        $respuesta = reportesoldesp1($request);
         return $respuesta;
     }
 
@@ -735,54 +831,7 @@ function consulta($request){
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
-/*
-(select sum(cantsoldesp) as cantsoldesp
-                    from despachosol inner join despachosoldet
-                    on despachosol.id=despachosoldet.despachosol_id
-                    where despachosol.id not in (select despachosol_id from despachosolanul)
-                    and despachosoldet.notaventadetalle_id=notaventadetalle.id
-                    despachosol.deleted_at is null
-                    group by notaventadetalle_id)
-*/
-/*
-    $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
-            sum(notaventadetalle.cant) AS cant,
-            sum(notaventadetalle.precioxkilo) AS precioxkilo,
-            sum(notaventadetalle.totalkilos) AS totalkilos,
-            sum(notaventadetalle.subtotal) AS subtotal,
-            sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
-            sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
-            sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
-            sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
-            sum(notaventadetalle.subtotal) AS totalps,
-            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
-            FROM notaventa INNER JOIN notaventadetalle
-            ON notaventa.id=notaventadetalle.notaventa_id and if(notaventadetalle.cantsoldesp >= notaventadetalle.cant,false, if(notaventadetalle.cantdesp >= notaventadetalle.cant,false,true))
-            INNER JOIN producto
-            ON notaventadetalle.producto_id=producto.id
-            INNER JOIN categoriaprod
-            ON categoriaprod.id=producto.categoriaprod_id
-            INNER JOIN areaproduccion
-            ON areaproduccion.id=categoriaprod.areaproduccion_id
-            INNER JOIN cliente
-            ON cliente.id=notaventa.cliente_id
-            WHERE $vendedorcond
-            and $aux_condFecha
-            and $aux_condrut
-            and $aux_condoc_id
-            and $aux_condgiro_id
-            and $aux_condareaproduccion_id
-            and $aux_condtipoentrega_id
-            and $aux_condnotaventa_id
-            and $aux_aprobstatus
-            and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
-            GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
-            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
-*/
 
-    //dd("$sql");
     $datas = DB::select($sql);
     //dd($datas);
     return $datas;
@@ -952,4 +1001,237 @@ function reporte1($request){
         return $respuesta;
     }
 
+}
+
+function reportesoldesp1($request){
+    $respuesta = array();
+    $respuesta['exito'] = false;
+    $respuesta['mensaje'] = "Código no Existe";
+    $respuesta['tabla'] = "";
+
+    if($request->ajax()){
+        $datas = consultasoldesp($request);
+
+        $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
+                <th>Razón Social</th>
+                <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
+                <th class='tooltipsC' title='Orden de Compra'>OC</th>
+                <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                <th>Comuna</th>
+                <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
+            </tr>
+        </thead>
+        <tbody>";
+
+        $i = 0;
+        foreach ($datas as $data) {
+
+            $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
+            if(empty($data->oc_file)){
+                $aux_enlaceoc = $data->oc_id;
+            }else{
+                $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
+            }
+            $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
+            //dd($ruta_nuevoSolDesp);
+            $respuesta['tabla'] .= "
+            <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                <td id='id$i' name='id$i'>$data->id
+                </td>
+                <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
+                <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                <td>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->id,1)'>
+                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                    </a>
+                </td>
+                <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
+                <td>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
+                    <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
+                    </a>
+                </td>
+                <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
+                <td style='text-align:right'>".
+                    number_format($data->totalkilos, 2, ",", ".") .
+                "</td>
+                <td>
+                    <a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer Orden Despacho'>
+                        <i class='fa fa-fw fa-truck'></i>
+                    </a>
+
+                </td>
+            </tr>";
+
+            //dd($data->contacto);
+        }
+
+        $respuesta['tabla'] .= "
+        </tbody>
+        </table>";
+        return $respuesta;
+    }
+
+}
+
+function consultasoldesp($request){
+    if(empty($request->vendedor_id)){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+        }else{
+            $vendedorcond = " true ";
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+    }else{
+        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+    }
+
+    if(empty($request->fechad) or empty($request->fechah)){
+        $aux_condFecha = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->fechad);
+        $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
+        $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+        $aux_condFecha = "despachosol.fechahora>='$fechad' and despachosol.fechahora<='$fechah'";
+    }
+    if(empty($request->rut)){
+        $aux_condrut = " true";
+    }else{
+        $aux_condrut = "cliente.rut='$request->rut'";
+    }
+    if(empty($request->oc_id)){
+        $aux_condoc_id = " true";
+    }else{
+        $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
+    }
+    if(empty($request->giro_id)){
+        $aux_condgiro_id = " true";
+    }else{
+        $aux_condgiro_id = "notaventa.giro_id='$request->giro_id'";
+    }
+    if(empty($request->areaproduccion_id)){
+        $aux_condareaproduccion_id = " true";
+    }else{
+        $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$request->areaproduccion_id'";
+    }
+    if(empty($request->tipoentrega_id)){
+        $aux_condtipoentrega_id = " true";
+    }else{
+        $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$request->tipoentrega_id'";
+    }
+    if(empty($request->notaventa_id)){
+        $aux_condnotaventa_id = " true";
+    }else{
+        $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
+    }
+
+    if(empty($request->aprobstatus)){
+        $aux_aprobstatus = " true";
+    }else{
+        switch ($request->aprobstatus) {
+            case 1:
+                $aux_aprobstatus = "notaventa.aprobstatus='0'";
+                break;
+            case 2:
+                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                break;    
+            case 3:
+                $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
+                break;
+            case 4:
+                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                break;
+        }
+        
+    }
+
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true";
+    }else{
+        $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
+    }
+
+    $aux_condaprobord = "true";
+    switch ($request->filtro) {
+        case 1:
+            //Filtra solo las aprobadas. Esto es para la consulta para crear ordenes de Despacho
+            $aux_condaprobord = "despachosol.aprorddesp = 1";
+            break;
+        case 2:
+            //Muestra todo sin importar si fue aprobadada o no. Esto es para el reporte
+            $aux_condaprobord = "true";
+            break;
+    }
+
+    //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
+
+    $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
+            comuna.nombre as comunanombre,
+            despachosol.notaventa_id,despachosol.fechaestdesp,
+            sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos
+            FROM despachosol INNER JOIN despachosoldet
+            ON despachosol.id=despachosoldet.despachosol_id
+            AND if((SELECT cantdesp
+                    FROM vista_sumorddespdet
+                    WHERE despachosoldet_id=despachosoldet.id
+                    ) >= despachosoldet.cantsoldesp,FALSE,TRUE)
+            INNER JOIN notaventa
+            ON notaventa.id=despachosol.notaventa_id
+            INNER JOIN notaventadetalle
+            ON despachosoldet.notaventadetalle_id=notaventadetalle.id
+            INNER JOIN producto
+            ON notaventadetalle.producto_id=producto.id
+            INNER JOIN categoriaprod
+            ON categoriaprod.id=producto.categoriaprod_id
+            INNER JOIN areaproduccion
+            ON areaproduccion.id=categoriaprod.areaproduccion_id
+            INNER JOIN cliente
+            ON cliente.id=notaventa.cliente_id
+            INNER JOIN comuna
+            ON comuna.id=despachosol.comunaentrega_id
+            WHERE $vendedorcond
+            and $aux_condFecha
+            and $aux_condrut
+            and $aux_condoc_id
+            and $aux_condgiro_id
+            and $aux_condareaproduccion_id
+            and $aux_condtipoentrega_id
+            and $aux_condnotaventa_id
+            and $aux_aprobstatus
+            and $aux_condcomuna_id
+            and $aux_condaprobord
+            and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
+            GROUP BY despachosol.id;";
+/*
+(select sum(cantsoldesp) as cantsoldesp
+                    from despachosol inner join despachosoldet
+                    on despachosol.id=despachosoldet.despachosol_id
+                    where despachosol.id not in (select despachosol_id from despachosolanul)
+                    and despachosoldet.notaventadetalle_id=notaventadetalle.id
+                    despachosol.deleted_at is null
+                    group by notaventadetalle_id)
+*/
+    //dd("$sql");
+    $datas = DB::select($sql);
+    //dd($datas);
+    return $datas;
 }

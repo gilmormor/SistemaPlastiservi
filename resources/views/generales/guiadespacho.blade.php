@@ -15,9 +15,7 @@
                         <label for="idg" class="control-label">OD</label>
                         <input type="text" name="idg" id="idg" class="form-control" required placeholder="ID" disabled readonly/>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-xs-12 col-sm-12" classorig="form-group col-xs-12 col-sm-12">
+                    <div class="form-group col-xs-12 col-sm-10" classorig="form-group col-xs-12 col-sm-10">
                         <label for="guiadespacho" class="control-label">Guia despacho</label>
                         <input type="text" name="guiadespacho" id="guiadespacho" class="form-control requeridos" required placeholder="Guia despacho"/>
                         <span class="help-block"></span>

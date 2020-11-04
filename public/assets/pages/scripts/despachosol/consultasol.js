@@ -14,7 +14,6 @@ $(document).ready(function () {
         }
 	});
 */
-    consultar(datos());
     $("#btnconsultar").click(function()
     {
         consultar(datos());
@@ -55,43 +54,6 @@ function configurarTabla(aux_tabla){
 }
 
 
-function ajaxRequest(data,url,funcion) {
-	$.ajax({
-		url: url,
-		type: 'POST',
-		data: data,
-		success: function (respuesta) {
-			if(funcion=='aprobarcotvend'){
-				if (respuesta.mensaje == "ok") {
-					$("#fila"+data['nfila']).remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
-				}
-            }
-            if(funcion=='vistonotaventa'){
-				if (respuesta.mensaje == "ok") {
-					//$("#fila"+data['nfila']).remove();
-                    Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-                    
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
-				}
-			}
-
-		},
-		error: function () {
-		}
-	});
-}
 
 function datos(){
     var data = {
@@ -106,7 +68,7 @@ function datos(){
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
-        filtro            : 0,
+        filtro            : '2',
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -114,7 +76,7 @@ function datos(){
 
 function consultar(data){
     $.ajax({
-        url: '/despachosol/reporte',
+        url: '/despachoord/reporte',
         type: 'POST',
         data: data,
         success: function (datos) {
@@ -213,14 +175,4 @@ function copiar_rut(id,rut){
 	$("#rut").val(rut);
 	//$("#rut").focus();
 	$("#rut").blur();
-}
-
-function visto(id,visto){
-    //alert($(this).attr("value"));
-    var data = {
-        id     : id,
-        _token : $('input[name=_token]').val()
-    };
-    var ruta = '/notaventa/visto/' + id;
-    ajaxRequest(data,ruta,'vistonotaventa');
 }

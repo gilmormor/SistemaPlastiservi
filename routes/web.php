@@ -469,11 +469,26 @@ Route::post('despachosol/reporte', 'DespachoSolController@reporte')->name('repor
 Route::post('despachosol/anular/{id}', 'DespachoSolController@anular')->name('anular_despachosol');
 Route::get('despachosol/{id}/{stareport}/exportPdf', 'DespachoSolController@exportPdf')->name('exportPdf_despachosol');
 Route::post('despachosol/aproborddesp/{id}', 'DespachoSolController@aproborddesp')->name('aproborddesp_despachosol');
+Route::get('despachosol/listarsoldesp', 'DespachoSolController@listarsoldesp')->name('listarsoldesp_despachosol');
+Route::post('despachosol/reportesoldesp', 'DespachoSolController@reportesoldesp')->name('reportesoldesp_despachosol');
 
+Route::get('despachosol/reporteindex', 'DespachoSolController@reporteindex')->name('reporteindex_despachosol');
+
+/*RUTAS REPORTE SOLICITUD DESPACHO*/
+Route::get('reportsoldesp', 'ReportSolDespController@index')->name('reportsoldesp');
+Route::post('reportsoldesp/reporte', 'ReportSolDespController@reporte')->name('reportsoldesp_reporte');
+Route::get('reportsoldesp/exportPdf', 'ReportSolDespController@exportPdf')->name('reportsoldesp_exportPdf');
+
+
+
+/*
+Route::get('notaventaconsulta', 'NotaVentaConsultaController@index')->name('notaventaconsulta');
+Route::post('notaventaconsulta/reporte', 'NotaVentaConsultaController@reporte')->name('notaventaconsulta_reporte');
+*/
 
 /*RUTAS Orden de Despacho*/
 Route::get('despachoord/index', 'DespachoOrdController@index')->name('despachoord');
-Route::get('despachoord', 'DespachoOrdController@listards')->name('listards_despachoord');
+//Route::get('despachoord', 'DespachoOrdController@listards')->name('listards_despachoord');
 Route::get('despachoord/crear', 'DespachoOrdController@crear')->name('crear_despachoord');
 Route::get('despachoord/{id}/crearord', 'DespachoOrdController@crearord')->name('crearord_despachoord');
 Route::post('despachoord', 'DespachoOrdController@guardar')->name('guardar_despachoord');
@@ -485,7 +500,7 @@ Route::post('despachoord/anular/{id}', 'DespachoOrdController@anular')->name('an
 Route::get('despachoord/{id}/{stareport}/exportPdf', 'DespachoOrdController@exportPdf')->name('exportPdf_despachoord');
 Route::get('despachoord/indexguia', 'DespachoOrdController@indexguia')->name('indexguia_despachoord');
 Route::get('despachoord/indexfact', 'DespachoOrdController@indexfact')->name('indexfact_despachoord');
-Route::get('despachoord/indexcompletado', 'DespachoOrdController@indexcompletado')->name('indexcompletado_despachoord');
+Route::get('despachoord/indexcerrada', 'DespachoOrdController@indexcerrada')->name('indexcerrada_despachoord');
 Route::post('despachoord/guardarguiadesp', 'DespachoOrdController@guardarguiadesp')->name('guardarguiadesp_despachoord');
 Route::post('despachoord/guardarfactdesp', 'DespachoOrdController@guardarfactdesp')->name('guardarfactdesp_despachoord');
 Route::post('despachoord/consultarod', 'DespachoOrdController@consultarod')->name('consultarod_despachoord');

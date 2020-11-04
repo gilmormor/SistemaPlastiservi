@@ -14,7 +14,7 @@ $(document).ready(function () {
         }
 	});
 */
-    consultar(datos());
+    //consultar(datos());
     $("#btnconsultar").click(function()
     {
         consultar(datos());
@@ -106,7 +106,7 @@ function datos(){
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
-        filtro            : 0,
+        filtro            : 1,
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -114,7 +114,7 @@ function datos(){
 
 function consultar(data){
     $.ajax({
-        url: '/despachosol/reporte',
+        url: '/reportsoldesp/reporte',
         type: 'POST',
         data: data,
         success: function (datos) {

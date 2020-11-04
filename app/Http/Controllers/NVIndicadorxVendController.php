@@ -124,7 +124,7 @@ class NVIndicadorxVendController extends Controller
                 $datas = consulta($request);
             }
             if($request->idcons == "2"){
-                $datas = consultaODcompetada($request);
+                $datas = consultaODcerrada($request);
             }
             //dd($respuesta['totalkilos']);
 
@@ -381,7 +381,7 @@ function consulta($request){
     return $respuesta;
 }
 
-function consultaODcompetada($request){
+function consultaODcerrada($request){
     $array = array('apellido', 'email', 'teléfono');
     $separado_por_comas = implode(",", $array);
     //dd(json_decode($request->vendedor_id));
@@ -403,10 +403,10 @@ function consultaODcompetada($request){
         $aux_condFecha = " true";
     }else{
         $fecha = date_create_from_format('d/m/Y', $request->fechad);
-        $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
+        $fechad = date_format($fecha, 'Y-m-d'); //." 00:00:00";
         $fecha = date_create_from_format('d/m/Y', $request->fechah);
-        $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
-        $aux_condFecha = "despachoord.fechahora>='$fechad' and despachoord.fechahora<='$fechah'";
+        $fechah = date_format($fecha, 'Y-m-d'); //." 23:59:59";
+        $aux_condFecha = "despachoord.fechafactura>='$fechad' and despachoord.fechafactura<='$fechah'";
     }
     if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";

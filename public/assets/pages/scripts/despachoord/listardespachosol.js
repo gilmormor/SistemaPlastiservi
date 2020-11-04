@@ -106,6 +106,7 @@ function datos(){
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
+        filtro            : 1,
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -113,7 +114,7 @@ function datos(){
 
 function consultar(data){
     $.ajax({
-        url: '/despachoord/reporte',
+        url: '/despachosol/reportesoldesp',
         type: 'POST',
         data: data,
         success: function (datos) {
