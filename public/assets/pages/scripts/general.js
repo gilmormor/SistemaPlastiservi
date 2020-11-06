@@ -803,6 +803,7 @@ function genpdfOD(id,stareport){ //GENERAR PDF Orden de Despacho
 	$("#myModalpdf").modal('show')
 }
 
+
 $("#myModalpdf").on("hidden.bs.modal", function () {
 	$('#contpdf').attr('src', 'about:blank');
 });

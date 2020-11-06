@@ -15,7 +15,7 @@ use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ReportSolDespController extends Controller
+class ReportOrdDespCerradaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -90,105 +90,183 @@ class ReportSolDespController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
 
-        return view('reportsoldesp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
+        return view('reportorddespcerrada.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
 
     }
 
     public function reporte(Request $request){
         $respuesta = array();
-        $respuesta['exito'] = false;
-        $respuesta['mensaje'] = "Código no Existe";
-        $respuesta['tabla'] = "";
-    
+		$respuesta['exito'] = false;
+		$respuesta['mensaje'] = "Código no Existe";
+		$respuesta['tabla'] = "";
+
         if($request->ajax()){
-            $datas = consultasoldesp($request);
-    
-            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablasconsOD' data-page-length='50'>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Fecha</th>
-                    <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
+            $datas = consulta($request);
+            $aux_colvistoth = "";
+            if(auth()->id()==1 or auth()->id()==2 or auth()->id()==24){
+                $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
+            }
+            $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
+
+            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Fecha</th>
+					<th>RUT</th>
                     <th>Razón Social</th>
-                    <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
+                    <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                    <th>Comuna</th>
-                    <th class='tooltipsC' title='Total Kg'>Total Kg</th>
-                    <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
-                </tr>
-            </thead>
+                    <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                    $aux_colvistoth
+				</tr>
+			</thead>
             <tbody>";
-    
+
             $i = 0;
+            $aux_Tpvckg = 0;
+            $aux_Tpvcpesos= 0;
+            $aux_Tcankg = 0;
+            $aux_Tcanpesos = 0;
+            $aux_totalKG = 0;
+            $aux_totalps = 0;
+            $aux_prom = 0;
             foreach ($datas as $data) {
+                $colorFila = "";
+                $aux_data_toggle = "";
+                $aux_title = "";
+                if(!empty($data->anulada)){
+                    $colorFila = 'background-color: #87CEEB;';
+                    $aux_data_toggle = "tooltip";
+                    $aux_title = "Anulada Fecha:" . $data->anulada;
+                }
+    
                 $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
+                $prompvc = 0;
+                $promcan = 0;
+                $aux_prom = 0;
+                if($data->pvckg!=0){
+                    $prompvc = $data->pvcpesos / $data->pvckg;
+                }
+                if($data->cankg!=0){
+                    $promcan = $data->canpesos / $data->cankg;
+                }
+                if($data->totalkilos>0){
+                    $aux_prom = $data->subtotal / $data->totalkilos;
+                }
+
+                $Visto       = $data->visto;
+                $checkVisto  = 'checked';
+                if(empty($data->visto))
+                    $checkVisto = '';
+
+                $aux_colvistotd = "";
+                if(empty($data->visto)){
+                    $fechavisto = '';
+                }else{
+                    $fechavisto = 'Leido:' . date('d-m-Y h:i:s A', strtotime($data->visto));
+                }
+                
+                $aux_colvistotd = "
+                <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='$fechavisto'>
+                    <div class='checkbox'>
+                        <label style='font-size: 1.2em'>";
+                        if(!empty($data->anulada)){
+                            $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
+                        }else{
+                            if(auth()->id()==1 or auth()->id()==2 or auth()->id()==24){
+                                $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>";
+                            }else{
+                                $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
+                            }
+                        }
+                        $aux_colvistotd .= "<span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                        </label>
+                    </div>
+                </td>";
                 if(empty($data->oc_file)){
                     $aux_enlaceoc = $data->oc_id;
                 }else{
                     $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
                 }
-                $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
-                $aprorddesp = "<i class='glyphicon glyphicon-floppy-save text-warning tooltipsC' title='Pendiente Aprobar'></i>";
-                if($data->aprorddesp){
-                    $fechaaprob = date('d-m-Y h:i:s A', strtotime($data->aprorddespfh));
-                    $aprorddesp = "<i class='glyphicon glyphicon-floppy-save text-primary tooltipsC' title='Fecha: $fechaaprob'></i>";
+                $aux_icodespacho = "";
+                $aux_obsdespacho = "No ha iniciado el despacho";
+                if(!empty($data->inidespacho)){
+                    $aux_icodespacho = "fa-star-o";
+                    $aux_obsdespacho = "Ini: " . date('d-m-Y', strtotime($data->inidespacho)) . " Guia: " . $data->guiasdespacho;
                 }
-                $listadosoldesp = "";
-                $ordesp = DespachoOrd::orderBy('id')
-                        ->where('despachosol_id',$data->id);
-                if($ordesp->count() > 0){
-                    $aux_cont = $ordesp->count();
-                    $listadosoldesp = "
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden Despacho: $aux_cont' onclick='genlistaOD($data->id)'>
-                            <i class='glyphicon glyphicon-search'></i>
-                        </a>";
+                if(!empty($data->findespacho)){
+                    $aux_icodespacho = " fa-star";
+                    $aux_obsdespacho = "Ini:" . date('d-m-Y', strtotime($data->inidespacho)) . " Fin:" . date('d-m-Y', strtotime($data->findespacho)) . " Guia: " . $data->guiasdespacho;
                 }
-                //dd($ordesp);
-
-                /*$despachoord = DespachoOrd::findOrFail($data->id)
-                                ->whereNull();*/
                 $respuesta['tabla'] .= "
-                <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id
+                        <a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_obsdespacho' data-toggle='tooltip'>
+                            <i class='fa fa-fw $aux_icodespacho'></i>                                    
+                        </a>
                     </td>
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                    <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
+                    <td id='rut$i' name='rut$i'>$rut</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                    <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</a></td>
+                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
+                    <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
+                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                     <td>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->id,1)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>
+                        <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
+                        <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
                     </td>
-                    <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                     <td>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
+                        <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2']) . "' class='btn-accion-tabla tooltipsC' title='Precio x Kg' target='_blank'>-->
+                        <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,2)' title='Nota de venta' data-toggle='tooltip'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
                     </td>
-                    <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
-                    <td style='text-align:right'>".
-                        number_format($data->totalkilos, 2, ",", ".") .
-                    "</td>
-                    <td>
-                        $aprorddesp | 
-                        $listadosoldesp
-                    </td>
+                    $aux_colvistotd
                 </tr>";
+
+                if(empty($data->anulada)){
+                    $aux_Tpvckg += $data->pvckg;
+                    $aux_Tpvcpesos += $data->pvcpesos;
+                    $aux_Tcankg += $data->cankg;
+                    $aux_Tcanpesos += $data->canpesos;
+                    $aux_totalKG += $data->totalkilos;
+                    $aux_totalps += $data->subtotal;    
+                }
+
     
                 //dd($data->contacto);
             }
-    
+
+            $aux_promGeneral = 0;
+            if($aux_totalKG>0){
+                $aux_promGeneral = $aux_totalps / $aux_totalKG;
+            }
             $respuesta['tabla'] .= "
             </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='5' style='text-align:left'>TOTAL</th>
+                    <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>
+                    <th style='text-align:right'></th>
+                </tr>
+            </tfoot>
+
             </table>";
+
             return $respuesta;
         }
-        
-        return $respuesta;
     }
-
     
+
     /**
      * Show the form for creating a new resource.
      *
@@ -257,7 +335,7 @@ class ReportSolDespController extends Controller
 }
 
 
-function consultasoldesp($request){
+function consulta($request){
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -287,7 +365,7 @@ function consultasoldesp($request){
         $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
         $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
-        $aux_condFecha = "despachosol.fechahora>='$fechad' and despachosol.fechahora<='$fechah'";
+        $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
     }
     if(empty($request->rut)){
         $aux_condrut = " true";
@@ -336,38 +414,28 @@ function consultasoldesp($request){
             case 4:
                 $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
                 break;
+            case 5:
+                $aux_aprobstatus = "notaventa.findespacho IS NULL";
+                break;
+            case 6:
+                $aux_aprobstatus = "notaventa.findespacho IS NOT NULL";
+                break;
         }
         
     }
 
-    if(empty($request->comuna_id)){
-        $aux_condcomuna_id = " true";
-    }else{
-        $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
-    }
-
-    $aux_condaprobord = "true";
-    
-    if(empty($request->id)){
-        $aux_condid = " true";
-    }else{
-        $aux_condid = "despachosol.id='$request->id'";
-    }
-
- 
-    //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
-
-    $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
-            comuna.nombre as comunanombre,
-            despachosol.notaventa_id,despachosol.fechaestdesp,
-            sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
-            despachosol.aprorddesp,despachosol.aprorddespfh
-            FROM despachosol INNER JOIN despachosoldet
-            ON despachosol.id=despachosoldet.despachosol_id
-            INNER JOIN notaventa
-            ON notaventa.id=despachosol.notaventa_id
-            INNER JOIN notaventadetalle
-            ON despachosoldet.notaventadetalle_id=notaventadetalle.id
+    $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+            sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
+            sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
+            sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
+            sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
+            sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
+            sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
+            sum(notaventadetalle.subtotal) AS totalps,
+            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
+            FROM notaventa INNER JOIN notaventadetalle
+            ON notaventa.id=notaventadetalle.notaventa_id
             INNER JOIN producto
             ON notaventadetalle.producto_id=producto.id
             INNER JOIN categoriaprod
@@ -376,8 +444,6 @@ function consultasoldesp($request){
             ON areaproduccion.id=categoriaprod.areaproduccion_id
             INNER JOIN cliente
             ON cliente.id=notaventa.cliente_id
-            INNER JOIN comuna
-            ON comuna.id=despachosol.comunaentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -387,13 +453,11 @@ function consultasoldesp($request){
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
             and $aux_aprobstatus
-            and $aux_condcomuna_id
-            and $aux_condaprobord
-            and $aux_condid
-            and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
-            GROUP BY despachosol.id;";
-    //dd($sql);
+            and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
+            GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
+    //dd("$sql");
     $datas = DB::select($sql);
-
     return $datas;
 }

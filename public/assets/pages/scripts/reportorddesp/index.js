@@ -37,7 +37,6 @@ $(document).ready(function () {
     });
 
     configurarTabla('.tablas');
-    configurarTabla('.tablasconsOD');
 
 });
 
@@ -115,7 +114,7 @@ function datos(){
 
 function consultar(data){
     $.ajax({
-        url: '/reportsoldesp/reporte',
+        url: '/reportorddesp/reporte',
         type: 'POST',
         data: data,
         success: function (datos) {
@@ -224,31 +223,4 @@ function visto(id,visto){
     };
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
-}
-
-
-function genlistaOD(id){ //Generar listado Ordenes de Despacho asociados a una solicitud de despacho
-	consultarOD(datosDespacho(id));
-}
-
-function consultarOD(data){
-    $.ajax({
-        url: '/reportorddesp/reporte',
-        type: 'POST',
-        data: data,
-        success: function (datos) {
-            if(datos['tabla'].length>0){
-                $("#tablalistarorddesp").html(datos['tabla']);
-                $("#myModalTablaOD").modal('show');
-            }
-        }
-    });
-}
-
-function datosDespacho(id){
-    var data = {
-        despachosol_id    : id,
-        _token            : $('input[name=_token]').val()
-    };
-    return data;
 }

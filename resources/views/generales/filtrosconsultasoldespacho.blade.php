@@ -158,6 +158,14 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="ID">
+                        <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                            <label for="id">ID:</label>
+                        </div>
+                        <div class="col-xs-12 col-md-8 col-sm-8">
+                            <input type="text" name="id" id="id" class="form-control" maxlength="10"/>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-xs-12 col-md-2 col-sm-12">

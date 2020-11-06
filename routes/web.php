@@ -479,6 +479,25 @@ Route::get('reportsoldesp', 'ReportSolDespController@index')->name('reportsoldes
 Route::post('reportsoldesp/reporte', 'ReportSolDespController@reporte')->name('reportsoldesp_reporte');
 Route::get('reportsoldesp/exportPdf', 'ReportSolDespController@exportPdf')->name('reportsoldesp_exportPdf');
 
+/*RUTAS REPORTE ORDEN DESPACHO*/
+Route::get('reportorddesp', 'ReportOrdDespController@index')->name('reportorddesp');
+Route::post('reportorddesp/reporte', 'ReportOrdDespController@reporte')->name('reportorddesp_reporte');
+Route::get('reportorddesp/exportPdf', 'ReportOrdDespController@exportPdf')->name('reportorddesp_exportPdf');
+
+/*RUTAS REPORTE ORDEN DESPACHO GUIA FACTURA*/
+Route::get('reportorddespguiafact', 'ReportOrdDespGuiaFactController@index')->name('reportorddespguiafact');
+Route::post('reportorddespguiafact/reporte', 'ReportOrdDespGuiaFactController@reporte')->name('reportorddespguiafact_reporte');
+Route::get('reportorddespguiafact/exportPdf', 'ReportOrdDespGuiaFactController@exportPdf')->name('reportorddespguiafact_exportPdf');
+
+/*RUTAS REPORTE ORDEN DESPACHO CERRADAS*/
+Route::get('reportorddespcerrada', 'ReportOrdDespCerradaController@index')->name('reportorddespcerrada');
+Route::post('reportorddespcerrada/reporte', 'ReportOrdDespCerradaController@reporte')->name('reportorddespcerrada_reporte');
+Route::get('reportorddespcerrada/exportPdf', 'ReportOrdDespCerradaController@exportPdf')->name('reportorddespcerrada_exportPdf');
+
+/*RUTAS REPORTE Nota de Venta Pendientes*/
+Route::get('reportnvpendientes', 'ReportNVPendientesController@index')->name('reportnvpendientes');
+Route::post('reportnvpendientes/reporte', 'ReportNVPendientesController@reporte')->name('reportnvpendientes_reporte');
+Route::get('reportnvpendientes/exportPdf', 'ReportNVPendientesController@exportPdf')->name('reportnvpendientes_exportPdf');
 
 
 /*

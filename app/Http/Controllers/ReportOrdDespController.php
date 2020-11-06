@@ -15,7 +15,7 @@ use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ReportSolDespController extends Controller
+class ReportOrdDespController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -90,10 +90,11 @@ class ReportSolDespController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
 
-        return view('reportsoldesp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
+        return view('reportorddesp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
 
     }
 
+    
     public function reporte(Request $request){
         $respuesta = array();
         $respuesta['exito'] = false;
@@ -103,13 +104,14 @@ class ReportSolDespController extends Controller
         if($request->ajax()){
             $datas = consultasoldesp($request);
     
-            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablasconsOD' data-page-length='50'>
+            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Fecha</th>
                     <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
                     <th>Razón Social</th>
+                    <th class='tooltipsC' title='Orden de Despacho'>OD</th>
                     <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
@@ -129,21 +131,19 @@ class ReportSolDespController extends Controller
                     $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
                 }
                 $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
-                $aprorddesp = "<i class='glyphicon glyphicon-floppy-save text-warning tooltipsC' title='Pendiente Aprobar'></i>";
-                if($data->aprorddesp){
-                    $fechaaprob = date('d-m-Y h:i:s A', strtotime($data->aprorddespfh));
-                    $aprorddesp = "<i class='glyphicon glyphicon-floppy-save text-primary tooltipsC' title='Fecha: $fechaaprob'></i>";
+                $aprguiadesp = "<i class='glyphicon glyphicon-floppy-save text-warning tooltipsC' title='Pendiente Aprobar'></i>";
+                if($data->aprguiadesp){
+                    $fechaaprob = date('d-m-Y h:i:s A', strtotime($data->aprguiadespfh));
+                    $aprguiadesp = "<i class='glyphicon glyphicon-floppy-save text-primary tooltipsC' title='Fecha: $fechaaprob'></i>";
                 }
                 $listadosoldesp = "";
+                /*
                 $ordesp = DespachoOrd::orderBy('id')
                         ->where('despachosol_id',$data->id);
                 if($ordesp->count() > 0){
                     $aux_cont = $ordesp->count();
-                    $listadosoldesp = "
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden Despacho: $aux_cont' onclick='genlistaOD($data->id)'>
-                            <i class='glyphicon glyphicon-search'></i>
-                        </a>";
-                }
+                    $listadosoldesp = "<i class='glyphicon glyphicon-search text-primary tooltipsC' title='Orden Despacho: $aux_cont'></i>";
+                }*/
                 //dd($ordesp);
 
                 /*$despachoord = DespachoOrd::findOrFail($data->id)
@@ -156,8 +156,13 @@ class ReportSolDespController extends Controller
                     <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->id,1)'>
+                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD($data->id,1)'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->despachosol_id,1)'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>$data->despachosol_id
                         </a>
                     </td>
                     <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
@@ -171,8 +176,7 @@ class ReportSolDespController extends Controller
                         number_format($data->totalkilos, 2, ",", ".") .
                     "</td>
                     <td>
-                        $aprorddesp | 
-                        $listadosoldesp
+                        $aprguiadesp
                     </td>
                 </tr>";
     
@@ -188,7 +192,6 @@ class ReportSolDespController extends Controller
         return $respuesta;
     }
 
-    
     /**
      * Show the form for creating a new resource.
      *
@@ -257,6 +260,7 @@ class ReportSolDespController extends Controller
 }
 
 
+
 function consultasoldesp($request){
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
@@ -287,7 +291,7 @@ function consultasoldesp($request){
         $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
         $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
-        $aux_condFecha = "despachosol.fechahora>='$fechad' and despachosol.fechahora<='$fechah'";
+        $aux_condFecha = "despachoord.fechahora>='$fechad' and despachoord.fechahora<='$fechah'";
     }
     if(empty($request->rut)){
         $aux_condrut = " true";
@@ -346,28 +350,34 @@ function consultasoldesp($request){
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
 
-    $aux_condaprobord = "true";
-    
     if(empty($request->id)){
         $aux_condid = " true";
     }else{
-        $aux_condid = "despachosol.id='$request->id'";
+        $aux_condid = "despachoord.id='$request->id'";
     }
 
- 
-    //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
+       
+    if(empty($request->despachosol_id)){
+        $aux_conddespachosol_id = " true";
+    }else{
+        $aux_conddespachosol_id = "despachoord.despachosol_id='$request->despachosol_id'";
+    }
 
-    $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
+    $aux_condaprobord = "true";
+
+    //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
+
+    $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
-            despachosol.notaventa_id,despachosol.fechaestdesp,
-            sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
-            despachosol.aprorddesp,despachosol.aprorddespfh
-            FROM despachosol INNER JOIN despachosoldet
-            ON despachosol.id=despachosoldet.despachosol_id
+            despachoord.notaventa_id,despachoord.fechaestdesp,
+            sum(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
+            despachoord.aprguiadesp,despachoord.aprguiadespfh
+            FROM despachoord INNER JOIN despachoorddet
+            ON despachoord.id=despachoorddet.despachoord_id
             INNER JOIN notaventa
-            ON notaventa.id=despachosol.notaventa_id
+            ON notaventa.id=despachoord.notaventa_id
             INNER JOIN notaventadetalle
-            ON despachosoldet.notaventadetalle_id=notaventadetalle.id
+            ON despachoorddet.notaventadetalle_id=notaventadetalle.id
             INNER JOIN producto
             ON notaventadetalle.producto_id=producto.id
             INNER JOIN categoriaprod
@@ -377,7 +387,7 @@ function consultasoldesp($request){
             INNER JOIN cliente
             ON cliente.id=notaventa.cliente_id
             INNER JOIN comuna
-            ON comuna.id=despachosol.comunaentrega_id
+            ON comuna.id=despachoord.comunaentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -390,8 +400,9 @@ function consultasoldesp($request){
             and $aux_condcomuna_id
             and $aux_condaprobord
             and $aux_condid
-            and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
-            GROUP BY despachosol.id;";
+            and $aux_conddespachosol_id
+            and despachoord.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
+            GROUP BY despachoord.id;";
     //dd($sql);
     $datas = DB::select($sql);
 
