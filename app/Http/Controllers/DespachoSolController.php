@@ -312,7 +312,10 @@ class DespachoSolController extends Controller
                 }
             }
         }
-        return redirect('despachosol/index')->with('mensaje','Nota de Venta creada con exito.');
+        return redirect('despachosol/index')->with([
+                                                    'mensaje'=>'Registro creado con exito.',
+                                                    'tipo_alert' => 'alert-success'
+                                                ]);
     }
 
     /**
@@ -337,6 +340,7 @@ class DespachoSolController extends Controller
     {
         can('editar-solicitud-despacho');
         $data = DespachoSol::findOrFail($id);
+        //dd($data);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
@@ -480,41 +484,52 @@ class DespachoSolController extends Controller
         $dateInput = explode('/',$request->fechaestdesp);
         $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
         $despachosol = DespachoSol::findOrFail($id);
-        $despachosol->comunaentrega_id = $request->comunaentrega_id;
-        $despachosol->tipoentrega_id = $request->tipoentrega_id;
-        $despachosol->plazoentrega = $request->plazoentrega;
-        $despachosol->lugarentrega = $request->lugarentrega;
-        $despachosol->contacto = $request->contacto;
-        $despachosol->contactoemail = $request->contactoemail;
-        $despachosol->contactotelf = $request->contactotelf;
-        $despachosol->observacion = $request->observacion;
-        $despachosol->fechaestdesp = $request->fechaestdesp;
-        //dd($request);
-        if($despachosol->save()){
-            $cont_producto = count($request->producto_id);
-            if($cont_producto>0){
-                for ($i=0; $i < $cont_producto ; $i++){
-                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                        $despachosoldet = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
-                        $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
-                        if($despachosoldet->save()){ //Si al editar dejo en cero la cantidad solicitada elimino el registro en detalle solicitud
-                            if($request->cantsoldesp[$i]==0){
-                                $despachosoldet->usuariodel_id = auth()->id();
-                                $despachosoldet->save();
-                                $despachosoldet->delete();
+        if($despachosol->updated_at == $request->updated_at){
+            $despachosol->updated_at = date("Y-m-d H:i:s");
+            $despachosol->comunaentrega_id = $request->comunaentrega_id;
+            $despachosol->tipoentrega_id = $request->tipoentrega_id;
+            $despachosol->plazoentrega = $request->plazoentrega;
+            $despachosol->lugarentrega = $request->lugarentrega;
+            $despachosol->contacto = $request->contacto;
+            $despachosol->contactoemail = $request->contactoemail;
+            $despachosol->contactotelf = $request->contactotelf;
+            $despachosol->observacion = $request->observacion;
+            $despachosol->fechaestdesp = $request->fechaestdesp;
+            //dd($request);
+            if($despachosol->save()){
+                $cont_producto = count($request->producto_id);
+                if($cont_producto>0){
+                    for ($i=0; $i < $cont_producto ; $i++){
+                        if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                            $despachosoldet = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
+                            $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
+                            if($despachosoldet->save()){ //Si al editar dejo en cero la cantidad solicitada elimino el registro en detalle solicitud
+                                if($request->cantsoldesp[$i]==0){
+                                    $despachosoldet->usuariodel_id = auth()->id();
+                                    $despachosoldet->save();
+                                    $despachosoldet->delete();
+                                }
+                                /*
+                                $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
+                                $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                                $notaventadetalle->save();
+                                */
+                                //$despacho_id = $despachosol->id;    
                             }
-                            /*
-                            $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
-                            $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
-                            $notaventadetalle->save();
-                            */
-                            //$despacho_id = $despachosol->id;    
                         }
                     }
                 }
             }
+            return redirect('despachosol/index')->with([
+                                                        'mensaje'=>'Registro actualizado con exito.',
+                                                        'tipo_alert' => 'alert-success'
+                                                    ]);
+        }else{
+            return redirect('despachosol/index')->with([
+                                                        'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                                                        'tipo_alert' => 'alert-error'
+                                                    ]);
         }
-        return redirect('despachosol/index')->with('mensaje','Nota de Venta creada con exito.');
     }
 
     /**

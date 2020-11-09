@@ -1,3 +1,4 @@
+<input type="hidden" name="updated_at" id="updated_at" value="{{$data->updated_at}}">
 <input type="hidden" name="id" id="id" value="{{$data->id}}">
 <input type="hidden" name="notaventa_id" id="notaventa_id" value="{{$data->notaventa_id}}">
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">

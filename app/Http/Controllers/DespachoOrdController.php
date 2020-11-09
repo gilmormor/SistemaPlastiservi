@@ -271,7 +271,10 @@ class DespachoOrdController extends Controller
                 }
             }
         }
-        return redirect('despachoord/index')->with('mensaje','Nota de Venta creada con exito.'); 
+        return redirect('despachoord/index')->with([
+                                                    'mensaje'=>'Registro creado con exito.',
+                                                    'tipo_alert' => 'alert-success'
+                                                ]);
     }
 
     /**
@@ -441,37 +444,49 @@ class DespachoOrdController extends Controller
         $dateInput = explode('/',$request->fechaestdesp);
         $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
         $despachoord = DespachoOrd::findOrFail($id);
-        $despachoord->comunaentrega_id = $request->comunaentrega_id;
-        $despachoord->tipoentrega_id = $request->tipoentrega_id;
-        $despachoord->plazoentrega = $request->plazoentrega;
-        $despachoord->lugarentrega = $request->lugarentrega;
-        $despachoord->contacto = $request->contacto;
-        $despachoord->contactoemail = $request->contactoemail;
-        $despachoord->contactotelf = $request->contactotelf;
-        $despachoord->observacion = $request->observacion;
-        $despachoord->fechaestdesp = $request->fechaestdesp;
-        $despachoord->despachoobs_id = $request->despachoobs_id;
-        //dd($request);
-        if($despachoord->save()){
-            $cont_producto = count($request->producto_id);
-            if($cont_producto>0){
-                for ($i=0; $i < $cont_producto ; $i++){
-                    if(is_null($request->producto_id[$i])==false && is_null($request->cantord[$i])==false){
-                        $despachoorddet = DespachoOrdDet::findOrFail($request->NVdet_id[$i]);
-                        $despachoorddet->cantdesp = $request->cantord[$i];
-                        if($despachoorddet->save()){
-                            /*
-                            $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
-                            $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
-                            $notaventadetalle->save();
-                            */
-                            //$despacho_id = $despachosol->id;    
+        if($despachoord->updated_at == $request->updated_at){
+            $despachoord->updated_at = date("Y-m-d H:i:s");
+            $despachoord->comunaentrega_id = $request->comunaentrega_id;
+            $despachoord->tipoentrega_id = $request->tipoentrega_id;
+            $despachoord->plazoentrega = $request->plazoentrega;
+            $despachoord->lugarentrega = $request->lugarentrega;
+            $despachoord->contacto = $request->contacto;
+            $despachoord->contactoemail = $request->contactoemail;
+            $despachoord->contactotelf = $request->contactotelf;
+            $despachoord->observacion = $request->observacion;
+            $despachoord->fechaestdesp = $request->fechaestdesp;
+            $despachoord->despachoobs_id = $request->despachoobs_id;
+            //dd($request);
+            if($despachoord->save()){
+                $cont_producto = count($request->producto_id);
+                if($cont_producto>0){
+                    for ($i=0; $i < $cont_producto ; $i++){
+                        if(is_null($request->producto_id[$i])==false && is_null($request->cantord[$i])==false){
+                            $despachoorddet = DespachoOrdDet::findOrFail($request->NVdet_id[$i]);
+                            $despachoorddet->cantdesp = $request->cantord[$i];
+                            if($despachoorddet->save()){
+                                /*
+                                $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
+                                $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                                $notaventadetalle->save();
+                                */
+                                //$despacho_id = $despachosol->id;    
+                            }
                         }
                     }
                 }
             }
+            return redirect('despachoord/index')->with([
+                                                        'mensaje'=>'Registro actualizado con exito.',
+                                                        'tipo_alert' => 'alert-success'
+                                                    ]);
+        }else{
+            return redirect('despachoord/index')->with([
+                'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachoord->updated_at,
+                                                        'tipo_alert' => 'alert-error'
+                                                    ]);
         }
-        return redirect('despachoord/index')->with('mensaje','Orden de Despacho actualizada con exito.');
+
     }
 
     /**

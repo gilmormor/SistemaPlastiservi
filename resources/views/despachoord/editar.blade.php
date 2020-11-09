@@ -46,9 +46,9 @@
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer text-center">
-                    @if (($data->notaventa->vendedor_id == $vendedor_id) or ($data->usuario_id == auth()->id())) <!-- Solo deja modificar si el el mismo vendedor o si fue el usuario que creo el registro -->
+                    <!--@if (($data->notaventa->vendedor_id == $vendedor_id) or ($data->usuario_id == auth()->id())) --><!-- Solo deja modificar si el el mismo vendedor o si fue el usuario que creo el registro -->
                         @include('includes.boton-form-editar')
-                    @endif
+                    <!--@endif-->
                 </div>
                 <!-- /.box-footer -->
             </form>
