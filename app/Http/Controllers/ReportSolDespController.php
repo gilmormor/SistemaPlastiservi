@@ -8,6 +8,7 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
+use App\Models\DespachoSolAnul;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
@@ -169,12 +170,19 @@ class ReportSolDespController extends Controller
                     <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
                     <td style='text-align:right'>".
                         number_format($data->totalkilos, 2, ",", ".") .
-                    "</td>
-                    <td>
-                        $aprorddesp | 
-                        $listadosoldesp
-                    </td>
-                </tr>";
+                    "</td>";
+                    $despachosolanul = DespachoSolAnul::where('despachosol_id','=',$data->id)->get();
+                    if (count($despachosolanul)>0){
+                        $respuesta['tabla'] .= "<td><small class='label pull-left bg-red'>Anulado</small></td>";
+                    }else{
+                        $respuesta['tabla'] .= "
+                        <td>
+                            $aprorddesp | 
+                            $listadosoldesp
+                        </td>
+                        ";
+                    }
+                    $respuesta['tabla'] .= "</tr>";
     
                 //dd($data->contacto);
             }

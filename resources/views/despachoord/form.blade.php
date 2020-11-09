@@ -150,6 +150,7 @@
                                     }
                                     if($detalle->cantsoldesp > $sumacantorddesp){
                                         $aux_nfila++;
+                                        $aux_saldo = $detalle->cantsoldesp - $sumacantorddesp;
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td name="despachosoldet_id{{$aux_nfila}}" id="despachosoldet_id{{$aux_nfila}}">
@@ -186,10 +187,10 @@
                                         {{$sumacantorddesp}}
                                     </td>
                                     <td name="saldocantOrigF{{$aux_nfila}}" id="saldocantOrigF{{$aux_nfila}}" style="text-align:right;display:none;">
-                                        {{$detalle->cantsoldesp - $sumacantorddesp}}
+                                        {{$aux_saldo}}
                                     </td>
                                     <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->cantsoldesp - $sumacantorddesp}}
+                                        {{$aux_saldo}}
                                     </td>
                                     <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
                                         <div class='checkbox'>
@@ -200,9 +201,9 @@
                                         </div>
                                     </td>
                                     <td name="cantordF{{$aux_nfila}}" id="cantordF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$detalle->cantsoldesp - $sumacantorddesp}},{{$aux_nfila}})" style="text-align:right;"/>
+                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" style="text-align:right;"/>
                                     </td>
-                                    <td name="cantorddespF{{$aux_nfila}}" id="cantorddespF{{$aux_nfila}}" style="text-align:right;display:none;">
+                                    <td name="cantorddespinputF{{$aux_nfila}}" id="cantorddespinputF{{$aux_nfila}}" style="text-align:right;display:none;">
                                         <input type="text" name="cantorddesp[]" id="cantorddesp{{$aux_nfila}}" class="form-control" style="text-align:right;"/>
                                     </td>
                                     <td style="display:none;">
@@ -294,7 +295,7 @@
                             @endforeach
                             <tr id="trneto" name="trneto">
                                 <td colspan="6" style="text-align:right">
-                                    <b>Total:</b>
+                                    <b>Total Unidades:</b>
                                 </td>
                                 <td style="text-align:right">
                                     <div class="form-group col-xs-12 col-sm-12" style="margin-bottom: 0px;padding-left: 0px;padding-right: 0px;">

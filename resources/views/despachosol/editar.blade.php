@@ -1,22 +1,11 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-    Solicitud Despacho
-@endsection
-
-@routes
-@section("styles")
-    <link rel="stylesheet" href="{{asset("assets/js/bootstrap-fileinput/css/fileinput.min.css")}}">
-@endsection
-
-@section("scriptsPlugins")
-    <script src="{{asset("assets/js/bootstrap-fileinput/js/fileinput.min.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/js/bootstrap-fileinput/js/locales/es.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/js/bootstrap-fileinput/themes/fas/theme.min.js")}}" type="text/javascript"></script>
+    Solicitud de Despacho
 @endsection
 
 @section('scripts')
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/notaventa/crear.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/despachosol/crear.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')

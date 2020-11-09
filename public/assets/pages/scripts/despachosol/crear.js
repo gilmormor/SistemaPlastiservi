@@ -19,7 +19,7 @@ $(document).ready(function () {
 	//$("#rut").numeric();
 	$("#cantM").numeric();
 	$("#precioM").numeric({decimalPlaces: 2});
-	$(".numerico").numeric();
+	$(".numerico").numeric({ negative : false });
 	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});
@@ -93,6 +93,15 @@ $(document).ready(function () {
 	$('.datepicker').datepicker({
 		language: "es",
 		autoclose: true,
+		todayHighlight: true
+	}).datepicker("setDate");
+
+	var dateToday = new Date(); 
+	$("#fechaestdesp").datepicker({
+		language: "es",
+		autoclose: true,
+		minDate: dateToday,
+		startDate: new Date(),
 		todayHighlight: true
 	}).datepicker("setDate");
 
@@ -589,17 +598,12 @@ $('#form-general').submit(function() {
 })
 
 function actSaldo(s,i){
-/*
-	aux_saldo = s - $("#cantsol" + i).val();
-	$("#saldocantF" + i).html(aux_saldo);
-	$("#cantsoldesp" + i).val($("#cantsol" + i).val());
-*/
 	aux_cantsol = $.trim($("#cantsol" + i).val());
 	$("#cantsol" + i).val(aux_cantsol);
-	aux_saldo = s - $("#cantsol" + i).val();
-	//alert($("#cantord" + i).val());
+	aux_cantTD = $.trim($("#cantTD" + i).html());
+	aux_cantdespF = $.trim($("#cantsoldespF" + i).html());
+	aux_saldo = aux_cantTD - aux_cantdespF - aux_cantsol;
 	$("#saldocantF" + i).html(aux_saldo);
-	$("#cantsoldesp" + i).val($("#cantsol" + i).val());
 	if(aux_cantsol.length == 0 || aux_cantsol == " " || aux_cantsol == null){
 		$("#llenarCantSol" + i).prop("checked", false);
 	}else{
@@ -618,8 +622,10 @@ function actSaldo(s,i){
 	
 	if(aux_saldo < 0){
 		aux_cant = parseFloat($("#cant" + i).val());
-		aux_cantsoldesp = parseFloat($("#cantsoldespF" + i).html());
-		$("#cantsol" + i).val(aux_cant - aux_cantsoldesp);
+		aux_cantTD = $.trim($("#cantTD" + i).html());
+		aux_cantdespF = $.trim($("#cantsoldespF" + i).html());
+		aux_saldo = aux_cantTD - aux_cantdespF;
+		$("#cantsol" + i).val(aux_saldo);
 		$("#saldocantF" + i).html('0');
 		aux_totalkilosTD = aux_cant * $("#peso" + i).val();
 		aux_subtotalCFTD = aux_cant * $("#peso" + i).val() * $("#precioxkilo" + i).val();
@@ -627,6 +633,8 @@ function actSaldo(s,i){
 		$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-##,###,##0.00',1));
 		$("#subtotalSFTD" + i).html(aux_subtotalCFTD);
 	}
+	$("#cantsoldesp" + i).val($("#cantsol" + i).val());
+
 	sumcant();
 	totalizardespacho();
 
@@ -660,20 +668,22 @@ function sumarcant(){
 	nFilas = $("#tabla-data tr").length - 4;
 	$("#cantsolTotal").val('');
 	for (var i = 1; i <= nFilas; i++) {
-		saldo = $("#saldocantOrigF" + i).html();
+		aux_cantTD = $.trim($("#cantTD" + i).html());
+		aux_cantdespF = $.trim($("#cantsoldespF" + i).html());
+		aux_saldo = aux_cantTD - aux_cantdespF;
+
 		if (estaSeleccionado){
 			$("#llenarCantSol" + i).prop("checked", true);
-			$("#cantsol" + i).val($.trim(saldo));
-			$("#cantsoldesp" + i).val($.trim(saldo));
+			$("#cantsol" + i).val($.trim(aux_saldo));
 			$("#saldocantF" + i).html("0")
 			actSaldo($("#cantsol" + i).val(),i);
 		}else{
 			$("#llenarCantSol" + i).prop("checked", false);
 			$("#cantsol" + i).val('');
-			$("#cantsoldesp" + i).val('');
 			$("#saldocantF" + i).html($("#saldocantOrigF" + i).html())
 			actSaldo($("#saldocantOrigF" + i).html(),i);
 		}
+		$("#cantsoldesp" + i).val($("#cantsol" + i).val());
 	}
 	sumcant();
 }

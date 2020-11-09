@@ -102,7 +102,7 @@
                             <th class='tooltipsC' title='Marcar todo'>
                                 <div class='checkbox'>
                                     <label style='font-size: 1.2em'>
-                                        <input type='checkbox' id='marcarTodo' name='marcarTodo' checked readonly disabled>
+                                        <input type='checkbox' id='marcarTodo' name='marcarTodo' checked>
                                         <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                                     </label>
                                 </div>
@@ -120,7 +120,7 @@
                             <th style="display:none;">Peso</th>
                             <th>TU</th>
                             <th style="display:none;">TUnion</th>
-                            <th>Desc</th>
+                            <th style="display:none;">Desc</th>
                             <th style="display:none;">DescPorc</th>
                             <th style="display:none;">DescVal</th>
                             <th>PUnit</th>
@@ -145,6 +145,16 @@
                                 <?php 
                                     $aux_nfila++;
                                     $cantordTotal = $cantordTotal + $detalle->cantdesp;
+                                    $sql = "SELECT cantdesp
+                                            FROM vista_sumorddespdet
+                                            WHERE despachosoldet_id=$detalle->despachosoldet_id";
+                                    $datasuma = DB::select($sql);
+                                    if(empty($datasuma)){
+                                        $sumacantorddesp= 0;
+                                    }else{
+                                        $sumacantorddesp= $datasuma[0]->cantdesp;
+                                    }
+                                    $aux_saldo = $detalle->despachosoldet->cantsoldesp - $sumacantorddesp;
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -185,36 +195,27 @@
                                         {{$detalle->notaventadetalle->producto->nombre}}
                                     </td>
                                     <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
-                                        @if ($aux_sta==2)
-                                            {{$detalle->notaventadetalle->cant}}
-                                        @else 
-                                            {{$detalle->notaventadetalle->cant - $detalle->notaventadetalle->cantusada}}
-                                        @endif
+                                        {{$detalle->despachosoldet->cantsoldesp}}
                                     </td>
-                                    <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->cantdesp}}
+                                    <td name="cantorddespF{{$aux_nfila}}" id="cantorddespF{{$aux_nfila}}" style="text-align:right">
+                                        {{$sumacantorddesp - $detalle->cantdesp}}
                                     </td>
-                                    <!--
-                                    <td name="cantsoldespF{{$aux_nfila}}" id="cantsoldespF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->cantsoldesp}}
-                                    </td>
-                                    -->
                                     <td name="saldocantOrigF{{$aux_nfila}}" id="saldocantOrigF{{$aux_nfila}}" style="text-align:right;display:none;">
-                                        {{$detalle->notaventadetalle->cant - $detalle->cantdesp}}
+                                        {{$aux_saldo}}
                                     </td>
                                     <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->notaventadetalle->cant - $detalle->cantdesp}}
+                                        {{$aux_saldo}}
                                     </td>
                                     <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
                                         <div class='checkbox'>
                                             <label style='font-size: 1.2em'>
-                                                <input type="checkbox" class="checkllenarCantSol" id="llenarCantSol{{$aux_nfila}}" name="llenarCantSol{{$aux_nfila}}" onclick="llenarCantSol({{$aux_nfila}})" readonly disabled checked>
+                                                <input type="checkbox" class="checkllenarCantOrd" id="llenarCantOrd{{$aux_nfila}}" name="llenarCantOrd{{$aux_nfila}}" onclick="llenarCantOrd({{$aux_nfila}})" checked>
                                                 <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                                             </label>
                                         </div>
                                     </td>
                                     <td name="cantordF{{$aux_nfila}}" id="cantordF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control" onkeyup="actSaldo({{$detalle->notaventadetalle->cant - $detalle->cantdesp}},{{$aux_nfila}})" value="{{$detalle->cantdesp}}" style="text-align:right;" readonly disabled/>
+                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" value="{{$detalle->cantdesp}}" style="text-align:right;"/>
                                     </td>
                                     <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:right;display:none;">
                                         <input type="text" name="cantdesp[]" id="cantdesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantdesp}}" style="text-align:right;"/>
@@ -260,7 +261,7 @@
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->tipounion}}" style="display:none;"/>
                                     </td>
-                                    <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right;display:none;">
                                         <?php $aux_descPorc = $detalle->notaventadetalle->descuento * 100; ?>
                                         {{$aux_descPorc}}%
                                     </td>
@@ -306,22 +307,22 @@
                             @endforeach
                             <tr id="trneto" name="trneto">
                                 <td colspan="6" style="text-align:right">
-                                    <b>Total:</b>
+                                    <b>Total Unidades:</b>
                                 </td>
                                 <td style="text-align:right">
                                     <div class="form-group col-xs-12 col-sm-12">
                                         <input type="text" name="cantordTotal" id="cantordTotal" value={{$cantordTotal}} class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>
-                                <td colspan="10" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="9" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="17" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="16" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="17" style="text-align:right"><b>Total</b></td>
+                                <td colspan="16" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
                             </tr>
                         @endif

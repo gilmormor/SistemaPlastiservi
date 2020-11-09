@@ -33,8 +33,8 @@
 						@endif
 					</p>
 					<p>Fecha Act: {{date('d-m-Y h:i:s A')}}</p>
-					<p>Fecha: {{date('d-m-Y', strtotime($despachoord->fecha))}}</p>
-					<p>Hora: {{date("h:i:s A", strtotime($despachoord->fecha))}}</p>
+					<p>Fecha: {{date('d-m-Y', strtotime($despachoord->fechahora))}}</p>
+					<p>Hora: {{date("h:i:s A", strtotime($despachoord->fechahora))}}</p>
 					<p>Vendedor: {{$despachoord->notaventa->vendedor->persona->nombre . " " . $despachoord->notaventa->vendedor->persona->apellido}} </p>
 					<p>Teléfono: {{$despachoord->notaventa->vendedor->persona->telefono}} </p>
 					<p>email: {{$despachoord->notaventa->vendedor->persona->email}} </p>

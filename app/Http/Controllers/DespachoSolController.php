@@ -497,7 +497,12 @@ class DespachoSolController extends Controller
                     if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
                         $despachosoldet = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
                         $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
-                        if($despachosoldet->save()){
+                        if($despachosoldet->save()){ //Si al editar dejo en cero la cantidad solicitada elimino el registro en detalle solicitud
+                            if($request->cantsoldesp[$i]==0){
+                                $despachosoldet->usuariodel_id = auth()->id();
+                                $despachosoldet->save();
+                                $despachosoldet->delete();
+                            }
                             /*
                             $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
                             $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
@@ -680,7 +685,7 @@ class DespachoSolController extends Controller
         $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
         if($stareport == '1'){
-            //return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+            return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
         
             $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
             //return $pdf->download('cotizacion.pdf');
@@ -827,6 +832,8 @@ function consulta($request){
             and $aux_condnotaventa_id
             and $aux_aprobstatus
             and $aux_condcomuna_id
+            and notaventa.anulada is null
+            and notaventa.visto is null
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
