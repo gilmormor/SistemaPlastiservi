@@ -70,13 +70,14 @@
 		<table id="factura_detalle">
 				<thead>
 					<tr>
-						<th width="30px">Cant.</th>
-						<th width="30px">CantOD</th>
+						<th width="30px">Solicitado</th>
+						<th width="30px">Despachado</th>
 						<th class="textcenter">Unidad</th>
 						<th class="textleft">Descripción</th>
 						<th class="textleft">Diam</th>
 						<th class="textleft">Clase</th>
 						<th class="textright">Largo</th>
+						<th class="textright">TU</th>
 						<th class="textright">Peso</th>
 						<th class="textright">$ x Kg</th>
 						<th class="textright">Total Kg</th>
@@ -114,6 +115,7 @@
 							</td>
 							<td class="textleft">{{$despachoorddet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
 							<td class="textright">{{$despachoorddet->notaventadetalle->producto->long}} mts</td>
+							<td class="textright">{{$despachoorddet->notaventadetalle->producto->tipounion}}</td>
 							<td class="textright">{{number_format($despachoorddet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($despachoorddet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($despachoorddet->notaventadetalle->totalkilos, 2, ",", ".")}}</td>

@@ -71,12 +71,13 @@
 				<thead>
 					<tr>
 						<th width="30px">Cant.</th>
-						<th width="30px">CantSD</th>
+						<th width="30px">Solicitud</th>
 						<th class="textcenter">Unidad</th>
 						<th class="textleft">Descripción</th>
 						<th class="textleft">Diam</th>
 						<th class="textleft">Clase</th>
 						<th class="textright">Largo</th>
+						<th class="textright">TU</th>
 						<th class="textright">Peso</th>
 						<th class="textright">$ x Kg</th>
 						<th class="textright">Total Kg</th>
@@ -114,6 +115,7 @@
 							</td>
 							<td class="textleft">{{$despachosoldet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
 							<td class="textright">{{$despachosoldet->notaventadetalle->producto->long}} mts</td>
+							<td class="textright">{{$despachosoldet->notaventadetalle->producto->tipounion}}</td>
 							<td class="textright">{{number_format($despachosoldet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($despachosoldet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($despachosoldet->notaventadetalle->totalkilos, 2, ",", ".")}}</td>

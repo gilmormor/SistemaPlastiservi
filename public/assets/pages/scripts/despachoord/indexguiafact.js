@@ -6,7 +6,7 @@ $(document).ready(function () {
 		todayHighlight: true
 	}).datepicker("setDate");
 
-
+	$(".numerico").numeric({ negative : false });
 });
 
 
@@ -55,6 +55,17 @@ function ajaxRequest(data,url,funcion) {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
 				}
 			}
+			if(funcion=='consultaranularguiafact'){
+				if (respuesta.mensaje == "ok") {
+					//alert(respuesta.despachoord.numfactura);
+					$("#numfactura").val(respuesta.despachoord.numfactura);
+					$(".requeridos").keyup();
+					$("#myModalnumfactura").modal('show');
+				} else {
+					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
+				}
+			}
+
 		},
 		error: function () {
 		}
@@ -110,6 +121,7 @@ $("#btnGuardarG").click(function(event)
 function numfactura(nfila,id){
 	$("#idf").val(id);
 	$("#numfactura").val('');
+	$("#fechafactura").val('');
 	$("#nfilaf").val(nfila);
 	var data = {
 		id    : id,
@@ -118,6 +130,20 @@ function numfactura(nfila,id){
 	};
 	var ruta = '/despachoord/consultarod';
 	ajaxRequest(data,ruta,'consultarnumfacturaod');
+}
+
+function anularguiafact(nfila,id){
+	$("#idf").val(id);
+	$("#numfactura").val('');
+	$("#fechafactura").val('');
+	$("#nfilaf").val(nfila);
+	var data = {
+		id    : id,
+		nfila : nfila,
+		_token: $('input[name=_token]').val()
+	};
+	var ruta = '/despachoord/consultarod';
+	ajaxRequest(data,ruta,'consultaranularguiafact');
 }
 
 $("#btnGuardarF").click(function(event)

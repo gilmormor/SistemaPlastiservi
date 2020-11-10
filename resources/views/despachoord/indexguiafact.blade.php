@@ -94,6 +94,10 @@ Orden de despacho
                                                 <a onclick='numfactura({{$aux_nfila}},{{$data->id}})' class='btn btn-warning btn-xs' title='Factura' data-toggle='tooltip'>
                                                     Fact
                                                 </a>
+                                                |
+                                                <a onclick='anularguiafact({{$aux_nfila}},{{$data->id}})' class='btn btn-danger btn-xs' title='Anular Guia y Factura' data-toggle='tooltip'>
+                                                    Anular
+                                                </a>
                                             @endif
                                         @endif
                                     </td>
@@ -114,6 +118,7 @@ Orden de despacho
     </div>
 </div>
 @include('generales.modalpdf')
-@include('generales.guiadespacho')
-@include('generales.facturadespacho')
+@include('generales.despachoguia')
+@include('generales.despachofactura')
+@include('generales.despachoanularguiafact')
 @endsection

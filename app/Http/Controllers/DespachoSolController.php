@@ -700,7 +700,9 @@ class DespachoSolController extends Controller
         $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
         if($stareport == '1'){
-            return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+            if(env('APP_DEBUG')){
+                return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+            }
         
             $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
             //return $pdf->download('cotizacion.pdf');
