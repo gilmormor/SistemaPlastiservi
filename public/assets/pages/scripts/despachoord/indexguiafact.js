@@ -58,9 +58,9 @@ function ajaxRequest(data,url,funcion) {
 			if(funcion=='consultaranularguiafact'){
 				if (respuesta.mensaje == "ok") {
 					//alert(respuesta.despachoord.numfactura);
-					$("#numfactura").val(respuesta.despachoord.numfactura);
+					$("#guiadespacho").val(respuesta.despachoord.guiadespacho);
 					$(".requeridos").keyup();
-					$("#myModalnumfactura").modal('show');
+					$("#myModalanularguiafact").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
 				}

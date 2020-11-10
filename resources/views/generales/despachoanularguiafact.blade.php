@@ -17,14 +17,14 @@
                     </div>
                     <div class="form-group col-xs-12 col-sm-10" classorig="form-group col-xs-12 col-sm-10">
                         <label for="guiadespacho" class="control-label">Guia despacho</label>
-                        <input type="text" name="guiadespacho" id="guiadespacho" class="form-control requeridos numerico" required placeholder="Guia despacho"/>
+                        <input type="text" name="guiadespacho" id="guiadespacho" class="form-control requeridos numerico" required placeholder="Guia despacho" disabled readonly/>
                         <span class="help-block"></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-group col-xs-12 col-sm-12" classorig="form-group col-xs-12 col-sm-12">
-                        <label for="observacion" class="control-label">Observación</label>
-                        <input type="text" name="observacion" id="observacion" class="form-control requeridos" required placeholder="Observación"/>
+                        <label for="observacion" id="observacion" name="lblaccioncorrectiva" class="control-label">Observación</label>
+                        <textarea name="observacion" id="observacion" class="form-control requeridos" tipoval="texto"></textarea>
                         <span class="help-block"></span>
                     </div>
                 </div>

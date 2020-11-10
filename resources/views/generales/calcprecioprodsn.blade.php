@@ -44,10 +44,11 @@
                     <label for="descuentoM" class="control-label" data-toggle='tooltip'>Descuento</label>
                     <select name="descuentoM" id="descuentoM" class="selectpicker form-control descuentoM" tipoval="combobox" data-live-search='true'>
                         <option porc="0" value=1>0%</option>
-                        <option porc="0.05" value=0.95>5%</option>
-                        <option porc="0.10" value=0.90>10%</option>
-                        <option porc="0.15" value=0.85>15%</option>
-                        <option porc="0.20" value=0.80>20%</option>
+                        <option porc="0.005" value=0.95>0.5%</option>
+                        <option porc="0.010" value=0.90>1.0%</option>
+                        <option porc="0.015" value=0.85>1.5%</option>
+                        <option porc="0.020" value=0.80>2.0%</option>
+<!--
                         <option porc="0.25" value=0.75>25%</option>
                         <option porc="0.30" value=0.70>30%</option>
                         <option porc="0.35" value=0.65>35%</option>
@@ -65,6 +66,7 @@
                         <option porc="0.90" value=0.10>90%</option>
                         <option porc="0.95" value=0.05>95%</option>
                         <option porc="0.100" value=0.0>100%</option>
+-->
                     </select>
                     <span class="help-block"></span>
                 </div>
