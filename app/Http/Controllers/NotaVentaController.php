@@ -362,7 +362,11 @@ class NotaVentaController extends Controller
                 }
             }
         }
-        return redirect('notaventa')->with('mensaje','Nota de Venta creada con exito.');
+        return redirect('notaventa')->with([
+                                            'mensaje'=>'Nota de Venta creada con exito.',
+                                            'tipo_alert' => 'alert-success'
+                                        ]);
+        
     }
 
     /**
@@ -509,66 +513,78 @@ class NotaVentaController extends Controller
         can('guardar-notaventa');
         //dd($request);
         $notaventa = NotaVenta::findOrFail($id);
-        $request->request->add(['fechahora' => $notaventa->fechahora]);
-        $aux_plazoentrega= DateTime::createFromFormat('d/m/Y', $request->plazoentrega)->format('Y-m-d');
-        $request->request->add(['plazoentrega' => $aux_plazoentrega]);
-        //dd($request->plazoentrega);
-        $notaventaid = $id;
-
-        $notaventa->update($request->all());
-        if ($foto = NotaVenta::setFotonotaventa($request->oc_file,$notaventaid,$request)){
-            $request->request->add(['oc_file' => $foto]);
-            $data = NotaVenta::findOrFail($notaventaid);
-            $data->oc_file = $foto;
-            $data->save();
-        }
-
-        $auxNVDet=NotaVentaDetalle::where('notaventa_id',$id)->whereNotIn('id', $request->NVdet_id)->pluck('id')->toArray(); //->destroy();
-        for ($i=0; $i < count($auxNVDet) ; $i++){
-            NotaVentaDetalle::destroy($auxNVDet[$i]);
-        }
-        $cont_cotdet = count($request->NVdet_id);
-        if($cont_cotdet>0){
-            for ($i=0; $i < count($request->NVdet_id) ; $i++){
-                $idcotizaciondet = $request->NVdet_id[$i]; 
-                if( $request->NVdet_id[$i] == '0' ){
-                    $notaventadetalle = new NotaVentaDetalle();
-                    $notaventadetalle->notaventa_id = $notaventaid;
-                    $notaventadetalle->producto_id = $request->producto_id[$i];
-                    //$notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];
-                    $notaventadetalle->cant = $request->cant[$i];
-                    $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
-                    $notaventadetalle->descuento = $request->descuento[$i];
-                    $notaventadetalle->preciounit = $request->preciounit[$i];
-                    $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
-                    $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
-                    $notaventadetalle->totalkilos = $request->totalkilos[$i];
-                    $notaventadetalle->subtotal = $request->subtotal[$i];
-                    $notaventadetalle->save();
-                    $idcotizaciondet = $notaventadetalle->id;
-
-                    //dd($idDireccion);
-                }else{
-                    //dd($idDireccion);
-                    DB::table('notaventadetalle')->updateOrInsert(
-                        ['id' => $request->NVdet_id[$i], 'notaventa_id' => $id],
-                        [
-                            'producto_id' => $request->producto_id[$i],
-                            'cotizaciondetalle_id' => $request->cotizaciondetalle_id[$i],
-                            'cant' => $request->cant[$i],
-                            'unidadmedida_id' => $request->unidadmedida_id[$i],
-                            'descuento' => $request->descuento[$i],
-                            'preciounit' => $request->preciounit[$i],
-                            'precioxkilo' => $request->precioxkilo[$i],
-                            'precioxkiloreal' => $request->precioxkiloreal[$i],
-                            'totalkilos' => $request->totalkilos[$i],
-                            'subtotal' => $request->subtotal[$i],
-                        ]
-                    );
+        if($notaventa->updated_at == $request->updated_at){
+            $notaventa->updated_at = date("Y-m-d H:i:s");
+            $request->request->add(['fechahora' => $notaventa->fechahora]);
+            $aux_plazoentrega= DateTime::createFromFormat('d/m/Y', $request->plazoentrega)->format('Y-m-d');
+            $request->request->add(['plazoentrega' => $aux_plazoentrega]);
+            //dd($request->plazoentrega);
+            $notaventaid = $id;
+    
+            $notaventa->update($request->all());
+            if ($foto = NotaVenta::setFotonotaventa($request->oc_file,$notaventaid,$request)){
+                $request->request->add(['oc_file' => $foto]);
+                $data = NotaVenta::findOrFail($notaventaid);
+                $data->oc_file = $foto;
+                $data->save();
+            }
+    
+            $auxNVDet=NotaVentaDetalle::where('notaventa_id',$id)->whereNotIn('id', $request->NVdet_id)->pluck('id')->toArray(); //->destroy();
+            for ($i=0; $i < count($auxNVDet) ; $i++){
+                NotaVentaDetalle::destroy($auxNVDet[$i]);
+            }
+            $cont_cotdet = count($request->NVdet_id);
+            if($cont_cotdet>0){
+                for ($i=0; $i < count($request->NVdet_id) ; $i++){
+                    $idcotizaciondet = $request->NVdet_id[$i]; 
+                    if( $request->NVdet_id[$i] == '0' ){
+                        $notaventadetalle = new NotaVentaDetalle();
+                        $notaventadetalle->notaventa_id = $notaventaid;
+                        $notaventadetalle->producto_id = $request->producto_id[$i];
+                        //$notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];
+                        $notaventadetalle->cant = $request->cant[$i];
+                        $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
+                        $notaventadetalle->descuento = $request->descuento[$i];
+                        $notaventadetalle->preciounit = $request->preciounit[$i];
+                        $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
+                        $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
+                        $notaventadetalle->totalkilos = $request->totalkilos[$i];
+                        $notaventadetalle->subtotal = $request->subtotal[$i];
+                        $notaventadetalle->save();
+                        $idcotizaciondet = $notaventadetalle->id;
+    
+                        //dd($idDireccion);
+                    }else{
+                        //dd($idDireccion);
+                        DB::table('notaventadetalle')->updateOrInsert(
+                            ['id' => $request->NVdet_id[$i], 'notaventa_id' => $id],
+                            [
+                                'producto_id' => $request->producto_id[$i],
+                                'cotizaciondetalle_id' => $request->cotizaciondetalle_id[$i],
+                                'cant' => $request->cant[$i],
+                                'unidadmedida_id' => $request->unidadmedida_id[$i],
+                                'descuento' => $request->descuento[$i],
+                                'preciounit' => $request->preciounit[$i],
+                                'precioxkilo' => $request->precioxkilo[$i],
+                                'precioxkiloreal' => $request->precioxkiloreal[$i],
+                                'totalkilos' => $request->totalkilos[$i],
+                                'subtotal' => $request->subtotal[$i],
+                            ]
+                        );
+                    }
                 }
             }
+            return redirect('notaventa/'.$id.'/editar')->with([
+                                                                'mensaje'=>'Nota de Venta Actualizada con exito.',
+                                                                'tipo_alert' => 'alert-success'
+                                                            ]);
+        }else{
+            return redirect('notaventa/'.$id.'/editar')->with([
+                                                                'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
+                                                                'tipo_alert' => 'alert-error'
+                                                            ]);
         }
-        return redirect('notaventa/'.$id.'/editar')->with('mensaje','Cliente actualizado con exito!');
+        
     }
 
     /**
