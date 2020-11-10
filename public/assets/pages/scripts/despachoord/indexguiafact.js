@@ -57,12 +57,23 @@ function ajaxRequest(data,url,funcion) {
 			}
 			if(funcion=='consultaranularguiafact'){
 				if (respuesta.mensaje == "ok") {
-					//alert(respuesta.despachoord.numfactura);
-					$("#guiadespacho").val(respuesta.despachoord.guiadespacho);
+					//alert(respuesta.despachoord.guiadespacho);
+					$("#guiadespachoanul").val(respuesta.despachoord.guiadespacho);
 					$(".requeridos").keyup();
 					$("#myModalanularguiafact").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
+				}
+			}
+			
+			if(funcion=='guardaranularguia'){
+				if (respuesta.mensaje == "ok") {
+					//alert(data['nfila']);
+					$("#fila" + data['nfila']).remove();
+					$("#myModalanularguiafact").modal('hide');
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
 				}
 			}
 
@@ -117,6 +128,39 @@ $("#btnGuardarG").click(function(event)
 	
 });
 
+$("#btnGuardarGanul").click(function(event)
+{
+	event.preventDefault();
+	if(verificarAnulGuia())
+	{
+		var data = {
+			id    : $("#idanul").val(),
+			nfila : $("#nfilaanul").val(),
+			observacion : $("#observacionanul").val(),
+			_token: $('input[name=_token]').val()
+		};
+		var ruta = '/guardaranularguia';
+		swal({
+			title: '¿ Seguro desea continuar ?',
+			text: "Esta acción no se puede deshacer!",
+				icon: 'warning',
+			buttons: {
+				cancel: "Cancelar",
+				confirm: "Aceptar"
+			},
+		}).then((value) => {
+			if (value) {
+				ajaxRequest(data,ruta,'guardaranularguia');
+			}
+		});
+
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+	
+});
+
+
 
 function numfactura(nfila,id){
 	$("#idf").val(id);
@@ -133,10 +177,9 @@ function numfactura(nfila,id){
 }
 
 function anularguiafact(nfila,id){
-	$("#idf").val(id);
-	$("#numfactura").val('');
-	$("#fechafactura").val('');
-	$("#nfilaf").val(nfila);
+	$("#idanul").val(id);
+	$("#guiadespachoanul").val('');
+	$("#nfilaanul").val(nfila);
 	var data = {
 		id    : id,
 		nfila : nfila,
@@ -210,6 +253,20 @@ function verificarFact()
 	v1=validacion('numfactura','texto');
 	v2=validacion('fechafactura','texto');
 	if (v1===false || v2===false)
+	{
+		return false;
+	}else{
+		return true;
+	}
+}
+
+
+function verificarAnulGuia()
+{
+	var v1=0;
+	
+	v1=validacion('observacionanul','texto');
+	if (v1===false)
 	{
 		return false;
 	}else{

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DespachoOrd;
+use App\Models\DespachoOrdAnulGuiaFact;
 use Illuminate\Http\Request;
 
 class DespachoOrdAnulGuiaFactController extends Controller
@@ -81,4 +83,38 @@ class DespachoOrdAnulGuiaFactController extends Controller
     {
         //
     }
+
+    public function guardaranularguia(Request $request)
+    {
+        if ($request->ajax()) {
+            //dd($request);
+            $despachoord = DespachoOrd::findOrFail($request->id);
+            $despachoordanulguiafact = new DespachoOrdAnulGuiaFact();
+
+            $despachoordanulguiafact->despachoord_id = $request->id;
+            $despachoordanulguiafact->guiadespacho = $despachoord->guiadespacho;
+            $despachoordanulguiafact->guiadespachofec = $despachoord->guiadespachofec;
+            $despachoordanulguiafact->numfactura = $despachoord->numfactura;
+            $despachoordanulguiafact->fechafactura = $despachoord->fechafactura;
+            $despachoordanulguiafact->numfacturafec = $despachoord->numfacturafec;
+            $despachoordanulguiafact->observacion = $request->observacion;
+            $despachoordanulguiafact->usuario_id = auth()->id();
+            $despachoordanulguiafact->save();
+
+            $despachoord->guiadespacho = NULL;
+            $despachoord->guiadespachofec = NULL;
+            $despachoord->numfactura = NULL;
+            $despachoord->fechafactura = NULL;
+            $despachoord->numfacturafec = NULL;
+
+            if ($despachoord->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
 }

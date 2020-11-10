@@ -533,3 +533,8 @@ Route::post('despachoobs', 'DespachoObsController@guardar')->name('guardar_despa
 Route::get('despachoobs/{id}/editar', 'DespachoObsController@editar')->name('editar_despachoobs');
 Route::put('despachoobs/{id}', 'DespachoObsController@actualizar')->name('actualizar_despachoobs');
 Route::delete('despachoobs/{id}', 'DespachoObsController@eliminar')->name('eliminar_despachoobs');
+
+
+
+/*RUTAS Anular Guia Despacho*/
+Route::post('guardaranularguia', 'DespachoOrdAnulGuiaFactController@guardaranularguia')->name('guardaranularguia');
