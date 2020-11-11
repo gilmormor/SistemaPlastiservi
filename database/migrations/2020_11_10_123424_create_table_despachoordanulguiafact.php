@@ -18,8 +18,8 @@ class CreateTableDespachoordanulguiafact extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('despachoord_id');
             $table->foreign('despachoord_id','fk_despachoordanulgf_despachoord')->references('id')->on('despachoord')->onDelete('restrict')->onUpdate('restrict');
-            $table->string('guiadespacho',50)->comment('Guia despacho');
-            $table->dateTime('guiadespachofec')->comment('Fecha inclusion guia despacho.');
+            $table->string('guiadespacho',50)->comment('Guia despacho')->nullable();
+            $table->dateTime('guiadespachofec')->comment('Fecha inclusion guia despacho.')->nullable();
             $table->string('numfactura',50)->comment('Número de Factura')->nullable();
             $table->date('fechafactura')->comment('Fecha de factura.')->nullable();
             $table->dateTime('numfacturafec')->comment('Fecha inclusion numero de factura.')->nullable();
