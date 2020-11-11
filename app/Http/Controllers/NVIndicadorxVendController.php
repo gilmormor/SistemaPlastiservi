@@ -123,7 +123,7 @@ class NVIndicadorxVendController extends Controller
             if($request->idcons == "1"){
                 $datas = consulta($request);
             }
-            if($request->idcons == "2"){
+            if($request->idcons == "2" or $request->idcons == "3"){
                 $datas = consultaODcerrada($request);
             }
             //dd($respuesta['totalkilos']);
@@ -402,11 +402,19 @@ function consultaODcerrada($request){
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
     }else{
-        $fecha = date_create_from_format('d/m/Y', $request->fechad);
-        $fechad = date_format($fecha, 'Y-m-d'); //." 00:00:00";
-        $fecha = date_create_from_format('d/m/Y', $request->fechah);
-        $fechah = date_format($fecha, 'Y-m-d'); //." 23:59:59";
-        $aux_condFecha = "despachoord.fechafactura>='$fechad' and despachoord.fechafactura<='$fechah'";
+        if($request->idcons == "2"){
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d'); //." 00:00:00";
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d'); //." 23:59:59";
+            $aux_condFecha = "despachoord.fechafactura>='$fechad' and despachoord.fechafactura<='$fechah'";    
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+            $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";    
+        }
     }
     if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";

@@ -59,7 +59,8 @@ function ajaxRequest(data,url,funcion) {
 				if (respuesta.mensaje == "ok") {
 					//alert(respuesta.despachoord.guiadespacho);
 					$("#guiadespachoanul").val(respuesta.despachoord.guiadespacho);
-					$(".requeridos").keyup();
+					//$(".requeridos").keyup();
+					quitarvalidacioneach();
 					$("#myModalanularguiafact").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
@@ -137,6 +138,7 @@ $("#btnGuardarGanul").click(function(event)
 			id    : $("#idanul").val(),
 			nfila : $("#nfilaanul").val(),
 			observacion : $("#observacionanul").val(),
+			status : $("#status").val(),
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/guardaranularguia';
@@ -225,12 +227,14 @@ $("#btnGuardarF").click(function(event)
 
 $(".requeridos").keyup(function(){
 	//alert($(this).parent().attr('class'));
-	validacion($(this).prop('name'),$(this).attr('tipoval'));
+	quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
 });
 
-function restablecerInput(){
-	
-}
+$(".requeridos").change(function(){
+	//alert($(this).parent().attr('class'));
+	quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+
 
 function verificarGuia()
 {
@@ -265,8 +269,9 @@ function verificarAnulGuia()
 {
 	var v1=0;
 	
+	v2=validacion('status','combobox');
 	v1=validacion('observacionanul','texto');
-	if (v1===false)
+	if (v1===false || v2===false)
 	{
 		return false;
 	}else{

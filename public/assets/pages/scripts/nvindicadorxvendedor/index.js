@@ -17,13 +17,8 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
-        consultar(datos(1));
-    });
-
-    
-    $("#btnconsultarOD").click(function()
-    {
-        consultar(datos(2));
+        aux_consultaid = $("#consulta_id").val();
+        consultar(datos(aux_consultaid));
     });
 
     $("#btnpdf1").click(function()
@@ -106,6 +101,8 @@ function consultar(data){
         data: data,
         success: function (datos) {
             if(datos['tabla'].length>0){
+                aux_titulo = $("#consulta_id option:selected").html();
+                $("#titulo_grafico").html('Tabla Indicadores ' +aux_titulo+ ' por Vendedor')
                 $("#tablaconsulta").html(datos['tabla']);
                 configurarTabla('.tablascons');
                 grafico(datos);

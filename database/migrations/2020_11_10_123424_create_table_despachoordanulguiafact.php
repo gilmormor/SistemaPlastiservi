@@ -26,6 +26,7 @@ class CreateTableDespachoordanulguiafact extends Migration
             $table->string('observacion',200)->comment('Observaciones');
             $table->unsignedBigInteger('usuario_id')->comment('Usuario que creo el registro');
             $table->foreign('usuario_id','fk_despachoordanulgf_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
+            $table->integer('status')->comment('1 = Anulado y devuelto a guia despacho, 2= Anulado y devuelto a orden despacho.');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();
             $table->softDeletes();

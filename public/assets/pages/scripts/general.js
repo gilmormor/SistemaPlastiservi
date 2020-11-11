@@ -321,6 +321,20 @@ function quitarValidacion(campo,tipo)
 }
 
 
+function quitarvalidacioneach(){
+	$(".requeridos").each(function() {
+		quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
+	});
+	blanquearcamposrequeridos();
+}
+
+function blanquearcamposrequeridos(){
+	$(".requeridos").each(function() {
+		$(this).val('');
+	});
+	$(".selectpicker").selectpicker('refresh');
+}
+
 function dgv(T)    //digito verificador
 {  
       var M=0,S=1;

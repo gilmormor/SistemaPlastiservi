@@ -119,19 +119,29 @@ Productos Notas de Venta
 
                         </div>
                         <div class="col-xs-12 col-md-4 col-sm-4">
-                            <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div class="col-xs-12 col-md-9 col-sm-9 text-center">
-                                        <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success" data-toggle='tooltip' title="Consultar">Consultar</button>
-                                        <button type="button" id="btnconsultarOD" name="btnconsultarOD" class="btn btn-info" data-toggle='tooltip' title="Consulta por Orden Despacho">ConsultarOD</button>
-                                        <!--<button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>
-                                        </button>-->
-                                        <!--
-                                        <button type="button" id="btnpdf1" name="btnpdf1" class="btn-accion-tabla tooltipsC" title="PDF1">
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>
-                                        </button>-->
-                                    </div>
+                            <div class="col-xs-12 col-md-8 col-sm-8" data-toggle='tooltip' title="Consulta">
+                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                    <label>Consulta:</label>
+                                </div>
+                                <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <select name="consulta_id" id="consulta_id" class="selectpicker form-control consulta_id">
+                                        <option value="1">Nota de Venta</option>
+                                        <option value="2">Facturado (Fecha FC)</option>
+                                        <option value="3">Facturado (Fecha NV)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <div class="col-xs-12 col-md-12 col-sm-12 text-center">
+                                    <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success" data-toggle='tooltip' title="Consultar">Consultar</button>
+                                    <!--<button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
+                                        <i class="fa fa-fw fa-file-pdf-o"></i>
+                                    </button>-->
+                                    <!--
+                                    <button type="button" id="btnpdf1" name="btnpdf1" class="btn-accion-tabla tooltipsC" title="PDF1">
+                                        <i class="fa fa-fw fa-file-pdf-o"></i>
+                                    </button>-->
                                 </div>
                             </div>
                         </div>
@@ -158,7 +168,7 @@ Productos Notas de Venta
     <!-- DONUT CHART -->
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Tabla Indicadores Factura por Vendedor</h3>
+                <h3 class="box-title" id="titulo_grafico" name="titulo_grafico"></h3>
         
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
