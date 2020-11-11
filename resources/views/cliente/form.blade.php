@@ -371,7 +371,7 @@
                 <div class="col-xs-12 col-sm-4">
                     <div class="form-group col-xs-12 col-sm-12">
                         <label for="provincia_idM" class="col-form-label">Provincia</label>
-                        <select name="provincia_idM" id="provincia_idM" class="selectpicker form-control provincia_id" data-live-search='true' title='Seleccione...' disabled readonly>
+                        <select name="provincia_idM" id="provincia_idM" class="selectpicker form-control" data-live-search='true' title='Seleccione...' disabled readonly>
                             @foreach($provincias as $provincia)
                                 <option
                                     value="{{$provincia->id}}">

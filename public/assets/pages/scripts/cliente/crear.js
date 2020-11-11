@@ -147,7 +147,7 @@ function insertarTabla(){
 
 
 
-
+/*
 $('.region_id').on('change', function () {
 	llenarProvincia(this,0);
 });
@@ -206,7 +206,7 @@ function llenarComuna(obj,i){
         }
     });
 }
-
+*/
 $('#comunap_id').on('change', function () {
 	$("#regionp_id").val($('#comunap_id option:selected').attr("region_id"));
 	$("#provinciap_id").val($('#comunap_id option:selected').attr("provincia_id"));
@@ -438,7 +438,7 @@ function quitarValidacion(campo,tipo,columnas)
 
 function editarRegistro(i){
 	//alert($("#direccion"+i).val());
-	event.preventDefault();
+	//event.preventDefault();
     limpiarInputOT();
 	quitarverificar();
 	$("#aux_sta").val('0');
@@ -448,8 +448,10 @@ function editarRegistro(i){
 	/*$("#provincia_idM").empty();
 	$("#comuna_idM").empty();*/
 	
+	$("#comuna_idM").val($("#comuna_id"+i).val());
 	$("#region_idM").val($("#region_id"+i).val());
-	llenarProvincia("#region_id"+i,i);
+	$("#provincia_idM").val($("#provincia_id"+i).val());
+	//llenarProvincia("#region_id"+i,i);
 	
 	//$("#sucursal_idM").val($("#sucursal_id"+i).val());
 	$(".selectpicker").selectpicker('refresh');
