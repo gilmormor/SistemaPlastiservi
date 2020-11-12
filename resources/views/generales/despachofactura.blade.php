@@ -17,12 +17,12 @@
                     </div>
                     <div class="form-group col-xs-12 col-sm-5" classorig="form-group col-xs-12 col-sm-5">
                         <label for="numfactura" class="control-label">Número Factura</label>
-                        <input type="text" name="numfactura" id="numfactura" class="form-control requeridos numerico" required placeholder="Número de Factura"/>
+                        <input type="text" name="numfactura" id="numfactura" class="form-control requeridos numerico" tipoval="texto" required placeholder="Número de Factura"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="form-group col-xs-12 col-sm-5" classorig="form-group col-xs-12 col-sm-5">
                         <label for="fechafactura" class="control-label" data-toggle='tooltip' title="Fecha Factura">Fecha Factura</label>
-                        <input type="text" name="fechafactura" id="fechafactura" class="form-control pull-right datepicker requeridos" required readonly/>
+                        <input type="text" name="fechafactura" id="fechafactura" class="form-control pull-right datepicker requeridos" tipoval="texto" required readonly/>
                     </div>
                 </div>
             </div>

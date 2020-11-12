@@ -1,5 +1,5 @@
 <div class="modal fade" id="myModalguiadesp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" id="mdialTamanio">
+    <div class="modal-dialog modal-dialog-centered">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
@@ -17,7 +17,7 @@
                     </div>
                     <div class="form-group col-xs-12 col-sm-10" classorig="form-group col-xs-12 col-sm-10">
                         <label for="guiadespacho" class="control-label">Guia despacho</label>
-                        <input type="text" name="guiadespacho" id="guiadespacho" class="form-control requeridos numerico" required placeholder="Guia despacho"/>
+                        <input type="text" name="guiadespacho" id="guiadespacho" class="form-control requeridos numerico" tipoval="texto" required placeholder="Guia despacho"/>
                         <span class="help-block"></span>
                     </div>
                 </div>

@@ -49,11 +49,11 @@ $(document).ready(function () {
 	} );
 	
 	$('#myModalpdf').on('show.bs.modal', function () {
-		$('.modal-body').css('height',$( window ).height()*0.75);
+		$('#myModalpdf .modal-body').css('height',$( window ).height()*0.75);
 		});
 
 	$('#myModalverpdf').on('show.bs.modal', function () {
-		$('.modal-body').css('height',$( window ).height()*0.75);
+		$('#myModalpdf .modal-body').css('height',$( window ).height()*0.75);
 	});
 
 });

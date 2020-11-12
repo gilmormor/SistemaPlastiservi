@@ -39,7 +39,8 @@ function ajaxRequest(data,url,funcion) {
 			if(funcion=='consultarguiadespachood'){
 				if (respuesta.mensaje == "ok") {
 					$("#guiadespacho").val(respuesta.despachoord.guiadespacho);
-					$(".requeridos").keyup();
+					//$(".requeridos").keyup();
+					quitarvalidacioneach();
 					$("#myModalguiadesp").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
@@ -49,7 +50,8 @@ function ajaxRequest(data,url,funcion) {
 				if (respuesta.mensaje == "ok") {
 					//alert(respuesta.despachoord.numfactura);
 					$("#numfactura").val(respuesta.despachoord.numfactura);
-					$(".requeridos").keyup();
+					//$(".requeridos").keyup();
+					quitarvalidacioneach();
 					$("#myModalnumfactura").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');

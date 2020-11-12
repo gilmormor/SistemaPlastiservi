@@ -35,8 +35,10 @@ class DespachoSolController extends Controller
     public function index()
     {
         can('listar-solicitud-despacho');
+        $despachosolanul = DespachoSolAnul::orderBy('id')->pluck('despachosol_id')->toArray();
         $datas = DespachoSol::orderBy('id')
                 ->whereNull('aprorddesp')
+                ->whereNotIn('id', $despachosolanul)
                 ->get();
         return view('despachosol.index', compact('datas'));
     }

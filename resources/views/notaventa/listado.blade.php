@@ -72,7 +72,7 @@
 					<th class="textleft">Diametro</th>
 					<th class="textleft">Clase</th>
 					<th class="textright">Largo</th>
-					<th class="textright">TU</th>
+					<th class="textcenter">TU</th>
 					<th class="textright" width="150px">Precio Neto</th>
 					<th class="textright" width="150px">Total Neto</th>
 				</tr>
@@ -92,7 +92,7 @@
 						</td>
 						<td class="textleft">{{$notaventaDetalle->producto->claseprod->cla_nombre}}</td>
 						<td class="textright">{{$notaventaDetalle->producto->long}} mts</td>
-						<td class="textright">{{$notaventaDetalle->producto->tipounion}}</td>
+						<td class="textcenter">{{$notaventaDetalle->producto->tipounion}}</td>
 						<td class="textright">{{number_format($notaventaDetalle->preciounit, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($notaventaDetalle->subtotal, 2, ",", ".")}}</td>
 					</tr>

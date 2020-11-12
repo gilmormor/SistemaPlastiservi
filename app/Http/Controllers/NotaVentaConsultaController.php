@@ -201,11 +201,27 @@ class NotaVentaConsultaController extends Controller
                     $aux_icodespacho = " fa-star";
                     $aux_obsdespacho = "Ini:" . date('d-m-Y', strtotime($data->inidespacho)) . " Fin:" . date('d-m-Y', strtotime($data->findespacho)) . " Guia: " . $data->guiasdespacho;
                 }
+
+                $aux_cantdesp = consultatotcantod($data->id);
+                $aux_icodespachoNew = "";
+                $aux_obsdespachoNew = "No ha iniciado el despacho";
+                if($aux_cantdesp > 0){
+                    $aux_icodespachoNew = "fa-star-o";
+                    $aux_obsdespachoNew = "Inició despacho";
+                    $aux_obsdespacho = "";
+                    if($data->cant == $aux_cantdesp){
+                        $aux_icodespachoNew = " fa-star";
+                        $aux_obsdespachoNew = "Fin despacho";
+                    }
+                }
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_obsdespacho' data-toggle='tooltip'>
                             <i class='fa fa-fw $aux_icodespacho'></i>                                    
+                        </a>
+                        <a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_obsdespachoNew' data-toggle='tooltip'>
+                            <i class='fa fa-fw $aux_icodespachoNew'></i>                                    
                         </a>
                     </td>
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
@@ -507,4 +523,23 @@ function consulta($request){
     //dd("$sql");
     $datas = DB::select($sql);
     return $datas;
+}
+
+
+function consultatotcantod($id){
+    $sql = "SELECT notaventa_id,sum(cantdesp) AS cantdesp 
+    FROM despachoord JOIN despachoorddet 
+    ON despachoord.id = despachoorddet.despachoord_id
+    WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
+    and despachoord.numfactura is not null
+    and despachoord.notaventa_id=$id
+    and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
+    group by despachoord.notaventa_id;";
+    //dd("$sql");
+    $datas = DB::select($sql);
+    $aux_cant = 0;
+    if($datas){
+        $aux_cant = $datas[0]->cantdesp;
+    }
+    return $aux_cant;
 }
