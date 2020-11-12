@@ -624,6 +624,70 @@ class DespachoOrdController extends Controller
         }
     }
 
+    public function listarorddespxnv(Request $request){
+        $respuesta = array();
+		$respuesta['exito'] = false;
+		$respuesta['mensaje'] = "Código no Existe";
+		$respuesta['tabla'] = "";
+        if($request->ajax()){
+            $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
+            $despchoords = DespachoOrd::orderBy('id')
+                    ->where('notaventa_id','=',$request->id)
+                    ->whereNotNull('numfactura')
+                    ->whereNotIn('id',  $despachoordanul)
+                    ->get();
+            $respuesta['tabla'] .= "<table id='tabladespachoorddet' name='tabladespachoorddet' class='table display AllDataTables table-hover table-condensed' data-page-length='15'>
+            <thead>
+                <tr>
+                    <th>ID OD</th>
+                    <th>Fecha</th>
+                    <th>Cant</th>
+                    <th class='textcenter'>Unidad</th>
+					<th class='textleft'>Descripción</th>
+					<th class='textleft'>Diametro</th>
+					<th class='textleft'>Clase</th>
+					<th class='textright'>Largo</th>
+					<th class='textcenter'>TU</th>
+                </tr>
+            </thead>
+            <tbody>";
+            $i=0;
+            foreach ($despchoords as $despchoord) {
+                foreach ($despchoord->despachoorddets as $despachoorddet) {
+                    //dd($despachoorddet);
+                    $i++;
+                    $unidades = $despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre;
+                    $nombreproduc = $despachoorddet->notaventadetalle->producto->nombre;
+                    $diametro = $despachoorddet->notaventadetalle->producto->diamextpg;
+                    if ($despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedida_id != 3){
+                        $diametro .= 'mm';
+                    }
+                    $cla_nombre = $despachoorddet->notaventadetalle->producto->claseprod->cla_nombre;
+                    $long = $despachoorddet->notaventadetalle->producto->long;
+                    $tipounion = $despachoorddet->notaventadetalle->producto->tipounion;
+                    $respuesta['tabla'] .= "
+                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                        <td id='id$i' name='id$i'>$despachoorddet->despachoord_id</td>
+                        <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($despachoorddet->created_at)) . "</td>
+                        <td id='rut$i' name='rut$i'>$despachoorddet->cantdesp</td>
+                        <td class='textcenter'>$unidades</td>
+						<td class='textleft'>$nombreproduc</td>
+                        <td class='textleft'>$diametro</td>
+                        <td class='textleft'>$cla_nombre</td>
+						<td class='textright'>$long mts</td>
+						<td class='textcenter'>$tipounion</td>
+                    </tr>";
+                    $respuesta['exito'] = true;
+    
+                }
+                
+            }
+            $respuesta['tabla'] .= "
+                </tbody>
+                </table>";
+        }
+        return $respuesta;
+    }
 }
 
 

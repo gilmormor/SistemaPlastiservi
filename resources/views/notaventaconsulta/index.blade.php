@@ -52,4 +52,5 @@ Cotización
 @include('generales.buscarcliente')
 @include('generales.modalpdf')
 @include('generales.verpdf')
+@include('generales.listarorddesp')
 @endsection

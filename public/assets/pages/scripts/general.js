@@ -855,3 +855,23 @@ function verpdf2(nameFile,stareport){ //GENERAR PDF NOTA DE VENTA
 
 }
 //
+
+function listarorddespxNV(id){
+	var data = {
+        id: id,
+        _token: $('input[name=_token]').val()
+    };
+    $.ajax({
+        url: '/despachoord/listarorddespxnv',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+			$("#tablalistarorddesp").html(respuesta.tabla);
+			//$("#tablaconsulta").html(datos['tabla']);
+			configurarTabla('#tabladespachoorddet');
+
+			$("#myModalTablaOD").modal('show');
+        }
+    });
+
+}

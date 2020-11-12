@@ -90,16 +90,21 @@
 						$aux_sumprecioxkilo = 0;
 						$aux_sumtotalkilos = 0;
 						$aux_promPonderadoPrecioxkilo = 0;
+						$neto = 0;
 					?>
 					@foreach($despachoorddets as $despachoorddet)
 						<?php
 							$aux_sumprecioxkilo += $despachoorddet->notaventadetalle->precioxkilo;
-							$aux_sumtotalkilos += $despachoorddet->notaventadetalle->totalkilos;
+							//$aux_sumtotalkilos += $despachoorddet->notaventadetalle->totalkilos;
+							$aux_sumtotalkilos += ($despachoorddet->cantdesp * $despachoorddet->notaventadetalle->producto->peso);
 						?>
 					@endforeach
 					@foreach($despachoorddets as $despachoorddet)
 						<?php
 							$aux_promPonderadoPrecioxkilo += ($despachoorddet->notaventadetalle->precioxkilo * (($despachoorddet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
+							$totalkilos = $despachoorddet->cantdesp * $despachoorddet->notaventadetalle->producto->peso;
+							$subtotal = $despachoorddet->cantdesp * $despachoorddet->notaventadetalle->preciounit;
+							$neto += $subtotal;
 						?>
 						<tr class="headt" style="height:150%;">
 							<td class="textcenter">{{number_format($despachoorddet->notaventadetalle->cant, 0, ",", ".")}}</td>
@@ -118,12 +123,13 @@
 							<td class="textcenter">{{$despachoorddet->notaventadetalle->producto->tipounion}}</td>
 							<td class="textright">{{number_format($despachoorddet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($despachoorddet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($despachoorddet->notaventadetalle->totalkilos, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($despachoorddet->notaventadetalle->preciounit, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($despachoorddet->notaventadetalle->subtotal, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($subtotal, 2, ",", ".")}}</td>
 						</tr>
 					@endforeach
 				</tbody>
+				<!--
 				<tfoot>
 					<tr>
 						<td colspan="8" class="textright"><span><strong>Totales</strong></span></td>
@@ -131,22 +137,22 @@
 						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
 					</tr>
 				</tfoot>
-
+			-->
 		</table>
 	</div>
 	<div>
 		<table id="factura_detalle">
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>NETO</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($despachoord->notaventa->neto, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($neto, 2, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$empresa[0]['iva']}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($despachoord->notaventa->iva, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(($neto * $empresa[0]['iva'])/100, 2, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($despachoord->notaventa->total, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($neto * ($empresa[0]['iva']+100)/100, 2, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>

@@ -220,7 +220,7 @@ class NotaVentaConsultaController extends Controller
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_obsdespacho' data-toggle='tooltip'>
                             <i class='fa fa-fw $aux_icodespacho'></i>                                    
                         </a>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_obsdespachoNew' data-toggle='tooltip'>
+                        <a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->id)' title='$aux_obsdespachoNew' data-toggle='tooltip'>
                             <i class='fa fa-fw $aux_icodespachoNew'></i>                                    
                         </a>
                     </td>
