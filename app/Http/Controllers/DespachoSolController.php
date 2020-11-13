@@ -326,8 +326,6 @@ class DespachoSolController extends Controller
                 'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
                 'tipo_alert' => 'alert-error'
             ]);
-
-
         }
     }
 
