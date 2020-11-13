@@ -281,43 +281,54 @@ class DespachoSolController extends Controller
     public function guardar(ValidarDespachoSol $request)
     {
         can('guardar-solicitud-despacho');
-        
-        $hoy = date("Y-m-d H:i:s");
-        $request->request->add(['fechahora' => $hoy]);
-        $request->request->add(['usuario_id' => auth()->id()]);
-        $dateInput = explode('/',$request->plazoentrega);
-        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-        $dateInput = explode('/',$request->fechaestdesp);
-        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-        $comuna = Comuna::findOrFail($request->comuna_id);
-        $request->request->add(['provincia_id' => $comuna->provincia_id]);
-        $request->request->add(['region_id' => $comuna->provincia->region_id]);
-        $despachosol = DespachoSol::create($request->all());
-        $despachosolid = $despachosol->id;
-        $cont_producto = count($request->producto_id);
-        if($cont_producto>0){
-            for ($i=0; $i < $cont_producto ; $i++){
-                $aux_cantsol = $request->cantsol[$i];
-                if(is_null($request->producto_id[$i])==false && is_null($aux_cantsol)==false && $aux_cantsol > 0){
-                    $despachosoldet = new DespachoSolDet();
-                    $despachosoldet->despachosol_id = $despachosolid;
-                    $despachosoldet->notaventadetalle_id = $request->NVdet_id[$i];
-                    $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
-                    if($despachosoldet->save()){
-                        /*
-                        $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
-                        $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
-                        $notaventadetalle->save();
-                        */
-                        //$despacho_id = $despachosol->id;    
+        $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+        if($notaventa->updated_at == $request->updated_at){
+            $notaventa->updated_at = date("Y-m-d H:i:s");
+            $notaventa->save();
+            $hoy = date("Y-m-d H:i:s");
+            $request->request->add(['fechahora' => $hoy]);
+            $request->request->add(['usuario_id' => auth()->id()]);
+            $dateInput = explode('/',$request->plazoentrega);
+            $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+            $dateInput = explode('/',$request->fechaestdesp);
+            $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+            $comuna = Comuna::findOrFail($request->comuna_id);
+            $request->request->add(['provincia_id' => $comuna->provincia_id]);
+            $request->request->add(['region_id' => $comuna->provincia->region_id]);
+            $despachosol = DespachoSol::create($request->all());
+            $despachosolid = $despachosol->id;
+            $cont_producto = count($request->producto_id);
+            if($cont_producto>0){
+                for ($i=0; $i < $cont_producto ; $i++){
+                    $aux_cantsol = $request->cantsol[$i];
+                    if(is_null($request->producto_id[$i])==false && is_null($aux_cantsol)==false && $aux_cantsol > 0){
+                        $despachosoldet = new DespachoSolDet();
+                        $despachosoldet->despachosol_id = $despachosolid;
+                        $despachosoldet->notaventadetalle_id = $request->NVdet_id[$i];
+                        $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
+                        if($despachosoldet->save()){
+                            /*
+                            $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
+                            $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                            $notaventadetalle->save();
+                            */
+                            //$despacho_id = $despachosol->id;    
+                        }
                     }
                 }
             }
+            return redirect('despachosol/index')->with([
+                'mensaje'=>'Registro creado con exito.',
+                'tipo_alert' => 'alert-success'
+            ]);
+        }else{
+            return redirect('despachosol/index')->with([
+                'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
+                'tipo_alert' => 'alert-error'
+            ]);
+
+
         }
-        return redirect('despachosol/index')->with([
-                                                    'mensaje'=>'Registro creado con exito.',
-                                                    'tipo_alert' => 'alert-success'
-                                                ]);
     }
 
     /**

@@ -113,7 +113,7 @@ Orden de despacho
                                     <td>{{$data->guiadespacho}}</td>
                                     <td>{{date("d/m/Y", strtotime($data->fechahora))}}</td>
                                     <td>{{$data->numfactura}}</td>
-                                    <td>{{date("d/m/Y", strtotime($data->fechaestdesp))}}</td>        
+                                    <td>{{date("d/m/Y", strtotime($data->fechafactura))}}</td>        
                                 @endif
                             </tr>
                             @endforeach
