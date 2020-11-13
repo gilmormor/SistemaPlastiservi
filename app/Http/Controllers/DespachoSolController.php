@@ -852,7 +852,7 @@ function consulta($request){
             and $aux_aprobstatus
             and $aux_condcomuna_id
             and notaventa.anulada is null
-            and notaventa.visto is null
+            and notaventa.findespacho is null
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
