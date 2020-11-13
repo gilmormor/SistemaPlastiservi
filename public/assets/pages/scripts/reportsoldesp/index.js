@@ -121,7 +121,7 @@ function consultar(data){
         success: function (datos) {
             if(datos['tabla'].length>0){
                 $("#tablaconsulta").html(datos['tabla']);
-                configurarTabla('.tablascons');
+                configurarTabla('.tablasconsOD');
             }
         }
     });

@@ -36,6 +36,7 @@ Solicitud de despacho
                                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                                 <th class='tooltipsC' title='Comuna'>Comuna</th>
                                 <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                                <th class='tooltipsC' title='Tipo Entrega'>TE</th>
                                 <th class="width70"></th>
                             </tr>
                         </thead>
@@ -78,6 +79,9 @@ Solicitud de despacho
                                     <td style='text-align:right'>
                                         {{number_format($aux_totalkg, 2, ",", ".")}}
                                     </td>
+                                    <td>
+                                        <i class='fa fa-fw {{$data->tipoentrega->icono}} tooltipsC' title='{{$data->tipoentrega->nombre}}'></i>
+                                    </td>    
                                     <td id="accion{{$aux_nfila}}">
                                         @if ($data->despachosolanul)
                                             <small class="label pull-left bg-red">Anulado</small>

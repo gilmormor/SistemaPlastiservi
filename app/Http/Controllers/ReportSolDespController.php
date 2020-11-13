@@ -116,6 +116,7 @@ class ReportSolDespController extends Controller
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
                     <th>Comuna</th>
                     <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                    <th class='tooltipsC' title='Tipo de Entrega'>TE</th>
                     <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
                 </tr>
             </thead>
@@ -170,7 +171,10 @@ class ReportSolDespController extends Controller
                     <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
                     <td style='text-align:right'>".
                         number_format($data->totalkilos, 2, ",", ".") .
-                    "</td>";
+                    "</td>
+                    <td>
+                        <i class='fa fa-fw $data->icono tooltipsC' title='$data->tipentnombre'></i>
+                    </td>";
                     $despachosolanul = DespachoSolAnul::where('despachosol_id','=',$data->id)->get();
                     if (count($despachosolanul)>0){
                         $respuesta['tabla'] .= "<td><small class='label pull-left bg-red'>Anulado</small></td>";
@@ -369,7 +373,8 @@ function consultasoldesp($request){
             comuna.nombre as comunanombre,
             despachosol.notaventa_id,despachosol.fechaestdesp,
             sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
-            despachosol.aprorddesp,despachosol.aprorddespfh
+            despachosol.aprorddesp,despachosol.aprorddespfh,
+            tipoentrega.nombre as tipentnombre,tipoentrega.icono
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             INNER JOIN notaventa
@@ -386,6 +391,8 @@ function consultasoldesp($request){
             ON cliente.id=notaventa.cliente_id
             INNER JOIN comuna
             ON comuna.id=despachosol.comunaentrega_id
+            INNER JOIN tipoentrega
+            ON tipoentrega.id=despachosol.tipoentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut

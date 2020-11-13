@@ -240,7 +240,16 @@ class DespachoOrdController extends Controller
     {
         can('guardar-orden-despacho');
         //dd($request);
-        
+/*        
+        $cont_producto = count($request->producto_id);
+        if($cont_producto>0){
+            for ($i=0; $i < $cont_producto ; $i++){
+                $aux_cantord = $request->cantord[$i];
+                if(is_null($request->producto_id[$i])==false && is_null($aux_cantord)==false && $aux_cantord > 0){
+                    //$request->despachosoldet_id[$i];
+                }
+            }
+        }*/
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
         $request->request->add(['usuario_id' => auth()->id()]);

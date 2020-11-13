@@ -824,7 +824,8 @@ function consulta($request){
             sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
             sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
             sum(notaventadetalle.subtotal) AS totalps,
-            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
+            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
+            tipoentrega.nombre as tipentnombre,tipoentrega.icono
             FROM notaventa INNER JOIN notaventadetalle
             ON notaventa.id=notaventadetalle.notaventa_id and 
             if((SELECT cantsoldesp
@@ -841,6 +842,8 @@ function consulta($request){
             ON cliente.id=notaventa.cliente_id
             INNER JOIN comuna
             ON comuna.id=notaventa.comunaentrega_id
+            INNER JOIN tipoentrega
+            ON tipoentrega.id=notaventa.tipoentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -957,8 +960,8 @@ function reporte1($request){
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
             }
             $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
-            $nuevoSolDesp = "<a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer Solicitud Despacho'>
-                <i class='fa fa-fw fa-truck'></i>
+            $nuevoSolDesp = "<a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer solicitud despacho: $data->tipentnombre'>
+                <i class='fa fa-fw $data->icono'></i>
                 </a>";
             if(!empty($data->anulada)){
                 $colorFila = 'background-color: #87CEEB;';
@@ -1089,8 +1092,8 @@ function reportesoldesp1($request){
                     number_format($data->totalkilos, 2, ",", ".") .
                 "</td>
                 <td>
-                    <a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer Orden Despacho'>
-                        <i class='fa fa-fw fa-truck'></i>
+                    <a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
+                        <i class='fa fa-fw $data->icono'></i>
                     </a>
 
                 </td>
@@ -1212,7 +1215,7 @@ function consultasoldesp($request){
 
     $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
-            despachosol.notaventa_id,despachosol.fechaestdesp,
+            despachosol.notaventa_id,despachosol.fechaestdesp,tipoentrega.nombre as tipentnombre,tipoentrega.icono,
             sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
@@ -1234,6 +1237,8 @@ function consultasoldesp($request){
             ON cliente.id=notaventa.cliente_id
             INNER JOIN comuna
             ON comuna.id=despachosol.comunaentrega_id
+            INNER JOIN tipoentrega
+            ON tipoentrega.id=despachosol.tipoentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut

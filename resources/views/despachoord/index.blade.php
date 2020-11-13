@@ -37,6 +37,7 @@ Orden de despacho
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                                 <th class='tooltipsC' title='Comuna'>Comuna</th>
                                 <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                                <th class='tooltipsC' title='Tipo Entrega'>TE</th>
                                 <th class="width70"></th>
                             </tr>
                         </thead>
@@ -77,6 +78,9 @@ Orden de despacho
                                 <td>{{$data->comunaentrega->nombre}}</td>
                                 <td style='text-align:right'>
                                     {{number_format($aux_totalkg, 2, ",", ".")}}
+                                </td>
+                                <td>
+                                    <i class='fa fa-fw {{$data->tipoentrega->icono}} tooltipsC' title='{{$data->tipoentrega->nombre}}'></i>
                                 </td>
                                 <td id="accion{{$aux_nfila}}">
                                     @if ($data->despachoordanul)

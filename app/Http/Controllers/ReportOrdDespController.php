@@ -117,6 +117,7 @@ class ReportOrdDespController extends Controller
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
                     <th>Comuna</th>
                     <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                    <th class='tooltipsC' title='Tipo de Entrega'>TE</th>
                     <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
                 </tr>
             </thead>
@@ -175,6 +176,9 @@ class ReportOrdDespController extends Controller
                     <td style='text-align:right'>".
                         number_format($data->totalkilos, 2, ",", ".") .
                     "</td>
+                    <td>
+                        <i class='fa fa-fw $data->icono tooltipsC' title='$data->tipentnombre'></i>
+                    </td>
                     <td>
                         $aprguiadesp
                     </td>
@@ -371,7 +375,8 @@ function consultasoldesp($request){
             comuna.nombre as comunanombre,
             despachoord.notaventa_id,despachoord.fechaestdesp,
             sum(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
-            despachoord.aprguiadesp,despachoord.aprguiadespfh
+            despachoord.aprguiadesp,despachoord.aprguiadespfh,
+            tipoentrega.nombre as tipentnombre,tipoentrega.icono
             FROM despachoord INNER JOIN despachoorddet
             ON despachoord.id=despachoorddet.despachoord_id
             INNER JOIN notaventa
@@ -388,6 +393,8 @@ function consultasoldesp($request){
             ON cliente.id=notaventa.cliente_id
             INNER JOIN comuna
             ON comuna.id=despachoord.comunaentrega_id
+            INNER JOIN tipoentrega
+            ON tipoentrega.id=despachoord.tipoentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
