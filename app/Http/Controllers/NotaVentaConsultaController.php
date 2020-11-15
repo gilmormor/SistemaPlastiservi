@@ -106,8 +106,7 @@ class NotaVentaConsultaController extends Controller
                 $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
             }
             $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
-
-            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+            $respuesta['tabla'] .= "<table id='tabla-data' name='tabla-data' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
 					<th>ID</th>
@@ -221,7 +220,7 @@ class NotaVentaConsultaController extends Controller
                             <i class='fa fa-fw $aux_icodespacho'></i>                                    
                         </a>
                         <a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->id)' title='$aux_obsdespachoNew' data-toggle='tooltip'>
-                            <i class='fa fa-fw $aux_icodespachoNew'></i>                                    
+                            <i class='fa fa-fw $aux_icodespachoNew text-danger'></i>                                    
                         </a>
                     </td>
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>

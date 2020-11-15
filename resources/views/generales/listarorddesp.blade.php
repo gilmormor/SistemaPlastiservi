@@ -9,7 +9,7 @@
                 <h3 class="modal-title">Orden de Despacho</h3>
             </div>
             <div class="modal-body">
-                <div class="row" id="tablalistarorddesp" name="tablalistarorddesp">
+                <div class="table-responsive" id="tablalistarorddesp" name="tablalistarorddesp">
                 </div>
             </div>
             <div class="modal-footer">

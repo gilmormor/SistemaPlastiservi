@@ -611,9 +611,9 @@ function actSaldo(s,i){
 	}
 	aux_totalkilosTD = aux_cantsol * $("#peso" + i).val();
 	if($("#peso" + i).val() == 0){
-		aux_subtotalCFTD = aux_cantsol * $("#preciounit" + i).val();
+		aux_subtotalCFTD = Math.round(aux_cantsol * $("#preciounit" + i).val());
 	}else{
-		aux_subtotalCFTD = aux_cantsol * $("#peso" + i).val() * $("#precioxkilo" + i).val();
+		aux_subtotalCFTD = Math.round(aux_cantsol * $("#preciounit" + i).val());
 	}
 	$("#totalkilosTD" + i).html(MASK(0, aux_totalkilosTD, '-##,###,##0.00',1));
 	$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-##,###,##0.00',1));
@@ -628,7 +628,7 @@ function actSaldo(s,i){
 		$("#cantsol" + i).val(aux_saldo);
 		$("#saldocantF" + i).html('0');
 		aux_totalkilosTD = aux_cant * $("#peso" + i).val();
-		aux_subtotalCFTD = aux_cant * $("#peso" + i).val() * $("#precioxkilo" + i).val();
+		aux_subtotalCFTD = aux_cant  * $("#preciounit" + i).val();
 		$("#totalkilosTD" + i).html(MASK(0, aux_totalkilosTD, '-##,###,##0.00',1));
 		$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-##,###,##0.00',1));
 		$("#subtotalSFTD" + i).html(aux_subtotalCFTD);

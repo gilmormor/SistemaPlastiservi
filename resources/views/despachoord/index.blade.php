@@ -30,7 +30,7 @@ Orden de despacho
                             <tr>
                                 <th class="width70">ID</th>
                                 <th class='tooltipsC' title='fecha estimada de Despacho'>Fecha ED</th>
-                                <th>Descripción</th>
+                                <th>Razón Social</th>
                                 <th class='tooltipsC' title='Orden Despacho'>OD</th>
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>

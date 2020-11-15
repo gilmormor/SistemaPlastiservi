@@ -68,77 +68,74 @@
 	</table>
 	<div>
 		<table id="factura_detalle">
-				<thead>
-					<tr>
-						<th width="30px">Cant.</th>
-						<th width="30px">Solicitud</th>
-						<th class="textcenter">Unidad</th>
-						<th class="textleft">Descripción</th>
-						<th class="textleft">Diam</th>
-						<th class="textleft">Clase</th>
-						<th class="textright">Largo</th>
-						<th class="textcenter">TU</th>
-						<th class="textright">Peso</th>
-						<th class="textright">$ x Kg</th>
-						<th class="textright">Total Kg</th>
-						<th class="textright" width="90px">Precio Unit</th>
-						<th class="textright" width="90px">Total Neto</th>
-					</tr>
-				</thead>
-				<tbody id="detalle_productos">
+			<thead>
+				<tr>
+					<th width="30px">Cant.</th>
+					<th width="30px">Solicitud</th>
+					<th class="textcenter">Unidad</th>
+					<th class="textleft">Descripción</th>
+					<th class="textleft">Diam</th>
+					<th class="textleft">Clase</th>
+					<th class="textright">Largo</th>
+					<th class="textcenter">TU</th>
+					<th class="textright">Peso</th>
+					<!--<th class="textright">$ x Kg</th>-->
+					<th class="textright">Total Kg</th>
+					<th class="textright" width="90px">Precio Unit</th>
+					<th class="textright" width="90px">Total Neto</th>
+				</tr>
+			</thead>
+			<tbody id="detalle_productos">
+				<?php
+					$aux_sumprecioxkilo = 0;
+					$aux_sumtotalkilos = 0;
+					$aux_promPonderadoPrecioxkilo = 0;
+					$neto = 0;
+				?>
+				@foreach($despachosoldets as $despachosoldet)
 					<?php
-						$aux_sumprecioxkilo = 0;
-						$aux_sumtotalkilos = 0;
-						$aux_promPonderadoPrecioxkilo = 0;
-						$neto = 0;
+						$aux_sumprecioxkilo += $despachosoldet->notaventadetalle->precioxkilo;
+						$aux_sumtotalkilos += $despachosoldet->notaventadetalle->totalkilos;
 					?>
-					@foreach($despachosoldets as $despachosoldet)
-						<?php
-							$aux_sumprecioxkilo += $despachosoldet->notaventadetalle->precioxkilo;
-							$aux_sumtotalkilos += $despachosoldet->notaventadetalle->totalkilos;
-						?>
-					@endforeach
-					@foreach($despachosoldets as $despachosoldet)
-						<?php
-							$aux_promPonderadoPrecioxkilo += ($despachosoldet->notaventadetalle->precioxkilo * (($despachosoldet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
-							$totalkilos = $despachosoldet->cantsoldesp * $despachosoldet->notaventadetalle->producto->peso;
-							$subtotal = $despachosoldet->cantsoldesp * $despachosoldet->notaventadetalle->preciounit;
-							$neto += $subtotal;
+				@endforeach
+				@foreach($despachosoldets as $despachosoldet)
+					<?php
+						$aux_promPonderadoPrecioxkilo += ($despachosoldet->notaventadetalle->precioxkilo * (($despachosoldet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
+						$totalkilos = $despachosoldet->cantsoldesp * $despachosoldet->notaventadetalle->producto->peso;
+						$subtotal = $despachosoldet->cantsoldesp * $despachosoldet->notaventadetalle->preciounit;
+						$neto += $subtotal;
 
-						?>
-						<tr class="headt" style="height:150%;">
-							<td class="textcenter">{{number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".")}}</td>
-							<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
-							<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
-							<td class="textleft">{{$despachosoldet->notaventadetalle->producto->nombre}}</td>
-							<td class="textleft">
-								@if ($despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedida_id==3)
-									{{$despachosoldet->notaventadetalle->producto->diamextpg}}								
-								@else
-									{{$despachosoldet->notaventadetalle->producto->diamextmm}}mm
-								@endif
-							</td>
-							<td class="textleft">{{$despachosoldet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
-							<td class="textright">{{$despachosoldet->notaventadetalle->producto->long}} mts</td>
-							<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->tipounion}}</td>
-							<td class="textright">{{number_format($despachosoldet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($despachosoldet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($despachosoldet->notaventadetalle->preciounit, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($subtotal, 2, ",", ".")}}</td>
-						</tr>
-					@endforeach
-				</tbody>
-				<!--
-				<tfoot>
-					<tr>
-						<td colspan="8" class="textright"><span><strong>Totales</strong></span></td>
-						<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>
-						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
+					?>
+					<tr class="headt" style="height:150%;">
+						<td class="textcenter">{{number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".")}}</td>
+						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
+						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
+						<td class="textleft">{{$despachosoldet->notaventadetalle->producto->nombre}}</td>
+						<td class="textleft">
+							@if ($despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedida_id==3)
+								{{$despachosoldet->notaventadetalle->producto->diamextpg}}								
+							@else
+								{{$despachosoldet->notaventadetalle->producto->diamextmm}}mm
+							@endif
+						</td>
+						<td class="textleft">{{$despachosoldet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
+						<td class="textright">{{$despachosoldet->notaventadetalle->producto->long}} mts</td>
+						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->tipounion}}</td>
+						<td class="textright">{{number_format($despachosoldet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
+						<!--<td class="textright">{{number_format($despachosoldet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>-->
+						<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($despachosoldet->notaventadetalle->preciounit, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($subtotal, 2, ",", ".")}}</td>
 					</tr>
-				</tfoot>
-				-->
-
+				@endforeach
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="9" class="textright"><span><strong>Totales</strong></span></td>
+					<!--<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>-->
+					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
+				</tr>
+			</tfoot>
 		</table>
 	</div>
 	<div>
@@ -149,11 +146,11 @@
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$empresa[0]['iva']}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(($neto * $empresa[0]['iva'])/100, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round(($neto * $empresa[0]['iva'])/100), 2, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($neto * ($empresa[0]['iva']+100)/100, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round($neto * ($empresa[0]['iva']+100)/100), 2, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>
@@ -194,16 +191,16 @@
 				<td class="textleft" width="50%"><span>{{$despachosol->contactotelf}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Nota de Venta: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{ str_pad($despachosol->notaventa_id, 10, "0", STR_PAD_LEFT) }}</span></td>
-			</tr>
-			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Orden de Compra: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$despachosol->notaventa->oc_id}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>No. Cotización: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{str_pad($despachosol->notaventa->cotizacion_id, 10, "0", STR_PAD_LEFT)}}</span></td>
+			</tr>
+			<tr>
+				<td colspan="7" class="textleft" width="40%"><span><strong>Nota de Venta: </strong></span></td>
+				<td class="textleft" width="50%"><span>{{ str_pad($despachosol->notaventa_id, 10, "0", STR_PAD_LEFT) }}</span></td>
 			</tr>
 		</table>
 	</div>

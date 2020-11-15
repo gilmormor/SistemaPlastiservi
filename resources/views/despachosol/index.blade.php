@@ -29,7 +29,7 @@ Solicitud de despacho
                         <thead>
                             <tr>
                                 <th class="width70">ID</th>
-                                <th>Descripción</th>
+                                <th>Razón Social</th>
                                 <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>

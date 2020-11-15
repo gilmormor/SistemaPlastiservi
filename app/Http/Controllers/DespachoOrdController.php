@@ -274,12 +274,12 @@ class DespachoOrdController extends Controller
                     }
                 }
             }
-            return redirect('despachosol/index')->with([
+            return redirect('despachoord/index')->with([
                 'mensaje'=>'Registro creado con exito.',
                 'tipo_alert' => 'alert-success'
             ]);
         }else{
-            return redirect('despachosol/index')->with([
+            return redirect('despachoord/index')->with([
                 'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
                 'tipo_alert' => 'alert-error'
             ]);
@@ -650,6 +650,7 @@ class DespachoOrdController extends Controller
                 <tr>
                     <th>ID OD</th>
                     <th>Fecha</th>
+                    <th>Solic</th>
                     <th>Cant</th>
                     <th class='textcenter'>Unidad</th>
 					<th class='textleft'>Descripción</th>
@@ -674,11 +675,13 @@ class DespachoOrdController extends Controller
                     $cla_nombre = $despachoorddet->notaventadetalle->producto->claseprod->cla_nombre;
                     $long = $despachoorddet->notaventadetalle->producto->long;
                     $tipounion = $despachoorddet->notaventadetalle->producto->tipounion;
+                    $cantsoldesp = $despachoorddet->despachosoldet->cantsoldesp;
                     $respuesta['tabla'] .= "
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                         <td id='id$i' name='id$i'>$despachoorddet->despachoord_id</td>
                         <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($despachoorddet->created_at)) . "</td>
-                        <td id='rut$i' name='rut$i'>$despachoorddet->cantdesp</td>
+                        <td class='textright'>$cantsoldesp</td>
+                        <td class='textright'>$despachoorddet->cantdesp</td>
                         <td class='textcenter'>$unidades</td>
 						<td class='textleft'>$nombreproduc</td>
                         <td class='textleft'>$diametro</td>

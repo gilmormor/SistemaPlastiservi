@@ -26,7 +26,7 @@ Orden de despacho
                                 <th>ID</th>
                                 <th class='tooltipsC' title='Fecha Orden despacho'>Fecha OD</th>
                                 <th class='tooltipsC' title='Fecha estimada de Despacho'>Fecha ED</th>
-                                <th>Descripción</th>
+                                <th>Razón Social</th>
                                 <th class='tooltipsC' title='Orden Despacho'>OD</th>
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>

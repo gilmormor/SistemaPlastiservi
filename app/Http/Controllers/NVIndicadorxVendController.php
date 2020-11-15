@@ -435,7 +435,7 @@ function consultaODcerrada($request){
 
 
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
-    sum(despachoorddet.cantdesp) AS totalkilos
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
     INNER JOIN despachoord
@@ -468,7 +468,7 @@ function consultaODcerrada($request){
     $respuesta['productos'] = $datas;
 
     $sql = "SELECT persona.id,persona.nombre,
-    sum(despachoorddet.cantdesp) AS totalkilos
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
     INNER JOIN despachoord
@@ -502,7 +502,7 @@ function consultaODcerrada($request){
 
 
     $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
-    sum(despachoorddet.cantdesp) AS totalkilos
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
     INNER JOIN despachoord

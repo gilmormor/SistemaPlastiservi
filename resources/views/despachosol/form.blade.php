@@ -283,13 +283,12 @@
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                     <thead>
                         <tr>
-                            <th class="width30">ID</th>
+                            <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">NotaVentaDetalle_ID</th>
                             <th style="display:none;">cotizacion_ID</th>
                             <th style="display:none;">Codigo Producto</th>
                             <th style="display:none;">CódInterno</th>
                             <th style="display:none;">Cant</th>
-                            <th>Nombre</th>
                             <th>Cant</th>
                             <!--<th>Desp</th>-->
                             <th>Solid</th>
@@ -304,8 +303,9 @@
                             </th>
                             <th class="width70">SolicitudDesp</th>
                             <th style="display:none;">UnidadMedida</th>
-                            <th>Clase</th>
+                            <th>Nombre</th>
                             <th>Diam</th>
+                            <th>Clase</th>
                             <th style="display:none;">Diametro</th>
                             <th>Esp</th>
                             <th style="display:none;">Espesor</th>
@@ -320,7 +320,7 @@
                             <th style="display:none;">DescVal</th>
                             <th>PUnit</th>
                             <th style="display:none;">Precio Neto Unit</th>
-                            <th>V Kilo</th>
+                            <th style="display:none;">V Kilo</th>
                             <th style="display:none;">Precio X Kilo</th>
                             <th style="display:none;">Precio X Kilo Real</th>
                             <th>Kilos</th>
@@ -350,7 +350,7 @@
                                     //dd($aux_saldo);
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                    <td name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
+                                    <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
                                         @if ($aux_sta==2)
                                             {{$detalle->id}}
                                         @else
@@ -383,9 +383,6 @@
                                         @else 
                                             <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->cant - $detalle->cantusada}}" style="display:none;"/>
                                         @endif
-                                    </td>
-                                    <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                        {{$detalle->producto->nombre}}
                                     </td>
                                     <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
                                         @if ($aux_sta==2)
@@ -425,8 +422,8 @@
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="4" style="display:none;"/>
                                     </td>
-                                    <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
-                                        {{$detalle->producto->claseprod->cla_nombre}}
+                                    <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
+                                        {{$detalle->producto->nombre}}
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
                                         @if ($detalle->producto->categoriaprod->unidadmedida_id==3)
@@ -435,6 +432,9 @@
                                             {{$detalle->producto->diamextmm}}
                                         @endif
 
+                                    </td>
+                                    <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
+                                        {{$detalle->producto->claseprod->cla_nombre}}
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->diamextmm}}" style="display:none;"/>
@@ -480,7 +480,7 @@
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$detalle->preciounit}}" style="display:none;"/>
                                     </td>
-                                    <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
+                                    <td style="display:none;" name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
                                         {{number_format($detalle->precioxkilo, 2, '.', ',')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
@@ -510,7 +510,7 @@
                                 ?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="6" style="text-align:right">
+                                <td colspan="4" style="text-align:right">
                                     <b>Total Unidades:</b>
                                 </td>
                                 <td style="text-align:right">
@@ -522,11 +522,11 @@
                                 <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="16" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="14" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="16" style="text-align:right"><b>Total</b></td>
+                                <td colspan="14" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
                             </tr>
                         @endif
