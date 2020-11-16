@@ -622,7 +622,24 @@ $("#rut").focus(function(){
 	$("#clientedirec_id").prop("disabled",true);
 	eliminarFormatoRut($(this));
 });
-
+/*
+$("#oc_id").blur(function(){
+	swal({
+		title: 'Orden de compra ya existe.',
+		text: "",
+		icon: 'error',
+		buttons: {
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+			//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+			$("#oc_id").focus();
+			//$("#rut").focus();
+		}
+	});
+});
+*/
 function copiar_codprod(id,codintprod){
 	//$("#myModalBuscarProd").modal('hide');
 	//$("#myModal").modal('show');
