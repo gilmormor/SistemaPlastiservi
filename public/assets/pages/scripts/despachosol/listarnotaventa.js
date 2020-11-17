@@ -106,6 +106,7 @@ function datos(){
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
+        plazoentrega      : $("#plazoentrega").val(),
         filtro            : 0,
         _token            : $('input[name=_token]').val()
     };

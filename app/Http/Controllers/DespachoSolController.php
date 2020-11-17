@@ -819,6 +819,17 @@ function consulta($request){
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
 
+    if(empty($request->plazoentrega)){
+        $aux_condplazoentrega = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->plazoentrega);
+        $fechad = date_format($fecha, 'Y-m-d');
+        $aux_condplazoentrega = "notaventa.plazoentrega='$fechad'";
+        //dd($aux_condplazoentrega);
+    }
+
+    
+
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
@@ -863,6 +874,7 @@ function consulta($request){
             and $aux_condnotaventa_id
             and $aux_aprobstatus
             and $aux_condcomuna_id
+            and $aux_condplazoentrega
             and notaventa.anulada is null
             and notaventa.findespacho is null
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
