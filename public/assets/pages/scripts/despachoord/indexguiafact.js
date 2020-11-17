@@ -105,26 +105,53 @@ $("#btnGuardarG").click(function(event)
 	if(verificarGuia())
 	{
 		var data = {
-			id    : $("#idg").val(),
-			guiadespacho : $("#guiadespacho").val(),
-			nfila : $("#nfila").val(),
+			guiadespacho: $("#guiadespacho").val(),
 			_token: $('input[name=_token]').val()
 		};
-		var ruta = '/despachoord/guardarguiadesp';
-		swal({
-			title: '¿ Seguro desea continuar ?',
-			text: "Esta acción no se puede deshacer!",
-				icon: 'warning',
-			buttons: {
-				cancel: "Cancelar",
-				confirm: "Aceptar"
-			},
-		}).then((value) => {
-			if (value) {
-				ajaxRequest(data,ruta,'guardarguiadesp');
+		$.ajax({
+			url: '/despachoord/buscarguiadesp',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				if(respuesta.mensaje == 'ok'){
+					swal({
+						title: 'Guia despacho N°.' +$("#guiadespacho").val()+ ' ya existe.',
+						text: "",
+						icon: 'error',
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							//$("#oc_id").focus();
+						}
+					});
+				
+				}else{
+					var data = {
+						id    : $("#idg").val(),
+						guiadespacho : $("#guiadespacho").val(),
+						nfila : $("#nfila").val(),
+						_token: $('input[name=_token]').val()
+					};
+					var ruta = '/despachoord/guardarguiadesp';
+					swal({
+						title: '¿ Seguro desea continuar ?',
+						text: "Esta acción no se puede deshacer!",
+							icon: 'warning',
+						buttons: {
+							cancel: "Cancelar",
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							ajaxRequest(data,ruta,'guardarguiadesp');
+						}
+					});			
+				}
 			}
-		});
-
+		});		
+		
 	}else{
 		alertify.error("Falta incluir informacion");
 	}

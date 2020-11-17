@@ -534,13 +534,19 @@ class DespachoOrdController extends Controller
     {
         if ($request->ajax()) {
             //dd($request);
-            $despachoord = DespachoOrd::findOrFail($request->id);
-            $despachoord->guiadespacho = $request->guiadespacho;
-            $despachoord->guiadespachofec = date("Y-m-d H:i:s");
-            if ($despachoord->save()) {
-                return response()->json(['mensaje' => 'ok']);
-            } else {
-                return response()->json(['mensaje' => 'ng']);
+            $despachoord = DespachoOrd::where('guiadespacho','=',$request->guiadespacho)->get();
+            $aux_contgdesp = count($despachoord);
+            if($aux_contgdesp>0){
+                return response()->json(['mensaje' => 'dup']);
+            }else{
+                $despachoord = DespachoOrd::findOrFail($request->id);
+                $despachoord->guiadespacho = $request->guiadespacho;
+                $despachoord->guiadespachofec = date("Y-m-d H:i:s");
+                if ($despachoord->save()) {
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }    
             }
         } else {
             abort(404);
@@ -699,6 +705,22 @@ class DespachoOrdController extends Controller
                 </table>";
         }
         return $respuesta;
+    }
+
+    public function buscarguiadesp(Request $request)
+    {
+        if ($request->ajax()) {
+            $despachoord = DespachoOrd::where('guiadespacho' ,'=',$request->guiadespacho)->get();
+            if(count($despachoord) > 0){
+                return response()->json(['mensaje' => 'ok',
+                'Mensaje' => 'Encontrado'
+               ]);
+            }else{
+                return response()->json(['mensaje' => 'no',
+                'Mensaje' => 'No existe.'
+               ]);
+            }
+        }
     }
 }
 

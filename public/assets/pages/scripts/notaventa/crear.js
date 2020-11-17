@@ -622,24 +622,41 @@ $("#rut").focus(function(){
 	$("#clientedirec_id").prop("disabled",true);
 	eliminarFormatoRut($(this));
 });
-/*
+
 $("#oc_id").blur(function(){
-	swal({
-		title: 'Orden de compra ya existe.',
-		text: "",
-		icon: 'error',
-		buttons: {
-			confirm: "Aceptar"
-		},
-	}).then((value) => {
-		if (value) {
-			//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-			$("#oc_id").focus();
-			//$("#rut").focus();
-		}
-	});
+	aux_ocid = $.trim($("#oc_id").val());
+	$("#oc_id").val(aux_ocid);
+	if(aux_ocid != "" ){
+		var data = {
+			oc_id: $("#oc_id").val(),
+			_token: $('input[name=_token]').val()
+		};
+		$.ajax({
+			url: '/notaventa/buscaroc_id',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				if(respuesta.mensaje == 'ok'){
+					swal({
+						title: 'Orden de compra N°.' +data.oc_id+ ' ya existe.',
+						text: "",
+						icon: 'error',
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							//$("#oc_id").focus();
+						}
+					});
+				
+				}
+			}
+		});
+	
+	}
 });
-*/
+
 function copiar_codprod(id,codintprod){
 	//$("#myModalBuscarProd").modal('hide');
 	//$("#myModal").modal('show');
@@ -995,5 +1012,3 @@ $('#form-general').submit(function() {
 	$("#tipoentrega_id").prop('disabled', false);
     //Rest of code
 })
-
-

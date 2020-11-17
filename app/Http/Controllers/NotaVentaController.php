@@ -552,7 +552,6 @@ class NotaVentaController extends Controller
                         $notaventadetalle->subtotal = $request->subtotal[$i];
                         $notaventadetalle->save();
                         $idcotizaciondet = $notaventadetalle->id;
-    
                         //dd($idDireccion);
                     }else{
                         //dd($idDireccion);
@@ -915,6 +914,23 @@ class NotaVentaController extends Controller
             abort(404);
         }
 
+    }
+
+    public function buscaroc_id(Request $request)
+    {
+        //dd($request);
+        if ($request->ajax()) {
+            $notaventa = NotaVenta::where('oc_id' ,'=',$request->oc_id)->get();
+            if(count($notaventa) > 0){
+                return response()->json(['mensaje' => 'ok',
+                'Mensaje' => 'Encontrado'
+               ]);
+            }else{
+                return response()->json(['mensaje' => 'no',
+                'Mensaje' => 'Orden de compra no existe.'
+               ]);
+            }
+        }
     }
 
 

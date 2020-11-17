@@ -64,9 +64,11 @@
 					?>
 					@foreach($notaventas as $notaventa)
 						<?php
-							$i++;
-							$aux_totalKG += $notaventa->totalkilos;
-							$aux_totalps += $notaventa->totalps;
+							if(empty($notaventa->anulada)){
+								$i++;
+								$aux_totalKG += $notaventa->totalkilos;
+								$aux_totalps += $notaventa->totalps;
+							}
 							$rut = number_format( substr ( $notaventa->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->rut, strlen($notaventa->rut) -1 , 1 );
 							$colorFila = "";
 							$aux_data_toggle = "";
