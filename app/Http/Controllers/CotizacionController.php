@@ -101,12 +101,14 @@ class CotizacionController extends Controller
             WHERE usuario.id=' . auth()->id();
         $counts = DB::select($sql);
         $vendedor_id = '0';
+        //dd($counts[0]->contador);
         if($counts[0]->contador>0){
             $vendedor_id=$user->persona->vendedor->id;
             $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
         }else{
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
+        //dd($vendedor_id);
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])

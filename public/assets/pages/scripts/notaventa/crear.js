@@ -704,7 +704,7 @@ $("#rut").blur(function(){
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
-				url: '/cliente/buscarCli',
+				url: '/cliente/buscarCliId',
 				type: 'POST',
 				data: data,
 				success: function (respuesta) {

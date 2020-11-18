@@ -599,11 +599,10 @@ $("#rut").blur(function(){
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
-				url: '/cliente/buscarCli',
+				url: '/cliente/buscarCliId',
 				type: 'POST',
 				data: data,
 				success: function (respuesta) {
-
 					if(respuesta.length>0){
 						if(respuesta[0]['descripcion']==null){
 							$("#razonsocial").val(respuesta[0]['razonsocial']);
@@ -669,78 +668,103 @@ $("#rut").blur(function(){
 							});
 						}
 					}else{
-						var data = {
-							rut: $("#rut").val(),
-							_token: $('input[name=_token]').val()
-						};
 						$.ajax({
-							url: '/clientetemp/buscarCliTemp',
+							url: '/cliente/buscarCli',
 							type: 'POST',
 							data: data,
 							success: function (respuesta) {
 								if(respuesta.length>0){
-									if(respuesta[0]['vendedor_id']==$("#vendedor_id").val()){
-										$("#razonsocialCTM").val(respuesta[0]['razonsocial']);
-										$("#direccionCTM").val(respuesta[0]['direccion']);
-										$("#telefonoCTM").val(respuesta[0]['telefono']);
-										$("#emailCTM").val(respuesta[0]['email']);
-										$("#giro_idCTM").val(respuesta[0]['giro_id']);
-										$("#formapago_idCTM").val(respuesta[0]['formapago_id']);
-										$("#plazopago_idCTM").val(respuesta[0]['plazopago_id']);
-										$("#comunap_idCTM").val(respuesta[0]['comunap_id']);
-										$("#provinciap_idCTM").val(respuesta[0]['provinciap_id']);
-										$("#regionp_idCTM").val(respuesta[0]['regionp_id']);
-										$("#contactonombreCTM").val(respuesta[0]['contactonombre']);
-										$("#contactoemailCTM").val(respuesta[0]['contactoemail']);
-										$("#contactotelefCTM").val(respuesta[0]['contactotelef']);
-										$("#finanzascontactoCTM").val(respuesta[0]['finanzascontacto']);
-										$("#finanzanemailCTM").val(respuesta[0]['finanzanemail']);
-										$("#finanzastelefonoCTM").val(respuesta[0]['finanzastelefono']);
-										$("#sucursal_idCTM").val(respuesta[0]['sucursal_id']);
-										$("#observacionesCTM").val(respuesta[0]['observaciones']);
-										$("#regionp_idCTM").val($('#comunap_idCTM option:selected').attr("region_id"));
-										$("#provinciap_idCTM").val($('#comunap_idCTM option:selected').attr("provincia_id"));
-									
-										$(".selectpicker").selectpicker('refresh');
-										formato_rut($("#rut"));
-										$("#myModalClienteTemp").modal('show');
-									}else{
-										swal({
-											title: 'Cliente temporal pertenece a otro vendedor.',
-											text: "",
-											icon: 'error',
-											buttons: {
-												cancel: "Cerrar"
-											},
-										}).then((value) => {
-											if (value) {
-												
-											}
-										});
-									}
-								}else{
-									formato_rut($("#rut"));
 									swal({
-										title: 'Cliente no existe.',
-										text: "Aceptar para crear cliente temporal",
+										title: 'Cliente pertenece a otro Vendedor',
+										text: respuesta[0]['razonsocial'],
 										icon: 'error',
 										buttons: {
-											confirm: "Aceptar",
-											cancel: "Cancelar"
+											confirm: "Aceptar"
 										},
 									}).then((value) => {
 										if (value) {
-											limpiarclientemp();
-											
-											$("#myModalClienteTemp").modal('show');
-										}else{
-											$("#rut").focus();
+											//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
 											//$("#rut").val('');
+											$("#rut").focus();
 										}
-									});			
+									});
+								}else{
+									var data = {
+										rut: $("#rut").val(),
+										_token: $('input[name=_token]').val()
+									};
+									$.ajax({
+										url: '/clientetemp/buscarCliTemp',
+										type: 'POST',
+										data: data,
+										success: function (respuesta) {
+											if(respuesta.length>0){
+												if(respuesta[0]['vendedor_id']==$("#vendedor_id").val()){
+													$("#razonsocialCTM").val(respuesta[0]['razonsocial']);
+													$("#direccionCTM").val(respuesta[0]['direccion']);
+													$("#telefonoCTM").val(respuesta[0]['telefono']);
+													$("#emailCTM").val(respuesta[0]['email']);
+													$("#giro_idCTM").val(respuesta[0]['giro_id']);
+													$("#formapago_idCTM").val(respuesta[0]['formapago_id']);
+													$("#plazopago_idCTM").val(respuesta[0]['plazopago_id']);
+													$("#comunap_idCTM").val(respuesta[0]['comunap_id']);
+													$("#provinciap_idCTM").val(respuesta[0]['provinciap_id']);
+													$("#regionp_idCTM").val(respuesta[0]['regionp_id']);
+													$("#contactonombreCTM").val(respuesta[0]['contactonombre']);
+													$("#contactoemailCTM").val(respuesta[0]['contactoemail']);
+													$("#contactotelefCTM").val(respuesta[0]['contactotelef']);
+													$("#finanzascontactoCTM").val(respuesta[0]['finanzascontacto']);
+													$("#finanzanemailCTM").val(respuesta[0]['finanzanemail']);
+													$("#finanzastelefonoCTM").val(respuesta[0]['finanzastelefono']);
+													$("#sucursal_idCTM").val(respuesta[0]['sucursal_id']);
+													$("#observacionesCTM").val(respuesta[0]['observaciones']);
+													$("#regionp_idCTM").val($('#comunap_idCTM option:selected').attr("region_id"));
+													$("#provinciap_idCTM").val($('#comunap_idCTM option:selected').attr("provincia_id"));
+												
+													$(".selectpicker").selectpicker('refresh');
+													formato_rut($("#rut"));
+													$("#myModalClienteTemp").modal('show');
+												}else{
+													swal({
+														title: 'Cliente temporal pertenece a otro vendedor.',
+														text: "",
+														icon: 'error',
+														buttons: {
+															cancel: "Cerrar"
+														},
+													}).then((value) => {
+														if (value) {
+															
+														}
+													});
+												}
+											}else{
+												formato_rut($("#rut"));
+												swal({
+													title: 'Cliente no existe.',
+													text: "Aceptar para crear cliente temporal",
+													icon: 'error',
+													buttons: {
+														confirm: "Aceptar",
+														cancel: "Cancelar"
+													},
+												}).then((value) => {
+													if (value) {
+														limpiarclientemp();
+														
+														$("#myModalClienteTemp").modal('show');
+													}else{
+														$("#rut").focus();
+														//$("#rut").val('');
+													}
+												});			
+											}
+										}
+									});
 								}
 							}
 						});
+
 					}
 				}
 			});

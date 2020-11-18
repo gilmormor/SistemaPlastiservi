@@ -339,11 +339,11 @@ class ClienteController extends Controller
     }
 
     public function buscarCli(Request $request){
-        //dd($request);
         if($request->ajax()){
             //dd($request);
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
+            //dd($sucurArray);
             $clientedirecs = Cliente::where('rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
@@ -444,9 +444,63 @@ class ClienteController extends Controller
 
     public function buscarCliId(Request $request){
         if($request->ajax()){
-            //dd($request);
+            //dd($request->rut);
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $clientedirecs = Cliente::where('cliente.id', $request->rut)
+                    ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
+                    ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                    ->select([
+                                'cliente.id',
+                                'cliente.rut',
+                                'cliente.razonsocial',
+                                'cliente.telefono',
+                                'cliente.email',
+                                'cliente.direccion',
+                                'cliente.vendedor_id',
+                                'cliente.contactonombre',
+                                'cliente.formapago_id',
+                                'cliente.plazopago_id',
+                                'cliente.giro_id',
+                                'cliente.regionp_id',
+                                'cliente.provinciap_id',
+                                'cliente.comunap_id',
+                                'clientedirec.id as direc_id',
+                                'clientedirec.direcciondetalle'
+                            ]);
+            //dd($clientedirecs->get());
+            return response()->json($clientedirecs->get());
+        }
+    }
+
+    public function buscarmyCli(Request $request){
+        if($request->ajax()){
+            //dd($request);
+            $user = Usuario::findOrFail(auth()->id());
+            $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+            $counts = DB::select($sql);
+            $vendedor_id = '0';
+            if($counts[0]->contador>0){
+                $vendedor_id=$user->persona->vendedor->id;
+                $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            }else{
+                $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            }
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
+                ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                        ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                ->pluck('cliente_sucursal.cliente_id')->toArray())
+                ->whereIn('cliente.id',$clientevendedorArray)
+                ->get();
+            dd($clientes);
             $clientedirecs = Cliente::where('cliente.id', $request->id)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
@@ -473,5 +527,6 @@ class ClienteController extends Controller
             return response()->json($clientedirecs->get());
         }
     }
+
 
 }

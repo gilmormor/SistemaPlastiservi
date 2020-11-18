@@ -165,11 +165,12 @@ Route::put('cliente/{id}', 'ClienteController@actualizar')->name('actualizar_cli
 Route::delete('cliente/{id}', 'ClienteController@eliminar')->name('eliminar_cliente');
 Route::post('cliente/eliminarClienteDirec/{id}', 'ClienteController@eliminarClienteDirec')->name('eliminar_clienteDirec');
 Route::post('cliente/buscarCli', 'ClienteController@buscarCli')->name('buscarCli');
-Route::post('cliente/buscarCliID', 'ClienteController@buscarCliID')->name('buscarCliID');
+Route::post('cliente/buscarCliId', 'ClienteController@buscarCliId')->name('buscarCliId');
 Route::post('cliente/buscarClisinsuc', 'ClienteController@buscarClisinsuc')->name('buscarClisinsuc');
 Route::post('cliente/guardarclientetemp', 'ClienteController@guardarclientetemp')->name('guardarclientetemp');
 //Ruta para actualizar el campo giro_id en la tabla clientes
 Route::get('cliente/clientegiro', 'ClienteController@clientegiro')->name('clientegiro');
+Route::post('cliente/buscarmyCli', 'ClienteController@buscarmyCli')->name('buscarmyCli');
 
 
 /*RUTAS FORMA DE PAGO*/
