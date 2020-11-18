@@ -36,7 +36,7 @@ Notas de Venta
                                         <label for="fecha">Fecha Ini:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required>
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required readonly>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final">
@@ -190,7 +190,7 @@ Notas de Venta
                                         <label for="fecha">Plazo Entrega:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="plazoentrega" id="plazoentrega" placeholder="DD/MM/AAAA" required>
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="plazoentrega" id="plazoentrega" placeholder="DD/MM/AAAA" required readonly>
                                     </div>
                                 </div>
                             </div>

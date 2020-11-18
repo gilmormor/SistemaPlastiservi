@@ -616,13 +616,19 @@ class CotizacionController extends Controller
         $cotizacion = Cotizacion::findOrFail($id);
         $cotizacionDetalles = $cotizacion->cotizaciondetalles()->get();
         $empresa = Empresa::orderBy('id')->get();
+        if($cotizacion->cliente){
+            $aux_razonsocial = $cotizacion->cliente->razonsocial;
+        }else{
+            $aux_razonsocial = $cotizacion->clientetemp->razonsocial;
+        }
+        //dd($cotizacion->cliente);
         //$rut = number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
         //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         
         $pdf = PDF::loadView('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         //return $pdf->download('cotizacion.pdf');
-        return $pdf->stream(str_pad($cotizacion->id, 5, "0", STR_PAD_LEFT) .' - '. $cotizacion->cliente->razonsocial . '.pdf');
+        return $pdf->stream(str_pad($cotizacion->id, 5, "0", STR_PAD_LEFT) .' - '. $aux_razonsocial . '.pdf');
         
     }
 }

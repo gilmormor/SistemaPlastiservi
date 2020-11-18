@@ -138,6 +138,7 @@ $(document).ready(function () {
 	$('.datepicker').datepicker({
 		language: "es",
 		autoclose: true,
+		clearBtn : true,
 		todayHighlight: true
 	}).datepicker("setDate");
 

@@ -29,7 +29,8 @@ $(document).ready(function () {
     //alert(aux_nfila);
     $('.datepicker').datepicker({
 		language: "es",
-		autoclose: true,
+        autoclose: true,
+        clearBtn : true,
 		todayHighlight: true
     }).datepicker("setDate");
     
