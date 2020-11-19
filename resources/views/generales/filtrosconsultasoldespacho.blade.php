@@ -22,6 +22,16 @@
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-12 col-sm-12">
+                    <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Estimada de Despacho">
+                        <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                            <label for="fecha">Fecha ED:</label>
+                        </div>
+                        <div class="col-xs-12 col-md-8 col-sm-8">
+                            <input type="text" bsDaterangepicker class="form-control datepicker" name="fechaestdesp" id="fechaestdesp" placeholder="DD/MM/AAAA" required readonly="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12 col-sm-12">
                     <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="RUT">
                         <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                             <label for="rut">RUT:</label>

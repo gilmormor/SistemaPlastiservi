@@ -28,7 +28,8 @@ $(document).ready(function () {
     //alert(aux_nfila);
     $('.datepicker').datepicker({
 		language: "es",
-		autoclose: true,
+        autoclose: true,
+        clearBtn : true,
 		todayHighlight: true
     }).datepicker("setDate");
     
@@ -97,6 +98,7 @@ function datos(){
     var data = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
+        fechaestdesp      : $("#fechaestdesp").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
         vendedor_id       : $("#vendedor_id").val(),
         oc_id             : $("#oc_id").val(),

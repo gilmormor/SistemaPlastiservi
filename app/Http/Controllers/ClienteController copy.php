@@ -447,7 +447,7 @@ class ClienteController extends Controller
             //dd($request->rut);
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
-            $clientedirecs = Cliente::where('cliente.id', $request->rut)
+            $clientedirecs = Cliente::where('cliente.rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
                     ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)

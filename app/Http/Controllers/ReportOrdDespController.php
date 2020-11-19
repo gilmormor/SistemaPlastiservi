@@ -102,7 +102,7 @@ class ReportOrdDespController extends Controller
         $respuesta['tabla'] = "";
     
         if($request->ajax()){
-            $datas = consultasoldesp($request);
+            $datas = consultaorddesp($request);
     
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
             <thead>
@@ -265,7 +265,7 @@ class ReportOrdDespController extends Controller
 
 
 
-function consultasoldesp($request){
+function consultaorddesp($request){
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -369,6 +369,15 @@ function consultasoldesp($request){
 
     $aux_condaprobord = "true";
 
+    if(empty($request->fechaestdesp)){
+        $aux_condfechaestdesp = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->fechaestdesp);
+        $fechad = date_format($fecha, 'Y-m-d');
+        $aux_condfechaestdesp = "despachoord.fechaestdesp='$fechad'";
+    }
+
+
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
 
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
@@ -408,6 +417,7 @@ function consultasoldesp($request){
             and $aux_condaprobord
             and $aux_condid
             and $aux_conddespachosol_id
+            and $aux_condfechaestdesp
             and despachoord.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachoord.id;";
     //dd($sql);

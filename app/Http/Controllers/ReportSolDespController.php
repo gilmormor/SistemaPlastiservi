@@ -365,6 +365,13 @@ function consultasoldesp($request){
     }else{
         $aux_condid = "despachosol.id='$request->id'";
     }
+    if(empty($request->fechaestdesp)){
+        $aux_condfechaestdesp = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->fechaestdesp);
+        $fechad = date_format($fecha, 'Y-m-d');
+        $aux_condfechaestdesp = "despachosol.fechaestdesp='$fechad'";
+    }
 
  
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
@@ -405,6 +412,7 @@ function consultasoldesp($request){
             and $aux_condcomuna_id
             and $aux_condaprobord
             and $aux_condid
+            and $aux_condfechaestdesp
             and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachosol.id;";
     //dd($sql);

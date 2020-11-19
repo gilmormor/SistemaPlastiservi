@@ -1,6 +1,19 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
 
+    $('#tabla-data-cotizacion').DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        "order"       : [[ 0, "desc" ]],
+		"language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+      });
+
     function generateBarcode(codbar,i){
         var value = codbar; //"7626513231424"; //$("#barcodeValue").val();
         var btype = "ean13" //$("input[name=btype]:checked").val();

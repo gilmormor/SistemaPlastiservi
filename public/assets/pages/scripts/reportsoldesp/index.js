@@ -100,6 +100,7 @@ function datos(){
         id                : $("#id").val(),
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
+        fechaestdesp      : $("#fechaestdesp").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
         vendedor_id       : $("#vendedor_id").val(),
         oc_id             : $("#oc_id").val(),

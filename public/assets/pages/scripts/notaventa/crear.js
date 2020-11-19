@@ -113,7 +113,7 @@ $(document).ready(function () {
 		}
 	});
 	$("#btnbuscarcliente").click(function(event){
-			$(this).val("");
+			$("#rut").val("");
 			$(".input-sm").val('');
 			$("#myModalBusqueda").modal('show');
 	});

@@ -26,7 +26,7 @@ Cotización
             </div>
             <div class="box-body">
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-data-cotizacion">
                         <thead>
                             <tr>
                                 <th class="width70">ID</th>

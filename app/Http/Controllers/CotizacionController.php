@@ -274,7 +274,7 @@ class CotizacionController extends Controller
             }
         }
         //return redirect('cotizacion')->with('mensaje','Cotización creada con exito');
-        return redirect('cotizacion/'.$cotizacionid.'/editar')->with('mensaje','Cotización creada con exito!');
+        return redirect('cotizacion')->with('mensaje','Cotización creada con exito!');
     }
 
     /**
@@ -475,7 +475,8 @@ class CotizacionController extends Controller
                 }
             }
         }
-        return redirect('cotizacion/'.$id.'/editar')->with('mensaje','Cliente actualizado con exito!');
+        //return redirect('cotizacion/'.$id.'/editar')->with('mensaje','Cliente actualizado con exito!');
+        return redirect('cotizacion')->with('mensaje','Cliente actualizado con exito!');
     }
 
     /**
