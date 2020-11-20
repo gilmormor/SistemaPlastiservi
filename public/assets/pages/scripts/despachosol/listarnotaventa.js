@@ -14,6 +14,20 @@ $(document).ready(function () {
         }
 	});
 */
+
+    $('#tabla-data-listarnotaventa').DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        "order"       : [[ 0, "desc" ]],
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+    });
+    
     consultar(datos());
     $("#btnconsultar").click(function()
     {

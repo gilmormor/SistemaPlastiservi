@@ -407,6 +407,15 @@ class ClienteController extends Controller
         if($request->ajax()){
             //dd($request);
             $cliente = Cliente::create($request->all());
+            $clienteid = $cliente->id; //Tomo el id de cliente
+            $clienteDireccion = new ClienteDirec; //Crear el registro en direccion
+            $clienteDireccion->cliente_id = $clienteid;
+            $clienteDireccion->direcciondetalle = $request->direccion;
+            $clienteDireccion->region_id = $request->regionp_id;
+            $clienteDireccion->provincia_id = $request->provinciap_id;
+            $clienteDireccion->comuna_id = $request->comunap_id;
+            $clienteDireccion->save();
+    
             $cliente->vendedores()->sync([
                 0 => $request->vendedor_id
             ]);

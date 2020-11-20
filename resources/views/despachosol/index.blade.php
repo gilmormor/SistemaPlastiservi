@@ -15,7 +15,7 @@ Solicitud de despacho
         @include('includes.mensaje')
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Solicitud de Despacho</h3>
+                <h3 class="box-title">Solicitud de Despacho por Aprobar</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('listarnv_despachosol')}}" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i> Nueva Solicitud Despacho

@@ -828,22 +828,26 @@ function consulta($request){
         //dd($aux_condplazoentrega);
     }
 
-    
-
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
             comuna.nombre as comunanombre,
-            sum(notaventadetalle.cant) AS cant,
-            sum(notaventadetalle.precioxkilo) AS precioxkilo,
-            sum(notaventadetalle.totalkilos) AS totalkilos,
-            sum(notaventadetalle.subtotal) AS subtotal,
+            vista_notaventatotales.cant,
+            vista_notaventatotales.precioxkilo,
+            vista_notaventatotales.totalkilos,
+            vista_notaventatotales.subtotal,
             sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
             sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
             sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
             sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
             sum(notaventadetalle.subtotal) AS totalps,
+            (SELECT sum(kgsoldesp) as kgsoldesp
+                    FROM vista_sumsoldespdet
+                    WHERE notaventa_id=notaventa.id) as totalkgsoldesp,
+            (SELECT sum(subtotalsoldesp) as subtotalsoldesp
+                    FROM vista_sumsoldespdet
+                    WHERE notaventa_id=notaventa.id) as totalsubtotalsoldesp,
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
             tipoentrega.nombre as tipentnombre,tipoentrega.icono
             FROM notaventa INNER JOIN notaventadetalle
@@ -864,6 +868,8 @@ function consulta($request){
             ON comuna.id=notaventa.comunaentrega_id
             INNER JOIN tipoentrega
             ON tipoentrega.id=notaventa.tipoentrega_id
+            INNER JOIN vista_notaventatotales
+            ON notaventa.id=vista_notaventatotales.id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -880,7 +886,8 @@ function consulta($request){
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
-            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
+            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
+            ORDER BY notaventadetalle.notaventa_id desc;";
 
     $datas = DB::select($sql);
     //dd($datas);
@@ -901,7 +908,7 @@ function reporte1($request){
         }
         $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
 
-        $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+        $respuesta['tabla'] .= "<table id='tabla-data-listarnotaventa' name='tabla-data-listarnotaventa' class='table display AllDataTables table-hover table-condensed' data-page-length='50'>
         <thead>
             <tr>
                 <th>ID</th>
@@ -997,8 +1004,8 @@ function reporte1($request){
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
-                <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
-                <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
+                <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos - $data->totalkgsoldesp, 2, ",", ".") ."</td>
+                <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal - $data->totalsubtotalsoldesp, 2, ",", ".") ."</td>
                 <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                 <td>
                     <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->

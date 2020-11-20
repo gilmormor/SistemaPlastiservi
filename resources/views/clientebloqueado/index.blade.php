@@ -16,7 +16,7 @@ Cliente Bloquedo
                 <h3 class="box-title">Cliente Bloquedo</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('crear_clientebloqueado')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo registro
+                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo Bloqueo
                     </a>
                 </div>
             </div>

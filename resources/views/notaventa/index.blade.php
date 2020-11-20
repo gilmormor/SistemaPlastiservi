@@ -96,7 +96,7 @@ Nota de Venta
                                         <a href="{{route('editar_notaventa', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
                                             <i class="fa fa-fw fa-pencil"></i>
                                         </a>
-                                        @if (session('aux_aproNV')=='0')
+                                        @if (session('aux_aproNV')=='0' and auth()->id() == 1)
                                             <form action="{{route('eliminar_notaventa', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
                                                 @csrf @method("delete")
                                                 <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
