@@ -96,13 +96,14 @@
 					<?php
 						$aux_sumprecioxkilo += $despachoorddet->notaventadetalle->precioxkilo;
 						//$aux_sumtotalkilos += $despachoorddet->notaventadetalle->totalkilos;
-						$aux_sumtotalkilos += ($despachoorddet->cantdesp * $despachoorddet->notaventadetalle->producto->peso);
+						$aux_sumtotalkilos += ($despachoorddet->notaventadetalle->totalkilos/$despachoorddet->notaventadetalle->cant) * $despachoorddet->cantdesp;
 					?>
 				@endforeach
 				@foreach($despachoorddets as $despachoorddet)
 					<?php
 						$aux_promPonderadoPrecioxkilo += ($despachoorddet->notaventadetalle->precioxkilo * (($despachoorddet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
-						$totalkilos = $despachoorddet->cantdesp * $despachoorddet->notaventadetalle->producto->peso;
+						$peso = $despachoorddet->notaventadetalle->totalkilos/$despachoorddet->notaventadetalle->cant;
+						$totalkilos = ($peso) * $despachoorddet->cantdesp;
 						$subtotal = $despachoorddet->cantdesp * $despachoorddet->notaventadetalle->preciounit;
 						$neto += $subtotal;
 					?>
@@ -121,7 +122,7 @@
 						<td class="textleft">{{$despachoorddet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
 						<td class="textright">{{$despachoorddet->notaventadetalle->producto->long}} mts</td>
 						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto->tipounion}}</td>
-						<td class="textright">{{number_format($despachoorddet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($peso, 3, ",", ".")}}</td>
 						<!--<td class="textright">{{number_format($despachoorddet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>-->
 						<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($despachoorddet->notaventadetalle->preciounit, 2, ",", ".")}}</td>

@@ -825,8 +825,8 @@ function consulta($request){
         $fecha = date_create_from_format('d/m/Y', $request->plazoentrega);
         $fechad = date_format($fecha, 'Y-m-d');
         $aux_condplazoentrega = "notaventa.plazoentrega='$fechad'";
-        //dd($aux_condplazoentrega);
     }
+    //dd($aux_condplazoentrega);
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
@@ -888,7 +888,7 @@ function consulta($request){
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
             ORDER BY notaventadetalle.notaventa_id desc;";
-
+    //dd($sql);
     $datas = DB::select($sql);
     //dd($datas);
     return $datas;
@@ -908,7 +908,7 @@ function reporte1($request){
         }
         $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
 
-        $respuesta['tabla'] .= "<table id='tabla-data-listarnotaventa' name='tabla-data-listarnotaventa' class='table display AllDataTables table-hover table-condensed' data-page-length='50'>
+        $respuesta['tabla'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
         <thead>
             <tr>
                 <th>ID</th>
@@ -1080,7 +1080,7 @@ function reportesoldesp1($request){
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th>Comuna</th>
-                <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                <th class='tooltipsC' title='Total Kg Pendientes'>Total Kg</th>
                 <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
             </tr>
         </thead>
@@ -1117,7 +1117,7 @@ function reportesoldesp1($request){
                 </td>
                 <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
                 <td style='text-align:right'>".
-                    number_format($data->totalkilos, 2, ",", ".") .
+                    number_format($data->totalkilos - $data->totalkilosdesp, 2, ",", ".") .
                 "</td>
                 <td>
                     <a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
@@ -1251,7 +1251,8 @@ function consultasoldesp($request){
     $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
             despachosol.notaventa_id,despachosol.fechaestdesp,tipoentrega.nombre as tipentnombre,tipoentrega.icono,
-            sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos
+            IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
+            vista_despsoltotales.totalkilos
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND if((SELECT cantdesp
@@ -1274,6 +1275,10 @@ function consultasoldesp($request){
             ON comuna.id=despachosol.comunaentrega_id
             INNER JOIN tipoentrega
             ON tipoentrega.id=despachosol.tipoentrega_id
+            INNER JOIN vista_despsoltotales
+            ON despachosol.id = vista_despsoltotales.id
+            LEFT JOIN vista_despordxdespsoltotales
+            ON despachosol.id = vista_despordxdespsoltotales.despachosol_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -1287,7 +1292,8 @@ function consultasoldesp($request){
             and $aux_condaprobord
             and $aux_condfechaestdesp
             and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
-            GROUP BY despachosol.id;";
+            GROUP BY despachosol.id
+            ORDER BY despachosol.id DESC;";
 /*
 (select sum(cantsoldesp) as cantsoldesp
                     from despachosol inner join despachosoldet

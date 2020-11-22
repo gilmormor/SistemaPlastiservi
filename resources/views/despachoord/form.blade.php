@@ -118,6 +118,8 @@
                             <th style="display:none;">Largo</th>
                             <th>Peso</th>
                             <th style="display:none;">Peso</th>
+                            <th>Kilos</th>
+                            <th style="display:none;">Total Kilos</th>
                             <th>TU</th>
                             <th style="display:none;">TUnion</th>
                             <th style="display:none;">Desc</th>
@@ -128,8 +130,6 @@
                             <th style="display:none;">V Kilo</th>
                             <th style="display:none;">Precio X Kilo</th>
                             <th style="display:none;">Precio X Kilo Real</th>
-                            <th>Kilos</th>
-                            <th style="display:none;">Total Kilos</th>
                             <th>Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
@@ -144,6 +144,7 @@
                                             FROM vista_sumorddespdet
                                             WHERE despachosoldet_id=$detalle->id";
                                     $datasuma = DB::select($sql);
+                                    $peso = $detalle->notaventadetalle->totalkilos/$detalle->notaventadetalle->cant;
                                     if(empty($datasuma)){
                                         $sumacantorddesp= 0;
                                     }else{
@@ -237,10 +238,16 @@
                                         <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->long}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
-                                        {{$detalle->notaventadetalle->producto->peso}}
+                                        {{$peso}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->peso}}" style="display:none;"/>
+                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$peso}}" style="display:none;"/>
+                                    </td>
+                                    <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
+                                        0.00 <!--{{number_format($detalle->notaventadetalle->totalkilos, 2, '.', ',')}}-->
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->totalkilos}}" style="display:none;"/>
                                     </td>
                                     <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
                                         {{$detalle->notaventadetalle->producto->tipounion}}
@@ -273,12 +280,6 @@
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->precioxkiloreal}}" style="display:none;"/>
-                                    </td>
-                                    <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
-                                        0.00 <!--{{number_format($detalle->notaventadetalle->totalkilos, 2, '.', ',')}}-->
-                                    </td>
-                                    <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->totalkilos}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCFTD" style="text-align:right"> 
                                         0.00

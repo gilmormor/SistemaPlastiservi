@@ -266,7 +266,7 @@ class NotaVentaConsultaController extends Controller
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='5' style='text-align:left'>TOTAL</th>
+                    <th colspan='5' style='text-align:left'>TOTALES</th>
                     <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>

@@ -5,7 +5,6 @@ Notas de Venta
 
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/despachosol/listarnotaventa.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -15,7 +14,7 @@ Notas de Venta
         @include('includes.mensaje')
         <div class="box box-primary collapsed-box">
             <div class="box-header with-border">
-                <h3 class="box-title">Nota de Venta Pendiente</h3>
+                <h3 class="box-title">Pendientes Nota de Venta</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>

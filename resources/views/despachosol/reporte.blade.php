@@ -95,13 +95,14 @@
 				@foreach($despachosoldets as $despachosoldet)
 					<?php
 						$aux_sumprecioxkilo += $despachosoldet->notaventadetalle->precioxkilo;
-						$aux_sumtotalkilos += $despachosoldet->notaventadetalle->totalkilos;
+						$aux_sumtotalkilos += $despachosoldet->cantsoldesp * ($despachosoldet->notaventadetalle->totalkilos/$despachosoldet->notaventadetalle->cant);
 					?>
 				@endforeach
 				@foreach($despachosoldets as $despachosoldet)
 					<?php
 						$aux_promPonderadoPrecioxkilo += ($despachosoldet->notaventadetalle->precioxkilo * (($despachosoldet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
-						$totalkilos = $despachosoldet->cantsoldesp * $despachosoldet->notaventadetalle->producto->peso;
+						$peso = $despachosoldet->notaventadetalle->totalkilos/$despachosoldet->notaventadetalle->cant;
+						$totalkilos = $despachosoldet->cantsoldesp * $peso;
 						$subtotal = $despachosoldet->cantsoldesp * $despachosoldet->notaventadetalle->preciounit;
 						$neto += $subtotal;
 

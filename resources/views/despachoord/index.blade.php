@@ -15,7 +15,7 @@ Orden de despacho
         @include('includes.mensaje')
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Orden de Despacho</h3>
+                <h3 class="box-title">Orden de Despacho por aprobar</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('listarsoldesp_despachosol')}}" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i> Nueva Orden Despacho
