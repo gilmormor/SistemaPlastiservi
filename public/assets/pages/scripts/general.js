@@ -627,12 +627,21 @@ $("#btnGuardarM").click(function(event)
 
 function totalizar(){
 	total_neto = 0;
-
+	total_kg = 0;
 	$("#tabla-data tr .subtotal").each(function() {
 		valor = $(this).html() ;
 		valorNum = parseFloat(valor);
 		total_neto += valorNum;
 	});
+	$("#tabla-data tr .subtotalkg").each(function() {
+		valor = $(this).html() ;
+		valor = valor.replace(/,/g, ""); //Elimina comas al valor con formato
+		//alert(valor);
+		valorNum = parseFloat(valor);
+		total_kg += valorNum;
+	});
+	aux_totalkgform = MASK(0, total_kg, '-##,###,##0.00',1)
+
 	aux_porciva = $("#aux_iva").val()
 	aux_porciva = parseFloat(aux_porciva);
 	aux_iva = Math.round(total_neto * (aux_porciva/100));
@@ -642,6 +651,7 @@ function totalizar(){
 	aux_tdtotalform = MASK(0, aux_total, '-##,###,##0.00',1)
 	
 	//$("#tdneto").html(total_neto.toFixed(2));
+	$("#totalkg").html(aux_totalkgform);
 	$("#tdneto").html(aux_netoform);
 	$("#tdiva").html(aux_ivaform);
 	$("#tdtotal").html(aux_tdtotalform);
@@ -653,6 +663,7 @@ function totalizar(){
 
 function totalizardespacho(){
 	total_neto = 0;
+	total_kg = 0;
 
 	$("#tabla-data tr .subtotal").each(function() {
 		valor = $(this).html() ;
@@ -660,7 +671,17 @@ function totalizardespacho(){
 		valorNum = parseFloat(valor);
 		total_neto += valorNum;
 	});
+	
+	$("#tabla-data tr .subtotalkg").each(function() {
+		valor = $(this).html() ;
+		valor = valor.replace(/,/g, ""); //Elimina comas al valor con formato
+		//alert(valor);
+		valorNum = parseFloat(valor);
+		total_kg += valorNum;
+	});
 	//alert(total_neto);
+	aux_totalkgform = MASK(0, total_kg, '-##,###,##0.00',1)
+	//alert(aux_totalkgform);
 	aux_porciva = $("#aux_iva").val()
 	aux_porciva = parseFloat(aux_porciva);
 	aux_iva = Math.round(total_neto * (aux_porciva/100));
@@ -670,6 +691,7 @@ function totalizardespacho(){
 	aux_tdtotalform = MASK(0, aux_total, '-##,###,##0.00',1)
 	
 	//$("#tdneto").html(total_neto.toFixed(2));
+	$("#totalkg").html(aux_totalkgform);
 	$("#tdneto").html(aux_netoform);
 	$("#tdiva").html(aux_ivaform);
 	$("#tdtotal").html(aux_tdtotalform);

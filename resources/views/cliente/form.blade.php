@@ -253,11 +253,13 @@
 <div class="box box-danger">
     <div class="box-header with-border">
         <h3 class="box-title">Dirección</h3>
-        <div class="box-tools pull-right">
-            <a id="botonNuevaDirec" href="{{route('crear_cliente')}}" class="btn btn-block btn-success btn-sm">
-                <i class="fa fa-fw fa-plus-circle"></i> Nueva Dirección
-            </a>
-        </div>
+        @if(can('guardar-cliente',false) == true)
+            <div class="box-tools pull-right">
+                <a id="botonNuevaDirec" href="{{route('crear_cliente')}}" class="btn btn-block btn-success btn-sm">
+                    <i class="fa fa-fw fa-plus-circle"></i> Nueva Dirección
+                </a>
+            </div>
+        @endif
         <div class="box-body">
             <table class="table table-striped table-bordered table-hover" id="tabla-data">
                 <thead>
@@ -294,12 +296,14 @@
                                     <input type="text" name="comuna_id[]" id="comuna_id{{$aux_nfila}}" class="form-control" value="{{$clientedirec->comuna_id}}" style="display:none;"/>
                                 </td>
                                 <td>
-                                    <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
-                                        <i class="fa fa-fw fa-pencil"></i>
-                                    </a>
-                                    <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
-                                        <i class="fa fa-fw fa-trash text-danger"></i>
-                                    </a>
+                                    @if(can('guardar-cliente',false) == true)
+                                        <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                            <i class="fa fa-fw fa-pencil"></i>
+                                        </a>
+                                        <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
+                                            <i class="fa fa-fw fa-trash text-danger"></i>
+                                        </a>
+                                    @endif
                                 </td>
                             </tr>
                             <?php $i++;?>

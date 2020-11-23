@@ -26,11 +26,13 @@
                 <div class="box-body">
                     @include('cliente.form')
                 </div>
-                <!-- /.box-body -->
-                <div class="box-footer text-center">
-                    @include('includes.boton-form-editar')
-                </div>
-                <!-- /.box-footer -->
+                @if(can('guardar-cliente',false) == true)
+                    <!-- /.box-body -->
+                    <div class="box-footer text-center">
+                        @include('includes.boton-form-editar')
+                    </div>
+                    <!-- /.box-footer -->
+                @endif
             </form>
         </div>
     </div>

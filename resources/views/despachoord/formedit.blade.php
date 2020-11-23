@@ -258,7 +258,7 @@
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$peso}}" style="display:none;"/>
                                     </td>
-                                    <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right" class="subtotalkg">
                                         {{number_format($totalkilosItem, 2, '.', ',')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
@@ -317,7 +317,9 @@
                                         <input type="text" name="cantordTotal" id="cantordTotal" value={{$cantordTotal}} class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>
-                                <td colspan="9" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="6" style="text-align:right"><b>Total Kg</b></td>
+                                <td id="totalkg" name="totalkg" style="text-align:right">0.00</td>
+                                <td colspan="2" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="triva" name="triva">

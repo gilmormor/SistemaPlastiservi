@@ -16,11 +16,13 @@ Clientes
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Clientes</h3>
-                <div class="box-tools pull-right">
-                    <a href="{{route('crear_cliente')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Crear Cliente
-                    </a>
-                </div>
+                @if(can('guardar-cliente',false) == true)
+                    <div class="box-tools pull-right">
+                        <a href="{{route('crear_cliente')}}" class="btn btn-block btn-success btn-sm">
+                            <i class="fa fa-fw fa-plus-circle"></i> Crear Cliente
+                        </a>
+                    </div>
+                @endif
             </div>
             <div class="box-body">
                 <table class="table table-striped table-bordered table-hover" id="tabla-data">

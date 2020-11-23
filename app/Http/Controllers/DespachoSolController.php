@@ -915,12 +915,12 @@ function reporte1($request){
                 <th>Fecha</th>
                 <th>Razón Social</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
-                <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
-                <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
-                <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                 <th>Comuna</th>
+                <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
+                <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
+                <!--<th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>-->
                 <th class='tooltipsC' title='Solicitud Despacho'>Despacho</th>
             </tr>
         </thead>
@@ -1004,9 +1004,6 @@ function reporte1($request){
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
-                <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos - $data->totalkgsoldesp, 2, ",", ".") ."</td>
-                <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal - $data->totalsubtotalsoldesp, 2, ",", ".") ."</td>
-                <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                 <td>
                     <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->id,1)'>
@@ -1020,6 +1017,9 @@ function reporte1($request){
                     </a>
                 </td>
                 <td>$data->comunanombre</td>
+                <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos - $data->totalkgsoldesp, 2, ",", ".") ."</td>
+                <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal - $data->totalsubtotalsoldesp, 2, ",", ".") ."</td>
+                <!--<td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>-->
                 <td>
                     $nuevoSolDesp
                 </td>
