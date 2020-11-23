@@ -43,15 +43,23 @@ Clientes
                             <td>{{$data->rut}}</td>
                             <td>{{$data->razonsocial}}</td>
                             <td>
-                                <a href="{{route('editar_cliente', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                    <i class="fa fa-fw fa-pencil"></i>
-                                </a>
-                                <form action="{{route('eliminar_cliente', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
-                                    @csrf @method("delete")
-                                    <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                        <i class="fa fa-fw fa-trash text-danger"></i>
-                                    </button>
-                                </form>
+                                @if(can('guardar-cliente',false) == true)
+                                    <a href="{{route('editar_cliente', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+                                        <i class="fa fa-fw fa-pencil"></i>
+                                    </a>
+                                @else
+                                    <a href="{{route('editar_cliente', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Ver este registro">
+                                        <i class="fa fa-fw fa-eye"></i>
+                                    </a>
+                                @endif
+                                @if(can('eliminar-cliente',false) == true)
+                                    <form action="{{route('eliminar_cliente', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
+                                        @csrf @method("delete")
+                                        <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
+                                            <i class="fa fa-fw fa-trash text-danger"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
