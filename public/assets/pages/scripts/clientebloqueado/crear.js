@@ -11,7 +11,10 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
 	});
-    $( "#cliente_id" ).focus();
+    $( "#rut" ).focus();
+    $("#rut").focus(function(){
+        eliminarFormatoRut($(this));
+    });
     $("#rut").keyup(function(event){
 		if(event.which==113){
 			$(this).val("");
@@ -32,30 +35,31 @@ function copiar_rut(id,rut){
     $("#cliente_id").val(id);
     $("#rut").val(rut);
 	//$("#rut").focus();
-	$("#cliente_id").blur();
+	$("#rut").blur();
 	$("#razonsocial").focus();
 }
 
-$("#cliente_id").blur(function(){
-	codigo = $("#cliente_id").val();
+$("#rut").blur(function(){
+    eliminarFormatoRut($(this));
+	codigo = $("#rut").val();
 	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
 	{
 		//totalizar();
         var data = {
-            id: codigo,
+            rut: codigo,
             _token: $('input[name=_token]').val()
         };
         $.ajax({
-            url: '/cliente/buscarCliID',
+            url: '/cliente/buscarCliId',
             type: 'POST',
             data: data,
             success: function (respuesta) {
                 if(respuesta.length>0){
                     //alert(respuesta[0]['vendedor_id']);
-                    $("#rut").val(respuesta[0]['rut']);
+                    //$("#rut").val(respuesta[0]['rut']);
                     formato_rut($("#rut"));
                     $("#razonsocial").val(respuesta[0]['razonsocial']);
-                    $("#cliente_id").val(respuesta[0]['id'])
+                    $("#cliente_id").val(respuesta[0]['id']);
                     $( "#descripcion" ).focus();
                 }else{
                     swal({
@@ -68,7 +72,7 @@ $("#cliente_id").blur(function(){
                     }).then((value) => {
                         if (value) {
                             //ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-                            $("#cliente_id").focus();
+                            $("#rut").focus();
                         }
                     });
                 }

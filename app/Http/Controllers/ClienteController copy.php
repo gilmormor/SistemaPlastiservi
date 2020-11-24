@@ -466,12 +466,12 @@ class ClienteController extends Controller
 
     public function buscarCliId(Request $request){
         if($request->ajax()){
-            //dd($request->rut);
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
             $clientedirecs = Cliente::where('cliente.rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+                    ->leftjoin('clientebloqueado', 'cliente.id', '=', 'clientebloqueado.cliente_id')
                     ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
                     ->select([
                                 'cliente.id',
@@ -489,7 +489,8 @@ class ClienteController extends Controller
                                 'cliente.provinciap_id',
                                 'cliente.comunap_id',
                                 'clientedirec.id as direc_id',
-                                'clientedirec.direcciondetalle'
+                                'clientedirec.direcciondetalle',
+                                'clientebloqueado.descripcion'
                             ]);
             //dd($clientedirecs->get());
             return response()->json($clientedirecs->get());
