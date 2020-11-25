@@ -60,7 +60,7 @@ $("#rut").blur(function(){
                     formato_rut($("#rut"));
                     $("#razonsocial").val(respuesta[0]['razonsocial']);
                     $("#cliente_id").val(respuesta[0]['id']);
-                    $( "#descripcion" ).focus();
+                    $("#descripcion").focus();
                 }else{
                     swal({
                         title: 'Cliente no existe.',

@@ -18,35 +18,37 @@ Permiso - Rol
             </div>
             <div class="box-body">
                 @csrf
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Permiso</th>
-                            @foreach ($rols as $id => $nombre)
-                                <th class="text-center">{{$nombre}}</th>
-                            @endforeach
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($permisos as $key => $permiso)
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                        <thead>
                             <tr>
-                                <td class="font-weight-bold">{{$permiso["id"]}}</td>
-                                <td class="font-weight-bold">{{$permiso["nombre"]}}</td>
-                                @foreach($rols as $id => $nombre)
-                                    <td class="text-center">
-                                        <input
-                                        type="checkbox"
-                                        class="permiso_rol"
-                                        name="permiso_rol[]"
-                                        data-permisoid={{$permiso[ "id"]}}
-                                        value="{{$id}}" {{in_array($id, array_column($permisosRols[$permiso["id"]], "id"))? "checked" : ""}}>
-                                    </td>
+                                <th>ID</th>
+                                <th>Permiso</th>
+                                @foreach ($rols as $id => $nombre)
+                                    <th class="text-center">{{$nombre}}</th>
                                 @endforeach
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($permisos as $key => $permiso)
+                                <tr>
+                                    <td class="font-weight-bold">{{$permiso["id"]}}</td>
+                                    <td class="font-weight-bold">{{$permiso["nombre"]}}</td>
+                                    @foreach($rols as $id => $nombre)
+                                        <td class="text-center">
+                                            <input
+                                            type="checkbox"
+                                            class="permiso_rol"
+                                            name="permiso_rol[]"
+                                            data-permisoid={{$permiso[ "id"]}}
+                                            value="{{$id}}" {{in_array($id, array_column($permisosRols[$permiso["id"]], "id"))? "checked" : ""}}>
+                                        </td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

@@ -151,7 +151,8 @@ class CotizacionController extends Controller
                 'producto.tipounion',
                 'producto.precioneto',
                 'categoriaprod.precio',
-                'categoriaprodsuc.sucursal_id'
+                'categoriaprodsuc.sucursal_id',
+                'categoriaprod.unidadmedida_id'
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();

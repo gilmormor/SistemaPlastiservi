@@ -20,37 +20,39 @@
                     </a>
                 </div>
             </div>
-            <div class="box-body table-responsive">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Nombre</th>
-                        <th>Slug</th>
-                        <th class="width70"></th>
-                    </tr>
-                </thead>
-                    <tbody>
-                        @foreach ($permisos as $permiso)
-                            <tr>
-                                <td>{{$permiso->id}}</td>
-                                <td>{{$permiso->nombre}}</td>
-                                <td>{{$permiso->slug}}</td>
-                                <td>
-                                    <a href="{{route('editar_permiso', ['id' => $permiso->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                        <i class="fa fa-fw fa-pencil"></i>
-                                    </a>
-                                    <form action="{{route('eliminar_permiso', ['id' => $permiso->id])}}" class="d-inline form-eliminar" method="POST">
-                                        @csrf @method("delete")
-                                        <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                            <i class="fa fa-fw fa-trash text-danger"></i>
-                                        </button>
-                                    </form>         
-                                </td>    
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="box-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Slug</th>
+                            <th class="width70"></th>
+                        </tr>
+                    </thead>
+                        <tbody>
+                            @foreach ($permisos as $permiso)
+                                <tr>
+                                    <td>{{$permiso->id}}</td>
+                                    <td>{{$permiso->nombre}}</td>
+                                    <td>{{$permiso->slug}}</td>
+                                    <td>
+                                        <a href="{{route('editar_permiso', ['id' => $permiso->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+                                            <i class="fa fa-fw fa-pencil"></i>
+                                        </a>
+                                        <form action="{{route('eliminar_permiso', ['id' => $permiso->id])}}" class="d-inline form-eliminar" method="POST">
+                                            @csrf @method("delete")
+                                            <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
+                                                <i class="fa fa-fw fa-trash text-danger"></i>
+                                            </button>
+                                        </form>         
+                                    </td>    
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
