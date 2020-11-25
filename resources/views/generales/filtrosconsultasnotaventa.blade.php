@@ -147,6 +147,10 @@
                 <button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
                     <i class="fa fa-fw fa-file-pdf-o"></i>
                 </button>
+                <!--
+                <a class='btn-accion-tabla btn-sm' onclick='genreportepdf()' title='Nota de venta' data-toggle='tooltip'>
+                    <i class="fa fa-fw fa-file-pdf-o"></i>                                    
+                </a>-->
             </div>
         </div>
     </div>

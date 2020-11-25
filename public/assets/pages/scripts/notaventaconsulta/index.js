@@ -222,3 +222,25 @@ function visto(id,visto){
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
 }
+
+function genreportepdf(){ //GENERAR REPORTE PDF NOTA DE VENTA
+    reportepdf(datos());
+/*
+	$("#myModalpdf").modal('show')
+	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
+*/
+}
+
+function reportepdf(data){
+    alert('entro');
+    /*
+    $.ajax({
+        url: '/notaventaconsulta/exportPdf',
+        type: 'GET',
+        data: data,
+        success: function (datos) {
+            $("#midiv").html(datos);
+        }
+    });
+    */
+}
