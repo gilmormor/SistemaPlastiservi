@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Cotización
+Validar Cliente
 @endsection
 
 @section("scripts")
@@ -15,7 +15,7 @@ Cotización
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Cotización</h3>
+                <h3 class="box-title">Validar Cliente</h3>
                 <!--@if (session('aux_aprocot') == '0')-->
                     <div class="box-tools pull-right">
                         <a href="{{route('crear_cotizacion')}}" class="btn btn-block btn-success btn-sm">

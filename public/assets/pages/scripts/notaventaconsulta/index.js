@@ -232,14 +232,24 @@ function genreportepdf(){ //GENERAR REPORTE PDF NOTA DE VENTA
 }
 
 function reportepdf(data){
-    alert('entro');
+    //htmlexterno = '';
+    $.post("/notaventaconsulta/exportPdf", data, function(htmlexterno){
+        alert(htmlexterno.tabla);
+        //$("#cargaexterna").html(htmlexterno);
+        $('#contpdf').attr('src', htmlexterno);
+        $("#myModalpdf").modal('show');
+    });
     /*
+    alert('entro');
     $.ajax({
         url: '/notaventaconsulta/exportPdf',
         type: 'GET',
         data: data,
         success: function (datos) {
-            $("#midiv").html(datos);
+            $('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
+            $("#myModalpdf").modal('show')
+        
+            //$("#midiv").html(datos);
         }
     });
     */

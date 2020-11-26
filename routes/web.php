@@ -319,7 +319,7 @@ Route::post('notaventa/buscaroc_id', 'NotaVentaController@buscaroc_id')->name('b
 /*RUTAS CONSULTAR NOTA DE VENTA*/
 Route::get('notaventaconsulta', 'NotaVentaConsultaController@index')->name('notaventaconsulta');
 Route::post('notaventaconsulta/reporte', 'NotaVentaConsultaController@reporte')->name('notaventaconsulta_reporte');
-Route::get('notaventaconsulta/exportPdf', 'NotaVentaConsultaController@exportPdf')->name('exportPdf_notaventaconsulta');
+Route::post('notaventaconsulta/exportPdf', 'NotaVentaConsultaController@exportPdf')->name('exportPdf_notaventaconsulta');
 
 /*RUTAS CONSULTAR PRODUCTOS POR NOTA DE VENTA*/
 Route::get('prodxnotaventa', 'ProducxNotaVentaController@index')->name('prodxnotaventa');

@@ -348,6 +348,7 @@ class NotaVentaConsultaController extends Controller
 
     public function exportPdf(Request $request)
     {
+        //dd($request);
         //$cotizaciones = Cotizacion::orderBy('id')->get();
         $rut=str_replace("-","",$request->rut);
         $rut=str_replace(".","",$rut);
@@ -383,13 +384,19 @@ class NotaVentaConsultaController extends Controller
             $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
             $nombreTipoEntrega=$tipoentrega->nombre;
         }
-
-        if($notaventas){
-            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
         
+        return armarReportehtml($request);
+        if($notaventas){
+            if(env('APP_DEBUG')){
+                return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            }
+
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            
             $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream();
+            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+            return $pdf->stream("ReporteNotasVenta.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         }
@@ -519,7 +526,6 @@ function consulta($request){
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
-    //dd("$sql");
     $datas = DB::select($sql);
     return $datas;
 }
@@ -541,4 +547,147 @@ function consultatotcantod($id){
         $aux_cant = $datas[0]->cantdesp;
     }
     return $aux_cant;
+}
+
+
+function armarReportehtml($request){
+    //$cotizaciones = Cotizacion::orderBy('id')->get();
+    $rut=str_replace("-","",$request->rut);
+    $rut=str_replace(".","",$rut);
+    //dd($rut);
+    if($request->ajax()){
+        $notaventas = consulta($request);
+    }
+    //dd($request);
+    $notaventas = consulta($request);
+    $aux_fdesde= $request->fechad;
+    $aux_fhasta= $request->fechah;
+
+    //$cotizaciones = consulta('','');
+    $empresa = Empresa::orderBy('id')->get();
+    $usuario = Usuario::findOrFail(auth()->id());
+    $nomvendedor = "Todos";
+    if(!empty($request->vendedor_id)){
+        $vendedor = Vendedor::findOrFail($request->vendedor_id);
+        $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+    }
+    $nombreAreaproduccion = "Todos";
+    if($request->areaproduccion_id){
+        $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+        $nombreAreaproduccion=$areaProduccion->nombre;
+    }
+    $nombreGiro = "Todos";
+    if($request->giro_id){
+        $giro = Giro::findOrFail($request->giro_id);
+        $nombreGiro=$giro->nombre;
+    }
+    $nombreTipoEntrega = "Todos";
+    if($request->tipoentrega_id){
+        $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
+        $nombreTipoEntrega=$tipoentrega->nombre;
+    }
+
+    $respuesta = array();
+    $respuesta['exito'] = false;
+    $respuesta['mensaje'] = "Código no Existe";
+    $respuesta['tabla'] = "";
+    $theme = '';
+    $ruta_logo = asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png");
+    $respuesta['tabla'] .= "
+    <br>
+    <br>
+    <div id='page_pdf'>
+        <table id='factura_head'>
+            <tr>
+                <td class='logo_factura'>
+                    <div>
+                        <img src='$ruta_logo' style='max-width:1200%;width:auto;height:auto;'>
+                        <p>$empresa[0]['nombre']</p>					
+                        <p>RUT: $empresa[0]['rut']</p>
+                    </div>
+                </td>
+                <td class='info_empresa'>
+                </td>
+                <td class='info_factura'>
+                    <div class='round'>
+                        <span class='h3'>Reporte Nota de Venta</span>
+                        <p>Fecha: date('d-m-Y h:i:s A')</p>
+                        <p>Area Producción: $nombreAreaproduccion</p>
+                        <p>Vendedor: $nomvendedor </p>
+                        <p>Giro: $nombreGiro </p>
+                        <p>Tipo Entrega: $nombreTipoEntrega </p>
+                        <p>Desde: $aux_fdesde Hasta: $aux_fhasta</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    
+        <div class='round'>
+            <table id='factura_detalle'>
+                    <thead>
+                        <tr>
+                            <th style='text-align:left'>#</th>
+                            <th style='text-align:left'>NV ID</th>
+                            <th class='textcenter'>Fecha</th>
+                            <th class='textleft'>Razón Social</th>
+                            <th style='text-align:right'>Total Kg</th>
+                            <th style='text-align:right'>Total $</th>
+                            <th style='text-align:right'>Prom</th>
+                        </tr>
+                    </thead>
+                    <tbody id='detalle_productos'>";
+                    $i=0;
+                    $aux_totalKG = 0;
+                    $aux_totalps = 0;
+                    foreach($notaventas as $notaventa){
+                        if(empty($notaventa->anulada)){
+                            $i++;
+                            $aux_totalKG += $notaventa->totalkilos;
+                            $aux_totalps += $notaventa->totalps;
+                        }
+                        $rut = number_format( substr ( $notaventa->rut, 0 , -1 ) , 0, '', '.') . '-' . substr ( $notaventa->rut, strlen($notaventa->rut) -1 , 1 );
+                        $colorFila = '';
+                        $aux_data_toggle = '';
+                        $aux_title = '';
+                        if(!empty($notaventa->anulada)){
+                            $colorFila = 'background-color: #87CEEB;';
+                            $aux_data_toggle = 'tooltip';
+                            $aux_title = 'Anulada Fecha:' . $notaventa->anulada;
+                        }
+                        $aux_prom = 0;
+                        if($notaventa->totalkilos>0){
+                            $aux_prom = $notaventa->subtotal / $notaventa->totalkilos;
+                        }
+                        $respuesta['tabla'] .= "
+                        <tr style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
+                            <td>$i</td>
+                            <td>$notaventa->id</td>
+                            <td style='text-align:center'>date('d-m-Y', strtotime($notaventa->fechahora))</td>
+                            <td>$notaventa->razonsocial</td>
+                            <td style='text-align:right'>number_format($notaventa->totalkilos, 2, ',', '.')</td>
+                            <td style='text-align:right'>number_format($notaventa->totalps, 2, ',', '.')</td>
+                            <td style='text-align:right'>number_format($aux_prom, 2, ',', '.')</td>
+                        </tr>";
+                    }
+                    $respuesta['tabla'] .= "
+                    </tbody>";
+                    $aux_promGeneral = 0;
+                    if($aux_totalKG>0){
+                        $aux_promGeneral = $aux_totalps / $aux_totalKG;
+                    }
+    
+                    $respuesta['tabla'] .= "
+                                    <tfoot id='detalle_totales'>
+                                        <tr class='headt'>
+                                            <b>
+                                            <td colspan='4' class='textright'><span>TOTALES</span></td>
+                                            <td class='textright'><span>number_format($aux_totalKG, 2, ',', '.')</span></td>
+                                            <td class='textright'><span>number_format($aux_totalps, 2, ',', '.')</span></td>
+                                            <td class='textright'><span>number_format($aux_promGeneral, 2, ',', '.')</span></td>
+                                            </b>
+                                    </tfoot>
+                            </table>
+                        </div>
+    </div>";
+    return $respuesta['tabla'];
 }
