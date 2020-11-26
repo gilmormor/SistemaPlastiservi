@@ -471,7 +471,10 @@ class ClienteController extends Controller
             $clientedirecs = Cliente::where('cliente.rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
-                    ->leftjoin('clientebloqueado', 'cliente.id', '=', 'clientebloqueado.cliente_id')
+                    ->leftjoin('clientebloqueado', function ($join) {
+                        $join->on('cliente.id', '=', 'clientebloqueado.cliente_id')
+                        ->whereNull('clientebloqueado.deleted_at');
+                    })
                     ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
                     ->select([
                                 'cliente.id',
