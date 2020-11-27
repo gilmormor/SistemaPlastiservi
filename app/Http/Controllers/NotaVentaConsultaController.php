@@ -385,7 +385,7 @@ class NotaVentaConsultaController extends Controller
             $nombreTipoEntrega=$tipoentrega->nombre;
         }
         
-        return armarReportehtml($request);
+        //return armarReportehtml($request);
         if($notaventas){
             if(env('APP_DEBUG')){
                 return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));

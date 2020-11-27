@@ -233,12 +233,40 @@ function genreportepdf(){ //GENERAR REPORTE PDF NOTA DE VENTA
 
 function reportepdf(data){
     //htmlexterno = '';
+    $('#contpdf').attr('src', '/notaventaconsulta/exportPdf/'+data);
+    $("#myModalpdf").modal('show');
+    /*
+    $('#contpdf').attr('src', function(e){
+        $.ajax({
+            url: '/notaventaconsulta/exportPdf',
+            type: 'POST',
+            data: data,
+            success: function (datos) {
+                $('#contpdf').attr('src', datos);
+            }
+        });
+    });
+    $("#myModalpdf").modal('show');
+    */
+
+/*
+    $.ajax({
+        url: '/notaventaconsulta/exportPdf',
+        type: 'POST',
+        data: data,
+        success: function (datos) {
+            $('#contpdf').attr('src', datos);
+            $("#myModalpdf").modal('show');
+        }
+    });
+*/
+/*
     $.post("/notaventaconsulta/exportPdf", data, function(htmlexterno){
-        alert(htmlexterno.tabla);
+        alert(htmlexterno);
         //$("#cargaexterna").html(htmlexterno);
         $('#contpdf').attr('src', htmlexterno);
         $("#myModalpdf").modal('show');
-    });
+    });*/
     /*
     alert('entro');
     $.ajax({
