@@ -98,7 +98,7 @@ class NotaVentaConsultaController extends Controller
 		$respuesta['exito'] = false;
 		$respuesta['mensaje'] = "Código no Existe";
 		$respuesta['tabla'] = "";
-
+        //dd($request);
         if($request->ajax()){
             $datas = consulta($request);
             $aux_colvistoth = "";
@@ -357,6 +357,7 @@ class NotaVentaConsultaController extends Controller
             $notaventas = consulta($request);
         }
         //dd($request);
+        //dd(str_replace(".","",$request->rut));
         $notaventas = consulta($request);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
@@ -439,7 +440,9 @@ function consulta($request){
     if(empty($request->rut)){
         $aux_condrut = " true";
     }else{
-        $aux_condrut = "cliente.rut='$request->rut'";
+        $aux_rut = str_replace(".","",$request->rut);
+        $aux_rut = str_replace("-","",$aux_rut);
+        $aux_condrut = "cliente.rut='$aux_rut'";
     }
     if(empty($request->oc_id)){
         $aux_condoc_id = " true";

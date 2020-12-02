@@ -100,7 +100,7 @@
 				@endforeach
 				@foreach($despachosoldets as $despachosoldet)
 					<?php
-						$aux_promPonderadoPrecioxkilo += ($despachosoldet->notaventadetalle->precioxkilo * (($despachosoldet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
+						//$aux_promPonderadoPrecioxkilo += ($despachosoldet->notaventadetalle->precioxkilo * (($despachosoldet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
 						$peso = $despachosoldet->notaventadetalle->totalkilos/$despachosoldet->notaventadetalle->cant;
 						$totalkilos = $despachosoldet->cantsoldesp * $peso;
 						$subtotal = $despachosoldet->cantsoldesp * $despachosoldet->notaventadetalle->preciounit;

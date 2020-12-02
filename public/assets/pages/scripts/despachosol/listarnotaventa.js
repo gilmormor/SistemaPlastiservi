@@ -56,6 +56,19 @@ function configurarTabla(aux_tabla){
         }
     });    
 }
+function configurarTabla2(aux_tabla){
+    $(aux_tabla).DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+    });    
+}
 
 
 function ajaxRequest(data,url,funcion) {
@@ -124,7 +137,11 @@ function consultar(data){
         success: function (datos) {
             if(datos['tabla'].length>0){
                 $("#tablaconsulta").html(datos['tabla']);
+                $("#tablaconsulta2").html(datos['tabla2']);
+                $("#tablaconsulta3").html(datos['tabla3']);
+                
                 configurarTabla('.tablascons');
+                configurarTabla2('.tablascons2');
             }
         }
     });

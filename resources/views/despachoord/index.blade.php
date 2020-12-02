@@ -2,6 +2,9 @@
 @section('titulo')
 Orden de despacho
 @endsection
+<?php
+    use App\Models\ClienteBloqueado;
+?>
 
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
@@ -31,7 +34,7 @@ Orden de despacho
                                 <th class="width70">ID</th>
                                 <th class='tooltipsC' title='fecha estimada de Despacho'>Fecha ED</th>
                                 <th>Razón Social</th>
-                                <th class='tooltipsC' title='Orden Despacho'>OD</th>
+                                <!--<th class='tooltipsC' title='Orden Despacho'>OD</th>-->
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
@@ -55,11 +58,13 @@ Orden de despacho
                                 <td>{{$data->id}}</td>
                                 <td>{{$data->fechaestdesp}}</td>
                                 <td>{{$data->notaventa->cliente->razonsocial}}</td>
+<!--
                                 <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD({{$data->id}},1)'>
                                         <i class='fa fa-fw fa-file-pdf-o'></i>
                                     </a>
                                 </td>
+-->
                                 <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->despachosol_id}},1)'>
                                         <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->despachosol_id}}
@@ -86,12 +91,25 @@ Orden de despacho
                                     @if ($data->despachoordanul)
                                         <small class="label pull-left bg-red">Anulado</small>
                                     @else
+                                        <?php 
+                                            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->notaventa->cliente_id)->get();
+                                        ?>
+                                        @if(count($clibloq) > 0)
+                                            <a class='btn-accion-tabla btn-sm' title='Cliente Bloqueado: {{$clibloq[0]->descripcion}}' data-toggle='tooltip'>
+                                                <span class='glyphicon glyphicon-remove-circle text-danger' style='bottom: 0px;top: 2px;'></span>
+                                            </a>
+                                        @else
+                                            <a id='bntaproord$i' name='bntaproord$i' class='btn-accion-tabla btn-sm' onclick='aprobarord({{$aux_nfila}},{{$data->id}})' title='Aprobar Orden Despacho' data-toggle='tooltip'>
+                                                <span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>
+                                            </a>
+                                            <a href="{{route('editar_despachoord', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+                                                <i class="fa fa-fw fa-pencil"></i>
+                                            </a>
+                                        @endif
+                                        <!--
                                         <a id='bntaproord$i' name='bntaproord$i' class='btn-accion-tabla btn-sm' onclick='aprobarord({{$aux_nfila}},{{$data->id}})' title='Aprobar Orden Despacho' data-toggle='tooltip'>
                                             <span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>
-                                        </a>
-                                        <a href="{{route('editar_despachoord', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                            <i class="fa fa-fw fa-pencil"></i>
-                                        </a>
+                                        </a>-->
                                         <a id='btnanularnv$i' name='btnanularnv$i' class='btn-accion-tabla btn-sm' onclick='anular({{$aux_nfila}},{{$data->id}})' title='Anular Orden Despacho' data-toggle='tooltip'>
                                             <span class='glyphicon glyphicon-remove text-danger'></span>
                                         </a>

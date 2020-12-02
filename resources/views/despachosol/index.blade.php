@@ -2,7 +2,9 @@
 @section('titulo')
 Solicitud de despacho
 @endsection
-
+<?php
+    use App\Models\ClienteBloqueado;
+?>
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
@@ -86,12 +88,21 @@ Solicitud de despacho
                                         @if ($data->despachosolanul)
                                             <small class="label pull-left bg-red">Anulado</small>
                                         @else
-                                            <a id='bntaprosol$i' name='bntaprosol$i' class='btn-accion-tabla btn-sm' onclick='aprobarsol({{$aux_nfila}},{{$data->id}})' title='Aprobar Solicitud Despacho' data-toggle='tooltip'>
-                                                <span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>
-                                            </a>
-                                            <a href="{{route('editar_despachosol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                                <i class="fa fa-fw fa-pencil"></i>
-                                            </a>
+                                            <?php 
+                                                $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->notaventa->cliente_id)->get();
+                                            ?>
+                                            @if(count($clibloq) > 0)
+                                                <a class='btn-accion-tabla btn-sm' title='Cliente Bloqueado: {{$clibloq[0]->descripcion}}' data-toggle='tooltip'>
+                                                    <span class='glyphicon glyphicon-remove-circle text-danger' style='bottom: 0px;top: 2px;'></span>
+                                                </a>
+                                            @else
+                                                <a class='btn-accion-tabla btn-sm' onclick='aprobarsol({{$aux_nfila}},{{$data->id}})' title='Aprobar Solicitud Despacho' data-toggle='tooltip'>
+                                                    <span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>
+                                                </a>
+                                                <a href="{{route('editar_despachosol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+                                                    <i class="fa fa-fw fa-pencil"></i>
+                                                </a>
+                                            @endif
                                             <a id='btnanularnv$i' name='btnanularnv$i' class='btn-accion-tabla btn-sm' onclick='anular({{$aux_nfila}},{{$data->id}})' title='Anular Solicitud Despacho' data-toggle='tooltip'>
                                                 <span class='glyphicon glyphicon-remove text-danger'></span>
                                             </a>

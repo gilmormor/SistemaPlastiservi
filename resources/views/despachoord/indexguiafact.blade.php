@@ -33,6 +33,7 @@ Orden de despacho
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                                 <th class='tooltipsC' title='Total Kg'>Total Kg</th>
                                 <th class='tooltipsC' title='Tipo Entrega'>TE</th>
+                                <th class='tooltipsC' title='Guia Despacho'>#Guia</th>
                                 @if ($aux_vista != "C")
                                     <th class="width100"></th>
                                 @else
@@ -84,6 +85,9 @@ Orden de despacho
                                 <td>
                                     <i class='fa fa-fw {{$data->tipoentrega->icono}} tooltipsC' title='{{$data->tipoentrega->nombre}}'></i>
                                 </td> 
+                                <td style='text-align:left'>
+                                    {{$data->guiadespacho}}
+                                </td>
                                 @if ($aux_vista != "C")
                                     <td id="accion{{$aux_nfila}}">
                                         @if ($data->despachoordanul)

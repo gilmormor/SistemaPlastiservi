@@ -347,8 +347,9 @@
                                     }
                                     if($detalle->cant > $sumacantsoldesp){
                                         $aux_nfila++;
-                                    $aux_saldo = $detalle->cant - $sumacantsoldesp;
-                                    //dd($aux_saldo);
+                                        $aux_saldo = $detalle->cant - $sumacantsoldesp;
+                                        //dd($aux_saldo);
+                                        //Este If cierra abajo
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -506,7 +507,8 @@
                                         0.00 <!--{{$detalle->subtotal}}-->
                                     </td>
                                 </tr>
-                                <?php $i++;
+                                <?php 
+                                    $i++;
                                     }
                                 ?>
                             @endforeach

@@ -1,4 +1,4 @@
-<div class="col-xs-12 col-md-10 col-sm-12">
+<div class="col-xs-12 col-md-9 col-sm-12" style="padding-left: 0px;padding-right: 0px;">
     <div class="col-xs-12 col-md-12 col-sm-12">
         <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
             <div class="col-xs-12 col-md-4 col-sm-4 text-left">
@@ -139,13 +139,14 @@
         </div>
     </div>
 </div>
-<div class="col-xs-12 col-md-2 col-sm-12">
+<div class="col-xs-12 col-md-3 col-sm-12">
     <div class="col-xs-12 col-md-12 col-sm-12">
         <div class="col-xs-12 col-sm-12">
-            <div class="col-xs-12 col-md-8 col-sm-8 text-center">
-                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                <button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
-                    <i class="fa fa-fw fa-file-pdf-o"></i>
+            <div class="col-xs-12 col-md-12 col-sm-12 text-center">
+                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
+                <button type="submit" class="btn btn-success tooltipsC" title="Reporte">Reporte</button>
+                <!--<button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
+                    <i class="fa fa-fw fa-file-pdf-o"></i>-->
                 </button>
                 <!-- intento de boton modal para el reporte PDF
                 <a class='btn-accion-tabla btn-sm' onclick='genreportepdf()' title='Reporte Nota Venta' data-toggle='tooltip'>

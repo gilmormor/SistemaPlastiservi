@@ -6,6 +6,7 @@ use App\Http\Requests\ValidarDespachoOrd;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Cliente;
+use App\Models\ClienteBloqueado;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
@@ -240,7 +241,15 @@ class DespachoOrdController extends Controller
     {
         can('guardar-orden-despacho');
         //dd($request);
+
         $despachosol = DespachoSol::findOrFail($request->despachosol_id);
+        $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
+        if(count($clibloq) > 0){
+            return redirect('despachoord/index')->with([
+                'mensaje'=>'Registro no fue guardado. Cliente Bloquedo: ' . $clibloq[0]->descripcion ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         if($despachosol->updated_at == $request->updated_at){
             $despachosol->updated_at = date("Y-m-d H:i:s");
             $despachosol->save();
@@ -657,7 +666,7 @@ class DespachoOrdController extends Controller
                     <th>ID OD</th>
                     <th>Fecha</th>
                     <th>Solic</th>
-                    <th>Cant</th>
+                    <th>Entregado</th>
                     <th class='textcenter'>Unidad</th>
 					<th class='textleft'>Descripción</th>
 					<th class='textleft'>Diametro</th>
@@ -676,7 +685,7 @@ class DespachoOrdController extends Controller
                     $nombreproduc = $despachoorddet->notaventadetalle->producto->nombre;
                     $diametro = $despachoorddet->notaventadetalle->producto->diamextpg;
                     if ($despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedida_id != 3){
-                        $diametro .= 'mm';
+                        $diametro = $despachoorddet->notaventadetalle->producto->diamextmm . 'mm';
                     }
                     $cla_nombre = $despachoorddet->notaventadetalle->producto->claseprod->cla_nombre;
                     $long = $despachoorddet->notaventadetalle->producto->long;

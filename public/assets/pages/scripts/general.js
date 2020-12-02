@@ -839,6 +839,11 @@ function genpdfOD(id,stareport){ //GENERAR PDF Orden de Despacho
 	$("#myModalpdf").modal('show')
 }
 
+function pdfSolDespPrev(id,stareport){ //GENERAR PDF Solicitud despacho previo
+	$('#contpdf').attr('src', '/despachosol/'+id+'/'+stareport+'/pdfSolDespPrev');
+	$("#myModalpdf").modal('show')
+}
+
 
 $("#myModalpdf").on("hidden.bs.modal", function () {
 	$('#contpdf').attr('src', 'about:blank');

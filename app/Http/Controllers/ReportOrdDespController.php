@@ -133,9 +133,13 @@ class ReportOrdDespController extends Controller
                 }
                 $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
                 $aprguiadesp = "<i class='glyphicon glyphicon-floppy-save text-warning tooltipsC' title='Pendiente Aprobar'></i>";
+                $imprOrdDesp = "";
                 if($data->aprguiadesp){
                     $fechaaprob = date('d-m-Y h:i:s A', strtotime($data->aprguiadespfh));
                     $aprguiadesp = "<i class='glyphicon glyphicon-floppy-save text-primary tooltipsC' title='Fecha: $fechaaprob'></i>";
+                    $imprOrdDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD($data->id,1)'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>
+                        </a>";
                 }
                 $listadosoldesp = "";
                 /*
@@ -157,9 +161,7 @@ class ReportOrdDespController extends Controller
                     <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD($data->id,1)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>
-                        </a>
+                        $imprOrdDesp
                     </td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->despachosol_id,1)'>
@@ -419,7 +421,7 @@ function consultaorddesp($request){
             and $aux_conddespachosol_id
             and $aux_condfechaestdesp
             and despachoord.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
-            GROUP BY despachoord.id;";
+            GROUP BY despachoord.id desc;";
     //dd($sql);
     $datas = DB::select($sql);
 

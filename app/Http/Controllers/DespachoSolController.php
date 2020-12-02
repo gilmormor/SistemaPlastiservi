@@ -6,6 +6,7 @@ use App\Http\Requests\ValidarDespachoSol;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Cliente;
+use App\Models\ClienteBloqueado;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
@@ -282,6 +283,15 @@ class DespachoSolController extends Controller
     {
         can('guardar-solicitud-despacho');
         $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+        //dd('cliente bloquedo');
+        
+        $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$notaventa->cliente_id)->get();
+        if(count($clibloq) > 0){
+            return redirect('despachosol/index')->with([
+                'mensaje'=>'Registro no fue guardado. Cliente Bloquedo: ' . $clibloq[0]->descripcion ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         if($notaventa->updated_at == $request->updated_at){
             $notaventa->updated_at = date("Y-m-d H:i:s");
             $notaventa->save();
@@ -728,9 +738,31 @@ class DespachoSolController extends Controller
             }
         }
     }
+
+    //Reporte previo a la solicitud de Despacho, para saber como esta la nota de venta
+    public function pdfSolDespPrev($id,$stareport = '1')
+    {
+        $notaventa = NotaVenta::findOrFail($id);
+        $notaventaDetalles = $notaventa->notaventadetalles()->get();
+        $empresa = Empresa::orderBy('id')->get();
+        $rut = number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
+        //dd($empresa[0]['iva']);
+        if(env('APP_DEBUG')){
+            return view('despachosol.reportesolprev', compact('notaventa','notaventaDetalles','empresa'));
+        }
+        $pdf = PDF::loadView('despachosol.reportesolprev', compact('notaventa','notaventaDetalles','empresa'));
+        //return $pdf->download('cotizacion.pdf');
+        return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');        
+    }
 }
 
-function consulta($request){
+
+function consulta($request,$aux_sql,$orden){
+    if($orden==1){
+        $aux_orden = "notaventadetalle.notaventa_id desc";
+    }else{
+        $aux_orden = "notaventa.cliente_id";
+    }
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -829,65 +861,105 @@ function consulta($request){
     //dd($aux_condplazoentrega);
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
+    if($aux_sql==1){
+        $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        comuna.nombre as comunanombre,
+        vista_notaventatotales.cant,
+        vista_notaventatotales.precioxkilo,
+        vista_notaventatotales.totalkilos,
+        vista_notaventatotales.subtotal,
+        sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
+        sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
+        sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
+        sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
+        sum(notaventadetalle.subtotal) AS totalps,
+        (SELECT sum(kgsoldesp) as kgsoldesp
+                FROM vista_sumsoldespdet
+                WHERE notaventa_id=notaventa.id) as totalkgsoldesp,
+        (SELECT sum(subtotalsoldesp) as subtotalsoldesp
+                FROM vista_sumsoldespdet
+                WHERE notaventa_id=notaventa.id) as totalsubtotalsoldesp,
+        notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
+        tipoentrega.nombre as tipentnombre,tipoentrega.icono
+        FROM notaventa INNER JOIN notaventadetalle
+        ON notaventa.id=notaventadetalle.notaventa_id and 
+        if((SELECT cantsoldesp
+                FROM vista_sumsoldespdet
+                WHERE notaventadetalle_id=notaventadetalle.id
+                ) >= notaventadetalle.cant,false,true)
+        INNER JOIN producto
+        ON notaventadetalle.producto_id=producto.id
+        INNER JOIN categoriaprod
+        ON categoriaprod.id=producto.categoriaprod_id
+        INNER JOIN areaproduccion
+        ON areaproduccion.id=categoriaprod.areaproduccion_id
+        INNER JOIN cliente
+        ON cliente.id=notaventa.cliente_id
+        INNER JOIN comuna
+        ON comuna.id=notaventa.comunaentrega_id
+        INNER JOIN tipoentrega
+        ON tipoentrega.id=notaventa.tipoentrega_id
+        INNER JOIN vista_notaventatotales
+        ON notaventa.id=vista_notaventatotales.id
+        WHERE $vendedorcond
+        and $aux_condFecha
+        and $aux_condrut
+        and $aux_condoc_id
+        and $aux_condgiro_id
+        and $aux_condareaproduccion_id
+        and $aux_condtipoentrega_id
+        and $aux_condnotaventa_id
+        and $aux_aprobstatus
+        and $aux_condcomuna_id
+        and $aux_condplazoentrega
+        and notaventa.anulada is null
+        and notaventa.findespacho is null
+        and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
+        GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
+        ORDER BY $aux_orden;";
+    }
+    
+    if($aux_sql==2){
+        $sql = "SELECT notaventadetalle.producto_id,producto.nombre,if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,
+        claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
+        sum(notaventadetalle.cant) AS cant,sum(vista_sumsoldespdet.cantsoldesp) AS cantsoldesp,
+        sum(notaventadetalle.totalkilos) AS totalkilos,sum(vista_sumsoldespdet.kgsoldesp) AS kgsoldesp,
+        sum(notaventadetalle.subtotal) AS subtotal,sum(vista_sumsoldespdet.subtotalsoldesp) AS subtotalsoldesp
+        FROM notaventadetalle INNER JOIN vista_sumsoldespdet
+        ON notaventadetalle.id = vista_sumsoldespdet.notaventadetalle_id
+        INNER JOIN notaventa
+        ON notaventadetalle.notaventa_id=notaventa.id
+        INNER JOIN producto
+        ON notaventadetalle.producto_id=producto.id
+        INNER JOIN claseprod
+        ON producto.claseprod_id=claseprod.id
+        INNER JOIN categoriaprod
+        ON producto.categoriaprod_id=categoriaprod.id
+        INNER JOIN cliente
+        ON cliente.id=notaventa.cliente_id
+        WHERE $vendedorcond
+        and $aux_condFecha
+        and $aux_condrut
+        and $aux_condoc_id
+        and $aux_condgiro_id
+        and $aux_condareaproduccion_id
+        and $aux_condtipoentrega_id
+        and $aux_condnotaventa_id
+        and $aux_aprobstatus
+        and $aux_condcomuna_id
+        and $aux_condplazoentrega
+        AND vista_sumsoldespdet.cantsoldesp<notaventadetalle.cant
+        AND isnull(notaventa.anulada)
+        AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
+        GROUP BY notaventadetalle.producto_id
+        ORDER BY producto.nombre,producto.peso;";
+    }
+    
 
-    $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
-            comuna.nombre as comunanombre,
-            vista_notaventatotales.cant,
-            vista_notaventatotales.precioxkilo,
-            vista_notaventatotales.totalkilos,
-            vista_notaventatotales.subtotal,
-            sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
-            sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
-            sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
-            sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
-            sum(notaventadetalle.subtotal) AS totalps,
-            (SELECT sum(kgsoldesp) as kgsoldesp
-                    FROM vista_sumsoldespdet
-                    WHERE notaventa_id=notaventa.id) as totalkgsoldesp,
-            (SELECT sum(subtotalsoldesp) as subtotalsoldesp
-                    FROM vista_sumsoldespdet
-                    WHERE notaventa_id=notaventa.id) as totalsubtotalsoldesp,
-            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
-            tipoentrega.nombre as tipentnombre,tipoentrega.icono
-            FROM notaventa INNER JOIN notaventadetalle
-            ON notaventa.id=notaventadetalle.notaventa_id and 
-            if((SELECT cantsoldesp
-                    FROM vista_sumsoldespdet
-                    WHERE notaventadetalle_id=notaventadetalle.id
-                    ) >= notaventadetalle.cant,false,true)
-            INNER JOIN producto
-            ON notaventadetalle.producto_id=producto.id
-            INNER JOIN categoriaprod
-            ON categoriaprod.id=producto.categoriaprod_id
-            INNER JOIN areaproduccion
-            ON areaproduccion.id=categoriaprod.areaproduccion_id
-            INNER JOIN cliente
-            ON cliente.id=notaventa.cliente_id
-            INNER JOIN comuna
-            ON comuna.id=notaventa.comunaentrega_id
-            INNER JOIN tipoentrega
-            ON tipoentrega.id=notaventa.tipoentrega_id
-            INNER JOIN vista_notaventatotales
-            ON notaventa.id=vista_notaventatotales.id
-            WHERE $vendedorcond
-            and $aux_condFecha
-            and $aux_condrut
-            and $aux_condoc_id
-            and $aux_condgiro_id
-            and $aux_condareaproduccion_id
-            and $aux_condtipoentrega_id
-            and $aux_condnotaventa_id
-            and $aux_aprobstatus
-            and $aux_condcomuna_id
-            and $aux_condplazoentrega
-            and notaventa.anulada is null
-            and notaventa.findespacho is null
-            and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
-            GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
-            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
-            ORDER BY notaventadetalle.notaventa_id desc;";
+
     //dd($sql);
     $datas = DB::select($sql);
     //dd($datas);
@@ -899,9 +971,11 @@ function reporte1($request){
     $respuesta['exito'] = false;
     $respuesta['mensaje'] = "Código no Existe";
     $respuesta['tabla'] = "";
+    $respuesta['tabla2'] = "";
+    $respuesta['tabla3'] = "";
 
     if($request->ajax()){
-        $datas = consulta($request);
+        $datas = consulta($request,1,1);
         $aux_colvistoth = "";
         if(auth()->id()==1 or auth()->id()==2){
             $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
@@ -918,8 +992,8 @@ function reporte1($request){
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                 <th>Comuna</th>
-                <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
-                <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
+                <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
+                <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
                 <!--<th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>-->
                 <th class='tooltipsC' title='Solicitud Despacho'>Despacho</th>
             </tr>
@@ -987,10 +1061,21 @@ function reporte1($request){
             }else{
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
             }
-            $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
-            $nuevoSolDesp = "<a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer solicitud despacho: $data->tipentnombre'>
-                <i class='fa fa-fw $data->icono'></i>
-                </a>";
+            $nuevoSolDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='pdfSolDespPrev($data->id,2)'>
+                                <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                            </a>";
+            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
+            if(count($clibloq) > 0){
+                $aux_descbloq = $clibloq[0]->descripcion;
+                $nuevoSolDesp .= "<a href='#' class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq' >
+                    <i class='fa fa-fw fa-times-circle-o text-danger'></i>
+                    </a>";
+            }else{
+                $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
+                $nuevoSolDesp .= "<a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer solicitud despacho: $data->tipentnombre'>
+                    <i class='fa fa-fw $data->icono'></i>
+                    </a>";
+            }
             if(!empty($data->anulada)){
                 $colorFila = 'background-color: #87CEEB;';
                 $aux_data_toggle = "tooltip";
@@ -1046,18 +1131,115 @@ function reporte1($request){
         </tbody>
         <tfoot>
             <tr>
-                <th colspan='5' style='text-align:left'>TOTAL</th>
+                <th colspan='7' style='text-align:left'>TOTAL</th>
                 <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
                 <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
-                <th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>
+                <!--<th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>-->
                 <th style='text-align:right'></th>
             </tr>
         </tfoot>
 
         </table>";
+
+        $datas = consulta($request,1,2);
+        $aux_clienteid = $datas[0]->cliente_id;
+
+        $respuesta['tabla2'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
+        <thead>
+            <tr>
+                <th>Razón Social</th>
+                <th>Comuna</th>
+                <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
+                <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
+            </tr>
+        </thead>
+        <tbody>";
+
+        $aux_kgpend = 0;
+        $aux_platapend = 0;
+        $razonsocial = "";
+        $aux_comuna  = "";
+        foreach ($datas as $data) {
+            if($data->cliente_id==$aux_clienteid){
+                $aux_kgpend += ($data->totalkilos - $data->totalkgsoldesp);
+                $aux_platapend += ($data->subtotal - $data->totalsubtotalsoldesp);
+                $razonsocial = $data->razonsocial;
+                $aux_comuna  = $data->comunanombre;
+
+            }else{
+                $respuesta['tabla2'] .= "
+                <tr>
+                    <td>$razonsocial</td>
+                    <td>$aux_comuna</td>
+                    <td style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($aux_platapend, 2, ",", ".") ."</td>
+                </tr>";
+                $aux_kgpend = 0;
+                $aux_platapend = 0;
+                $aux_kgpend += ($data->totalkilos - $data->totalkgsoldesp);
+                $aux_platapend += ($data->subtotal - $data->totalsubtotalsoldesp);
+                $aux_clienteid = $data->cliente_id;
+                $razonsocial = $data->razonsocial;
+                $aux_comuna  = $data->comunanombre;
+            }
+        }
+        $respuesta['tabla2'] .= "
+            <tr>
+                <td>$razonsocial</td>
+                <td>$aux_comuna</td>
+                <td style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
+                <td style='text-align:right'>".number_format($aux_platapend, 2, ",", ".") ."</td>
+            </tr>
+            </tbody>
+            </table>";
+
+/*********************************************** */
+
+        $datas = consulta($request,2,1);
+        $respuesta['tabla3'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th>Diametro</th>
+                <th>Clase</th>
+                <th>Largo</th>
+                <th>Peso</th>
+                <th>TU</th>
+                <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
+                <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
+            </tr>
+        </thead>
+        <tbody>";
+        $aux_totalkg = 0;
+        $aux_totalplata = 0;
+        foreach ($datas as $data) {
+            $aux_totalkg += ($data->totalkilos - $data->kgsoldesp);
+            $aux_totalplata += ($data->subtotal - $data->subtotalsoldesp);    
+            $respuesta['tabla3'] .= "
+            <tr>
+                <td>$data->nombre</td>
+                <td>$data->diametro</td>
+                <td>$data->cla_nombre</td>
+                <td>$data->long</td>
+                <td>$data->peso</td>
+                <td>$data->tipounion</td>
+                <td style='text-align:right'>".number_format($data->totalkilos - $data->kgsoldesp, 2, ",", ".") ."</td>
+                <td style='text-align:right'>".number_format($data->subtotal - $data->subtotalsoldesp, 2, ",", ".") ."</td>
+            </tr>";
+        }        
+        $respuesta['tabla3'] .= "
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='6' style='text-align:left'>TOTALES</th>
+                    <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
+                </tr>
+            </tfoot>
+            </table>";
+
         return $respuesta;
     }
-
 }
 
 function reportesoldesp1($request){
@@ -1097,6 +1279,20 @@ function reportesoldesp1($request){
             }
             $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
             //dd($ruta_nuevoSolDesp);
+
+            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
+            if(count($clibloq) > 0){
+                $aux_descbloq = $clibloq[0]->descripcion;
+                $nuevoOrdDesp = "<a href='#' class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq' >
+                    <i class='fa fa-fw fa-times-circle-o text-danger'></i>
+                    </a>";
+            }else{
+                $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
+                $nuevoOrdDesp = "<a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
+                                    <i class='fa fa-fw $data->icono'></i>
+                                </a>";    
+            }
+
             $respuesta['tabla'] .= "
             <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                 <td id='id$i' name='id$i'>$data->id
@@ -1120,10 +1316,7 @@ function reportesoldesp1($request){
                     number_format($data->totalkilos - $data->totalkilosdesp, 2, ",", ".") .
                 "</td>
                 <td>
-                    <a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
-                        <i class='fa fa-fw $data->icono'></i>
-                    </a>
-
+                    $nuevoOrdDesp
                 </td>
             </tr>";
 
@@ -1248,7 +1441,8 @@ function consultasoldesp($request){
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
-    $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
+    $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
+            notaventa.oc_file,
             comuna.nombre as comunanombre,
             despachosol.notaventa_id,despachosol.fechaestdesp,tipoentrega.nombre as tipentnombre,tipoentrega.icono,
             IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
