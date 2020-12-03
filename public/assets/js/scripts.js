@@ -1,5 +1,7 @@
 /* Boton Borrar Campos De Formulario*/
 $(document).ready(function () {
+    var screen = $('#loading-screen');
+    configureLoadingScreen(screen);
 
     $("#modal-seleccionar-rol").draggable({opacity: 0.35, handle: ".modal-header"});
 
@@ -60,3 +62,13 @@ $(document).ready(function () {
     });
 
 });
+
+function configureLoadingScreen(screen){
+    $(document)
+        .ajaxStart(function () {
+            screen.fadeIn();
+        })
+        .ajaxStop(function () {
+            screen.fadeOut();
+        });
+}

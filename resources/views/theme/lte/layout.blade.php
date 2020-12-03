@@ -102,6 +102,9 @@
                 </div>
             @endif
         </div>
+        <div id="loading-screen" style="display:none">
+            <img src="{{asset("assets/$theme/dist/img/spinning-circles.svg")}}">
+        </div>
         <!-- jQuery 3 -->
         <script src="{{asset("assets/$theme/bower_components/jquery/dist/jquery.min.js")}}"></script>
         <!-- jQuery UI - v1.12.1 - 2016-09-14 -->

@@ -1,5 +1,7 @@
 $(document).ready(function () {
 	//Biblioteca.validacionGeneral('form-general');
+	var screen = $('#loading-screen');
+    configureLoadingScreen(screen);
 	
 	$('#tabla-data-productos').DataTable( {
         "language": {
@@ -57,8 +59,6 @@ $(document).ready(function () {
 	});
 
 });
-
-
 
 
 function validacion(campo,tipo)
