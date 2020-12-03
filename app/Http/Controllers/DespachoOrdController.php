@@ -246,7 +246,7 @@ class DespachoOrdController extends Controller
         $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
         if(count($clibloq) > 0){
             return redirect('despachoord/index')->with([
-                'mensaje'=>'Registro no fue guardado. Cliente Bloquedo: ' . $clibloq[0]->descripcion ,
+                'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -462,6 +462,13 @@ class DespachoOrdController extends Controller
         $dateInput = explode('/',$request->fechaestdesp);
         $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
         $despachoord = DespachoOrd::findOrFail($id);
+        $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachoord->notaventa->cliente_id)->get();
+        if(count($clibloq) > 0){
+            return redirect('despachoord/index')->with([
+                'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         if($despachoord->updated_at == $request->updated_at){
             $despachoord->updated_at = date("Y-m-d H:i:s");
             $despachoord->comunaentrega_id = $request->comunaentrega_id;

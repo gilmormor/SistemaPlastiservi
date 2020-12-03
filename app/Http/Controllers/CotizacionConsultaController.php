@@ -328,7 +328,9 @@ class CotizacionConsultaController extends Controller
 
         if($cotizaciones){
             //return view('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
-            
+            if(env('APP_DEBUG')){
+                return view('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
+            }
             $pdf = PDF::loadView('cotizacionconsulta.listado', compact('cotizaciones','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream();

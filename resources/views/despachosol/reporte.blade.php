@@ -146,12 +146,12 @@
 				<td class="textright" width="10%"><span><strong>{{number_format($neto, 2, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$empresa[0]['iva']}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round(($neto * $empresa[0]['iva'])/100), 2, ",", ".")}}</strong></span></td>
+				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$despachosol->notaventa->piva}}%</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round(($neto * $despachosol->notaventa->piva)/100), 2, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round($neto * ($empresa[0]['iva']+100)/100), 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round($neto * ($despachosol->notaventa->piva+100)/100), 2, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>

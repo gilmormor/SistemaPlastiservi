@@ -45,6 +45,7 @@ class ValidarNotaVenta extends FormRequest
             'comuna_id' => 'required',
             'comunaentrega_id' => 'required',
             'neto' => 'required',
+            'piva' => 'required',
             'iva' => 'required',
             'total' => 'required',
             'usuario_id' => 'required',

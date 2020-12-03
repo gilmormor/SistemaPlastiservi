@@ -31,6 +31,7 @@ class Cotizacion extends Model
         'comuna_id',
         'giro_id',
         'neto',
+        'piva',
         'iva',
         'total',
         'usuario_id',

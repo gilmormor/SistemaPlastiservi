@@ -24,7 +24,7 @@
 			<td class="info_factura">
 				<div>
 					<span class="h3">Vista Previa Solicitud Despacho</span>
-					<p>Nro: <strong> {{ str_pad($notaventa->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
+					<p>Nro Nota Venta: <strong> {{ str_pad($notaventa->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
 					<p>Fecha Act: {{date('d-m-Y h:i:s A')}}</p>
 					<p>Fecha: {{date('d-m-Y', strtotime($notaventa->fechahora))}}</p>
 					<p>Hora: {{date("h:i:s A", strtotime($notaventa->fechahora))}}</p>
@@ -160,12 +160,12 @@
 				<td class="textright" width="10%"><span><strong>{{number_format($totalSubtotalItem, 2, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$empresa[0]['iva']}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * $empresa[0]['iva'] /100), 2, ",", ".")}}</strong></span></td>
+				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$notaventa->piva}}%</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * $notaventa->piva/100), 2, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * (1 + ($empresa[0]['iva'] /100))), 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * (1 + ($notaventa->piva/100))), 2, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>

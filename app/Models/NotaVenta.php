@@ -38,6 +38,7 @@ class NotaVenta extends Model
         'comunaentrega_id',
         'giro_id',
         'neto',
+        'piva',
         'iva',
         'total',
         'oc_id',

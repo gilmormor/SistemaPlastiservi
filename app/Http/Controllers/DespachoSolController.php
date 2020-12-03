@@ -288,7 +288,7 @@ class DespachoSolController extends Controller
         $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$notaventa->cliente_id)->get();
         if(count($clibloq) > 0){
             return redirect('despachosol/index')->with([
-                'mensaje'=>'Registro no fue guardado. Cliente Bloquedo: ' . $clibloq[0]->descripcion ,
+                'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -505,6 +505,13 @@ class DespachoSolController extends Controller
         $dateInput = explode('/',$request->fechaestdesp);
         $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
         $despachosol = DespachoSol::findOrFail($id);
+        $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
+        if(count($clibloq) > 0){
+            return redirect('despachosol/index')->with([
+                'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         if($despachosol->updated_at == $request->updated_at){
             $despachosol->updated_at = date("Y-m-d H:i:s");
             $despachosol->comunaentrega_id = $request->comunaentrega_id;
@@ -1061,14 +1068,14 @@ function reporte1($request){
             }else{
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
             }
-            $nuevoSolDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='pdfSolDespPrev($data->id,2)'>
+            $nuevoSolDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->id,2)'>
                                 <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                             </a>";
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
                 $nuevoSolDesp .= "<a href='#' class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq' >
-                    <i class='fa fa-fw fa-times-circle-o text-danger'></i>
+                    <i class='fa fa-fw fa-ban text-danger'></i>
                     </a>";
             }else{
                 $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
@@ -1284,7 +1291,7 @@ function reportesoldesp1($request){
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
                 $nuevoOrdDesp = "<a href='#' class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq' >
-                    <i class='fa fa-fw fa-times-circle-o text-danger'></i>
+                    <i class='fa fa-fw fa-ban text-danger'></i>
                     </a>";
             }else{
                 $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);

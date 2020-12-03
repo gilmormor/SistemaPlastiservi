@@ -20,6 +20,7 @@
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
 
 <input type="hidden" name="neto" id="neto" value="{{old('neto', $data->neto ?? '')}}">
+<input type="hidden" name="piva" id="piva" value="{{old('piva', $empresa->iva ?? '')}}">
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
 <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}">
 

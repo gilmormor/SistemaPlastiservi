@@ -41,6 +41,7 @@ class ValidarCotizacion extends FormRequest
             'provincia_id' => 'required',
             'comuna_id' => 'required',
             'neto' => 'required',
+            'piva' => 'required',
             'iva' => 'required',
             'total' => 'required',
             'usuario_id' => 'required',
