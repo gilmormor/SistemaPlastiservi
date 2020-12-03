@@ -85,6 +85,8 @@
 						$aux_sumtotalkilos = 0;
 						$aux_promPonderadoPrecioxkilo = 0;
 						$totalSubtotalItem = 0;
+						$aux_totalkgItem = 0;
+						$aux_sumtotalkilos1 = 0;
 					?>
 					@foreach($notaventaDetalles as $notaventaDetalle)
 						<?php
@@ -109,7 +111,9 @@
 							if($notaventaDetalle->cant > $sumacantsoldesp){
 								$aux_saldo = $notaventaDetalle->cant - $sumacantsoldesp;
 								$subtotalItem = $aux_saldo * $notaventaDetalle->preciounit;
-								$totalSubtotalItem += $subtotalItem
+								$totalSubtotalItem += $subtotalItem;
+								$aux_totalkgItem = $aux_saldo * ($notaventaDetalle->totalkilos/$notaventaDetalle->cant);
+								$aux_sumtotalkilos1 += $aux_totalkgItem;
 
 						?>
 						<tr class="headt" style="height:150%;">
@@ -134,7 +138,7 @@
 							<td class="textcenter">{{$notaventaDetalle->producto->tipounion}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($notaventaDetalle->totalkilos, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($aux_totalkgItem, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->preciounit, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($subtotalItem, 2, ",", ".")}}</td>
 						</tr>
@@ -147,7 +151,7 @@
 					<tr>
 						<td colspan="10" class="textright"><span><strong>Totales</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>
-						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
+						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos1, 2, ",", ".")}}</strong></span></td>
 					</tr>
 				</tfoot>
 

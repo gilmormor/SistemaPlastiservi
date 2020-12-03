@@ -935,7 +935,7 @@ function consulta($request,$aux_sql,$orden){
         sum(notaventadetalle.cant) AS cant,sum(vista_sumsoldespdet.cantsoldesp) AS cantsoldesp,
         sum(notaventadetalle.totalkilos) AS totalkilos,sum(vista_sumsoldespdet.kgsoldesp) AS kgsoldesp,
         sum(notaventadetalle.subtotal) AS subtotal,sum(vista_sumsoldespdet.subtotalsoldesp) AS subtotalsoldesp
-        FROM notaventadetalle INNER JOIN vista_sumsoldespdet
+        FROM notaventadetalle LEFT JOIN vista_sumsoldespdet
         ON notaventadetalle.id = vista_sumsoldespdet.notaventadetalle_id
         INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
@@ -1122,8 +1122,8 @@ function reporte1($request){
                 $aux_Tpvcpesos += $data->pvcpesos;
                 $aux_Tcankg += $data->cankg;
                 $aux_Tcanpesos += $data->canpesos;
-                $aux_totalKG += $data->totalkilos;
-                $aux_totalps += $data->subtotal;    
+                $aux_totalKG += ($data->totalkilos - $data->totalkgsoldesp);
+                $aux_totalps += ($data->subtotal - $data->totalsubtotalsoldesp);    
             }
 
 
