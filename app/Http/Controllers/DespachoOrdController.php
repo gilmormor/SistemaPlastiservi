@@ -57,7 +57,8 @@ class DespachoOrdController extends Controller
                         ->whereNotIn('id',  $despachoordanul)
                         ->get();
         $aux_vista = 'G';
-        return view('despachoord.indexguiafact', compact('datas','aux_vista'));
+        $aux_titulo = "Asignar Guia Despacho";
+        return view('despachoord.indexguiafact', compact('datas','aux_vista','aux_titulo'));
     }
 
     public function indexfact()
@@ -70,7 +71,8 @@ class DespachoOrdController extends Controller
                         ->whereNotIn('id',  $despachoordanul)
                         ->get();
         $aux_vista = 'F';
-        return view('despachoord.indexguiafact', compact('datas','aux_vista'));
+        $aux_titulo = "Asignar Número de Factura";
+        return view('despachoord.indexguiafact', compact('datas','aux_vista','aux_titulo'));
     }
 
         public function indexcerrada()
@@ -83,7 +85,8 @@ class DespachoOrdController extends Controller
                         ->whereNotIn('id',  $despachoordanul)
                         ->get();
         $aux_vista = 'C';
-        return view('despachoord.indexguiafact', compact('datas','aux_vista'));
+        $aux_titulo = "Ordenes de Despacho Cerradas";
+        return view('despachoord.indexguiafact', compact('datas','aux_vista','aux_titulo'));
     }
 
 

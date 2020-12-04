@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Orden de despacho
+{{$aux_titulo}}
 @endsection
 
 @section("scripts")
@@ -15,7 +15,7 @@ Orden de despacho
         @include('includes.mensaje')
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Orden de Despacho</h3>
+                <h3 class="box-title">{{$aux_titulo}}</h3>
             </div>
             <div class="box-body">
                 <div class="table-responsive">
@@ -61,7 +61,7 @@ Orden de despacho
                                 <td>{{$data->notaventa->cliente->razonsocial}}</td>
                                 <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD({{$data->id}},1)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                                        <i class='fa fa-fw fa-file-pdf-o'></i>{{$data->id}}
                                     </a>
                                 </td>
                                 <td>

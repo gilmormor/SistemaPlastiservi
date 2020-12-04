@@ -1074,9 +1074,9 @@ function reporte1($request){
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
-                $nuevoSolDesp .= "<a href='#' class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq' >
-                    <i class='fa fa-fw fa-ban text-danger'></i>
-                    </a>";
+                $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
+                                    <i class='fa fa-fw fa-ban text-danger'></i>
+                                </a>";
             }else{
                 $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
                 $nuevoSolDesp .= "<a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer solicitud despacho: $data->tipentnombre'>
@@ -1099,7 +1099,7 @@ function reporte1($request){
                 <td>
                     <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->id
                     </a>
                 </td>
                 <td>
@@ -1290,9 +1290,9 @@ function reportesoldesp1($request){
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
-                $nuevoOrdDesp = "<a href='#' class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq' >
-                    <i class='fa fa-fw fa-ban text-danger'></i>
-                    </a>";
+                $nuevoOrdDesp = "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
+                                    <i class='fa fa-fw fa-ban text-danger'></i>
+                                </a>";
             }else{
                 $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
                 $nuevoOrdDesp = "<a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
@@ -1309,7 +1309,7 @@ function reportesoldesp1($request){
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->id
                     </a>
                 </td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>

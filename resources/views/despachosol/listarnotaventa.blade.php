@@ -221,7 +221,7 @@ Notas de Venta
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Pendiente x Nota Venta</a></li>
                             <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Pendiente x Cliente</a></li>
-                            <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Pendiente x producto</a></li>
+                            <li style="display:none;"><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Pendiente x producto</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="tab_1">
@@ -232,7 +232,7 @@ Notas de Venta
                                 <div class="table-responsive" id="tablaconsulta2">
                                 </div>
                             </div>
-                            <div class="tab-pane" id="tab_3">
+                            <div style="display:none;" class="tab-pane" id="tab_3">
                                 <div class="table-responsive" id="tablaconsulta3">
                                 </div>
                             </div>

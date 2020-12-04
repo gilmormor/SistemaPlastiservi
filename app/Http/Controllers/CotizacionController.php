@@ -71,7 +71,8 @@ class CotizacionController extends Controller
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
                 where ' . $aux_condvend . ' and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
-                and cotizacion.deleted_at is null;';
+                and cotizacion.deleted_at is null
+                ORDER BY cotizacion.id desc;';
 
         $datas = DB::select($sql);
        
@@ -598,9 +599,20 @@ class CotizacionController extends Controller
     public function buscarCotizacion(Request $request){
         if($request->ajax()){
             $user = Usuario::findOrFail(auth()->id());
-            $vendedor_id=$user->persona->vendedor->id;
+            $sql= 'SELECT COUNT(*) AS contador
+                FROM vendedor INNER JOIN persona
+                ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
+                INNER JOIN usuario 
+                ON persona.usuario_id=usuario.id and persona.deleted_at is null
+                WHERE usuario.id=' . auth()->id() . ';';
+            $counts = DB::select($sql);
+            $aux_condvend = "true ";
+            if($counts[0]->contador > 0){
+                $vendedor_id=$user->persona->vendedor->id;
+                $aux_condvend = "cotizacion.vendedor_id= $vendedor_id ";
+            }
             //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-            $sql = 'SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
+            $sql = "SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
                         clientebloqueado.descripcion as descripbloqueo,
                         (SELECT COUNT(*) 
                         FROM cotizaciondetalle 
@@ -610,9 +622,9 @@ class CotizacionController extends Controller
                     on cotizacion.cliente_id = cliente.id
                     LEFT join clientebloqueado
                     on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-                    where cotizacion.vendedor_id=' . $vendedor_id . ' and (aprobstatus=1 or aprobstatus=3) 
-                    and cotizacion.id=' . $request->id .
-                    ' and cotizacion.deleted_at is null;';
+                    where $aux_condvend and (aprobstatus=1 or aprobstatus=3) 
+                    and cotizacion.id = $request->id 
+                    and cotizacion.deleted_at is null;";
             //where usuario_id='.auth()->id();
             //dd($sql);
             $cotizaciones = DB::select($sql);
