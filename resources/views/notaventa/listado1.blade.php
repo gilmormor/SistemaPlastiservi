@@ -91,7 +91,9 @@
 					@endforeach
 					@foreach($notaventaDetalles as $notaventaDetalle)
 						<?php
-							$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
+							if($aux_sumtotalkilos > 0){
+								$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
+							}
 							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
 						?>
 						<tr class="headt" style="height:150%;">

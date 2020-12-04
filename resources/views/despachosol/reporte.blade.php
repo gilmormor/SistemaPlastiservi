@@ -112,14 +112,14 @@
 						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 						<td class="textleft">{{$despachosoldet->notaventadetalle->producto->nombre}}</td>
-						<td class="textleft">
+						<td class="textcenter">
 							@if ($despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedida_id==3)
 								{{$despachosoldet->notaventadetalle->producto->diamextpg}}								
 							@else
 								{{$despachosoldet->notaventadetalle->producto->diamextmm}}mm
 							@endif
 						</td>
-						<td class="textleft">{{$despachosoldet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
+						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
 						<td class="textright">{{$despachosoldet->notaventadetalle->producto->long}} mts</td>
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->tipounion}}</td>
 						<td class="textright">{{number_format($despachosoldet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
