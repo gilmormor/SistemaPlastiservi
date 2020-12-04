@@ -34,7 +34,7 @@ Orden de despacho
                                 <th class="width70">ID</th>
                                 <th class='tooltipsC' title='fecha estimada de Despacho'>Fecha ED</th>
                                 <th>Razón Social</th>
-                                <!--<th class='tooltipsC' title='Orden Despacho'>OD</th>-->
+                                <th class='tooltipsC' title='Orden Despacho'>OD</th>
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
@@ -58,13 +58,11 @@ Orden de despacho
                                 <td>{{$data->id}}</td>
                                 <td>{{$data->fechaestdesp}}</td>
                                 <td>{{$data->notaventa->cliente->razonsocial}}</td>
-<!--
                                 <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD({{$data->id}},1)'>
                                         <i class='fa fa-fw fa-file-pdf-o'></i>
                                     </a>
                                 </td>
--->
                                 <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->despachosol_id}},1)'>
                                         <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->despachosol_id}}
