@@ -1148,6 +1148,7 @@ function reporte1($request){
 
         </table>";
 
+        /*****CONSULTA AGRUPADO POR CLIENTE******/
         $datas = consulta($request,1,2);
         $aux_clienteid = $datas[0]->cliente_id;
 
@@ -1166,14 +1167,10 @@ function reporte1($request){
         $aux_platapend = 0;
         $razonsocial = "";
         $aux_comuna  = "";
+        $aux_totalkg = 0;
+        $aux_totalplata = 0;
         foreach ($datas as $data) {
-            if($data->cliente_id==$aux_clienteid){
-                $aux_kgpend += ($data->totalkilos - $data->totalkgsoldesp);
-                $aux_platapend += ($data->subtotal - $data->totalsubtotalsoldesp);
-                $razonsocial = $data->razonsocial;
-                $aux_comuna  = $data->comunanombre;
-
-            }else{
+            if($data->cliente_id!=$aux_clienteid){
                 $respuesta['tabla2'] .= "
                 <tr>
                     <td>$razonsocial</td>
@@ -1183,12 +1180,14 @@ function reporte1($request){
                 </tr>";
                 $aux_kgpend = 0;
                 $aux_platapend = 0;
-                $aux_kgpend += ($data->totalkilos - $data->totalkgsoldesp);
-                $aux_platapend += ($data->subtotal - $data->totalsubtotalsoldesp);
-                $aux_clienteid = $data->cliente_id;
-                $razonsocial = $data->razonsocial;
-                $aux_comuna  = $data->comunanombre;
             }
+            $aux_kgpend += ($data->totalkilos - $data->totalkgsoldesp);
+            $aux_platapend += ($data->subtotal - $data->totalsubtotalsoldesp);
+            $aux_totalkg += ($data->totalkilos - $data->totalkgsoldesp);
+            $aux_totalplata += ($data->subtotal - $data->totalsubtotalsoldesp);
+            $razonsocial = $data->razonsocial;
+            $aux_comuna  = $data->comunanombre;
+
         }
         $respuesta['tabla2'] .= "
             <tr>
@@ -1198,10 +1197,18 @@ function reporte1($request){
                 <td style='text-align:right'>".number_format($aux_platapend, 2, ",", ".") ."</td>
             </tr>
             </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='2' style='text-align:left'>TOTALES</th>
+                    <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
+                </tr>
+            </tfoot>
+
             </table>";
 
-/*********************************************** */
 
+            /*****CONSULTA AGRUPADO POR PRODUCTO*****/
         $datas = consulta($request,2,1);
         $respuesta['tabla3'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
         <thead>
