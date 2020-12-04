@@ -108,7 +108,7 @@
 						$neto += $subtotal;
 					?>
 					<tr class="headt" style="height:150%;">
-						<td class="textcenter">{{number_format($despachoorddet->notaventadetalle->cant, 0, ",", ".")}}</td>
+						<td class="textcenter">{{number_format($despachoorddet->despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{number_format($despachoorddet->cantdesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 						<td class="textleft">{{$despachoorddet->notaventadetalle->producto->nombre}}</td>

@@ -59,7 +59,7 @@ Solicitud de despacho
                                     <td>{{$data->notaventa->cliente->razonsocial}}</td>
                                     <td>
                                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->id}},1)'>
-                                            <i class='fa fa-fw fa-file-pdf-o'></i>
+                                            <i class='fa fa-fw fa-file-pdf-o'></i>{{$data->id}}
                                         </a>
                                     </td>
                                     <td>
