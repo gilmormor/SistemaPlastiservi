@@ -936,7 +936,7 @@ function consulta($request,$aux_sql,$orden){
         sum(notaventadetalle.totalkilos) AS totalkilos,sum(vista_sumsoldespdet.kgsoldesp) AS kgsoldesp,
         sum(notaventadetalle.subtotal) AS subtotal,sum(vista_sumsoldespdet.subtotalsoldesp) AS subtotalsoldesp
         FROM notaventadetalle LEFT JOIN vista_sumsoldespdet
-        ON notaventadetalle.id = vista_sumsoldespdet.notaventadetalle_id
+        ON notaventadetalle.id = vista_sumsoldespdet.notaventadetalle_id AND vista_sumsoldespdet.cantsoldesp<notaventadetalle.cant
         INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
@@ -958,7 +958,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_aprobstatus
         and $aux_condcomuna_id
         and $aux_condplazoentrega
-        AND vista_sumsoldespdet.cantsoldesp<notaventadetalle.cant
+        AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
         GROUP BY notaventadetalle.producto_id

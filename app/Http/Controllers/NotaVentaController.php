@@ -18,6 +18,7 @@ use App\Models\Giro;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaDetalle;
 use App\Models\PlazoPago;
+use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\SucursalClienteDirec;
 use App\Models\TipoEntrega;
@@ -345,6 +346,7 @@ class NotaVentaController extends Controller
         if($cont_producto>0){
             for ($i=0; $i < $cont_producto ; $i++){
                 if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                    $producto = Producto::findOrFail($request->producto_id[$i]);
                     $notaventadetalle = new NotaVentaDetalle();
                     $notaventadetalle->notaventa_id = $notaventaid;
                     $notaventadetalle->producto_id = $request->producto_id[$i];
@@ -353,6 +355,7 @@ class NotaVentaController extends Controller
                     $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $notaventadetalle->descuento = $request->descuento[$i];
                     $notaventadetalle->preciounit = $request->preciounit[$i];
+                    $notaventadetalle->peso = $producto->peso;
                     $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
                     $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                     $notaventadetalle->totalkilos = $request->totalkilos[$i];
@@ -441,12 +444,14 @@ class NotaVentaController extends Controller
                 'claseprod.cla_nombre',
                 'producto.codintprod',
                 'producto.diamextmm',
+                'producto.diamextpg',
                 'producto.espesor',
                 'producto.long',
                 'producto.peso',
                 'producto.tipounion',
                 'producto.precioneto',
                 'categoriaprod.precio',
+                'categoriaprod.unidadmedida_id',
                 'categoriaprodsuc.sucursal_id'
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
@@ -537,6 +542,7 @@ class NotaVentaController extends Controller
             if($cont_cotdet>0){
                 for ($i=0; $i < count($request->NVdet_id) ; $i++){
                     $idcotizaciondet = $request->NVdet_id[$i]; 
+                    $producto = Producto::findOrFail($request->producto_id[$i]);
                     if( $request->NVdet_id[$i] == '0' ){
                         $notaventadetalle = new NotaVentaDetalle();
                         $notaventadetalle->notaventa_id = $notaventaid;
@@ -546,6 +552,7 @@ class NotaVentaController extends Controller
                         $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                         $notaventadetalle->descuento = $request->descuento[$i];
                         $notaventadetalle->preciounit = $request->preciounit[$i];
+                        $notaventadetalle->peso = $producto->peso;
                         $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
                         $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                         $notaventadetalle->totalkilos = $request->totalkilos[$i];
@@ -564,6 +571,7 @@ class NotaVentaController extends Controller
                                 'unidadmedida_id' => $request->unidadmedida_id[$i],
                                 'descuento' => $request->descuento[$i],
                                 'preciounit' => $request->preciounit[$i],
+                                'peso' => $producto->peso,
                                 'precioxkilo' => $request->precioxkilo[$i],
                                 'precioxkiloreal' => $request->precioxkiloreal[$i],
                                 'totalkilos' => $request->totalkilos[$i],

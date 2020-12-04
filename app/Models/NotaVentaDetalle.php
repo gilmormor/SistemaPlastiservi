@@ -16,6 +16,7 @@ class NotaVentaDetalle extends Model
         'cant',
         'unidadmedida_id',
         'preciounit',
+        'peso',
         'precioneto',
         'iva',
         'total',

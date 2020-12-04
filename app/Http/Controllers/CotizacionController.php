@@ -16,6 +16,7 @@ use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\PlazoPago;
+use App\Models\Producto;
 use App\Models\Provincia;
 use App\Models\Region;
 use App\Models\Seguridad\Usuario;
@@ -258,6 +259,7 @@ class CotizacionController extends Controller
         if($cont_producto>0){
             for ($i=0; $i < $cont_producto ; $i++){
                 if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                    $producto = Producto::findOrFail($request->producto_id[$i]);
                     $cotizaciondetalle = new CotizacionDetalle();
                     $cotizaciondetalle->cotizacion_id = $cotizacionid;
                     $cotizaciondetalle->producto_id = $request->producto_id[$i];
@@ -265,6 +267,7 @@ class CotizacionController extends Controller
                     $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $cotizaciondetalle->descuento = $request->descuento[$i];
                     $cotizaciondetalle->preciounit = $request->preciounit[$i];
+                    $cotizaciondetalle->peso = $producto->peso;
                     $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
                     $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                     $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
@@ -354,13 +357,15 @@ class CotizacionController extends Controller
                 'claseprod.cla_nombre',
                 'producto.codintprod',
                 'producto.diamextmm',
+                'producto.diamextpg',
                 'producto.espesor',
                 'producto.long',
                 'producto.peso',
                 'producto.tipounion',
                 'producto.precioneto',
                 'categoriaprod.precio',
-                'categoriaprodsuc.sucursal_id'
+                'categoriaprodsuc.sucursal_id',
+                'categoriaprod.unidadmedida_id'
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
@@ -442,6 +447,7 @@ class CotizacionController extends Controller
         if($cont_cotdet>0){
             for ($i=0; $i < count($request->cotdet_id) ; $i++){
                 $idcotizaciondet = $request->cotdet_id[$i]; 
+                $producto = Producto::findOrFail($request->producto_id[$i]);
                 if( $request->cotdet_id[$i] == '0' ){
                     $cotizaciondetalle = new CotizacionDetalle();
                     $cotizaciondetalle->cotizacion_id = $id;
@@ -450,6 +456,7 @@ class CotizacionController extends Controller
                     $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $cotizaciondetalle->descuento = $request->descuento[$i];
                     $cotizaciondetalle->preciounit = $request->preciounit[$i];
+                    $cotizaciondetalle->peso = $producto->peso;
                     $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
                     $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                     $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
@@ -467,6 +474,7 @@ class CotizacionController extends Controller
                             'unidadmedida_id' => $request->unidadmedida_id[$i],
                             'descuento' => $request->descuento[$i],
                             'preciounit' => $request->preciounit[$i],
+                            'peso' => $producto->peso,
                             'precioxkilo' => $request->precioxkilo[$i],
                             'precioxkiloreal' => $request->precioxkiloreal[$i],
                             'totalkilos' => $request->totalkilos[$i],
