@@ -930,14 +930,16 @@ function consulta($request,$aux_sql,$orden){
     }
     
     if($aux_sql==2){
-        $sql = "SELECT notaventadetalle.producto_id,producto.nombre,if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,
+        $sql = "SELECT notaventadetalle.id,notaventadetalle.producto_id,producto.nombre,
+        if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
-        sum(notaventadetalle.cant) AS cant,sum(vista_sumsoldespdet.cantsoldesp) AS cantsoldesp,
-        sum(notaventadetalle.totalkilos) AS totalkilos,sum(vista_sumsoldespdet.kgsoldesp) AS kgsoldesp,
-        sum(notaventadetalle.subtotal) AS subtotal,sum(vista_sumsoldespdet.subtotalsoldesp) AS subtotalsoldesp
-        FROM notaventadetalle LEFT JOIN vista_sumsoldespdet
-        ON notaventadetalle.id = vista_sumsoldespdet.notaventadetalle_id AND vista_sumsoldespdet.cantsoldesp<notaventadetalle.cant
-        INNER JOIN notaventa
+        cant,cantsoldesp,
+        totalkilos,
+        subtotal,
+        kgsoldesp,subtotalsoldesp,
+        sum(totalkilos-if(isnull(kgsoldesp),0,kgsoldesp)) as saldokg,
+        sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldokg
+        FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
         ON notaventadetalle.producto_id=producto.id
@@ -947,6 +949,8 @@ function consulta($request,$aux_sql,$orden){
         ON producto.categoriaprod_id=categoriaprod.id
         INNER JOIN cliente
         ON cliente.id=notaventa.cliente_id
+        LEFT JOIN vista_sumsoldespdet
+        ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -961,11 +965,8 @@ function consulta($request,$aux_sql,$orden){
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
-        GROUP BY notaventadetalle.producto_id
-        ORDER BY producto.nombre,producto.peso;";
+        GROUP BY notaventadetalle.producto_id;";
     }
-    
-
 
     //dd($sql);
     $datas = DB::select($sql);
