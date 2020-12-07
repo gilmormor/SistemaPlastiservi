@@ -1234,7 +1234,7 @@ function reporte1($request){
         $aux_totalkg = 0;
         $aux_totalplata = 0;
         foreach ($datas as $data) {
-            if($data->saldokg>0){
+            if($data->saldoplata>0){
                 $aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
                 $aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);    
                 $respuesta['tabla3'] .= "
