@@ -938,7 +938,7 @@ function consulta($request,$aux_sql,$orden){
         subtotal,
         kgsoldesp,subtotalsoldesp,
         sum(totalkilos-if(isnull(kgsoldesp),0,kgsoldesp)) as saldokg,
-        sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldokg
+        sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldoplata
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
@@ -1212,7 +1212,7 @@ function reporte1($request){
             </table>";
 
 
-            /*****CONSULTA AGRUPADO POR PRODUCTO*****/
+        /*****CONSULTA AGRUPADO POR PRODUCTO*****/
         $datas = consulta($request,2,1);
         $respuesta['tabla3'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
         <thead>
@@ -1231,19 +1231,21 @@ function reporte1($request){
         $aux_totalkg = 0;
         $aux_totalplata = 0;
         foreach ($datas as $data) {
-            $aux_totalkg += ($data->totalkilos - $data->kgsoldesp);
-            $aux_totalplata += ($data->subtotal - $data->subtotalsoldesp);    
-            $respuesta['tabla3'] .= "
-            <tr>
-                <td>$data->nombre</td>
-                <td>$data->diametro</td>
-                <td>$data->cla_nombre</td>
-                <td>$data->long</td>
-                <td>$data->peso</td>
-                <td>$data->tipounion</td>
-                <td style='text-align:right'>".number_format($data->totalkilos - $data->kgsoldesp, 2, ",", ".") ."</td>
-                <td style='text-align:right'>".number_format($data->subtotal - $data->subtotalsoldesp, 2, ",", ".") ."</td>
-            </tr>";
+            if($data->saldokg>0){
+                $aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
+                $aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);    
+                $respuesta['tabla3'] .= "
+                <tr>
+                    <td>$data->nombre</td>
+                    <td>$data->diametro</td>
+                    <td>$data->cla_nombre</td>
+                    <td>$data->long</td>
+                    <td>$data->peso</td>
+                    <td>$data->tipounion</td>
+                    <td style='text-align:right'>".number_format($data->saldokg, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->saldoplata, 2, ",", ".") ."</td>
+                </tr>";    
+            }
         }        
         $respuesta['tabla3'] .= "
             </tbody>
