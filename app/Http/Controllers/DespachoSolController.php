@@ -112,6 +112,30 @@ class DespachoSolController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
 
+        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
+        //******************* */
+        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
+        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
+        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
+        ->select([
+                'producto.id',
+                'producto.nombre',
+                'claseprod.cla_nombre',
+                'producto.codintprod',
+                'producto.diamextmm',
+                'producto.espesor',
+                'producto.long',
+                'producto.peso',
+                'producto.tipounion',
+                'producto.precioneto',
+                'categoriaprod.precio',
+                'categoriaprodsuc.sucursal_id'
+                ])
+                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+                ->get();
+        //****************** */
+
         /*
         $request = [
             'fechad'            => '',
@@ -128,7 +152,7 @@ class DespachoSolController extends Controller
         $respuesta = reporte1($request);
         */ 
 
-        return view('despachosol.listarnotaventa', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
+        return view('despachosol.listarnotaventa', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos'));
 
     }
 
@@ -639,6 +663,7 @@ class DespachoSolController extends Controller
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
+
 
         /*
         $request = [
