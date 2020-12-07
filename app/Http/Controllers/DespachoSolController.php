@@ -965,8 +965,11 @@ function consulta($request,$aux_sql,$orden){
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
-        GROUP BY notaventadetalle.producto_id;";
+        GROUP BY notaventadetalle.producto_id
+        ORDER BY producto.nombre,producto.peso;";
     }
+    
+
 
     //dd($sql);
     $datas = DB::select($sql);
@@ -1210,6 +1213,7 @@ function reporte1($request){
 
 
             /*****CONSULTA AGRUPADO POR PRODUCTO*****/
+            /*
         $datas = consulta($request,2,1);
         $respuesta['tabla3'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
         <thead>
@@ -1252,7 +1256,7 @@ function reporte1($request){
                 </tr>
             </tfoot>
             </table>";
-
+*/
         return $respuesta;
     }
 }
