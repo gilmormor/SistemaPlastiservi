@@ -1154,7 +1154,10 @@ function reporte1($request){
 
         /*****CONSULTA AGRUPADO POR CLIENTE******/
         $datas = consulta($request,1,2);
-        $aux_clienteid = $datas[0]->cliente_id;
+        if($datas){
+            $aux_clienteid = $datas[0]->cliente_id;
+
+        }
 
         $respuesta['tabla2'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
         <thead>
