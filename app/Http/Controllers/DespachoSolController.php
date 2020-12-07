@@ -930,7 +930,7 @@ function consulta($request,$aux_sql,$orden){
     }
     
     if($aux_sql==2){
-        $sql = "SELECT notaventadetalle.id,notaventadetalle.producto_id,producto.nombre,
+        $sql = "SELECT notaventadetalle.producto_id,producto.nombre,
         if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
         cant,cantsoldesp,
@@ -1213,7 +1213,6 @@ function reporte1($request){
 
 
             /*****CONSULTA AGRUPADO POR PRODUCTO*****/
-            /*
         $datas = consulta($request,2,1);
         $respuesta['tabla3'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
         <thead>
@@ -1256,7 +1255,7 @@ function reporte1($request){
                 </tr>
             </tfoot>
             </table>";
-*/
+
         return $respuesta;
     }
 }
