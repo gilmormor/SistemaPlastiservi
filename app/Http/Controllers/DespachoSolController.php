@@ -962,6 +962,7 @@ function consulta($request,$aux_sql,$orden){
         totalkilos,
         subtotal,
         kgsoldesp,subtotalsoldesp,
+        sum(cant-if(isnull(cantsoldesp),0,cantsoldesp)) as saldocant,
         sum(totalkilos-if(isnull(kgsoldesp),0,kgsoldesp)) as saldokg,
         sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldoplata
         FROM notaventadetalle INNER JOIN notaventa
@@ -1251,6 +1252,7 @@ function reporte1($request){
                 <th>Largo</th>
                 <th>Peso</th>
                 <th>TU</th>
+                <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant Pend</th>
                 <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
                 <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
             </tr>
@@ -1270,16 +1272,17 @@ function reporte1($request){
                     <td>$data->long</td>
                     <td>$data->peso</td>
                     <td>$data->tipounion</td>
+                    <td style='text-align:right'>$data->saldocant</td>
                     <td style='text-align:right'>".number_format($data->saldokg, 2, ",", ".") ."</td>
                     <td style='text-align:right'>".number_format($data->saldoplata, 2, ",", ".") ."</td>
                 </tr>";    
             }
-        }        
+        }
         $respuesta['tabla3'] .= "
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='6' style='text-align:left'>TOTALES</th>
+                    <th colspan='7' style='text-align:left'>TOTALES</th>
                     <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
                 </tr>

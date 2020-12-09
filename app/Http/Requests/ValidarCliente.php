@@ -28,7 +28,7 @@ class ValidarCliente extends FormRequest
             'razonsocial' => 'required|max:70|unique:cliente,razonsocial,' . $this->route('id'),
             'direccion' => 'required|max:200',
             'telefono' => 'required|max:50',
-            'email' => 'required|max:50',
+            'email' => 'required|max:50|email:rfc,dns',
             'nombrefantasia' => 'max:50',
             'direccion' => 'required',
             'giro_id' => 'required',

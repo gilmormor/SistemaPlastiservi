@@ -64,6 +64,7 @@
 				<thead>
 					<tr>
 						<th width="30px">Cant.</th>
+						<th>Desp</th>
 						<th>Solid</th>
 						<th>Saldo</th>	
 						<th class="textcenter">Unidad</th>
@@ -98,6 +99,7 @@
 						<?php
 							$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
 							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
+							//SUMA TOTAL DE SOLICITADO
 							$sql = "SELECT cantsoldesp
 								FROM vista_sumsoldespdet
 								WHERE notaventadetalle_id=$notaventaDetalle->id";
@@ -108,6 +110,19 @@
 							}else{
 								$sumacantsoldesp= $datasuma[0]->cantsoldesp;
 							}
+							/*************************/
+							//SUMA TOTAL DESPACHADO
+							$sql = "SELECT cantdesp
+								FROM vista_sumorddespxnvdetid
+								WHERE notaventadetalle_id=$notaventaDetalle->id";
+							$datasumadesp = DB::select($sql);
+							if(empty($datasumadesp)){
+								$sumacantdesp= 0;
+							}else{
+								$sumacantdesp= $datasumadesp[0]->cantdesp;
+							}
+							/*************************/
+
 							if($notaventaDetalle->cant > $sumacantsoldesp){
 								$aux_saldo = $notaventaDetalle->cant - $sumacantsoldesp;
 								$subtotalItem = $aux_saldo * $notaventaDetalle->preciounit;
@@ -118,6 +133,9 @@
 						?>
 						<tr class="headt" style="height:150%;">
 							<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
+							<td class="textcenter">
+								{{$sumacantdesp}}
+							</td>		
 							<td class="textcenter">
 								{{$sumacantsoldesp}}
 							</td>
