@@ -167,7 +167,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="10" class="textright"><span><strong>Totales</strong></span></td>
+						<td colspan="11" class="textright"><span><strong>Totales</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos1, 2, ",", ".")}}</strong></span></td>
 					</tr>

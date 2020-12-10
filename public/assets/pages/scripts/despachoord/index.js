@@ -56,7 +56,20 @@ function ajaxRequest(data,url,funcion) {
 			}
 			if(funcion=='aproborddesp'){
 				if (respuesta.mensaje == "ok") {
-					$("#fila"+data['nfila']).remove();
+					swal({
+						title: '¿ Desea ver PDF Orden Despacho ?',
+						text: "",
+						icon: 'success',
+						buttons: {
+							cancel: "Cancelar",
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							genpdfOD(data.id,1);
+						}
+						$("#fila"+data['nfila']).remove();
+					});
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					if (respuesta.mensaje == "sp"){

@@ -102,7 +102,7 @@ class ReportOrdDespGuiaFactController extends Controller
         $respuesta['tabla'] = "";
     
         if($request->ajax()){
-            $datas = consultasoldesp($request);
+            $datas = consultaorddesp($request);
     
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
             <thead>
@@ -182,7 +182,7 @@ class ReportOrdDespGuiaFactController extends Controller
                         $data->guiadespacho
                     </td>
                     <td>
-                        $data->guiadespachofec
+                        " . date('Y-m-d', strtotime($data->guiadespachofec)) . "
                     </td>
                     <td>
                         $data->numfactura
@@ -271,7 +271,7 @@ class ReportOrdDespGuiaFactController extends Controller
     }
 }
 
-function consultasoldesp($request){
+function consultaorddesp($request){
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -303,6 +303,27 @@ function consultasoldesp($request){
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "despachoord.fechahora>='$fechad' and despachoord.fechahora<='$fechah'";
     }
+
+    if(empty($request->fechadfac) or empty($request->fechahfac)){
+        $aux_condFechaFac = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->fechadfac);
+        $fechadfac = date_format($fecha, 'Y-m-d');
+        $fecha = date_create_from_format('d/m/Y', $request->fechahfac);
+        $fechahfac = date_format($fecha, 'Y-m-d');
+        $aux_condFechaFac = "despachoord.fechafactura>='$fechadfac' and despachoord.fechafactura<='$fechahfac'";
+    }
+
+    if(empty($request->fechaestdesp)){
+        $aux_condFechaED = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->fechaestdesp);
+        $fechaestdesp = date_format($fecha, 'Y-m-d');
+        $aux_condFechaED = "despachoord.fechaestdesp ='$fechaestdesp'";
+    }
+
+    
+
     if(empty($request->rut)){
         $aux_condrut = " true";
     }else{
@@ -401,6 +422,8 @@ function consultasoldesp($request){
             ON comuna.id=despachoord.comunaentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
+            and $aux_condFechaFac
+            and $aux_condFechaED
             and $aux_condrut
             and $aux_condoc_id
             and $aux_condgiro_id

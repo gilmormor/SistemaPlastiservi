@@ -675,6 +675,7 @@ class DespachoOrdController extends Controller
                 <tr>
                     <th>ID OD</th>
                     <th>Fecha</th>
+                    <th>FechaFact</th>
                     <th>Solic</th>
                     <th>Entregado</th>
                     <th class='textcenter'>Unidad</th>
@@ -682,7 +683,8 @@ class DespachoOrdController extends Controller
 					<th class='textleft'>Diametro</th>
 					<th class='textleft'>Clase</th>
 					<th class='textright'>Largo</th>
-					<th class='textcenter'>TU</th>
+                    <th class='textcenter'>TU</th>
+                    <th class='textcenter'>Peso</th>
                 </tr>
             </thead>
             <tbody>";
@@ -701,10 +703,12 @@ class DespachoOrdController extends Controller
                     $long = $despachoorddet->notaventadetalle->producto->long;
                     $tipounion = $despachoorddet->notaventadetalle->producto->tipounion;
                     $cantsoldesp = $despachoorddet->despachosoldet->cantsoldesp;
+                    $peso = $despachoorddet->notaventadetalle->peso;
                     $respuesta['tabla'] .= "
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                         <td id='id$i' name='id$i'>$despachoorddet->despachoord_id</td>
                         <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($despachoorddet->created_at)) . "</td>
+                        <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
                         <td class='textright'>$cantsoldesp</td>
                         <td class='textright'>$despachoorddet->cantdesp</td>
                         <td class='textcenter'>$unidades</td>
@@ -712,7 +716,8 @@ class DespachoOrdController extends Controller
                         <td class='textleft'>$diametro</td>
                         <td class='textleft'>$cla_nombre</td>
 						<td class='textright'>$long mts</td>
-						<td class='textcenter'>$tipounion</td>
+                        <td class='textcenter'>$tipounion</td>
+                        <td class='textcenter'>$peso</td>
                     </tr>";
                     $respuesta['exito'] = true;
     

@@ -206,7 +206,7 @@ class NotaVentaConsultaController extends Controller
                 $aux_obsdespachoNew = "No ha iniciado el despacho";
                 if($aux_cantdesp > 0){
                     $aux_icodespachoNew = "fa-star-o";
-                    $aux_obsdespachoNew = "Inició despacho";
+                    $aux_obsdespachoNew = "Inicio despacho";
                     $aux_obsdespacho = "";
                     if($data->cant == $aux_cantdesp){
                         $aux_icodespachoNew = " fa-star";

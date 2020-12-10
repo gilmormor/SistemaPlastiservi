@@ -49,6 +49,7 @@
 					<tr>
 						<th style='text-align:left'>#</th>
 						<th style='text-align:left'>NV ID</th>
+						<th style='text-align:left'>OC</th>
 						<th class="textcenter">Fecha</th>
 						<th class="textleft">Razón Social</th>
 						<th style='text-align:right'>Total Kg</th>
@@ -101,6 +102,7 @@
 						<tr style='{{$colorFila}}' title='{{$aux_title}}' data-toggle='{{$aux_data_toggle}}' class='btn-accion-tabla tooltipsC'>
 							<td>{{$i}}</td>
 							<td>{{$notaventa->id}}</td>
+							<td>{{$notaventa->oc_id}}</td>
 							<td style='text-align:center'>{{date('d-m-Y', strtotime($notaventa->fechahora))}}</td>
 							<td>{{$notaventa->razonsocial}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->totalkilos, 2, ",", ".")}}</td>
