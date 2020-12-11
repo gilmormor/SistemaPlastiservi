@@ -151,6 +151,14 @@ class ReportOrdDespGuiaFactController extends Controller
 
                 /*$despachoord = DespachoOrd::findOrFail($data->id)
                                 ->whereNull();*/
+                $aux_enlaceOD = "";
+                if ($data->aprguiadesp == 1){
+                    $aux_enlaceOD = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD($data->id,1)'>
+                                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->id
+                                    </a>";
+                }
+                //dd($aux_enlaceOD);
+
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id
@@ -159,9 +167,7 @@ class ReportOrdDespGuiaFactController extends Controller
                     <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD($data->id,1)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>
-                        </a>
+                        $aux_enlaceOD
                     </td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->despachosol_id,1)'>
@@ -355,21 +361,21 @@ function consultaorddesp($request){
         $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
     }
 
-    if(empty($request->aprobstatus)){
-        $aux_aprobstatus = " true";
+    if(empty($request->statusOD)){
+        $aux_statusOD = " true";
     }else{
-        switch ($request->aprobstatus) {
+        switch ($request->statusOD) {
             case 1:
-                $aux_aprobstatus = "notaventa.aprobstatus='0'";
+                $aux_statusOD = "isnull(despachoord.aprguiadesp)";
                 break;
             case 2:
-                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                $aux_statusOD = "despachoord.aprguiadesp=1 and isnull(despachoord.guiadespacho)";
                 break;    
             case 3:
-                $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
+                $aux_statusOD = "not isnull(despachoord.guiadespacho) and isnull(despachoord.numfactura)";
                 break;
             case 4:
-                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                $aux_statusOD = "not isnull(despachoord.numfactura)";
                 break;
         }
         
@@ -430,7 +436,7 @@ function consultaorddesp($request){
             and $aux_condareaproduccion_id
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
-            and $aux_aprobstatus
+            and $aux_statusOD
             and $aux_condcomuna_id
             and $aux_condaprobord
             and $aux_condid

@@ -15,7 +15,7 @@ Orden Despacho
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Consultar Orden Despacho</h3>
+                <h3 class="box-title">Consultar Orden Despacho, Guia, Factura, cerrada</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>
@@ -75,12 +75,12 @@ Orden Despacho
                                         <label>Estatus:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus">
+                                        <select name="statusOD" id="statusOD" class="selectpicker form-control statusOD">
                                             <option value="" selected>Todos</option>
                                             <option value="1">Emitidas</option>
                                             <option value="2">Guia</option>
                                             <option value="3">Factura</option>
-                                            <option value="4">Cerradas</option>
+                                            <option value="4">Cerrada</option>
                                         </select>
                                     </div>
                                 </div>

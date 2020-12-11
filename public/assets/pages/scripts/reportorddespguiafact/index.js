@@ -109,7 +109,7 @@ function datos(){
         areaproduccion_id : $("#areaproduccion_id").val(),
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
-        aprobstatus       : $("#aprobstatus").val(),
+        statusOD          : $("#statusOD").val(),
         comuna_id         : $("#comuna_id").val(),
         _token            : $('input[name=_token]').val()
     };
