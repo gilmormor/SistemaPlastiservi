@@ -58,9 +58,11 @@ Orden de despacho
                                 <td>{{$data->id}}</td>
                                 <td>{{$data->fechaestdesp}}</td>
                                 <td>{{$data->notaventa->cliente->razonsocial}}</td>
+                                <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD({{$data->id}},1)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                                        <i class='fa fa-fw fa-file-pdf-o'></i>{{$data->id}}
                                     </a>
+                                </td>
                                 <td>
                                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->despachosol_id}},1)'>
                                         <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->despachosol_id}}
