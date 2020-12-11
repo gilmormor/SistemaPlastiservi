@@ -100,6 +100,7 @@
 							$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
 							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
 							//SUMA TOTAL DE SOLICITADO
+							/*************************/
 							$sql = "SELECT cantsoldesp
 								FROM vista_sumsoldespdet
 								WHERE notaventadetalle_id=$notaventaDetalle->id";
@@ -112,6 +113,7 @@
 							}
 							/*************************/
 							//SUMA TOTAL DESPACHADO
+							/*************************/
 							$sql = "SELECT cantdesp
 								FROM vista_sumorddespxnvdetid
 								WHERE notaventadetalle_id=$notaventaDetalle->id";

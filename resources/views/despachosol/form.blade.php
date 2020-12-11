@@ -290,7 +290,7 @@
                             <th style="display:none;">CódInterno</th>
                             <th style="display:none;">Cant</th>
                             <th>Cant</th>
-                            <!--<th>Desp</th>-->
+                            <th>Desp</th>
                             <th>Solid</th>
                             <th>Saldo</th>
                             <th class='tooltipsC' title='Marcar todo'>
@@ -335,16 +335,33 @@
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($detalles as $detalle)
                                 <?php 
+                                    /*************************/
+                                    //SUMA TOTAL SOLICITADO
+                                    /*************************/
                                     $sql = "SELECT cantsoldesp
                                             FROM vista_sumsoldespdet
                                             WHERE notaventadetalle_id=$detalle->id";
                                     $datasuma = DB::select($sql);
-                                    $peso = $detalle->totalkilos/$detalle->cant;
                                     if(empty($datasuma)){
                                         $sumacantsoldesp= 0;
                                     }else{
                                         $sumacantsoldesp= $datasuma[0]->cantsoldesp;
                                     }
+                                    /*************************/
+                                    //SUMA TOTAL DESPACHADO
+                                    /*************************/
+                                    $sql = "SELECT cantdesp
+                                        FROM vista_sumorddespxnvdetid
+                                        WHERE notaventadetalle_id=$detalle->id";
+                                    $datasumadesp = DB::select($sql);
+                                    if(empty($datasumadesp)){
+                                        $sumacantdesp= 0;
+                                    }else{
+                                        $sumacantdesp= $datasumadesp[0]->cantdesp;
+                                    }
+                                    /*************************/
+                                    $peso = $detalle->totalkilos/$detalle->cant;
+
                                     if($detalle->cant > $sumacantsoldesp){
                                         $aux_nfila++;
                                         $aux_saldo = $detalle->cant - $sumacantsoldesp;
@@ -386,25 +403,23 @@
                                             <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->cant - $detalle->cantusada}}" style="display:none;"/>
                                         @endif
                                     </td>
-                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:center">
                                         @if ($aux_sta==2)
                                             {{$detalle->cant}}
                                         @else 
                                             {{$detalle->cant - $detalle->cantusada}}
                                         @endif
                                     </td>
-                                    <!--
-                                    <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->cantdesp}}
+                                    <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:center">
+                                        {{$sumacantdesp}}
                                     </td>
-                                    -->
-                                    <td name="cantsoldespF{{$aux_nfila}}" id="cantsoldespF{{$aux_nfila}}" style="text-align:right">
+                                    <td name="cantsoldespF{{$aux_nfila}}" id="cantsoldespF{{$aux_nfila}}" style="text-align:center">
                                         {{$sumacantsoldesp}}
                                     </td>
                                     <td name="saldocantOrigF{{$aux_nfila}}" id="saldocantOrigF{{$aux_nfila}}" style="text-align:right;display:none;">
                                         {{$aux_saldo}}
                                     </td>
-                                    <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
+                                    <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:center">
                                         {{$aux_saldo}}
                                     </td>
                                     <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
@@ -513,7 +528,7 @@
                                 ?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="4" style="text-align:right">
+                                <td colspan="5" style="text-align:right">
                                     <b>Total Unidades:</b>
                                 </td>
                                 <td style="text-align:right">
