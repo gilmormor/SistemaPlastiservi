@@ -158,6 +158,7 @@ class ReportOrdDespGuiaFactController extends Controller
                                     </a>";
                 }
                 //dd($aux_enlaceOD);
+                $aux_fechaguia = $data->guiadespachofec == null ? "" : date('Y-m-d', strtotime($data->guiadespachofec));
 
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
@@ -188,7 +189,7 @@ class ReportOrdDespGuiaFactController extends Controller
                         $data->guiadespacho
                     </td>
                     <td>
-                        " . date('Y-m-d', strtotime($data->guiadespachofec)) . "
+                        $aux_fechaguia
                     </td>
                     <td>
                         $data->numfactura
