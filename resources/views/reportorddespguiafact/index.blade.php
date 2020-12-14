@@ -76,12 +76,16 @@ Orden Despacho
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="statusOD" id="statusOD" class="selectpicker form-control statusOD">
-                                            <option value="" selected>Todos</option>
-                                            <option value="1">Emitidas</option>
-                                            <option value="2">Anuladas</option>
-                                            <option value="3">Guia</option>
-                                            <option value="4">Factura</option>
-                                            <option value="5">Cerrada</option>
+                                            @if ($aux_verestado =='1')
+                                                <option value="" selected>Todos</option>
+                                                <option value="1">Emitidas</option>
+                                                <option value="2">Anuladas</option>
+                                                <option value="3">Guia</option>
+                                                <option value="4">Factura</option>
+                                                <option value="5">Cerrada</option>
+                                            @else
+                                                <option value="5" selected>Cerrada</option>
+                                            @endif
                                         </select>
                                     </div>
                                 </div>
@@ -134,6 +138,24 @@ Orden Despacho
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id')}}" maxlength="12"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Guia Despacho">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="guiadespacho">NumGuia:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <input type="text" name="guiadespacho" id="guiadespacho" class="form-control" value="{{old('guiadespacho')}}" maxlength="12"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Factura">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="numfactura">NumFac:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <input type="text" name="numfactura" id="numfactura" class="form-control" value="{{old('numfactura')}}" maxlength="12"/>
                                     </div>
                                 </div>
                             </div>

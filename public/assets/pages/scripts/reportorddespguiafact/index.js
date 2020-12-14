@@ -111,6 +111,8 @@ function datos(){
         notaventa_id      : $("#notaventa_id").val(),
         statusOD          : $("#statusOD").val(),
         comuna_id         : $("#comuna_id").val(),
+        guiadespacho      : $("#guiadespacho").val(),
+        numfactura        : $("#numfactura").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;

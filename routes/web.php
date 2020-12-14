@@ -489,6 +489,7 @@ Route::get('reportorddesp/exportPdf', 'ReportOrdDespController@exportPdf')->name
 
 /*RUTAS REPORTE ORDEN DESPACHO GUIA FACTURA*/
 Route::get('reportorddespguiafact', 'ReportOrdDespGuiaFactController@index')->name('reportorddespguiafact');
+Route::get('reportorddespguiafact2', 'ReportOrdDespGuiaFactController@index2')->name('reportorddespguiafact2');
 Route::post('reportorddespguiafact/reporte', 'ReportOrdDespGuiaFactController@reporte')->name('reportorddespguiafact_reporte');
 Route::get('reportorddespguiafact/exportPdf', 'ReportOrdDespGuiaFactController@exportPdf')->name('reportorddespguiafact_exportPdf');
 

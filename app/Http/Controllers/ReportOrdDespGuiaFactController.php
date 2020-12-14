@@ -89,11 +89,84 @@ class ReportOrdDespGuiaFactController extends Controller
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
+        $aux_verestado='1'; //Mostrar todas los opciopnes de estado de OD
 
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
+        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado'));
 
     }
 
+    public function index2()
+    {
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+                $user = Usuario::findOrFail(auth()->id());
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                        })
+                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+                ->join('vendedor', function ($join) {
+                    $join->on('persona.id', '=', 'vendedor.persona_id')
+                        ->where('vendedor.sta_activo', '=', 1);
+                })
+                ->select([
+                    'vendedor.id',
+                    'persona.nombre',
+                    'persona.apellido'
+                ])
+                ->where('vendedor.id','=',$vendedor_id)
+                ->get();
+        }else{
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+                $user = Usuario::findOrFail(auth()->id());
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                        })
+                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+                ->join('vendedor', function ($join) {
+                    $join->on('persona.id', '=', 'vendedor.persona_id')
+                        ->where('vendedor.sta_activo', '=', 1);
+                })
+                ->select([
+                    'vendedor.id',
+                    'persona.nombre',
+                    'persona.apellido'
+                ])
+                ->get();
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
+        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->pluck('cliente_sucursal.cliente_id')->toArray())
+        ->whereIn('cliente.id',$clientevendedorArray)
+        ->get();
+        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+
+        $giros = Giro::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $comunas = Comuna::orderBy('id')->get();
+        $fechaAct = date("d/m/Y");
+        $aux_verestado='2'; //Mostrar todas los opciopnes de estado de OD
+
+        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado'));
+
+    }
         
     public function reporte(Request $request){
         $respuesta = array();
@@ -419,6 +492,17 @@ function consultaorddesp($request){
         $aux_conddespachosol_id = "despachoord.despachosol_id='$request->despachosol_id'";
     }
 
+    if(empty($request->guiadespacho)){
+        $aux_condguiadespacho = " true";
+    }else{
+        $aux_condguiadespacho = "despachoord.guiadespacho='$request->guiadespacho'";
+    }
+    if(empty($request->numfactura)){
+        $aux_condnumfactura = " true";
+    }else{
+        $aux_condnumfactura = "despachoord.numfactura='$request->numfactura'";
+    }
+
     $aux_condaprobord = "true";
 
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
@@ -463,6 +547,8 @@ function consultaorddesp($request){
             and $aux_condaprobord
             and $aux_condid
             and $aux_conddespachosol_id
+            and $aux_condguiadespacho
+            and $aux_condnumfactura
             and despachoord.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachoord.id;";
             //and despachoord.id not in (SELECT despachoord_id from despachoordanul where isnull(deleted_at))
