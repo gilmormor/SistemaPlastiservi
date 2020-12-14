@@ -78,9 +78,10 @@ Orden Despacho
                                         <select name="statusOD" id="statusOD" class="selectpicker form-control statusOD">
                                             <option value="" selected>Todos</option>
                                             <option value="1">Emitidas</option>
-                                            <option value="2">Guia</option>
-                                            <option value="3">Factura</option>
-                                            <option value="4">Cerrada</option>
+                                            <option value="2">Anuladas</option>
+                                            <option value="3">Guia</option>
+                                            <option value="4">Factura</option>
+                                            <option value="5">Cerrada</option>
                                         </select>
                                     </div>
                                 </div>

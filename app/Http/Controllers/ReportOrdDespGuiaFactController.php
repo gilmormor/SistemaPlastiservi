@@ -157,6 +157,9 @@ class ReportOrdDespGuiaFactController extends Controller
                                         <i class='fa fa-fw fa-file-pdf-o'></i>$data->id
                                     </a>";
                 }
+                if ($data->despachoordanul_id != null){
+                    $aux_enlaceOD = "<small class='label pull-left bg-red'>Anulado</small>";
+                }
                 //dd($aux_enlaceOD);
                 $aux_fechaguia = $data->guiadespachofec == null ? "" : date('Y-m-d', strtotime($data->guiadespachofec));
 
@@ -366,17 +369,20 @@ function consultaorddesp($request){
         $aux_statusOD = " true";
     }else{
         switch ($request->statusOD) {
-            case 1:
-                $aux_statusOD = "isnull(despachoord.aprguiadesp)";
+            case 1: //Emitidas
+                $aux_statusOD = "isnull(despachoord.aprguiadesp) and isnull(despachoordanul.id)";
                 break;
-            case 2:
-                $aux_statusOD = "despachoord.aprguiadesp=1 and isnull(despachoord.guiadespacho)";
+            case 2: //Anuladas
+                $aux_statusOD = "isnull(despachoord.aprguiadesp) and not isnull(despachoordanul.id)";
+                break;
+            case 3: //Esperando por guia
+                $aux_statusOD = "despachoord.aprguiadesp=1 and isnull(despachoord.guiadespacho) and isnull(despachoordanul.id)";
                 break;    
-            case 3:
-                $aux_statusOD = "not isnull(despachoord.guiadespacho) and isnull(despachoord.numfactura)";
+            case 4: //Esperando por Factura
+                $aux_statusOD = "not isnull(despachoord.guiadespacho) and isnull(despachoord.numfactura) and isnull(despachoordanul.id)";
                 break;
-            case 4:
-                $aux_statusOD = "not isnull(despachoord.numfactura)";
+            case 5: //Cerradas
+                $aux_statusOD = "not isnull(despachoord.numfactura) and isnull(despachoordanul.id)";
                 break;
         }
         
@@ -410,7 +416,8 @@ function consultaorddesp($request){
             despachoord.notaventa_id,despachoord.fechaestdesp,
             sum(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
             despachoord.aprguiadesp,despachoord.aprguiadespfh,
-            despachoord.guiadespacho,despachoord.guiadespachofec,despachoord.numfactura,despachoord.fechafactura
+            despachoord.guiadespacho,despachoord.guiadespachofec,despachoord.numfactura,despachoord.fechafactura,
+            despachoordanul.id as despachoordanul_id
             FROM despachoord INNER JOIN despachoorddet
             ON despachoord.id=despachoorddet.despachoord_id
             INNER JOIN notaventa
@@ -427,6 +434,8 @@ function consultaorddesp($request){
             ON cliente.id=notaventa.cliente_id
             INNER JOIN comuna
             ON comuna.id=despachoord.comunaentrega_id
+            LEFT JOIN despachoordanul
+            ON despachoordanul.despachoord_id=despachoord.id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condFechaFac
@@ -444,6 +453,8 @@ function consultaorddesp($request){
             and $aux_conddespachosol_id
             and despachoord.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachoord.id;";
+            //and despachoord.id not in (SELECT despachoord_id from despachoordanul where isnull(deleted_at))
+
     //dd($sql);
     $datas = DB::select($sql);
 
