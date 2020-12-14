@@ -103,6 +103,15 @@ class ReportOrdDespGuiaFactController extends Controller
     
         if($request->ajax()){
             $datas = consultaorddesp($request);
+
+            $emcabezadoGF = "
+                <th class='tooltipsC' title='Num Guia'>NumGuia</th>
+                <th class='tooltipsC' title='Fecha Guia'>F Guia</th>
+                <th class='tooltipsC' title='Num Factura'>NumFact</th>
+                <th class='tooltipsC' title='Fecha Factura'>F Fact</th>";
+            if ($request->statusOD >= 1 and $request->statusOD <=3){
+                $emcabezadoGF = "";
+            }
     
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
             <thead>
@@ -116,12 +125,9 @@ class ReportOrdDespGuiaFactController extends Controller
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
                     <th>Comuna</th>
-                    <th class='tooltipsC' title='Total Kg'>Total Kg</th>
-                    <th class='tooltipsC' title='Num Guia'>NumGuia</th>
-                    <th class='tooltipsC' title='Fecha Guia'>F Guia</th>
-                    <th class='tooltipsC' title='Num Factura'>NumFact</th>
-                    <th class='tooltipsC' title='Fecha Factura'>F Fact</th>
-                </tr>
+                    <th class='tooltipsC' title='Total Kg'>Total Kg</th>" .
+                    $emcabezadoGF .
+                "</tr>
             </thead>
             <tbody>";
     
@@ -163,6 +169,23 @@ class ReportOrdDespGuiaFactController extends Controller
                 //dd($aux_enlaceOD);
                 $aux_fechaguia = $data->guiadespachofec == null ? "" : date('Y-m-d', strtotime($data->guiadespachofec));
 
+                $detalleGF = "
+                <td>
+                    $data->guiadespacho
+                </td>
+                <td>
+                    $aux_fechaguia
+                </td>
+                <td>
+                    $data->numfactura
+                </td>
+                <td>
+                    $data->fechafactura
+                </td>";
+                if ($request->statusOD >= 1 and $request->statusOD <=3){
+                    $detalleGF = "";
+                }
+
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id
@@ -187,20 +210,9 @@ class ReportOrdDespGuiaFactController extends Controller
                     <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
                     <td style='text-align:right'>".
                         number_format($data->totalkilos, 2, ",", ".") .
-                    "</td>
-                    <td>
-                        $data->guiadespacho
-                    </td>
-                    <td>
-                        $aux_fechaguia
-                    </td>
-                    <td>
-                        $data->numfactura
-                    </td>
-                    <td>
-                        $data->fechafactura
-                    </td>
-                </tr>";
+                    "</td>" .
+                    $detalleGF .
+                "</tr>";
     
                 //dd($data->contacto);
             }
