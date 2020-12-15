@@ -666,7 +666,7 @@ class NotaVentaController extends Controller
             if($request->aprobstatus=='1'){
                 $notaventa->aprobusu_id = auth()->id();
                 $notaventa->aprobfechahora = date("Y-m-d H:i:s");
-                $notaventa->aprobobs = 'Aprobado por el mismo vendedor';
+                $notaventa->aprobobs = 'Aprobado por el vendedor';
             }
             if ($notaventa->save()) {
                 return response()->json(['mensaje' => 'ok']);
