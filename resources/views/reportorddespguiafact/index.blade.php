@@ -80,8 +80,8 @@ Orden Despacho
                                                 <option value="" selected>Todos</option>
                                                 <option value="1">Emitidas</option>
                                                 <option value="2">Anuladas</option>
-                                                <option value="3">Guia</option>
-                                                <option value="4">Factura</option>
+                                                <option value="3">Por Asignar Guia</option>
+                                                <option value="4">Por Asignar Factura</option>
                                                 <option value="5">Cerrada</option>
                                             @else
                                                 <option value="5" selected>Cerrada</option>
