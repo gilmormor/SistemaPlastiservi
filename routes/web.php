@@ -547,4 +547,4 @@ Route::post('guardaranularguia', 'DespachoOrdAnulGuiaFactController@guardaranula
 
 /*RUTAS NOTA DE VENTA DEVOLVER A VENDEDOR - DEVOLVER NOTA DE VENTA A VENDEDOR*/
 Route::get('notaventadevolvend', 'NotaVentaDevolVendController@index')->name('notaventadevolvend');
-Route::put('notaventadevolvend/{id}', 'NotaVentaDevolVendController@actualizar')->name('actualizar_notaventadevolvend');
+Route::post('notaventadevolvend/actualizarreg', 'NotaVentaDevolVendController@actualizarreg')->name('actualizarreg_notaventadevolvend');

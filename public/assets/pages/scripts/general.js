@@ -26,7 +26,7 @@ $(document).ready(function () {
 
 		},
 		stateSave: false
-    } );
+	} );
 
 
 	$('#tabla-data-productos tfoot th').each( function () {
@@ -901,4 +901,19 @@ function listarorddespxNV(id){
         }
     });
 
+}
+
+function configurarTablageneral(aux_tabla){
+	$(aux_tabla).DataTable({
+		'paging'      : true, 
+		'lengthChange': true,
+		'searching'   : true,
+		'ordering'    : true,
+		'info'        : true,
+		'autoWidth'   : false,
+		"order"       : [[ 0, "desc" ]],
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+		}
+	});    
 }

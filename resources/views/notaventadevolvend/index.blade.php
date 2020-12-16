@@ -4,9 +4,9 @@ Devolver Nota de Venta a Vendedor
 @endsection
 
 @section("scripts")
-    <script type="text/javascript" src="{{asset("assets/js/jquery-barcode.js")}}"></script>
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/notaventadevolvend/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -19,7 +19,7 @@ Devolver Nota de Venta a Vendedor
             </div>
             <div class="box-body">
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-datadesc">
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>
@@ -50,8 +50,8 @@ Devolver Nota de Venta a Vendedor
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{{route('editar_notaventa', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                            <i class="fa fa-fw fa-exchange"></i>
+                                        <a class="btn-accion-tabla tooltipsC" title="Devolver a vendedor" onclick='devNVvend({{$data->id}})'>
+                                            <i class="fa fa-fw fa-reply"></i>
                                         </a>
                                     </td>
                                 </tr>

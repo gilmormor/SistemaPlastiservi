@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\NotaVenta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +15,7 @@ class NotaVentaDevolVendController extends Controller
      */
     public function index()
     {        
-        can('listar-nota-venta-cerrada');
+        can('listar-devolver-nota-venta-vendedor');
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
         $sql = 'SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_id,oc_file,
                 (SELECT COUNT(*) 
@@ -27,7 +28,8 @@ class NotaVentaDevolVendController extends Controller
             and isnull(anulada)
             and (aprobstatus=1 or aprobstatus=3)
             and notaventa.id not in (SELECT notaventa_id FROM despachoord where isnull(despachoord.deleted_at) and despachoord.id not in (SELECT despachoordanul.despachoord_id from despachoordanul where isnull(despachoordanul.deleted_at)) )
-            and isnull(notaventa.deleted_at);';
+            and isnull(notaventa.deleted_at)
+            order by notaventa.id desc;';
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);
@@ -85,7 +87,7 @@ class NotaVentaDevolVendController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function actualizar(Request $request, $id)
     {
         //
     }
@@ -100,4 +102,27 @@ class NotaVentaDevolVendController extends Controller
     {
         //
     }
+
+    public function actualizarreg(Request $request)
+    {
+        can('guardar-devolver-nota-venta-vendedor');
+        dd($request->id);
+        if ($request->ajax()) {
+            $notaventa = NotaVenta::findOrFail($request->id);
+            $notaventa->aprobstatus = $request->valor;
+            $notaventa->aprobusu_id = auth()->id();
+            $notaventa->aprobfechahora = date("Y-m-d H:i:s");
+            $notaventa->aprobobs = $request->obs;
+            
+            if ($notaventa->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+
 }
