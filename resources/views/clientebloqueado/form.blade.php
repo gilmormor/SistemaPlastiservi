@@ -1,12 +1,19 @@
 <input type="hidden" name="cliente_id" id="cliente_id" value="{{old('cliente_id', $data->cliente_id ?? '')}}">
 <div class="form-group">
     <label for="rut" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
-    <div class="input-group col-lg-3">
-        <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $data->cliente->rut ?? '')}}" onkeyup="llevarMayus(this);" title="F2 Buscar" placeholder="F2 Buscar" maxlength="12" required/>
-        <span class="input-group-btn">
-            <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
-        </span>
-    </div>
+    @if ($aux_editar == 0)
+        <div class="input-group col-lg-3">
+            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $data->cliente->rut ?? '')}}" onkeyup="llevarMayus(this);" title="F2 Buscar" placeholder="F2 Buscar" maxlength="12" required/>
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
+            </span>
+        </div>
+    @else
+        <div class="col-lg-3">
+            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $data->cliente->rut ?? '')}}" maxlength="12" required disabled readonly/>
+        </div>
+
+    @endif
 </div>
 <!--
 <div class="form-group">

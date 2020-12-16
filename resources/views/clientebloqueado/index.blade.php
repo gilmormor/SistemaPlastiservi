@@ -27,6 +27,7 @@ Cliente Bloquedo
                             <th class="width70">ID</th>
                             <th class="width70">Cod Cliente</th>
                             <th>Nombre</th>
+                            <th>Descripción</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
@@ -36,6 +37,7 @@ Cliente Bloquedo
                             <td>{{$data->id}}</td>
                             <td>{{$data->cliente_id}}</td>
                             <td>{{$data->cliente->razonsocial}}</td>
+                            <td>{{$data->descripcion}}</td>
                             <td>
                                 <a href="{{route('editar_clientebloqueado', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
                                     <i class="fa fa-fw fa-pencil"></i>

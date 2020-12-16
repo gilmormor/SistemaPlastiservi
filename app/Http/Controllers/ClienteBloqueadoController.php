@@ -68,7 +68,8 @@ class ClienteBloqueadoController extends Controller
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
-        return view('clientebloqueado.crear', compact('clientes'));
+        $aux_editar = 0;
+        return view('clientebloqueado.crear', compact('clientes','aux_editar'));
     }
 
     /**
@@ -134,7 +135,8 @@ class ClienteBloqueadoController extends Controller
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
-        return view('clientebloqueado.editar', compact('data','clientes'));
+        $aux_editar = 1;
+        return view('clientebloqueado.editar', compact('data','clientes','aux_editar'));
     }
 
     /**

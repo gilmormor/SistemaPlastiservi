@@ -544,3 +544,7 @@ Route::delete('despachoobs/{id}', 'DespachoObsController@eliminar')->name('elimi
 
 /*RUTAS Anular Guia Despacho*/
 Route::post('guardaranularguia', 'DespachoOrdAnulGuiaFactController@guardaranularguia')->name('guardaranularguia');
+
+/*RUTAS NOTA DE VENTA DEVOLVER A VENDEDOR - DEVOLVER NOTA DE VENTA A VENDEDOR*/
+Route::get('notaventadevolvend', 'NotaVentaDevolVendController@index')->name('notaventadevolvend');
+Route::put('notaventadevolvend/{id}', 'NotaVentaDevolVendController@actualizar')->name('actualizar_notaventadevolvend');
