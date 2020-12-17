@@ -4,25 +4,43 @@ $(document).ready(function () {
 });
 
 
-function devNVvend(id){
-    var data = {
-        id: id,
-        _token: $('input[name=_token]').val()
-    };
-
-	$.ajax({
-        url: '/notaventadevolvend/actualizarreg',
-        type: 'POST',
-        data: data,
-        success: function (datos) {
-			/*
-            if(datos['tabla'].length>0){
-                $("#tablaconsulta").html(datos['tabla']);
-                configurarTabla('.tablascons');
-			}
-			*/
+function devNVvend(id,nfila){
+    swal({
+        title: 'Devolver Nota Venta Nro: ' + id + ' ?',
+        text: "",
+        icon: 'warning',
+        buttons: {
+            confirm: "Aceptar",
+            cancel: "Cancelar"
+        },
+    }).then((value) => {
+        if (value) {
+            var data = {
+                id: id,
+                _token: $('input[name=_token]').val()
+            };
+        
+            $.ajax({
+                url: '/notaventadevolvend/actualizarreg',
+                type: 'POST',
+                data: data,
+                success: function (respuesta) {
+                    if (respuesta.mensaje == "ok") {
+                        $("#fila"+nfila).remove();
+                        Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                    } else {
+                        if (respuesta.mensaje == "sp"){
+                            Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                        }else{
+                            Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                        }
+                    }
+                }
+            });
+        
         }
     });
+
 
 };
 
@@ -39,3 +57,43 @@ function datos(){
     };
     return data;
 }
+
+function anularNV(id,nfila){
+    swal({
+        title: 'Anular Nota Venta Nro: ' + id + ' ?',
+        text: "",
+        icon: 'warning',
+        buttons: {
+            confirm: "Aceptar",
+            cancel: "Cancelar"
+        },
+    }).then((value) => {
+        if (value) {
+            var data = {
+                id: id,
+                _token: $('input[name=_token]').val()
+            };
+        
+            $.ajax({
+                url: '/notaventadevolvend/anular/actualizanular',
+                type: 'POST',
+                data: data,
+                success: function (respuesta) {
+                    if (respuesta.mensaje == "ok") {
+                        $("#fila"+nfila).remove();
+                        Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                    } else {
+                        if (respuesta.mensaje == "sp"){
+                            Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                        }else{
+                            Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                        }
+                    }
+                }
+            });
+        
+        }
+    });
+
+
+};

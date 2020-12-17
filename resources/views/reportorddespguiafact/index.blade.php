@@ -1,6 +1,12 @@
 @extends("theme.$theme.layout")
 @section('titulo')
 Orden Despacho
+@if ($aux_verestado =='1')
+    Orden Despacho
+@else
+    Orden Despacho Cerradas
+@endif
+
 @endsection
 
 @section("scripts")
@@ -15,7 +21,12 @@ Orden Despacho
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Consultar Orden Despacho, Guia, Factura, cerrada</h3>
+                @if ($aux_verestado =='1')
+                    <h3 class="box-title">Consultar Orden Despacho, Guia, Factura, cerrada</h3>
+                @else
+                    <h3 class="box-title">Consultar Orden Despacho Cerradas</h3>
+                @endif
+                
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>

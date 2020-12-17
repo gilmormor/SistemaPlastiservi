@@ -941,5 +941,38 @@ class NotaVentaController extends Controller
         }
     }
 
+}
+
+function consultaNVaprobadas($id){
+    $aux_condid = "true";
+    if($id!=""){
+        $aux_condid = "notaventa.id=$id";
+    }
+    //Consultar registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
+
+    $sql = "SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_id,oc_file,
+                (SELECT COUNT(*) 
+                FROM notaventadetalle 
+                WHERE notaventadetalle.notaventa_id=notaventa.id and 
+                notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
+            FROM notaventa inner join cliente
+            on notaventa.cliente_id = cliente.id
+            where $aux_condid
+            and isnull(notaventa.findespacho)
+            and isnull(anulada)
+            and (aprobstatus=1 or aprobstatus=3)
+            and notaventa.id not in (SELECT notaventa_id 
+                                    FROM despachosol 
+                                    where isnull(despachosol.deleted_at) and despachosol.id 
+                                    not in (SELECT despachosolanul.despachosol_id 
+                                            from despachosolanul 
+                                            where isnull(despachosolanul.deleted_at)
+                                           )
+                                    )
+            and isnull(notaventa.deleted_at)
+            order by notaventa.id desc;";
+        //dd($sql);
+    $datas = DB::select($sql);
+    return $datas;
 
 }

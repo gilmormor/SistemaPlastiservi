@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Devolver Nota de Venta a Vendedor
+Anular Nota de Venta
 @endsection
 
 @section("scripts")
@@ -15,7 +15,7 @@ Devolver Nota de Venta a Vendedor
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Devolver Nota de Venta a Vendedor</h3>
+                <h3 class="box-title">Anular Nota de Venta</h3>
             </div>
             <div class="box-body">
                 <div class="table-responsive">
@@ -50,8 +50,8 @@ Devolver Nota de Venta a Vendedor
                                         </a>
                                     </td>
                                     <td>
-                                        <a class="btn btn-primary btn-xs tooltipsC" title="Devolver a vendedor" onclick='devNVvend({{$data->id}},{{$aux_nfila}})'>
-                                            <i class="fa fa-fw fa-reply"></i>
+                                        <a class="btn btn-primary btn-xs tooltipsC" title="Anular" onclick='anularNV({{$data->id}},{{$aux_nfila}})'>
+                                            <i class="fa fa-fw fa-remove"></i>
                                         </a>
                                     </td>
                                 </tr>
