@@ -24,71 +24,17 @@ class ReportOrdDespGuiaFactController extends Controller
      */
     public function index()
     {
-        $user = Usuario::findOrFail(auth()->id());
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->where('vendedor.id','=',$vendedor_id)
-                ->get();
-        }else{
-            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->get();
-        }
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+        can('listar-despacho-consulta-guia-factura-cerradas');
+        $respuesta = cargadatos();
+        $clientes = $respuesta['clientes'];
+        $vendedores = $respuesta['vendedores'];
+        $vendedores1 = $respuesta['vendedores1'];
+        $giros = $respuesta['giros'];
+        $areaproduccions = $respuesta['areaproduccions'];
+        $tipoentregas = $respuesta['tipoentregas'];
+        $comunas = $respuesta['comunas'];
+        $fechaAct = $respuesta['fechaAct'];
 
-        $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
-        $tipoentregas = TipoEntrega::orderBy('id')->get();
-        $comunas = Comuna::orderBy('id')->get();
-        $fechaAct = date("d/m/Y");
         $aux_verestado='1'; //Mostrar todas los opciopnes de estado de OD
 
         return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado'));
@@ -97,77 +43,42 @@ class ReportOrdDespGuiaFactController extends Controller
 
     public function index2()
     {
-        $user = Usuario::findOrFail(auth()->id());
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->where('vendedor.id','=',$vendedor_id)
-                ->get();
-        }else{
-            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->get();
-        }
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+        can('listar-despacho-consulta-cerradas');
+        $respuesta = cargadatos();
+        $clientes = $respuesta['clientes'];
+        $vendedores = $respuesta['vendedores'];
+        $vendedores1 = $respuesta['vendedores1'];
+        $giros = $respuesta['giros'];
+        $areaproduccions = $respuesta['areaproduccions'];
+        $tipoentregas = $respuesta['tipoentregas'];
+        $comunas = $respuesta['comunas'];
+        $fechaAct = $respuesta['fechaAct'];
 
-        $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
-        $tipoentregas = TipoEntrega::orderBy('id')->get();
-        $comunas = Comuna::orderBy('id')->get();
-        $fechaAct = date("d/m/Y");
         $aux_verestado='2'; //Mostrar todas los opciopnes de estado de OD
 
         return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado'));
 
     }
-        
+
+    public function indexupdateguiafact()
+    {
+        can('listar-despacho-cerradas-edit-guia-fact');
+        $respuesta = cargadatos();
+        $clientes = $respuesta['clientes'];
+        $vendedores = $respuesta['vendedores'];
+        $vendedores1 = $respuesta['vendedores1'];
+        $giros = $respuesta['giros'];
+        $areaproduccions = $respuesta['areaproduccions'];
+        $tipoentregas = $respuesta['tipoentregas'];
+        $comunas = $respuesta['comunas'];
+        $fechaAct = $respuesta['fechaAct'];
+
+        $aux_verestado='3'; //3 muestra boton de editar Num Guia y Num Fact 
+
+        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado'));
+
+    }
+
     public function reporte(Request $request){
         $respuesta = array();
         $respuesta['exito'] = false;
@@ -177,13 +88,18 @@ class ReportOrdDespGuiaFactController extends Controller
         if($request->ajax()){
             $datas = consultaorddesp($request);
 
-            $emcabezadoGF = "
+            $encabezadoGF = "
                 <th class='tooltipsC' title='Num Guia'>NumGuia</th>
                 <th class='tooltipsC' title='Fecha Guia'>F Guia</th>
                 <th class='tooltipsC' title='Num Factura'>NumFact</th>
                 <th class='tooltipsC' title='Fecha Factura'>F Fact</th>";
             if ($request->statusOD >= 1 and $request->statusOD <=3){
-                $emcabezadoGF = "";
+                $encabezadoGF = "";
+            }
+            $encabezadoeditarguiafac = "";
+
+            if($request->aux_verestado == '3'){
+                $encabezadoeditarguiafac = "<th class='tooltipsC' title='Editar Guia Factura'>Edit</th>";
             }
     
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
@@ -198,9 +114,10 @@ class ReportOrdDespGuiaFactController extends Controller
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
                     <th>Comuna</th>
-                    <th class='tooltipsC' title='Total Kg'>Total Kg</th>" .
-                    $emcabezadoGF .
-                "</tr>
+                    <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                    $encabezadoGF
+                    $encabezadoeditarguiafac
+                </tr>
             </thead>
             <tbody>";
     
@@ -219,17 +136,6 @@ class ReportOrdDespGuiaFactController extends Controller
                     $aprguiadesp = "<i class='glyphicon glyphicon-floppy-save text-primary tooltipsC' title='Fecha: $fechaaprob'></i>";
                 }
                 $listadosoldesp = "";
-                /*
-                $ordesp = DespachoOrd::orderBy('id')
-                        ->where('despachosol_id',$data->id);
-                if($ordesp->count() > 0){
-                    $aux_cont = $ordesp->count();
-                    $listadosoldesp = "<i class='glyphicon glyphicon-search text-primary tooltipsC' title='Orden Despacho: $aux_cont'></i>";
-                }*/
-                //dd($ordesp);
-
-                /*$despachoord = DespachoOrd::findOrFail($data->id)
-                                ->whereNull();*/
                 $aux_enlaceOD = "";
                 if ($data->aprguiadesp == 1){
                     $aux_enlaceOD = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD($data->id,1)'>
@@ -239,17 +145,17 @@ class ReportOrdDespGuiaFactController extends Controller
                 if ($data->despachoordanul_id != null){
                     $aux_enlaceOD = "<small class='label pull-left bg-red'>Anulado</small>";
                 }
-                //dd($aux_enlaceOD);
+
                 $aux_fechaguia = $data->guiadespachofec == null ? "" : date('Y-m-d', strtotime($data->guiadespachofec));
 
                 $detalleGF = "
-                <td>
+                <td id='guiadespacho$i' name='guiadespacho$i'>
                     $data->guiadespacho
                 </td>
                 <td>
                     $aux_fechaguia
                 </td>
-                <td>
+                <td id='numfactura$i' name='numfactura$i'>
                     $data->numfactura
                 </td>
                 <td>
@@ -258,6 +164,18 @@ class ReportOrdDespGuiaFactController extends Controller
                 if ($request->statusOD >= 1 and $request->statusOD <=3){
                     $detalleGF = "";
                 }
+
+                $detalleeditarguiafac = "";
+                if($request->aux_verestado == '3'){
+                    $detalleeditarguiafac = "
+                        <td>
+                            <a class='btn btn-primary btn-xs tooltipsC' title='Editar Guia Fact' onclick='editguiafact($data->id,$i)'>
+                                <i class='fa fa-fw fa-pencil'></i>
+                            </a>
+                        </td>
+                    ";
+                }
+    
 
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
@@ -283,9 +201,11 @@ class ReportOrdDespGuiaFactController extends Controller
                     <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
                     <td style='text-align:right'>".
                         number_format($data->totalkilos, 2, ",", ".") .
-                    "</td>" .
-                    $detalleGF .
-                "</tr>";
+                    "</td>
+                    $detalleGF
+                    $detalleeditarguiafac
+                </tr>";
+                $i++;
     
                 //dd($data->contacto);
             }
@@ -364,6 +284,87 @@ class ReportOrdDespGuiaFactController extends Controller
     {
         //
     }
+}
+
+function cargadatos(){
+    $respuesta = array();
+
+    $user = Usuario::findOrFail(auth()->id());
+    $sql= 'SELECT COUNT(*) AS contador
+        FROM vendedor INNER JOIN persona
+        ON vendedor.persona_id=persona.id
+        INNER JOIN usuario 
+        ON persona.usuario_id=usuario.id
+        WHERE usuario.id=' . auth()->id();
+    $counts = DB::select($sql);
+    $vendedor_id = '0';
+    if($counts[0]->contador>0){
+        $vendedor_id=$user->persona->vendedor->id;
+        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->where('vendedor.id','=',$vendedor_id)
+            ->get();
+    }else{
+        $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                    })
+            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+            ->join('vendedor', function ($join) {
+                $join->on('persona.id', '=', 'vendedor.persona_id')
+                    ->where('vendedor.sta_activo', '=', 1);
+            })
+            ->select([
+                'vendedor.id',
+                'persona.nombre',
+                'persona.apellido'
+            ])
+            ->get();
+    }
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+    $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
+    ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                            ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+    ->pluck('cliente_sucursal.cliente_id')->toArray())
+    ->whereIn('cliente.id',$clientevendedorArray)
+    ->get();
+    $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+
+    $giros = Giro::orderBy('id')->get();
+    $areaproduccions = AreaProduccion::orderBy('id')->get();
+    $tipoentregas = TipoEntrega::orderBy('id')->get();
+    $comunas = Comuna::orderBy('id')->get();
+    $fechaAct = date("d/m/Y");
+
+    $respuesta['clientes'] = $clientes;
+    $respuesta['vendedores'] = $vendedores;
+    $respuesta['vendedores1'] = $vendedores1;
+    $respuesta['giros'] = $giros;
+    $respuesta['areaproduccions'] = $areaproduccions;
+    $respuesta['tipoentregas'] = $tipoentregas;
+    $respuesta['comunas'] = $comunas;
+    $respuesta['fechaAct'] = $fechaAct;
+
+    return $respuesta;
 }
 
 function consultaorddesp($request){

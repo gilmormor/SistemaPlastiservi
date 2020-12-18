@@ -16,6 +16,8 @@ Orden Despacho
 @endsection
 
 @section('contenido')
+<input type="hidden" name="aux_verestado" id="aux_verestado" value="{{old('aux_verestado', $aux_verestado ?? '')}}">
+
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
@@ -87,20 +89,19 @@ Orden Despacho
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="statusOD" id="statusOD" class="selectpicker form-control statusOD">
-                                            @if ($aux_verestado =='1')
+                                            @if ($aux_verestado =='2')
+                                                <option value="5" selected>Cerrada</option>
+                                            @else
                                                 <option value="" selected>Todos</option>
                                                 <option value="1">Emitidas</option>
                                                 <option value="2">Anuladas</option>
                                                 <option value="3">Por Asignar Guia</option>
                                                 <option value="4">Por Asignar Factura</option>
                                                 <option value="5">Cerrada</option>
-                                            @else
-                                                <option value="5" selected>Cerrada</option>
                                             @endif
                                         </select>
                                     </div>
                                 </div>
-
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="RUT">

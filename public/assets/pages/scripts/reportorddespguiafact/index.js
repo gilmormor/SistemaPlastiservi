@@ -113,6 +113,7 @@ function datos(){
         comuna_id         : $("#comuna_id").val(),
         guiadespacho      : $("#guiadespacho").val(),
         numfactura        : $("#numfactura").val(),
+        aux_verestado     : $("#aux_verestado").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -229,4 +230,16 @@ function visto(id,visto){
     };
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
+}
+
+function editguiafact(id,i){
+    var data = {
+        id     : id,
+        guiadespacho : $("#guiadespacho"+i),
+        numfactura   : $("#numfactura"+i),
+        _token : $('input[name=_token]').val()
+    };
+    var ruta = '/notaventa/visto/' + id;
+    ajaxRequest(data,ruta,'vistonotaventa');
+    
 }
