@@ -582,7 +582,10 @@ class DespachoOrdController extends Controller
             $despachoord->fechafactura = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
             $despachoord->numfacturafec = date("Y-m-d H:i:s");
             if ($despachoord->save()) {
-                return response()->json(['mensaje' => 'ok']);
+                return response()->json([
+                                        'mensaje' => 'ok',
+                                        'despachoord' => $despachoord
+                                        ]);
             } else {
                 return response()->json(['mensaje' => 'ng']);
             }
@@ -598,7 +601,8 @@ class DespachoOrdController extends Controller
             if ($despachoord) {
                 return response()->json([
                                         'mensaje' => 'ok',
-                                        'despachoord' => $despachoord
+                                        'despachoord' => $despachoord,
+                                        'fechafactura' => date("d/m/Y", strtotime($despachoord->fechafactura))
                                         ]);
             } else {
                 return response()->json(['mensaje' => 'ng']);

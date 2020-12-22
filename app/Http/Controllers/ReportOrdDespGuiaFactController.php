@@ -54,7 +54,7 @@ class ReportOrdDespGuiaFactController extends Controller
         $comunas = $respuesta['comunas'];
         $fechaAct = $respuesta['fechaAct'];
 
-        $aux_verestado='2'; //Mostrar todas los opciopnes de estado de OD
+        $aux_verestado='2'; //Mostrar solo opcion orddesp cerradas
 
         return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado'));
 
@@ -99,7 +99,7 @@ class ReportOrdDespGuiaFactController extends Controller
             $encabezadoeditarguiafac = "";
 
             if($request->aux_verestado == '3'){
-                $encabezadoeditarguiafac = "<th class='tooltipsC' title='Editar Guia Factura'>Edit</th>";
+                $encabezadoeditarguiafac = "<th class='width70 tooltipsC' title='Editar Guia Factura'>Edit</th>";
             }
     
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
@@ -152,13 +152,13 @@ class ReportOrdDespGuiaFactController extends Controller
                 <td id='guiadespacho$i' name='guiadespacho$i'>
                     $data->guiadespacho
                 </td>
-                <td>
+                <td id='fechaguia$i' name='fechaguia$i'>
                     $aux_fechaguia
                 </td>
                 <td id='numfactura$i' name='numfactura$i'>
                     $data->numfactura
                 </td>
-                <td>
+                <td id='fechafactura$i' name='fechafactura$i'>
                     $data->fechafactura
                 </td>";
                 if ($request->statusOD >= 1 and $request->statusOD <=3){
@@ -169,7 +169,10 @@ class ReportOrdDespGuiaFactController extends Controller
                 if($request->aux_verestado == '3'){
                     $detalleeditarguiafac = "
                         <td>
-                            <a class='btn btn-primary btn-xs tooltipsC' title='Editar Guia Fact' onclick='editguiafact($data->id,$i)'>
+                            <a class='btn btn-primary btn-xs tooltipsC' title='Editar Guia' onclick='guiadesp($i,$data->id,2)'>
+                                <i class='fa fa-fw fa-pencil'></i>
+                            </a>
+                            <a class='btn btn-primary btn-xs tooltipsC' title='Editar Fact' onclick='numfactura($i,$data->id,2)'>
                                 <i class='fa fa-fw fa-pencil'></i>
                             </a>
                         </td>
@@ -195,7 +198,7 @@ class ReportOrdDespGuiaFactController extends Controller
                     <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
+                            <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
                         </a>
                     </td>
                     <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>

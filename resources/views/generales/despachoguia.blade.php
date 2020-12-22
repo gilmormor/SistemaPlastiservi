@@ -11,13 +11,14 @@
             <div class="modal-body">
                 <div class="row">
                     <input type="hidden" name="nfila" id="nfila">
+                    <input type="hidden" name="status" id="status">
                     <div class="form-group col-xs-12 col-sm-2">
                         <label for="idg" class="control-label">OD</label>
                         <input type="text" name="idg" id="idg" class="form-control" required placeholder="ID" disabled readonly/>
                     </div>
                     <div class="form-group col-xs-12 col-sm-10" classorig="form-group col-xs-12 col-sm-10">
-                        <label for="guiadespacho" class="control-label">Guia despacho</label>
-                        <input type="text" name="guiadespacho" id="guiadespacho" class="form-control requeridos numerico" tipoval="texto" required placeholder="Guia despacho"/>
+                        <label for="guiadespachom" class="control-label">Guia despacho</label>
+                        <input type="text" name="guiadespachom" id="guiadespachom" class="form-control requeridos numerico" tipoval="texto" required placeholder="Guia despacho"/>
                         <span class="help-block"></span>
                     </div>
                 </div>

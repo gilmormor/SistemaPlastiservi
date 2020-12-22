@@ -37,7 +37,7 @@ $(document).ready(function () {
         eliminarFormatoRut($(this));
     });
 
-    configurarTabla('.tablas');
+	configurarTabla('.tablas');
 
 });
 
@@ -86,8 +86,7 @@ function ajaxRequest(data,url,funcion) {
 						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
 					}
 				}
-			}
-
+            }
 		},
 		error: function () {
 		}
@@ -230,16 +229,4 @@ function visto(id,visto){
     };
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
-}
-
-function editguiafact(id,i){
-    var data = {
-        id     : id,
-        guiadespacho : $("#guiadespacho"+i),
-        numfactura   : $("#numfactura"+i),
-        _token : $('input[name=_token]').val()
-    };
-    var ruta = '/notaventa/visto/' + id;
-    ajaxRequest(data,ruta,'vistonotaventa');
-    
 }

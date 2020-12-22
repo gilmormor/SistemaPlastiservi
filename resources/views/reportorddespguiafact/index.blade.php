@@ -13,6 +13,7 @@ Orden Despacho
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/reportorddespguiafact/index.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/despachoord/indexguiafact.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -89,7 +90,7 @@ Orden Despacho
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="statusOD" id="statusOD" class="selectpicker form-control statusOD">
-                                            @if ($aux_verestado =='2')
+                                            @if ($aux_verestado =='2' or $aux_verestado =='3')
                                                 <option value="5" selected>Cerrada</option>
                                             @else
                                                 <option value="" selected>Todos</option>
@@ -270,4 +271,7 @@ Orden Despacho
 @include('generales.buscarcliente')
 @include('generales.modalpdf')
 @include('generales.verpdf')
+@include('generales.despachoguia')
+@include('generales.despachofactura')
+
 @endsection

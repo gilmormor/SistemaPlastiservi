@@ -29,7 +29,12 @@ function ajaxRequest(data,url,funcion) {
 			}
 			if(funcion=='guardarfactdesp'){
 				if (respuesta.mensaje == "ok") {
-					$("#fila" + data['nfila']).remove();
+					if(data['status'] == 1){
+						$("#fila" + data['nfila']).remove();
+					}else{
+						$("#numfactura" + data['nfila']).html(data['numfactura']);
+						$("#fechafactura" + data['nfila']).html(respuesta.despachoord.fechafactura);	
+					}
 					$("#myModalnumfactura").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
@@ -38,9 +43,13 @@ function ajaxRequest(data,url,funcion) {
 			}
 			if(funcion=='consultarguiadespachood'){
 				if (respuesta.mensaje == "ok") {
-					$("#guiadespacho").val(respuesta.despachoord.guiadespacho);
-					//$(".requeridos").keyup();
-					quitarvalidacioneach();
+					if(data['status']=='1'){
+						$("#guiadespachom").val(respuesta.despachoord.guiadespacho);
+						quitarvalidacioneach();
+					}else{
+						quitarvalidacioneach();
+						$("#guiadespachom").val(respuesta.despachoord.guiadespacho);
+					}
 					$("#myModalguiadesp").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
@@ -49,9 +58,16 @@ function ajaxRequest(data,url,funcion) {
 			if(funcion=='consultarnumfacturaod'){
 				if (respuesta.mensaje == "ok") {
 					//alert(respuesta.despachoord.numfactura);
-					$("#numfactura").val(respuesta.despachoord.numfactura);
-					//$(".requeridos").keyup();
-					quitarvalidacioneach();
+					if(data['status']=='1'){
+						$("#numfacturam").val(respuesta.despachoord.numfactura);
+						//$(".requeridos").keyup();
+						quitarvalidacioneach();	
+					}else{
+						quitarvalidacioneach();
+						$("#numfacturam").val(respuesta.despachoord.numfactura);
+						$("#fechafacturam").val(respuesta.fechafactura);
+						$("#fechafacturam").datepicker("setDate", respuesta.fechafactura);
+					}
 					$("#myModalnumfactura").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
@@ -71,8 +87,14 @@ function ajaxRequest(data,url,funcion) {
 			
 			if(funcion=='guardaranularguia'){
 				if (respuesta.mensaje == "ok") {
-					//alert(data['nfila']);
-					$("#fila" + data['nfila']).remove();
+					if(data['status'] == 1){
+						//alert(data['nfila']);
+						$("#fila" + data['nfila']).remove();					
+					}else{
+						$("#guiadespacho" + data['nfila']).html(data['guiadespacho']);
+						$("#fechaguia" + data['nfila']).html(respuesta.despachoord.fechafactura);	
+
+					}
 					$("#myModalanularguiafact").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
@@ -86,13 +108,15 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function guiadesp(nfila,id){
+function guiadesp(nfila,id,status){
 	$("#idg").val(id);
 	$("#nfila").val(nfila);
-	$("#guiadespacho").val('');
+	$("#guiadespachom").val('');
+	$("#status").val(status);
 	var data = {
 		id    : id,
 		nfila : nfila,
+		status : status,
 		_token: $('input[name=_token]').val()
 	};
 	var ruta = '/despachoord/consultarod';
@@ -105,7 +129,7 @@ $("#btnGuardarG").click(function(event)
 	if(verificarGuia())
 	{
 		var data = {
-			guiadespacho: $("#guiadespacho").val(),
+			guiadespacho: $("#guiadespachom").val(),
 			_token: $('input[name=_token]').val()
 		};
 		$.ajax({
@@ -115,7 +139,7 @@ $("#btnGuardarG").click(function(event)
 			success: function (respuesta) {
 				if(respuesta.mensaje == 'ok'){
 					swal({
-						title: 'Guia despacho N°.' +$("#guiadespacho").val()+ ' ya existe.',
+						title: 'Guia despacho N°.' +$("#guiadespachom").val()+ ' ya existe.',
 						text: "",
 						icon: 'error',
 						buttons: {
@@ -130,7 +154,7 @@ $("#btnGuardarG").click(function(event)
 				}else{
 					var data = {
 						id    : $("#idg").val(),
-						guiadespacho : $("#guiadespacho").val(),
+						guiadespacho : $("#guiadespachom").val(),
 						nfila : $("#nfila").val(),
 						_token: $('input[name=_token]').val()
 					};
@@ -193,14 +217,16 @@ $("#btnGuardarGanul").click(function(event)
 
 
 
-function numfactura(nfila,id){
+function numfactura(nfila,id,status){
 	$("#idf").val(id);
-	$("#numfactura").val('');
-	$("#fechafactura").val('');
+	$("#numfacturam").val('');
+	$("#fechafacturam").val('');
 	$("#nfilaf").val(nfila);
+	$("#status").val(status);
 	var data = {
 		id    : id,
 		nfila : nfila,
+		status: status,
 		_token: $('input[name=_token]').val()
 	};
 	var ruta = '/despachoord/consultarod';
@@ -220,6 +246,7 @@ function anularguiafact(nfila,id){
 	ajaxRequest(data,ruta,'consultaranularguiafact');
 }
 
+
 $("#btnGuardarF").click(function(event)
 {
 	event.preventDefault();
@@ -227,9 +254,10 @@ $("#btnGuardarF").click(function(event)
 	{
 		var data = {
 			id    : $("#idf").val(),
-			numfactura   : $("#numfactura").val(),
-			fechafactura : $("#fechafactura").val(),
+			numfactura   : $("#numfacturam").val(),
+			fechafactura : $("#fechafacturam").val(),
 			nfila : $("#nfilaf").val(),
+			status : $("#status").val(),
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/despachoord/guardarfactdesp';
@@ -269,7 +297,7 @@ function verificarGuia()
 {
 	var v1=0;
 	
-	v1=validacion('guiadespacho','texto');
+	v1=validacion('guiadespachom','texto');
 	if (v1===false)
 	{
 		return false;
@@ -283,8 +311,8 @@ function verificarFact()
 	var v1=0;
 	var v2=0;
 	
-	v1=validacion('numfactura','texto');
-	v2=validacion('fechafactura','texto');
+	v1=validacion('numfacturam','texto');
+	v2=validacion('fechafacturam','texto');
 	if (v1===false || v2===false)
 	{
 		return false;

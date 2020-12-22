@@ -94,7 +94,7 @@
                                             <small class="label pull-left bg-red">Anulado</small>
                                         @else
                                             @if ($aux_vista == "G")
-                                                <a onclick='guiadesp({{$aux_nfila}},{{$data->id}})' class="btn btn-primary btn-xs tooltipsC" title="Guia de despacho">
+                                                <a onclick='guiadesp({{$aux_nfila}},{{$data->id}},1)' class="btn btn-primary btn-xs tooltipsC" title="Guia de despacho">
                                                     Guia
                                                 </a>
                                                 <a onclick='anularguiafact({{$aux_nfila}},{{$data->id}})' class='btn btn-danger btn-xs' title='Anular Guia' data-toggle='tooltip'>
@@ -102,7 +102,7 @@
                                                 </a>
                                             @endif
                                             @if ($aux_vista == "F")
-                                                <a onclick='numfactura({{$aux_nfila}},{{$data->id}})' class='btn btn-primary btn-xs' title='Factura' data-toggle='tooltip'>
+                                                <a onclick='numfactura({{$aux_nfila}},{{$data->id}},1)' class='btn btn-primary btn-xs' title='Factura' data-toggle='tooltip'>
                                                     Fact
                                                 </a>
                                                 |
