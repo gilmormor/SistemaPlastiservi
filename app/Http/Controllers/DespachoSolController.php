@@ -948,6 +948,7 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
+        and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
         GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho

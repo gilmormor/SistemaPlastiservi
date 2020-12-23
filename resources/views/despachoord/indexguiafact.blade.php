@@ -32,6 +32,7 @@
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                                 <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                                <th class='tooltipsC' title='Total $'>Total $</th>
                                 <th class='tooltipsC' title='Tipo Entrega'>TE</th>
                                 <th class='tooltipsC' title='Guia Despacho'>#Guia</th>
                                 @if ($aux_vista != "C")
@@ -50,8 +51,10 @@
                             <?php
                                 $aux_nfila++;
                                 $aux_totalkg = 0;
+                                $subtotal = 0;
                                 foreach($data->despachoorddets as $despachoorddet){
                                     $aux_totalkg += $despachoorddet->cantdesp * ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant);
+                                    $subtotal += $despachoorddet->cantdesp * $despachoorddet->notaventadetalle->preciounit;
                                 }
                             ?>
                             <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
@@ -82,6 +85,10 @@
                                 <td style='text-align:right'>
                                     {{number_format($aux_totalkg, 2, ",", ".")}}
                                 </td>
+                                <td style='text-align:right'>
+                                    {{number_format($subtotal, 0, ",", ".")}}
+                                </td>
+                                
                                 <td>
                                     <i class='fa fa-fw {{$data->tipoentrega->icono}} tooltipsC' title='{{$data->tipoentrega->nombre}}'></i>
                                 </td> 
