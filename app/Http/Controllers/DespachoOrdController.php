@@ -562,7 +562,11 @@ class DespachoOrdController extends Controller
                 $despachoord->guiadespacho = $request->guiadespacho;
                 $despachoord->guiadespachofec = date("Y-m-d H:i:s");
                 if ($despachoord->save()) {
-                    return response()->json(['mensaje' => 'ok']);
+                    return response()->json([
+                                            'mensaje' => 'ok',
+                                            'despachoord' => $despachoord,
+                                            'guiadespachofec' => date("Y-m-d", strtotime($despachoord->guiadespachofec))
+                                            ]);
                 } else {
                     return response()->json(['mensaje' => 'ng']);
                 }    

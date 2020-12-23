@@ -20,8 +20,15 @@ function ajaxRequest(data,url,funcion) {
 			if(funcion=='guardarguiadesp'){
 				if (respuesta.mensaje == "ok") {
 					//alert(data['nfila']);
-					$("#fila" + data['nfila']).remove();
+					if(data['status']=='1'){
+						$("#fila" + data['nfila']).remove();
+					}else{
+						$("#guiadespacho" + data['nfila']).html(respuesta.despachoord.guiadespacho);
+						$("#fechaguia" + data['nfila']).html(respuesta.guiadespachofec);	
+					}
 					$("#myModalguiadesp").modal('hide');
+
+
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
@@ -59,15 +66,15 @@ function ajaxRequest(data,url,funcion) {
 				if (respuesta.mensaje == "ok") {
 					//alert(respuesta.despachoord.numfactura);
 					if(data['status']=='1'){
-						$("#numfacturam").val(respuesta.despachoord.numfactura);
-						//$(".requeridos").keyup();
 						quitarvalidacioneach();	
 					}else{
-						quitarvalidacioneach();
+						quitarvalidacioneach();	
 						$("#numfacturam").val(respuesta.despachoord.numfactura);
 						$("#fechafacturam").val(respuesta.fechafactura);
-						$("#fechafacturam").datepicker("setDate", respuesta.fechafactura);
+						$("#fechafacturam").datepicker("setDate",respuesta.fechafactura)	
 					}
+					
+					//$(".requeridos").keyup();
 					$("#myModalnumfactura").modal('show');
 				} else {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
@@ -87,14 +94,7 @@ function ajaxRequest(data,url,funcion) {
 			
 			if(funcion=='guardaranularguia'){
 				if (respuesta.mensaje == "ok") {
-					if(data['status'] == 1){
-						//alert(data['nfila']);
-						$("#fila" + data['nfila']).remove();					
-					}else{
-						$("#guiadespacho" + data['nfila']).html(data['guiadespacho']);
-						$("#fechaguia" + data['nfila']).html(respuesta.despachoord.fechafactura);	
-
-					}
+					$("#fila" + data['nfila']).remove();
 					$("#myModalanularguiafact").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
@@ -156,6 +156,7 @@ $("#btnGuardarG").click(function(event)
 						id    : $("#idg").val(),
 						guiadespacho : $("#guiadespachom").val(),
 						nfila : $("#nfila").val(),
+						status : $("#status").val(),
 						_token: $('input[name=_token]').val()
 					};
 					var ruta = '/despachoord/guardarguiadesp';
