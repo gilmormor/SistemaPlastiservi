@@ -18,8 +18,8 @@ class CreateTableNotaventacerrada extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('notaventa_id');
             $table->foreign('notaventa_id','fk_notaventacerrada_notaventa')->references('id')->on('notaventa')->onDelete('restrict')->onUpdate('restrict');
-            $table->string('observacion',200)->comment('Observaciones')->nullable();
-            $table->boolean('motcierre_id')->comment('Motivo cierre NotaVenta. 1=Por fecha, 2=Por Precio, 3=Por solicitud del cliente')->nullable();
+            $table->string('observacion',200)->comment('Observaciones');
+            $table->boolean('motcierre_id')->comment('Motivo cierre NotaVenta. 1=Por fecha, 2=Por Precio, 3=Por solicitud del cliente');
             $table->unsignedBigInteger('usuario_id')->comment('Usuario que creo el registro');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();
