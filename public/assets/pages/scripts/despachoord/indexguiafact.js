@@ -32,6 +32,9 @@ function ajaxRequest(data,url,funcion) {
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
+					if(respuesta.mensaje != "ng"){
+						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
+					}
 				}
 			}
 			if(funcion=='guardarfactdesp'){

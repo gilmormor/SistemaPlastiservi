@@ -38,9 +38,12 @@ class DespachoSolController extends Controller
     {
         can('listar-solicitud-despacho');
         $despachosolanul = DespachoSolAnul::orderBy('id')->pluck('despachosol_id')->toArray();
+        $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
+        //dd($notaventacerrada);
         $datas = DespachoSol::orderBy('id')
                 ->whereNull('aprorddesp')
                 ->whereNotIn('id', $despachosolanul)
+                ->whereNotIn('notaventa_id', $notaventacerradaArray)
                 ->get();
         return view('despachosol.index', compact('datas'));
     }
@@ -347,7 +350,7 @@ class DespachoSolController extends Controller
                             if($despachosoldet->save()){
                                 /*
                                 $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
-                                $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                                $notaventadetalle->cantsoldes   p = $request->cantsoldesp[$i];
                                 $notaventadetalle->save();
                                 */
                                 //$despacho_id = $despachosol->id;    
@@ -368,12 +371,10 @@ class DespachoSolController extends Controller
         }else{
             //dd($notaventacerrada);
             return redirect('despachosol/index')->with([
-                'mensaje'=>'Registro no fue creado. La nota de venta fue Cerrada ' . $notaventacerrada[0]->created_at,
+                'mensaje'=>'Registro no fue creado. La nota de venta fue Cerrada. Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at)),
                 'tipo_alert' => 'alert-error'
             ]);
-
         }
-
     }
 
     /**
@@ -537,64 +538,74 @@ class DespachoSolController extends Controller
     public function actualizar(ValidarDespachoSol $request, $id)
     {
         can('guardar-solicitud-despacho');
-        $dateInput = explode('/',$request->plazoentrega);
-        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-        $dateInput = explode('/',$request->fechaestdesp);
-        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-        $despachosol = DespachoSol::findOrFail($id);
-        $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
-        if(count($clibloq) > 0){
-            return redirect('despachosol/index')->with([
-                'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        if($despachosol->updated_at == $request->updated_at){
-            $despachosol->updated_at = date("Y-m-d H:i:s");
-            $despachosol->comunaentrega_id = $request->comunaentrega_id;
-            $despachosol->tipoentrega_id = $request->tipoentrega_id;
-            $despachosol->plazoentrega = $request->plazoentrega;
-            $despachosol->lugarentrega = $request->lugarentrega;
-            $despachosol->contacto = $request->contacto;
-            $despachosol->contactoemail = $request->contactoemail;
-            $despachosol->contactotelf = $request->contactotelf;
-            $despachosol->observacion = $request->observacion;
-            $despachosol->fechaestdesp = $request->fechaestdesp;
-            //dd($request);
-            if($despachosol->save()){
-                $cont_producto = count($request->producto_id);
-                if($cont_producto>0){
-                    for ($i=0; $i < $cont_producto ; $i++){
-                        if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                            $despachosoldet = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
-                            $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
-                            if($despachosoldet->save()){ //Si al editar dejo en cero la cantidad solicitada elimino el registro en detalle solicitud
-                                if($request->cantsoldesp[$i]==0){
-                                    $despachosoldet->usuariodel_id = auth()->id();
-                                    $despachosoldet->save();
-                                    $despachosoldet->delete();
+        $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
+        //dd($notaventacerrada);
+        if(count($notaventacerrada) == 0){
+            $dateInput = explode('/',$request->plazoentrega);
+            $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+            $dateInput = explode('/',$request->fechaestdesp);
+            $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+            $despachosol = DespachoSol::findOrFail($id);
+            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
+            if(count($clibloq) > 0){
+                return redirect('despachosol/index')->with([
+                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            if($despachosol->updated_at == $request->updated_at){
+                $despachosol->updated_at = date("Y-m-d H:i:s");
+                $despachosol->comunaentrega_id = $request->comunaentrega_id;
+                $despachosol->tipoentrega_id = $request->tipoentrega_id;
+                $despachosol->plazoentrega = $request->plazoentrega;
+                $despachosol->lugarentrega = $request->lugarentrega;
+                $despachosol->contacto = $request->contacto;
+                $despachosol->contactoemail = $request->contactoemail;
+                $despachosol->contactotelf = $request->contactotelf;
+                $despachosol->observacion = $request->observacion;
+                $despachosol->fechaestdesp = $request->fechaestdesp;
+                //dd($request);
+                if($despachosol->save()){
+                    $cont_producto = count($request->producto_id);
+                    if($cont_producto>0){
+                        for ($i=0; $i < $cont_producto ; $i++){
+                            if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                                $despachosoldet = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
+                                $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
+                                if($despachosoldet->save()){ //Si al editar dejo en cero la cantidad solicitada elimino el registro en detalle solicitud
+                                    if($request->cantsoldesp[$i]==0){
+                                        $despachosoldet->usuariodel_id = auth()->id();
+                                        $despachosoldet->save();
+                                        $despachosoldet->delete();
+                                    }
+                                    /*
+                                    $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
+                                    $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                                    $notaventadetalle->save();
+                                    */
+                                    //$despacho_id = $despachosol->id;    
                                 }
-                                /*
-                                $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
-                                $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
-                                $notaventadetalle->save();
-                                */
-                                //$despacho_id = $despachosol->id;    
                             }
                         }
                     }
                 }
+                return redirect('despachosol/index')->with([
+                                                            'mensaje'=>'Registro actualizado con exito.',
+                                                            'tipo_alert' => 'alert-success'
+                                                        ]);
+            }else{
+                return redirect('despachosol/index')->with([
+                                                            'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                                                            'tipo_alert' => 'alert-error'
+                                                        ]);
             }
-            return redirect('despachosol/index')->with([
-                                                        'mensaje'=>'Registro actualizado con exito.',
-                                                        'tipo_alert' => 'alert-success'
-                                                    ]);
         }else{
             return redirect('despachosol/index')->with([
-                                                        'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
-                                                        'tipo_alert' => 'alert-error'
-                                                    ]);
+                'mensaje'=>'Registro no fue Modificado. La nota de venta fue Cerrada. Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at)),
+                'tipo_alert' => 'alert-error'
+            ]);
         }
+
     }
 
     /**
@@ -1550,6 +1561,7 @@ function consultasoldesp($request){
             and $aux_condcomuna_id
             and $aux_condaprobord
             and $aux_condfechaestdesp
+            and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachosol.id
             ORDER BY despachosol.id DESC;";

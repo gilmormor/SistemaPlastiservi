@@ -18,6 +18,7 @@ use App\Models\DespachoSol;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\NotaVentaCerrada;
 use App\Models\PlazoPago;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
@@ -37,10 +38,12 @@ class DespachoOrdController extends Controller
     {
         can('listar-orden-despacho');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
+        $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
         $datas = DespachoOrd::orderBy('id')
                 ->whereNull('aprguiadesp')
                 ->whereNull('guiadespacho')->whereNull('numfactura')
                 ->whereNotIn('id',  $despachoordanul)
+                ->whereNotIn('notaventa_id', $notaventacerradaArray)
                 ->get();
         return view('despachoord.index', compact('datas'));
     }
@@ -51,10 +54,12 @@ class DespachoOrdController extends Controller
     {
         can('listar-guia-despacho');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
+        $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
         $datas = DespachoOrd::orderBy('id')
                         ->where('aprguiadesp','1')
                         ->whereNull('guiadespacho')
                         ->whereNotIn('id',  $despachoordanul)
+                        ->whereNotIn('notaventa_id', $notaventacerradaArray)
                         ->get();
         $aux_vista = 'G';
         $aux_titulo = "Asignar Guia Despacho";
@@ -65,10 +70,12 @@ class DespachoOrdController extends Controller
     {
         can('listar-factura-despacho');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
+        $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
         $datas = DespachoOrd::orderBy('id')
                         ->whereNotNull('guiadespacho')
                         ->whereNull('numfactura')
                         ->whereNotIn('id',  $despachoordanul)
+                        ->whereNotIn('notaventa_id', $notaventacerradaArray)
                         ->get();
         $aux_vista = 'F';
         $aux_titulo = "Asignar Número de Factura";
@@ -244,55 +251,63 @@ class DespachoOrdController extends Controller
     {
         can('guardar-orden-despacho');
         //dd($request);
-
-        $despachosol = DespachoSol::findOrFail($request->despachosol_id);
-        $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
-        if(count($clibloq) > 0){
-            return redirect('despachoord/index')->with([
-                'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        if($despachosol->updated_at == $request->updated_at){
-            $despachosol->updated_at = date("Y-m-d H:i:s");
-            $despachosol->save();
-            $hoy = date("Y-m-d H:i:s");
-            $request->request->add(['fechahora' => $hoy]);
-            $request->request->add(['usuario_id' => auth()->id()]);
-            $dateInput = explode('/',$request->plazoentrega);
-            $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-            $dateInput = explode('/',$request->fechaestdesp);
-            $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-            $despachoord = DespachoOrd::create($request->all());
-            $despachoord_id = $despachoord->id;
-            $cont_producto = count($request->producto_id);
-            if($cont_producto>0){
-                for ($i=0; $i < $cont_producto ; $i++){
-                    $aux_cantord = $request->cantord[$i];
-                    if(is_null($request->producto_id[$i])==false && is_null($aux_cantord)==false && $aux_cantord > 0){
-                        $despachoorddet = new DespachoOrdDet();
-                        $despachoorddet->despachoord_id = $despachoord_id;
-                        $despachoorddet->despachosoldet_id = $request->despachosoldet_id[$i];
-                        $despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];
-                        $despachoorddet->cantdesp = $request->cantord[$i];
-                        if($despachoorddet->save()){
-                            /*
-                            $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
-                            $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
-                            $notaventadetalle->save();
-                            */
-                            //$despacho_id = $despachoord->id;
+        $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
+        //dd($notaventacerrada);
+        if(count($notaventacerrada) == 0){
+            $despachosol = DespachoSol::findOrFail($request->despachosol_id);
+            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
+            if(count($clibloq) > 0){
+                return redirect('despachoord/index')->with([
+                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            if($despachosol->updated_at == $request->updated_at){
+                $despachosol->updated_at = date("Y-m-d H:i:s");
+                $despachosol->save();
+                $hoy = date("Y-m-d H:i:s");
+                $request->request->add(['fechahora' => $hoy]);
+                $request->request->add(['usuario_id' => auth()->id()]);
+                $dateInput = explode('/',$request->plazoentrega);
+                $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+                $dateInput = explode('/',$request->fechaestdesp);
+                $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+                $despachoord = DespachoOrd::create($request->all());
+                $despachoord_id = $despachoord->id;
+                $cont_producto = count($request->producto_id);
+                if($cont_producto>0){
+                    for ($i=0; $i < $cont_producto ; $i++){
+                        $aux_cantord = $request->cantord[$i];
+                        if(is_null($request->producto_id[$i])==false && is_null($aux_cantord)==false && $aux_cantord > 0){
+                            $despachoorddet = new DespachoOrdDet();
+                            $despachoorddet->despachoord_id = $despachoord_id;
+                            $despachoorddet->despachosoldet_id = $request->despachosoldet_id[$i];
+                            $despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];
+                            $despachoorddet->cantdesp = $request->cantord[$i];
+                            if($despachoorddet->save()){
+                                /*
+                                $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
+                                $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                                $notaventadetalle->save();
+                                */
+                                //$despacho_id = $despachoord->id;
+                            }
                         }
                     }
                 }
+                return redirect('despachoord/index')->with([
+                    'mensaje'=>'Registro creado con exito.',
+                    'tipo_alert' => 'alert-success'
+                ]);
+            }else{
+                return redirect('despachoord/index')->with([
+                    'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                    'tipo_alert' => 'alert-error'
+                ]);
             }
-            return redirect('despachoord/index')->with([
-                'mensaje'=>'Registro creado con exito.',
-                'tipo_alert' => 'alert-success'
-            ]);
         }else{
             return redirect('despachoord/index')->with([
-                'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                'mensaje'=>'Registro no fue creado. La nota de venta fue Cerrada. Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at)),
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -459,61 +474,71 @@ class DespachoOrdController extends Controller
     public function actualizar(ValidarDespachoOrd $request, $id)
     {
         can('guardar-orden-despacho');
-        //dd($request);
-        $dateInput = explode('/',$request->plazoentrega);
-        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-        $dateInput = explode('/',$request->fechaestdesp);
-        $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-        $despachoord = DespachoOrd::findOrFail($id);
-        $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachoord->notaventa->cliente_id)->get();
-        if(count($clibloq) > 0){
-            return redirect('despachoord/index')->with([
-                'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        if($despachoord->updated_at == $request->updated_at){
-            $despachoord->updated_at = date("Y-m-d H:i:s");
-            $despachoord->comunaentrega_id = $request->comunaentrega_id;
-            $despachoord->tipoentrega_id = $request->tipoentrega_id;
-            $despachoord->plazoentrega = $request->plazoentrega;
-            $despachoord->lugarentrega = $request->lugarentrega;
-            $despachoord->contacto = $request->contacto;
-            $despachoord->contactoemail = $request->contactoemail;
-            $despachoord->contactotelf = $request->contactotelf;
-            $despachoord->observacion = $request->observacion;
-            $despachoord->fechaestdesp = $request->fechaestdesp;
-            $despachoord->despachoobs_id = $request->despachoobs_id;
+        $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
+        //dd($notaventacerrada);
+        if(count($notaventacerrada) == 0){
             //dd($request);
-            if($despachoord->save()){
-                $cont_producto = count($request->producto_id);
-                if($cont_producto>0){
-                    for ($i=0; $i < $cont_producto ; $i++){
-                        if(is_null($request->producto_id[$i])==false && is_null($request->cantord[$i])==false){
-                            $despachoorddet = DespachoOrdDet::findOrFail($request->NVdet_id[$i]);
-                            $despachoorddet->cantdesp = $request->cantord[$i];
-                            if($despachoorddet->save()){
-                                /*
-                                $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
-                                $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
-                                $notaventadetalle->save();
-                                */
-                                //$despacho_id = $despachosol->id;    
+            $dateInput = explode('/',$request->plazoentrega);
+            $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+            $dateInput = explode('/',$request->fechaestdesp);
+            $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+            $despachoord = DespachoOrd::findOrFail($id);
+            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachoord->notaventa->cliente_id)->get();
+            if(count($clibloq) > 0){
+                return redirect('despachoord/index')->with([
+                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            if($despachoord->updated_at == $request->updated_at){
+                $despachoord->updated_at = date("Y-m-d H:i:s");
+                $despachoord->comunaentrega_id = $request->comunaentrega_id;
+                $despachoord->tipoentrega_id = $request->tipoentrega_id;
+                $despachoord->plazoentrega = $request->plazoentrega;
+                $despachoord->lugarentrega = $request->lugarentrega;
+                $despachoord->contacto = $request->contacto;
+                $despachoord->contactoemail = $request->contactoemail;
+                $despachoord->contactotelf = $request->contactotelf;
+                $despachoord->observacion = $request->observacion;
+                $despachoord->fechaestdesp = $request->fechaestdesp;
+                $despachoord->despachoobs_id = $request->despachoobs_id;
+                //dd($request);
+                if($despachoord->save()){
+                    $cont_producto = count($request->producto_id);
+                    if($cont_producto>0){
+                        for ($i=0; $i < $cont_producto ; $i++){
+                            if(is_null($request->producto_id[$i])==false && is_null($request->cantord[$i])==false){
+                                $despachoorddet = DespachoOrdDet::findOrFail($request->NVdet_id[$i]);
+                                $despachoorddet->cantdesp = $request->cantord[$i];
+                                if($despachoorddet->save()){
+                                    /*
+                                    $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
+                                    $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                                    $notaventadetalle->save();
+                                    */
+                                    //$despacho_id = $despachosol->id;    
+                                }
                             }
                         }
                     }
                 }
+                return redirect('despachoord/index')->with([
+                                                            'mensaje'=>'Registro actualizado con exito.',
+                                                            'tipo_alert' => 'alert-success'
+                                                        ]);
+            }else{
+                return redirect('despachoord/index')->with([
+                    'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachoord->updated_at,
+                                                            'tipo_alert' => 'alert-error'
+                                                        ]);
             }
-            return redirect('despachoord/index')->with([
-                                                        'mensaje'=>'Registro actualizado con exito.',
-                                                        'tipo_alert' => 'alert-success'
-                                                    ]);
         }else{
             return redirect('despachoord/index')->with([
-                'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachoord->updated_at,
-                                                        'tipo_alert' => 'alert-error'
-                                                    ]);
+                'mensaje'=>'Registro no fue Modificado. La nota de venta fue Cerrada. Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at)),
+                'tipo_alert' => 'alert-error'
+            ]);
         }
+
 
     }
 
@@ -559,21 +584,27 @@ class DespachoOrdController extends Controller
                 return response()->json(['mensaje' => 'dup']);
             }else{
                 $despachoord = DespachoOrd::findOrFail($request->id);
-                $despachoord->guiadespacho = $request->guiadespacho;
-                $despachoord->guiadespachofec = date("Y-m-d H:i:s");
-                if ($despachoord->save()) {
-                    return response()->json([
-                                            'mensaje' => 'ok',
-                                            'despachoord' => $despachoord,
-                                            'guiadespachofec' => date("Y-m-d", strtotime($despachoord->guiadespachofec))
-                                            ]);
-                } else {
-                    return response()->json(['mensaje' => 'ng']);
-                }    
+                $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$despachoord->notaventa_id)->get();
+                if(count($notaventacerrada) == 0){
+                    $despachoord->guiadespacho = $request->guiadespacho;
+                    $despachoord->guiadespachofec = date("Y-m-d H:i:s");
+                    if ($despachoord->save()) {
+                        return response()->json([
+                                                'mensaje' => 'ok',
+                                                'despachoord' => $despachoord,
+                                                'guiadespachofec' => date("Y-m-d", strtotime($despachoord->guiadespachofec))
+                                                ]);
+                    } else {
+                        return response()->json(['mensaje' => 'ng']);
+                    }                        
+                }else{
+                    $mensaje = 'Nota Venta fue cerrada: Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at));
+                    return response()->json(['mensaje' => $mensaje]);            
+                }
             }
         } else {
             abort(404);
-        }
+        }    
     }
 
     public function guardarfactdesp(Request $request)
