@@ -599,7 +599,7 @@ class DespachoOrdController extends Controller
                     }                        
                 }else{
                     $mensaje = 'Nota Venta fue cerrada: Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at));
-                    return response()->json(['mensaje' => $mensaje]);            
+                    return response()->json(['mensaje' => $mensaje]);
                 }
             }
         } else {
@@ -612,17 +612,23 @@ class DespachoOrdController extends Controller
         if ($request->ajax()) {
             //dd($request);
             $despachoord = DespachoOrd::findOrFail($request->id);
-            $despachoord->numfactura = $request->numfactura;
-            $dateInput = explode('/',$request->fechafactura);
-            $despachoord->fechafactura = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-            $despachoord->numfacturafec = date("Y-m-d H:i:s");
-            if ($despachoord->save()) {
-                return response()->json([
-                                        'mensaje' => 'ok',
-                                        'despachoord' => $despachoord
-                                        ]);
-            } else {
-                return response()->json(['mensaje' => 'ng']);
+            $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$despachoord->notaventa_id)->get();
+            if(count($notaventacerrada) == 0){
+                $despachoord->numfactura = $request->numfactura;
+                $dateInput = explode('/',$request->fechafactura);
+                $despachoord->fechafactura = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+                $despachoord->numfacturafec = date("Y-m-d H:i:s");
+                if ($despachoord->save()) {
+                    return response()->json([
+                                            'mensaje' => 'ok',
+                                            'despachoord' => $despachoord
+                                            ]);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }    
+            }else{
+                $mensaje = 'Nota Venta fue cerrada: Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at));
+                return response()->json(['mensaje' => $mensaje]);
             }
         } else {
             abort(404);

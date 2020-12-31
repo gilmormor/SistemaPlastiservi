@@ -357,8 +357,9 @@ function consulta($request){
     and $aux_condgiro_id
     and $aux_condrut
     and $aux_condareaproduccion_id
-    and notaventa.anulada is null
-    and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
+    and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+    and isnull(notaventa.anulada)
+    and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
     GROUP BY notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,producto.diamextmm,claseprod.cla_nombre,
     producto.long,producto.peso,producto.tipounion;";

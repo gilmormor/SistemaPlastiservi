@@ -37,7 +37,9 @@ class ReportOrdDespGuiaFactController extends Controller
 
         $aux_verestado='1'; //Mostrar todas los opciopnes de estado de OD
 
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado'));
+        $titulo = "Consultar Orden Despacho, Guia, Factura, cerrada";
+
+        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado','titulo'));
 
     }
 
@@ -55,8 +57,9 @@ class ReportOrdDespGuiaFactController extends Controller
         $fechaAct = $respuesta['fechaAct'];
 
         $aux_verestado='2'; //Mostrar solo opcion orddesp cerradas
+        $titulo = "Consultar Orden Despacho Cerradas";
 
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado'));
+        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado','titulo'));
 
     }
 
@@ -74,8 +77,9 @@ class ReportOrdDespGuiaFactController extends Controller
         $fechaAct = $respuesta['fechaAct'];
 
         $aux_verestado='3'; //3 muestra boton de editar Num Guia y Num Fact 
+        $titulo = "Editar Número Guia o Factura";
 
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado'));
+        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado','titulo'));
 
     }
 
@@ -553,7 +557,8 @@ function consultaorddesp($request){
             and $aux_conddespachosol_id
             and $aux_condguiadespacho
             and $aux_condnumfactura
-            and despachoord.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
+            and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+            and isnull(despachoord.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             GROUP BY despachoord.id;";
             //and despachoord.id not in (SELECT despachoord_id from despachoordanul where isnull(deleted_at))
 

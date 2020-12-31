@@ -176,6 +176,7 @@ function consulta($id){
                                             where isnull(despachosolanul.deleted_at)
                                            )
                                     )
+            and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(notaventa.deleted_at)
             order by notaventa.id desc;";
         //dd($sql);

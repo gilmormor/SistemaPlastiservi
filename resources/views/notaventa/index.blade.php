@@ -36,7 +36,7 @@ Nota de Venta
                                 <th>Cliente</th>
                                 @if (session('aux_aproNV')=='0' and $aux_statusPant==0)
                                     <th class="width30"><label for="" title='Cerrar Nota de venta' data-toggle='tooltip'>CNV</label></th>
-                                    <th class="width30"><label for="" title='Anular Nota de venta' data-toggle='tooltip'></label></th>
+                                    <th class="width30"><label for="" title='Anular Nota de venta' data-toggle='tooltip'>Anular</label></th>
                                 @endif
                                 <th class="width30"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
                                 <th class="width70"></th>

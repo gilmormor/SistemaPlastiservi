@@ -26,9 +26,6 @@ function ajaxRequest(data,url,funcion) {
 						$("#guiadespacho" + data['nfila']).html(respuesta.despachoord.guiadespacho);
 						$("#fechaguia" + data['nfila']).html(respuesta.guiadespachofec);	
 					}
-					$("#myModalguiadesp").modal('hide');
-
-
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
@@ -36,6 +33,7 @@ function ajaxRequest(data,url,funcion) {
 						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
 					}
 				}
+				$("#myModalguiadesp").modal('hide');
 			}
 			if(funcion=='guardarfactdesp'){
 				if (respuesta.mensaje == "ok") {
@@ -45,11 +43,14 @@ function ajaxRequest(data,url,funcion) {
 						$("#numfactura" + data['nfila']).html(data['numfactura']);
 						$("#fechafactura" + data['nfila']).html(respuesta.despachoord.fechafactura);	
 					}
-					$("#myModalnumfactura").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
+					if(respuesta.mensaje != "ng"){
+						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
+					}
 				}
+				$("#myModalnumfactura").modal('hide');
 			}
 			if(funcion=='consultarguiadespachood'){
 				if (respuesta.mensaje == "ok") {
