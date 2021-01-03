@@ -315,6 +315,9 @@ Route::post('notaventa/buscarguiadespacho/{id}', 'NotaVentaController@buscarguia
 Route::post('notaventa/actguiadespacho/{id}', 'NotaVentaController@actguiadespacho')->name('actguiadespacho_notaventa');
 Route::post('notaventa/findespacho/{id}', 'NotaVentaController@findespacho')->name('findespacho_notaventa');
 Route::post('notaventa/buscaroc_id', 'NotaVentaController@buscaroc_id')->name('buscaroc_id_notaventa');
+Route::get('notaventa/cerrartodasNV', 'NotaVentaController@cerrartodasNV')->name('cerrartodasNV_notaventa');
+
+
 
 /*RUTAS CONSULTAR NOTA DE VENTA*/
 Route::get('notaventaconsulta', 'NotaVentaConsultaController@index')->name('notaventaconsulta');

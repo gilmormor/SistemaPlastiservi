@@ -16,6 +16,7 @@ use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\NotaVenta;
+use App\Models\NotaVentaCerrada;
 use App\Models\NotaVentaDetalle;
 use App\Models\PlazoPago;
 use App\Models\Producto;
@@ -940,6 +941,22 @@ class NotaVentaController extends Controller
                 'Mensaje' => 'Orden de compra no existe.'
                ]);
             }
+        }
+    }
+
+    public function cerrartodasNV(){
+        $sql = "SELECT *
+            FROM notaventa 
+            WHERE notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+            and isnull(notaventa.deleted_at);";
+        $datas = DB::select($sql);
+        foreach ($datas as $data){
+            $notaventacerrada = new NotaVentaCerrada();
+            $notaventacerrada->notaventa_id = $data->id;
+            $notaventacerrada->observacion = 'Cierre 2020';
+            $notaventacerrada->motcierre_id = 1;                    
+            $notaventacerrada->usuario_id = 1;
+            $notaventacerrada->save();
         }
     }
 

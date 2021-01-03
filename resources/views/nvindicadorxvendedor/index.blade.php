@@ -152,8 +152,8 @@ Productos Notas de Venta
                                         <label>Estatus NV:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="status_id" id="status_id" class="selectpicker form-control status_id">
-                                            <option value="1">Activas</option>
+                                        <select name="statusact_id" id="statusact_id" class="selectpicker form-control statusact_id">
+                                            <option value="1" selected>Activas</option>
                                             <option value="2">Cerradas</option>
                                             <option value="3">Todas: Activas + cerradas</option>
                                         </select>

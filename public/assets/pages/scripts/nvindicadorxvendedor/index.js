@@ -50,6 +50,7 @@ function datos(idcons){
         categoriaprod_id: $("#categoriaprod_id").val(),
         areaproduccion_id : $("#areaproduccion_id").val(),
         idcons : idcons,
+        statusact_id : $("#statusact_id").val(),
         _token: $('input[name=_token]').val()
     };
     return data;
