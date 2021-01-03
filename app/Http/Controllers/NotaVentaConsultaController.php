@@ -486,12 +486,6 @@ function consulta($request){
             case 4:
                 $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
                 break;
-            case 5:
-                $aux_aprobstatus = "notaventa.findespacho IS NULL";
-                break;
-            case 6:
-                $aux_aprobstatus = "notaventa.findespacho IS NOT NULL";
-                break;
         }
         
     }
@@ -525,11 +519,13 @@ function consulta($request){
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
             and $aux_aprobstatus
-            and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
+
+            //and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+
     $datas = DB::select($sql);
     return $datas;
 }
