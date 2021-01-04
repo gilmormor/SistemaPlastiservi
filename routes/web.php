@@ -555,3 +555,11 @@ Route::get('notaventadevolvend', 'NotaVentaDevolVendController@index')->name('no
 Route::post('notaventadevolvend/actualizarreg', 'NotaVentaDevolVendController@actualizarreg')->name('actualizarreg_notaventadevolvend');
 Route::get('notaventadevolvend/anular', 'NotaVentaDevolVendController@indexanular')->name('indexanular_notaventadevolvend');
 Route::post('notaventadevolvend/anular/actualizanular', 'NotaVentaDevolVendController@actualizanular')->name('actualizanular_notaventadevolvend');
+
+/*RUTAS Carrera Nota Venta */
+Route::get('notaventacerrada', 'NotaVentaCerradaController@index')->name('notaventacerrada');
+Route::get('notaventacerrada/crear', 'NotaVentaCerradaController@crear')->name('crear_notaventacerrada');
+Route::post('notaventacerrada', 'NotaVentaCerradaController@guardar')->name('guardar_notaventacerrada');
+Route::get('notaventacerrada/{id}/editar', 'NotaVentaCerradaController@editar')->name('editar_notaventacerrada');
+Route::put('notaventacerrada/{id}', 'NotaVentaCerradaController@actualizar')->name('actualizar_notaventacerrada');
+Route::delete('notaventacerrada/{id}', 'NotaVentaCerradaController@eliminar')->name('eliminar_notaventacerrada');

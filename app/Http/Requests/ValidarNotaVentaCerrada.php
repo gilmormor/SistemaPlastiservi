@@ -27,7 +27,6 @@ class ValidarNotaVentaCerrada extends FormRequest
             'observacion' => 'max:200',
             'notaventa_id' => 'required',
             'motcierre_id' => 'required',
-            'usuario_id' => 'required'
         ];
     }
 }

@@ -90,7 +90,7 @@ Nota de Venta
                                     <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"2"}})' title='Precio x Kg' data-toggle='tooltip'>
                                         <i class="fa fa-fw fa-file-pdf-o"></i>
                                     </a>
-                            </td>
+                                </td>
                                 <td>
                                     @if (session('aux_aproNV')=='0' and $aux_statusPant==0)    
                                         <a href="{{route('editar_notaventa', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">

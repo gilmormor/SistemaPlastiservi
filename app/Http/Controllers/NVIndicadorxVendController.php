@@ -447,6 +447,18 @@ function consultaODcerrada($request){
         $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$request->areaproduccion_id'";
     }
 
+    switch ($request->statusact_id) {
+        case 1:
+            $aux_condstatusact_id = "notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))";
+            break;
+        case 2:
+            $aux_condstatusact_id = "notaventa.id in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))";
+            break;
+        case 3:
+            $aux_condstatusact_id = " true";
+            break;
+    }
+
 
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos
@@ -471,7 +483,7 @@ function consultaODcerrada($request){
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
     and notaventa.anulada is null
-    and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+    and $aux_condstatusact_id
     and despachoord.deleted_at is null 
     and notaventadetalle.deleted_at is null 
     and notaventa.deleted_at is null
@@ -507,7 +519,7 @@ function consultaODcerrada($request){
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
     and notaventa.anulada is null
-    and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+    and $aux_condstatusact_id
     and despachoord.deleted_at is null 
     and notaventadetalle.deleted_at is null 
     and notaventa.deleted_at is null
@@ -542,7 +554,7 @@ function consultaODcerrada($request){
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
     and notaventa.anulada is null
-    and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+    and $aux_condstatusact_id
     and despachoord.deleted_at is null 
     and notaventadetalle.deleted_at is null 
     and notaventa.deleted_at is null

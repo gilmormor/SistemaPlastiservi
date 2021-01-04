@@ -10,7 +10,7 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
       });
-    $("#tabla-data").on('submit', '.form-eliminar', function () {
+    $("#tabla-data").on('submit', '.form-eliminar', function (event) {
         event.preventDefault();
         const form = $(this);
         swal({

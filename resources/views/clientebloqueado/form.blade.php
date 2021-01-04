@@ -38,7 +38,7 @@
 <div class="form-group">
     <label for="razonsocial" class="col-lg-3 control-label requerido">Razon Social</label>
     <div class="col-lg-8">
-        <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('descripcion', $data->cliente->razonsocial ?? '')}}" disabled readonly/>
+        <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', $data->cliente->razonsocial ?? '')}}" disabled readonly/>
     </div>
 </div>
 
