@@ -40,7 +40,7 @@ class NotaVentaCerradaController extends Controller
      */
     public function crear()
     {
-        can('crear-nota-venta-cerrada');
+        can('crear-cerrar-nota-venta');
         $aux_editar = 0;
         return view('notaventacerrar.crear', compact('aux_editar'));
     }
