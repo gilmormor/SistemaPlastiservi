@@ -464,13 +464,14 @@ $('.provincia_id').on('change', function () {
 
 
 function eliminarRegistro(i){
-	event.preventDefault();
+	//event.preventDefault();
 	//alert($('input[name=_token]').val());
 	var data = {
 		id: $("#NVdet_idTD"+i).html(),
-		nfila : i
+		nfila : i,
+		_token: $('input[name=_token]').val()
 	};
-	var ruta = '/cotizacion/eliminarCotizacionDetalle/'+i;
+	var ruta = '/notaventa/eliminarDetalle/'+i;
 	swal({
 		title: '¿ Está seguro que desea eliminar el registro ?',
 		text: "Esta acción no se puede deshacer!",
@@ -481,11 +482,23 @@ function eliminarRegistro(i){
 		},
 	}).then((value) => {
 		if (value) {
-			ajaxRequest(data,ruta,'eliminar');
+			mensajeEliminarRegistro(data);
+			/*
+			if(data['id']=='0'){
+				mensajeEliminarRegistro(data);
+			}else{
+				ajaxRequest(data,ruta,'eliminar');
+			}
+			*/
 		}
 	});
 }
 
+function mensajeEliminarRegistro(data){
+	$("#fila"+data['nfila']).remove();
+	Biblioteca.notificaciones('El registro fue eliminado correctamente', 'Plastiservi', 'success');
+	totalizar();
+}
 
 function ajaxRequest(data,url,funcion) {
 	$.ajax({
@@ -495,9 +508,11 @@ function ajaxRequest(data,url,funcion) {
 		success: function (respuesta) {
 			if(funcion=='eliminar'){
 				if (respuesta.mensaje == "ok" || data['id']=='0') {
+					mensajeEliminarRegistro(data);
+					/*
 					$("#fila"+data['nfila']).remove();
 					Biblioteca.notificaciones('El registro fue eliminado correctamente', 'Plastiservi', 'success');
-					totalizar();
+					totalizar();*/
 				} else {
 					if (respuesta.mensaje == "sp"){
 						Biblioteca.notificaciones('Registro no tiene permiso para eliminar.', 'Plastiservi', 'error');

@@ -625,11 +625,11 @@ class NotaVentaController extends Controller
         }
     }
 
-    public function eliminarCotizacionDetalle(Request $request)
+    public function eliminarDetalle(Request $request)
     {
         //can('eliminar-cotizacionDetalle');
         if ($request->ajax()) {
-            if (CotizacionDetalle::destroy($request->id)) {
+            if (NotaVentaDetalle::destroy($request->id)) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);

@@ -300,7 +300,7 @@ Route::post('notaventa', 'NotaVentaController@guardar')->name('guardar_notaventa
 Route::get('notaventa/{id}/editar', 'NotaVentaController@editar')->name('editar_notaventa');
 Route::put('notaventa/{id}', 'NotaVentaController@actualizar')->name('actualizar_notaventa');
 Route::delete('notaventa/{id}', 'NotaVentaController@eliminar')->name('eliminar_notaventa');
-Route::post('notaventa/eliminarCotizacionDetalle/{id}', 'NotaVentaController@eliminarCotizacionDetalle')->name('eliminar_notaventadetalle');
+Route::post('notaventa/eliminarDetalle/{id}', 'NotaVentaController@eliminarDetalle')->name('eliminar_notaventadetalle');
 Route::post('notaventa/aprobarcotvend/{id}', 'NotaVentaController@aprobarcotvend')->name('aprobarcotvend');
 Route::post('notaventa/aprobarnvsup/{id}', 'NotaVentaController@aprobarnvsup')->name('aprobarnvsup');
 Route::get('notaventa/{id}/{stareport}/exportPdf', 'NotaVentaController@exportPdf')->name('exportPdf_notaventa');
