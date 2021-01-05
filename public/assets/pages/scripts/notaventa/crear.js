@@ -496,7 +496,7 @@ function eliminarRegistro(i){
 
 function mensajeEliminarRegistro(data){
 	$("#fila"+data['nfila']).remove();
-	Biblioteca.notificaciones('El registro fue eliminado correctamente', 'Plastiservi', 'success');
+	Biblioteca.notificaciones('Registro eliminado. Debes actualizar o guardar para que los cambios surtan efecto.', 'Plastiservi', 'success');
 	totalizar();
 }
 
