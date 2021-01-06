@@ -99,7 +99,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
             $despachoordanulguiafact->numfacturafec = $despachoord->numfacturafec;
             $despachoordanulguiafact->observacion = $request->observacion;
             $despachoordanulguiafact->usuario_id = auth()->id();
-            $despachoordanulguiafact->status = $request->status;
+            $despachoordanulguiafact->status = 1; //$request->status;
             $despachoordanulguiafact->save();
 
             $despachoord->guiadespacho = NULL;

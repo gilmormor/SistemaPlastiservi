@@ -330,8 +330,11 @@ function verificarFact()
 function verificarAnulGuia()
 {
 	var v1=0;
+	var v2=0;
 	
-	v2=validacion('status','combobox');
+	//v2=validacion('status','combobox');
+	v2=true;
+	//alert($("#status option:selected").html());
 	v1=validacion('observacionanul','texto');
 	if (v1===false || v2===false)
 	{

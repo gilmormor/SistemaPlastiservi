@@ -179,6 +179,8 @@ function validacion(campo,tipo)
 		case "combobox": 
 			columnas = $('#'+campo).parent().parent().attr("classorig");
 			codigo = document.getElementById(campo).value;
+			//alert($('#'+campo + ' option:selected').text());
+			//alert(campo);
 			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo) ) {
 				$("#glypcn"+campo).remove();
 				$('#'+campo).parent().parent().attr("class", columnas+" has-error has-feedback");
