@@ -28,7 +28,7 @@ class CreateTableCotizaciondetalle extends Migration
             $table->float('precioxkilo',10,2)->comment('Precio por Kilo');
             $table->float('precioxkiloreal',10,2)->comment('Precio por Kilo real. Precio fijado en categoria.');
             $table->float('totalkilos',10,2)->comment('Total Kilos');
-            $table->float('subtotal',10,2)->comment('SubTotal Precio neto (cant x preciounit) sin IVA');
+            $table->float('subtotal',15,2)->comment('SubTotal Precio neto (cant x preciounit) sin IVA');
             $table->engine = 'InnoDB';
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();

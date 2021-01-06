@@ -646,9 +646,9 @@ function totalizar(){
 	aux_porciva = parseFloat(aux_porciva);
 	aux_iva = Math.round(total_neto * (aux_porciva/100));
 	aux_total = total_neto + aux_iva;
-	aux_netoform = MASK(0, total_neto, '-##,###,##0.00',1)
-	aux_ivaform = MASK(0, aux_iva, '-##,###,##0.00',1)
-	aux_tdtotalform = MASK(0, aux_total, '-##,###,##0.00',1)
+	aux_netoform = MASK(0, total_neto, '-#,###,###,##0.00',1)
+	aux_ivaform = MASK(0, aux_iva, '-#,###,###,##0.00',1)
+	aux_tdtotalform = MASK(0, aux_total, '-#,###,###,##0.00',1)
 	
 	//$("#tdneto").html(total_neto.toFixed(2));
 	$("#totalkg").html(aux_totalkgform);
@@ -686,9 +686,9 @@ function totalizardespacho(){
 	aux_porciva = parseFloat(aux_porciva);
 	aux_iva = Math.round(total_neto * (aux_porciva/100));
 	aux_total = total_neto + aux_iva;
-	aux_netoform = MASK(0, total_neto, '-##,###,##0.00',1)
-	aux_ivaform = MASK(0, aux_iva, '-##,###,##0.00',1)
-	aux_tdtotalform = MASK(0, aux_total, '-##,###,##0.00',1)
+	aux_netoform = MASK(0, total_neto, '-#,###,###,##0.00',1)
+	aux_ivaform = MASK(0, aux_iva, '-#,###,###,##0.00',1)
+	aux_tdtotalform = MASK(0, aux_total, '-#,###,###,##0.00',1)
 	
 	//$("#tdneto").html(total_neto.toFixed(2));
 	$("#totalkg").html(aux_totalkgform);

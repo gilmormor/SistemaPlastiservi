@@ -47,9 +47,9 @@ class CreateTableCotizacion extends Migration
             $table->foreign('comuna_id','fk_cotizacion_comuna')->references('id')->on('comuna')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('giro_id');
             $table->foreign('giro_id','fk_cotizacion_giro')->references('id')->on('giro')->onDelete('restrict')->onUpdate('restrict');
-            $table->float('neto',10,2)->comment('Total neto, Valor sin IVA');
-            $table->float('iva',10,2)->comment('Total IVA');
-            $table->float('total',10,2)->comment('Total incluye IVA');
+            $table->float('neto',15,2)->comment('Total neto, Valor sin IVA');
+            $table->float('iva',15,2)->comment('Total IVA');
+            $table->float('total',15,2)->comment('Total incluye IVA');
             $table->unsignedBigInteger('usuario_id')->comment('Usuario quien creo el registro');
             $table->foreign('usuario_id','fk_cotizacion_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->boolean('aprobstatus')->comment('Status de aprobacion (null o 0)=Sin aprobar, 1=Cotizacion cerrada por el vendedor para hacer NV, 2=Cotizacion cerrada por vendedor pero no cumple, debe pasar por aprobacion, 3=Aprobada por supervisor, 4=Rechazada por Supersivor')->nullable();
