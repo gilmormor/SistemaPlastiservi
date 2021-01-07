@@ -21,8 +21,8 @@
                         <span class="help-block"></span>
                     </div>
                     <div class="form-group col-xs-12 col-sm-4" classorig="form-group col-xs-12 col-sm-4">
-                        <label for="status" class="col-form-label">Status Anular</label>
-                        <select name="status" id="status" class="selectpicker form-control requeridos" title='Seleccione...' tipoval="combobox">
+                        <label for="statusM" class="col-form-label">Status Anular</label>
+                        <select name="statusM" id="statusM" class="selectpicker form-control requeridos" title='Seleccione...' tipoval="combobox">
                             @if ($aux_vista=="G")
                                 <option value="2">Orden Despacho</option>                            
                             @endif

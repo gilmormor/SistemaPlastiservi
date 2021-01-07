@@ -196,7 +196,7 @@ $("#btnGuardarGanul").click(function(event)
 			id    : $("#idanul").val(),
 			nfila : $("#nfilaanul").val(),
 			observacion : $("#observacionanul").val(),
-			status : $("#status").val(),
+			statusM : $("#statusM").val(),
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/guardaranularguia';
@@ -331,10 +331,7 @@ function verificarAnulGuia()
 {
 	var v1=0;
 	var v2=0;
-	
-	//v2=validacion('status','combobox');
-	v2=true;
-	//alert($("#status option:selected").html());
+	v2=validacion('statusM','combobox');
 	v1=validacion('observacionanul','texto');
 	if (v1===false || v2===false)
 	{

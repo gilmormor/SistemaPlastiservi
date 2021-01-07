@@ -99,12 +99,12 @@ class DespachoOrdAnulGuiaFactController extends Controller
             $despachoordanulguiafact->numfacturafec = $despachoord->numfacturafec;
             $despachoordanulguiafact->observacion = $request->observacion;
             $despachoordanulguiafact->usuario_id = auth()->id();
-            $despachoordanulguiafact->status = 1; //$request->status;
+            $despachoordanulguiafact->status = $request->statusM;
             $despachoordanulguiafact->save();
 
             $despachoord->guiadespacho = NULL;
             $despachoord->guiadespachofec = NULL;
-            if($request->status == '2'){ //Si status es = 1 solo borra la guia de despacho si es = 2 borra guia y factura
+            if($request->statusM == '2'){ //Si status es = 1 solo borra la guia de despacho si es = 2 borra guia y factura
                 $despachoord->guiadespacho = NULL;
                 $despachoord->guiadespachofec = NULL;
                 $despachoord->numfactura = NULL;
