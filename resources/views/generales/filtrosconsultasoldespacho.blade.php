@@ -9,7 +9,7 @@
                             <label for="fecha">Fecha Ini:</label>
                         </div>
                         <div class="col-xs-12 col-md-8 col-sm-8">
-                            <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required readonly="">
+                            <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad"  value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final">
@@ -17,7 +17,7 @@
                             <label for="dep_fecha">Fecha Fin:</label>
                         </div>
                         <div class="col-xs-12 col-md-8 col-sm-8">
-                            <input type="text" class="form-control datepicker" name="fechah" id="fechah" value="{{old('fechah', $fechaAct ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                            <input type="text" class="form-control datepicker" name="fechah" id="fechah" value="{{old('fechah', $fechaServ['fechaAct'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                         </div>
                     </div>
                 </div>

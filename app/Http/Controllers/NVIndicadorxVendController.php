@@ -108,8 +108,10 @@ class NVIndicadorxVendController extends Controller
 
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
-        $fechaAct = date("d/m/Y");
-        return view('nvindicadorxvendedor.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaAct'));
+        $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
+                    'fechaAct' => date("d/m/Y")
+                    ];
+        return view('nvindicadorxvendedor.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
     }
 
     public function reporte(Request $request){

@@ -84,8 +84,10 @@ class CotizacionConsultaController extends Controller
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-        $fechaAct = date("d/m/Y");
-        return view('cotizacionconsulta.index', compact('datas','clientes','vendedores','vendedores1','fechaAct'));
+        $fechaServ = ['fechaAct' => date("d/m/Y"),
+                    'fecha1erDiaMes' => date("01/m/Y")
+                    ];
+        return view('cotizacionconsulta.index', compact('datas','clientes','vendedores','vendedores1','fechaServ'));
     }
 
     /**

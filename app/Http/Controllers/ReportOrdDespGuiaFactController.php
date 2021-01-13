@@ -33,13 +33,17 @@ class ReportOrdDespGuiaFactController extends Controller
         $areaproduccions = $respuesta['areaproduccions'];
         $tipoentregas = $respuesta['tipoentregas'];
         $comunas = $respuesta['comunas'];
-        $fechaAct = $respuesta['fechaAct'];
+        //$fechaAct = $respuesta['fechaAct'];
+        $fechaServ = [
+                    'fecha1erDiaMes' => $respuesta['fecha1erDiaMes'],
+                    'fechaAct' => $respuesta['fechaAct']
+                    ];
 
         $aux_verestado='1'; //Mostrar todas los opciopnes de estado de OD
 
         $titulo = "Consultar Orden Despacho, Guia, Factura, cerrada";
 
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado','titulo'));
+        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaServ','aux_verestado','titulo'));
 
     }
 
@@ -360,7 +364,6 @@ function cargadatos(){
     $areaproduccions = AreaProduccion::orderBy('id')->get();
     $tipoentregas = TipoEntrega::orderBy('id')->get();
     $comunas = Comuna::orderBy('id')->get();
-    $fechaAct = date("d/m/Y");
 
     $respuesta['clientes'] = $clientes;
     $respuesta['vendedores'] = $vendedores;
@@ -369,7 +372,8 @@ function cargadatos(){
     $respuesta['areaproduccions'] = $areaproduccions;
     $respuesta['tipoentregas'] = $tipoentregas;
     $respuesta['comunas'] = $comunas;
-    $respuesta['fechaAct'] = $fechaAct;
+    $respuesta['fecha1erDiaMes'] = date("01/m/Y");
+    $respuesta['fechaAct'] = date("d/m/Y");
 
     return $respuesta;
 }

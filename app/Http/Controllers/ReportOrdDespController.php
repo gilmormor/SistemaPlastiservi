@@ -88,9 +88,11 @@ class ReportOrdDespController extends Controller
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $fechaAct = date("d/m/Y");
-
-        return view('reportorddesp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
+        $fechaServ = [
+                    'fecha1erDiaMes' => date("01/m/Y"),
+                    'fechaAct' => date("d/m/Y"),
+                    ];
+        return view('reportorddesp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaServ'));
 
     }
 
