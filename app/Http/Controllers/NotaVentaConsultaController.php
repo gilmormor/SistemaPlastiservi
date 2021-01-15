@@ -175,7 +175,7 @@ class NotaVentaConsultaController extends Controller
                 $Visto       = $data->visto;
                 $checkVisto  = 'checked';
                 if(empty($data->visto))
-                    $checkVisto = '';
+                    $checkVisto = ''; 
 
                 $aux_colvistotd = "";
                 if(empty($data->visto)){
