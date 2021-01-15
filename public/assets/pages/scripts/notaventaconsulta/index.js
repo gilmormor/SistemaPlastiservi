@@ -39,6 +39,29 @@ $(document).ready(function () {
 
     configurarTabla('.tablas');
 
+	$('#oc_file').fileinput({
+		language: 'es',
+		allowedFileExtensions: ['jpg', 'jpeg', 'png', "pdf"],
+		maxFileSize: 4000,
+		initialPreview: [
+			// PDF DATA
+			'/storage/imagenes/notaventa/'+$("#imagen").val(),
+		],
+		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
+		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
+		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
+		initialPreviewConfig: [
+			{type: "pdf", size: 8000, caption: $("#imagen").val(), url: "/file-upload-batch/2", key: 10, downloadUrl: false}, // disable download
+		],
+        showUpload: false,
+        showClose: false,
+        initialPreviewAsData: true,
+		dropZoneEnabled: false,
+		maxFileCount: 5,
+        theme: "fa",
+	});
+
+
 });
 
 function configurarTabla(aux_tabla){
@@ -282,4 +305,57 @@ function reportepdf(data){
         }
     });
     */
+}
+
+function clicbotonactfileoc(id,oc_id){
+    $('.fileinput-remove-button').click();
+    $("#myModalactualizarFileOC").modal('show');
+}
+
+$("#btnGuardarFileOC").click(function(event)
+{
+	event.preventDefault();
+	if(verificarFileOC())
+	{
+		var data = {
+			id    : $("#idf").val(),
+			numfactura   : $("#numfacturam").val(),
+			fechafactura : $("#fechafacturam").val(),
+			nfila : $("#nfilaf").val(),
+			status : $("#status").val(),
+			_token: $('input[name=_token]').val()
+		};
+		var ruta = '/despachoord/guardarfactdesp';
+		swal({
+			title: '¿ Seguro desea continuar ?',
+			text: "Esta acción no se puede deshacer!",
+				icon: 'warning',
+			buttons: {
+				cancel: "Cancelar",
+				confirm: "Aceptar"
+			},
+		}).then((value) => {
+			if (value) {
+				ajaxRequest(data,ruta,'guardarfactdesp');
+			}
+		});
+
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+	
+});
+
+function verificarFileOC()
+{
+	var v1=0;
+	var v2=0;
+
+    v1=validacion('oc_id1','texto');
+	v2=validacion('oc_file','otro');
+	if (v1===false || v2===false){
+		return false;
+	}else{
+		return true;
+	}
 }

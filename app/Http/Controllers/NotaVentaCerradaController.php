@@ -8,6 +8,7 @@ use App\Models\ClienteSucursal;
 use App\Models\NotaVentaCerrada;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class NotaVentaCerradaController extends Controller
 {
@@ -54,11 +55,20 @@ class NotaVentaCerradaController extends Controller
     public function guardar(Request $request)
     {
         can('guardar-cerrar-nota-venta');
-        $request->request->add(['usuario_id' => auth()->id()]);
-        //dd($request);
-        NotaVentaCerrada::create($request->all());
-        return redirect('notaventacerrada')->with('mensaje','Creado con exito');
-
+        $sql = "SELECT COUNT(*) as cont
+        FROM notaventa
+        where id = $request->notaventa_id
+        and anulada is null
+        and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        and notaventa.deleted_at is null;";
+        $datas = DB::select($sql);
+        if($datas[0]->cont > 0){
+            $request->request->add(['usuario_id' => auth()->id()]);
+            NotaVentaCerrada::create($request->all());
+            return redirect('notaventacerrada')->with('mensaje','Creado con exito');
+        }else{
+            return redirect('notaventacerrada')->with('mensaje','Nota de venta no existe');
+        }
     }
 
     /**

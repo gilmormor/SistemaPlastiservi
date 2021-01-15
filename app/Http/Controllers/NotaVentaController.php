@@ -960,6 +960,35 @@ class NotaVentaController extends Controller
         }
     }
 
+    public function buscarNV(Request $request){
+        if($request->ajax()){
+            $sql = "SELECT COUNT(*) as cont
+                FROM notaventa
+                where id = $request->id
+                and anulada is null
+                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+                and notaventa.deleted_at is null;";
+            $datas = DB::select($sql);
+            //dd($datas[0]->cont);
+            if($datas[0]->cont > 0){
+                return response()->json(['mensaje' => 'ok']);
+            }else{
+                return response()->json(['mensaje' => 'no']);
+            }
+        }
+    }
+
+    public function actualizarFileOC(Request $request){
+        if ($foto = NotaVenta::setFotonotaventa($request->oc_file,$request->id,$request)){
+            $request->request->add(['oc_file' => $foto]);
+            $data = NotaVenta::findOrFail($request->id);
+            $data->oc_file = $foto;
+            if($data->save()){
+                return response()->json(['mensaje' => 'ok']); 
+            }
+        }
+    }
+
 }
 
 function consultaNVaprobadas($id){

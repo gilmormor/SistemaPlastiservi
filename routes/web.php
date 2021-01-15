@@ -166,6 +166,7 @@ Route::delete('cliente/{id}', 'ClienteController@eliminar')->name('eliminar_clie
 Route::post('cliente/eliminarClienteDirec/{id}', 'ClienteController@eliminarClienteDirec')->name('eliminar_clienteDirec');
 Route::post('cliente/buscarCli', 'ClienteController@buscarCli')->name('buscarCli');
 Route::post('cliente/buscarCliId', 'ClienteController@buscarCliId')->name('buscarCliId');
+Route::post('cliente/buscarClixId', 'ClienteController@buscarClixId')->name('buscarClixId');
 Route::post('cliente/buscarClisinsuc', 'ClienteController@buscarClisinsuc')->name('buscarClisinsuc');
 Route::post('cliente/guardarclientetemp', 'ClienteController@guardarclientetemp')->name('guardarclientetemp');
 //Ruta para actualizar el campo giro_id en la tabla clientes
@@ -316,6 +317,7 @@ Route::post('notaventa/actguiadespacho/{id}', 'NotaVentaController@actguiadespac
 Route::post('notaventa/findespacho/{id}', 'NotaVentaController@findespacho')->name('findespacho_notaventa');
 Route::post('notaventa/buscaroc_id', 'NotaVentaController@buscaroc_id')->name('buscaroc_id_notaventa');
 Route::get('notaventa/cerrartodasNV', 'NotaVentaController@cerrartodasNV')->name('cerrartodasNV_notaventa');
+Route::post('notaventa/buscarNV', 'NotaVentaController@buscarNV')->name('buscarNV_notaventa');
 
 
 

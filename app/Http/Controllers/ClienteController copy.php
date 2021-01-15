@@ -500,6 +500,42 @@ class ClienteController extends Controller
         }
     }
 
+    public function buscarClixId(Request $request){
+        if($request->ajax()){
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $clientedirecs = Cliente::where('cliente.id', $request->id)
+                    ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
+                    ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+                    ->leftjoin('clientebloqueado', function ($join) {
+                        $join->on('cliente.id', '=', 'clientebloqueado.cliente_id')
+                        ->whereNull('clientebloqueado.deleted_at');
+                    })
+                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                    ->select([
+                                'cliente.id',
+                                'cliente.rut',
+                                'cliente.razonsocial',
+                                'cliente.telefono',
+                                'cliente.email',
+                                'cliente.direccion',
+                                'cliente.vendedor_id',
+                                'cliente.contactonombre',
+                                'cliente.formapago_id',
+                                'cliente.plazopago_id',
+                                'cliente.giro_id',
+                                'cliente.regionp_id',
+                                'cliente.provinciap_id',
+                                'cliente.comunap_id',
+                                'clientedirec.id as direc_id',
+                                'clientedirec.direcciondetalle',
+                                'clientebloqueado.descripcion'
+                            ]);
+            //dd($clientedirecs->get());
+            return response()->json($clientedirecs->get());
+        }
+    }
+
     public function buscarmyCli(Request $request){
         if($request->ajax()){
             //dd($request);

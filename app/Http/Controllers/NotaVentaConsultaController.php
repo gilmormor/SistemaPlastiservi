@@ -203,6 +203,11 @@ class NotaVentaConsultaController extends Controller
                 </td>";
                 if(empty($data->oc_file)){
                     $aux_enlaceoc = $data->oc_id;
+                    /*
+                    $aux_enlaceoc = "<button type='button' class='btn btn-block btn-primary'>$data->oc_id</button>";*/
+                    $aux_enlaceoc = "<a class='btn btn-primary btn-xs tooltipsC' title='Subir OC' onclick='clicbotonactfileoc($i,$data->oc_id)'>
+                                        <i class='fa fa-fw fa-cloud-upload'></i>
+                                    </a>";
                 }else{
                     $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
                 }

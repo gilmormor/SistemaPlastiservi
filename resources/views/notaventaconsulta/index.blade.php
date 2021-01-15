@@ -3,6 +3,16 @@
 Cotización
 @endsection
 
+@section("styles")
+    <link rel="stylesheet" href="{{asset("assets/js/bootstrap-fileinput/css/fileinput.min.css")}}">
+@endsection
+
+@section("scriptsPlugins")
+    <script src="{{asset("assets/js/bootstrap-fileinput/js/fileinput.min.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/js/bootstrap-fileinput/js/locales/es.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/js/bootstrap-fileinput/themes/fas/theme.min.js")}}" type="text/javascript"></script>
+@endsection
+
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
@@ -53,4 +63,5 @@ Cotización
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.listarorddesp')
+@include('generales.actualizarFileOC')
 @endsection
