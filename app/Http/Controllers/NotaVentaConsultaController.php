@@ -211,6 +211,7 @@ class NotaVentaConsultaController extends Controller
                 }else{
                     $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
                 }
+                $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
                 $aux_icodespacho = "";
                 $aux_obsdespacho = "No ha iniciado el despacho";
                 if(!empty($data->inidespacho)){
@@ -490,21 +491,23 @@ function consulta($request){
         $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
     }
 
-    $aux_aprobstatus = " true";    
-    if(!empty($request->aprobstatus)){
-        if(in_array('1',$request->aprobstatus)){
-            $aux_aprobstatus = "notaventa.aprobstatus='0'";
+    $aux_aprobstatus = " true";
+    if(is_array($request->aprobstatus)){
+        if(!empty($request->aprobstatus)){
+            if(in_array('1',$request->aprobstatus)){
+                $aux_aprobstatus = "notaventa.aprobstatus='0'";
+            }
+            if(in_array('2',$request->aprobstatus)){
+                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+            }
+            if(in_array('3',$request->aprobstatus)){
+                $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
+            }
+            if(in_array('4',$request->aprobstatus)){
+                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+            }
         }
-        if(in_array('2',$request->aprobstatus)){
-            $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
-        }
-        if(in_array('3',$request->aprobstatus)){
-            $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
-        }
-        if(in_array('4',$request->aprobstatus)){
-            $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
-        }
-        /*
+    }else{
         switch ($request->aprobstatus) {
             case 1:
                 $aux_aprobstatus = "notaventa.aprobstatus='0'";
@@ -519,8 +522,8 @@ function consulta($request){
                 $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
                 break;
         }
-        */
     }
+    
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
