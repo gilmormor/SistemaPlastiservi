@@ -7,7 +7,7 @@ Persona
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
 @endsection
 
-@section('contenido')
+@section('contenido') 
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
