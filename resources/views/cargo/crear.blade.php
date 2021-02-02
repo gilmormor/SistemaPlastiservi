@@ -8,7 +8,7 @@
 @endsection
 
 @section('contenido')
-<div class="row">
+<div class="row"> 
     <div class="col-lg-12">
         @include('includes.form-error')
         @include('includes.mensaje')
