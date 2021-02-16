@@ -556,6 +556,31 @@ $("#rut").blur(function(){
 									$("#rut").focus();
 								}
 							});
+						}else{
+							$.ajax({
+								url: '/clientetemp/buscarCliTemp',
+								type: 'POST',
+								data: data,
+								success: function (respuesta) {
+									if(respuesta.length>0){
+										swal({
+											title: "RUT esta en Clientes temporales",
+											text: "Para crear cliente debe ser validado en el Menú: Archivos Maestros->Clientes->Validar Cliente",
+											icon: 'error',
+											buttons: {
+												confirm: "Aceptar"
+											},
+										}).then((value) => {
+											if (value) {
+												//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+												$("#rut").focus();
+											}
+										});
+									}else{
+										alert('entro');
+									}
+								}
+							});
 						}
 					}
 				});
