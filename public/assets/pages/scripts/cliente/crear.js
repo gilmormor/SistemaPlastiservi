@@ -564,8 +564,8 @@ $("#rut").blur(function(){
 								success: function (respuesta) {
 									if(respuesta.length>0){
 										swal({
-											title: "RUT esta en Clientes temporales",
-											text: "Para crear cliente debe ser validado en el Menú: Archivos Maestros->Clientes->Validar Cliente",
+											title: "Cliente temporal",
+											text: "Para crear cliente, debe ser validado en el Menú: Archivos Maestros->Clientes->Validar Cliente",
 											icon: 'error',
 											buttons: {
 												confirm: "Aceptar"
