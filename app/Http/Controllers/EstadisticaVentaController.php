@@ -82,9 +82,7 @@ class EstadisticaVentaController extends Controller
             $aux_totalsubtotal = 0;
             $aux_totalkilos = 0;
             $aux_totaldiferenciakilos = 0;
-            $aux_totalprecioxkilo = 0;
             $aux_totalvalorcosto = 0;
-            $aux_totaldiferenciaprecio = 0;
             $aux_totaldiferenciaval = 0;
             foreach ($datas as $data) {
                 $respuesta['tabla'] .= "
@@ -109,14 +107,12 @@ class EstadisticaVentaController extends Controller
                 $aux_totalsubtotal += $data->subtotal;
                 $aux_totalkilos += $data->kilos;
                 $aux_totaldiferenciakilos += $data->diferenciakilos;
-                $aux_totalprecioxkilo += $data->precioxkilo;
                 $aux_totalvalorcosto += $data->valorcosto;
-                $aux_totaldiferenciaprecio += $data->diferenciaprecio;
-                $aux_totaldiferenciaval += $data->diferenciaval;
             }
-            $aux_promprecioxkilo = $aux_totalprecioxkilo / $i;
-            $aux_promvalorcosto = $aux_totalvalorcosto / $i;
-            $aux_promdiferenciaprecio = $aux_totaldiferenciaprecio / $i;
+            $aux_promprecioxkilo = round($aux_totalsubtotal / $aux_totalkilos,2);
+            $aux_promvalorcosto = round($aux_totalvalorcosto / $i ,2);
+            $aux_diferenciaprecio = $aux_promprecioxkilo - $aux_promvalorcosto;
+            $aux_totaldiferenciaval = $aux_totalkilos * $aux_diferenciaprecio;
             $respuesta['tabla'] .= "
             </tbody>
             <tfoot>
@@ -128,7 +124,7 @@ class EstadisticaVentaController extends Controller
                     <th style='text-align:right'>". number_format($aux_totaldiferenciakilos, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_promprecioxkilo, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_promvalorcosto, 2, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_promdiferenciaprecio, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_diferenciaprecio, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totaldiferenciaval, 0, ",", ".") ."</th>
                 </tr>
             </tfoot>
@@ -170,6 +166,89 @@ class EstadisticaVentaController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         }
     }
+
+    public function grafico(Request $request){
+        //dd($request);
+        $respuesta = array();
+		$respuesta['exito'] = true;
+		$respuesta['mensaje'] = "Código encontrado";
+		$respuesta['tabla'] = "";
+
+        if($request->ajax()){
+            $datas = consultagrafico($request);
+
+            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+			<thead>
+				<tr>
+					<th>Materia Prima</th>
+                    <th style='text-align:right'>Valor<br>Neto</th>
+					<th style='text-align:right'>Kilos<br>Entreg</th>
+                    <th style='text-align:right'>Precio<br>Kilo</th>
+                    <th style='text-align:right'>Preci<br>Costo</th>
+                    <th style='text-align:right'>Dif<br>Precio</th>
+                    <th style='text-align:right'>Dif<br>Valorizada</th>
+                </tr>
+            </thead>
+            <tbody>";
+            $i = 0;
+            $aux_totalsubtotal = 0;
+            $aux_totalkilos = 0;
+            $aux_totalprecioxkilo = 0;
+            $aux_totalvalorcosto = 0;
+            $aux_totaldifprec = 0;
+            $aux_totaldifval = 0;
+            
+            foreach ($datas as $data) {
+                $respuesta['tabla'] .= "
+                <tr id='fila$i' name='fila$i'>
+                    <td>$data->matprimdesc</td>
+                    <td style='text-align:right'>".number_format($data->subtotal, 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->kilos, 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->precioxkilo, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->valorcosto, 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->difprec, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->difval, 0, ",", ".") ."</td>
+                </tr>";
+                $i++;
+                $aux_totalsubtotal += $data->subtotal;
+                $aux_totalkilos += $data->kilos;
+                $aux_totalprecioxkilo += $data->precioxkilo;
+                $aux_totalvalorcosto += $data->valorcosto;
+                $aux_totaldifprec += $data->difprec;
+                $aux_totaldifval += $data->difval;
+            }
+            $respuesta['tabla'] .= "
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th style='text-align:right'>TOTALES</th>
+                    <th style='text-align:right'>". number_format($aux_totalsubtotal, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalkilos, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalprecioxkilo, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalvalorcosto, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totaldifprec, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totaldifval, 0, ",", ".") ."</th>
+                </tr>
+            </tfoot>
+
+            </table>";
+
+            $respuesta['matprimdesc'] = array_column($datas, 'matprimdesc');
+            
+            $respuesta['difvals'] = array_column($datas, 'difval');
+            //dd($respuesta['difvals']);
+            $i = 0;
+            foreach($respuesta['difvals'] as &$difval){
+                $difval = round($difval,2);
+                $difval1 = round(($difval / $aux_totaldifval) * 100,2);
+                $respuesta['matprimdesc'][$i] .= " " . number_format($difval1, 2, ",", ".") . "%";
+                $i++;
+            }
+
+
+            return $respuesta;
+        }
+    }
     
 }
 
@@ -183,13 +262,6 @@ function consulta($request){
         $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "estadisticaventa.fechadocumento>='$fechad' and estadisticaventa.fechadocumento<='$fechah'";
-    }
-    if(empty($request->rut)){
-        $aux_condrut = " true";
-    }else{
-        $aux_rut = str_replace(".","",$request->rut);
-        $aux_rut = str_replace("-","",$aux_rut);
-        $aux_condrut = "cliente.rut='$aux_rut'";
     }
     if(empty($request->producto)){
         $aux_condproducto = " true";
@@ -205,10 +277,32 @@ function consulta($request){
     $sql = "SELECT *
             FROM estadisticaventa
             WHERE $aux_condFecha
-            and $aux_condrut
             and $aux_condproducto
             and $aux_condmatprimdesc;";
 
+    $datas = DB::select($sql);
+    return $datas;
+}
+
+function consultagrafico($request){
+    if(empty($request->fechad) or empty($request->fechah)){
+        $aux_condFecha = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->fechad);
+        $fechad = date_format($fecha, 'Y-m-d');
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
+        $fechah = date_format($fecha, 'Y-m-d');
+        $aux_condFecha = "estadisticaventa.fechadocumento>='$fechad' and estadisticaventa.fechadocumento<='$fechah'";
+    }
+
+    $sql = "SELECT matprimdesc,SUM(subtotal) AS subtotal,SUM(kilos) AS kilos,
+            ROUND(SUM(subtotal)/SUM(kilos),2) AS precioxkilo,valorcosto,
+            ROUND((SUM(subtotal)/SUM(kilos)),2)-valorcosto AS difprec,
+            SUM(kilos)*(ROUND((SUM(subtotal)/SUM(kilos)),2)-valorcosto) AS difval
+            FROM estadisticaventa
+            WHERE $aux_condFecha
+            GROUP BY estadisticaventa.matprimdesc,valorcosto;";
+    //dd($sql);
     $datas = DB::select($sql);
     return $datas;
 }

@@ -5,7 +5,6 @@ Clientes
 
 @section("scripts")
     <script type="text/javascript" src="{{asset("assets/js/jquery-barcode.js")}}"></script>
-    <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/cliente/index.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -34,37 +33,6 @@ Clientes
                             <th class="width70"></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php $aux_nfila = 0; ?>
-                        @foreach ($datas as $data)
-                        <?php $aux_nfila++; ?>
-                        <tr>
-                            <td>{{$data->id}}</td>
-                            <td>{{$data->rut}}</td>
-                            <td>{{$data->razonsocial}}</td>
-                            <td>
-                                @if(can('guardar-cliente',false) == true)
-                                    <a href="{{route('editar_cliente', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                        <i class="fa fa-fw fa-pencil"></i>
-                                    </a>
-                                @else
-                                    <a href="{{route('editar_cliente', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Ver este registro">
-                                        <i class="fa fa-fw fa-eye"></i>
-                                    </a>
-                                @endif
-                                @if(can('eliminar-cliente',false) == true)
-                                    <form action="{{route('eliminar_cliente', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
-                                        @csrf @method("delete")
-                                        <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                            <i class="fa fa-fw fa-trash text-danger"></i>
-                                        </button>
-                                    </form>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
-
-                    </tbody>
                 </table>
             </div>
         </div>

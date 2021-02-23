@@ -65,7 +65,7 @@ class ClienteController extends Controller
         */
 
         //$datas = datatables($datas)->toJson();
-        return view('cliente.index1');
+        return view('cliente.index');
         //return view('cliente.index', compact('datas'));
     }
 

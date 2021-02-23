@@ -20,6 +20,12 @@ $(document).ready(function () {
         consultar(datos());
     });
 
+    $("#btnconsultarT").click(function()
+    {
+        consultarT(datos());
+    });
+
+
     $("#btnpdf1").click(function()
     {
         consultarpdf(datos());
@@ -118,7 +124,6 @@ function datos(){
         _token            : $('input[name=_token]').val(),
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
-        rut               : eliminarFormatoRutret($("#rut").val()),
         matprimdesc       : $("#matprimdesc").val(),
         producto          : $("#producto").val()
     };
@@ -126,18 +131,38 @@ function datos(){
 }
 
 function consultar(data){
+    $("#graficos").hide();
     $.ajax({
         url: '/estadisticaventa/reporte',
         type: 'POST',
         data: data,
         success: function (datos) {
             if(datos['tabla'].length>0){
+                $("#tablaconsultaG").html('');
                 $("#tablaconsulta").html(datos['tabla']);
                 configurarTabla('.tablascons');
             }
         }
     });
 }
+
+function consultarT(data){
+    $("#graficos").hide();
+    $.ajax({
+        url: '/estadisticaventa/grafico',
+        type: 'POST',
+        data: data,
+        success: function (datos) {
+            if(datos['tabla'].length>0){
+                $("#tablaconsulta").html('');
+                $("#tablaconsultaG").html(datos['tabla']);
+                configurarTabla('.tablascons');
+                grafico(datos);
+            }
+        }
+    });
+}
+
 
 function consultarpdf(data){
     $.ajax({
@@ -269,4 +294,42 @@ function reportepdf(data){
 function clicbotonactfileoc(id,oc_id){
     $('.fileinput-remove-button').click();
     $("#myModalactualizarFileOC").modal('show');
+}
+
+function grafico(datos){
+    $("#graficos").show();
+    $('.resultadosPie1').html('<canvas id="graficoPie1"></canvas>');
+    var config1 = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: datos['difvals'],
+                backgroundColor: [
+                    window.chartColors.blue,
+                    window.chartColors.orange,
+                    window.chartColors.red,
+                    window.chartColors.purple,
+                    window.chartColors.yellow,  
+                    window.chartColors.blue,
+                    window.chartColors.orange,
+                    window.chartColors.red,
+                    window.chartColors.purple,
+                    window.chartColors.yellow,  
+                ],
+                label: 'Dataset 1'
+            }],
+            labels: datos['matprimdesc']
+        },
+        options: {
+            responsive: true
+        }
+    };
+
+    var ctxPie1 = document.getElementById('graficoPie1').getContext('2d');
+    window.myPie1 = new Chart(ctxPie1, config1);
+    myPie1.clear();
+
+    $("#tituloPie1").html("Ingreso X Materia Prima");
+	$("#graficos").show();
+
 }

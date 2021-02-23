@@ -3,16 +3,6 @@
 Informe Materias Primas Precio X Kilo
 @endsection
 
-@section("styles")
-    <link rel="stylesheet" href="{{asset("assets/js/bootstrap-fileinput/css/fileinput.min.css")}}">
-@endsection
-
-@section("scriptsPlugins")
-    <script src="{{asset("assets/js/bootstrap-fileinput/js/fileinput.min.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/js/bootstrap-fileinput/js/locales/es.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/js/bootstrap-fileinput/themes/fas/theme.min.js")}}" type="text/javascript"></script>
-@endsection
-
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
@@ -32,8 +22,6 @@ Informe Materias Primas Precio X Kilo
             </div>
             <div class="box-body">
                 <div class="row">
-                    <form action="{{route('estadisticaventa_exportPdf')}}" class="d-inline form-eliminar" method="get" target="_blank">
-                        @csrf
                         <div class="col-xs-12 col-md-9 col-sm-12" style="padding-left: 0px;padding-right: 0px;">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
@@ -54,19 +42,6 @@ Informe Materias Primas Precio X Kilo
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="RUT">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="rut">RUT:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <div class="input-group">
-                                            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut')}}" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12" data-toggle='tooltip'/>
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="MateriaPrima">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>MateriaPrima:</label>
@@ -84,8 +59,7 @@ Informe Materias Primas Precio X Kilo
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
+
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Producto">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Producto:</label>
@@ -106,24 +80,21 @@ Informe Materias Primas Precio X Kilo
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12">
-                            <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div class="col-xs-12 col-md-12 col-sm-12 text-center">
-                                        <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
-                                        <button type="submit" class="btn btn-success tooltipsC" title="Reporte PDF">Reporte PDF</button>
-                                        <!--<button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>-->
-                                        </button>
-                                        <!-- intento de boton modal para el reporte PDF
-                                        <a class='btn-accion-tabla btn-sm' onclick='genreportepdf()' title='Reporte Nota Venta' data-toggle='tooltip'>
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>
-                                        </a>
-                                        -->                                  
-                                    </div>
-                                </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12 text-center">
+                                <form action="{{route('estadisticaventa_exportPdf')}}" class="d-inline form-eliminar" method="get" target="_blank">
+                                    @csrf
+                                    <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
+                                    <button type="submit" class="btn btn-success tooltipsC" title="Reporte PDF">Reporte PDF</button>
+                                </form>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12 text-center">
+                                <form action="{{route('estadisticaventa_exportPdf')}}" class="d-inline form-eliminar" method="get" target="_blank">
+                                    @csrf
+                                    <button type="button" id="btnconsultarT" name="btnconsultarT" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
+                                    <button type="submit" class="btn btn-success tooltipsC" title="Reporte PDF">Reporte PDF</button>
+                                </form>
                             </div>
                         </div>
-                    </form>
                 </div>
             </div>
             <div class="row">
@@ -134,16 +105,68 @@ Informe Materias Primas Precio X Kilo
 
             <div class="table-responsive" id="tablaconsulta">
             </div>
-            <!--
-            <div class="container">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="table-responsive" id="tablaconsulta">
-                        </div>			
+
+            <div class="row" id="graficos" name="graficos" style="display:none;">
+                <div class="col-lg-12">
+                    <!-- DONUT CHART -->
+                       <div class="box box-danger">
+                           <div class="box-header with-border">
+                               <h3 class="box-title">Gráfico Pie</h3>
+                       
+                               <div class="box-tools pull-right">
+                                   <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                   </button>
+                                   <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                               </div>
+                           </div>
+                           <div class="box-body">
+                               <div class="col-xs-12 col-sm-12">
+                                   <div class="col-xs-12 col-sm-12 text-center">
+                                       <label id="tituloPie1" name="tituloPie1">Gráfico Números</label>
+                                   </div>
+                                   <div class="resultadosPie1 text-center" style="width: 100%;">
+                                       <canvas id="graficoPie1"></canvas>
+                                   </div>
+                               </div>
+                               
+                           </div>
+                           <!-- /.box-body -->
+                       </div>
+                       <!-- /.box -->
+                   </div>
+
+
+                <div class="col-lg-12">
+                <!-- DONUT CHART -->
+                    <div class="box box-danger">
+                        <div class="box-header with-border">
+                            <h3 class="box-title" id="titulo_grafico" name="titulo_grafico"></h3>
+                    
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="col-xs-12 col-sm-12">
+                                <div class="table-responsive" id="tablaconsultaG">
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <!-- /.box-body -->
                     </div>
+                    <!-- /.box -->
                 </div>
+            
+            
+
             </div>
-            -->
+
+
+
+
         </div>
     </div>
 </div>

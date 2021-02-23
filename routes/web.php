@@ -572,3 +572,4 @@ Route::delete('notaventacerrada/{id}', 'NotaVentaCerradaController@eliminar')->n
 Route::get('estadisticaventa', 'EstadisticaVentaController@index')->name('estadisticaventa');
 Route::post('estadisticaventa/reporte', 'EstadisticaVentaController@reporte')->name('estadisticaventa_reporte');
 Route::get('estadisticaventa/exportPdf', 'EstadisticaVentaController@exportPdf')->name('estadisticaventa_exportPdf');
+Route::post('estadisticaventa/grafico', 'EstadisticaVentaController@grafico')->name('estadisticaventa_grafico');

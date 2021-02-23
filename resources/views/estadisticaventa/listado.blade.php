@@ -52,9 +52,7 @@
 						$aux_totalsubtotal = 0;
 						$aux_totalkilos = 0;
 						$aux_totaldiferenciakilos = 0;
-						$aux_totalprecioxkilo = 0;
 						$aux_totalvalorcosto = 0;
-						$aux_totaldiferenciaprecio = 0;
 						$aux_totaldiferenciaval = 0;
 					?>
 					@foreach($datas as $data)
@@ -63,10 +61,7 @@
 							$aux_totalsubtotal += $data->subtotal;
 							$aux_totalkilos += $data->kilos;
 							$aux_totaldiferenciakilos += $data->diferenciakilos;
-							$aux_totalprecioxkilo += $data->precioxkilo;
 							$aux_totalvalorcosto += $data->valorcosto;
-							$aux_totaldiferenciaprecio += $data->diferenciaprecio;
-							$aux_totaldiferenciaval += $data->diferenciaval;
 						?>
 
 						<tr id='fila{{$i}}' name='fila{{$i}}'>
@@ -90,11 +85,11 @@
 					@endforeach
 				</tbody>
 				<?php
-					$aux_promprecioxkilo = $aux_totalprecioxkilo / $i;
-					$aux_promvalorcosto = $aux_totalvalorcosto / $i;
-					$aux_promdiferenciaprecio = $aux_totaldiferenciaprecio / $i;				
+					$aux_promprecioxkilo = round($aux_totalsubtotal / $aux_totalkilos,2);
+					$aux_promvalorcosto = round($aux_totalvalorcosto / $i ,2);
+					$aux_diferenciaprecio = $aux_promprecioxkilo - $aux_promvalorcosto;
+					$aux_totaldiferenciaval = $aux_totalkilos * $aux_diferenciaprecio;
 				?>
-
 				<tfoot id="detalle_totales">
 					<tr class="headt">
 						<b>
@@ -105,7 +100,7 @@
 							<th style='text-align:right'>{{number_format($aux_totaldiferenciakilos, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_promprecioxkilo, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_promvalorcosto, 2, ",", ".")}}</th>
-							<th style='text-align:right'>{{number_format($aux_promdiferenciaprecio, 2, ",", ".")}}</th>
+							<th style='text-align:right'>{{number_format($aux_diferenciaprecio, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_totaldiferenciaval, 0, ",", ".")}}</th>
 						</b>
 				</tfoot>
