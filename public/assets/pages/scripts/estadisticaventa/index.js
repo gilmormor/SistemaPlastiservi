@@ -50,6 +50,20 @@ function configurarTabla(aux_tabla){
         'ordering'    : true,
         'info'        : true,
         'autoWidth'   : false,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+    });    
+}
+/*
+function configurarTabla(aux_tabla){
+    $(aux_tabla).DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
         'dom'         : 'Bfrtip',
         'buttons'     : [
             'copy', 'csv', 'excel', 'pdf', 'print'
@@ -59,7 +73,7 @@ function configurarTabla(aux_tabla){
         }
     });    
 }
-
+*/
 
 function ajaxRequest(data,url,funcion) {
 	$.ajax({

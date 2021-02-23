@@ -163,7 +163,7 @@ class EstadisticaVentaController extends Controller
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             $pdf = PDF::loadView('estadisticaventa.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta'))->setPaper('a4', 'landscape');
-            return $pdf->download('ReporteMatPrimxKilo.pdf');
+            //return $pdf->download('ReporteMatPrimxKilo.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteMatPrimxKilo.pdf");
         }else{
