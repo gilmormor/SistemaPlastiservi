@@ -158,6 +158,7 @@ Route::post('producto/obtGrupoProd', 'ProductoController@obtGrupoProd')->name('o
 
 /*RUTAS CLIENTES*/
 Route::get('cliente', 'ClienteController@index')->name('cliente');
+Route::get('clientepage', 'ClienteController@clientepage')->name('clientepage');
 Route::get('cliente/crear', 'ClienteController@crear')->name('crear_cliente');
 Route::post('cliente', 'ClienteController@guardar')->name('guardar_cliente');
 Route::get('cliente/{id}/editar', 'ClienteController@editar')->name('editar_cliente');

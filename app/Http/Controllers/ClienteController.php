@@ -16,19 +16,12 @@ use App\Models\Provincia;
 use App\Models\Region;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
-use App\Models\SucursalClienteDirec;
-use App\Models\Vendedor;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class ClienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         can('listar-cliente');
@@ -71,7 +64,15 @@ class ClienteController extends Controller
         ->get();
         */
 
-        return view('cliente.index', compact('datas'));
+        //$datas = datatables($datas)->toJson();
+        return view('cliente.index1');
+        //return view('cliente.index', compact('datas'));
+    }
+
+    public function clientepage(){
+        return datatables()
+            ->eloquent(Cliente::query())
+            ->toJson();
     }
 
     /**
@@ -120,7 +121,7 @@ class ClienteController extends Controller
             if($cont_direc>0){
                 for ($i=0; $i < $cont_direc ; $i++){
                     if(is_null($request->direcciondetalle[$i])==false && is_null($request->region_id[$i])==false && is_null($request->provincia_id[$i])==false && is_null($request->comuna_id[$i])==false){
-                        $clienteDireccion = new ClienteDirec;
+                        $clienteDireccion = new ClienteDirec();
                         $clienteDireccion->cliente_id = $clienteid;
                         $clienteDireccion->direcciondetalle = $request->direcciondetalle[$i];
                         $clienteDireccion->region_id = $request->region_id[$i];
@@ -239,57 +240,70 @@ class ClienteController extends Controller
     public function actualizar(ValidarCliente $request, $id)
     {
         //dd($request->mostrarguiasfacturas[$i]);
-        //dd($request);
-        can('guardar-cliente');
-        $cliente = Cliente::findOrFail($id);
+        /*
+        $permisos = Permiso::whereHas('roles', function ($query) {
+            $query->where('rol_id', session()->get('rol_id'));
+            })->get()->pluck('slug')->toArray();
+        $permiso = 'guardar-cliente';
+        dd(!in_array($permiso, $permisos));
+        dd($permisos);*/
         
-        $cliente->update($request->all());
-        //dd($request);
+        if(can('guardar-cliente',false) == true){
+            $cliente = Cliente::findOrFail($id);
         
-        $cliente->vendedores()->sync($request->vendedor_id);
-        if(isset($request->direccion_id)){
-            $auxDirCli=ClienteDirec::where('cliente_id',$id)->whereNotIn('id', $request->direccion_id)->pluck('id')->toArray(); //->destroy();
-            for ($i=0; $i < count($auxDirCli) ; $i++){
-                ClienteDirec::destroy($auxDirCli[$i]);
-            }
-            $cont_direc = count($request->direccion_id);
-            if($cont_direc>0){
-                for ($i=0; $i < count($request->direccion_id) ; $i++){
-                    if( $request->direccion_id[$i] == '0' ){
-                        $clienteDireccion = new ClienteDirec;
-                        $clienteDireccion->cliente_id = $id;
-                        $clienteDireccion->direcciondetalle = $request->direcciondetalle[$i];
-                        $clienteDireccion->region_id = $request->region_id[$i];
-                        $clienteDireccion->provincia_id = $request->provincia_id[$i];
-                        $clienteDireccion->comuna_id = $request->comuna_id[$i];
-                        $clienteDireccion->save();
-                    }else{
-                        DB::table('clientedirec')->updateOrInsert(
-                            ['id' => $request->direccion_id[$i], 'cliente_id' => $id],
-                            [
-                                'direcciondetalle' => $request->direcciondetalle[$i],
-                                'region_id' => $request->region_id[$i],
-                                'provincia_id' => $request->provincia_id[$i],
-                                'comuna_id' => $request->comuna_id[$i],
-                            ]
-                        );
-                    }
-                    /* ESTO ES PARA INSERTAR O ELIMINAR SUCURSALES EN DIRECCIONES
-                    $idDireccion = $request->direccion_id[$i]; 
-                    if($request->sucursal_id[$i] == NULL){
-                        $aux_arraySuc = [];
-                    }else{
-                        $aux_arraySuc = explode(",", $request->sucursal_id[$i]);
-                    }
-                    $clientedirec = ClienteDirec::findOrFail($idDireccion);
-                    $clientedirec->sucursals()->sync($aux_arraySuc);
-                    */
+            $cliente->update($request->all());
+            //dd($request);
+            //dd($request);
+            
+            $cliente->vendedores()->sync($request->vendedor_id);
+            $cliente->sucursales()->sync($request->sucursalp_id);
+            if(isset($request->direccion_id)){
+                $auxDirCli=ClienteDirec::where('cliente_id',$id)->whereNotIn('id', $request->direccion_id)->pluck('id')->toArray(); //->destroy();
+                for ($i=0; $i < count($auxDirCli) ; $i++){
+                    ClienteDirec::destroy($auxDirCli[$i]);
                 }
+                $cont_direc = count($request->direccion_id);
+                if($cont_direc>0){
+                    for ($i=0; $i < count($request->direccion_id) ; $i++){
+                        if( $request->direccion_id[$i] == '0' ){
+                            $clienteDireccion = new ClienteDirec;
+                            $clienteDireccion->cliente_id = $id;
+                            $clienteDireccion->direcciondetalle = $request->direcciondetalle[$i];
+                            $clienteDireccion->region_id = $request->region_id[$i];
+                            $clienteDireccion->provincia_id = $request->provincia_id[$i];
+                            $clienteDireccion->comuna_id = $request->comuna_id[$i];
+                            $clienteDireccion->save();
+                        }else{
+                            DB::table('clientedirec')->updateOrInsert(
+                                ['id' => $request->direccion_id[$i], 'cliente_id' => $id],
+                                [
+                                    'direcciondetalle' => $request->direcciondetalle[$i],
+                                    'region_id' => $request->region_id[$i],
+                                    'provincia_id' => $request->provincia_id[$i],
+                                    'comuna_id' => $request->comuna_id[$i],
+                                ]
+                            );
+                        }
+                        /* ESTO ES PARA INSERTAR O ELIMINAR SUCURSALES EN DIRECCIONES
+                        $idDireccion = $request->direccion_id[$i]; 
+                        if($request->sucursal_id[$i] == NULL){
+                            $aux_arraySuc = [];
+                        }else{
+                            $aux_arraySuc = explode(",", $request->sucursal_id[$i]);
+                        }
+                        $clientedirec = ClienteDirec::findOrFail($idDireccion);
+                        $clientedirec->sucursals()->sync($aux_arraySuc);
+                        */
+                    }
+                }
+        
             }
-    
+
+            return redirect('cliente')->with('mensaje','Cliente actualizado con exito!');
+        }else{
+            return redirect('cliente')->with('mensaje','No tiene permiso para editar!');
         }
 
-        return redirect('cliente/'.$id.'/editar')->with('mensaje','Cliente actualizado con exito!');
     }
 
     /**
@@ -347,12 +361,18 @@ class ClienteController extends Controller
             //dd($request);
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
+            //dd($sucurArray);
             $clientedirecs = Cliente::where('rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
-                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                    ->leftjoin('clientebloqueado', function ($join) {
+                        $join->on('cliente.id', '=', 'clientebloqueado.cliente_id')
+                        ->whereNull('clientebloqueado.deleted_at');
+                    })
+                    ->whereNull('clientebloqueado.deleted_at')
                     ->select([
                                 'cliente.id',
+                                'cliente.rut',
                                 'cliente.razonsocial',
                                 'cliente.telefono',
                                 'cliente.email',
@@ -366,9 +386,10 @@ class ClienteController extends Controller
                                 'cliente.provinciap_id',
                                 'cliente.comunap_id',
                                 'clientedirec.id as direc_id',
-                                'clientedirec.direcciondetalle'
+                                'clientedirec.direcciondetalle',
+                                'clientebloqueado.descripcion'
                             ]);
-            //dd($clientedirecs->get());
+            //dd($clientedirecs->clientebloqueado->cliente_id);
             return response()->json($clientedirecs->get());
         }
     }
@@ -404,6 +425,15 @@ class ClienteController extends Controller
         if($request->ajax()){
             //dd($request);
             $cliente = Cliente::create($request->all());
+            $clienteid = $cliente->id; //Tomo el id de cliente
+            $clienteDireccion = new ClienteDirec; //Crear el registro en direccion
+            $clienteDireccion->cliente_id = $clienteid;
+            $clienteDireccion->direcciondetalle = $request->direccion;
+            $clienteDireccion->region_id = $request->regionp_id;
+            $clienteDireccion->provincia_id = $request->provinciap_id;
+            $clienteDireccion->comuna_id = $request->comunap_id;
+            $clienteDireccion->save();
+    
             $cliente->vendedores()->sync([
                 0 => $request->vendedor_id
             ]);
@@ -417,6 +447,151 @@ class ClienteController extends Controller
             $data = Cliente::findOrFail($cliente->id);
             return response()->json($data->where('id',$cliente->id)->get());
             //return response()->json($clientedirecs->get());
+        }
+    }
+
+    public function clientegiro(){
+        $sql = 'SELECT *
+            FROM clientegiro;';
+        //where usuario_id='.auth()->id();
+        //dd($sql);
+        $clientegiros = DB::select($sql);
+        $longitud = count($clientegiros);
+        /*
+        for ($i=0;$i<=$longitud;$i++){
+            dd($clientegiros[$i]['cliente_id']);
+        }*/
+        //dd($clientegiros);
+        foreach ($clientegiros as $clientegiro) {
+            $cliente = Cliente::findOrFail($clientegiro->cliente_id);
+            $cliente->giro_id=$clientegiro->giro_id;
+            $cliente->save();
+        }
+    }
+
+    public function buscarCliId(Request $request){
+        if($request->ajax()){
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $clientedirecs = Cliente::where('cliente.rut', $request->rut)
+                    ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
+                    ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+                    ->leftjoin('clientebloqueado', function ($join) {
+                        $join->on('cliente.id', '=', 'clientebloqueado.cliente_id')
+                        ->whereNull('clientebloqueado.deleted_at');
+                    })
+                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                    ->select([
+                                'cliente.id',
+                                'cliente.rut',
+                                'cliente.razonsocial',
+                                'cliente.telefono',
+                                'cliente.email',
+                                'cliente.direccion',
+                                'cliente.vendedor_id',
+                                'cliente.contactonombre',
+                                'cliente.formapago_id',
+                                'cliente.plazopago_id',
+                                'cliente.giro_id',
+                                'cliente.regionp_id',
+                                'cliente.provinciap_id',
+                                'cliente.comunap_id',
+                                'clientedirec.id as direc_id',
+                                'clientedirec.direcciondetalle',
+                                'clientebloqueado.descripcion'
+                            ]);
+            //dd($clientedirecs->get());
+            return response()->json($clientedirecs->get());
+        }
+    }
+
+    public function buscarClixId(Request $request){
+        if($request->ajax()){
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $clientedirecs = Cliente::where('cliente.id', $request->id)
+                    ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
+                    ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+                    ->leftjoin('clientebloqueado', function ($join) {
+                        $join->on('cliente.id', '=', 'clientebloqueado.cliente_id')
+                        ->whereNull('clientebloqueado.deleted_at');
+                    })
+                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                    ->select([
+                                'cliente.id',
+                                'cliente.rut',
+                                'cliente.razonsocial',
+                                'cliente.telefono',
+                                'cliente.email',
+                                'cliente.direccion',
+                                'cliente.vendedor_id',
+                                'cliente.contactonombre',
+                                'cliente.formapago_id',
+                                'cliente.plazopago_id',
+                                'cliente.giro_id',
+                                'cliente.regionp_id',
+                                'cliente.provinciap_id',
+                                'cliente.comunap_id',
+                                'clientedirec.id as direc_id',
+                                'clientedirec.direcciondetalle',
+                                'clientebloqueado.descripcion'
+                            ]);
+            //dd($clientedirecs->get());
+            return response()->json($clientedirecs->get());
+        }
+    }
+
+    public function buscarmyCli(Request $request){
+        if($request->ajax()){
+            //dd($request);
+            $user = Usuario::findOrFail(auth()->id());
+            $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+            $counts = DB::select($sql);
+            $vendedor_id = '0';
+            if($counts[0]->contador>0){
+                $vendedor_id=$user->persona->vendedor->id;
+                $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            }else{
+                $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            }
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
+                ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                        ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                ->pluck('cliente_sucursal.cliente_id')->toArray())
+                ->whereIn('cliente.id',$clientevendedorArray)
+                ->get();
+            dd($clientes);
+            $clientedirecs = Cliente::where('cliente.id', $request->id)
+                    ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
+                    ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                    ->select([
+                                'cliente.id',
+                                'cliente.rut',
+                                'cliente.razonsocial',
+                                'cliente.telefono',
+                                'cliente.email',
+                                'cliente.direccion',
+                                'cliente.vendedor_id',
+                                'cliente.contactonombre',
+                                'cliente.formapago_id',
+                                'cliente.plazopago_id',
+                                'cliente.giro_id',
+                                'cliente.regionp_id',
+                                'cliente.provinciap_id',
+                                'cliente.comunap_id',
+                                'clientedirec.id as direc_id',
+                                'clientedirec.direcciondetalle'
+                            ]);
+            //dd($clientedirecs->get());
+            return response()->json($clientedirecs->get());
         }
     }
 }
