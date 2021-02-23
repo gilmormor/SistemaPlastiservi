@@ -59,5 +59,10 @@ class Sucursal extends Model
     {
         return $this->hasMany(ClienteTemp::class);
     }
+    //RELACION DE UNO A MUCHOS EstadisticaVenta
+    public function estadisticaventa()
+    {
+        return $this->hasMany(EstadisticaVenta::class);
+    }
 
 }

@@ -15,11 +15,14 @@ class CreateTableEstadisticaventa extends Migration
     {
         Schema::create('estadisticaventa', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('sucursal_id')->comment("Id de Sucursal");
+            $table->foreign('sucursal_id','fk_estadisticaventa_sucursal')->references('id')->on('sucursal')->onDelete('restrict')->onUpdate('restrict');
             $table->integer('tipofact')->comment('Tipo de factura: 1=Factura eProPlas, 2=Guia externa.');
             $table->date('fechadocumento')->comment('Fecha Documento.');
             $table->string('tipodocumento',5)->comment('Tipo Documento');
             $table->string('numerodocumento',10)->comment('Número Documento');
             $table->integer('item')->comment('item dentro del detalle de la factura.')->nullable();
+            $table->string('rut',12);
             $table->string('razonsocial',50)->comment('Razon Social');
             $table->string('producto',4)->comment('Codigo producto')->nullable();
             $table->string('descripcion',100)->comment('Descripcion Producto');
@@ -29,7 +32,8 @@ class CreateTableEstadisticaventa extends Migration
             $table->string('espesorc',6)->comment('Espesor caracter')->nullable();
             $table->string('medidas',20)->comment('Medidas');
             $table->string('materiaprima',4)->comment('Codigo materia prima.')->nullable();
-            $table->string('descr_prod_mp',20)->comment('Descripcion materia prima.')->nullable();
+            $table->string('matprimdesc',20)->comment('Descripcion materia prima.')->nullable();
+            $table->string('descr_prod_mp',20)->comment('Descripcion Producto materia prima.')->nullable();
             $table->float('unidades',12,2)->comment('Unidades o cantidad');
             $table->float('subtotal',12,2)->comment('Subtotal');
             $table->float('kilos',12,2)->comment('Subtotal');

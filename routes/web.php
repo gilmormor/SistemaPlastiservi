@@ -565,3 +565,9 @@ Route::post('notaventacerrada', 'NotaVentaCerradaController@guardar')->name('gua
 Route::get('notaventacerrada/{id}/editar', 'NotaVentaCerradaController@editar')->name('editar_notaventacerrada');
 Route::put('notaventacerrada/{id}', 'NotaVentaCerradaController@actualizar')->name('actualizar_notaventacerrada');
 Route::delete('notaventacerrada/{id}', 'NotaVentaCerradaController@eliminar')->name('eliminar_notaventacerrada');
+
+
+/*RUTAS ESTADISTICA VENTA*/
+Route::get('estadisticaventa', 'EstadisticaVentaController@index')->name('estadisticaventa');
+Route::post('estadisticaventa/reporte', 'EstadisticaVentaController@reporte')->name('estadisticaventa_reporte');
+Route::get('estadisticaventa/exportPdf', 'EstadisticaVentaController@exportPdf')->name('estadisticaventa_exportPdf');
