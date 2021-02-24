@@ -143,6 +143,7 @@ class EstadisticaVentaController extends Controller
         //dd($request);
         //dd(str_replace(".","",$request->rut));
         $datas = consulta($request);
+        //dd($request);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -239,9 +240,9 @@ class EstadisticaVentaController extends Controller
             //dd($respuesta['difvals']);
             $i = 0;
             foreach($respuesta['difvals'] as &$difval){
-                $difval = round($difval,2);
+                $difval = round(($difval / $aux_totaldifval) * 100,2); //round($difval,2);
                 $difval1 = round(($difval / $aux_totaldifval) * 100,2);
-                $respuesta['matprimdesc'][$i] .= " " . number_format($difval1, 2, ",", ".") . "%";
+                //$respuesta['matprimdesc'][$i] .= " " . number_format($difval1, 2, ",", ".") . "%";
                 $i++;
             }
 

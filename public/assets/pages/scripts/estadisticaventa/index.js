@@ -47,7 +47,7 @@ $(document).ready(function () {
 
 
 });
-
+/*
 function configurarTabla(aux_tabla){
     $(aux_tabla).DataTable({
         'paging'      : true, 
@@ -61,7 +61,7 @@ function configurarTabla(aux_tabla){
         }
     });    
 }
-/*
+*/
 function configurarTabla(aux_tabla){
     $(aux_tabla).DataTable({
         'paging'      : true, 
@@ -79,7 +79,7 @@ function configurarTabla(aux_tabla){
         }
     });    
 }
-*/
+
 
 function ajaxRequest(data,url,funcion) {
 	$.ajax({

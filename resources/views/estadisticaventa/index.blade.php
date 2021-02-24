@@ -22,6 +22,8 @@ Informe Materias Primas Precio X Kilo
             </div>
             <div class="box-body">
                 <div class="row">
+                    <form action="{{route('estadisticaventa_exportPdf')}}" class="d-inline form-eliminar" method="get" target="_blank">
+                        @csrf
                         <div class="col-xs-12 col-md-9 col-sm-12" style="padding-left: 0px;padding-right: 0px;">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
@@ -81,20 +83,12 @@ Informe Materias Primas Precio X Kilo
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12 text-center">
-                                <form action="{{route('estadisticaventa_exportPdf')}}" class="d-inline form-eliminar" method="get" target="_blank">
-                                    @csrf
-                                    <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
-                                    <button type="submit" class="btn btn-success tooltipsC" title="Reporte PDF">Reporte PDF</button>
-                                </form>
-                            </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12 text-center">
-                                <form action="{{route('estadisticaventa_exportPdf')}}" class="d-inline form-eliminar" method="get" target="_blank">
-                                    @csrf
-                                    <button type="button" id="btnconsultarT" name="btnconsultarT" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
-                                    <button type="submit" class="btn btn-success tooltipsC" title="Reporte PDF">Reporte PDF</button>
-                                </form>
+                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
+                                <button type="submit" class="btn btn-success tooltipsC" title="Reporte PDF">Reporte PDF</button>
+                                <button type="button" id="btnconsultarT" name="btnconsultarT" class="btn btn-success tooltipsC" title="Totales Materia Prima">Totales</button>
                             </div>
                         </div>
+                    </form>
                 </div>
             </div>
             <div class="row">
@@ -107,36 +101,8 @@ Informe Materias Primas Precio X Kilo
             </div>
 
             <div class="row" id="graficos" name="graficos" style="display:none;">
-                <div class="col-lg-12">
-                    <!-- DONUT CHART -->
-                       <div class="box box-danger">
-                           <div class="box-header with-border">
-                               <h3 class="box-title">Gráfico Pie</h3>
-                       
-                               <div class="box-tools pull-right">
-                                   <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                   </button>
-                                   <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                               </div>
-                           </div>
-                           <div class="box-body">
-                               <div class="col-xs-12 col-sm-12">
-                                   <div class="col-xs-12 col-sm-12 text-center">
-                                       <label id="tituloPie1" name="tituloPie1">Gráfico Números</label>
-                                   </div>
-                                   <div class="resultadosPie1 text-center" style="width: 100%;">
-                                       <canvas id="graficoPie1"></canvas>
-                                   </div>
-                               </div>
-                               
-                           </div>
-                           <!-- /.box-body -->
-                       </div>
-                       <!-- /.box -->
-                   </div>
 
-
-                <div class="col-lg-12">
+                <div class="col-lg-6">
                 <!-- DONUT CHART -->
                     <div class="box box-danger">
                         <div class="box-header with-border">
@@ -160,6 +126,34 @@ Informe Materias Primas Precio X Kilo
                     <!-- /.box -->
                 </div>
             
+                <div class="col-lg-6">
+                    <!-- DONUT CHART -->
+                    <div class="box box-danger">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Gráfico Pie</h3>
+                    
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="col-xs-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-12 text-center">
+                                    <label id="tituloPie1" name="tituloPie1">Gráfico Números</label>
+                                </div>
+                                <div class="resultadosPie1 text-center" style="width: 100%;">
+                                    <canvas id="graficoPie1"></canvas>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+                </div>
+
             
 
             </div>
