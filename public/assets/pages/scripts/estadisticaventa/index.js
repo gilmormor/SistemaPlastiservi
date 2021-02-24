@@ -20,12 +20,6 @@ $(document).ready(function () {
         consultar(datos());
     });
 
-    $("#btnconsultarT").click(function()
-    {
-        consultarT(datos());
-    });
-
-
     $("#btnpdf1").click(function()
     {
         consultarpdf(datos());
@@ -138,31 +132,15 @@ function consultar(data){
         data: data,
         success: function (datos) {
             if(datos['tabla'].length>0){
-                $("#tablaconsultaG").html('');
+                //$("#tablaconsultaG").html('');
                 $("#tablaconsulta").html(datos['tabla']);
-                configurarTabla('.tablascons');
-            }
-        }
-    });
-}
-
-function consultarT(data){
-    $("#graficos").hide();
-    $.ajax({
-        url: '/estadisticaventa/grafico',
-        type: 'POST',
-        data: data,
-        success: function (datos) {
-            if(datos['tabla'].length>0){
-                $("#tablaconsulta").html('');
-                $("#tablaconsultaG").html(datos['tabla']);
+                $("#tablaconsultaT").html(datos['tablaT']);
                 configurarTabla('.tablascons');
                 grafico(datos);
             }
         }
     });
 }
-
 
 function consultarpdf(data){
     $.ajax({

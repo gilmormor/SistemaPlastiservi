@@ -48,10 +48,7 @@ class EstadisticaVentaController extends Controller
 		$respuesta['exito'] = false;
 		$respuesta['mensaje'] = "Código no Existe";
 		$respuesta['tabla'] = "";
-        //dd($request);
-        /*
-        */
-
+        $respuesta['tablaT'] = "";
 
         if($request->ajax()){
             $datas = consulta($request);
@@ -131,6 +128,76 @@ class EstadisticaVentaController extends Controller
 
             </table>";
 
+            //TOTALES Y GRAFICO
+            $datas = consultaTgrafico($request);
+            $respuesta['tablaT'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+            <thead>
+                <tr>
+                    <th>Materia Prima</th>
+                    <th style='text-align:right'>Valor<br>Neto</th>
+                    <th style='text-align:right'>Kilos<br>Entreg</th>
+                    <th style='text-align:right'>Precio<br>Kilo</th>
+                    <th style='text-align:right'>Preci<br>Costo</th>
+                    <th style='text-align:right'>Dif<br>Precio</th>
+                    <th style='text-align:right'>Dif<br>Valorizada</th>
+                </tr>
+            </thead>
+            <tbody>";
+            $i = 0;
+            $aux_totalsubtotal = 0;
+            $aux_totalkilos = 0;
+            $aux_totalprecioxkilo = 0;
+            $aux_totalvalorcosto = 0;
+            $aux_totaldifprec = 0;
+            $aux_totaldifval = 0;
+            
+            foreach ($datas as $data) {
+                $respuesta['tablaT'] .= "
+                <tr id='fila$i' name='fila$i'>
+                    <td>$data->matprimdesc</td>
+                    <td style='text-align:right'>".number_format($data->subtotal, 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->kilos, 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->precioxkilo, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->valorcosto, 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->difprec, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->difval, 0, ",", ".") ."</td>
+                </tr>";
+                $i++;
+                $aux_totalsubtotal += $data->subtotal;
+                $aux_totalkilos += $data->kilos;
+                $aux_totalprecioxkilo += $data->precioxkilo;
+                $aux_totalvalorcosto += $data->valorcosto;
+                $aux_totaldifprec += $data->difprec;
+                $aux_totaldifval += $data->difval;
+            }
+            $respuesta['tablaT'] .= "
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th style='text-align:right'>TOTALES</th>
+                    <th style='text-align:right'>". number_format($aux_totalsubtotal, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalkilos, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalprecioxkilo, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalvalorcosto, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totaldifprec, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totaldifval, 0, ",", ".") ."</th>
+                </tr>
+            </tfoot>
+
+            </table>";
+
+            $respuesta['matprimdesc'] = array_column($datas, 'matprimdesc');
+            
+            $respuesta['difvals'] = array_column($datas, 'difval');
+            //dd($respuesta['difvals']);
+            $i = 0;
+            foreach($respuesta['difvals'] as &$difval){
+                $difval = round($difval,2);
+                $difval1 = round(($difval / $aux_totaldifval) * 100,2);
+                $respuesta['matprimdesc'][$i] .= " " . number_format($difval1, 2, ",", ".") . "%";
+                $i++;
+            }
+
             return $respuesta;
         }
     }
@@ -153,7 +220,7 @@ class EstadisticaVentaController extends Controller
         
         //return armarReportehtml($request);
         if($datas){
-            if(env('APP_DEBUG')){
+            if(getenv('APP_DEBUG')){
                 return view('estadisticaventa.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta'));
             }
 
@@ -176,7 +243,7 @@ class EstadisticaVentaController extends Controller
 		$respuesta['tabla'] = "";
 
         if($request->ajax()){
-            $datas = consultagrafico($request);
+            $datas = consultaTgrafico($request);
 
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
@@ -285,7 +352,7 @@ function consulta($request){
     return $datas;
 }
 
-function consultagrafico($request){
+function consultaTgrafico($request){
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
     }else{

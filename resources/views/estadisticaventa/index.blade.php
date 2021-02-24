@@ -85,7 +85,7 @@ Informe Materias Primas Precio X Kilo
                             <div class="col-xs-12 col-md-12 col-sm-12 text-center">
                                 <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
                                 <button type="submit" class="btn btn-success tooltipsC" title="Reporte PDF">Reporte PDF</button>
-                                <button type="button" id="btnconsultarT" name="btnconsultarT" class="btn btn-success tooltipsC" title="Totales Materia Prima">Totales</button>
+                                <!--<button type="button" id="btnconsultarT" name="btnconsultarT" class="btn btn-success tooltipsC" title="Totales Materia Prima">Totales</button>-->
                             </div>
                         </div>
                     </form>
@@ -97,17 +97,56 @@ Informe Materias Primas Precio X Kilo
 				</div>
 			</div>
 
-            <div class="table-responsive" id="tablaconsulta">
+            <div class="row">
+                <div class="col-md-12">
+                  <!-- Custom Tabs -->
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Por Materia Prima</a></li>
+                            <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Totales</a></li>
+                            <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Grafico</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+                                <div class="table-responsive" id="tablaconsulta">
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_2">
+                                <div class="table-responsive" id="tablaconsultaT">
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_3">
+                                <div class="box box-danger">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">Gráfico Pie</h3>
+                                    </div>
+                                    <div class="box-body">
+                                        <div class="col-xs-8 col-sm-8">
+                                            <div class="col-xs-12 col-sm-12 text-center">
+                                                <label id="tituloPie1" name="tituloPie1">Gráfico Números</label>
+                                            </div>
+                                            <div class="resultadosPie1 text-center" style="width: 100%;">
+                                                <canvas id="graficoPie1"></canvas>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="row" id="graficos" name="graficos" style="display:none;">
 
+            
+<!--
+            <div class="row" id="graficos" name="graficos" style="display:none;">
                 <div class="col-lg-6">
-                <!-- DONUT CHART -->
                     <div class="box box-danger">
                         <div class="box-header with-border">
                             <h3 class="box-title" id="titulo_grafico" name="titulo_grafico"></h3>
-                    
                             <div class="box-tools pull-right">
                                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                                 </button>
@@ -121,17 +160,12 @@ Informe Materias Primas Precio X Kilo
                             </div>
                             
                         </div>
-                        <!-- /.box-body -->
                     </div>
-                    <!-- /.box -->
                 </div>
-            
                 <div class="col-lg-6">
-                    <!-- DONUT CHART -->
                     <div class="box box-danger">
                         <div class="box-header with-border">
                             <h3 class="box-title">Gráfico Pie</h3>
-                    
                             <div class="box-tools pull-right">
                                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                                 </button>
@@ -149,18 +183,10 @@ Informe Materias Primas Precio X Kilo
                             </div>
                             
                         </div>
-                        <!-- /.box-body -->
                     </div>
-                    <!-- /.box -->
                 </div>
-
-            
-
             </div>
-
-
-
-
+        -->
         </div>
     </div>
 </div>
