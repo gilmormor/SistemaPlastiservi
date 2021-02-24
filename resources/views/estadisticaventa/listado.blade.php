@@ -8,8 +8,8 @@
 		<tr>
 			<td class="logo_factura">
 				<div>
-					<img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png")}}" style="max-width:1200%;width:auto;height:auto;">
-					<p>{{$empresa[0]['nombre']}}</p>					
+					<!--<img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png")}}" style="max-width:1200%;width:auto;height:auto;">-->
+					<p><H1>{{$empresa[0]['nombre']}}</H1></p>					
 					<p>RUT: {{$empresa[0]['rut']}}</p>
 				</div>
 			</td>
