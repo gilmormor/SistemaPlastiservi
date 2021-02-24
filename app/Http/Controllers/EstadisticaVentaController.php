@@ -220,7 +220,6 @@ class EstadisticaVentaController extends Controller
         
         //return armarReportehtml($request);
         if($datas){
-            dd(getenv('APP_DEBUG'));
             if(getenv('APP_DEBUG')){
                 return view('estadisticaventa.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta'));
             }
