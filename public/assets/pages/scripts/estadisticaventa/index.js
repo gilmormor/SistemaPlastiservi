@@ -326,6 +326,8 @@ $(".detalle-venta").click(function(event){
 
 function consultardetalle(matprimdesc){
     event.preventDefault();
+    $("#matprimdesc option[value='"+matprimdesc+"'").attr("selected",true);
+    $("#matprimdesc").selectpicker('refresh');	
     detalleventa(datosdetalle(matprimdesc));
 
 }
@@ -343,16 +345,13 @@ function detalleventa(data){
                 
                 grafico(datos);
 
-
                 $("#tabladetalleventa").html(datos['tablaNCorto']);
                 //$("#tablaconsulta").html(datos['tabla']);
                 //configurarTabla('#tabladespachoorddet');
                 configurarTabla('.tablascons');
     
                 $("#myDetalleVenta").modal('show');
-    
-
-
+                
             }
         }
     }); 
