@@ -49,11 +49,12 @@ class EstadisticaVentaController extends Controller
 		$respuesta['mensaje'] = "Código no Existe";
 		$respuesta['tabla'] = "";
         $respuesta['tablaT'] = "";
+        $respuesta['tablaNCorto'] = "";
 
         if($request->ajax()){
             $datas = consulta($request);
             //dd($datas);
-            $respuesta['tabla'] .= "<table id='tabla-data' name='tabla-data' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+            $respuesta['tabla'] .= "<table id='tabla-data' name='tabla-data' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='10'>
 			<thead>
 				<tr>
 					<th>Dia</th>
@@ -74,6 +75,7 @@ class EstadisticaVentaController extends Controller
                 </tr>
 			</thead>
             <tbody>";
+            $respuesta['tablaNCorto'] = $respuesta['tabla'];
 
             $i = 0;
             $aux_totalsubtotal = 0;
@@ -86,7 +88,25 @@ class EstadisticaVentaController extends Controller
                 <tr id='fila$i' name='fila$i'>
                     <td>" . date('d', strtotime($data->fechadocumento)) . "</td>
                     <td>$data->numerodocumento</td>
-                    <td>$data->razonsocial</td>
+                    <td>".substr($data->razonsocial,0,20)."</td>
+                    <td>$data->descripcion</td>
+                    <td>$data->medidas</td>
+                    <td>$data->matprimdesc</td>
+                    <td style='text-align:right'>".number_format($data->unidades, 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->subtotal, 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->kilos, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->conversionkilos, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->diferenciakilos, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->precioxkilo, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->valorcosto, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->diferenciaprecio, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->diferenciaval, 0, ",", ".") ."</td>
+                </tr>";
+                $respuesta['tablaNCorto'] .= "
+                <tr id='fila$i' name='fila$i'>
+                    <td>" . date('d', strtotime($data->fechadocumento)) . "</td>
+                    <td>$data->numerodocumento</td>
+                    <td>".substr($data->razonsocial,0,6)."</td>
                     <td>$data->descripcion</td>
                     <td>$data->medidas</td>
                     <td>$data->matprimdesc</td>
@@ -106,11 +126,12 @@ class EstadisticaVentaController extends Controller
                 $aux_totaldiferenciakilos += $data->diferenciakilos;
                 $aux_totalvalorcosto += $data->valorcosto;
             }
+
             $aux_promprecioxkilo = round($aux_totalsubtotal / $aux_totalkilos,2);
             $aux_promvalorcosto = round($aux_totalvalorcosto / $i ,2);
             $aux_diferenciaprecio = $aux_promprecioxkilo - $aux_promvalorcosto;
             $aux_totaldiferenciaval = $aux_totalkilos * $aux_diferenciaprecio;
-            $respuesta['tabla'] .= "
+            $aux_tabla = "
             </tbody>
             <tfoot>
                 <tr>
@@ -127,6 +148,8 @@ class EstadisticaVentaController extends Controller
             </tfoot>
 
             </table>";
+            $respuesta['tabla'] .= $aux_tabla;
+            $respuesta['tablaNCorto'] .= $aux_tabla;
 
             //TOTALES Y GRAFICO
             $datas = consultaTgrafico($request);
@@ -135,11 +158,11 @@ class EstadisticaVentaController extends Controller
                 <tr>
                     <th>Materia Prima</th>
                     <th style='text-align:right'>Valor<br>Neto</th>
-                    <th style='text-align:right'>Kilos<br>Entreg</th>
+                    <th style='text-align:right'>Kilos<br>Entregados</th>
                     <th style='text-align:right'>Precio<br>Kilo</th>
-                    <th style='text-align:right'>Preci<br>Costo</th>
-                    <th style='text-align:right'>Dif<br>Precio</th>
-                    <th style='text-align:right'>Dif<br>Valorizada</th>
+                    <th style='text-align:right'>Precio<br>Costo</th>
+                    <th style='text-align:right'>Diferencia<br>Precio</th>
+                    <th style='text-align:right'>Diferencia<br>Valorizada</th>
                 </tr>
             </thead>
             <tbody>";
@@ -154,7 +177,7 @@ class EstadisticaVentaController extends Controller
             foreach ($datas as $data) {
                 $respuesta['tablaT'] .= "
                 <tr id='fila$i' name='fila$i'>
-                    <td>$data->matprimdesc</td>
+                    <td><a href='' onclick='consultardetalle(".'"'.$data->matprimdesc.'"'.")'>$data->matprimdesc</a></td>
                     <td style='text-align:right'>".number_format($data->subtotal, 0, ",", ".") ."</td>
                     <td style='text-align:right'>".number_format($data->kilos, 0, ",", ".") ."</td>
                     <td style='text-align:right'>".number_format($data->precioxkilo, 2, ",", ".") ."</td>

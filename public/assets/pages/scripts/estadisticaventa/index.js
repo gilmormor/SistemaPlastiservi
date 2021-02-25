@@ -41,7 +41,7 @@ $(document).ready(function () {
 
 
 });
-/*
+
 function configurarTabla(aux_tabla){
     $(aux_tabla).DataTable({
         'paging'      : true, 
@@ -55,7 +55,7 @@ function configurarTabla(aux_tabla){
         }
     });    
 }
-*/
+/*
 function configurarTabla(aux_tabla){
     $(aux_tabla).DataTable({
         'paging'      : true, 
@@ -73,7 +73,7 @@ function configurarTabla(aux_tabla){
         }
     });    
 }
-
+*/
 
 function ajaxRequest(data,url,funcion) {
 	$.ajax({
@@ -310,4 +310,61 @@ function grafico(datos){
     $("#tituloPie1").html("Ingreso X Materia Prima");
 	$("#graficos").show();
 
+}
+
+$(".detalle-venta").click(function(event){
+    event.preventDefault();
+    alert('$(this).html()');
+    /*
+    const url = $(this).attr('href');
+    const data = {
+        _token: $('input[name=_token]').val()
+    }
+    ajaxRequest(data,url,'verUsuario');*/
+    //$("#myModal").modal('show');
+});
+
+function consultardetalle(matprimdesc){
+    event.preventDefault();
+    detalleventa(datosdetalle(matprimdesc));
+
+}
+
+function detalleventa(data){
+    $.ajax({
+        url: '/estadisticaventa/reporte',
+        type: 'POST',
+        data: data,
+        success: function (datos) {
+            if(datos['tabla'].length>0){
+                //$("#tablaconsultaG").html('');
+                $("#tablaconsulta").html(datos['tabla']);
+                $("#tablaconsultaT").html(datos['tablaT']);
+                
+                grafico(datos);
+
+
+                $("#tabladetalleventa").html(datos['tablaNCorto']);
+                //$("#tablaconsulta").html(datos['tabla']);
+                //configurarTabla('#tabladespachoorddet');
+                configurarTabla('.tablascons');
+    
+                $("#myDetalleVenta").modal('show');
+    
+
+
+            }
+        }
+    }); 
+}
+
+function datosdetalle(matprimdesc){
+    var data = {
+        _token            : $('input[name=_token]').val(),
+        fechad            : $("#fechad").val(),
+        fechah            : $("#fechah").val(),
+        matprimdesc       : matprimdesc,
+        producto          : ''
+    };
+    return data;
 }

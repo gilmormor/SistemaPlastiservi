@@ -8,6 +8,11 @@ Informe Materias Primas Precio X Kilo
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/estadisticaventa/index.js")}}" type="text/javascript"></script>
 @endsection
+<style>
+    #mdialTamanio{
+      width: 80% !important;
+    }
+</style>
 
 @section('contenido')
 <div class="row">
@@ -102,18 +107,18 @@ Informe Materias Primas Precio X Kilo
                   <!-- Custom Tabs -->
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
-                            <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Por Materia Prima</a></li>
-                            <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Totales</a></li>
-                            <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Grafico</a></li>
+                            <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Totales</a></li>
+                            <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Por Materia Prima</a></li>
+                            <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Gráfico</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="tab_1">
-                                <div class="table-responsive" id="tablaconsulta">
+                                <div class="table-responsive" id="tablaconsultaT">
                                 </div>
                             </div>
                             <div class="tab-pane" id="tab_2">
-                                <div class="table-responsive" id="tablaconsultaT">
-                                </div>
+                                <div class="table-responsive" id="tablaconsulta">
+                                </div>                                
                             </div>
                             <div class="tab-pane" id="tab_3">
                                 <div class="box box-danger">
@@ -138,56 +143,30 @@ Informe Materias Primas Precio X Kilo
                     </div>
                 </div>
             </div>
-
-
-            
-<!--
-            <div class="row" id="graficos" name="graficos" style="display:none;">
-                <div class="col-lg-6">
-                    <div class="box box-danger">
-                        <div class="box-header with-border">
-                            <h3 class="box-title" id="titulo_grafico" name="titulo_grafico"></h3>
-                            <div class="box-tools pull-right">
-                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                        <div class="box-body">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="table-responsive" id="tablaconsultaG">
-                                </div>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="box box-danger">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Gráfico Pie</h3>
-                            <div class="box-tools pull-right">
-                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                        <div class="box-body">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-12 text-center">
-                                    <label id="tituloPie1" name="tituloPie1">Gráfico Números</label>
-                                </div>
-                                <div class="resultadosPie1 text-center" style="width: 100%;">
-                                    <canvas id="graficoPie1"></canvas>
-                                </div>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        -->
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="myDetalleVenta" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" id="mdialTamanio">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title">Detalle</h3>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive" id="tabladetalleventa" name="tabladetalleventa">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
 @endsection
