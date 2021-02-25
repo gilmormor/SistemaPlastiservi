@@ -10,7 +10,7 @@ Informe Materias Primas Precio X Kilo
 @endsection
 <style>
     #mdialTamanio{
-      width: 80% !important;
+      width: 85% !important;
     }
 </style>
 
