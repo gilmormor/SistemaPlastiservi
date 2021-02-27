@@ -34,6 +34,8 @@ class CrearTablaProducto extends Migration
             $table->foreign('claseprod_id','fk_producto_claseprod')->references('id')->on('claseprod')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('grupoprod_id');
             $table->foreign('grupoprod_id','fk_producto_grupoprod')->references('id')->on('grupoprod')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('color_id')->comment("Color")->nullable();
+            $table->foreign('color_id','fk_producto_color')->references('id')->on('color')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
             $table->timestamps();

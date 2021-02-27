@@ -573,3 +573,12 @@ Route::get('estadisticaventa', 'EstadisticaVentaController@index')->name('estadi
 Route::post('estadisticaventa/reporte', 'EstadisticaVentaController@reporte')->name('estadisticaventa_reporte');
 Route::get('estadisticaventa/exportPdf', 'EstadisticaVentaController@exportPdf')->name('estadisticaventa_exportPdf');
 Route::post('estadisticaventa/grafico', 'EstadisticaVentaController@grafico')->name('estadisticaventa_grafico');
+
+/*RUTAS GUIAS INTERNAS*/
+Route::get('guiainterna', 'GuiaInternaController@index')->name('guiainterna');
+Route::get('guiainternapage', 'GuiaInternaController@guiainternapage')->name('guiainternapage');
+Route::get('guiainterna/crear', 'GuiaInternaController@crear')->name('crear_guiainterna');
+Route::post('guiainterna', 'GuiaInternaController@guardar')->name('guardar_guiainterna');
+Route::get('guiainterna/{id}/editar', 'GuiaInternaController@editar')->name('editar_guiainterna');
+Route::put('guiainterna/{id}', 'GuiaInternaController@actualizar')->name('actualizar_guiainterna');
+Route::delete('guiainterna/{id}', 'GuiaInternaController@eliminar')->name('eliminar_guiainterna');

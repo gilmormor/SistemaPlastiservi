@@ -37,6 +37,8 @@ class CreateTableEstadisticaventa extends Migration
             $table->float('unidades',12,2)->comment('Unidades o cantidad');
             $table->float('subtotal',12,2)->comment('Subtotal');
             $table->float('kilos',12,2)->comment('Subtotal');
+            //$table->unsignedBigInteger('unidadmedida_id');
+            //$table->foreign('unidadmedida_id','fk_estadisticaventa_unidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
             $table->float('factorconversion',12,2)->comment('Factor de conversion');
             $table->float('diferenciakilos',12,2)->comment('Diferencia Kilos');
             $table->float('conversionkilos',12,2)->comment('Conversion Kilos');

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class EstadisticaVenta extends Model
 {
-    protected $table = "estidisticaventa";
+    protected $table = "estadisticaventa";
     protected $fillable = [
         'sucursal_id',
         'tipofact',
@@ -24,10 +24,12 @@ class EstadisticaVenta extends Model
         'espesorc',
         'medidas',
         'materiaprima',
+        'matprimdesc',
         'descr_prod_mp',
         'unidades',
         'subtotal',
         'kilos',
+        'unidadmedida_id',
         'factorconversion',
         'diferenciakilos',
         'conversionkilos',
@@ -43,6 +45,10 @@ class EstadisticaVenta extends Model
         return $this->belongsTo(Sucursal::class);
     }
     
-    
+    //Relacion inversa a UnidadMedida
+    /*public function unidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class);
+    }*/
 
 }

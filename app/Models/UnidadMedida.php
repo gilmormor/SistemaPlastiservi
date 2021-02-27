@@ -36,5 +36,9 @@ class UnidadMedida extends Model
         return $this->hasMany(CotizacionDetalle::class);
     }
 
-    
+    //RELACION UNO A MUCHOS EstadisticaVenta
+    /*public function estadisticaventas()
+    {
+        return $this->hasMany(EstadisticaVenta::class);
+    }*/
 }
