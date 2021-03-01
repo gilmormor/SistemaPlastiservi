@@ -37,8 +37,14 @@ class UnidadMedida extends Model
     }
 
     //RELACION UNO A MUCHOS EstadisticaVenta
-    /*public function estadisticaventas()
+    public function estadisticaventas()
     {
         return $this->hasMany(EstadisticaVenta::class);
-    }*/
+    }
+    //RELACION UNO A MUCHOS EstadisticaVentaGI Guia Interna
+    public function estadisticaventagis()
+    {
+        return $this->hasMany(EstadisticaVentaGI::class);
+    }
+
 }

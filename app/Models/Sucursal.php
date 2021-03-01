@@ -65,4 +65,10 @@ class Sucursal extends Model
         return $this->hasMany(EstadisticaVenta::class);
     }
 
+    //RELACION DE UNO A MUCHOS EstadisticaVentaGI Guia Interna
+    public function estadisticaventagi()
+    {
+        return $this->hasMany(EstadisticaVentaGI::class);
+    }
+
 }

@@ -574,11 +574,11 @@ Route::post('estadisticaventa/reporte', 'EstadisticaVentaController@reporte')->n
 Route::get('estadisticaventa/exportPdf', 'EstadisticaVentaController@exportPdf')->name('estadisticaventa_exportPdf');
 Route::post('estadisticaventa/grafico', 'EstadisticaVentaController@grafico')->name('estadisticaventa_grafico');
 
-/*RUTAS GUIAS INTERNAS*/
-Route::get('guiainterna', 'GuiaInternaController@index')->name('guiainterna');
-Route::get('guiainternapage', 'GuiaInternaController@guiainternapage')->name('guiainternapage');
-Route::get('guiainterna/crear', 'GuiaInternaController@crear')->name('crear_guiainterna');
-Route::post('guiainterna', 'GuiaInternaController@guardar')->name('guardar_guiainterna');
-Route::get('guiainterna/{id}/editar', 'GuiaInternaController@editar')->name('editar_guiainterna');
-Route::put('guiainterna/{id}', 'GuiaInternaController@actualizar')->name('actualizar_guiainterna');
-Route::delete('guiainterna/{id}', 'GuiaInternaController@eliminar')->name('eliminar_guiainterna');
+/*RUTAS ESTADISTICA VENTA GUIAS INTERNAS*/
+Route::get('estadisticaventagi', 'EstadisticaVentaGIController@index')->name('estadisticaventagi');
+Route::get('estadisticaventagipage', 'EstadisticaVentaGIController@estadisticaventagipage')->name('estadisticaventagipage');
+Route::get('estadisticaventagi/crear', 'EstadisticaVentaGIController@crear')->name('crear_estadisticaventagi');
+Route::post('estadisticaventagi', 'EstadisticaVentaGIController@guardar')->name('guardar_estadisticaventagi');
+Route::get('estadisticaventagi/{id}/editar', 'EstadisticaVentaGIController@editar')->name('editar_estadisticaventagi');
+Route::put('estadisticaventagi/{id}', 'EstadisticaVentaGIController@actualizar')->name('actualizar_estadisticaventagi');
+Route::delete('estadisticaventagi/{id}', 'EstadisticaVentaGIController@eliminar')->name('eliminar_estadisticaventagi');

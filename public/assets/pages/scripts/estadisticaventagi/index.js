@@ -9,7 +9,7 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        'ajax'        : "guiainternapage",
+        'ajax'        : "estadisticaventagipage",
         'columns'     : [
             {data: 'id'},
             {data: 'fechadocumento'},
@@ -39,7 +39,7 @@ $(document).on("click", ".btnEditar", function(){
     //alert('Id: '+id);
     // *** REDIRECCIONA A UNA RUTA*** 
     var loc = window.location;
-    window.location = loc.protocol+"//"+loc.hostname+"/cliente/"+id+"/editar";
+    window.location = loc.protocol+"//"+loc.hostname+"/estadisticaventagi/"+id+"/editar";
     // ****************************** 
 
     /*

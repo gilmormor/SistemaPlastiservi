@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EstadisticaVenta extends Model
+class EstadisticaVentaGI extends Model
 {
-    protected $table = "estadisticaventa";
+    protected $table = "estadisticaventagi";
     protected $fillable = [
         'sucursal_id',
         'tipofact',
@@ -50,5 +50,4 @@ class EstadisticaVenta extends Model
     {
         return $this->belongsTo(UnidadMedida::class);
     }
-
 }

@@ -1,10 +1,10 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-    Cliente
+    Guia Interna
 @endsection
 
 @section('scripts')
-    <script src="{{asset("assets/pages/scripts/cliente/crear.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/estadisticaventagi/crear.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -14,19 +14,19 @@
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Editar Cliente</h3>
+                <h3 class="box-title">Editar Guia Interna</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('cliente')}}" class="btn btn-block btn-info btn-sm">
+                    <a href="{{route('estadisticaventagi')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>
             </div>
-            <form action="{{route('actualizar_cliente', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
+            <form action="{{route('actualizar_estadisticaventagi', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
                 @csrf @method("put")
                 <div class="box-body">
-                    @include('cliente.form')
+                    @include('estadisticaventagi.form')
                 </div>
-                @if(can('guardar-cliente',false) == true)
+                @if(can('guardar-guia-interna',false) == true)
                     <!-- /.box-body -->
                     <div class="box-footer text-center">
                         @include('includes.boton-form-editar')

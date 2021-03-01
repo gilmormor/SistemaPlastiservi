@@ -4,7 +4,7 @@ Guia Interna
 @endsection
 
 @section("scripts")
-    <script src="{{asset("assets/pages/scripts/guiainterna/index.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/estadisticaventagi/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -16,7 +16,7 @@ Guia Interna
                 <h3 class="box-title">Guia Interna</h3>
                 @if(can('guardar-guia-interna',false) == true)
                     <div class="box-tools pull-right">
-                        <a href="{{route('crear_guiainterna')}}" class="btn btn-block btn-success btn-sm">
+                        <a href="{{route('crear_estadisticaventagi')}}" class="btn btn-block btn-success btn-sm">
                             <i class="fa fa-fw fa-plus-circle"></i> Crear Guia Interna
                         </a>
                     </div>
