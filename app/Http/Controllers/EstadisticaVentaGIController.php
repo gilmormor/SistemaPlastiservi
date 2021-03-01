@@ -119,7 +119,11 @@ class EstadisticaVentaGIController extends Controller
      */
     public function actualizar(Request $request, $id)
     {
+        $fechadocumento= DateTime::createFromFormat('d/m/Y', $request->fechadocumento)->format('Y-m-d');
+        $request->request->add(['fechadocumento' => $fechadocumento]);
         EstadisticaVentaGI::findOrFail($id)->update($request->all());
+        
+
         return redirect('estadisticaventagi')->with('mensaje','Guia Interna actualizada con exito.');
     }
 
