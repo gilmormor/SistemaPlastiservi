@@ -49,10 +49,10 @@ class CategoriaProd extends Model
     }
 
     //Relacion inversa a UnidadMedida
-    /*public function unidadmedidafact()
+    public function unidadmedidafact()
     {
         return $this->belongsTo(UnidadMedida::class,'unidadmedidafact_id');
-    }*/
+    }
     
     
 }
