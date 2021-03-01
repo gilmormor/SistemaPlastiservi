@@ -193,6 +193,7 @@ class EstadisticaVentaController extends Controller
                 $aux_totaldifprec += $data->difprec;
                 $aux_totaldifval += $data->difval;
             }
+            $datasGI = consultaTotalGI($request); //TOTAL GUIA INTERNA
             $respuesta['tablaT'] .= "
             </tbody>
             <tfoot>
@@ -204,6 +205,15 @@ class EstadisticaVentaController extends Controller
                     <th style='text-align:right'>". number_format($aux_totalvalorcosto, 0, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totaldifprec, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totaldifval, 0, ",", ".") ."</th>
+                </tr>
+                <tr>
+                    <th style='text-align:right'>TOTAL GUIAS INTERNAS</th>
+                    <th style='text-align:right'>". number_format($aux_totalsubtotal, 0, ",", ".") ."</th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'></th>
                 </tr>
             </tfoot>
 
@@ -394,6 +404,25 @@ function consultaTgrafico($request){
             FROM estadisticaventa
             WHERE $aux_condFecha
             GROUP BY estadisticaventa.matprimdesc,valorcosto;";
+    //dd($sql);
+    $datas = DB::select($sql);
+    return $datas;
+}
+
+function consultaTotalGI($request){
+    if(empty($request->fechad) or empty($request->fechah)){
+        $aux_condFecha = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->fechad);
+        $fechad = date_format($fecha, 'Y-m-d');
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
+        $fechah = date_format($fecha, 'Y-m-d');
+        $aux_condFecha = "estadisticaventa.fechadocumento>='$fechad' and estadisticaventa.fechadocumento<='$fechah'";
+    }
+
+    $sql = "SELECT sum(subtotal) AS subtotal
+            FROM estadisticaventagi
+            WHERE $aux_condFecha;";
     //dd($sql);
     $datas = DB::select($sql);
     return $datas;
