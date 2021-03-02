@@ -194,6 +194,7 @@ class EstadisticaVentaController extends Controller
                 $aux_totaldifval += $data->difval;
             }
             $datasGI = consultaTotalGI($request); //TOTAL GUIA INTERNA
+            //dd($datasGI);
             $respuesta['tablaT'] .= "
             </tbody>
             <tfoot>
@@ -207,8 +208,17 @@ class EstadisticaVentaController extends Controller
                     <th style='text-align:right'>". number_format($aux_totaldifval, 0, ",", ".") ."</th>
                 </tr>
                 <tr>
-                    <th style='text-align:right'>TOTAL GUIAS INTERNAS</th>
-                    <th style='text-align:right'>". number_format($aux_totalsubtotal, 0, ",", ".") ."</th>
+                    <th style='text-align:right'><a href='' onclick='consultarDetGuiaInterna()'>TOTAL GUIAS INTERNAS</a></th>
+                    <th style='text-align:right'>". number_format($datasGI[0]->subtotal, 0, ",", ".") ."</th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'></th>
+                </tr>
+                <tr>
+                    <th style='text-align:right'>TOTAL</th>
+                    <th style='text-align:right'>". number_format($aux_totalsubtotal + $datasGI[0]->subtotal, 0, ",", ".") ."</th>
                     <th style='text-align:right'></th>
                     <th style='text-align:right'></th>
                     <th style='text-align:right'></th>
@@ -234,6 +244,7 @@ class EstadisticaVentaController extends Controller
             return $respuesta;
         }
     }
+
 
     public function exportPdf(Request $request)
     {
@@ -417,7 +428,7 @@ function consultaTotalGI($request){
         $fechad = date_format($fecha, 'Y-m-d');
         $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d');
-        $aux_condFecha = "estadisticaventa.fechadocumento>='$fechad' and estadisticaventa.fechadocumento<='$fechah'";
+        $aux_condFecha = "estadisticaventagi.fechadocumento>='$fechad' and estadisticaventagi.fechadocumento<='$fechah'";
     }
 
     $sql = "SELECT sum(subtotal) AS subtotal

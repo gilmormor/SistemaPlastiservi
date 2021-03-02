@@ -7,6 +7,7 @@ use App\Models\EstadisticaVentaGI;
 use App\Models\UnidadMedida;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EstadisticaVentaGIController extends Controller
 {
@@ -137,4 +138,112 @@ class EstadisticaVentaGIController extends Controller
     {
         //
     }
+
+    public function reporte(Request $request){
+        $respuesta = array();
+		$respuesta['exito'] = false;
+		$respuesta['mensaje'] = "Código no Existe";
+		$respuesta['tabla'] = "";
+
+        if($request->ajax()){
+            $datas = consulta($request);
+            //dd($datas);
+            $respuesta['tabla'] .= "<table id='tabla-data' name='tabla-data' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='10'>
+			<thead>
+				<tr>
+					<th>Dia</th>
+					<th>Docum</th>
+                    <th>Razón Social</th>
+                    <th>Producto</th>
+                    <th>Medidas</th>
+                    <th>Materia<br>Prima</th>
+                    <th style='text-align:right'>Kilos</th>
+                    <th style='text-align:right'>Contenedor</th>
+                    <th style='text-align:right'>Unidades</th>
+                    <th style='text-align:right'>Valor<br>Unitario</th>
+                    <th style='text-align:right'>Valor<br>Total</th>
+                </tr>
+			</thead>
+            <tbody>";
+
+            $i = 0;
+            $aux_totalsubtotal = 0;
+            $aux_totalkilos = 0;
+            foreach ($datas as $data) {
+                $contenedor = 0;
+                $unidades = 0;
+                if($data->unidadmedida_id == 8){
+                    $contenedor = $data->unidades;
+                }else{
+                    $unidades = $data->unidades;
+                }
+                $respuesta['tabla'] .= "
+                <tr id='fila$i' name='fila$i'>
+                    <td>" . date('d', strtotime($data->fechadocumento)) . "</td>
+                    <td>$data->numerodocumento</td>
+                    <td>".substr($data->razonsocial,0,20)."</td>
+                    <td>$data->descripcion</td>
+                    <td>$data->medidas</td>
+                    <td>$data->matprimdesc</td>
+                    <td style='text-align:right'>".number_format($data->kilos, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($contenedor, 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($unidades , 0, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->valorcosto, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
+                </tr>";
+                $i++;
+                $aux_totalsubtotal += $data->subtotal;
+                $aux_totalkilos += $data->kilos;
+            }
+            $aux_tabla = "
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='6' style='text-align:right'>TOTALES</th>
+                    <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th style='text-align:right'>". number_format($aux_totalsubtotal, 0, ",", ".") ."</th>
+                </tr>
+            </tfoot>
+
+            </table>";
+            $respuesta['tabla'] .= $aux_tabla;
+
+            return $respuesta;
+        }
+    }
+}
+
+
+function consulta($request){
+    if(empty($request->fechad) or empty($request->fechah)){
+        $aux_condFecha = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->fechad);
+        $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
+        $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+        $aux_condFecha = "estadisticaventaGI.fechadocumento>='$fechad' and estadisticaventaGI.fechadocumento<='$fechah'";
+    }
+    if(empty($request->producto)){
+        $aux_condproducto = " true";
+    }else{
+        $aux_condproducto = "estadisticaventaGI.producto='$request->producto'";
+    }
+    if(empty($request->matprimdesc)){
+        $aux_condmatprimdesc = " true";
+    }else{
+        $aux_condmatprimdesc = "estadisticaventaGI.matprimdesc='$request->matprimdesc'";
+    }
+
+    $sql = "SELECT *
+            FROM estadisticaventaGI
+            WHERE $aux_condFecha
+            and $aux_condproducto
+            and $aux_condmatprimdesc;";
+
+    $datas = DB::select($sql);
+    return $datas; 
 }

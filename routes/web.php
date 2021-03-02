@@ -582,3 +582,4 @@ Route::post('estadisticaventagi', 'EstadisticaVentaGIController@guardar')->name(
 Route::get('estadisticaventagi/{id}/editar', 'EstadisticaVentaGIController@editar')->name('editar_estadisticaventagi');
 Route::put('estadisticaventagi/{id}', 'EstadisticaVentaGIController@actualizar')->name('actualizar_estadisticaventagi');
 Route::delete('estadisticaventagi/{id}', 'EstadisticaVentaGIController@eliminar')->name('eliminar_estadisticaventagi');
+Route::post('estadisticaventagi/reporte', 'EstadisticaVentaGIController@reporte')->name('estadisticaventagi_reporte');

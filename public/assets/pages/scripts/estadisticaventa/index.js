@@ -115,11 +115,11 @@ function ajaxRequest(data,url,funcion) {
 
 function datos(){
     var data = {
-        _token            : $('input[name=_token]').val(),
-        fechad            : $("#fechad").val(),
-        fechah            : $("#fechah").val(),
-        matprimdesc       : $("#matprimdesc").val(),
-        producto          : $("#producto").val()
+        _token      : $('input[name=_token]').val(),
+        fechad      : $("#fechad").val(),
+        fechah      : $("#fechah").val(),
+        matprimdesc : $("#matprimdesc").val(),
+        producto    : $("#producto").val()
     };
     return data;
 }
@@ -366,4 +366,27 @@ function datosdetalle(matprimdesc){
         producto          : ''
     };
     return data;
+}
+
+function consultarDetGuiaInterna(){
+    event.preventDefault();
+    data = datos();
+    $.ajax({
+        url: '/estadisticaventagi/reporte',
+        type: 'POST',
+        data: data,
+        success: function (datos) {
+            if(datos['tabla'].length>0){
+                //$("#tablaconsultaG").html('');
+
+                $("#tabladetalleventa").html(datos['tabla']);
+                //$("#tablaconsulta").html(datos['tabla']);
+                //configurarTabla('#tabladespachoorddet');
+                //configurarTabla('.tablascons');
+    
+                $("#myDetalleVenta").modal('show');
+                
+            }
+        }
+    });
 }
