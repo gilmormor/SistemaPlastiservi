@@ -20,6 +20,7 @@ $(document).ready(function () {
             {data: 'matprimdesc'},
             {data: 'unidades'},
             {data: 'kilos'},
+            {data: 'valorcosto'},
             {data: 'subtotal'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : "<a class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'><i class='fa fa-fw fa-pencil'></i></a><!--<a href='' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'><i class='fa fa-fw fa-trash text-danger'></i></a>-->"}

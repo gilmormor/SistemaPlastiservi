@@ -35,6 +35,7 @@ Guia Interna
                             <th>Materia Prima</th>
                             <th>Unidades</th>
                             <th>Kilos</th>
+                            <th>Valor<br>Unitario</th>
                             <th>Total</th>
                             <th class="width70">Acción</th>
                         </tr>

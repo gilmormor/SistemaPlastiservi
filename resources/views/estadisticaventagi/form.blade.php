@@ -72,7 +72,11 @@
         <label for="unidades" class="control-label requerido" data-toggle='tooltip' title="Unidades">Unidades</label>
         <input type="text" name="unidades" id="unidades" class="form-control numerico" value="{{old('unidades', $data->unidades ?? '')}}" maxlength="10" required/>
     </div>
-    <div class="form-group col-xs-12 col-sm-4">
+    <div class="form-group col-xs-12 col-sm-2">
+        <label for="valorcosto" class="control-label requerido" data-toggle='tooltip' title="Valor Unidad">Valor Unidad</label>
+        <input type="text" name="valorcosto" id="valorcosto" class="form-control numerico" value="{{old('valorcosto', $data->valorcosto ?? '')}}" maxlength="10" required/>
+    </div>
+    <div class="form-group col-xs-12 col-sm-2">
         <label for="unidadmedida_id" class="control-label requerido" data-toggle='tooltip' title="Unidad Medida">Unidad Medida</label>
         <select name="unidadmedida_id" id="unidadmedida_id" class="form-control select2 unidadmedida_id" required>
             <option value="">Seleccione...</option>
