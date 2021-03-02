@@ -349,6 +349,7 @@ function detalleventa(data){
                 //$("#tablaconsulta").html(datos['tabla']);
                 //configurarTabla('#tabladespachoorddet');
                 configurarTabla('.tablascons');
+                $("#titulodetalle").html('Materia Prima: '+data.matprimdesc);
     
                 $("#myDetalleVenta").modal('show');
                 
@@ -377,13 +378,10 @@ function consultarDetGuiaInterna(){
         data: data,
         success: function (datos) {
             if(datos['tabla'].length>0){
-                //$("#tablaconsultaG").html('');
                 $("#tabladetalleventa").html('');
                 $("#tabladetalleventa").html(datos['tabla']);
-                //$("#tablaconsulta").html(datos['tabla']);
-                //configurarTabla('#tabladespachoorddet');
-                //configurarTabla('.tablascons');
-    
+
+                $("#titulodetalle").html('Detalle Guia Interna');
                 $("#myDetalleVenta").modal('show');
                 
             }

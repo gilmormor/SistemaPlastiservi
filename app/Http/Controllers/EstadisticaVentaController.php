@@ -177,7 +177,7 @@ class EstadisticaVentaController extends Controller
             foreach ($datas as $data) {
                 $respuesta['tablaT'] .= "
                 <tr id='fila$i' name='fila$i'>
-                    <td><a href='' onclick='consultardetalle(".'"'.$data->matprimdesc.'"'.")'>$data->matprimdesc</a></td>
+                    <td><a href='' class='tooltipsC' title='Ver Detalle: $data->matprimdesc' onclick='consultardetalle(".'"'.$data->matprimdesc.'"'.")'>$data->matprimdesc</a></td>
                     <td style='text-align:right'>".number_format($data->subtotal, 0, ",", ".") ."</td>
                     <td style='text-align:right'>".number_format($data->kilos, 0, ",", ".") ."</td>
                     <td style='text-align:right'>".number_format($data->precioxkilo, 2, ",", ".") ."</td>
@@ -208,7 +208,7 @@ class EstadisticaVentaController extends Controller
                     <th style='text-align:right'>". number_format($aux_totaldifval, 0, ",", ".") ."</th>
                 </tr>
                 <tr>
-                    <th style='text-align:right'><a href='' onclick='consultarDetGuiaInterna()'>TOTAL GUIAS INTERNAS</a></th>
+                    <th style='text-align:right'><a href='' class='tooltipsC' title='Ver Detalle Guia Interna' onclick='consultarDetGuiaInterna()'>TOTAL GUIAS INTERNAS</a></th>
                     <th style='text-align:right'>". number_format($datasGI[0]->subtotal, 0, ",", ".") ."</th>
                     <th style='text-align:right'></th>
                     <th style='text-align:right'></th>
