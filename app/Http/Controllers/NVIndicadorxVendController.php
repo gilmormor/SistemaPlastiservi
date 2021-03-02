@@ -188,7 +188,7 @@ class NVIndicadorxVendController extends Controller
                 </tfoot>
             </table>";
             $respuesta['nombre'] = array_column($datas['vendedores'], 'nombre');
-            dd($respuesta['nombre']);
+            //dd($respuesta['nombre']);
             $respuesta['totalkilos'] = array_column($datas['vendedores'], 'totalkilos');
             $i = 0;
             foreach($respuesta['totalkilos'] as &$kilos){
