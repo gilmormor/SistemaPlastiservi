@@ -378,7 +378,7 @@ function consultarDetGuiaInterna(){
         success: function (datos) {
             if(datos['tabla'].length>0){
                 //$("#tablaconsultaG").html('');
-
+                $("#tabladetalleventa").html('');
                 $("#tabladetalleventa").html(datos['tabla']);
                 //$("#tablaconsulta").html(datos['tabla']);
                 //configurarTabla('#tabladespachoorddet');

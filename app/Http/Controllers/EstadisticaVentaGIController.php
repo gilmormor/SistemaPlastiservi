@@ -240,9 +240,7 @@ function consulta($request){
 
     $sql = "SELECT *
             FROM estadisticaventagi
-            WHERE $aux_condFecha
-            and $aux_condproducto
-            and $aux_condmatprimdesc;";
+            WHERE $aux_condFecha;";
 
     $datas = DB::select($sql);
     return $datas; 
