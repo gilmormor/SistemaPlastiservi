@@ -225,21 +225,21 @@ function consulta($request){
         $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
         $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
-        $aux_condFecha = "estadisticaventaGI.fechadocumento>='$fechad' and estadisticaventaGI.fechadocumento<='$fechah'";
+        $aux_condFecha = "estadisticaventagi.fechadocumento>='$fechad' and estadisticaventagi.fechadocumento<='$fechah'";
     }
     if(empty($request->producto)){
         $aux_condproducto = " true";
     }else{
-        $aux_condproducto = "estadisticaventaGI.producto='$request->producto'";
+        $aux_condproducto = "estadisticaventagi.producto='$request->producto'";
     }
     if(empty($request->matprimdesc)){
         $aux_condmatprimdesc = " true";
     }else{
-        $aux_condmatprimdesc = "estadisticaventaGI.matprimdesc='$request->matprimdesc'";
+        $aux_condmatprimdesc = "estadisticaventagi.matprimdesc='$request->matprimdesc'";
     }
 
     $sql = "SELECT *
-            FROM estadisticaventaGI
+            FROM estadisticaventagi
             WHERE $aux_condFecha
             and $aux_condproducto
             and $aux_condmatprimdesc;";
