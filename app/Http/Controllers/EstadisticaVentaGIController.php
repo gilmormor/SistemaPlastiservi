@@ -189,7 +189,7 @@ class EstadisticaVentaGIController extends Controller
                     <td style='text-align:right'>".number_format($contenedor, 0, ",", ".") ."</td>
                     <td style='text-align:right'>".number_format($unidades , 0, ",", ".") ."</td>
                     <td style='text-align:right'>".number_format($data->valorcosto, 2, ",", ".") ."</td>
-                    <td style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->subtotal, 0, ",", ".") ."</td>
                 </tr>";
                 $i++;
                 $aux_totalsubtotal += $data->subtotal;
