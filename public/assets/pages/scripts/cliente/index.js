@@ -15,7 +15,7 @@ $(document).ready(function () {
             {data: 'rut'},
             {data: 'razonsocial'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
-            {defaultContent : "<a class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'><i class='fa fa-fw fa-pencil'></i></a><!--<a href='' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'><i class='fa fa-fw fa-trash text-danger'></i></a>-->"}
+            {defaultContent : "<a class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'><i class='fa fa-fw fa-pencil'></i></a><a href='' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'><i class='fa fa-fw fa-trash text-danger'></i></a>"}
         ],
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -97,14 +97,4 @@ $(document).on("click", ".btnEditar", function(){
     $(".modal-header").css("color", "white" );
     $(".modal-title").text("Editar Usuario");		
     $('#modalCRUD').modal('show');	*/	   
-});
-
-$(document).on("click", ".btnEliminar", function(){	
-    fila = $(this).closest("tr");	        
-    id = fila.find('td:eq(0)').text();
-    //alert('Id: '+id);
-    // *** REDIRECCIONA A UNA RUTA*** 
-    var loc = window.location;
-    window.location = loc.protocol+"//"+loc.hostname+"/cliente/"+id+"/editar";
-    // ****************************** 
 });

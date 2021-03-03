@@ -5,10 +5,12 @@ Clientes
 
 @section("scripts")
     <script type="text/javascript" src="{{asset("assets/js/jquery-barcode.js")}}"></script>
+    <script src="{{asset("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/cliente/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
+@csrf @method("delete")
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')

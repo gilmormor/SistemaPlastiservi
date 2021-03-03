@@ -314,28 +314,41 @@ class ClienteController extends Controller
      */
     public function eliminar(Request $request,$id)
     {
-        can('eliminar-cliente');
-        if ($request->ajax()) {
-            if (Cliente::destroy($id)) {
-                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                $cliente = Cliente::withTrashed()->findOrFail($id);
-                $cliente->usuariodel_id = auth()->id();
-                $cliente->save();
-                //Eliminar Direcciones
-                $clientedirec = ClienteDirec::where('cliente_id', '=', $id);
-                $clientedirecs = $clientedirec->get();
-                //Eliminar Sucursales de cada direccion
-                foreach ($clientedirecs as $clientedire) {
-                    $clientedirec1 = ClienteDirec::findOrFail($clientedire->id);
-                    $clientedirec1->sucursals()->sync([]);
+        if(can('eliminar-cliente')){
+            if ($request->ajax()) {
+                //dd($request->id);
+                $data = Cliente::findOrFail($request->id);
+                $aux_contRegistos = $data->cotizacion->count() + $data->notaventa->count();
+                //dd($aux_contRegistos);
+                if($aux_contRegistos > 0){
+                    return response()->json(['mensaje' => 'cr']);
+                }else{
+                    if (Cliente::destroy($request->id)) {
+                        //dd('entro');
+                        //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                        $cliente = Cliente::withTrashed()->findOrFail($request->id);
+                        $cliente->usuariodel_id = auth()->id();
+                        $cliente->save();
+                        //Eliminar Direcciones
+                        $clientedirec = ClienteDirec::where('cliente_id', '=', $request->id);
+                        $clientedirecs = $clientedirec->get();
+                        //Eliminar Sucursales de cada direccion
+                        foreach ($clientedirecs as $clientedire) {
+                            $clientedirec1 = ClienteDirec::findOrFail($clientedire->id);
+                            $clientedirec1->sucursals()->sync([]);
+                        }
+                        $clientedirec->delete();
+                        return response()->json(['mensaje' => 'ok']);
+                    } else {
+                        return response()->json(['mensaje' => 'ng']);
+                    }    
                 }
-                $clientedirec->delete();
-                return response()->json(['mensaje' => 'ok']);
             } else {
-                return response()->json(['mensaje' => 'ng']);
+                abort(404);
             }
-        } else {
-            abort(404);
+    
+        }else{
+            return response()->json(['mensaje' => 'ne']);
         }
     }
 

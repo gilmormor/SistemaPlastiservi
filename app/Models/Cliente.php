@@ -43,6 +43,12 @@ class Cliente extends Model
     {
         return $this->hasMany(ClienteDirec::class);
     }
+    //RELACION DE UNO A MUCHOS NotaVenta
+    public function notaventa()
+    {
+        return $this->hasMany(NotaVenta::class);
+    }
+
     //Relacion inversa a Vendedor
     public function vendedor()
     {
