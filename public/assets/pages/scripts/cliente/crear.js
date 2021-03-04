@@ -577,7 +577,7 @@ $("#rut").blur(function(){
 											}
 										});
 									}else{
-										alert('entro');
+										//alert('entro');
 									}
 								}
 							});

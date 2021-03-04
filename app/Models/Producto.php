@@ -44,6 +44,12 @@ class Producto extends Model
     {
         return $this->hasMany(CotizacionDetalle::class);
     }
+    //RELACION UNO A MUCHOS NotaventaDetalle
+    public function notaventadetalles()
+    {
+        return $this->hasMany(NotaVentaDetalle::class);
+    }
+
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function grupoprod()
     {

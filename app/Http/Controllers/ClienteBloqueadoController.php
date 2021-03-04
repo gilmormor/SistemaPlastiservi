@@ -27,9 +27,23 @@ class ClienteBloqueadoController extends Controller
                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->get();
+        $aux_razonsocial = $datas[0]->cliente->razonsocial;
+        //dd($aux_razonsocial);
         //dd($datas[0]->cliente->id);
         //$datas = ClienteBloqueado::orderBy('id')->get();
+        //dd($datas[0]->cliente);
         return view('clientebloqueado.index', compact('datas','sucursales'));
+    }
+
+    public function clientebloqueadopage(){
+        return datatables()
+        ->eloquent(ClienteBloqueado::query()
+        ->join('cliente', 'clientebloqueado.cliente_id', '=', 'cliente.id')
+        ->select([
+            'clientebloqueado.*',
+            'cliente.razonsocial'
+                ])
+        )->toJson();
     }
 
     /**
@@ -160,6 +174,7 @@ class ClienteBloqueadoController extends Controller
      */
     public function eliminar(Request $request, $id)
     {
+        /*
         if ($request->ajax()) {
             $data = ClienteBloqueado::findOrFail($id);
             $data->usuariodel_id = auth()->id();
@@ -172,5 +187,26 @@ class ClienteBloqueadoController extends Controller
         } else {
             abort(404);
         }
+        */
+
+        if(can('eliminar-cliente-bloqueado',false)){
+            if ($request->ajax()) {
+                if (ClienteBloqueado::destroy($request->id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $clientebloqueado = ClienteBloqueado::withTrashed()->findOrFail($request->id);
+                    $clientebloqueado->usuariodel_id = auth()->id();
+                    $clientebloqueado->save();
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }    
+            } else {
+                abort(404);
+            }
+    
+        }else{
+            return response()->json(['mensaje' => 'ne']);
+        }
+
     }
 }

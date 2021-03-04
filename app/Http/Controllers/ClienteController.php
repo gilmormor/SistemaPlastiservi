@@ -314,11 +314,10 @@ class ClienteController extends Controller
      */
     public function eliminar(Request $request,$id)
     {
-        if(can('eliminar-cliente')){
+        if(can('eliminar-cliente',false)){
             if ($request->ajax()) {
-                //dd($request->id);
                 $data = Cliente::findOrFail($request->id);
-                $aux_contRegistos = $data->cotizacion->count() + $data->notaventa->count();
+                $aux_contRegistos = $data->cotizacion->count() + $data->notaventa->count(); // + $data->vendedores->count() + $data->sucursales->count();
                 //dd($aux_contRegistos);
                 if($aux_contRegistos > 0){
                     return response()->json(['mensaje' => 'cr']);
@@ -338,6 +337,10 @@ class ClienteController extends Controller
                             $clientedirec1->sucursals()->sync([]);
                         }
                         $clientedirec->delete();
+                        $clientesucursal = ClienteSucursal::where('cliente_id', '=', $request->id);
+                        $clientesucursal->delete();
+                        $clientevendedor = ClienteVendedor::where('cliente_id', '=', $request->id);
+                        $clientevendedor->delete();
                         return response()->json(['mensaje' => 'ok']);
                     } else {
                         return response()->json(['mensaje' => 'ng']);

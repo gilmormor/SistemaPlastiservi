@@ -23,8 +23,27 @@ class ProductoController extends Controller
     public function index()
     {
         can('listar-producto');
-        $datas = Producto::orderBy('id')->get();
-        return view('producto.index', compact('datas'));
+        //$datas = Producto::orderBy('id')->get();
+        //return view('producto.index', compact('datas'));
+        return view('producto.index');
+    }
+
+    public function productopage(){
+        
+        return datatables()
+            ->eloquent(Producto::query()
+            ->join('categoriaprod', 'producto.categoriaprod_id', '=', 'categoriaprod.id')
+            ->select([
+                'producto.*',
+                'categoriaprod.nombre as nombrecateg'
+            ])
+            )
+            ->toJson();
+        /*
+        return datatables()
+            ->eloquent(Producto::query())
+            ->toJson();
+        */
     }
 
     /**
@@ -144,9 +163,34 @@ class ProductoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function eliminar($id)
+    public function eliminar(Request $request,$id)
     {
-        //
+        if(can('eliminar-producto',false)){
+            if ($request->ajax()) {
+                //dd($request->id);
+                $data = Producto::findOrFail($request->id);
+                $aux_contRegistos = $data->cotizaciondetalles->count() + $data->notaventadetalles->count();
+                //dd($aux_contRegistos);
+                if($aux_contRegistos > 0){
+                    return response()->json(['mensaje' => 'cr']);
+                }else{
+                    if (Producto::destroy($request->id)) {
+                        //dd('entro');
+                        //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                        $producto = Producto::withTrashed()->findOrFail($request->id);
+                        $producto->usuariodel_id = auth()->id();
+                        $producto->save();
+                        return response()->json(['mensaje' => 'ok']);
+                    } else {
+                        return response()->json(['mensaje' => 'ng']);
+                    }    
+                }
+            } else {
+                abort(404);
+            }
+        }else{
+            return response()->json(['mensaje' => 'ne']);
+        }
     }
 
     public function obtClaseProd(Request $request)

@@ -146,6 +146,7 @@ Route::delete('categoriaprod/{id}', 'CategoriaProdController@eliminar')->name('e
 
 /*RUTAS PRODUCTOS*/
 Route::get('producto', 'ProductoController@index')->name('producto');
+Route::get('productopage', 'ProductoController@productopage')->name('productopage');
 Route::get('producto/crear', 'ProductoController@crear')->name('crear_producto');
 Route::post('producto', 'ProductoController@guardar')->name('guardar_producto');
 Route::get('producto/{id}/editar', 'ProductoController@editar')->name('editar_producto');
@@ -428,6 +429,7 @@ Route::get('noconformidadver/{id}/{sta_val}', 'NoConformidadController@ver')->na
 
 /*RUTAS Bloquear Cliente */
 Route::get('clientebloqueado', 'ClienteBloqueadoController@index')->name('clientebloqueado');
+Route::get('clientebloqueadopage', 'ClienteBloqueadoController@clientebloqueadopage')->name('clientebloqueadopage');
 Route::get('clientebloqueado/crear', 'ClienteBloqueadoController@crear')->name('crear_clientebloqueado');
 Route::post('clientebloqueado', 'ClienteBloqueadoController@guardar')->name('guardar_clientebloqueado');
 Route::get('clientebloqueado/{id}/editar', 'ClienteBloqueadoController@editar')->name('editar_clientebloqueado');

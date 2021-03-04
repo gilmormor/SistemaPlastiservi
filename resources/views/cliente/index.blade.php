@@ -32,7 +32,7 @@ Clientes
                             <th class="width70">ID</th>
                             <th class="width70">RUT</th>
                             <th>Nombre</th>
-                            <th class="width70"></th>
+                            <th class="width70">Acción</th>
                         </tr>
                     </thead>
                 </table>
