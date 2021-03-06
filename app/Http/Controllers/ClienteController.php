@@ -70,8 +70,31 @@ class ClienteController extends Controller
     }
 
     public function clientepage(){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        }else{
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+
         return datatables()
-            ->eloquent(Cliente::query())
+            ->eloquent(Cliente::query()
+            ->select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
+            ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+            ->pluck('cliente_sucursal.cliente_id')->toArray())
+            ->whereIn('cliente.id',$clientevendedorArray)
+            )
             ->toJson();
     }
 
@@ -174,59 +197,86 @@ class ClienteController extends Controller
     public function editar($id)
     {
         can('editar-cliente');
-        $data = Cliente::findOrFail($id);
-        //dd($data);
-        
-        $sucursales = Sucursal::orderBy('id')->pluck('nombre', 'id')->toArray();
-        $regiones = Region::orderBy('id')->get();
-        //$provincias = Provincia::where('region_id',$data->region_id)->orderBy('id')->get();
-        $provincias = Provincia::orderBy('id')->get();
-        //$comunas = Comuna::where('provincia_id',$data->provincia_id)->orderBy('id')->get();
-        $comunas = Comuna::orderBy('id')->get();
-        //dd($regiones);
-        $formapagos = FormaPago::orderBy('id')->get();
-        $plazopagos = PlazoPago::orderBy('id')->get();
-        //$vendedores = Vendedor::orderBy('id')->get();
-        $sql = 'SELECT vendedor.id,vendedor.persona_id,concat(nombre, " " ,apellido) AS nombre
-                FROM vendedor INNER JOIN persona
-                ON vendedor.persona_id=persona.id';
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        }else{
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $clienteArray = Cliente::whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                    ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+                    ->pluck('cliente_sucursal.cliente_id')->toArray())
+                    ->whereIn('cliente.id',$clientevendedorArray)
+                    ->where('cliente.id','=',$id)
+                    ->pluck('cliente.id')->toArray();
+        //dd($clienteArray);
+        if($clienteArray){
+            $data = Cliente::findOrFail($id);
+            //dd($data);
+            
+            $sucursales = Sucursal::orderBy('id')->pluck('nombre', 'id')->toArray();
+            $regiones = Region::orderBy('id')->get();
+            //$provincias = Provincia::where('region_id',$data->region_id)->orderBy('id')->get();
+            $provincias = Provincia::orderBy('id')->get();
+            //$comunas = Comuna::where('provincia_id',$data->provincia_id)->orderBy('id')->get();
+            $comunas = Comuna::orderBy('id')->get();
+            //dd($regiones);
+            $formapagos = FormaPago::orderBy('id')->get();
+            $plazopagos = PlazoPago::orderBy('id')->get();
+            //$vendedores = Vendedor::orderBy('id')->get();
+            $sql = 'SELECT vendedor.id,vendedor.persona_id,concat(nombre, " " ,apellido) AS nombre
+                    FROM vendedor INNER JOIN persona
+                    ON vendedor.persona_id=persona.id';
 
-        $vendedores = DB::select($sql);
-        $aux_codsuc = "           ";
-        $clientedirecs = $data->clientedirecs()->select(['id as dir_id','direcciondetalle','region_id','provincia_id','comuna_id','formapago_id','plazopago_id','contactonombre','contactoemail','contactotelef','nombrefantasia','mostrarguiasfacturas','finanzascontacto','finanzanemail','finanzastelefono','observaciones'])->get();
-        $sucursalclientedirecs = $data->clientedirecs()->join('sucursalclientedirec', 'clientedirec.id', '=', 'sucursalclientedirec.clientedirec_id')->select(['sucursalclientedirec.clientedirec_id as clientedirec_id','sucursalclientedirec.sucursal_id as sucursal_id'])->get();
-        $aux_vecsuc = array();
-        $aux_vecsuc1 = array();
-        $i = 0;
-        $j = 0;
-        //dd($clientedirecs);
-        //dd($sucursalclientedirecs);
-        foreach ($clientedirecs as $clientedirec) {
+            $vendedores = DB::select($sql);
+            $aux_codsuc = "           ";
+            $clientedirecs = $data->clientedirecs()->select(['id as dir_id','direcciondetalle','region_id','provincia_id','comuna_id','formapago_id','plazopago_id','contactonombre','contactoemail','contactotelef','nombrefantasia','mostrarguiasfacturas','finanzascontacto','finanzanemail','finanzastelefono','observaciones'])->get();
+            $sucursalclientedirecs = $data->clientedirecs()->join('sucursalclientedirec', 'clientedirec.id', '=', 'sucursalclientedirec.clientedirec_id')->select(['sucursalclientedirec.clientedirec_id as clientedirec_id','sucursalclientedirec.sucursal_id as sucursal_id'])->get();
+            $aux_vecsuc = array();
+            $aux_vecsuc1 = array();
+            $i = 0;
             $j = 0;
-            $aux_vecsuc1[$i][$j] = '';
-            foreach ($sucursalclientedirecs as $sucursalclientedirec) {
-                if($clientedirec->dir_id == $sucursalclientedirec->clientedirec_id){
-                    $aux_vecsuc1[$i][$j] = $sucursalclientedirec->sucursal_id;
-                    $j++;
+            //dd($clientedirecs);
+            //dd($sucursalclientedirecs);
+            foreach ($clientedirecs as $clientedirec) {
+                $j = 0;
+                $aux_vecsuc1[$i][$j] = '';
+                foreach ($sucursalclientedirecs as $sucursalclientedirec) {
+                    if($clientedirec->dir_id == $sucursalclientedirec->clientedirec_id){
+                        $aux_vecsuc1[$i][$j] = $sucursalclientedirec->sucursal_id;
+                        $j++;
+                    }
+                    
                 }
                 
-            }
-            
-            if(count($aux_vecsuc1[$i]) == 0){
-                $aux_vecsuc[$i] = '';
-            }else{
-                if($i==2){
-                    //dd($aux_vecsuc1);
+                if(count($aux_vecsuc1[$i]) == 0){
+                    $aux_vecsuc[$i] = '';
+                }else{
+                    if($i==2){
+                        //dd($aux_vecsuc1);
+                    }
+                    $aux_vecsuc[$i] = implode(',',$aux_vecsuc1[$i]);
                 }
-                $aux_vecsuc[$i] = implode(',',$aux_vecsuc1[$i]);
+                $i++;
             }
-            $i++;
+            $giros = Giro::orderBy('id')->get();
+            $aux_cont=(count($clientedirecs));
+            $aux_sta=2;
+            //dd($clientedirec);
+            return view('cliente.editar', compact('data','sucursales','regiones','provincias','comunas','formapagos','plazopagos','clientedirecs','sucursalclientedirec','vendedores','aux_vecsuc','giros','aux_sta','aux_cont'));
+        }else{
+            return redirect('cliente')->with('mensaje','No tiene permiso para ver este cliente.');
         }
-        $giros = Giro::orderBy('id')->get();
-        $aux_cont=(count($clientedirecs));
-        $aux_sta=2;
-        //dd($clientedirec);
-        return view('cliente.editar', compact('data','sucursales','regiones','provincias','comunas','formapagos','plazopagos','clientedirecs','sucursalclientedirec','vendedores','aux_vecsuc','giros','aux_sta','aux_cont'));
     }
 
     /**
