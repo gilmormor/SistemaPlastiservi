@@ -14,49 +14,24 @@ $(document).ready(function () {
         }
       });
 
-    function generateBarcode(codbar,i){
-        var value = codbar; //"7626513231424"; //$("#barcodeValue").val();
-        var btype = "ean13" //$("input[name=btype]:checked").val();
-        var renderer = "css"; //$("input[name=renderer]:checked").val();
-
-        var settings = {
-            output:renderer,
-            bgColor: "#FFFFFF", // $("#bgColor").val(),
-            color: "#000000", // $("#color").val(),
-            barWidth: "1", //$("#barWidth").val(),
-            barHeight: "50", //$("#barHeight").val(),
-            moduleSize: "3", //$("#moduleSize").val(),
-            posX: "5", //$("#posX").val(),
-            posY: "5", //$("#posY").val(),
-            addQuietZone: "1" //$("#quietZoneSize").val()
-        };
-        /*
-        if ($("#rectangular").is(':checked') || $("#rectangular").attr('checked')){
-            value = {code:value, rect: true};
-        }
-        */
-        //alert(value);
-        if (renderer == 'canvas'){
-            clearCanvas();
-            $("#barcodeTarget").hide();
-            $("#canvasTarget").show().barcode(value, btype, settings);
-        } else {
-            $("#canvasTarget").hide();
-            $("#barcodeTarget" + i).html("").show().barcode(value, btype, settings);
-        }
-    }
-
-    $("#btnGuardarM").click(function()
-    {
-        generateBarcode();
+    $("#tabla-data-cotizacion").on('submit', '.form-eliminar', function (event) {
+        event.preventDefault();
+        const form = $(this);
+        swal({
+            title: '¿ Está seguro que desea eliminar el registro ?',
+            text: "Esta acción no se puede deshacer!",
+            icon: 'warning',
+            buttons: {
+                cancel: "Cancelar",
+                confirm: "Aceptar"
+            },
+        }).then((value) => {
+            if (value) {
+                ajaxRequest(form.serialize(),form.attr('action'),'eliminar',form);
+            }
+        });
     });
 
-    aux_nfila=parseInt($("#tabla-data >tbody >tr").length);
-    for(i=1; i<=aux_nfila; i++){
-        codbar = $("#barcodeTarget" + i).html();
-        generateBarcode(codbar,i);
-    }
-    //alert(aux_nfila);
 
 });
 
@@ -84,7 +59,7 @@ function aprobarcotvend(i,id,aprobstatus){
 		}
 	});
 }
-function ajaxRequest(data,url,funcion) {
+function ajaxRequest(data,url,funcion,form = false) {
 	$.ajax({
 		url: url,
 		type: 'POST',
@@ -102,6 +77,18 @@ function ajaxRequest(data,url,funcion) {
 					}
 				}
 			}
+            if(funcion=='eliminar'){
+                if (respuesta.mensaje == "ok") {
+                    form.parents('tr').remove();
+                    Biblioteca.notificaciones('El registro fue eliminado correctamente', 'Plastiservi', 'success');
+                } else {
+                    if (respuesta.mensaje == "sp"){
+                        Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
+                    }else{
+                        Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo', 'Plastiservi', 'error');
+                    }
+                }
+            }
 		},
 		error: function () {
 		}

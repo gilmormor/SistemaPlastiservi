@@ -380,6 +380,7 @@ class ClienteController extends Controller
                         $cliente->save();
                         //Eliminar Direcciones
                         $clientedirec = ClienteDirec::where('cliente_id', '=', $request->id);
+                        ClienteDirec::where('cliente_id', $request->id)->update(['usuariodel_id' => auth()->id()]);
                         $clientedirecs = $clientedirec->get();
                         //Eliminar Sucursales de cada direccion
                         foreach ($clientedirecs as $clientedire) {
@@ -387,8 +388,10 @@ class ClienteController extends Controller
                             $clientedirec1->sucursals()->sync([]);
                         }
                         $clientedirec->delete();
+                        ClienteSucursal::where('cliente_id', $request->id)->update(['usuariodel_id' => auth()->id()]);
                         $clientesucursal = ClienteSucursal::where('cliente_id', '=', $request->id);
                         $clientesucursal->delete();
+                        ClienteVendedor::where('cliente_id', $request->id)->update(['usuariodel_id' => auth()->id()]);
                         $clientevendedor = ClienteVendedor::where('cliente_id', '=', $request->id);
                         $clientevendedor->delete();
                         return response()->json(['mensaje' => 'ok']);

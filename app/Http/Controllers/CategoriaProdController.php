@@ -263,10 +263,13 @@ class CategoriaProdController extends Controller
                         $CategoriaProd = CategoriaProd::withTrashed()->findOrFail($request->id);
                         $CategoriaProd->usuariodel_id = auth()->id();
                         $CategoriaProd->save();
+                        ClaseProd::where('categoriaprod_id', $request->id)->update(['usuariodel_id' => auth()->id()]);
                         $claseprod = ClaseProd::where('categoriaprod_id', '=', $request->id);
                         $claseprod->delete();
+                        GrupoProd::where('categoriaprod_id', $request->id)->update(['usuariodel_id' => auth()->id()]);
                         $GrupoProd = GrupoProd::where('categoriaprod_id', '=', $request->id);
                         $GrupoProd->delete();
+                        CategoriaProdSuc::where('categoriaprod_id', $request->id)->update(['usuariodel_id' => auth()->id()]);
                         $CategoriaProdSuc = CategoriaProdSuc::where('categoriaprod_id', '=', $request->id);
                         $CategoriaProdSuc->delete();
 
