@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarCertificado;
+use App\Models\AcuerdoTecCertificado;
+use App\Models\AcuerdoTecTemp;
 use App\Models\Certificado;
+use App\Models\NoConformidad_Certificado;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CertificadoController extends Controller
 {
@@ -19,6 +23,13 @@ class CertificadoController extends Controller
         $datas = Certificado::orderBy('id')->get();
         return view('certificado.index', compact('datas'));
     }
+
+    public function certificadopage(){
+        return datatables()
+            ->eloquent(Certificado::query())
+            ->toJson();
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -110,6 +121,7 @@ class CertificadoController extends Controller
      */
     public function eliminar(Request $request, $id)
     {
+        /*
         if ($request->ajax()) {
             if (Certificado::destroy($id)) {
                 return response()->json(['mensaje' => 'ok']);
@@ -118,6 +130,51 @@ class CertificadoController extends Controller
             }
         } else {
             abort(404);
+        }
+        */
+        if(can('eliminar-certificado',false)){
+            if ($request->ajax()) {
+                $data = Certificado::findOrFail($request->id);
+                $aux_contRegistos = 0;
+                $sql = "SELECT COUNT(*) as cont
+                        FROM acuerdotectemp_certificado
+                        WHERE certificado_id = $request->id 
+                        AND deleted_at is null;";
+                $datacont = DB::select($sql);
+                if($datacont){
+                    $aux_contRegistos += $datacont[0]->cont;
+                }
+                $sql = "SELECT COUNT(*) as cont
+                        FROM noconformidad_certificado
+                        WHERE certificado_id = $request->id 
+                        AND deleted_at is null;";
+                $datacont = DB::select($sql);
+                if($datacont){
+                    $aux_contRegistos += $datacont[0]->cont;
+                }
+                if($aux_contRegistos > 0){
+                    return response()->json(['mensaje' => 'cr']);
+                }else{
+                    if (Certificado::destroy($request->id)) {
+                        //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                        $certificado = Certificado::withTrashed()->findOrFail($request->id);
+                        $certificado->usuariodel_id = auth()->id();
+                        $certificado->save();
+                        $AcuerdoTecCertificado = AcuerdoTecCertificado::where('certificado_id', '=', $request->id);
+                        $AcuerdoTecCertificado->delete();
+                        $NoConformidad_Certificado = NoConformidad_Certificado::where('certificado_id', '=', $request->id);
+                        $NoConformidad_Certificado->delete();
+                        return response()->json(['mensaje' => 'ok']);
+                    } else {
+                        return response()->json(['mensaje' => 'ng']);
+                    }    
+                }
+            } else {
+                abort(404);
+            }
+    
+        }else{
+            return response()->json(['mensaje' => 'ne']);
         }
     }
 }

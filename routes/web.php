@@ -138,6 +138,7 @@ Route::post('jefaturaAreaSuc/asignarjefe', 'JefaturaAreaSucController@asignarjef
 
 /*RUTAS CATEGORIA*/
 Route::get('categoriaprod', 'CategoriaProdController@index')->name('categoriaprod');
+Route::get('categoriaprodpage', 'CategoriaProdController@categoriaprodpage')->name('categoriaprodpage');
 Route::get('categoriaprod/crear', 'CategoriaProdController@crear')->name('crear_categoriaprod');
 Route::post('categoriaprod', 'CategoriaProdController@guardar')->name('guardar_categoriaprod');
 Route::get('categoriaprod/{id}/editar', 'CategoriaProdController@editar')->name('editar_categoriaprod');
@@ -178,6 +179,7 @@ Route::post('cliente/buscarmyCli', 'ClienteController@buscarmyCli')->name('busca
 
 /*RUTAS FORMA DE PAGO*/
 Route::get('formapago', 'FormaPagoController@index')->name('formapago');
+Route::get('formapagopage', 'FormaPagoController@formapagopage')->name('formapagopage');
 Route::get('formapago/crear', 'FormaPagoController@crear')->name('crear_formapago');
 Route::post('formapago', 'FormaPagoController@guardar')->name('guardar_formapago');
 Route::get('formapago/{id}/editar', 'FormaPagoController@editar')->name('editar_formapago');
@@ -194,6 +196,7 @@ Route::delete('plazopago/{id}', 'PlazoPagoController@eliminar')->name('eliminar_
 
 /*RUTAS CERTIFICADO*/
 Route::get('certificado', 'CertificadoController@index')->name('certificado');
+Route::get('certificadopage', 'CertificadoController@certificadopage')->name('certificadopage');
 Route::get('certificado/crear', 'CertificadoController@crear')->name('crear_certificado');
 Route::post('certificado', 'CertificadoController@guardar')->name('guardar_certificado');
 Route::get('certificado/{id}/editar', 'CertificadoController@editar')->name('editar_certificado');

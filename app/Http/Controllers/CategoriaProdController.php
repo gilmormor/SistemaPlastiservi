@@ -43,8 +43,33 @@ class CategoriaProdController extends Controller
         ])
         ->get();
 
-        return view('categoriaprod.index', compact('datas'));
+        return view('categoriaprod.index');
+        //return view('categoriaprod.index', compact('datas'));
     }
+
+    public function categoriaprodpage(){
+        return datatables()
+            ->eloquent(CategoriaProd::query()
+            ->join('categoriaprodsuc', function ($join) {
+                $user = Usuario::findOrFail(auth()->id());
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
+                        })
+            ->select([
+                'categoriaprod.id',
+                'categoriaprod.nombre',
+                'categoriaprod.descripcion',
+                'categoriaprod.precio',
+                'categoriaprod.areaproduccion_id',
+                'categoriaprod.sta_precioxkilo',
+                'categoriaprod.unidadmedida_id',
+                'categoriaprod.unidadmedidafact_id'
+            ])
+            )
+            ->toJson();
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -207,6 +232,7 @@ class CategoriaProdController extends Controller
      */
     public function eliminar(Request $request,$id)
     {
+        /*
         can('eliminar-categoriaprod');
         if ($request->ajax()) {
             if (CategoriaProd::destroy($id)) {
@@ -222,6 +248,39 @@ class CategoriaProdController extends Controller
             }
         } else {
             abort(404);
+        }*/
+
+        if(can('eliminar-categoriaprod',false)){
+            if ($request->ajax()) {
+                $data = CategoriaProd::findOrFail($request->id);
+                $aux_contRegistos = $data->productos->count(); // + $data->vendedores->count() + $data->sucursales->count();
+                if($aux_contRegistos > 0){
+                    return response()->json(['mensaje' => 'cr']);
+                }else{
+                    if (CategoriaProd::destroy($request->id)) {
+                        //dd('entro');
+                        //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                        $CategoriaProd = CategoriaProd::withTrashed()->findOrFail($request->id);
+                        $CategoriaProd->usuariodel_id = auth()->id();
+                        $CategoriaProd->save();
+                        $claseprod = ClaseProd::where('categoriaprod_id', '=', $request->id);
+                        $claseprod->delete();
+                        $GrupoProd = GrupoProd::where('categoriaprod_id', '=', $request->id);
+                        $GrupoProd->delete();
+                        $CategoriaProdSuc = CategoriaProdSuc::where('categoriaprod_id', '=', $request->id);
+                        $CategoriaProdSuc->delete();
+
+                        return response()->json(['mensaje' => 'ok']);
+                    } else {
+                        return response()->json(['mensaje' => 'ng']);
+                    }    
+                }
+            } else {
+                abort(404);
+            }
+    
+        }else{
+            return response()->json(['mensaje' => 'ne']);
         }
     }
 }
