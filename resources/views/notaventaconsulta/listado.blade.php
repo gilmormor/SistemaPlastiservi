@@ -163,12 +163,10 @@
 
 				<tfoot id="detalle_totales">
 					<tr class="headt">
-						<b>
-						<td colspan="7" class="textright"><span>TOTALES</span></td>
-						<td class="textright"><span>{{number_format($aux_totalKG, 2, ",", ".")}}</span></td>
-						<td class="textright"><span>{{number_format($aux_totalps, 2, ",", ".")}}</span></td>
-						<td class="textright"><span>{{number_format($aux_promGeneral, 2, ",", ".")}}</span></td>
-						</b>
+						<td colspan="7" class="textright"><b>TOTALES</b></td>
+						<td class="textright"><b>{{number_format($aux_totalKG, 2, ",", ".")}}</b></td>
+						<td class="textright"><b>{{number_format($aux_totalps, 2, ",", ".")}}</b></td>
+						<td class="textright"><b>{{number_format($aux_promGeneral, 2, ",", ".")}}</b></td>
 				</tfoot>
 		</table>
 	</div>
