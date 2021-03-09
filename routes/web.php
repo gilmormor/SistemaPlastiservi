@@ -588,3 +588,9 @@ Route::get('estadisticaventagi/{id}/editar', 'EstadisticaVentaGIController@edita
 Route::put('estadisticaventagi/{id}', 'EstadisticaVentaGIController@actualizar')->name('actualizar_estadisticaventagi');
 Route::delete('estadisticaventagi/{id}', 'EstadisticaVentaGIController@eliminar')->name('eliminar_estadisticaventagi');
 Route::post('estadisticaventagi/reporte', 'EstadisticaVentaGIController@reporte')->name('estadisticaventagi_reporte');
+
+
+/*RUTAS REPORTE Pendientes por producto*/
+Route::get('reportpendientexprod', 'ReportPendienteXProdController@index')->name('reportpendientexprod');
+Route::post('reportpendientexprod/reporte', 'ReportPendienteXProdController@reporte')->name('reportpendientexprod_reporte');
+Route::get('reportpendientexprod/exportPdf', 'ReportPendienteXProdController@exportPdf')->name('reportpendientexprod_exportPdf');
