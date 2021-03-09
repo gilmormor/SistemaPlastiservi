@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CategoriaProd;
 use App\Models\Cliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
+use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
@@ -93,7 +95,33 @@ class NotaVentaConsultaController extends Controller
                     'fechaAct' => date("d/m/Y"),
                     ];
         //dd($fechaServ);
-        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaServ'));
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
+        //******************* */
+        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
+        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
+        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
+        ->select([
+                'producto.id',
+                'producto.nombre',
+                'claseprod.cla_nombre',
+                'producto.codintprod',
+                'producto.diamextmm',
+                'producto.diamextpg',
+                'producto.espesor',
+                'producto.long',
+                'producto.peso',
+                'producto.tipounion',
+                'producto.precioneto',
+                'categoriaprod.precio',
+                'categoriaprod.unidadmedida_id',
+                'categoriaprodsuc.sucursal_id'
+                ])
+                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+                ->get();
+        return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaServ','productos'));
 
     }
 
@@ -117,6 +145,7 @@ class NotaVentaConsultaController extends Controller
 					<th>Fecha</th>
 					<th>RUT</th>
                     <th>Razón Social</th>
+                    <th>Comuna</th>
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
                     <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
@@ -234,6 +263,7 @@ class NotaVentaConsultaController extends Controller
                         $aux_obsdespachoNew = "Fin despacho";
                     }
                 }
+                $comuna = Comuna::findOrFail($data->comuna_id);
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id
@@ -247,6 +277,7 @@ class NotaVentaConsultaController extends Controller
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                    <td id='comuna$i' name='comuna$i'>$comuna->nombre</td>
                     <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</a></td>
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
                     <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
@@ -524,6 +555,14 @@ function consulta($request){
         }
     }
     
+    $aux_condproducto_id = " true";
+    if(!empty($request->producto_id)){
+        $aux_condproducto_id = str_replace(".","",$request->producto_id);
+        $aux_condproducto_id = str_replace("-","",$aux_condproducto_id);
+        $aux_condproducto_id = "notaventadetalle.producto_id='$aux_condproducto_id'";
+    }
+ 
+    
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -554,6 +593,7 @@ function consulta($request){
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
             and $aux_aprobstatus
+            and $aux_condproducto_id
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,

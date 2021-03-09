@@ -129,6 +129,7 @@ function datos(){
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
+        producto_id       : $("#producto_idM").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -359,3 +360,24 @@ function verificarFileOC()
 		return true;
 	}
 }
+
+$("#btnbuscarproducto").click(function(event){
+    $(this).val("");
+    $(".input-sm").val('');
+    $("#myModalBuscarProd").modal('show');
+});
+
+function copiar_codprod(id,codintprod){
+    $("#myModalBuscarProd").modal('hide');
+	$("#producto_idM").val(id);
+	//$("#producto_idM").blur();
+	$("#producto_idM").focus();
+}
+
+$("#producto_idM").keyup(function(event){
+    if(event.which==113){
+        $(this).val("");
+        $(".input-sm").val('');
+        $("#myModalBuscarProd").modal('show');
+    }
+});

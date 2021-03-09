@@ -142,6 +142,24 @@
             </div>
         </div>
     </div>
+    <div class="col-xs-12 col-md-12 col-sm-12">
+        <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Producto">
+            <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                <label for="producto_idM" class="control-label" title="F2 Buscar">Producto</label>
+            </div>
+            <div class="col-xs-12 col-md-8 col-sm-8">
+                <div class="input-group">
+                    <input type="text" name="producto_idM" id="producto_idM" class="form-control" tipoval="numericootro" value="{{old('producto_idM', $clienteselec[0]->producto_idM ?? '')}}" placeholder="F2 Buscar"/>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnbuscarproducto" name="btnbuscarproducto" data-toggle='tooltip' title="Buscar">Buscar</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 </div>
 <div class="col-xs-12 col-md-3 col-sm-12">
     <div class="col-xs-12 col-md-12 col-sm-12">

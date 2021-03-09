@@ -64,4 +64,5 @@ Cotización
 @include('generales.verpdf')
 @include('generales.listarorddesp')
 @include('generales.actualizarFileOC')
+@include('generales.buscarproducto')
 @endsection

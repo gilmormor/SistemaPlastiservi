@@ -1,4 +1,12 @@
+<?php
+	use App\Models\Comuna;
+?>
 <link rel="stylesheet" href="{{asset("assets/css/factura.css")}}">
+
+<!-- Theme style -->
+<link rel="stylesheet" href="{{asset("assets/$theme/dist/css/AdminLTE.min.css")}}">
+<!-- AdminLTE App -->
+<script src="{{asset("assets/$theme/dist/js/adminlte.min.js")}}"></script>
 
 <!--<img class="anulada" src="img/anulado.png" alt="Anulada">-->
 <br>
@@ -49,9 +57,11 @@
 					<tr>
 						<th style='text-align:left'>#</th>
 						<th style='text-align:left'>NV ID</th>
+						<th style='text-align:left'>D</th>
 						<th style='text-align:left'>OC</th>
 						<th class="textcenter">Fecha</th>
 						<th class="textleft">Razón Social</th>
+						<th class="textleft">Comuna</th>
 						<th style='text-align:right'>Total Kg</th>
 						<th style='text-align:right'>Total $</th>
 						<th style='text-align:right'>Prom</th>
@@ -83,6 +93,7 @@
 							if($notaventa->totalkilos>0){
 								$aux_prom = $notaventa->subtotal / $notaventa->totalkilos;
 							}
+							$comuna = Comuna::findOrFail($notaventa->comuna_id);
 
 						?>
 <!--
@@ -99,12 +110,43 @@
 							<td style='text-align:right'>{{number_format($notaventa->totalps, 2, ",", ".")}}</td>
 						</tr>
 -->
+						<?php
+							$sql = "SELECT notaventa_id,sum(cantdesp) AS cantdesp 
+							FROM despachoord JOIN despachoorddet 
+							ON despachoord.id = despachoorddet.despachoord_id
+							WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
+							and despachoord.numfactura is not null
+							and despachoord.notaventa_id=$notaventa->id
+							and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
+							group by despachoord.notaventa_id;";
+							//dd("$sql");
+							$datas = DB::select($sql);
+							$aux_cant = 0;
+							if($datas){
+								$aux_cant = $datas[0]->cantdesp;
+							}
+							$ifd = "";
+							if($aux_cant > 0){
+								$ifd = "starb";
+								if($notaventa->cant == $aux_cant){
+									$ifd = "starl";
+								}
+							}
+
+						?>
 						<tr style='{{$colorFila}}' title='{{$aux_title}}' data-toggle='{{$aux_data_toggle}}' class='btn-accion-tabla tooltipsC'>
 							<td>{{$i}}</td>
 							<td>{{$notaventa->id}}</td>
+							<td>
+								@if (!empty($ifd))
+									<div></div><img src="{{asset("assets/$theme/dist/img/$ifd.png")}}" style="max-width:100%;width:10;height:10;">	
+								@endif
+							</td>
+							
 							<td>{{$notaventa->oc_id}}</td>
 							<td style='text-align:center'>{{date('d-m-Y', strtotime($notaventa->fechahora))}}</td>
 							<td>{{$notaventa->razonsocial}}</td>
+							<td>{{$comuna->nombre}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->totalkilos, 2, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->totalps, 2, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</td>

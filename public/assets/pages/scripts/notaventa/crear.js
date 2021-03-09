@@ -273,7 +273,7 @@ $("#botonNewProd").click(function(event)
 		quitarverificar();
 		$("#aux_sta").val('1');
 		$("#myModal").modal('show');
-		$("#direccionM").focus();	
+		$("#producto_idM").focus();	
 	}
 });
 
