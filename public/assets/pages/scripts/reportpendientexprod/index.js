@@ -108,6 +108,7 @@ function datos(){
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
         plazoentrega      : $("#plazoentrega").val(),
+        producto_id       : $("#producto_idM").val(),
         filtro            : 0,
         _token            : $('input[name=_token]').val()
     };
@@ -231,4 +232,17 @@ function visto(id,visto){
     };
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
+}
+
+$("#btnbuscarproducto").click(function(event){
+    $(this).val("");
+    $(".input-sm").val('');
+    $("#myModalBuscarProd").modal('show');
+});
+
+function copiar_codprod(id,codintprod){
+    $("#myModalBuscarProd").modal('hide');
+	$("#producto_idM").val(id);
+	//$("#producto_idM").blur();
+	$("#producto_idM").focus();
 }
