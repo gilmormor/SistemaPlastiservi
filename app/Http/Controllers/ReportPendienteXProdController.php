@@ -451,8 +451,8 @@ function reporte1($request){
                 <th>Peso</th>
                 <th>TU</th>
                 <th>Cant</th>
-                <th>Desp</th>
-                <th>Solid</th>
+                <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Desp</th>
+                <th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Solid</th>
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>
                 <!--
                 <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
