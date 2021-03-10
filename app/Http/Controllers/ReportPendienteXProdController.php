@@ -759,6 +759,7 @@ function consulta($request,$aux_sql,$orden){
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
+        and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
         GROUP BY notaventadetalle.producto_id
         ORDER BY producto.nombre,producto.peso;";
     }
