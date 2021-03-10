@@ -449,9 +449,14 @@ function reporte1($request){
                 <th>Largo</th>
                 <th>Peso</th>
                 <th>TU</th>
+                <th>Cant</th>
+                <th>Desp</th>
+                <th>Solid</th>
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant Pend</th>
+                <!--
                 <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
                 <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
+                -->
                 <th>VP</th>
             </tr>
         </thead>
@@ -460,6 +465,30 @@ function reporte1($request){
         $aux_totalplata = 0;
         foreach ($datas as $data) {
             if($data->saldoplata>0){
+                //SUMA TOTAL DE SOLICITADO
+                /*************************/
+                $sql = "SELECT cantsoldesp
+                FROM vista_sumsoldespdet
+                WHERE notaventadetalle_id=$data->id";
+                $datasuma = DB::select($sql);
+                $peso = $data->totalkilos/$data->cant;
+                if(empty($datasuma)){
+                    $sumacantsoldesp= 0;
+                }else{
+                    $sumacantsoldesp= $datasuma[0]->cantsoldesp;
+                }
+                /*************************/
+                //SUMA TOTAL DESPACHADO
+                /*************************/
+                $sql = "SELECT cantdesp
+                    FROM vista_sumorddespxnvdetid
+                    WHERE notaventadetalle_id=$data->id";
+                $datasumadesp = DB::select($sql);
+                if(empty($datasumadesp)){
+                    $sumacantdesp= 0;
+                }else{
+                    $sumacantdesp= $datasumadesp[0]->cantdesp;
+                }
                 if(empty($data->oc_file)){
                     $aux_enlaceoc = $data->oc_id;
                 }else{
@@ -467,7 +496,8 @@ function reporte1($request){
                 }
     
                 $aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
-                $aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);    
+                $aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
+                $aux_cantsaldo = $data->cant-$sumacantdesp;
                 $respuesta['tabla3'] .= "
                 <tr>
                     <td>
@@ -484,9 +514,14 @@ function reporte1($request){
                     <td>$data->long</td>
                     <td>$data->peso</td>
                     <td>$data->tipounion</td>
-                    <td style='text-align:right'>$data->saldocant</td>
+                    <td style='text-align:right'>$data->cant</td>
+                    <td style='text-align:right'>$sumacantdesp</td>
+                    <td style='text-align:right'>$sumacantsoldesp</td>
+                    <td style='text-align:right'>$aux_cantsaldo</td>
+                    <!--
                     <td style='text-align:right'>".number_format($data->saldokg, 2, ",", ".") ."</td>
                     <td style='text-align:right'>".number_format($data->saldoplata, 2, ",", ".") ."</td>
+                    -->
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->notaventa_id,2)'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
@@ -685,7 +720,7 @@ function consulta($request,$aux_sql,$orden){
     }
 
     if($aux_sql==2){
-        $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,producto.nombre,cliente.razonsocial,notaventa.id,
+        $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,producto.nombre,cliente.razonsocial,notaventadetalle.id,
         notaventadetalle.notaventa_id,oc_file,
         if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,notaventa.oc_id,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
@@ -720,6 +755,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condcomuna_id
         and $aux_condplazoentrega
         and $aux_condproducto_id
+        and notaventadetalle.cant > vista_sumsoldespdet.cantsoldesp
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)

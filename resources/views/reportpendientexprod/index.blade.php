@@ -253,12 +253,14 @@ Pendiente x Producto
                 </div>
             </div>
             -->
+            <div class="table-responsive" id="tablaconsulta3">
+            </div>
+            <!--
             <div class="container">
                 <div class="row">
-                    <div class="table-responsive" id="tablaconsulta3">
-                    </div>			
                 </div>
             </div>
+            -->
         </div>
     </div>
 </div>
