@@ -443,6 +443,7 @@ function reporte1($request){
                 <th>OC</th>
                 <th>Fecha</th>
                 <th>Razón Social</th>
+                <th class='tooltipsC' title='Código Producto'>CP</th>
                 <th>Descripción</th>
                 <th>Diametro</th>
                 <th>Clase</th>
@@ -452,93 +453,99 @@ function reporte1($request){
                 <th>Cant</th>
                 <th>Desp</th>
                 <th>Solid</th>
-                <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant Pend</th>
+                <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>
                 <!--
                 <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
                 <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
-                -->
                 <th>VP</th>
+                -->
             </tr>
         </thead>
         <tbody>";
-        $aux_totalkg = 0;
-        $aux_totalplata = 0;
+        $aux_totalcant = 0;
+        $aux_totalcantdesp = 0;
+        $aux_totalcantsol = 0;
+        $aux_totalcantpend = 0;
         foreach ($datas as $data) {
-            if($data->saldoplata>0){
-                //SUMA TOTAL DE SOLICITADO
-                /*************************/
-                $sql = "SELECT cantsoldesp
-                FROM vista_sumsoldespdet
-                WHERE notaventadetalle_id=$data->id";
-                $datasuma = DB::select($sql);
-                $peso = $data->totalkilos/$data->cant;
-                if(empty($datasuma)){
-                    $sumacantsoldesp= 0;
-                }else{
-                    $sumacantsoldesp= $datasuma[0]->cantsoldesp;
-                }
-                /*************************/
-                //SUMA TOTAL DESPACHADO
-                /*************************/
-                $sql = "SELECT cantdesp
-                    FROM vista_sumorddespxnvdetid
-                    WHERE notaventadetalle_id=$data->id";
-                $datasumadesp = DB::select($sql);
-                if(empty($datasumadesp)){
-                    $sumacantdesp= 0;
-                }else{
-                    $sumacantdesp= $datasumadesp[0]->cantdesp;
-                }
-                if(empty($data->oc_file)){
-                    $aux_enlaceoc = $data->oc_id;
-                }else{
-                    $aux_enlaceoc = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
-                }
-    
-                $aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
-                $aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
-                $aux_cantsaldo = $data->cant-$sumacantdesp;
-                $respuesta['tabla3'] .= "
-                <tr>
-                    <td>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
-                            $data->notaventa_id
-                        </a>
-                    </td>
-                    <td>$aux_enlaceoc</td>
-                    <td>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                    <td>$data->razonsocial</td>
-                    <td>$data->nombre</td>
-                    <td>$data->diametro</td>
-                    <td>$data->cla_nombre</td>
-                    <td>$data->long</td>
-                    <td>$data->peso</td>
-                    <td>$data->tipounion</td>
-                    <td style='text-align:right'>$data->cant</td>
-                    <td style='text-align:right'>$sumacantdesp</td>
-                    <td style='text-align:right'>$sumacantsoldesp</td>
-                    <td style='text-align:right'>$aux_cantsaldo</td>
-                    <!--
-                    <td style='text-align:right'>".number_format($data->saldokg, 2, ",", ".") ."</td>
-                    <td style='text-align:right'>".number_format($data->saldoplata, 2, ",", ".") ."</td>
-                    -->
-                    <td>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->notaventa_id,2)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
-                        </a>
-                    </td>
-                </tr>";    
+            //SUMA TOTAL DE SOLICITADO
+            /*************************/
+            $sql = "SELECT cantsoldesp
+            FROM vista_sumsoldespdet
+            WHERE notaventadetalle_id=$data->id";
+            $datasuma = DB::select($sql);
+            if(empty($datasuma)){
+                $sumacantsoldesp= 0;
+            }else{
+                $sumacantsoldesp= $datasuma[0]->cantsoldesp;
             }
+            /*************************/
+            //SUMA TOTAL DESPACHADO
+            /*************************/
+            $sql = "SELECT cantdesp
+                FROM vista_sumorddespxnvdetid
+                WHERE notaventadetalle_id=$data->id";
+            $datasumadesp = DB::select($sql);
+            if(empty($datasumadesp)){
+                $sumacantdesp= 0;
+            }else{
+                $sumacantdesp= $datasumadesp[0]->cantdesp;
+            }
+            if(empty($data->oc_file)){
+                $aux_enlaceoc = $data->oc_id;
+            }else{
+                $aux_enlaceoc = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
+            }
+
+            //$aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
+            //$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
+            $aux_cantsaldo = $data->cant-$sumacantdesp;
+            $respuesta['tabla3'] .= "
+            <tr>
+                <td>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
+                        $data->notaventa_id
+                    </a>
+                </td>
+                <td>$aux_enlaceoc</td>
+                <td>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                <td>$data->razonsocial</td>
+                <td>$data->producto_id</td>
+                <td>$data->nombre</td>
+                <td>$data->diametro</td>
+                <td>$data->cla_nombre</td>
+                <td>$data->long</td>
+                <td>$data->peso</td>
+                <td>$data->tipounion</td>
+                <td style='text-align:right'>$data->cant</td>
+                <td style='text-align:right'>$sumacantdesp</td>
+                <td style='text-align:right'>$sumacantsoldesp</td>
+                <td style='text-align:right'>$aux_cantsaldo</td>
+                <!--
+                <td>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->notaventa_id,2)'>
+                        <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                    </a>
+                </td>
+                -->
+            </tr>";
+            $aux_totalcant += $data->cant;
+            $aux_totalcantdesp += $sumacantdesp;
+            $aux_totalcantsol += $sumacantsoldesp;
+            $aux_totalcantpend += $aux_cantsaldo;    
         }
+
         $respuesta['tabla3'] .= "
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='7' style='text-align:left'>TOTALES</th>
-                    <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
+                    <th colspan='11' style='text-align:left'>TOTALES</th>
+                    <th style='text-align:right'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalcantsol, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalcantpend, 0, ",", ".") ."</th>
                 </tr>
             </tfoot>
+
             </table>";
         //dd($respuesta['tabla3']);
         return $respuesta;
@@ -720,17 +727,14 @@ function consulta($request,$aux_sql,$orden){
     }
 
     if($aux_sql==2){
-        $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,producto.nombre,cliente.razonsocial,notaventadetalle.id,
+        $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,
+        notaventadetalle.cant,if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS cantdesp,
+        producto.nombre,cliente.razonsocial,notaventadetalle.id,
         notaventadetalle.notaventa_id,oc_file,
         if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,notaventa.oc_id,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
-        cant,cantsoldesp,
-        totalkilos,
-        subtotal,
-        kgsoldesp,subtotalsoldesp,
-        sum(cant-if(isnull(cantsoldesp),0,cantsoldesp)) as saldocant,
-        sum(totalkilos-if(isnull(kgsoldesp),0,kgsoldesp)) as saldokg,
-        sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldoplata
+        notaventadetalle.totalkilos,
+        subtotal
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
@@ -741,8 +745,8 @@ function consulta($request,$aux_sql,$orden){
         ON producto.categoriaprod_id=categoriaprod.id
         INNER JOIN cliente
         ON cliente.id=notaventa.cliente_id
-        LEFT JOIN vista_sumsoldespdet
-        ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
+        LEFT JOIN vista_sumorddespxnvdetid
+        ON notaventadetalle.id=vista_sumorddespxnvdetid.notaventadetalle_id
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -755,13 +759,11 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condcomuna_id
         and $aux_condplazoentrega
         and $aux_condproducto_id
-        and notaventadetalle.cant > vista_sumsoldespdet.cantsoldesp
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
+        AND notaventadetalle.cant>if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
-        and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
-        GROUP BY notaventadetalle.producto_id
-        ORDER BY producto.nombre,producto.peso;";
+        and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at));";
     }
     $datas = DB::select($sql);
     return $datas;
