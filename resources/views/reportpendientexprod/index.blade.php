@@ -22,7 +22,7 @@ Pendiente x Producto
             </div>
             <div class="box-body">
                 <div class="row">
-                    <div class="col-xs-12 col-md-10 col-sm-12">
+                    <div class="col-xs-12 col-md-9 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
@@ -203,7 +203,7 @@ Pendiente x Producto
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-md-2 col-sm-12">
+                    <div class="col-xs-12 col-md-3 col-sm-12">
                         <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
                         <button type="button" id="btnpdf" name="btnpdf" class="btn btn-success tooltipsC" title="Reporte"><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
