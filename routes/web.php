@@ -593,4 +593,5 @@ Route::post('estadisticaventagi/reporte', 'EstadisticaVentaGIController@reporte'
 /*RUTAS REPORTE Pendientes por producto*/
 Route::get('reportpendientexprod', 'ReportPendienteXProdController@index')->name('reportpendientexprod');
 Route::post('reportpendientexprod/reporte', 'ReportPendienteXProdController@reporte')->name('reportpendientexprod_reporte');
+//Route::get('reportpendientexprod/exportPdf', 'ReportPendienteXProdController@exportPdf')->name('reportpendientexprod_exportPdf');
 Route::get('reportpendientexprod/exportPdf', 'ReportPendienteXProdController@exportPdf')->name('reportpendientexprod_exportPdf');

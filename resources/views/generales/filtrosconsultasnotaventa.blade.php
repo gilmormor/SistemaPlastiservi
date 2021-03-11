@@ -165,8 +165,8 @@
                 <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
                 <button type="submit" class="btn btn-success tooltipsC" title="Reporte">Reporte</button>
                 <!--<button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
-                    <i class="fa fa-fw fa-file-pdf-o"></i>-->
-                </button>
+                    <i class="fa fa-fw fa-file-pdf-o"></i>
+                </button>-->
                 <!-- intento de boton modal para el reporte PDF
                 <a class='btn-accion-tabla btn-sm' onclick='genreportepdf()' title='Reporte Nota Venta' data-toggle='tooltip'>
                     <i class="fa fa-fw fa-file-pdf-o"></i>

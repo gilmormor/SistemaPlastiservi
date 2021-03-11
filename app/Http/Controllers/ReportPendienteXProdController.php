@@ -9,12 +9,15 @@ use App\Models\ClienteBloqueado;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
+use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class ReportPendienteXProdController extends Controller
 {
@@ -191,6 +194,70 @@ class ReportPendienteXProdController extends Controller
         return $respuesta;
     }
 
+    public function exportPdf()
+    {
+        $request = new Request();
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->rut = $_GET["rut"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->oc_id = $_GET["oc_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->tipoentrega_id = $_GET["tipoentrega_id"];
+        $request->notaventa_id = $_GET["notaventa_id"];
+        $request->aprobstatus = $_GET["aprobstatus"];
+        $request->comuna_id = $_GET["comuna_id"];
+        $request->plazoentrega = $_GET["plazoentrega"];
+        $request->producto_id = $_GET["producto_id"];
+        $datas = consulta($request,2,1);
+
+        $aux_fdesde= $request->fechad;
+        $aux_fhasta= $request->fechah;
+
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $nomvendedor = "Todos";
+        if(!empty($request->vendedor_id)){
+            $vendedor = Vendedor::findOrFail($request->vendedor_id);
+            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+        }
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+        $nombreTipoEntrega = "Todos";
+        if($request->tipoentrega_id){
+            $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
+            $nombreTipoEntrega=$tipoentrega->nombre;
+        }
+        
+        //return armarReportehtml($request);
+        if($datas){
+            
+            if(env('APP_DEBUG')){
+                return view('reportpendientexprod.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            }
+            
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            
+            $pdf = PDF::loadView('reportpendientexprod.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'))->setPaper('a4', 'landscape');
+            //return $pdf->download('cotizacion.pdf');
+            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+            return $pdf->stream("ReporteNotasVenta.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        }
+        
+        
+    }
+
 }
 
 function reporte1($request){
@@ -202,239 +269,7 @@ function reporte1($request){
     $respuesta['tabla3'] = "";
 
     if($request->ajax()){
-        /*
-        $datas = consulta($request,1,1);
-        $aux_colvistoth = "";
-        if(auth()->id()==1 or auth()->id()==2){
-            $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
-        }
-        $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
-
-        $respuesta['tabla'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th>Razón Social</th>
-                <th class='tooltipsC' title='Orden de Compra'>OC</th>
-                <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
-                <th>Comuna</th>
-                <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
-                <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
-                <!--<th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>-->
-                <th class='tooltipsC' title='Solicitud Despacho'>Despacho</th>
-            </tr>
-        </thead>
-        <tbody>";
-
-        $i = 0;
-        $aux_Tpvckg = 0;
-        $aux_Tpvcpesos= 0;
-        $aux_Tcankg = 0;
-        $aux_Tcanpesos = 0;
-        $aux_totalKG = 0;
-        $aux_totalps = 0;
-        $aux_prom = 0;
-        foreach ($datas as $data) {
-            $colorFila = "";
-            $aux_data_toggle = "";
-            $aux_title = "";
-
-            $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
-            $prompvc = 0;
-            $promcan = 0;
-            $aux_prom = 0;
-            if($data->pvckg!=0){
-                $prompvc = $data->pvcpesos / $data->pvckg;
-            }
-            if($data->cankg!=0){
-                $promcan = $data->canpesos / $data->cankg;
-            }
-            if($data->totalkilos>0){
-                $aux_prom = $data->subtotal / $data->totalkilos;
-            }
-
-            $Visto       = $data->visto;
-            $checkVisto  = 'checked';
-            if(empty($data->visto))
-                $checkVisto = '';
-
-            $aux_colvistotd = "";
-            if(empty($data->visto)){
-                $fechavisto = '';
-            }else{
-                $fechavisto = 'Leido:' . date('d-m-Y h:i:s A', strtotime($data->visto));
-            }
-            
-            $aux_colvistotd = "
-            <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='$fechavisto'>
-                <div class='checkbox'>
-                    <label style='font-size: 1.2em'>";
-                    if(!empty($data->anulada)){
-                        $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
-                    }else{
-                        if(auth()->id()==1 or auth()->id()==2){
-                            $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto onclick='visto($data->id,$i)'>";
-                        }else{
-                            $aux_colvistotd .= "<input type='checkbox' id='visto$i' name='visto$i' value='$Visto' $checkVisto disabled>";
-                        }
-                    }
-                    $aux_colvistotd .= "<span class='cr'><i class='cr-icon fa fa-check'></i></span>
-                    </label>
-                </div>
-            </td>";
-            if(empty($data->oc_file)){
-                $aux_enlaceoc = $data->oc_id;
-            }else{
-                $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
-            }
-            $nuevoSolDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->id,2)'>
-                                <i class='fa fa-fw fa-file-pdf-o'></i>                                    
-                            </a>";
-            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
-            if(count($clibloq) > 0){
-                $aux_descbloq = $clibloq[0]->descripcion;
-                $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
-                                    <i class='fa fa-fw fa-ban text-danger'></i>
-                                </a>";
-            }else{
-                $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
-                $nuevoSolDesp .= "<a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer solicitud despacho: $data->tipentnombre'>
-                    <i class='fa fa-fw $data->icono'></i>
-                    </a>";
-            }
-            if(!empty($data->anulada)){
-                $colorFila = 'background-color: #87CEEB;';
-                $aux_data_toggle = "tooltip";
-                $aux_title = "Anulada Fecha:" . $data->anulada;
-                $nuevoSolDesp = "";
-            }
-            //dd($ruta_nuevoSolDesp);
-            $respuesta['tabla'] .= "
-            <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
-                <td id='id$i' name='id$i'>$data->id</td>
-                <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
-                <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
-                <td>
-                    <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->id
-                    </a>
-                </td>
-                <td>
-                    <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2']) . "' class='btn-accion-tabla tooltipsC' title='Precio x Kg' target='_blank'>-->
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV($data->id,2)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>                                    
-                    </a>
-                </td>
-                <td>$data->comunanombre</td>
-                <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos - $data->totalkgsoldesp, 2, ",", ".") ."</td>
-                <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal - $data->totalsubtotalsoldesp, 2, ",", ".") ."</td>
-                <!--<td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>-->
-                <td>
-                    $nuevoSolDesp
-                </td>
-            </tr>";
-
-            if(empty($data->anulada)){
-                $aux_Tpvckg += $data->pvckg;
-                $aux_Tpvcpesos += $data->pvcpesos;
-                $aux_Tcankg += $data->cankg;
-                $aux_Tcanpesos += $data->canpesos;
-                $aux_totalKG += ($data->totalkilos - $data->totalkgsoldesp);
-                $aux_totalps += ($data->subtotal - $data->totalsubtotalsoldesp);    
-            }
-
-
-            //dd($data->contacto);
-        }
-
-        $aux_promGeneral = 0;
-        if($aux_totalKG>0){
-            $aux_promGeneral = $aux_totalps / $aux_totalKG;
-        }
-        $respuesta['tabla'] .= "
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan='7' style='text-align:left'>TOTAL</th>
-                <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
-                <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
-                <!--<th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>-->
-                <th style='text-align:right'></th>
-            </tr>
-        </tfoot>
-
-        </table>";
-        */
-
-        /*****CONSULTA AGRUPADO POR CLIENTE******/
-        /*
-        $datas = consulta($request,1,2);
-        if($datas){
-            $aux_clienteid = $datas[0]->cliente_id;
-
-        }
-
-        $respuesta['tabla2'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
-        <thead>
-            <tr>
-                <th>Razón Social</th>
-                <th>Comuna</th>
-                <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
-                <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
-            </tr>
-        </thead>
-        <tbody>";
-
-        $aux_kgpend = 0;
-        $aux_platapend = 0;
-        $razonsocial = "";
-        $aux_comuna  = "";
-        $aux_totalkg = 0;
-        $aux_totalplata = 0;
-        foreach ($datas as $data) {
-            if($data->cliente_id!=$aux_clienteid){
-                $respuesta['tabla2'] .= "
-                <tr>
-                    <td>$razonsocial</td>
-                    <td>$aux_comuna</td>
-                    <td style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
-                    <td style='text-align:right'>".number_format($aux_platapend, 2, ",", ".") ."</td>
-                </tr>";
-                $aux_kgpend = 0;
-                $aux_platapend = 0;
-            }
-            $aux_kgpend += ($data->totalkilos - $data->totalkgsoldesp);
-            $aux_platapend += ($data->subtotal - $data->totalsubtotalsoldesp);
-            $aux_totalkg += ($data->totalkilos - $data->totalkgsoldesp);
-            $aux_totalplata += ($data->subtotal - $data->totalsubtotalsoldesp);
-            $razonsocial = $data->razonsocial;
-            $aux_comuna  = $data->comunanombre;
-
-        }
-        $respuesta['tabla2'] .= "
-            <tr>
-                <td>$razonsocial</td>
-                <td>$aux_comuna</td>
-                <td style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
-                <td style='text-align:right'>".number_format($aux_platapend, 2, ",", ".") ."</td>
-            </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan='2' style='text-align:left'>TOTALES</th>
-                    <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
-                </tr>
-            </tfoot>
-
-            </table>";
-        */
-
-        /*****CONSULTA AGRUPADO POR PRODUCTO*****/
+        /*****CONSULTA POR PRODUCTO*****/
         $datas = consulta($request,2,1);
         $respuesta['tabla3'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
         <thead>
@@ -553,6 +388,7 @@ function reporte1($request){
 }
 
 function consulta($request,$aux_sql,$orden){
+    //dd($request);
     if($orden==1){
         $aux_orden = "notaventadetalle.notaventa_id desc";
     }else{
@@ -661,7 +497,6 @@ function consulta($request,$aux_sql,$orden){
         $aux_condproducto_id = str_replace("-","",$aux_condproducto_id);
         $aux_condproducto_id = "notaventadetalle.producto_id='$aux_condproducto_id'";
     }
-
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){

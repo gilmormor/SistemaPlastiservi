@@ -247,3 +247,15 @@ function copiar_codprod(id,codintprod){
 	//$("#producto_idM").blur();
 	$("#producto_idM").focus();
 }
+
+$("#btnpdf").click(function(event){
+    data = datos();
+    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah+"&rut=" + data.rut + "&vendedor_id=" + data.vendedor_id +
+            "&oc_id="+data.oc_id + "&giro_id="+data.giro_id + "&areaproduccion_id="+data.areaproduccion_id +
+            "&tipoentrega_id="+data.tipoentrega_id + "&notaventa_id="+data.notaventa_id + "&aprobstatus="+data.aprobstatus +
+            "&comuna_id="+data.comuna_id + "&plazoentrega="+data.plazoentrega + "&producto_id="+data.producto_id
+    //alert(cadena);
+    $('#contpdf').attr('src', '/reportpendientexprod/exportPdf/'+cadena);
+    //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+});
