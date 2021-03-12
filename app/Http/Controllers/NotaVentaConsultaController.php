@@ -263,7 +263,7 @@ class NotaVentaConsultaController extends Controller
                         $aux_obsdespachoNew = "Fin despacho";
                     }
                 }
-                $comuna = Comuna::findOrFail($data->comuna_id);
+                $comuna = Comuna::findOrFail($data->comunaentrega_id);
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id

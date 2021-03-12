@@ -250,7 +250,7 @@ class ReportPendienteXProdController extends Controller
             $pdf = PDF::loadView('reportpendientexprod.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'))->setPaper('a4', 'landscape');
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("ReporteNotasVenta.pdf");
+            return $pdf->stream("ReportePendienteXProducto.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         }
@@ -278,6 +278,7 @@ function reporte1($request){
                 <th>OC</th>
                 <th>Fecha</th>
                 <th>Razón Social</th>
+                <th>Comuna</th>
                 <th class='tooltipsC' title='Código Producto'>CP</th>
                 <th>Descripción</th>
                 <th>Diametro</th>
@@ -347,7 +348,7 @@ function reporte1($request){
                                 . number_format($sumacantdesp, 0, ",", ".") .
                                 "</a>";
             }
-
+            $comuna = Comuna::findOrFail($data->comunaentrega_id);
             $respuesta['tabla3'] .= "
             <tr>
                 <td>
@@ -358,6 +359,7 @@ function reporte1($request){
                 <td>$aux_enlaceoc</td>
                 <td>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td>$data->razonsocial</td>
+                <td>$comuna->nombre</td>
                 <td>$data->producto_id</td>
                 <td>$data->nombre</td>
                 <td>$data->diametro</td>
@@ -397,7 +399,7 @@ function reporte1($request){
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='11' style='text-align:right'>TOTALES</th>
+                    <th colspan='12' style='text-align:right'>TOTALES</th>
                     <th style='text-align:right'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
@@ -598,7 +600,7 @@ function consulta($request,$aux_sql,$orden){
         if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,notaventa.oc_id,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
         notaventadetalle.totalkilos,
-        subtotal
+        subtotal,notaventa.comunaentrega_id
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto

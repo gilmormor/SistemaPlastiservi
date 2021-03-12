@@ -243,3 +243,25 @@ H1.SaltoDePagina
 	transform: rotate(-70deg);
 	content: '';
   }
+
+.width30{
+    width: 30px !important;
+}
+.width50{
+    width: 50px !important;
+}
+.width70{
+    width: 70px !important;
+}
+.width80{
+    width: 80px !important;
+}
+.width90{
+    width: 90px !important;
+}
+.width100{
+    width: 100px !important;
+}
+.width200{
+    width: 200px !important;
+}

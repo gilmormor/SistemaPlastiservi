@@ -93,7 +93,7 @@
 							if($notaventa->totalkilos>0){
 								$aux_prom = $notaventa->subtotal / $notaventa->totalkilos;
 							}
-							$comuna = Comuna::findOrFail($notaventa->comuna_id);
+							$comuna = Comuna::findOrFail($notaventa->comunaentrega_id);
 
 						?>
 <!--

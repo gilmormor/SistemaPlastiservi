@@ -5,6 +5,7 @@
 <br>
 <?php 
 	use App\Models\Producto;
+	use App\Models\Comuna;
 ?>
 <div id="page_pdf">
 	<table id="factura_head">
@@ -37,8 +38,9 @@
 					<tr>
 						<th>NV</th>
 						<th>OC</th>
-						<th>Fecha</th>
+						<th class='width50'>Fecha</th>
 						<th>Razón Social</th>
+						<th>Comuna</th>
 						<th style='text-align:left' class='tooltipsC' title='Código Producto'>CP</th>
 						<th style='text-align:left'>Descripción</th>
 						<th style='text-align:left'>Diametro</th>
@@ -97,12 +99,14 @@
 							//$aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
 							//$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
 							$aux_cantsaldo = $data->cant-$sumacantdesp;
+							$comuna = Comuna::findOrFail($data->comunaentrega_id);
 						?>
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td>{{$data->notaventa_id}}</td>
 							<td>{{$data->oc_id}}</td>
 							<td>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
 							<td>{{$data->razonsocial}}</td>
+							<td>{{$comuna->nombre}}</td>
 							<td>{{$data->producto_id}}</td>
 							<td>{{$data->nombre}}</td>
 							<td>{{$data->diametro}}</td>
@@ -133,7 +137,7 @@
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr>
-						<th colspan='11' style='text-align:right'>TOTALES</th>
+						<th colspan='12' style='text-align:right'>TOTALES</th>
 						<th style='text-align:right'>{{number_format($aux_totalcant, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalcantdesp, 0, ",", ".")}}</th>
