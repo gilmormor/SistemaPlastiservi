@@ -334,12 +334,11 @@ function reporte1($request){
             //$aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
             //$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
             $aux_cantsaldo = $data->cant-$sumacantdesp;
-            $fila_cantdesp = $sumacantdesp;
+            $fila_cantdesp = number_format($sumacantdesp, 0, ",", ".");
             if($sumacantdesp>0){
-                $fila_cantdesp = "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->notaventa_id,$data->producto_id)' title='Ver detalle despacho' data-toggle='tooltip'>
-                                    $sumacantdesp
-                                </a>";
-
+                $fila_cantdesp = "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->notaventa_id,$data->producto_id)' title='Ver detalle despacho' data-toggle='tooltip'>"
+                                . number_format($sumacantdesp, 0, ",", ".") .
+                                "</a>";
             }
 
             $respuesta['tabla3'] .= "
@@ -359,12 +358,12 @@ function reporte1($request){
                 <td>$data->long</td>
                 <td>$data->peso</td>
                 <td>$data->tipounion</td>
-                <td style='text-align:right'>$data->cant</td>
+                <td style='text-align:right'>". number_format($data->cant, 0, ",", ".") ."</td>
                 <td style='text-align:right'>
                     $fila_cantdesp
                 </td>
-                <td style='text-align:right'>$sumacantsoldesp</td>
-                <td style='text-align:right'>$aux_cantsaldo</td>
+                <td style='text-align:right'>". number_format($sumacantsoldesp, 0, ",", ".") ."</td>
+                <td style='text-align:right'>". number_format($aux_cantsaldo, 0, ",", ".") ."</td>
                 <!--
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->notaventa_id,2)'>

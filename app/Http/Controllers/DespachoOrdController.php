@@ -715,14 +715,14 @@ class DespachoOrdController extends Controller
                     ->whereNotNull('numfactura')
                     ->whereNotIn('id',  $despachoordanul)
                     ->get();
-            $respuesta['tabla'] .= "<table id='tabladespachoorddet' name='tabladespachoorddet' class='table display AllDataTables table-hover table-condensed' data-page-length='15'>
+            $respuesta['tabla'] .= "<table id='tabladespachoorddet' name='tabladespachoorddet' class='table display AllDataTables table-hover table-condensed' data-page-length='10'>
             <thead>
                 <tr>
                     <th>ID OD</th>
                     <th>Fecha</th>
                     <th>FechaFact</th>
-                    <th>Solic</th>
-                    <th>Entregado</th>
+                    <th style='text-align:right'>Solic</th>
+                    <th style='text-align:right'>Entregado</th>
                     <th class='textcenter'>Unidad</th>
 					<th class='textleft'>Descripción</th>
 					<th class='textleft'>Diametro</th>
@@ -737,6 +737,8 @@ class DespachoOrdController extends Controller
             </thead>
             <tbody>";
             $i=0;
+            $aux_totalcantsoldesp = 0;
+            $aux_totalcantdesp = 0;
             foreach ($despchoords as $despchoord) {
                 foreach ($despchoord->despachoorddets as $despachoorddet) {
                     //dd($despachoorddet);
@@ -763,8 +765,8 @@ class DespachoOrdController extends Controller
                         <td id='id$i' name='id$i'>$despachoorddet->despachoord_id</td>
                         <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($despachoorddet->created_at)) . "</td>
                         <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
-                        <td class='textright'>$cantsoldesp</td>
-                        <td class='textright'>$despachoorddet->cantdesp</td>
+                        <td style='text-align:right'>". number_format($cantsoldesp, 0, ",", ".") ."</td>
+                        <td style='text-align:right'>". number_format($despachoorddet->cantdesp, 0, ",", ".") ."</td>
                         <td class='textcenter'>$unidades</td>
 						<td class='textleft'>$nombreproduc</td>
                         <td class='textleft'>$diametro</td>
@@ -777,10 +779,20 @@ class DespachoOrdController extends Controller
                         <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
                     </tr>";
                     $respuesta['exito'] = true;
+                    $aux_totalcantsoldesp += $cantsoldesp;
+                    $aux_totalcantdesp += $despachoorddet->cantdesp;
                 }
             }
             $respuesta['tabla'] .= "
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan='3' style='text-align:left'>TOTALES</th>
+                        <th style='text-align:right'>". number_format($aux_totalcantsoldesp, 0, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
+                        <th colspan='10' style='text-align:right'></th>
+                    </tr>
+                </tfoot>
                 </table>";
         }
         return $respuesta;
