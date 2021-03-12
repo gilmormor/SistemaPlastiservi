@@ -244,6 +244,9 @@ H1.SaltoDePagina
 	content: '';
   }
 
+.width20{
+    width: 20px !important;
+}
 .width30{
     width: 30px !important;
 }

@@ -41,13 +41,13 @@
 						<th class='width50'>Fecha</th>
 						<th>Razón Social</th>
 						<th>Comuna</th>
-						<th style='text-align:left' class='tooltipsC' title='Código Producto'>CP</th>
+						<th style='text-align:left' class='width20'>CP</th>
 						<th style='text-align:left'>Descripción</th>
-						<th style='text-align:left'>Diametro</th>
+						<th style='text-align:left'>Diam</th>
 						<th style='text-align:left'>Clase</th>
-						<th style='text-align:left'>Largo</th>
+						<th style='text-align:left' class='width20'>L</th>
 						<th style='text-align:left'>Peso</th>
-						<th style='text-align:left'>TU</th>
+						<th style='text-align:left' class='width20'>TU</th>
 						<th style='text-align:right'>Cant</th>
 						<!--
 						<th style='text-align:right'>Kilos</th>
