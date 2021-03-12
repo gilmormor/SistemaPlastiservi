@@ -46,10 +46,15 @@
 						<th style='text-align:left'>Largo</th>
 						<th style='text-align:left'>Peso</th>
 						<th style='text-align:left'>TU</th>
-						<th style='text-align:right' >Cant</th>
+						<th style='text-align:right'>Cant</th>
+						<th style='text-align:right'>Kilos</th>
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Desp</th>
+						<th style='text-align:right' class='tooltipsC' title='Kilos Despachados'>Kilos<br>Desp</th>
+						<!--
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Solid</th>
+						-->
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>		
+						<th style='text-align:right' class='tooltipsC' title='Kilos Pendiente'>Kilos<br>Pend</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
@@ -57,7 +62,10 @@
 						$aux_totalcant = 0;
 						$aux_totalcantdesp = 0;
 						$aux_totalcantsol = 0;
+						$aux_totalkilos = 0;
+				        $aux_totalkilosdesp = 0;
 						$aux_totalcantpend = 0;
+						$aux_totalkilospend = 0;
 					?>
 					@foreach($datas as $data)
 						<?php
@@ -102,26 +110,39 @@
 							<td>{{$data->long}}</td>
 							<td>{{$data->peso}}</td>
 							<td>{{$data->tipounion}}</td>
-							<td style='text-align:right'>{{$data->cant}}</td>
-							<td style='text-align:right'>{{$sumacantdesp}}</td>
+							<td style='text-align:right'>{{number_format($data->cant, 0, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($data->totalkilos, 2, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($sumacantdesp, 0, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($sumacantdesp * $data->peso, 2, ",", ".")}}</td>
+							<!--
 							<td style='text-align:right'>{{$sumacantsoldesp}}</td>
-							<td style='text-align:right'>{{$aux_cantsaldo}}</td>
+							-->
+							<td style='text-align:right'>{{number_format($aux_cantsaldo, 0, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($aux_cantsaldo * $data->peso, 2, ",", ".")}}</td>
 						</tr>
 						<?php
 							$aux_totalcant += $data->cant;
 							$aux_totalcantdesp += $sumacantdesp;
-							$aux_totalcantsol += $sumacantsoldesp;
-							$aux_totalcantpend += $aux_cantsaldo;    
+							$aux_totalkilos += $data->totalkilos;
+            				$aux_totalkilosdesp += ($sumacantdesp * $data->peso);
+							//$aux_totalcantsol += $sumacantsoldesp;
+							$aux_totalcantpend += $aux_cantsaldo;
+							$aux_totalkilospend += ($aux_cantsaldo * $data->peso);
 						?>
 					@endforeach
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr>
-						<th colspan='11' style='text-align:left'>TOTALES</th>
+						<th colspan='11' style='text-align:right'>TOTALES</th>
 						<th style='text-align:right'>{{number_format($aux_totalcant, 0, ",", ".")}}</th>
+						<th style='text-align:right'>{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalcantdesp, 0, ",", ".")}}</th>
+						<!--
 						<th style='text-align:right'>{{number_format($aux_totalcantsol, 0, ",", ".")}}</th>
+						-->
+						<th style='text-align:right'>{{number_format($aux_totalkilosdesp, 2, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalcantpend, 0, ",", ".")}}</th>
+						<th style='text-align:right'>{{number_format($aux_totalkilospend, 2, ",", ".")}}</th>
 					</tr>
 				</tfoot>
 					

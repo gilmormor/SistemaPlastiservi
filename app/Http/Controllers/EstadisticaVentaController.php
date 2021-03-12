@@ -106,7 +106,7 @@ class EstadisticaVentaController extends Controller
                 <tr id='fila$i' name='fila$i'>
                     <td>" . date('d', strtotime($data->fechadocumento)) . "</td>
                     <td>$data->numerodocumento</td>
-                    <td>".substr($data->razonsocial,0,8)."</td>
+                    <td  class='tooltipsC' title='$data->razonsocial'>".substr($data->razonsocial,0,15)."</td>
                     <td>$data->descripcion</td>
                     <td>$data->medidas</td>
                     <td>$data->matprimdesc</td>

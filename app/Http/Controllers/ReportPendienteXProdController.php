@@ -285,12 +285,16 @@ function reporte1($request){
                 <th>Largo</th>
                 <th>Peso</th>
                 <th>TU</th>
-                <th>Cant</th>
-                <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Desp</th>
-                <th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Solid</th>
-                <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>
+                <th style='text-align:right'>Cant</th>
+                <th style='text-align:right'>Kilos</th>
+                <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
+                <th style='text-align:right' class='tooltipsC' title='Kilos Despachados'>Kilos<br>Desp</th>
                 <!--
-                <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
+                <th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Solid</th>
+                -->
+                <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>
+                <th style='text-align:right' class='tooltipsC' title='Kilos Pendiente'>Kilos<br>Pend</th>
+                <!--
                 <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
                 <th>VP</th>
                 -->
@@ -300,7 +304,10 @@ function reporte1($request){
         $aux_totalcant = 0;
         $aux_totalcantdesp = 0;
         $aux_totalcantsol = 0;
+        $aux_totalkilos = 0;
+        $aux_totalkilosdesp = 0;
         $aux_totalcantpend = 0;
+        $aux_totalkilospend = 0;
         foreach ($datas as $data) {
             //SUMA TOTAL DE SOLICITADO
             /*************************/
@@ -359,11 +366,16 @@ function reporte1($request){
                 <td>$data->peso</td>
                 <td>$data->tipounion</td>
                 <td style='text-align:right'>". number_format($data->cant, 0, ",", ".") ."</td>
+                <td style='text-align:right'>". number_format($data->totalkilos, 2, ",", ".") ."</td>
                 <td style='text-align:right'>
                     $fila_cantdesp
                 </td>
+                <td style='text-align:right'>". number_format($sumacantdesp * $data->peso, 0, ",", ".") ."</td>
+                <!--
                 <td style='text-align:right'>". number_format($sumacantsoldesp, 0, ",", ".") ."</td>
+                -->
                 <td style='text-align:right'>". number_format($aux_cantsaldo, 0, ",", ".") ."</td>
+                <td style='text-align:right'>". number_format($aux_cantsaldo * $data->peso, 2, ",", ".") ."</td>
                 <!--
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->notaventa_id,2)'>
@@ -374,19 +386,27 @@ function reporte1($request){
             </tr>";
             $aux_totalcant += $data->cant;
             $aux_totalcantdesp += $sumacantdesp;
-            $aux_totalcantsol += $sumacantsoldesp;
+            //$aux_totalcantsol += $sumacantsoldesp;
+            $aux_totalkilos += $data->totalkilos;
+            $aux_totalkilosdesp += ($sumacantdesp * $data->peso);
             $aux_totalcantpend += $aux_cantsaldo;    
+            $aux_totalkilospend += ($aux_cantsaldo * $data->peso);
         }
 
         $respuesta['tabla3'] .= "
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='11' style='text-align:left'>TOTALES</th>
+                    <th colspan='11' style='text-align:right'>TOTALES</th>
                     <th style='text-align:right'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalkilosdesp, 2, ",", ".") ."</th>
+                    <!--
                     <th style='text-align:right'>". number_format($aux_totalcantsol, 0, ",", ".") ."</th>
+                    -->
                     <th style='text-align:right'>". number_format($aux_totalcantpend, 0, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalkilospend, 2, ",", ".") ."</th>
                 </tr>
             </tfoot>
 
