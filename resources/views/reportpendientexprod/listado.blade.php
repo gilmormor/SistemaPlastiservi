@@ -48,7 +48,7 @@
 						<th style='text-align:left'>TU</th>
 						<th style='text-align:right'>Cant</th>
 						<th style='text-align:right'>Kilos</th>
-						<th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Desp</th>
+						<th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
 						<th style='text-align:right' class='tooltipsC' title='Kilos Despachados'>Kilos<br>Desp</th>
 						<!--
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Solid</th>
