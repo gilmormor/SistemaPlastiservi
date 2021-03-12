@@ -49,9 +49,13 @@
 						<th style='text-align:left'>Peso</th>
 						<th style='text-align:left'>TU</th>
 						<th style='text-align:right'>Cant</th>
+						<!--
 						<th style='text-align:right'>Kilos</th>
+						-->
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
+						<!--
 						<th style='text-align:right' class='tooltipsC' title='Kilos Despachados'>Kilos<br>Desp</th>
+						-->
 						<!--
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Solid</th>
 						-->
@@ -115,9 +119,13 @@
 							<td>{{$data->peso}}</td>
 							<td>{{$data->tipounion}}</td>
 							<td style='text-align:right'>{{number_format($data->cant, 0, ",", ".")}}</td>
+							<!--
 							<td style='text-align:right'>{{number_format($data->totalkilos, 2, ",", ".")}}</td>
+							-->
 							<td style='text-align:right'>{{number_format($sumacantdesp, 0, ",", ".")}}</td>
+							<!--
 							<td style='text-align:right'>{{number_format($sumacantdesp * $data->peso, 2, ",", ".")}}</td>
+							-->
 							<!--
 							<td style='text-align:right'>{{$sumacantsoldesp}}</td>
 							-->
@@ -139,12 +147,14 @@
 					<tr>
 						<th colspan='12' style='text-align:right'>TOTALES</th>
 						<th style='text-align:right'>{{number_format($aux_totalcant, 0, ",", ".")}}</th>
+						<!--
 						<th style='text-align:right'>{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
+						-->
 						<th style='text-align:right'>{{number_format($aux_totalcantdesp, 0, ",", ".")}}</th>
 						<!--
 						<th style='text-align:right'>{{number_format($aux_totalcantsol, 0, ",", ".")}}</th>
-						-->
 						<th style='text-align:right'>{{number_format($aux_totalkilosdesp, 2, ",", ".")}}</th>
+						-->
 						<th style='text-align:right'>{{number_format($aux_totalcantpend, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalkilospend, 2, ",", ".")}}</th>
 					</tr>
