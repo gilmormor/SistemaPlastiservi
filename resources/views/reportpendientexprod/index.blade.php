@@ -260,4 +260,5 @@ Pendiente x Producto
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.buscarproducto')
+@include('generales.listarorddesp')
 @endsection

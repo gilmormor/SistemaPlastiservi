@@ -334,6 +334,14 @@ function reporte1($request){
             //$aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
             //$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
             $aux_cantsaldo = $data->cant-$sumacantdesp;
+            $fila_cantdesp = $sumacantdesp;
+            if($sumacantdesp>0){
+                $fila_cantdesp = "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->notaventa_id,$data->producto_id)' title='Ver detalle despacho' data-toggle='tooltip'>
+                                    $sumacantdesp
+                                </a>";
+
+            }
+
             $respuesta['tabla3'] .= "
             <tr>
                 <td>
@@ -352,7 +360,9 @@ function reporte1($request){
                 <td>$data->peso</td>
                 <td>$data->tipounion</td>
                 <td style='text-align:right'>$data->cant</td>
-                <td style='text-align:right'>$sumacantdesp</td>
+                <td style='text-align:right'>
+                    $fila_cantdesp
+                </td>
                 <td style='text-align:right'>$sumacantsoldesp</td>
                 <td style='text-align:right'>$aux_cantsaldo</td>
                 <!--

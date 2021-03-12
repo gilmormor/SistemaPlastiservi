@@ -175,3 +175,11 @@ tfoot input {
     margin-left: -50px;
     top: 50%;
   }
+
+#mdialTamanio{
+    width: 80% !important;
+}
+
+#modalpdf{
+    width: 70% !important;
+}

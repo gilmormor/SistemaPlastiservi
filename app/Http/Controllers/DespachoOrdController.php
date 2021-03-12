@@ -740,6 +740,12 @@ class DespachoOrdController extends Controller
             foreach ($despchoords as $despchoord) {
                 foreach ($despchoord->despachoorddets as $despachoorddet) {
                     //dd($despachoorddet);
+                    //Si codigo producto es nulo muestra todo, de lo contrario solo muestra el producto igual a producto_id
+                    if($request->producto_id != null){
+                        if($request->producto_id != $despachoorddet->notaventadetalle->producto_id){
+                            continue;
+                        }
+                    }
                     $i++;
                     $unidades = $despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre;
                     $nombreproduc = $despachoorddet->notaventadetalle->producto->nombre;
@@ -771,9 +777,7 @@ class DespachoOrdController extends Controller
                         <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
                     </tr>";
                     $respuesta['exito'] = true;
-    
                 }
-                
             }
             $respuesta['tabla'] .= "
                 </tbody>

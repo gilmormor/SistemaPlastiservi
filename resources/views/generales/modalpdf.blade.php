@@ -1,5 +1,5 @@
 <div class="modal fade" id="myModalpdf" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen"  id="modalpdf">
     
         <!-- Modal content-->
         <div class="modal-content">

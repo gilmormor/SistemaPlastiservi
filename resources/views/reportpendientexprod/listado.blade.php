@@ -39,14 +39,14 @@
 						<th>OC</th>
 						<th>Fecha</th>
 						<th>Razón Social</th>
-						<th class='tooltipsC' title='Código Producto'>CP</th>
-						<th>Descripción</th>
-						<th>Diametro</th>
-						<th>Clase</th>
-						<th>Largo</th>
-						<th>Peso</th>
-						<th>TU</th>
-						<th>Cant</th>
+						<th style='text-align:left' class='tooltipsC' title='Código Producto'>CP</th>
+						<th style='text-align:left'>Descripción</th>
+						<th style='text-align:left'>Diametro</th>
+						<th style='text-align:left'>Clase</th>
+						<th style='text-align:left'>Largo</th>
+						<th style='text-align:left'>Peso</th>
+						<th style='text-align:left'>TU</th>
+						<th style='text-align:right' >Cant</th>
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Desp</th>
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Solid</th>
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>		

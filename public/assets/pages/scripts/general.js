@@ -885,9 +885,10 @@ function verpdf2(nameFile,stareport){ //GENERAR PDF NOTA DE VENTA
 }
 //
 
-function listarorddespxNV(id){
+function listarorddespxNV(id,producto_id = null){
 	var data = {
         id: id,
+		producto_id : producto_id,
         _token: $('input[name=_token]').val()
     };
     $.ajax({
