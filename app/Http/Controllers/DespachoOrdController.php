@@ -720,7 +720,6 @@ class DespachoOrdController extends Controller
                 <tr>
                     <th>ID OD</th>
                     <th>Fecha</th>
-                    <th>FechaFact</th>
                     <th style='text-align:right'>Solic</th>
                     <th style='text-align:right'>Entregado</th>
                     <th class='textcenter'>Unidad</th>
@@ -730,9 +729,9 @@ class DespachoOrdController extends Controller
 					<th class='textright'>Largo</th>
                     <th class='textcenter'>TU</th>
                     <th class='textcenter'>Peso</th>
+                    <th class='textcenter'>FecFact</th>
                     <th class='textcenter'>Guia</th>
                     <th class='textcenter'>Nfact</th>
-                    <th class='textcenter'>FecFact</th>
                 </tr>
             </thead>
             <tbody>";
@@ -764,7 +763,6 @@ class DespachoOrdController extends Controller
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                         <td id='id$i' name='id$i'>$despachoorddet->despachoord_id</td>
                         <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($despachoorddet->created_at)) . "</td>
-                        <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
                         <td style='text-align:right'>". number_format($cantsoldesp, 0, ",", ".") ."</td>
                         <td style='text-align:right'>". number_format($despachoorddet->cantdesp, 0, ",", ".") ."</td>
                         <td class='textcenter'>$unidades</td>
@@ -774,9 +772,9 @@ class DespachoOrdController extends Controller
 						<td class='textright'>$long mts</td>
                         <td class='textcenter'>$tipounion</td>
                         <td class='textcenter'>$peso</td>
+                        <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->guiadespacho ." </td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->numfactura . "</td>
-                        <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
                     </tr>";
                     $respuesta['exito'] = true;
                     $aux_totalcantsoldesp += $cantsoldesp;
@@ -787,7 +785,7 @@ class DespachoOrdController extends Controller
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan='3' style='text-align:left'>TOTALES</th>
+                        <th colspan='2' style='text-align:left'>TOTALES</th>
                         <th style='text-align:right'>". number_format($aux_totalcantsoldesp, 0, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
                         <th colspan='10' style='text-align:right'></th>
