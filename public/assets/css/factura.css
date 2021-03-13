@@ -244,11 +244,17 @@ H1.SaltoDePagina
 	content: '';
   }
 
+.width10{
+    width: 10px !important;
+}
 .width20{
     width: 20px !important;
 }
 .width30{
     width: 30px !important;
+}
+.width40{
+    width: 40px !important;
 }
 .width50{
     width: 50px !important;

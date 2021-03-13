@@ -277,6 +277,7 @@ function reporte1($request){
                 <th>NV</th>
                 <th>OC</th>
                 <th>Fecha</th>
+                <th>Plazo<br>Entrega</th>
                 <th>Razón Social</th>
                 <th>Comuna</th>
                 <th class='tooltipsC' title='Código Producto'>CP</th>
@@ -356,6 +357,7 @@ function reporte1($request){
                 </td>
                 <td>$aux_enlaceoc</td>
                 <td>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                <td>" . date('d-m-Y', strtotime($data->plazoentrega)) . "</td>
                 <td>$data->razonsocial</td>
                 <td>$comuna->nombre</td>
                 <td>$data->producto_id</td>
@@ -399,7 +401,7 @@ function reporte1($request){
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='12' style='text-align:right'>TOTALES</th>
+                    <th colspan='13' style='text-align:right'>TOTALES</th>
                     <th style='text-align:right'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
                     <!--
                     <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
@@ -602,7 +604,7 @@ function consulta($request,$aux_sql,$orden){
         if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,notaventa.oc_id,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
         notaventadetalle.totalkilos,
-        subtotal,notaventa.comunaentrega_id
+        subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto

@@ -36,31 +36,32 @@
 		<table id="factura_detalle">
 				<thead>
 					<tr>
-						<th>NV</th>
-						<th>OC</th>
+						<th class='width30'>NV</th>
+						<th class='width50'>OC</th>
 						<th class='width50'>Fecha</th>
+						<th class='width50'>Plazo<br>Entrega</th>
 						<th>Razón Social</th>
-						<th>Comuna</th>
-						<th style='text-align:left' class='width20'>CP</th>
-						<th style='text-align:left'>Descripción</th>
-						<th style='text-align:left'>Diam</th>
-						<th style='text-align:left'>Clase</th>
-						<th style='text-align:left' class='width20'>L</th>
-						<th style='text-align:left'>Peso</th>
-						<th style='text-align:left' class='width20'>TU</th>
-						<th style='text-align:right'>Cant</th>
+						<th class='width50'>Comuna</th>
+						<th style='text-align:left' class='width10'>CP</th>
+						<th style='text-align:left' class='width50'>Descripción</th>
+						<th style='text-align:left' class='width30'>Diam</th>
+						<th style='text-align:left' class='width40'>Clase</th>
+						<th style='text-align:left' class='width10'>L</th>
+						<th style='text-align:left' class='width30'>Peso</th>
+						<th style='text-align:left' class='width10'>TU</th>
+						<th style='text-align:right' class='width40'>Cant</th>
 						<!--
 						<th style='text-align:right'>Kilos</th>
 						-->
-						<th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
+						<th style='text-align:right' class='tooltipsC width40' title='Cantidad Despachada'>Cant<br>Desp</th>
 						<!--
 						<th style='text-align:right' class='tooltipsC' title='Kilos Despachados'>Kilos<br>Desp</th>
 						-->
 						<!--
 						<th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Solid</th>
 						-->
-						<th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>		
-						<th style='text-align:right' class='tooltipsC' title='Kilos Pendiente'>Kilos<br>Pend</th>
+						<th style='text-align:right' class='tooltipsC width40' title='Cantidad Pendiente'>Cant<br>Pend</th>		
+						<th style='text-align:right' class='tooltipsC width50' title='Kilos Pendiente'>Kilos<br>Pend</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
@@ -109,6 +110,7 @@
 							<td>{{$data->notaventa_id}}</td>
 							<td>{{$data->oc_id}}</td>
 							<td>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
+							<td>{{date('d-m-Y', strtotime($data->plazoentrega))}}</td>
 							<td>{{$data->razonsocial}}</td>
 							<td>{{$comuna->nombre}}</td>
 							<td>{{$data->producto_id}}</td>
@@ -145,7 +147,7 @@
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr>
-						<th colspan='12' style='text-align:right'>TOTALES</th>
+						<th colspan='13' style='text-align:right'>TOTALES</th>
 						<th style='text-align:right'>{{number_format($aux_totalcant, 0, ",", ".")}}</th>
 						<!--
 						<th style='text-align:right'>{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
