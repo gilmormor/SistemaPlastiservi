@@ -11,6 +11,7 @@ use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
@@ -358,6 +359,12 @@ function reporte1($request){
                                 "</a>";
             }
             $comuna = Comuna::findOrFail($data->comunaentrega_id);
+            $producto = Producto::findOrFail($data->producto_id);
+            $diametro = $producto->diamextpg;
+            if ($producto->categoriaprod->unidadmedida_id != 3){
+                $diametro = $producto->diamextmm . 'mm';
+            }
+
             $respuesta['tabla3'] .= "
             <tr>
                 <td>
@@ -372,7 +379,7 @@ function reporte1($request){
                 <td>$comuna->nombre</td>
                 <td>$data->producto_id</td>
                 <td>$data->nombre</td>
-                <td>$data->diametro</td>
+                <td>$diametro</td>
                 <td>$data->cla_nombre</td>
                 <td>$data->long</td>
                 <td>$data->peso</td>

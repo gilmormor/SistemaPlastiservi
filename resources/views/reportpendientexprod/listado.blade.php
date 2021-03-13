@@ -106,6 +106,12 @@
 							//$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
 							$aux_cantsaldo = $data->cant-$sumacantdesp;
 							$comuna = Comuna::findOrFail($data->comunaentrega_id);
+							$producto = Producto::findOrFail($data->producto_id);
+							$diametro = $producto->diamextpg;
+							if ($producto->categoriaprod->unidadmedida_id != 3){
+								$diametro = $producto->diamextmm . 'mm';
+							}
+
 						?>
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td>{{$data->notaventa_id}}</td>
@@ -116,7 +122,7 @@
 							<td>{{$comuna->nombre}}</td>
 							<td>{{$data->producto_id}}</td>
 							<td>{{$data->nombre}}</td>
-							<td>{{$data->diametro}}</td>
+							<td>{{$diametro}}</td>
 							<td>{{$data->cla_nombre}}</td>
 							<td>{{$data->long}}</td>
 							<td>{{$data->peso}}</td>
