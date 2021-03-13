@@ -213,9 +213,15 @@ class ReportPendienteXProdController extends Controller
         $datas = consulta($request,2,1);
 
         $aux_fdesde= $request->fechad;
+        if(empty($request->fechad)){
+            $aux_fdesde= '  /  /    ';
+        }
         $aux_fhasta= $request->fechah;
 
         $aux_plazoentregad= $request->plazoentregad;
+        if(empty($request->plazoentregad)){
+            $aux_plazoentregad= '  /  /    ';
+        }
         $aux_plazoentregah= $request->plazoentregah;
 
         //$cotizaciones = consulta('','');
