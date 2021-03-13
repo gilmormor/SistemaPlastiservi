@@ -199,6 +199,8 @@ class ReportPendienteXProdController extends Controller
         $request = new Request();
         $request->fechad = $_GET["fechad"];
         $request->fechah = $_GET["fechah"];
+        $request->plazoentregad = $_GET["plazoentregad"];
+        $request->plazoentregah = $_GET["plazoentregah"];
         $request->rut = $_GET["rut"];
         $request->vendedor_id = $_GET["vendedor_id"];
         $request->oc_id = $_GET["oc_id"];
@@ -207,12 +209,14 @@ class ReportPendienteXProdController extends Controller
         $request->notaventa_id = $_GET["notaventa_id"];
         $request->aprobstatus = $_GET["aprobstatus"];
         $request->comuna_id = $_GET["comuna_id"];
-        $request->plazoentrega = $_GET["plazoentrega"];
         $request->producto_id = $_GET["producto_id"];
         $datas = consulta($request,2,1);
 
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
+
+        $aux_plazoentregad= $request->plazoentregad;
+        $aux_plazoentregah= $request->plazoentregah;
 
         //$cotizaciones = consulta('','');
         $empresa = Empresa::orderBy('id')->get();
@@ -242,12 +246,12 @@ class ReportPendienteXProdController extends Controller
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportpendientexprod.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+                return view('reportpendientexprod.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
-            $pdf = PDF::loadView('reportpendientexprod.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'))->setPaper('a4', 'landscape');
+            $pdf = PDF::loadView('reportpendientexprod.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'))->setPaper('a4', 'landscape');
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReportePendienteXProducto.pdf");
@@ -516,7 +520,7 @@ function consulta($request,$aux_sql,$orden){
     }else{
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
-
+/*
     if(empty($request->plazoentrega)){
         $aux_condplazoentrega = " true";
     }else{
@@ -524,6 +528,17 @@ function consulta($request,$aux_sql,$orden){
         $fechad = date_format($fecha, 'Y-m-d');
         $aux_condplazoentrega = "notaventa.plazoentrega='$fechad'";
     }
+*/
+    if(empty($request->plazoentregad) or empty($request->plazoentregah)){
+        $aux_condplazoentrega = " true";
+    }else{
+        $fecha = date_create_from_format('d/m/Y', $request->plazoentregad);
+        $plazoentregad = date_format($fecha, 'Y-m-d')." 00:00:00";
+        $fecha = date_create_from_format('d/m/Y', $request->plazoentregah);
+        $plazoentregah = date_format($fecha, 'Y-m-d')." 23:59:59";
+        $aux_condplazoentrega = "notaventa.plazoentrega>='$plazoentregad' and notaventa.plazoentrega<='$plazoentregah'";
+    }
+
     //dd($aux_condplazoentrega);
 
     $aux_condproducto_id = " true";

@@ -99,6 +99,8 @@ function datos(){
     var data = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
+        plazoentregad     : $("#plazoentregad").val(),
+        plazoentregah     : $("#plazoentregah").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
         vendedor_id       : $("#vendedor_id").val(),
         oc_id             : $("#oc_id").val(),
@@ -108,7 +110,6 @@ function datos(){
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
-        plazoentrega      : $("#plazoentrega").val(),
         producto_id       : $("#producto_idM").val(),
         filtro            : 0,
         _token            : $('input[name=_token]').val()
@@ -250,10 +251,11 @@ function copiar_codprod(id,codintprod){
 
 $("#btnpdf").click(function(event){
     data = datos();
-    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah+"&rut=" + data.rut + "&vendedor_id=" + data.vendedor_id +
+    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah+"&plazoentregad="+data.plazoentregad+"&plazoentregah="+data.plazoentregah +
+            "&rut=" + data.rut + "&vendedor_id=" + data.vendedor_id +
             "&oc_id="+data.oc_id + "&giro_id="+data.giro_id + "&areaproduccion_id="+data.areaproduccion_id +
             "&tipoentrega_id="+data.tipoentrega_id + "&notaventa_id="+data.notaventa_id + "&aprobstatus="+data.aprobstatus +
-            "&comuna_id="+data.comuna_id + "&plazoentrega="+data.plazoentrega + "&producto_id="+data.producto_id
+            "&comuna_id="+data.comuna_id + "&producto_id="+data.producto_id
     //alert(cadena);
     $('#contpdf').attr('src', '/reportpendientexprod/exportPdf/'+cadena);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');

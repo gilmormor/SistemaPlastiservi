@@ -26,7 +26,8 @@
 					<p>Area Producción: {{$nombreAreaproduccion}}</p>
 					<p>Vendedor: {{$nomvendedor}} </p>
 					<p>Giro: {{$nombreGiro}} </p>
-					<p>Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
+					<p>Nota Venta-> Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
+					<p>Plazo Entrega-> Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
 				</div>
 			</td>
 		</tr>
@@ -53,7 +54,7 @@
 						<!--
 						<th style='text-align:right'>Kilos</th>
 						-->
-						<th style='text-align:right' class='tooltipsC width40' title='Cantidad Despachada'>Cant<br>Desp</th>
+						<th style='text-align:right' class='tooltipsC width30' title='Cantidad Despachada'>Cant<br>Desp</th>
 						<!--
 						<th style='text-align:right' class='tooltipsC' title='Kilos Despachados'>Kilos<br>Desp</th>
 						-->
