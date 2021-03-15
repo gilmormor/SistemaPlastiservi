@@ -139,6 +139,7 @@ function consultarpdf(data){
 function grafico(datos){
     $("#graficos").show();
     $("#graficos1").show();
+    $("#reporte1").show();
     $('.resultadosPie1').html('<canvas id="graficoPie1"></canvas>');
     $('.resultadosPie2').html('<canvas id="graficoPie2"></canvas>');
     var config1 = {
@@ -192,4 +193,5 @@ function grafico(datos){
     myPie2.clear();
 	$("#graficos").show();
 	$("#graficos1").show();
+    $("#reporte1").show();
 }
