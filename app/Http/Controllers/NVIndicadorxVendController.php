@@ -120,6 +120,126 @@ class NVIndicadorxVendController extends Controller
 		$respuesta['exito'] = true;
 		$respuesta['mensaje'] = "Código encontrado";
 		$respuesta['tabla'] = "";
+		$respuesta['tabladinero'] = "";
+
+        if($request->ajax()){
+            //dd($request->idcons);
+            if($request->idcons == "1"){
+                $datas = consulta($request);
+            }
+            if($request->idcons == "2" or $request->idcons == "3"){
+                $datas = consultaODcerrada($request);
+            }
+            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+			<thead>
+				<tr>
+					<th>Productos</th>";
+
+            foreach($datas['vendedores'] as $vendedor){
+                $nombreven = $vendedor->nombre;
+                $respuesta['tabla'] .= "
+                        <th style='text-align:right' class='tooltipsC' title='$nombreven'>$nombreven</th>";
+            }
+            $respuesta['tabla'] .= "
+                    <th style='text-align:right' class='tooltipsC' title='Total'>TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>";
+            $respuesta['tabladinero'] = $respuesta['tabla'];
+            $i = 0;
+            $totalgeneral = 0;
+            $totalgeneralDinero = 0;
+            foreach($datas['productos'] as $producto){
+                $respuesta['tabla'] .= "
+                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                        <td id='producto$i' name='producto$i'>$producto->gru_nombre</td>";
+                $respuesta['tabladinero'] = $respuesta['tabla'];
+                foreach($datas['vendedores'] as $vendedor){
+                    $aux_encontrado = false;
+                    foreach($datas['totales'] as $total){
+                        if($total->grupoprod_id == $producto->id and $total->persona_id==$vendedor->id){
+                            $aux_encontrado = true;
+                            $respuesta['tabla'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>" . number_format($total->totalkilos, 2, ",", ".") . "</td>";
+                            $respuesta['tabladinero'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>" . number_format($total->subtotal, 2, ",", ".") . "</td>";
+                        } 
+                    }
+                    if($aux_encontrado==false){
+                        $respuesta['tabla'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>0.00</td>";
+                        $respuesta['tabladinero'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>0.00</td>";
+                    }
+                }
+                
+                $respuesta['tabla'] .= "
+                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
+                    </tr>";
+                $respuesta['tabladinero'] .= "
+                    <td id='totalsubtotal$i' name='totalsubtotal$i' style='text-align:right'>" . number_format($producto->subtotal, 2, ",", ".") . "</td>
+                    </tr>";
+
+                $i++;
+                $totalgeneral += $producto->totalkilos;
+                $totalgeneralDinero += $producto->subtotal;
+
+            }
+            $respuesta['tabla'] .= "
+            </tbody>
+                <tfoot>
+                    <tr>
+                        <th>TOTAL KG</th>";
+            $respuesta['tabladinero'] .= "
+            </tbody>
+                <tfoot>
+                    <tr>
+                        <th>TOTAL $</th>";
+            
+
+            foreach($datas['vendedores'] as $vendedor){
+                $respuesta['tabla'] .= "
+                    <th style='text-align:right'>". number_format($vendedor->totalkilos, 2, ",", ".") ."</th>";
+                $respuesta['tabladinero'] .= "
+                <th style='text-align:right'>". number_format($vendedor->subtotal, 2, ",", ".") ."</th>";
+            }
+            $respuesta['tabla'] .= "
+                        <th style='text-align:right'>". number_format($totalgeneral, 2, ",", ".") ."</th>
+                    </tr>
+                </tfoot>
+            </table>";
+            $respuesta['tabladinero'] .= "
+                        <th style='text-align:right'>". number_format($totalgeneralDinero, 2, ",", ".") ."</th>
+                    </tr>
+                </tfoot>
+            </table>";
+
+
+            $respuesta['nombre'] = array_column($datas['vendedores'], 'nombre');
+            $respuesta['totalkilos'] = array_column($datas['vendedores'], 'totalkilos');
+            $i = 0;
+            foreach($respuesta['totalkilos'] as &$kilos){
+                $kilos = round($kilos,2);
+                $kilos1 = round(($kilos / $totalgeneral) * 100,2);
+                $respuesta['nombre'][$i] .= " " . number_format($kilos1, 2, ",", ".") . "%";
+                $i++;
+            }
+            $respuesta['nombredinero'] = array_column($datas['vendedores'], 'nombre');
+            $respuesta['totaldinero'] = array_column($datas['vendedores'], 'subtotal');
+            $i = 0;
+            foreach($respuesta['totaldinero'] as &$subtotaldinero){
+                $subtotaldinero = round($subtotaldinero,2);
+                $subtotaldinero1 = round(($subtotaldinero / $totalgeneralDinero) * 100,2);
+                $respuesta['nombredinero'][$i] .= " " . number_format($subtotaldinero1, 2, ",", ".") . "%";
+                $i++;
+            }
+
+            return $respuesta;
+        }
+    }
+
+    public function reporteDinero(Request $request){
+        //dd($request);
+        $respuesta = array();
+		$respuesta['exito'] = true;
+		$respuesta['mensaje'] = "Código encontrado";
+		$respuesta['tabla'] = "";
 
         if($request->ajax()){
             if($request->idcons == "1"){
@@ -128,8 +248,6 @@ class NVIndicadorxVendController extends Controller
             if($request->idcons == "2" or $request->idcons == "3"){
                 $datas = consultaODcerrada($request);
             }
-            //dd($respuesta['totalkilos']);
-
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
@@ -181,14 +299,12 @@ class NVIndicadorxVendController extends Controller
                 $respuesta['tabla'] .= "
                     <th style='text-align:right'>". number_format($vendedor->totalkilos, 2, ",", ".") ."</th>";
             }
-
             $respuesta['tabla'] .= "
                         <th style='text-align:right'>". number_format($totalgeneral, 2, ",", ".") ."</th>
                     </tr>
                 </tfoot>
             </table>";
             $respuesta['nombre'] = array_column($datas['vendedores'], 'nombre');
-            //dd($respuesta['nombre']);
             $respuesta['totalkilos'] = array_column($datas['vendedores'], 'totalkilos');
             $i = 0;
             foreach($respuesta['totalkilos'] as &$kilos){
@@ -197,7 +313,6 @@ class NVIndicadorxVendController extends Controller
                 $respuesta['nombre'][$i] .= " " . number_format($kilos1, 2, ",", ".") . "%";
                 $i++;
             }
-
             return $respuesta;
         }
     }
@@ -314,7 +429,8 @@ function consulta($request){
     }
 
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
-    sum(notaventadetalle.totalkilos) AS totalkilos
+    sum(notaventadetalle.totalkilos) AS totalkilos,
+    sum(notaventadetalle.subtotal) AS subtotal
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -341,7 +457,8 @@ function consulta($request){
     $respuesta['productos'] = $datas;
 
     $sql = "SELECT persona.id,persona.nombre,
-    sum(notaventadetalle.totalkilos) AS totalkilos
+    sum(notaventadetalle.totalkilos) AS totalkilos,
+    sum(notaventadetalle.subtotal) AS subtotal
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -369,7 +486,8 @@ function consulta($request){
 
 
     $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
-    sum(notaventadetalle.totalkilos) AS totalkilos
+    sum(notaventadetalle.totalkilos) AS totalkilos,
+    sum(notaventadetalle.subtotal) AS subtotal
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -464,7 +582,8 @@ function consultaODcerrada($request){
 
 
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * cantdesp)) AS subtotal
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
     INNER JOIN despachoord
@@ -498,7 +617,8 @@ function consultaODcerrada($request){
     $respuesta['productos'] = $datas;
 
     $sql = "SELECT persona.id,persona.nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * cantdesp)) AS subtotal
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
     INNER JOIN despachoord
@@ -533,7 +653,8 @@ function consultaODcerrada($request){
 
 
     $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * cantdesp)) AS subtotal
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
     INNER JOIN despachoord

@@ -106,6 +106,7 @@ function consultar(data){
                 aux_titulo = $("#consulta_id option:selected").html();
                 $("#titulo_grafico").html('Tabla Indicadores ' +aux_titulo+ ' por Vendedor')
                 $("#tablaconsulta").html(datos['tabla']);
+                $("#tablaconsultadinero").html(datos['tabladinero']);
                 configurarTabla('.tablascons');
                 grafico(datos);
             }
@@ -133,7 +134,9 @@ function consultarpdf(data){
 
 function grafico(datos){
     $("#graficos").show();
+    $("#graficos1").show();
     $('.resultadosPie1').html('<canvas id="graficoPie1"></canvas>');
+    $('.resultadosPie2').html('<canvas id="graficoPie2"></canvas>');
     var config1 = {
         type: 'pie',
         data: {
@@ -159,7 +162,35 @@ function grafico(datos){
     window.myPie1 = new Chart(ctxPie1, config1);
     myPie1.clear();
 
+    var config2 = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: datos['totaldinero'],
+                backgroundColor: [
+                    window.chartColors.blue,
+                    window.chartColors.orange,
+                    window.chartColors.red,
+                    window.chartColors.purple,
+                    window.chartColors.yellow,  
+                ],
+                label: 'Dataset 1'
+            }],
+            labels: datos['nombre']
+        },
+        options: {
+            responsive: true
+        }
+    };
+
+    var ctxPie2 = document.getElementById('graficoPie2').getContext('2d');
+    window.myPie2 = new Chart(ctxPie2, config2);
+    myPie2.clear();
+
+
     $("#tituloPie1").html("FACTURA POR VENDEDOR");
+    $("#tituloPie2").html("FACTURA POR VENDEDOR");
 	$("#graficos").show();
+	$("#graficos1").show();
 
 }
