@@ -104,9 +104,13 @@ function consultar(data){
         success: function (datos) {
             if(datos['tabla'].length>0){
                 aux_titulo = $("#consulta_id option:selected").html();
-                $("#titulo_grafico").html('Tabla Indicadores ' +aux_titulo+ ' por Vendedor')
+                $("#titulo_grafico").html('Tabla Indicadores ' +aux_titulo+ ' por Vendedor');
+                $("#titulo_grafico1").html($("#titulo_grafico").html());
                 $("#tablaconsulta").html(datos['tabla']);
                 $("#tablaconsultadinero").html(datos['tabladinero']);
+                $("#tituloPie1").html("Gráfico " + aux_titulo+ " por Vendedor");
+                $("#tituloPie2").html($("#tituloPie1").html() + " $");
+            
                 configurarTabla('.tablascons');
                 grafico(datos);
             }
@@ -186,11 +190,6 @@ function grafico(datos){
     var ctxPie2 = document.getElementById('graficoPie2').getContext('2d');
     window.myPie2 = new Chart(ctxPie2, config2);
     myPie2.clear();
-
-
-    $("#tituloPie1").html("FACTURA POR VENDEDOR");
-    $("#tituloPie2").html("FACTURA POR VENDEDOR");
 	$("#graficos").show();
 	$("#graficos1").show();
-
 }
