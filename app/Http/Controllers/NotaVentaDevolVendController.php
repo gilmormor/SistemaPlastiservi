@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DespachoSol;
+use App\Models\DespachoSolAnul;
 use App\Models\NotaVenta;
+use App\Models\NotaVentaCerrada;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +21,100 @@ class NotaVentaDevolVendController extends Controller
         can('listar-devolver-nota-venta-vendedor');
         $datas = consulta("");
 
+        $datas = NotaVenta::select([
+                    'notaventa.id',
+                    'notaventa.fechahora',
+                    'notaventa.cotizacion_id',
+                    'cliente.razonsocial',
+                    'aprobstatus',
+                    'aprobobs',
+                    'oc_id',
+                    'oc_file'
+                    ])
+            ->join('cliente','notaventa.cliente_id','=','cliente.id')
+            ->where('notaventa.anulada','=', null)
+            ->where(function($query) {
+                $query->where('aprobstatus','=',1)
+                      ->orWhere('aprobstatus','=',3);
+            })
+            ->whereNotIn('notaventa.id', DespachoSol::select(['notaventa_id'])
+                                      ->whereNotIn('despachosol.id',DespachoSolAnul::select(['despachosol_id']))
+                    )
+            ->whereNotIn('notaventa.id', NotaVentaCerrada::select(['notaventa_id']))
+            ->get();
+
+        //dd($datas);
+
         return view('notaventadevolvend.index', compact('datas'));
+    }
+
+    public function notaventadevolvervenpage(){
+        /*
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        }else{
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        */
+
+        $aux_condid = "";
+        $sql = "SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_id,oc_file,
+                (SELECT COUNT(*) 
+                FROM notaventadetalle 
+                WHERE notaventadetalle.notaventa_id=notaventa.id and 
+                notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
+            FROM notaventa inner join cliente
+            on notaventa.cliente_id = cliente.id
+            where $aux_condid
+            and isnull(notaventa.findespacho)
+            and isnull(anulada)
+            and (aprobstatus=1 or aprobstatus=3)
+            and notaventa.id not in (SELECT notaventa_id 
+                                    FROM despachosol 
+                                    where isnull(despachosol.deleted_at) and despachosol.id 
+                                    not in (SELECT despachosolanul.despachosol_id 
+                                            from despachosolanul 
+                                            where isnull(despachosolanul.deleted_at)
+                                           )
+                                    )
+            and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+            and isnull(notaventa.deleted_at)
+            order by notaventa.id desc;";
+
+        return datatables()
+            ->eloquent(NotaVenta::select([
+                'notaventa.id',
+                'notaventa.fechahora',
+                'notaventa.cotizacion_id',
+                'cliente.razonsocial',
+                'aprobstatus',
+                'aprobobs',
+                'oc_id',
+                'oc_file'
+                ])
+            ->join('cliente','notaventa.cliente_id','=','cliente.id')
+            ->where('notaventa.anulada','=', null)
+            ->where(function($query) {
+                $query->where('aprobstatus','=',1)
+                    ->orWhere('aprobstatus','=',3);
+            })
+            ->whereNotIn('notaventa.id', DespachoSol::select(['notaventa_id'])
+                                    ->whereNotIn('despachosol.id',DespachoSolAnul::select(['despachosol_id']))
+                        )
+            ->whereNotIn('notaventa.id', NotaVentaCerrada::select(['notaventa_id']))
+            )
+            ->toJson();
     }
 
     public function indexanular()

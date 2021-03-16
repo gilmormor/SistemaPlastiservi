@@ -560,6 +560,7 @@ Route::post('guardaranularguia', 'DespachoOrdAnulGuiaFactController@guardaranula
 
 /*RUTAS NOTA DE VENTA DEVOLVER A VENDEDOR - DEVOLVER NOTA DE VENTA A VENDEDOR*/
 Route::get('notaventadevolvend', 'NotaVentaDevolVendController@index')->name('notaventadevolvend');
+Route::get('notaventadevolvervenpage', 'NotaVentaDevolVendController@notaventadevolvervenpage')->name('notaventadevolvervenpage');
 Route::post('notaventadevolvend/actualizarreg', 'NotaVentaDevolVendController@actualizarreg')->name('actualizarreg_notaventadevolvend');
 Route::get('notaventadevolvend/anular', 'NotaVentaDevolVendController@indexanular')->name('indexanular_notaventadevolvend');
 Route::post('notaventadevolvend/anular/actualizanular', 'NotaVentaDevolVendController@actualizanular')->name('actualizanular_notaventadevolvend');

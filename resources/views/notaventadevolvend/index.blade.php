@@ -24,40 +24,12 @@ Devolver Nota de Venta a Vendedor
                             <tr>
                                 <th class="width30">ID</th>
                                 <th class="width30">Nro Cot</th>
-                                <th class="width30">Fecha</th>
+                                <th>Fecha</th>
                                 <th>Cliente</th>
                                 <th class="width30"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
                                 <th class="width70">Acción</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php $aux_nfila = 0; ?>
-                            @foreach ($datas as $data)
-                                <?php 
-                                    $aux_nfila++; 
-                                ?>
-                                <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
-                                    <td>{{$data->id}}</td>
-                                    <td >{{$data->cotizacion_id}}</td>
-                                    <td class="width200">{{date('d-m-Y', strtotime($data->fechahora))}} {{date("h:i:s A", strtotime($data->fechahora))}}</td>
-                                    <td >{{$data->razonsocial}}</td>
-                                    <td>
-                                        <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"1"}})' title='Nota de venta' data-toggle='tooltip'>
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>                                    
-                                        </a>
-                                        <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"2"}})' title='Precio x Kg' data-toggle='tooltip'>
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-primary btn-xs tooltipsC" title="Devolver a vendedor" onclick='devNVvend({{$data->id}},{{$aux_nfila}})'>
-                                            <i class="fa fa-fw fa-reply"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-
-                        </tbody>
                     </table>
                 </div>
             </div>
