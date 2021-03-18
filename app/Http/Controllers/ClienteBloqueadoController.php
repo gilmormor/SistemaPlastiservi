@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarClienteBloqueado;
 use App\Models\Cliente;
 use App\Models\ClienteBloqueado;
+use App\Models\ClienteBloqueadoCliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Seguridad\Usuario;
@@ -36,14 +37,26 @@ class ClienteBloqueadoController extends Controller
     }
 
     public function clientebloqueadopage(){
+        /*
         return datatables()
         ->eloquent(ClienteBloqueado::query()
         ->join('cliente', 'clientebloqueado.cliente_id', '=', 'cliente.id')
         ->select([
-            'clientebloqueado.*',
-            'cliente.razonsocial'
+                    'clientebloqueado.id',
+                    'clientebloqueado.cliente_id',
+                    'cliente.razonsocial',
+                    'clientebloqueado.descripcion'
                 ])
         )->toJson();
+*/
+        return datatables()
+        ->eloquent(ClienteBloqueadoCliente::query()
+        )->toJson();
+        /*
+        return datatables()
+        ->collection(ClienteBloqueado::join('cliente', 'clientebloqueado.cliente_id', '=', 'cliente.id')
+        )->toJson();*/
+        
     }
 
     /**
