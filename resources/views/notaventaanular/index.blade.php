@@ -6,7 +6,7 @@ Anular Nota de Venta
 @section("scripts")
     <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/notaventadevolvend/index.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/notaventadevolvend/index_sin_paginacion.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')

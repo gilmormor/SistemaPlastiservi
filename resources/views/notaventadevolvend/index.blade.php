@@ -19,14 +19,15 @@ Devolver Nota de Venta a Vendedor
             </div>
             <div class="box-body">
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover" id="tabla-datadesc">
+                    <!--<table class="table table-striped table-bordered table-hover" id="tabla-datadesc">-->
+                    <table class="table display AllDataTables table-striped table-condensed" id="tabla-datadesc">
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>
                                 <th class="width30">Nro Cot</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th class="width30"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
+                                <th class="width50"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
                                 <th class="width70">Acción</th>
                             </tr>
                         </thead>
