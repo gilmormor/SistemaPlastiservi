@@ -68,7 +68,6 @@ class NotaVentaDevolVendController extends Controller
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         */
 
-        $aux_condid = "";
         $sql = "SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_id,oc_file,
                 (SELECT COUNT(*) 
                 FROM notaventadetalle 
@@ -76,9 +75,7 @@ class NotaVentaDevolVendController extends Controller
                 notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
             FROM notaventa inner join cliente
             on notaventa.cliente_id = cliente.id
-            where $aux_condid
-            and isnull(notaventa.findespacho)
-            and isnull(anulada)
+            where isnull(anulada)
             and (aprobstatus=1 or aprobstatus=3)
             and notaventa.id not in (SELECT notaventa_id 
                                     FROM despachosol 
@@ -91,7 +88,9 @@ class NotaVentaDevolVendController extends Controller
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(notaventa.deleted_at)
             order by notaventa.id desc;";
-
+        $datas = DB::select($sql);
+        return datatables($datas)->toJson();
+        /*
         return datatables()
             ->eloquent(NotaVenta::select([
                 'notaventa.id',
@@ -115,6 +114,7 @@ class NotaVentaDevolVendController extends Controller
             ->whereNotIn('notaventa.id', NotaVentaCerrada::select(['notaventa_id']))
             )
             ->toJson();
+            */
     }
 
     public function indexanular()
