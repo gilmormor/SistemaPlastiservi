@@ -11,6 +11,7 @@ use App\Models\ClienteVendedor;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables\Editor;
 
 class ClienteBloqueadoController extends Controller
 {
@@ -37,22 +38,20 @@ class ClienteBloqueadoController extends Controller
     }
 
     public function clientebloqueadopage(){
-        /*
-        return datatables()
-        ->eloquent(ClienteBloqueado::query()
-        ->join('cliente', 'clientebloqueado.cliente_id', '=', 'cliente.id')
-        ->select([
-                    'clientebloqueado.id',
-                    'clientebloqueado.cliente_id',
-                    'cliente.razonsocial',
-                    'clientebloqueado.descripcion'
-                ])
-        )->toJson();
-*/
+        $sql = "SELECT clientebloqueado.id,clientebloqueado.descripcion,clientebloqueado.cliente_id,
+            cliente.razonsocial
+            from clientebloqueado inner join cliente
+            on clientebloqueado.cliente_id = cliente.id
+            where isnull(clientebloqueado.deleted_at) 
+            and isnull(cliente.deleted_at);
+        ";
+        $datas = DB::select($sql);
+        return datatables($datas)->toJson();
+/*
         return datatables()
         ->eloquent(ClienteBloqueadoCliente::query()
         )->toJson();
-        /*
+        
         return datatables()
         ->collection(ClienteBloqueado::join('cliente', 'clientebloqueado.cliente_id', '=', 'cliente.id')
         )->toJson();*/
