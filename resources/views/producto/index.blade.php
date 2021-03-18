@@ -31,7 +31,7 @@ Productos
                             <tr>
                                 <th class="width30">ID</th>
                                 <th>Nombre</th>
-                                <th>Categoria</th>
+                                <!--<th>Categoria</th>-->
                                 <th>DiamExt</th>
                                 <th>DiaPulg</th>
                                 <th>Espesor mm</th>

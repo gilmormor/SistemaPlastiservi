@@ -29,7 +29,7 @@ class ProductoController extends Controller
     }
 
     public function productopage(){
-        
+        /*        
         return datatables()
             ->eloquent(Producto::query()
             ->join('categoriaprod', 'producto.categoriaprod_id', '=', 'categoriaprod.id')
@@ -39,7 +39,13 @@ class ProductoController extends Controller
             ])
             )
             ->toJson();
-        /*
+        */
+        return datatables()
+        ->eloquent(Producto::query())
+        ->toJson();
+
+
+            /*
         return datatables()
             ->eloquent(Producto::query())
             ->toJson();
