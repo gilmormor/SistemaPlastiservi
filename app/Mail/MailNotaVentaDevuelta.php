@@ -28,8 +28,9 @@ class MailNotaVentaDevuelta extends Mailable
         $this->subject = " ID: " . $msg->id ." ". $asunto;
         $this->cuerpo = $cuerpo;
         $this->msg = $msg;
-        $this->rut = $rut;
-        $this->razonsocial = $razonsocial;
+        $notaventa = NotaVenta::findOrFail($msg->tabla_id);
+        $this->rut = $notaventa->cliente->rut;
+        $this->razonsocial = $notaventa->cliente->razonsocial;
 
     }
 

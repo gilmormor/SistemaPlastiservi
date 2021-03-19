@@ -17,11 +17,12 @@
     <p>Datos:</p>
     <ul>
         <li>Id Nota Venta: {{ $msg->tabla_id }}</li>
-        <li>RUT: {{ $msg->rut }}</li>
-        <li>Razon Social: {{ $msg->razonsocial }}</li>
+        <li>RUT: {{ $rut }}</li>
+        <li>Razon Social: {{ $razonsocial }}</li>
         <li>
+            Ingresar al Sistema: 
             <a href="https://www.pl.plastiservi.cl">
-                Ingresar al Sistema: https://www.pl.plastiservi.cl
+                https://www.pl.plastiservi.cl
             </a>
         </li>
     </ul>
