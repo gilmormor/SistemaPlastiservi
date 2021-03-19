@@ -18,8 +18,8 @@
     <ul>
         <li>Nota Venta Id: {{ $msg->tabla_id }}</li>
         <li>Fecha: {{date("d-m-Y h:i:s A", strtotime($notaventa->fechahora))}}</li>
-        <li>RUT: {{ $notaventa->rut }}</li>
-        <li>Razon Social: {{ $notaventa->razonsocial }}</li>
+        <li>RUT: {{ $notaventa->cliente->rut }}</li>
+        <li>Razon Social: {{ $notaventa->cliente->razonsocial }}</li>
         <li>
             Ingresar al Sistema: 
             <a href="https://www.pl.plastiservi.cl">
