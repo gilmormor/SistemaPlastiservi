@@ -23,7 +23,7 @@ class MailNotaVentaDevuelta extends Mailable
      *
      * @return void
      */
-    public function __construct($msg,$asunto,$cuerpo,$rut,$razonsocial)
+    public function __construct($msg,$asunto,$cuerpo)
     {
         $this->subject = " ID: " . $msg->id ." ". $asunto;
         $this->cuerpo = $cuerpo;
