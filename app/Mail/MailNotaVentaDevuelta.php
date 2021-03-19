@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\NotaVenta;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -14,6 +15,8 @@ class MailNotaVentaDevuelta extends Mailable
     public $subject;
     public $msg;
     public $cuerpo;
+    public $rut;
+    public $razonsocial;
 
     /**
      * Create a new message instance.
@@ -25,6 +28,10 @@ class MailNotaVentaDevuelta extends Mailable
         $this->subject = " ID: " . $msg->id ." ". $asunto;
         $this->cuerpo = $cuerpo;
         $this->msg = $msg;
+        $notaventa = NotaVenta::findOrFail($msg->tabla_id);
+        $this->rut = $notaventa->cliente->rut;
+        $this->razonsocial = $notaventa->cliente->razonsocial;
+
     }
 
     /**

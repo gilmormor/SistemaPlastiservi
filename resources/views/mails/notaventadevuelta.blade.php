@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <p>{{ $cuerpo }} {{ $msg->updated_at }}.</p>
+    <p>{{ $cuerpo }}, {{ $msg->updated_at }}.</p>
     <p>Datos del usuario que genero el correo:</p>
     <ul>
         <li>Nombre: {{session()->get('nombre_usuario') }}</li>
@@ -16,11 +16,12 @@
     </ul>
     <p>Datos:</p>
     <ul>
-        <li>Id: {{ $msg->tabla_id }}</li>
-        <li>Fecha: {{ $msg->created_at }}</li>
+        <li>Id Nota Venta: {{ $msg->tabla_id }}</li>
+        <li>RUT: {{ $msg->rut }}</li>
+        <li>Razon Social: {{ $msg->razonsocial }}</li>
         <li>
             <a href="https://www.pl.plastiservi.cl">
-                Ingresa a la pagina
+                Ingresar al Sistema: https://www.pl.plastiservi.cl
             </a>
         </li>
     </ul>
