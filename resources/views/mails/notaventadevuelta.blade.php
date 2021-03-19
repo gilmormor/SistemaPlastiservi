@@ -11,17 +11,17 @@
     <p>{{ $cuerpo }}, {{ date("d-m-Y h:i:s A", strtotime($msg->updated_at)) }}.</p>
     <p>Datos del usuario que genero el correo:</p>
     <ul>
-        <li>Nombre: {{session()->get('nombre_usuario') }}</li>
-        <li>Email: {{Auth::user()->email}}</li>
+        <li><b>Nombre:</b> {{session()->get('nombre_usuario') }}</li>
+        <li><b>Email:</b> {{Auth::user()->email}}</li>
     </ul>
-    <p>Datos:</p>
+    <p><b>Datos:</p>
     <ul>
-        <li>Nota Venta Id: {{ $msg->tabla_id }}</li>
-        <li>Fecha: {{date("d-m-Y h:i:s A", strtotime($notaventa->fechahora))}}</li>
-        <li>RUT: {{ $notaventa->cliente->rut }}</li>
-        <li>Razon Social: {{ $notaventa->cliente->razonsocial }}</li>
+        <li><b>Nota Venta Id:</b> {{ $msg->tabla_id }}</li>
+        <li><b>Fecha:</b> {{date("d-m-Y h:i:s A", strtotime($notaventa->fechahora))}}</li>
+        <li><b>RUT:</b> {{ $notaventa->cliente->rut }}</li>
+        <li><b>Razon Social:</b> {{ $notaventa->cliente->razonsocial }}</li>
         <li>
-            Ingresar al Sistema: 
+            <b>Ingresar al Sistema:</b> 
             <a href="https://www.pl.plastiservi.cl">
                 https://www.pl.plastiservi.cl
             </a>
