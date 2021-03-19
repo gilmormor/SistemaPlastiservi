@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MailNotaVentaDevuelta;
 use App\Models\DespachoSol;
 use App\Models\DespachoSolAnul;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
+use App\Models\Notificaciones;
+use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class NotaVentaDevolVendController extends Controller
 {
@@ -121,6 +125,25 @@ class NotaVentaDevolVendController extends Controller
             
             if(count($datas) > 0){
                 if ($notaventa->save()) {
+                    $notificaciones = new Notificaciones();
+                    $notificaciones->usuarioorigen_id = auth()->id();
+                    $notificaciones->usuariodestino_id = $notaventa->vendedor->persona->usuario->id;
+                    $notificaciones->vendedor_id = $notaventa->vendedor_id;
+                    $notificaciones->status = 1;                    
+                    $notificaciones->nombretabla = 'notaventa';
+                    $notificaciones->mensaje = 'Nota Venta Devuelta';
+                    $notificaciones->nombrepantalla = 'notaventadevolvend.index';
+                    $notificaciones->rutaorigen = 'notaventadevolvend';
+                    $notificaciones->rutadestino = 'notaventa';
+                    $notificaciones->tabla_id = $request->id;
+                    $notificaciones->accion = 'Nota Venta devuelta al vendedor.';
+                    $notificaciones->icono = 'fa fa-fw fa-reply';
+                    $notificaciones->save();
+                    //$usuario = Usuario::findOrFail(auth()->id());
+                    $asunto = 'Nota de Venta Devuelta';
+                    $cuerpo = "Nota de Venta Devuelta: Nro. $request->id";
+    
+                    Mail::to($notaventa->vendedor->persona->usuario->email)->send(new MailNotaVentaDevuelta($notificaciones,$asunto,$cuerpo));
                     return response()->json(['mensaje' => 'ok']);
                 } else {
                     return response()->json(['mensaje' => 'ng']);

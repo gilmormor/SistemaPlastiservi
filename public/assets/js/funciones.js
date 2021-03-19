@@ -70,7 +70,7 @@ function notificaciones(){
     var data = {
         prueba : 'prueba1',
     };
-    var url = '/noconformidadrecep/notificaciones/';
+    var url = '/notificaciones';
     funcion = 'notificaciones';
     $.ajax({
         url: url,
@@ -78,7 +78,9 @@ function notificaciones(){
         success: function (respuesta) {
             if(funcion=='notificaciones'){
                 $("#notificaciones").html(respuesta.htmlNotif);
-                $("#idnotifnum").html(respuesta.totalNotif);
+                if(respuesta.totalNotif>0){
+                    $("#idnotifnum").html(respuesta.totalNotif);
+                }
                 //alert(respuesta.htmlNotif)
     
                 return 0;
