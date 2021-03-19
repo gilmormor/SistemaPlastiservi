@@ -14,7 +14,7 @@
         <li><b>Nombre:</b> {{session()->get('nombre_usuario') }}</li>
         <li><b>Email:</b> {{Auth::user()->email}}</li>
     </ul>
-    <p><b>Datos:</p>
+    <p><b>Datos:</b></p>
     <ul>
         <li><b>Nota Venta Id:</b> {{ $msg->tabla_id }}</li>
         <li><b>Fecha:</b> {{date("d-m-Y h:i:s A", strtotime($notaventa->fechahora))}}</li>
