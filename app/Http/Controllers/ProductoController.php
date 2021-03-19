@@ -12,6 +12,7 @@ use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\DB;
 
 class ProductoController extends Controller
 {
@@ -40,15 +41,16 @@ class ProductoController extends Controller
             )
             ->toJson();
         */
+        $sql = "SELECT producto.*,categoriaprod.nombre AS categorianombre
+        FROM producto INNER JOIN categoriaprod
+        ON producto.categoriaprod_id = categoriaprod.id
+        WHERE isnull(producto.deleted_at) AND isnull(categoriaprod.deleted_at)";
+        $datas = DB::select($sql);
+        return datatables($datas)->toJson();
+        /*
         return datatables()
         ->eloquent(Producto::query())
         ->toJson();
-
-
-            /*
-        return datatables()
-            ->eloquent(Producto::query())
-            ->toJson();
         */
     }
 

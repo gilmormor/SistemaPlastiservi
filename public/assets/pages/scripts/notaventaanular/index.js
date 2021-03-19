@@ -1,65 +1,36 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
+    $('#tabla-dataanularnv').DataTable({
+    'paging'      : true, 
+    'lengthChange': true,
+    'searching'   : true,
+    'ordering'    : true,
+    'info'        : true,
+    'autoWidth'   : false,
+    'processing'  : true,
+    'serverSide'  : true,
+    'ajax'        : "notaventaanularpage",
+    'columns'     : [
+        {data: 'id'},
+        {data: 'cotizacion_id'},
+        {data: 'fechahora'},
+        {data: 'razonsocial'},
+        //El boton eliminar esta en comentario Gilmer 23/02/2021
+        {defaultContent : ""+
+            "<a class='btn-accion-tabla btn-sm verpdf1' title='Nota de venta' data-toggle='tooltip'>"+
+            "<i class='fa fa-fw fa-file-pdf-o'></i></a>"+
+            "<a class='btn-accion-tabla btn-sm verpdf2' title='Precio x Kg' data-toggle='tooltip'>"+
+            "<i class='fa fa-fw fa-file-pdf-o'></i></a>"},
+        {defaultContent : ""+
+            "<a class='btn btn-primary btn-xs tooltipsC btnanular' title='Anular'>"+
+            "<i class='fa fa-fw fa-remove'></i></a>"},
+    ],
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    }
+    });
 
-    $('#tabla-datadesc').DataTable({
-        'paging'      : true, 
-        'lengthChange': true,
-        'searching'   : true,
-        'ordering'    : true,
-        'info'        : true,
-        'autoWidth'   : false,
-        'processing'  : true,
-        'serverSide'  : true,
-        'ajax'        : "notaventadevolvervenpage",
-        'columns'     : [
-            {data: 'id'},
-            {data: 'cotizacion_id'},
-            {data: 'fechahora'},
-            {data: 'razonsocial'},
-            //El boton eliminar esta en comentario Gilmer 23/02/2021
-            {defaultContent : ""+
-                "<a class='btn-accion-tabla btn-sm verpdf1' title='Nota de venta' data-toggle='tooltip'>"+
-                "<i class='fa fa-fw fa-file-pdf-o'></i></a>"+
-                "<a class='btn-accion-tabla btn-sm verpdf2' title='Precio x Kg' data-toggle='tooltip'>"+
-                "<i class='fa fa-fw fa-file-pdf-o'></i></a>"},
-            {defaultContent : ""+
-                "<a class='btn btn-primary btn-xs tooltipsC btndevnvven' title='Devolver a vendedor'>"+
-                "<i class='fa fa-fw fa-reply'></i></a>"},
-        ],
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-        }
-      });
-
-      $('#tabla-dataanularnv').DataTable({
-        'paging'      : true, 
-        'lengthChange': true,
-        'searching'   : true,
-        'ordering'    : true,
-        'info'        : true,
-        'autoWidth'   : false,
-        'processing'  : true,
-        'serverSide'  : true,
-        'ajax'        : "anularnotaventapage",
-        'columns'     : [
-            {data: 'id'},
-            {data: 'cotizacion_id'},
-            {data: 'fechahora'},
-            {data: 'razonsocial'},
-            //El boton eliminar esta en comentario Gilmer 23/02/2021
-            {defaultContent : ""+
-                "<a class='btn-accion-tabla btn-sm verpdf1' title='Nota de venta' data-toggle='tooltip'>"+
-                "<i class='fa fa-fw fa-file-pdf-o'></i></a>"+
-                "<a class='btn-accion-tabla btn-sm verpdf2' title='Precio x Kg' data-toggle='tooltip'>"+
-                "<i class='fa fa-fw fa-file-pdf-o'></i></a>"},
-            {defaultContent : ""+
-                "<a class='btn btn-primary btn-xs tooltipsC btndevnvven' title='Devolver a vendedor'>"+
-                "<i class='fa fa-fw fa-reply'></i></a>"},
-        ],
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-        }
-      });
+    
 
 });
 
@@ -136,12 +107,13 @@ function anularNV(id,nfila){
             };
         
             $.ajax({
-                url: '/notaventadevolvend/anular/actualizanular',
+                url: '/notaventaanular/actualizanular',
                 type: 'POST',
                 data: data,
                 success: function (respuesta) {
                     if (respuesta.mensaje == "ok") {
-                        $("#fila"+nfila).remove();
+                        nfila.remove();
+                        //$("#fila"+nfila).remove();
                         Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                     } else {
                         if (respuesta.mensaje == "sp"){
@@ -185,11 +157,11 @@ $(document).on("click", ".verpdf2", function(){
     // ****************************** 
 });
 
-$(document).on("click", ".btndevnvven", function(){	
+$(document).on("click", ".btnanular", function(){	
     opcion = 2;//editar
     fila = $(this).closest("tr");	        
     id = fila.find('td:eq(0)').text();
-    devNVvend(id,fila);
+    anularNV(id,fila);
     //alert('Id: '+id);
     // *** REDIRECCIONA A UNA RUTA*** 
 });

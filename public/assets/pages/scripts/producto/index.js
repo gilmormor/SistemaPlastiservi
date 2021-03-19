@@ -13,6 +13,7 @@ $(document).ready(function () {
         'columns'     : [
             {data: 'id'},
             {data: 'nombre'},
+            {data: 'categorianombre'},
             {data: 'diamextmm'},
             {data: 'diamextpg'},
             {data: 'espesor'},

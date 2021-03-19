@@ -562,8 +562,11 @@ Route::post('guardaranularguia', 'DespachoOrdAnulGuiaFactController@guardaranula
 Route::get('notaventadevolvend', 'NotaVentaDevolVendController@index')->name('notaventadevolvend');
 Route::get('notaventadevolvervenpage', 'NotaVentaDevolVendController@notaventadevolvervenpage')->name('notaventadevolvervenpage');
 Route::post('notaventadevolvend/actualizarreg', 'NotaVentaDevolVendController@actualizarreg')->name('actualizarreg_notaventadevolvend');
-Route::get('notaventadevolvend/anular', 'NotaVentaDevolVendController@indexanular')->name('indexanular_notaventadevolvend');
-Route::post('notaventadevolvend/anular/actualizanular', 'NotaVentaDevolVendController@actualizanular')->name('actualizanular_notaventadevolvend');
+
+/*RUTAS NOTA DE VENTA ANULAR */
+Route::get('notaventaanular', 'NotaVentaAnularController@index')->name('notaventaanular');
+Route::get('notaventaanularpage', 'NotaVentaAnularController@notaventaanularpage')->name('notaventaanularpage');
+Route::post('notaventaanular/actualizanular', 'NotaVentaAnularController@actualizanular')->name('actualizanular_notaventaanularpage');
 
 /*RUTAS Carrera Nota Venta */
 Route::get('notaventacerrada', 'NotaVentaCerradaController@index')->name('notaventacerrada');

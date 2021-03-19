@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DespachoSol;
-use App\Models\DespachoSolAnul;
 use App\Models\NotaVenta;
-use App\Models\NotaVentaCerrada;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class NotaVentaDevolVendController extends Controller
+class NotaVentaAnularController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,27 +14,15 @@ class NotaVentaDevolVendController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {        
-        can('listar-devolver-nota-venta-vendedor');
-        return view('notaventadevolvend.index');
+    {
+        can('listar-anular-nota-venta');
+        return view('notaventaanular.index');
     }
 
-    public function notaventadevolvervenpage(){
-        $datas = consulta("");
-        return datatables($datas)->toJson();
-    }
-
-    public function anularnotaventapage()
+    public function notaventaanularpage()
     {
         $datas = consulta("");
         return datatables($datas)->toJson(); 
-    }
-
-    public function indexanular()
-    {        
-        can('listar-anular-nota-venta');
-
-        return view('notaventaanular.index');
     }
 
     /**
@@ -90,7 +75,7 @@ class NotaVentaDevolVendController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function actualizar(Request $request, $id)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -106,18 +91,15 @@ class NotaVentaDevolVendController extends Controller
         //
     }
 
-    public function actualizarreg(Request $request)
+    public function actualizanular(Request $request)
     {
-        can('guardar-devolver-nota-venta-vendedor');
+        can('guardar-anular-nota-venta');
         if ($request->ajax()) {
             $datas = consulta($request->id);
             //dd(count($datas));
 
             $notaventa = NotaVenta::findOrFail($request->id);
-            $notaventa->aprobstatus = null;
-            $notaventa->aprobusu_id = null;
-            $notaventa->aprobfechahora = null;
-            $notaventa->aprobobs = null;
+            $notaventa->anulada = date("Y-m-d H:i:s");;
             
             if(count($datas) > 0){
                 if ($notaventa->save()) {
@@ -132,8 +114,8 @@ class NotaVentaDevolVendController extends Controller
             abort(404);
         }
     }
-}
 
+}
 
 function consulta($id){
     $aux_condid = "true";
