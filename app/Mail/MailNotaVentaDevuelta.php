@@ -23,14 +23,14 @@ class MailNotaVentaDevuelta extends Mailable
      *
      * @return void
      */
-    public function __construct($msg,$asunto,$cuerpo)
+    public function __construct($msg,$asunto,$cuerpo,$rut,$razonsocial)
     {
         $this->subject = " ID: " . $msg->id ." ". $asunto;
         $this->cuerpo = $cuerpo;
         $this->msg = $msg;
         $notaventa = NotaVenta::findOrFail($msg->tabla_id);
-        $this->rut = $notaventa->cliente->rut;
-        $this->razonsocial = $notaventa->cliente->razonsocial;
+        $this->rut = $rut;
+        $this->razonsocial = $razonsocial;
 
     }
 

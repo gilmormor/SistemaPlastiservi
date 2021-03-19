@@ -142,8 +142,10 @@ class NotaVentaDevolVendController extends Controller
                     //$usuario = Usuario::findOrFail(auth()->id());
                     $asunto = 'Nota de Venta Devuelta';
                     $cuerpo = "Nota de Venta Devuelta: Nro. $request->id";
+                    $rut = $notaventa->cliente->rut;
+                    $razonsocial = $notaventa->cliente->razonsocial;
     
-                    Mail::to($notaventa->vendedor->persona->usuario->email)->send(new MailNotaVentaDevuelta($notificaciones,$asunto,$cuerpo));
+                    Mail::to($notaventa->vendedor->persona->usuario->email)->send(new MailNotaVentaDevuelta($notificaciones,$asunto,$cuerpo,$rut,$razonsocial));
                     return response()->json(['mensaje' => 'ok']);
                 } else {
                     return response()->json(['mensaje' => 'ng']);
