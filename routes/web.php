@@ -438,6 +438,8 @@ Route::post('clientebloqueado', 'ClienteBloqueadoController@guardar')->name('gua
 Route::get('clientebloqueado/{id}/editar', 'ClienteBloqueadoController@editar')->name('editar_clientebloqueado');
 Route::put('clientebloqueado/{id}', 'ClienteBloqueadoController@actualizar')->name('actualizar_clientebloqueado');
 Route::delete('clientebloqueado/{id}', 'ClienteBloqueadoController@eliminar')->name('eliminar_clientebloqueado');
+Route::post('clientebloqueado/buscarclibloq', 'ClienteBloqueadoController@buscarclibloq')->name('buscarclibloq');
+
 
 /*RUTAS Recepcion No Conformidad */
 Route::get('noconformidadrecep', 'NoConformidadRecepController@index')->name('noconformidadrecep');
@@ -602,3 +604,8 @@ Route::get('reportpendientexprod', 'ReportPendienteXProdController@index')->name
 Route::post('reportpendientexprod/reporte', 'ReportPendienteXProdController@reporte')->name('reportpendientexprod_reporte');
 //Route::get('reportpendientexprod/exportPdf', 'ReportPendienteXProdController@exportPdf')->name('reportpendientexprod_exportPdf');
 Route::get('reportpendientexprod/exportPdf', 'ReportPendienteXProdController@exportPdf')->name('reportpendientexprod_exportPdf');
+
+/*RUTAS REPORTE CLIENTES*/
+Route::get('reportclientes', 'ReportClientesController@index')->name('reportclientes');
+Route::post('reportclientes/reporte', 'ReportClientesController@reporte')->name('reportclientes_reporte');
+Route::get('reportclientes/exportPdf', 'ReportClientesController@exportPdf')->name('reportclientes_exportPdf');

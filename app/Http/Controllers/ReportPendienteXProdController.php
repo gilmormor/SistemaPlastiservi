@@ -209,6 +209,7 @@ class ReportPendienteXProdController extends Controller
         $request->tipoentrega_id = $_GET["tipoentrega_id"];
         $request->notaventa_id = $_GET["notaventa_id"];
         $request->aprobstatus = $_GET["aprobstatus"];
+        $request->giro_id = $_GET["giro_id"];
         $request->comuna_id = $_GET["comuna_id"];
         $request->producto_id = $_GET["producto_id"];
         $datas = consulta($request,2,1);

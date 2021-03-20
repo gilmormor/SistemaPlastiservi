@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarClienteBloqueado;
+use App\Mail\MailClienteBloqueado;
 use App\Models\Cliente;
 use App\Models\ClienteBloqueado;
 use App\Models\ClienteBloqueadoCliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
+use App\Models\Notificaciones;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables\Editor;
 
 class ClienteBloqueadoController extends Controller
@@ -93,6 +96,7 @@ class ClienteBloqueadoController extends Controller
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
+        ->whereNotIn('cliente.id', ClienteBloqueado::pluck('cliente_id')->toArray())
         ->get();
         $aux_editar = 0;
         return view('clientebloqueado.crear', compact('clientes','aux_editar'));
@@ -107,8 +111,38 @@ class ClienteBloqueadoController extends Controller
     public function guardar(ValidarClienteBloqueado $request)
     {
         can('guardar-cliente-bloqueado');
+        //dd($request);
         $request->request->add(['usuario_id' => auth()->id()]);
-        ClienteBloqueado::create($request->all());
+        $clientebloqueado = ClienteBloqueado::create($request->all());
+        if($clientebloqueado){
+            $asunto = 'Cliente Bloqueado';
+            $cuerpo = "Cliente Bloqueado: Id $request->cliente_id";
+            //$cliente = Cliente::findOrFail($request->cliente_id);
+            foreach ($clientebloqueado->cliente->vendedores as $vendedor) {
+                $notificaciones = new Notificaciones();
+                $notificaciones->usuarioorigen_id = auth()->id();
+                $notificaciones->usuariodestino_id = $vendedor->persona->usuario->id;
+                $notificaciones->vendedor_id = $vendedor->id;
+                $notificaciones->status = 1;                    
+                $notificaciones->nombretabla = 'clientebloqueado';
+                $notificaciones->mensaje = 'Cliente Bloqueado RUT: '.$clientebloqueado->cliente->rut;
+                $notificaciones->mensajetitle = $clientebloqueado->descripcion;
+                $notificaciones->nombrepantalla = 'clientebloqueado.index';
+                $notificaciones->rutaorigen = 'clientebloqueado/crear';
+                $notificaciones->rutadestino = '/';
+                $notificaciones->tabla_id = $clientebloqueado->id;
+                $notificaciones->accion = 'Cliente Bloqueado.';
+                $notificaciones->icono = 'fa fa-fw fa-lock text-red';
+                $notificaciones->save();
+    
+                $nombrevendedor = $vendedor->persona->nombre . ' ' . $vendedor->persona->apellido;
+                Mail::to($vendedor->persona->usuario->email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
+            }
+
+            
+
+        }
+
         return redirect('clientebloqueado')->with('mensaje','Creado con exito');
     }
 
@@ -174,7 +208,30 @@ class ClienteBloqueadoController extends Controller
      */
     public function actualizar(ValidarClienteBloqueado $request, $id)
     {
+        $clientebloqueado = ClienteBloqueado::findOrFail($id);
         ClienteBloqueado::findOrFail($id)->update($request->all());
+        $asunto = 'Cliente Bloqueado';
+        $cuerpo = "Cliente Bloqueado: Id $request->cliente_id";
+        foreach ($clientebloqueado->cliente->vendedores as $vendedor) {
+            $notificaciones = new Notificaciones();
+            $notificaciones->usuarioorigen_id = auth()->id();
+            $notificaciones->usuariodestino_id = $vendedor->persona->usuario->id;
+            $notificaciones->vendedor_id = $vendedor->id;
+            $notificaciones->status = 1;                    
+            $notificaciones->nombretabla = 'clientebloqueado';
+            $notificaciones->mensaje = 'Cliente Bloqueado RUT: '.$clientebloqueado->cliente->rut;
+            $notificaciones->mensajetitle = $clientebloqueado->descripcion;
+            $notificaciones->nombrepantalla = 'clientebloqueado.index';
+            $notificaciones->rutaorigen = 'clientebloqueado/crear';
+            $notificaciones->rutadestino = '/';
+            $notificaciones->tabla_id = $clientebloqueado->id;
+            $notificaciones->accion = 'Cliente Bloqueado.';
+            $notificaciones->icono = 'fa fa-fw fa-lock text-red';
+            $notificaciones->save();
+
+            $nombrevendedor = $vendedor->persona->nombre . ' ' . $vendedor->persona->apellido;
+            Mail::to($vendedor->persona->usuario->email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
+        }
         return redirect('clientebloqueado')->with('mensaje','Actualizado con exito');
     }
 
@@ -186,21 +243,6 @@ class ClienteBloqueadoController extends Controller
      */
     public function eliminar(Request $request, $id)
     {
-        /*
-        if ($request->ajax()) {
-            $data = ClienteBloqueado::findOrFail($id);
-            $data->usuariodel_id = auth()->id();
-            $data->save();
-            if (ClienteBloqueado::destroy($id)) {
-                return response()->json(['mensaje' => 'ok']);
-            } else {
-                return response()->json(['mensaje' => 'ng']);
-            }
-        } else {
-            abort(404);
-        }
-        */
-
         if(can('eliminar-cliente-bloqueado',false)){
             if ($request->ajax()) {
                 if (ClienteBloqueado::destroy($request->id)) {
@@ -208,6 +250,28 @@ class ClienteBloqueadoController extends Controller
                     $clientebloqueado = ClienteBloqueado::withTrashed()->findOrFail($request->id);
                     $clientebloqueado->usuariodel_id = auth()->id();
                     $clientebloqueado->save();
+                    $asunto = 'Cliente Desbloqueado';
+                    $cuerpo = "Cliente Desbloqueado: Id $clientebloqueado->cliente_id";
+                    foreach ($clientebloqueado->cliente->vendedores as $vendedor) {
+                        $notificaciones = new Notificaciones();
+                        $notificaciones->usuarioorigen_id = auth()->id();
+                        $notificaciones->usuariodestino_id = $vendedor->persona->usuario->id;
+                        $notificaciones->vendedor_id = $vendedor->id;
+                        $notificaciones->status = 1;                    
+                        $notificaciones->nombretabla = 'clientebloqueado';
+                        $notificaciones->mensaje = 'Cliente Desbloqueado Id: '.$clientebloqueado->cliente->id;
+                        $notificaciones->mensajetitle = $clientebloqueado->cliente->razonsocial;
+                        $notificaciones->nombrepantalla = 'clientebloqueado.index';
+                        $notificaciones->rutaorigen = 'clientebloqueado/crear';
+                        $notificaciones->rutadestino = '/';
+                        $notificaciones->tabla_id = $clientebloqueado->id;
+                        $notificaciones->accion = 'Cliente Desbloqueado.';
+                        $notificaciones->icono = 'fa fa-fw fa-unlock text-green';
+                        $notificaciones->save();
+
+                        $nombrevendedor = $vendedor->persona->nombre . ' ' . $vendedor->persona->apellido;
+                        Mail::to($vendedor->persona->usuario->email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
+                    }
                     return response()->json(['mensaje' => 'ok']);
                 } else {
                     return response()->json(['mensaje' => 'ng']);
@@ -220,5 +284,23 @@ class ClienteBloqueadoController extends Controller
             return response()->json(['mensaje' => 'ne']);
         }
 
+    }
+
+    public function buscarclibloq(Request $request)
+    {
+        if ($request->ajax()) {
+            $datas = ClienteBloqueado::where('cliente_id','=',$request->id);
+            //dd($datas->count());
+    
+            $aux_contRegistos = $datas->count();
+            //dd($aux_contRegistos);
+            if($aux_contRegistos > 0){
+                return response()->json(['mensaje' => 'ok']);
+            }else{
+                return response()->json(['mensaje' => 'ng']);   
+            }
+        } else {
+            abort(404);
+        }
     }
 }

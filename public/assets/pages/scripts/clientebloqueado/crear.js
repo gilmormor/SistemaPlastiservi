@@ -57,10 +57,14 @@ $("#rut").blur(function(){
                 if(respuesta.length>0){
                     //alert(respuesta[0]['vendedor_id']);
                     //$("#rut").val(respuesta[0]['rut']);
-                    formato_rut($("#rut"));
-                    $("#razonsocial").val(respuesta[0]['razonsocial']);
-                    $("#cliente_id").val(respuesta[0]['id']);
-                    $("#descripcion").focus();
+
+                    var data = {
+                        id         : respuesta[0]['id'],
+                        razonsocial: respuesta[0]['razonsocial'],
+                        _token: $('input[name=_token]').val()
+                    };
+                    var ruta = '/clientebloqueado/buscarclibloq';
+                    ajaxRequest(data,ruta,'buscarclibloq');
                 }else{
                     swal({
                         title: 'Cliente no existe.',
@@ -80,3 +84,45 @@ $("#rut").blur(function(){
         });
 	}
 });
+
+function ajaxRequest(data,url,funcion) {
+	$.ajax({
+		url: url,
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			if(funcion=='buscarclibloq'){
+				if (respuesta.mensaje == "ng") {
+                    formato_rut($("#rut"));
+                    $("#razonsocial").val(data.razonsocial);
+                    $("#cliente_id").val(data.id);
+                    $("#descripcion").focus();
+                } else {
+                    Biblioteca.notificaciones('Cliente: '+data.razonsocial+' ya está bloqueado.', 'Plastiservi', 'error');
+                    $("#rut").val('');
+				}
+			}
+			if(funcion=='verUsuario'){
+				$('#myModal .modal-body').html(respuesta);
+				$("#myModal").modal('show');
+			}
+			if(funcion=='aprobarnvsup'){
+				if (respuesta.mensaje == "ok") {
+					Biblioteca.notificaciones('El registro fue actualizado correctamente', 'Plastiservi', 'success');
+					// *** REDIRECCIONA A UNA RUTA*** 
+					var loc = window.location;
+    				window.location = loc.protocol+"//"+loc.hostname+"/notaventaaprobar";
+					// ****************************** 
+				} else {
+					if (respuesta.mensaje == "sp"){
+						Biblioteca.notificaciones('Registro no puso se actualizado.', 'Plastiservi', 'error');
+					}else{
+						Biblioteca.notificaciones('El registro no puso se actualizado, hay recursos usandolo', 'Plastiservi', 'error');
+					}
+				}
+			}
+		},
+		error: function () {
+		}
+	});
+}

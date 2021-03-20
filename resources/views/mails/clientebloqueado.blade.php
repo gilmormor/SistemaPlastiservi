@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Nota Venta Devuelta</title>
+    <title>Cliente Bloqueado</title>
 </head>
 <body>
 
-    <p>{{ $cuerpo }}, {{ date("d-m-Y h:i:s A", strtotime($msg->updated_at)) }}.</p>
+    <p>{{ $cuerpo }}.</p>
+    <p>Fecha: {{ date("d-m-Y h:i:s A", strtotime($msg->updated_at)) }}.</p>
     <p>Datos del usuario que genero el correo:</p>
     <ul>
         <li><b>Nombre:</b> {{session()->get('nombre_usuario') }}</li>
@@ -16,11 +17,11 @@
     </ul>
     <p><b>Datos:</b></p>
     <ul>
-        <li><b>Nota Venta Id:</b> {{ $msg->tabla_id }}</li>
-        <li><b>Fecha:</b> {{date("d-m-Y h:i:s A", strtotime($notaventa->fechahora))}}</li>
-        <li><b>RUT:</b> {{ $notaventa->cliente->rut }}</li>
-        <li><b>Razon Social:</b> {{ $notaventa->cliente->razonsocial }}</li>
-        <li><b>Vendedor:</b> {{ $notaventa->vendedor->persona->nombre . " " . $notaventa->vendedor->persona->apellido}}</li>
+        <li><b>Cliente Id:</b> {{ $msg->cliente->id }}</li>
+        <li><b>RUT:</b> {{ $msg->cliente->rut }}</li>
+        <li><b>Razón Social:</b> {{ $msg->cliente->razonsocial }}</li>
+        <li><b>Descripción:</b> {{ $msg->descripcion }}</li>
+        <li><b>Vendedor:</b> {{ $nombrevendedor }}</li>
     </ul>
     <p>
         <b>Ingresar al Sistema:</b> 

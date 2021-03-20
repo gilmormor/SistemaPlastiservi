@@ -172,7 +172,9 @@ class NotificacionesController extends Controller
         $datas = consulta(auth()->id());
         $contadornot = 0;
         if($datas){
-            $contadornot = $datas[0]->contador;
+            foreach($datas as $data){
+                $contadornot += $data->contador;
+            }
         }
         $totalNotif = $contRecepNC + $contnotivalai + $contnoticumpl + $contnoRevSGI + $contadornot;
         $htmlNotif = "";
@@ -185,7 +187,7 @@ class NotificacionesController extends Controller
                     foreach($datas as $data){
                         $aux_ruta = route('vista_notificaciones',['id' => $data->id]);
                         $htmlNotif .= "
-                        <li>
+                        <li class='tooltipsC' title='$data->mensajetitle'>
                             <a href='$aux_ruta'>
                             <i class='$data->icono'></i> $data->contador $data->mensaje
                             </a>
@@ -335,7 +337,7 @@ function consultaSQL($idconsulta,$usuario_id){
 }
 
 function consulta($usuario_id){
-    $sql = "SELECT id,count(*) as contador,mensaje,rutadestino,icono
+    $sql = "SELECT id,count(*) as contador,mensaje,mensajetitle,rutadestino,icono
     FROM notificaciones
     WHERE usuariodestino_id = $usuario_id
     and status = 1

@@ -16,6 +16,7 @@ $(document).ready(function () {
             {data: 'cotizacion_id'},
             {data: 'fechahora'},
             {data: 'razonsocial'},
+            {data: 'nombrevendedor'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""+
                 "<a class='btn-accion-tabla btn-sm verpdf1' title='Nota de venta' data-toggle='tooltip'>"+

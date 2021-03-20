@@ -25,6 +25,7 @@ class CreateTableNotificaciones extends Migration
             $table->integer('status')->comment('Estatus de notificacion. 1=Activa, 2=Vista.');
             $table->string('nombretabla',30)->comment('Nombre de tabla donde se origino la accion');
             $table->string('mensaje',45)->comment('Mensaje al usuario.');
+            $table->string('mensajetitle',50)->comment('Mensaje para el titulo al pasar el mouse.')->nullable();
             $table->string('nombrepantalla',30)->comment('Nombre de pantalla donde se genero la Accion.');
             $table->string('rutaorigen',40)->comment('Ruta origen donde se genero la accion.');
             $table->string('rutadestino',40)->comment('Ruta destino donde debe ir cuando se seleccione la notificacion.');

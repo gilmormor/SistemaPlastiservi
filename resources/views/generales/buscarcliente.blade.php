@@ -10,10 +10,11 @@
         </div>
         <div class="modal-body">
             <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover tablas" id="tabla-data-clientes">
+                <!--<table class="table table-striped table-bordered table-hover tablas" id="tabla-data-clientes">-->
+                <table class="table display AllDataTables table-striped table-condensed table-hover tablas" id="tabla-data-clientes"  data-page-length="10">
                     <thead>
                         <tr>
-                            <th class="width70">ID</th>
+                            <th class="width30">ID</th>
                             <th>RUT</th>
                             <th>Razón Social</th>
                             <th>Dirección</th>

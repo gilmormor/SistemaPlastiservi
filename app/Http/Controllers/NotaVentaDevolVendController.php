@@ -137,7 +137,7 @@ class NotaVentaDevolVendController extends Controller
                     $notificaciones->rutadestino = 'notaventa';
                     $notificaciones->tabla_id = $request->id;
                     $notificaciones->accion = 'Nota Venta devuelta al vendedor.';
-                    $notificaciones->icono = 'fa fa-fw fa-reply';
+                    $notificaciones->icono = 'fa fa-fw fa-reply text-yellow';
                     $notificaciones->save();
                     //$usuario = Usuario::findOrFail(auth()->id());
                     $asunto = 'Nota de Venta Devuelta';
@@ -166,12 +166,17 @@ function consulta($id){
     //Consultar registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
 
     $sql = "SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_id,oc_file,
+            CONCAT(persona.nombre, ' ', persona.apellido) as nombrevendedor,
                 (SELECT COUNT(*) 
                 FROM notaventadetalle 
                 WHERE notaventadetalle.notaventa_id=notaventa.id and 
                 notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
             FROM notaventa inner join cliente
             on notaventa.cliente_id = cliente.id
+            inner join vendedor
+            on notaventa.vendedor_id=vendedor.id
+            inner join persona
+            on vendedor.persona_id=persona.id
             where $aux_condid
             and isnull(notaventa.findespacho)
             and isnull(anulada)

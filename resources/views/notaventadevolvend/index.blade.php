@@ -26,7 +26,8 @@ Devolver Nota de Venta a Vendedor
                                 <th class="width30">ID</th>
                                 <th class="width30">Nro Cot</th>
                                 <th>Fecha</th>
-                                <th>Cliente</th>
+                                <th>Razon Social</th>
+                                <th>Vendedor</th>
                                 <th class="width50"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
                                 <th class="width70">Acción</th>
                             </tr>

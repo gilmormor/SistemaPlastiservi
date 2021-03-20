@@ -15,6 +15,7 @@ class Notificaciones extends Model
         'status',
         'nombretabla',
         'mensaje',
+        'mensajetitle',
         'nombrepantalla',
         'rutaorigen',
         'rutadestino',
