@@ -259,7 +259,7 @@ class ClienteBloqueadoController extends Controller
                         $notificaciones->vendedor_id = $vendedor->id;
                         $notificaciones->status = 1;                    
                         $notificaciones->nombretabla = 'clientebloqueado';
-                        $notificaciones->mensaje = 'Cliente Desbloqueado Id: '.$clientebloqueado->cliente->id;
+                        $notificaciones->mensaje = 'Cliente Desbloq Rut: '.$clientebloqueado->cliente->rut;
                         $notificaciones->mensajetitle = $clientebloqueado->cliente->razonsocial;
                         $notificaciones->nombrepantalla = 'clientebloqueado.index';
                         $notificaciones->rutaorigen = 'clientebloqueado/crear';

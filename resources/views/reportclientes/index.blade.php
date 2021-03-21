@@ -112,7 +112,7 @@ Clientes
                                     <label>Vendedor:</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
-                                    <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
+                                    <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id" data-live-search="true">
                                         <option value="">Todos</option>
                                         @foreach($vendedores1 as $vendedor)
                                             <option
