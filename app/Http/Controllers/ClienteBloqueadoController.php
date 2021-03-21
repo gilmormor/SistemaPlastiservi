@@ -129,7 +129,7 @@ class ClienteBloqueadoController extends Controller
                 $notificaciones->mensajetitle = $clientebloqueado->descripcion;
                 $notificaciones->nombrepantalla = 'clientebloqueado.index';
                 $notificaciones->rutaorigen = 'clientebloqueado/crear';
-                $notificaciones->rutadestino = '/';
+                $notificaciones->rutadestino = 'reportclientes';
                 $notificaciones->tabla_id = $clientebloqueado->id;
                 $notificaciones->accion = 'Cliente Bloqueado.';
                 $notificaciones->icono = 'fa fa-fw fa-lock text-red';
@@ -223,7 +223,7 @@ class ClienteBloqueadoController extends Controller
             $notificaciones->mensajetitle = $clientebloqueado->descripcion;
             $notificaciones->nombrepantalla = 'clientebloqueado.index';
             $notificaciones->rutaorigen = 'clientebloqueado/crear';
-            $notificaciones->rutadestino = '/';
+            $notificaciones->rutadestino = 'reportclientes';
             $notificaciones->tabla_id = $clientebloqueado->id;
             $notificaciones->accion = 'Cliente Bloqueado.';
             $notificaciones->icono = 'fa fa-fw fa-lock text-red';
@@ -263,7 +263,7 @@ class ClienteBloqueadoController extends Controller
                         $notificaciones->mensajetitle = $clientebloqueado->cliente->razonsocial;
                         $notificaciones->nombrepantalla = 'clientebloqueado.index';
                         $notificaciones->rutaorigen = 'clientebloqueado/crear';
-                        $notificaciones->rutadestino = '/';
+                        $notificaciones->rutadestino = 'reportclientes';
                         $notificaciones->tabla_id = $clientebloqueado->id;
                         $notificaciones->accion = 'Cliente Desbloqueado.';
                         $notificaciones->icono = 'fa fa-fw fa-unlock text-green';

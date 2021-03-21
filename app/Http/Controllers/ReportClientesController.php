@@ -86,7 +86,7 @@ class ReportClientesController extends Controller
         $giros = Giro::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
-        return view('reportclientes.index',compact('clientes','giros','comunas','fechaAct'));
+        return view('reportclientes.index',compact('clientes','vendedores1','giros','comunas','fechaAct'));
     }
 
     public function reporte(Request $request){
@@ -110,13 +110,13 @@ class ReportClientesController extends Controller
             </thead>
             <tbody>";
             foreach ($datas as $data) {
+                $clientebloqueadodesc = "";
+                if($data->clientebloqueadodesc){
+                    $clientebloqueadodesc = 'Bloqueado: ' . $data->clientebloqueadodesc;
+                }
                 $respuesta['tabla'] .= "
-                <tr>
-                    <td>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Ficha Cliente' onclick='genpdfNV($data->id,1)'>
-                            $data->id
-                        </a>
-                    </td>
+                <tr class='tooltipsC' data-toggle='tooltip' title='$clientebloqueadodesc'>
+                    <td>$data->id</td>
                     <td>$data->rut</td>
                     <td>$data->razonsocial</td>
                     <td>$data->direccion</td>
@@ -136,6 +136,7 @@ class ReportClientesController extends Controller
     
     public function exportPdf()
     {
+        $datosv = array();
         $request = new Request();
         $request->fechad = $_GET["fechad"];
         $request->fechah = $_GET["fechah"];
@@ -143,38 +144,61 @@ class ReportClientesController extends Controller
         $request->giro_id = $_GET["giro_id"];
         $request->comuna_id = $_GET["comuna_id"];
         $request->bloqueado = $_GET["bloqueado"];
-        $datas = consulta($request);
-
-        $aux_fdesde= $request->fechad;
-        if(empty($request->fechad)){
-            $aux_fdesde= '  /  /    ';
-        }
-        $aux_fhasta= $request->fechah;
-
-        $empresa = Empresa::orderBy('id')->get();
-        $usuario = Usuario::findOrFail(auth()->id());
+        $request->vendedor_id = $_GET["vendedor_id"];
         
-        $nomvendedor = "Todos";
+
+        $datas = consulta($request);
+        $datosv['aux_fdesde'] = $request->fechad;
+
+        //$aux_fdesde= $request->fechad;
+        if(empty($request->fechad)){
+            $datosv['aux_fdesde'] = '  /  /    ';
+        }
+        $datosv['aux_fhasta'] = $request->fechah;
+        //$aux_fhasta= $request->fechah;
+
+        $datosv['empresa'] = Empresa::orderBy('id')->get();
+        $datosv['usuario'] = Usuario::findOrFail(auth()->id());
+        //$empresa = Empresa::orderBy('id')->get();
+        //$usuario = Usuario::findOrFail(auth()->id());
+        
+        $datosv['nomvendedor'] = "Todos";
+        //$nomvendedor = "Todos";
         if(!empty($request->vendedor_id)){
             $vendedor = Vendedor::findOrFail($request->vendedor_id);
-            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+            $datosv['nomvendedor'] = $vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+            //$nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
         }
-        $nombreGiro = "Todos";
+        $datosv['nombreGiro'] = "Todos";
+        //$nombreGiro = "Todos";
         if($request->giro_id){
             $giro = Giro::findOrFail($request->giro_id);
-            $nombreGiro=$giro->nombre;
+            $datosv['nombreGiro'] = $nombreGiro=$giro->nombre;
+            //$nombreGiro=$giro->nombre;
+        }
+        $datosv['bloqueado'] = "Clientes: Todos";
+        //$bloqueado = "Clientes: Todos";
+        if($request->bloqueado){
+            $datosv['bloqueado'] = "Clientes: Activos";
+            //$bloqueado = "Clientes: Activos";
+            if($request->bloqueado=='1'){
+                $datosv['bloqueado'] = "Clientes: Bloqueados";
+                //$bloqueado = "Clientes: Bloqueados";
+            }
         }
         
         //return armarReportehtml($request);
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportclientes.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'));
+                //return view('reportclientes.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'));
+                return view('reportclientes.listado', compact('datas','datosv'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
-            $pdf = PDF::loadView('reportclientes.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'))->setPaper('a4', 'landscape');
+            //$pdf = PDF::loadView('reportclientes.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'))->setPaper('a4', 'landscape');
+            $pdf = PDF::loadView('reportclientes.listado', compact('datas','datosv'))->setPaper('a4', 'landscape');
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteClientes.pdf");
@@ -189,19 +213,23 @@ class ReportClientesController extends Controller
 
 function consulta($request){
     //dd($request);
-    $user = Usuario::findOrFail(auth()->id());
-    $sql= 'SELECT COUNT(*) AS contador
-        FROM vendedor INNER JOIN persona
-        ON vendedor.persona_id=persona.id
-        INNER JOIN usuario 
-        ON persona.usuario_id=usuario.id
-        WHERE usuario.id=' . auth()->id();
-    $counts = DB::select($sql);
-    if($counts[0]->contador>0){
-        $vendedor_id=$user->persona->vendedor->id;
-        $vendedorcond = "cliente_vendedor.vendedor_id=" . $vendedor_id ;
+    if(empty($request->vendedor_id)){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $vendedorcond = "cliente_vendedor.vendedor_id=" . $vendedor_id ;
+        }else{
+            $vendedorcond = " true ";
+        }
     }else{
-        $vendedorcond = " true ";
+        $vendedorcond = "cliente_vendedor.vendedor_id='$request->vendedor_id'";
     }
 
 
@@ -241,11 +269,13 @@ function consulta($request){
         $aux_bloqueado .= " (SELECT cliente_id from clientebloqueado where isnull(clientebloqueado.deleted_at))";
     }
 
-    $sql = "SELECT cliente.*,comuna.nombre as nombrecomuna
+    $sql = "SELECT cliente.*,comuna.nombre as nombrecomuna, clientebloqueado.descripcion as clientebloqueadodesc
     FROM cliente inner join comuna
     on cliente.comunap_id=comuna.id
     inner join cliente_vendedor
     on cliente.id=cliente_vendedor.cliente_id
+    left join clientebloqueado
+    on cliente.id=clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
     WHERE $vendedorcond
     and $aux_condFecha
     and $aux_condrut

@@ -12,8 +12,8 @@
 			<td class="logo_factura">
 				<div>
 					<img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png")}}" style="max-width:1200%;width:auto;height:auto;">
-					<p>{{$empresa[0]['nombre']}}</p>					
-					<p>RUT: {{$empresa[0]['rut']}}</p>
+					<p>{{$datosv['empresa'][0]['nombre']}}</p>					
+					<p>RUT: {{$datosv['empresa'][0]['rut']}}</p>
 				</div>
 			</td>
 			<td class="info_empresa">
@@ -22,9 +22,10 @@
 				<div class="round">
 					<span class="h3">Clientes</span>
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
-					<p>Vendedor: {{$nomvendedor}} </p>
-					<p>Giro: {{$nombreGiro}} </p>
-					<p>Fecha creación: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
+					<p>{{$datosv['bloqueado']}} </p>
+					<p>Vendedor: {{$datosv['nomvendedor']}} </p>
+					<p>Giro: {{$datosv['nombreGiro']}} </p>
+					<p>Fecha creación: {{$datosv['aux_fdesde']}} Hasta: {{$datosv['aux_fhasta']}}</p>
 				</div>
 			</td>
 		</tr>

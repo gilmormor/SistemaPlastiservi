@@ -99,12 +99,31 @@ Clientes
                                 <div class="col-xs-12 col-md-8 col-sm-8">
                                     <select name="bloqueado" id="bloqueado" class="selectpicker form-control bloqueado" data-live-search="true">
                                         <option value="">Todos</option>
-                                        <option value="1">Si</option>
-                                        <option value="2">No</option>
+                                        <option value="2">Activos</option>
+                                        <option value="1">Bloqueados</option>
                                     </select>
                                 </div>
                             </div>
 
+                        </div>
+                        <div class="col-xs-12 col-md-12 col-sm-12">
+                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Vendedor">
+                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                    <label>Vendedor:</label>
+                                </div>
+                                <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
+                                        <option value="">Todos</option>
+                                        @foreach($vendedores1 as $vendedor)
+                                            <option
+                                                value="{{$vendedor->id}}"
+                                                >
+                                                {{$vendedor->nombre}} {{$vendedor->apellido}}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-3 col-sm-12">
