@@ -25,6 +25,7 @@ class ReportOrdDespGuiaFactController extends Controller
     public function index()
     {
         //can('listar-despacho-consulta-guia-factura-cerradas');
+        can('reporte-orden-despacho,-guia,-factura,-cerrada');
         $respuesta = cargadatos();
         $clientes = $respuesta['clientes'];
         $vendedores = $respuesta['vendedores'];

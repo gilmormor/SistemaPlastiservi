@@ -24,6 +24,7 @@ class ReportNVPendientesController extends Controller
      */
     public function index()
     {
+        can('reporte-notas-de-ventas-pendientes');
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona

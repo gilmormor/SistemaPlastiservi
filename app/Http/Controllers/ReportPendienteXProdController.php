@@ -29,6 +29,7 @@ class ReportPendienteXProdController extends Controller
      */
     public function index()
     {
+        can('reporte-pendiente-por-producto');
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona

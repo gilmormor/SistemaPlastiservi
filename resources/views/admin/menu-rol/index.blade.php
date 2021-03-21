@@ -19,7 +19,8 @@ Menú - Rol
             <div class="box-body">
                 @csrf
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover" id="tabla-data1">
+                    <!--<table class="table table-striped table-bordered table-hover" id="tabla-data1">-->
+                    <table class="table display AllDataTables table-striped table-condensed table-hover" id="tabla-data1">
                         <thead>
                             <tr>
                                 <th>Menú</th>

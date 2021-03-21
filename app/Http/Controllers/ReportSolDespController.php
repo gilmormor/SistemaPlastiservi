@@ -25,6 +25,7 @@ class ReportSolDespController extends Controller
      */
     public function index()
     {
+        can('reporte-solicitud-de-despacho');
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona

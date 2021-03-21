@@ -26,7 +26,7 @@ class ProducxNotaVentaController extends Controller
      */
     public function index()
     {
-        can('consulta-cotizacion');
+        can('reporte-productos-x-nota-venta');
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
