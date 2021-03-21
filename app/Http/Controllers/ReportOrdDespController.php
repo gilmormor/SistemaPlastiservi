@@ -53,6 +53,7 @@ class ReportOrdDespController extends Controller
                     'persona.apellido'
                 ])
                 ->where('vendedor.id','=',$vendedor_id)
+                ->groupBy('vendedor.id')
                 ->get();
         }else{
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
@@ -72,6 +73,7 @@ class ReportOrdDespController extends Controller
                     'persona.nombre',
                     'persona.apellido'
                 ])
+                ->groupBy('vendedor.id')
                 ->get();
         }
         $sucurArray = $user->sucursales->pluck('id')->toArray();

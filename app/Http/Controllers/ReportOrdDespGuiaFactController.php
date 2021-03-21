@@ -24,7 +24,7 @@ class ReportOrdDespGuiaFactController extends Controller
      */
     public function index()
     {
-        can('listar-despacho-consulta-guia-factura-cerradas');
+        //can('listar-despacho-consulta-guia-factura-cerradas');
         $respuesta = cargadatos();
         $clientes = $respuesta['clientes'];
         $vendedores = $respuesta['vendedores'];
@@ -329,6 +329,7 @@ function cargadatos(){
                 'persona.apellido'
             ])
             ->where('vendedor.id','=',$vendedor_id)
+            ->groupBy('vendedor.id')
             ->get();
     }else{
         $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
@@ -348,6 +349,7 @@ function cargadatos(){
                 'persona.nombre',
                 'persona.apellido'
             ])
+            ->groupBy('vendedor.id')
             ->get();
     }
     $sucurArray = $user->sucursales->pluck('id')->toArray();

@@ -56,6 +56,7 @@ class ProducxNotaVentaController extends Controller
                     'persona.apellido'
                 ])
                 ->where('vendedor.id','=',$vendedor_id)
+                ->groupBy('vendedor.id')
                 ->get();
     
         }else{
@@ -76,6 +77,7 @@ class ProducxNotaVentaController extends Controller
                     'persona.nombre',
                     'persona.apellido'
                 ])
+                ->groupBy('vendedor.id')
                 ->get();
     
         }
