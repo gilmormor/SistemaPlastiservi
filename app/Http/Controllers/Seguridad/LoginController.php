@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Seguridad;
 
+use App\Events\InicioSesionUsuario;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -31,6 +32,7 @@ class LoginController extends Controller
         $roles = $user->roles()->get();
         if ($roles->isNotEmpty()) {
             $user->setSession($roles->toArray());
+            event(new InicioSesionUsuario());
         } else {
             $this->guard()->logout();
             $request->session()->invalidate();
