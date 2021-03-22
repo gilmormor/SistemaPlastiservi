@@ -134,7 +134,7 @@ class NotaVentaConsultaController extends Controller
 		$respuesta['tabla'] = "";
         //dd($request);
         if($request->ajax()){
-            $datas = consulta($request);
+            $datas = consulta($request,1);
             $aux_colvistoth = "";
             if(auth()->id()==1 or auth()->id()==2 or auth()->id()==24){
                 $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
@@ -402,17 +402,11 @@ class NotaVentaConsultaController extends Controller
 
     public function exportPdf(Request $request)
     {
-        //dd($request);
-        //$cotizaciones = Cotizacion::orderBy('id')->get();
         $rut=str_replace("-","",$request->rut);
         $rut=str_replace(".","",$rut);
-        //dd($rut);
-        if($request->ajax()){
-            $notaventas = consulta($request);
-        }
-        //dd($request);
-        //dd(str_replace(".","",$request->rut));
-        $notaventas = consulta($request);
+        $notaventas = consulta($request,1);
+        $totalareaprods = consulta($request,2); //Totales Area de produccion
+
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -444,12 +438,12 @@ class NotaVentaConsultaController extends Controller
         if($notaventas){
             
             if(env('APP_DEBUG')){
-                return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
-            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteNotasVenta.pdf");
@@ -460,7 +454,7 @@ class NotaVentaConsultaController extends Controller
     
 }
 
-function consulta($request){
+function consulta($request,$aux_consulta){
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -566,43 +560,70 @@ function consulta($request){
     }
  
     
-
-    $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
-            sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
-            sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
-            sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
-            sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
-            sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
-            sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
-            sum(notaventadetalle.subtotal) AS totalps,
-            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
-            FROM notaventa INNER JOIN notaventadetalle
-            ON notaventa.id=notaventadetalle.notaventa_id
-            INNER JOIN producto
-            ON notaventadetalle.producto_id=producto.id
-            INNER JOIN categoriaprod
-            ON categoriaprod.id=producto.categoriaprod_id
-            INNER JOIN areaproduccion
-            ON areaproduccion.id=categoriaprod.areaproduccion_id
-            INNER JOIN cliente
-            ON cliente.id=notaventa.cliente_id
-            WHERE $vendedorcond
-            and $aux_condFecha
-            and $aux_condrut
-            and $aux_condoc_id
-            and $aux_condgiro_id
-            and $aux_condareaproduccion_id
-            and $aux_condtipoentrega_id
-            and $aux_condnotaventa_id
-            and $aux_aprobstatus
-            and $aux_condproducto_id
-            and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
-            GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-            notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
-            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
-
+    if($aux_consulta == 1){
+        $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
+        sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,
+        sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
+        sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
+        sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
+        sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
+        sum(notaventadetalle.subtotal) AS totalps,
+        notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
+        FROM notaventa INNER JOIN notaventadetalle
+        ON notaventa.id=notaventadetalle.notaventa_id
+        INNER JOIN producto
+        ON notaventadetalle.producto_id=producto.id
+        INNER JOIN categoriaprod
+        ON categoriaprod.id=producto.categoriaprod_id
+        INNER JOIN areaproduccion
+        ON areaproduccion.id=categoriaprod.areaproduccion_id
+        INNER JOIN cliente
+        ON cliente.id=notaventa.cliente_id
+        WHERE $vendedorcond
+        and $aux_condFecha
+        and $aux_condrut
+        and $aux_condoc_id
+        and $aux_condgiro_id
+        and $aux_condareaproduccion_id
+        and $aux_condtipoentrega_id
+        and $aux_condnotaventa_id
+        and $aux_aprobstatus
+        and $aux_condproducto_id
+        and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
+        GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho;";
+    }
             //and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+    if($aux_consulta == 2){
+        $sql = "SELECT areaproduccion_id,areaproduccion.nombre,
+        sum(notaventadetalle.totalkilos) AS totalkilos,
+        sum(notaventadetalle.subtotal) AS totalps
+        FROM notaventa INNER JOIN notaventadetalle
+        ON notaventa.id=notaventadetalle.notaventa_id
+        INNER JOIN producto
+        ON notaventadetalle.producto_id=producto.id
+        INNER JOIN categoriaprod
+        ON categoriaprod.id=producto.categoriaprod_id
+        INNER JOIN areaproduccion
+        ON areaproduccion.id=categoriaprod.areaproduccion_id
+        INNER JOIN cliente
+        ON cliente.id=notaventa.cliente_id
+        WHERE $vendedorcond
+        and $aux_condFecha
+        and $aux_condrut
+        and $aux_condoc_id
+        and $aux_condgiro_id
+        and $aux_condareaproduccion_id
+        and $aux_condtipoentrega_id
+        and $aux_condnotaventa_id
+        and $aux_aprobstatus
+        and $aux_condproducto_id
+        and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
+        GROUP BY areaproduccion_id,areaproduccion.nombre;";
+    }
 
     $datas = DB::select($sql);
     return $datas;
@@ -633,11 +654,7 @@ function armarReportehtml($request){
     $rut=str_replace("-","",$request->rut);
     $rut=str_replace(".","",$rut);
     //dd($rut);
-    if($request->ajax()){
-        $notaventas = consulta($request);
-    }
-    //dd($request);
-    $notaventas = consulta($request);
+    $notaventas = consulta($request,1);
     $aux_fdesde= $request->fechad;
     $aux_fhasta= $request->fechah;
 

@@ -123,11 +123,23 @@
 						<td colspan="8" class="textright"><span><strong>Totales</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
+						<td class="textright"><span><strong>NETO</strong></span></td>
+						<td class="textright"><span><strong>{{number_format($notaventa->neto, 2, ",", ".")}}</strong></span></td>
 					</tr>
+					<tr>
+						<td colspan="11" class="textright"><span><strong>IVA {{$notaventa->piva}}%</strong></span></td>
+						<td class="textright"><span><strong>{{number_format($notaventa->iva, 2, ",", ".")}}</strong></span></td>
+					</tr>
+					<tr>
+						<td colspan="11" class="textright"><span><strong>TOTAL</strong></span></td>
+						<td class="textright"><span><strong>{{number_format($notaventa->total, 2, ",", ".")}}</strong></span></td>
+					</tr>
+		
 				</tfoot>
 
 		</table>
 	</div>
+	<!--
 	<div>
 		<table id="factura_detalle">
 			<tr class="headt">
@@ -144,6 +156,7 @@
 			</tr>
 		</table>
 	</div>
+-->
 	<br>
 	<div class="round1">
 		<span class="h3">Información</span>

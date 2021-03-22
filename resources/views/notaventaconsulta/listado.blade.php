@@ -148,7 +148,7 @@
 							<td>{{$notaventa->razonsocial}}</td>
 							<td>{{$comuna->nombre}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->totalkilos, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->totalps, 2, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($notaventa->totalps, 0, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</td>
 						</tr>
 
@@ -162,11 +162,20 @@
 				?>
 
 				<tfoot id="detalle_totales">
+					@foreach($totalareaprods as $totalareaprod)
+						<tr class="headt">
+							<td colspan="7" class="textright"><b>{{$totalareaprod->nombre}}</b></td>
+							<td class="textright"><b>{{number_format($totalareaprod->totalkilos, 2, ",", ".")}}</b></td>
+							<td class="textright"><b>{{number_format($totalareaprod->totalps, 0, ",", ".")}}</b></td>
+							<td class="textright"><b>{{number_format($totalareaprod->totalps / $totalareaprod->totalkilos, 2, ",", ".")}}</b></td>
+						</tr>
+					@endforeach
 					<tr class="headt">
-						<td colspan="7" class="textright"><b>TOTALES</b></td>
+						<td colspan="7" class="textright"><b>TOTAL</b></td>
 						<td class="textright"><b>{{number_format($aux_totalKG, 2, ",", ".")}}</b></td>
-						<td class="textright"><b>{{number_format($aux_totalps, 2, ",", ".")}}</b></td>
+						<td class="textright"><b>{{number_format($aux_totalps, 0, ",", ".")}}</b></td>
 						<td class="textright"><b>{{number_format($aux_promGeneral, 2, ",", ".")}}</b></td>
+					</tr>
 				</tfoot>
 		</table>
 	</div>
