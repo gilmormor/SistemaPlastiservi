@@ -24,6 +24,8 @@ class CreateTableBitacora extends Migration
             $table->foreign('usuario_id','fk_bitacora_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->string('codmov',3)->comment('Codigo de Movimiento Ejm: IS=Inicio de Sesion, FS=Finde Sesion.');
             $table->string('desc',250)->comment('Descripcion de movimiento.');
+            $table->string('nombretabla',40)->comment('Nombre de tabla donde se origino la accion')->nullable();
+            $table->unsignedBigInteger('tabla_id')->comment('id de la tabla donde se genero la accion.')->nullable();
             $table->string('ip',16)->comment('Dirección IP');
             $table->string('dispositivo',16)->comment('Dispositivo')->nullable();
             $table->softDeletes();
