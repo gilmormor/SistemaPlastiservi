@@ -28,6 +28,7 @@ class NotaVentaConsultaController extends Controller
     {
         can('consulta-nota-de-venta');
         $user = Usuario::findOrFail(auth()->id());
+        /*
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
             ON vendedor.persona_id=persona.id
@@ -79,6 +80,11 @@ class NotaVentaConsultaController extends Controller
                 ->groupBy('vendedor.id')
                 ->get();
         }
+        */
+        $arrayvend = Vendedor::vendedores(); //Esto viene del modelo vendedores
+        $vendedores1 = $arrayvend['vendedores'];
+        $clientevendedorArray = $arrayvend['clientevendedorArray'];
+
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])

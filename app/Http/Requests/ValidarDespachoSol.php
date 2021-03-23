@@ -31,7 +31,7 @@ class ValidarDespachoSol extends FormRequest
             'plazoentrega' => 'required',
             'lugarentrega' => 'required',
             'contacto' => 'required|max:50',
-            'contactoemail' => 'required|max:50|email:rfc,dns',
+            'contactoemail' => 'required|max:50|email:rfc', //'contactoemail' => 'required|max:50|email:rfc,dns',
             'contactotelf' => 'required|max:50',
             'observacion' => 'max:200',
             'fechaestdesp' => 'required',

@@ -26,6 +26,7 @@ class CotizacionConsultaController extends Controller
     {
         can('consulta-cotizacion');
         $user = Usuario::findOrFail(auth()->id());
+        /*
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
             ON vendedor.persona_id=persona.id
@@ -77,6 +78,11 @@ class CotizacionConsultaController extends Controller
                 ->groupBy('vendedor.id')
                 ->get();
         }
+        */
+        $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
+        $vendedores1 = $arrayvend['vendedores'];
+        $clientevendedorArray = $arrayvend['clientevendedorArray'];
+
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
