@@ -163,11 +163,17 @@
 
 				<tfoot id="detalle_totales">
 					@foreach($totalareaprods as $totalareaprod)
+						<?php
+							$aux_promAreaProd = 0;
+							if($totalareaprod->totalkilos > 0){
+								$aux_promAreaProd = $totalareaprod->totalps / $totalareaprod->totalkilos;
+							}
+						?>
 						<tr class="headt">
 							<td colspan="7" class="textright"><b>{{$totalareaprod->nombre}}</b></td>
 							<td class="textright"><b>{{number_format($totalareaprod->totalkilos, 2, ",", ".")}}</b></td>
 							<td class="textright"><b>{{number_format($totalareaprod->totalps, 0, ",", ".")}}</b></td>
-							<td class="textright"><b>{{number_format($totalareaprod->totalps / $totalareaprod->totalkilos, 2, ",", ".")}}</b></td>
+							<td class="textright"><b>{{number_format($aux_promAreaProd, 2, ",", ".")}}</b></td>
 						</tr>
 					@endforeach
 					<tr class="headt">

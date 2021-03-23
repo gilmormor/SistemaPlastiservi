@@ -9,7 +9,7 @@
 <body>
 
     <p>{{ $cuerpo }}, {{ date("d-m-Y h:i:s A", strtotime($msg->updated_at)) }}.</p>
-    <p>Datos del usuario que genero el correo:</p>
+    <p>Datos usuario que generó el correo:</p>
     <ul>
         <li><b>Nombre:</b> {{session()->get('nombre_usuario') }}</li>
         <li><b>Email:</b> {{Auth::user()->email}}</li>

@@ -29,7 +29,7 @@ class DespachoOrdDet extends Model
     {
         return $this->belongsTo(DespachoSolDet::class);
     }
-
+  
     //RELACION INVERSA NotaVentaDetalle
     public function notaventadetalle()
     {

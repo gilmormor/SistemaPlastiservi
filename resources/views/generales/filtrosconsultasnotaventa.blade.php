@@ -156,6 +156,23 @@
                 </div>
             </div>
         </div>
+        <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Comuna">
+            <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                <label>Comuna:</label>
+            </div>
+            <div class="col-xs-12 col-md-8 col-sm-8">
+                <select name="comuna_id" id="comuna_id" class="selectpicker form-control comuna_id" data-live-search="true">
+                    <option value="">Todos</option>
+                    @foreach($comunas as $comuna)
+                        <option
+                            value="{{$comuna->id}}"
+                            >
+                            {{$comuna->nombre}}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
     </div>
 </div>
 <div class="col-xs-12 col-md-3 col-sm-12">

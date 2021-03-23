@@ -129,7 +129,8 @@ function datos(){
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
-        producto_id       : $("#producto_idM").val(),
+        producto_idM      : $("#producto_idM").val(),
+        comuna_id         : $("#comuna_id").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;

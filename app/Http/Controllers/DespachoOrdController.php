@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\GuardarFacturaDespacho;
+use App\Events\GuardarGuiaDespacho;
 use App\Http\Requests\ValidarDespachoOrd;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
@@ -577,7 +579,6 @@ class DespachoOrdController extends Controller
     public function guardarguiadesp(Request $request)
     {
         if ($request->ajax()) {
-            //dd($request);
             $despachoord = DespachoOrd::where('guiadespacho','=',$request->guiadespacho)->get();
             $aux_contgdesp = count($despachoord);
             if($aux_contgdesp>0){
@@ -589,6 +590,7 @@ class DespachoOrdController extends Controller
                     $despachoord->guiadespacho = $request->guiadespacho;
                     $despachoord->guiadespachofec = date("Y-m-d H:i:s");
                     if ($despachoord->save()) {
+                        Event(new GuardarGuiaDespacho($despachoord));
                         return response()->json([
                                                 'mensaje' => 'ok',
                                                 'despachoord' => $despachoord,
@@ -619,6 +621,7 @@ class DespachoOrdController extends Controller
                 $despachoord->fechafactura = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
                 $despachoord->numfacturafec = date("Y-m-d H:i:s");
                 if ($despachoord->save()) {
+                    Event(new GuardarFacturaDespacho($despachoord));
                     return response()->json([
                                             'mensaje' => 'ok',
                                             'despachoord' => $despachoord
@@ -786,7 +789,7 @@ class DespachoOrdController extends Controller
                 <tfoot>
                     <tr>
                         <th colspan='2' style='text-align:left'>TOTALES</th>
-                        <th style='text-align:right'>". number_format($aux_totalcantsoldesp, 0, ",", ".") ."</th>
+                        <th style='text-align:right'></th>
                         <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
                         <th colspan='10' style='text-align:right'></th>
                     </tr>

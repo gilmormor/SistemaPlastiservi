@@ -3,9 +3,13 @@
 namespace App\Providers;
 
 use App\Events\FinSesionUsuario;
+use App\Events\GuardarFacturaDespacho;
+use App\Events\GuardarGuiaDespacho;
 use App\Events\InicioSesionUsuario;
 use App\Listeners\BitFinSesionUsuario;
 use App\Listeners\BitInicioSesionUsuario;
+use App\Listeners\NotifyMailGuardarFacturaDespacho;
+use App\Listeners\NotifyMailGuardarGuiaDespacho;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -29,6 +33,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         FinSesionUsuario::class => [
             BitFinSesionUsuario::class,
+        ],
+        GuardarGuiaDespacho::class => [
+            NotifyMailGuardarGuiaDespacho::class,
+        ],
+        GuardarFacturaDespacho::class => [
+            NotifyMailGuardarFacturaDespacho::class,
         ]
     ];
 
