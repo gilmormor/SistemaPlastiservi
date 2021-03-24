@@ -165,7 +165,7 @@ Solicitud Despacho
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="status" id="status" class="selectpicker form-control status">
                                             <option value="">Todos</option>
-                                            <option value="1">Abiertas</option>
+                                            <option value="1" selected>Abiertas</option>
                                             <option value="2">Cerradas</option>
                                             <option value="3">Anuladas</option>
                                         </select>
