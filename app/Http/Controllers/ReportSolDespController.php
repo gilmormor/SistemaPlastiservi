@@ -343,26 +343,32 @@ function consultasoldesp($request){
         $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
     }
 
-    if(empty($request->aprobstatus)){
-        $aux_aprobstatus = " true";
+    if(empty($request->status)){
+        $aux_status = " true";
     }else{
-        switch ($request->aprobstatus) {
-            case 1:
-                $aux_aprobstatus = "notaventa.aprobstatus='0'";
-                break;
-            case 2:
-                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+        $aux_inNullSoldesp = "despachosol.id IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE isnull(despachosolanul.deleted_at))";
+        $aux_notinNullSoldesp = "despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE isnull(despachosolanul.deleted_at))";
+        $aux_sqlsumdespfact = "SELECT cantdesp
+                    FROM vista_sumorddespdetconfacturada
+                    WHERE despachosoldet_id=despachosoldet.id";
+        switch ($request->status) {
+            case '1':
+                $aux_status = "if((if(isnull(($aux_sqlsumdespfact)),0,($aux_sqlsumdespfact))
+                                ) < despachosoldet.cantsoldesp,TRUE,FALSE)
+                                AND $aux_notinNullSoldesp";
                 break;    
-            case 3:
-                $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
+            case '2':
+                $aux_status = "if((if(isnull(($aux_sqlsumdespfact)),0,($aux_sqlsumdespfact))
+                                ) >= despachosoldet.cantsoldesp,TRUE,FALSE)
+                                AND $aux_notinNullSoldesp
+                                ";
                 break;
-            case 4:
-                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+            case '3':
+                $aux_status = "despachosol.id IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE isnull(despachosolanul.deleted_at))";
                 break;
         }
-        
     }
-
+    //dd($aux_status);
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
@@ -391,10 +397,13 @@ function consultasoldesp($request){
             comuna.nombre as comunanombre,
             despachosol.notaventa_id,despachosol.fechaestdesp,
             sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
+            sum(despachosoldet.cantsoldesp) AS totalcantsol,
+            sum(($aux_sqlsumdespfact)) as totalcantdesp,
             despachosol.aprorddesp,despachosol.aprorddespfh,
             tipoentrega.nombre as tipentnombre,tipoentrega.icono
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
+            AND $aux_status
             INNER JOIN notaventa
             ON notaventa.id=despachosol.notaventa_id
             INNER JOIN notaventadetalle
@@ -419,7 +428,6 @@ function consultasoldesp($request){
             and $aux_condareaproduccion_id
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
-            and $aux_aprobstatus
             and $aux_condcomuna_id
             and $aux_condaprobord
             and $aux_condid
