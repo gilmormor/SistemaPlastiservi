@@ -14,7 +14,7 @@ $(document).ready(function () {
         }
 	});
 */
-    consultar(datos());
+    //consultar(datos());
     $("#btnconsultar").click(function()
     {
         consultar(datos());
@@ -268,7 +268,8 @@ $(document).on("click", ".btndevsol", function(event){
             _token : $('input[name=_token]').val()
         };
         if (value) {
-            ajaxRequest(data,form.attr('href'),'btndevsol',form);
+            $("#myModaldevsoldeps").modal('show');
+            //ajaxRequest(data,form.attr('href'),'btndevsol',form);
         }
     });
     

@@ -1,5 +1,5 @@
 <div class="modal fade" id="myModalanularguiafact" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" id="mdialTamanio">
+    <div class="modal-dialog modal-dialog-centered" id="mdialTamanio1">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">

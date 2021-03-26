@@ -32,7 +32,7 @@ Solicitud Despacho
 </div>
 
 <div class="modal fade" id="myModaldevsoldeps" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" id="mdialTamanio">
+    <div class="modal-dialog modal-dialog-centered" id="mdialTamanio1">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
@@ -44,8 +44,8 @@ Solicitud Despacho
             <div class="modal-body">
                 <div class="row">
                     <input type="hidden" name="nfilaanul" id="nfilaanul">
-                    <div class="form-group col-xs-12 col-sm-2">
-                        <label for="despachosol_id" class="control-label">OD</label>
+                    <div class="form-group col-xs-12 col-sm-5">
+                        <label for="despachosol_id" class="control-label">Id Solicitud Despacho</label>
                         <input type="text" name="despachosol_id" id="despachosol_id" class="form-control" required placeholder="ID" disabled readonly/>
                     </div>
                 </div>
