@@ -43,9 +43,8 @@ Solicitud de despacho
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $aux_nfila = 0; ?>
+                            <?php $aux_nfila = 0;?>
                             @foreach ($datas as $data)
-                                @if (count($data->despachoords) == 0)
                                 <?php
                                     
                                     $aux_nfila++; 
@@ -117,7 +116,6 @@ Solicitud de despacho
                                         @endif
                                     </td>
                                 </tr>
-                                @endif
                             @endforeach
                         </tbody>
                     </table>

@@ -349,7 +349,7 @@ function consultasoldesp($request){
         $aux_inNullSoldesp = "despachosol.id IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE isnull(despachosolanul.deleted_at))";
         $aux_notinNullSoldesp = "despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE isnull(despachosolanul.deleted_at))";
         $aux_sqlsumdespfact = "SELECT cantdesp
-                    FROM vista_sumorddespdetconfacturada
+                    FROM vista_sumorddespdetconfactura
                     WHERE despachosoldet_id=despachosoldet.id";
         switch ($request->status) {
             case '1':

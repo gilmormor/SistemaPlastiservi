@@ -10,6 +10,7 @@ use App\Models\ClienteBloqueado;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
+use App\Models\DespachoOrd;
 use App\Models\DespachoSol;
 use App\Models\DespachoSolAnul;
 use App\Models\DespachoSolDet;
@@ -1363,7 +1364,6 @@ function reportesoldesp1($request){
 
         $i = 0;
         foreach ($datas as $data) {
-
             $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
             if(empty($data->oc_file)){
                 $aux_enlaceoc = $data->oc_id;
@@ -1385,6 +1385,21 @@ function reportesoldesp1($request){
                                     <i class='fa fa-fw $data->icono'></i>
                                 </a>";    
             }
+
+            $sql = "SELECT COUNT(*) as cont
+            FROM despachoord
+            WHERE despachoord.despachosol_id=$data->id
+            AND despachoord.id 
+            NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at));";
+
+            $contorddesp = DB::select($sql);
+            /*
+            if($contorddesp[0]->cont == 0){
+                $nuevoOrdDesp .= "<a id='btndelvolver$i' name='btndelvolver$i' class='btn-accion-tabla btn-sm tooltipsC' onclick='anular({{$i}},{{$data->id}})' title='Devolver Solicitud' data-toggle='tooltip'>
+                                            <span class='glyphicon glyphicon-share-alt text-danger'></span>
+                                        </a>";
+            }
+            */
 
             $respuesta['tabla'] .= "
             <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
@@ -1412,7 +1427,7 @@ function reportesoldesp1($request){
                     $nuevoOrdDesp
                 </td>
             </tr>";
-
+            $i++;
             //dd($data->contacto);
         }
 
@@ -1532,7 +1547,22 @@ function consultasoldesp($request){
         $aux_condfechaestdesp = "despachosol.fechaestdesp='$fechad'";
     }
 
+    if(empty($request->id)){
+        $aux_condid = " true";
+    }else{
+        $aux_condid = "despachosol.id='$request->id'";
+    }
+
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
+
+    $aux_notinNullSoldesp = "despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE isnull(despachosolanul.deleted_at))";
+    $aux_sqlsumdesp = "SELECT cantdesp
+                        FROM vista_sumorddespdet
+                        WHERE despachosoldet_id=despachosoldet.id";
+    $aux_condactivas = "if((if(isnull(($aux_sqlsumdesp)),0,($aux_sqlsumdesp))
+                    ) >= despachosoldet.cantsoldesp,FALSE,TRUE)
+                    AND $aux_notinNullSoldesp";
+    //$aux_condactivas = "true";
 
     $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
             notaventa.oc_file,
@@ -1542,10 +1572,7 @@ function consultasoldesp($request){
             vista_despsoltotales.totalkilos
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
-            AND if((SELECT cantdesp
-                    FROM vista_sumorddespdet
-                    WHERE despachosoldet_id=despachosoldet.id
-                    ) >= despachosoldet.cantsoldesp,FALSE,TRUE)
+            AND $aux_condactivas
             INNER JOIN notaventa
             ON notaventa.id=despachosol.notaventa_id
             INNER JOIN notaventadetalle
@@ -1578,8 +1605,10 @@ function consultasoldesp($request){
             and $aux_condcomuna_id
             and $aux_condaprobord
             and $aux_condfechaestdesp
+            and $aux_condid
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
-            and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
+            and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
+            and isnull(despachosoldet.deleted_at)
             GROUP BY despachosol.id
             ORDER BY despachosol.id DESC;";
 /*
