@@ -509,10 +509,17 @@ class ClienteController extends Controller
             $cliente->sucursales()->sync([
                 0 => $request->sucursal_id
             ]);
-            //Actualizo el campo cliente_id por el cliente recien creado
+            //Actualizo tadoas las cotizaciones que tenga el cliente temporal asignado
+            //campo cliente_id por el cliente recien creado
+            /*
             $cotizacion = Cotizacion::findOrFail($request->cotizacion_id);
             $cotizacion->cliente_id = $cliente->id;
             $cotizacion->save();
+            */
+            $cotizacion = Cotizacion::findOrFail($request->cotizacion_id);
+            Cotizacion::where('clientetemp_id','=',$cotizacion->clientetemp_id)
+                            ->update(['cliente_id' => $cliente->id]);
+            //********* */
             $data = Cliente::findOrFail($cliente->id);
             return response()->json($data->where('id',$cliente->id)->get());
             //return response()->json($clientedirecs->get());

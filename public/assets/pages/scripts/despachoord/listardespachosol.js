@@ -88,7 +88,26 @@ function ajaxRequest(data,url,funcion) {
 					}
 				}
 			}
-
+            if(funcion=='btndevsol'){
+                if (respuesta.mensaje == "ok") {
+                    form.parents('tr').remove();
+                    Biblioteca.notificaciones('El registro fue procesado correctamente.', 'Plastiservi', 'success');
+                } else {
+                    if (respuesta.mensaje == "sp"){
+                        Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
+                    }else{
+                        if(respuesta.mensaje == "hojos"){
+                            Biblioteca.notificaciones('No puede ser eliminado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
+                        }else{
+                            if(respuesta.mensaje == "ne"){
+                                Biblioteca.notificaciones('No tiene permiso para eliminar.', 'Plastiservi', 'error');
+                            }else{
+                                Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
+                            }
+                        }
+                    }
+                }
+            }
 		},
 		error: function () {
 		}
@@ -228,3 +247,30 @@ function visto(id,visto){
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
 }
+
+$(document).on("click", ".btndevsol", function(event){
+    event.preventDefault();
+    swal({
+        title: '¿ Desea devolver Solicitud ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        fila = $(this).closest("tr");
+        form = $(this);
+        id = fila.find('td:eq(0)').text();
+            //alert(id);
+        var data = {
+            id      : id,
+            _token : $('input[name=_token]').val()
+        };
+        if (value) {
+            ajaxRequest(data,form.attr('href'),'btndevsol',form);
+        }
+    });
+    
+});
+

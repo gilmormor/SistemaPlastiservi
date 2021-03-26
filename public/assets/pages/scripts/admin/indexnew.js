@@ -39,55 +39,53 @@ $(document).on("click", ".btnEliminar", function(event){
             ajaxRequest(data,form.attr('href')+'/1','eliminar',form);
         }
     });
+    
+});
 
 
-
-    function ajaxRequest(data,url,funcion,form = false) {
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            success: function (respuesta) {
-                if(funcion=='eliminar'){
-                    if (respuesta.mensaje == "ok") {
-                        form.parents('tr').remove();
-                        Biblioteca.notificaciones('El registro fue eliminado correctamente.', 'Plastiservi', 'success');
-                    } else {
-                        if (respuesta.mensaje == "sp"){
-                            Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
+function ajaxRequest(data,url,funcion,form = false) {
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            if(funcion=='eliminar'){
+                if (respuesta.mensaje == "ok") {
+                    form.parents('tr').remove();
+                    Biblioteca.notificaciones('El registro fue eliminado correctamente.', 'Plastiservi', 'success');
+                } else {
+                    if (respuesta.mensaje == "sp"){
+                        Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
+                    }else{
+                        if(respuesta.mensaje == "cr"){
+                            Biblioteca.notificaciones('No puede ser eliminado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
                         }else{
-                            if(respuesta.mensaje == "cr"){
-                                Biblioteca.notificaciones('No puede ser eliminado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
+                            if(respuesta.mensaje == "ne"){
+                                Biblioteca.notificaciones('No tiene permiso para eliminar.', 'Plastiservi', 'error');
                             }else{
-                                if(respuesta.mensaje == "ne"){
-                                    Biblioteca.notificaciones('No tiene permiso para eliminar.', 'Plastiservi', 'error');
-                                }else{
-                                    Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
-                                }
+                                Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
                             }
                         }
                     }
                 }
-                if(funcion=='verUsuario'){
-                    $('#myModal .modal-body').html(respuesta);
-                    $("#myModal").modal('show');
-                }
-            },
-            error: function () {
             }
-        });
-    }
-
-    $(".ver-usuario").click(function(event)
-    {
-        event.preventDefault();
-        const url = $(this).attr('href');
-        const data = {
-            _token: $('input[name=_token]').val()
+            if(funcion=='verUsuario'){
+                $('#myModal .modal-body').html(respuesta);
+                $("#myModal").modal('show');
+            }
+        },
+        error: function () {
         }
-        ajaxRequest(data,url,'verUsuario');
-        //$("#myModal").modal('show');
     });
-    
-});
+}
 
+$(".ver-usuario").click(function(event)
+{
+    event.preventDefault();
+    const url = $(this).attr('href');
+    const data = {
+        _token: $('input[name=_token]').val()
+    }
+    ajaxRequest(data,url,'verUsuario');
+    //$("#myModal").modal('show');
+});

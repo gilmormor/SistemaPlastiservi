@@ -764,6 +764,34 @@ class DespachoSolController extends Controller
         }
     }
 
+    /*DEVOLVER SOLICITUD DESPACHO A SOLICITUDES PENDIENTES POR APROBAR*/
+    public function devolversoldesp(Request $request)
+    {
+        if ($request->ajax()) {
+            $despachosol = DespachoSol::findOrFail($request->id);
+            $sql = "SELECT COUNT(*) as cont
+            FROM despachoord
+            WHERE despachoord.despachosol_id=$request->id
+            AND despachoord.id 
+            NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at));";
+
+            $contorddesp = DB::select($sql);
+            if($contorddesp[0]->cont == 0){ 
+                $despachosol->aprorddesp = null;
+                $despachosol->aprorddespfh = null;
+                if ($despachosol->save()) {
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }
+            }else{
+                return response()->json(['mensaje' => 'hijos']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
     public function aproborddesp(Request $request)
     {
         if ($request->ajax()) {
@@ -1382,7 +1410,9 @@ function reportesoldesp1($request){
             }else{
                 $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
                 $nuevoOrdDesp = "<a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
-                                    <i class='fa fa-fw $data->icono'></i>
+                                    <button type='button' class='btn btn-default btn-xs'>
+                                        <i class='fa fa-fw $data->icono'></i>
+                                    </button>
                                 </a>";    
             }
 
@@ -1393,13 +1423,16 @@ function reportesoldesp1($request){
             NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at));";
 
             $contorddesp = DB::select($sql);
-            /*
             if($contorddesp[0]->cont == 0){
-                $nuevoOrdDesp .= "<a id='btndelvolver$i' name='btndelvolver$i' class='btn-accion-tabla btn-sm tooltipsC' onclick='anular({{$i}},{{$data->id}})' title='Devolver Solicitud' data-toggle='tooltip'>
-                                            <span class='glyphicon glyphicon-share-alt text-danger'></span>
-                                        </a>";
+                $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip'>
+                                    <button type='button' class='btn btn-primary btn-xs'><i class='fa fa-fw fa-reply'></i></button>
+                                </a>";
+            }else{
+                $nuevoOrdDesp .= "<a id='btnanular$i' name='btnanular$i' class='btn-accion-tabla btn-sm tooltipsC' onclick='anularrestosol({{$i}},{{$data->id}})' title='Anular Resto de Solicitud' data-toggle='tooltip'>
+                                    <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-remove'></i></button>
+                                </a>";
+                                
             }
-            */
 
             $respuesta['tabla'] .= "
             <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
