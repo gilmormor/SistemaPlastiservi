@@ -14,7 +14,7 @@ $(document).ready(function () {
         }
 	});
 */
-    //consultar(datos());
+    consultar(datos());
     $("#btnconsultar").click(function()
     {
         consultar(datos());
