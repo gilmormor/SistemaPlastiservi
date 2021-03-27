@@ -1424,7 +1424,7 @@ function reportesoldesp1($request){
 
             $contorddesp = DB::select($sql);
             if($contorddesp[0]->cont == 0){
-                $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip'>
+                $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' fila='$i' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip'>
                                     <button type='button' class='btn btn-primary btn-xs'><i class='fa fa-fw fa-reply'></i></button>
                                 </a>";
             }else{

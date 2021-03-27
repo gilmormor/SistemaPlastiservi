@@ -90,7 +90,8 @@ function ajaxRequest(data,url,funcion) {
 			}
             if(funcion=='btndevsol'){
                 if (respuesta.mensaje == "ok") {
-                    form.parents('tr').remove();
+                    //form.parents('tr').remove();
+                    $("#fila"+data['nfila']).remove();
                     Biblioteca.notificaciones('El registro fue procesado correctamente.', 'Plastiservi', 'success');
                 } else {
                     if (respuesta.mensaje == "sp"){
@@ -107,6 +108,7 @@ function ajaxRequest(data,url,funcion) {
                         }
                     }
                 }
+                $("#myModaldevsoldeps").modal('hide');
             }
 		},
 		error: function () {
@@ -231,6 +233,7 @@ $("#btnbuscarcliente").click(function(event){
     $("#myModalBusqueda").modal('show');
 });
 
+
 function copiar_rut(id,rut){
 	$("#myModalBusqueda").modal('hide');
 	$("#rut").val(rut);
@@ -250,6 +253,20 @@ function visto(id,visto){
 
 $(document).on("click", ".btndevsol", function(event){
     event.preventDefault();
+    fila = $(this).closest("tr");
+    form = $(this);
+    id = fila.find('td:eq(0)').text();
+
+    $("#despachosol_id").val(id);
+    $("#nfilaDel").val(form.attr('fila'));
+    $("#ruta").val(form.attr('href'));
+    $("#observacion").val("");
+    $("#myModaldevsoldeps").modal('show');
+    
+});
+
+
+$("#btnGuardarDSD").click(function(event){
     swal({
         title: '¿ Desea devolver Solicitud ?',
         text: "Esta acción no se puede deshacer!",
@@ -259,19 +276,22 @@ $(document).on("click", ".btndevsol", function(event){
             confirm: "Aceptar"
         },
     }).then((value) => {
+        /*
         fila = $(this).closest("tr");
         form = $(this);
         id = fila.find('td:eq(0)').text();
             //alert(id);
+        */
         var data = {
-            id      : id,
+            id     : $("#despachosol_id").val(),
+            nfila  : $("#nfilaDel").val(),
             _token : $('input[name=_token]').val()
         };
         if (value) {
-            $("#myModaldevsoldeps").modal('show');
-            //ajaxRequest(data,form.attr('href'),'btndevsol',form);
+            
+            ajaxRequest(data,$("#ruta").val(),'btndevsol',form);
         }
     });
-    
 });
+
 

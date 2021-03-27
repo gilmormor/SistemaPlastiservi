@@ -43,7 +43,8 @@ Solicitud Despacho
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <input type="hidden" name="nfilaanul" id="nfilaanul">
+                    <input type="hidden" name="nfilaDel" id="nfilaDel">
+                    <input type="hidden" name="ruta" id="ruta">
                     <div class="form-group col-xs-12 col-sm-5">
                         <label for="despachosol_id" class="control-label">Id Solicitud Despacho</label>
                         <input type="text" name="despachosol_id" id="despachosol_id" class="form-control" required placeholder="ID" disabled readonly/>
@@ -59,7 +60,7 @@ Solicitud Despacho
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <button type="button" id="btnGuardarGanul" name="btnGuardarGanul" class="btn btn-primary">Guardar</button>
+                <button type="button" id="btnGuardarDSD" name="btnGuardarDSD" class="btn btn-primary">Guardar</button>
             </div>
         </div>
         
