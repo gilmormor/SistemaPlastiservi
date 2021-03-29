@@ -97,77 +97,79 @@ class NotificacionesController extends Controller
         $usuario = Usuario::with('roles')->findOrFail(auth()->id());
         //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
         $fecha = date("d-m-Y H:i:s");
-        $notfNoConformidades = consultaSQL(1,$usuario->persona->id);
+        if($usuario->persona){
+            $notfNoConformidades = consultaSQL(1,$usuario->persona->id);
 
-        foreach ($notfNoConformidades as $NC) {
-            if($NC->notirecep === null){
-                if ((NOW()<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) 
-                OR (!is_null($NC->accioninmediata) and $NC->accioninmediata!=''))){
-                    $aux_mostrar = false;
-                    if(is_null($NC->usuario_idmp2)){
-                        $aux_mostrar = true;
-                    }else{
-                        //Esta ultima validacion es para que cuando se rachazada la NC por el dueño permita mostrarla sin importar la fecha que fue hecha a accion inmediata -> or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))
-                        $aux_mostrarCP = false;
-                        if($NC->cumplimiento==1 or ($NC->cumplimiento <= 0 and !is_null($NC->cumplimiento))){
-                            $aux_mostrarCP = true;
-                        }
-                        if($NC->aprobpaso2==1 or ($NC->aprobpaso2 <= 0 and !is_null($NC->aprobpaso2))){
-                            $aux_mostrarCP = true;
-                        }
-                        if(($NC->usuario_idmp2==auth()->id()) AND ( $NC->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) or $aux_mostrarCP )){
+            foreach ($notfNoConformidades as $NC) {
+                if($NC->notirecep === null){
+                    if ((NOW()<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) 
+                    OR (!is_null($NC->accioninmediata) and $NC->accioninmediata!=''))){
+                        $aux_mostrar = false;
+                        if(is_null($NC->usuario_idmp2)){
                             $aux_mostrar = true;
+                        }else{
+                            //Esta ultima validacion es para que cuando se rachazada la NC por el dueño permita mostrarla sin importar la fecha que fue hecha a accion inmediata -> or ($data->cumplimiento <= 0 and !is_null($data->cumplimiento))
+                            $aux_mostrarCP = false;
+                            if($NC->cumplimiento==1 or ($NC->cumplimiento <= 0 and !is_null($NC->cumplimiento))){
+                                $aux_mostrarCP = true;
+                            }
+                            if($NC->aprobpaso2==1 or ($NC->aprobpaso2 <= 0 and !is_null($NC->aprobpaso2))){
+                                $aux_mostrarCP = true;
+                            }
+                            if(($NC->usuario_idmp2==auth()->id()) AND ( $NC->accioninmediatafec<= date("Y-m-d H:i:s",strtotime($NC->fechahora."+ 1 days")) or $aux_mostrarCP )){
+                                $aux_mostrar = true;
+                            }
+                        }
+                        if ($aux_mostrar){
+                            $contRecepNC++;
                         }
                     }
-                    if ($aux_mostrar){
+
+                }
+            }
+            $arearesps = consultaSQL(2,$usuario->persona->id);
+            foreach ($arearesps as $data){
+                if($data->notirecep === null){
+                    if ((NOW()>= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
+                    AND (is_null($data->accioninmediata) or $data->accioninmediata=='')))
+                    {
                         $contRecepNC++;
                     }
-                }
+                else
+                    if ($data->usuario_idmp2==auth()->id()){
+                        $contRecepNC++;
+                    }
 
-            }
-        }
-        $arearesps = consultaSQL(2,$usuario->persona->id);
-        foreach ($arearesps as $data){
-            if($data->notirecep === null){
-                if ((NOW()>= date("Y-m-d H:i:s",strtotime($data->fechahora."+ 1 days")) 
-                AND (is_null($data->accioninmediata) or $data->accioninmediata=='')))
-                {
-                    $contRecepNC++;
                 }
-            else
-                if ($data->usuario_idmp2==auth()->id()){
-                    $contRecepNC++;
+            }
+            $datas = NoConformidad::orderBy('id')
+                ->where('usuario_id','=',auth()->id())
+                ->get();
+            $datas = consultaSQL(1,$usuario->persona->id);
+            foreach ($datas as $data){
+                if(!empty($data->fechaguardado) and empty($data->cumplimiento)){
+                    if($data->noticumpl===null){ //($NC->fechacompromiso != null and $NC->cumplimiento === null){
+                        $contnoticumpl++;
+                    }    
                 }
+            }
 
+            $datas = consultaSQL(3,$usuario->persona->id);
+            //$datas = DB::select($sql); //Area responsable
+            foreach ($datas as $data){
+                if($data->accioninmediata != null and $data->stavalai === null){
+                    $contnotivalai++;
+                }
             }
-        }
-        $datas = NoConformidad::orderBy('id')
-            ->where('usuario_id','=',auth()->id())
-            ->get();
-        $datas = consultaSQL(1,$usuario->persona->id);
-        foreach ($datas as $data){
-            if(!empty($data->fechaguardado) and empty($data->cumplimiento)){
-                if($data->noticumpl===null){ //($NC->fechacompromiso != null and $NC->cumplimiento === null){
-                    $contnoticumpl++;
-                }    
+            if(can('listar-validar-ai-nc',false)){
+                $datas = consultaSQL(4,$usuario->persona->id);
+                foreach($datas as $data){
+                    if($data->cumplimiento != null and $data->aprobpaso2 === null){
+                    $contnoRevSGI++;
+                    } 
+                }
+                
             }
-        }
-
-        $datas = consultaSQL(3,$usuario->persona->id);
-        //$datas = DB::select($sql); //Area responsable
-        foreach ($datas as $data){
-            if($data->accioninmediata != null and $data->stavalai === null){
-                $contnotivalai++;
-            }
-        }
-        if(can('listar-validar-ai-nc',false)){
-            $datas = consultaSQL(4,$usuario->persona->id);
-            foreach($datas as $data){
-                if($data->cumplimiento != null and $data->aprobpaso2 === null){
-                $contnoRevSGI++;
-                } 
-            }
-            
         }
         $datas = consulta(auth()->id());
         $contadornot = 0;

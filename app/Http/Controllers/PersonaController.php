@@ -7,7 +7,7 @@ use App\Models\Cargo;
 use App\Models\JefaturaSucursalArea;
 use App\Models\JefaturaSucursalAreaPersona;
 use App\Models\Persona;
-use App\User;
+use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 
 class PersonaController extends Controller
@@ -35,7 +35,7 @@ class PersonaController extends Controller
         can('crear-persona');
         $cargos = Cargo::orderBy('id')->get();
         $jefaturasucursalareas = JefaturaSucursalArea::orderBy('id')->get();
-        $users = User::orderBy('id')->get();
+        $users = Usuario::orderBy('id')->get();
         $aux_sta=1;
         return view('persona.crear',compact('cargos','jefaturasucursalareas','users','aux_sta'));
     }
@@ -79,7 +79,7 @@ class PersonaController extends Controller
         //dd($data->jefaturasucursalareas);
         $cargos = Cargo::orderBy('id')->get();
         $jefaturasucursalareas = JefaturaSucursalArea::orderBy('id')->get();
-        $users = User::orderBy('id')->get();
+        $users = Usuario::orderBy('id')->get();
         $aux_sta=2;
         return view('persona.editar', compact('data','cargos','jefaturasucursalareas','users','aux_sta'));
     }

@@ -14,6 +14,7 @@ class SolDespachoDet extends Model
         'notaventadetalle_id',
         'obs',
         'cantsoldesp',
+        'cantsoldespdev',
         'cantdesp',
         'usuariodel_id'
     ];

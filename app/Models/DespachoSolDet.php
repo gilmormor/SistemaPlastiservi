@@ -13,6 +13,7 @@ class DespachoSolDet extends Model
         'despachosol_id',
         'notaventadetalle_id',
         'cantsoldesp',
+        'cantsoldespdev',
         'usuariodel_id'
     ];
 

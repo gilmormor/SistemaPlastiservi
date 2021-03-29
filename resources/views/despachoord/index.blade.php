@@ -94,7 +94,7 @@ Orden de despacho
                                         ?>
                                         @if(count($clibloq) > 0)
                                             <a class='btn-accion-tabla btn-sm' title='Cliente Bloqueado: {{$clibloq[0]->descripcion}}' data-toggle='tooltip'>
-                                                <span class='fa fa-fw fa-ban text-danger text-danger' style='bottom: 0px;top: 2px;'></span>
+                                                <span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>
                                             </a>
                                         @else
                                             <a id='bntaproord$i' name='bntaproord$i' class='btn-accion-tabla btn-sm' onclick='aprobarord({{$aux_nfila}},{{$data->id}})' title='Aprobar Orden Despacho' data-toggle='tooltip'>

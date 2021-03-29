@@ -45,6 +45,8 @@ Solicitud Despacho
                 <div class="row">
                     <input type="hidden" name="nfilaDel" id="nfilaDel">
                     <input type="hidden" name="ruta" id="ruta">
+                    <input type="hidden" name="status" id="status">
+                    <input type="hidden" name="boton" id="boton">
                     <div class="form-group col-xs-12 col-sm-5">
                         <label for="despachosol_id" class="control-label">Id Solicitud Despacho</label>
                         <input type="text" name="despachosol_id" id="despachosol_id" class="form-control" required placeholder="ID" disabled readonly/>

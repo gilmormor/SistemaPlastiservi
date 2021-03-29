@@ -2,12 +2,16 @@
 
 namespace App\Providers;
 
+use App\Events\CerrarSolDesp;
+use App\Events\DevolverSolDesp;
 use App\Events\FinSesionUsuario;
 use App\Events\GuardarFacturaDespacho;
 use App\Events\GuardarGuiaDespacho;
 use App\Events\InicioSesionUsuario;
 use App\Listeners\BitFinSesionUsuario;
 use App\Listeners\BitInicioSesionUsuario;
+use App\Listeners\CerrarSolDespNotificacion;
+use App\Listeners\DevolverSolDespNotificacion;
 use App\Listeners\NotifyMailGuardarFacturaDespacho;
 use App\Listeners\NotifyMailGuardarGuiaDespacho;
 use Illuminate\Support\Facades\Event;
@@ -39,6 +43,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         GuardarFacturaDespacho::class => [
             NotifyMailGuardarFacturaDespacho::class,
+        ],
+        DevolverSolDesp::class => [
+            DevolverSolDespNotificacion::class,
+        ],
+        CerrarSolDesp::class => [
+            CerrarSolDespNotificacion::class,
         ]
     ];
 

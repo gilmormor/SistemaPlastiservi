@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CerrarSolDesp;
+use App\Events\DevolverSolDesp;
 use App\Http\Requests\ValidarDespachoSol;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
@@ -780,6 +782,7 @@ class DespachoSolController extends Controller
                 $despachosol->aprorddesp = null;
                 $despachosol->aprorddespfh = null;
                 if ($despachosol->save()) {
+                    event(new DevolverSolDesp($despachosol,$request));
                     return response()->json(['mensaje' => 'ok']);
                 } else {
                     return response()->json(['mensaje' => 'ng']);
@@ -787,6 +790,38 @@ class DespachoSolController extends Controller
             }else{
                 return response()->json(['mensaje' => 'hijos']);
             }
+        } else {
+            abort(404);
+        }
+    }
+
+    /*CERRAR O DEVOLVER PARCIALMENTE SOLICITUD DESPACHO A SOLICITUDES PENDIENTES POR APROBAR*/
+    /*ASIGNO RESTO AL CAMPO cantsoldesp LO QUE NO SE HA DESPACHADO */
+    public function cerrarsoldesp(Request $request)
+    {
+        if ($request->ajax()) {
+            $despachosol = DespachoSol::findOrFail($request->id);
+            foreach($despachosol->despachosoldets as $despchosoldet){
+                $sql = "SELECT *
+                    FROM vista_sumorddespdet
+                    WHERE despachosoldet_id=$despchosoldet->id;";
+                $vista_sumorddespdet = DB::select($sql);
+                if($vista_sumorddespdet){
+                    $cantsoldespdev = 0;
+                    if($despchosoldet->cantsoldesp > $vista_sumorddespdet['0']->cantdesp){
+                        $cantsoldespdev = $despchosoldet->cantsoldesp - $vista_sumorddespdet['0']->cantdesp;
+                    }
+                }else{
+                    $cantsoldespdev = $despchosoldet->cantsoldesp;
+                }
+                if($cantsoldespdev > 0){
+                    $despchosoldet->cantsoldesp = $despchosoldet->cantsoldesp - $cantsoldespdev;
+                    $despchosoldet->cantsoldespdev = $cantsoldespdev;
+                    $despchosoldet->save();
+                }
+            }
+            event(new CerrarSolDesp($despachosol,$request));
+            return response()->json(['mensaje' => 'ok']);
         } else {
             abort(404);
         }
@@ -1176,7 +1211,7 @@ function reporte1($request){
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
                 $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
-                                    <i class='fa fa-fw fa-ban text-danger'></i>
+                                    <i class='fa fa-fw fa-lock text-danger'></i>
                                 </a>";
             }else{
                 $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
@@ -1405,7 +1440,9 @@ function reportesoldesp1($request){
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
                 $nuevoOrdDesp = "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
-                                    <i class='fa fa-fw fa-ban text-danger'></i>
+                                    <button type='button' class='btn btn-default btn-xs' disabled>
+                                        <i class='fa fa-fw fa-lock text-danger'></i>
+                                    </button>
                                 </a>";
             }else{
                 $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
@@ -1428,8 +1465,8 @@ function reportesoldesp1($request){
                                     <button type='button' class='btn btn-primary btn-xs'><i class='fa fa-fw fa-reply'></i></button>
                                 </a>";
             }else{
-                $nuevoOrdDesp .= "<a id='btnanular$i' name='btnanular$i' class='btn-accion-tabla btn-sm tooltipsC' onclick='anularrestosol({{$i}},{{$data->id}})' title='Anular Resto de Solicitud' data-toggle='tooltip'>
-                                    <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-remove'></i></button>
+                $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
+                                    <button type='button' class='btn btn-default btn-xs'><i class='fa fa-fw fa-archive'></i></button>
                                 </a>";
                                 
             }

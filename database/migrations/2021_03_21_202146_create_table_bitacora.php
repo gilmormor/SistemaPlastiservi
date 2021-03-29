@@ -20,7 +20,7 @@ class CreateTableBitacora extends Migration
             $table->foreign('empresa_id','fk_bitacora_empresa')->references('id')->on('empresa')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('menu_id')->comment('Codigo de Menu')->nullable();
             $table->foreign('menu_id','fk_bitacora_menu')->references('id')->on('menu')->onDelete('restrict')->onUpdate('restrict');
-            $table->unsignedBigInteger('usuario_id')->comment('Codigo de Empresa');
+            $table->unsignedBigInteger('usuario_id')->comment('Id Usuario');
             $table->foreign('usuario_id','fk_bitacora_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->string('codmov',3)->comment('Codigo de Movimiento Ejm: IS=Inicio de Sesion, FS=Finde Sesion.');
             $table->string('desc',250)->comment('Descripcion de movimiento.');

@@ -97,7 +97,29 @@ function ajaxRequest(data,url,funcion) {
                     if (respuesta.mensaje == "sp"){
                         Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
                     }else{
-                        if(respuesta.mensaje == "hojos"){
+                        if(respuesta.mensaje == "hijos"){
+                            Biblioteca.notificaciones('No puede ser eliminado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
+                        }else{
+                            if(respuesta.mensaje == "ne"){
+                                Biblioteca.notificaciones('No tiene permiso para eliminar.', 'Plastiservi', 'error');
+                            }else{
+                                Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
+                            }
+                        }
+                    }
+                }
+                $("#myModaldevsoldeps").modal('hide');
+            }
+            if(funcion=='btncerrarsol'){
+                if (respuesta.mensaje == "ok") {
+                    //form.parents('tr').remove();
+                    $("#fila"+data['nfila']).remove();
+                    Biblioteca.notificaciones('El registro fue procesado correctamente.', 'Plastiservi', 'success');
+                } else {
+                    if (respuesta.mensaje == "sp"){
+                        Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
+                    }else{
+                        if(respuesta.mensaje == "hijos"){
                             Biblioteca.notificaciones('No puede ser eliminado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
                         }else{
                             if(respuesta.mensaje == "ne"){
@@ -256,42 +278,93 @@ $(document).on("click", ".btndevsol", function(event){
     fila = $(this).closest("tr");
     form = $(this);
     id = fila.find('td:eq(0)').text();
-
+    $('.modal-title').html('Devolver Solicitud Despacho');
     $("#despachosol_id").val(id);
     $("#nfilaDel").val(form.attr('fila'));
     $("#ruta").val(form.attr('href'));
     $("#observacion").val("");
+    $("#status").val("1");
+    $("#boton").val("btndevsol");
+    quitarValidacion($(".requeridos").prop('name'),$(".requeridos").attr('tipoval'));
     $("#myModaldevsoldeps").modal('show');
     
 });
 
+$(document).on("click", ".btncerrarsol", function(event){
+    event.preventDefault();
+    fila = $(this).closest("tr");
+    form = $(this);
+    id = fila.find('td:eq(0)').text();
+    $('.modal-title').html('Cerrar Solicitud Despacho');
+    $("#despachosol_id").val(id);
+    $("#nfilaDel").val(form.attr('fila'));
+    $("#ruta").val(form.attr('href'));
+    $("#observacion").val("");
+    $("#status").val("2");
+    $("#boton").val("btncerrarsol");
+    quitarValidacion($(".requeridos").prop('name'),$(".requeridos").attr('tipoval'));
+    $("#myModaldevsoldeps").modal('show');
+    
+});
 
 $("#btnGuardarDSD").click(function(event){
-    swal({
-        title: '¿ Desea devolver Solicitud ?',
-        text: "Esta acción no se puede deshacer!",
-        icon: 'warning',
-        buttons: {
-            cancel: "Cancelar",
-            confirm: "Aceptar"
-        },
-    }).then((value) => {
-        /*
-        fila = $(this).closest("tr");
-        form = $(this);
-        id = fila.find('td:eq(0)').text();
-            //alert(id);
-        */
-        var data = {
-            id     : $("#despachosol_id").val(),
-            nfila  : $("#nfilaDel").val(),
-            _token : $('input[name=_token]').val()
-        };
-        if (value) {
-            
-            ajaxRequest(data,$("#ruta").val(),'btndevsol',form);
-        }
-    });
+    if(verificarFact())
+	{
+        swal({
+            title: '¿ Desea ' + $('.modal-title').html() + ' ?',
+            text: "Esta acción no se puede deshacer!",
+            icon: 'warning',
+            buttons: {
+                cancel: "Cancelar",
+                confirm: "Aceptar"
+            },
+        }).then((value) => {
+            /*
+            fila = $(this).closest("tr");
+            form = $(this);
+            id = fila.find('td:eq(0)').text();
+                //alert(id);
+            */
+            var data = {
+                id     : $("#despachosol_id").val(),
+                nfila  : $("#nfilaDel").val(),
+                obs    : $("#observacion").val(),
+                status : $("#status").val(),
+                _token : $('input[name=_token]').val()
+            };
+            if (value) {
+                
+                ajaxRequest(data,$("#ruta").val(),$("#boton").val(),form);
+            }
+        });
+    }else{
+		alertify.error("Falta incluir informacion");
+	}
 });
 
 
+function verificarFact()
+{
+	var v1=0;
+	var v2=0;
+	
+	v1=validacion('observacion','texto');
+	v2=true;
+	if (v1===false || v2===false)
+	{
+		return false;
+	}else{
+		return true;
+	}
+}
+
+
+$(".requeridos").keyup(function(){
+	//alert($(this).parent().attr('class'));
+	quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+
+$(".requeridos").change(function(){
+	//alert($(this).parent().attr('class'));
+	quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
+});
