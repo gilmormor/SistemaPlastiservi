@@ -49,6 +49,7 @@ class CerrarSolDespNotificacion
         $despachosoldev->despachosol_id = $despachosol->id;
         $despachosoldev->usuario_id = auth()->id();
         $despachosoldev->obs = $event->request->obs;
+        $despachosoldev->status = $event->request->status;
         $despachosoldev->save();
     }
 }
