@@ -21,7 +21,7 @@ class CreateTableDespachosoldev extends Migration
             $table->unsignedBigInteger('usuario_id')->comment('Id Usuario');
             $table->foreign('usuario_id','fk_despchosoldev_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->string('obs',250)->comment('Observacion.');
-            $table->integer('status')->comment('Estatus de devolucion. 1=Devolucion Total, 2=Devolucion Parcial. Si es total, cambio el estatus de aprobacion, Si es parcial le asigno al campo cantdev el valor del item que no ha sido despachado.');
+            $table->integer('status')->comment('Estatus de devolucion. 1=Devolucion Total, 2=Devolucion Parcial. Si es total, cambio el estatus de aprobacion, Si es parcial resto al campo cantsoldesp lo que falta por despachar y le asigno al campo cantsoldespdev el valor del item que no ha sido despachado.');
             $table->timestamps();
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_spanish_ci';
