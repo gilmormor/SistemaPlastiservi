@@ -397,7 +397,7 @@ function consultasoldesp($request){
             comuna.nombre as comunanombre,
             despachosol.notaventa_id,despachosol.fechaestdesp,
             sum(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
-            sum(despachosoldet.cantsoldesp AS totalcantsol,
+            sum(despachosoldet.cantsoldesp) AS totalcantsol,
             sum(($aux_sqlsumdespfact)) as totalcantdesp,
             despachosol.aprorddesp,despachosol.aprorddespfh,
             tipoentrega.nombre as tipentnombre,tipoentrega.icono
