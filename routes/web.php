@@ -577,6 +577,7 @@ Route::post('notaventaanular/actualizanular', 'NotaVentaAnularController@actuali
 
 /*RUTAS Carrera Nota Venta */
 Route::get('notaventacerrada', 'NotaVentaCerradaController@index')->name('notaventacerrada');
+Route::get('notaventacerradapage', 'NotaVentaCerradaController@notaventacerradapage')->name('notaventacerradapage');
 Route::get('notaventacerrada/crear', 'NotaVentaCerradaController@crear')->name('crear_notaventacerrada');
 Route::post('notaventacerrada', 'NotaVentaCerradaController@guardar')->name('guardar_notaventacerrada');
 Route::get('notaventacerrada/{id}/editar', 'NotaVentaCerradaController@editar')->name('editar_notaventacerrada');

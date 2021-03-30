@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    $(document).on("click", ".btnEditar", function(){	
+    $(document).on("click", ".btnEditar", function(event){	
         event.preventDefault();
         opcion = 2;//editar
         fila = $(this).closest("tr");	        
@@ -36,7 +36,7 @@ $(document).on("click", ".btnEliminar", function(event){
             id      : id
         };
         if (value) {
-            ajaxRequest(data,form.attr('href')+'/1','eliminar',form);
+            ajaxRequest(data,form.attr('href')+'/'+id,'eliminar',form);
         }
     });
     

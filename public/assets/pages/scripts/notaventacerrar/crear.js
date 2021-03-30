@@ -60,3 +60,12 @@ $("#notaventa_id").blur(function(){
         });
 	}
 });
+
+$("#notaventa_id").keyup(function(event){
+    if(event.which==113){
+        $(this).val("");
+        $(".input-sm").val('');
+        alert('entro');
+        $("#myModalBuscarProd").modal('show');
+    }
+});

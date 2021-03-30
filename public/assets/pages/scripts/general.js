@@ -830,6 +830,20 @@ function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
 	$("#myModalpdf").modal('show')
 }
 
+$(document).on("click", ".btngenpdfNV1", function(){	
+    fila = $(this).closest("tr");	        
+    id = fila.find('td:eq(0)').text();
+    //form = $(this);
+	genpdfNV(id,1);
+});
+
+$(document).on("click", ".btngenpdfNV2", function(){	
+    fila = $(this).closest("tr");	        
+    id = fila.find('td:eq(0)').text();
+    //form = $(this);
+	genpdfNV(id,2);
+});
+
 
 function genpdfSD(id,stareport){ //GENERAR PDF Solicitud de Despacho
 	$('#contpdf').attr('src', '/despachosol/'+id+'/'+stareport+'/exportPdf');

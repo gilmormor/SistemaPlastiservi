@@ -22,6 +22,7 @@ class NotaVentaCerradaController extends Controller
         can('listar-cerrar-nota-venta');
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
+        
         $datas = NotaVentaCerrada::join('notaventa','notaventacerrada.notaventa_id','=','notaventa.id')
                 ->select([
                     'notaventacerrada.id',
@@ -32,6 +33,25 @@ class NotaVentaCerradaController extends Controller
                 ->whereIn('notaventa.sucursal_id', $sucurArray)
                 ->get();
         return view('notaventacerrar.index', compact('datas','sucursales'));
+    }
+
+    public function notaventacerradapage(){
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        
+        return datatables()
+            ->eloquent(NotaVentaCerrada::query()
+            ->join('notaventa','notaventacerrada.notaventa_id','=','notaventa.id')
+            ->select([
+                'notaventacerrada.id',
+                'notaventacerrada.notaventa_id',
+                'notaventacerrada.observacion',
+                'notaventacerrada.motcierre_id',
+                'notaventacerrada.notaventa_id'
+                ])
+            ->whereIn('notaventa.sucursal_id', $sucurArray)
+            )
+            ->toJson();        
     }
 
     /**
@@ -131,4 +151,9 @@ class NotaVentaCerradaController extends Controller
             abort(404);
         }
     }
+}
+
+
+function prueba($v){
+    dd($v);
 }

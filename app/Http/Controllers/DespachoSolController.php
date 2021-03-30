@@ -13,6 +13,7 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
+use App\Models\DespachoOrdAnul;
 use App\Models\DespachoSol;
 use App\Models\DespachoSolAnul;
 use App\Models\DespachoSolDet;
@@ -742,7 +743,15 @@ class DespachoSolController extends Controller
     {
         if ($request->ajax()) {
             $despachosol = DespachoSol::findOrFail($request->id);
-            if($despachosol->despachoords->count() == 0){
+            $sql = "SELECT COUNT(*) AS cont
+                FROM despachosol INNER JOIN despachoord
+                ON despachosol.id=despachoord.despachosol_id
+                WHERE despachosol.id = $request->id
+                AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+                AND isnull(despachosol.deleted_at)
+                AND ISNULL(despachoord.deleted_at)";
+            $cont = DB::select($sql);
+            if($cont[0]->cont == 0){
                 $despachosolanul = new DespachoSolAnul();
                 $despachosolanul->despachosol_id = $request->id;
                 $despachosolanul->usuario_id = auth()->id();
