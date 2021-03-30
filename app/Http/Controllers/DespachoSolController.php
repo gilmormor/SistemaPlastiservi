@@ -1420,7 +1420,7 @@ function reportesoldesp1($request){
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th>Comuna</th>
                 <th class='tooltipsC' title='Total Kg Pendientes'>Total Kg</th>
-                <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
+                <th class='tooltipsC' title='Acción'>Acción</th>
             </tr>
         </thead>
         <tbody>";
@@ -1466,7 +1466,7 @@ function reportesoldesp1($request){
                                 </a>";
             }else{
                 $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
-                                    <button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-archive'></i></button>
+                                    <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-archive'></i></button>
                                 </a>";
                                 
             }
