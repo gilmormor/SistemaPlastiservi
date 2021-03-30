@@ -1462,11 +1462,11 @@ function reportesoldesp1($request){
             $contorddesp = DB::select($sql);
             if($contorddesp[0]->cont == 0){
                 $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' fila='$i' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip'>
-                                    <button type='button' class='btn btn-primary btn-xs'><i class='fa fa-fw fa-reply'></i></button>
+                                    <button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>
                                 </a>";
             }else{
                 $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
-                                    <button type='button' class='btn btn-default btn-xs'><i class='fa fa-fw fa-archive'></i></button>
+                                    <button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-archive'></i></button>
                                 </a>";
                                 
             }
