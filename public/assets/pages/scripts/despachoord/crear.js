@@ -232,7 +232,7 @@ function insertarTabla(){
 				'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ $("#totalkilosM").attr("valor") +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="subtotalCFTD'+ aux_nfila + '" id="subtotalCFTD'+ aux_nfila + '" class="subtotalCF" style="text-align:right">'+ 
-				MASK(0, $("#subtotalM").attr("valor"), '-##,###,##0.00',1)+
+				MASK(0, $("#subtotalM").attr("valor"), '-#,###,###,##0.00',1)+
 			'</td>'+
 			'<td class="subtotalCF" style="text-align:right;display:none;">'+ 
 				'<input type="text" name="subtotal[]" id="subtotal'+ aux_nfila + '" class="form-control" value="'+ $("#subtotalM").attr("valor") +'" style="display:none;"/>'+
@@ -611,7 +611,7 @@ function actSaldo(i){
 	}
 	//aux_subtotalCFTD = aux_cantord * $("#peso" + i).val() * $("#precioxkilo" + i).val();
 	$("#totalkilosTD" + i).html(MASK(0, aux_totalkilosTD, '-##,###,##0.00',1));
-	$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-##,###,##0.00',1));
+	$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-#,###,###,##0.00',1));
 	$("#subtotalSFTD" + i).html(aux_subtotalCFTD);
 	
 	//alert(aux_saldo);
@@ -628,7 +628,7 @@ function actSaldo(i){
 		aux_totalkilosTD = aux_saldo * $("#peso" + i).val();
 		aux_subtotalCFTD = Math.round(aux_saldo * $("#preciounit" + i).val());
 		$("#totalkilosTD" + i).html(MASK(0, aux_totalkilosTD, '-##,###,##0.00',1));
-		$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-##,###,##0.00',1));
+		$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-#,###,###,##0.00',1));
 		$("#subtotalSFTD" + i).html(aux_subtotalCFTD);
 	}
 	sumcant();

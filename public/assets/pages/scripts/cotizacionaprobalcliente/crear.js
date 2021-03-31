@@ -333,7 +333,7 @@ function modificarTabla(i){
 	$("#precioxkilo"+i).val($("#precioM").attr('valor'));
 	$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
 	$("#totalkilos"+i).val($("#totalkilosM").attr('valor'));
-	$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-##,###,##0.00',1));
+	$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-#,###,###,##0.00',1));
 	$("#subtotal"+i).val($("#subtotalM").attr('valor'));
 	$("#subtotalSFTD"+i).html($("#subtotalM").attr('valor'));
 	totalizar();
@@ -451,7 +451,7 @@ function insertarTabla(){
 				'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ $("#totalkilosM").attr("valor") +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="subtotalCFTD'+ aux_nfila + '" id="subtotalCFTD'+ aux_nfila + '" class="subtotalCF" style="text-align:right">'+ 
-				MASK(0, $("#subtotalM").attr("valor"), '-##,###,##0.00',1)+
+				MASK(0, $("#subtotalM").attr("valor"), '-#,###,###,##0.00',1)+
 			'</td>'+
 			'<td class="subtotalCF" style="text-align:right;display:none;">'+ 
 				'<input type="text" name="subtotal[]" id="subtotal'+ aux_nfila + '" class="form-control" value="'+ $("#subtotalM").attr("valor") +'" style="display:none;"/>'+
@@ -860,7 +860,7 @@ function editarRegistro(i){
 	$("#totalkilosM").attr('valor',$("#totalkilos"+i).val());
 	$("#totalkilosM").val(MASK(0, $("#totalkilos"+i).val(), '-##,###,##0.00',1));
 	$("#subtotalM").attr('valor',$("#subtotal"+i).val());
-	$("#subtotalM").val(MASK(0, $("#subtotal"+i).val(), '-##,###,##0.00',1));
+	$("#subtotalM").val(MASK(0, $("#subtotal"+i).val(), '-#,###,###,##0.00',1));
 	$("#cla_nombreM").val($.trim( $("#cla_nombreTD"+i).html() ));
 	$("#tipounionM").val($("#tipounion"+i).val());
 	$("#diamextmmM").val($("#diamextmm"+i).val());
@@ -1254,7 +1254,7 @@ function totalizarItem(aux_estprec){
 	$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
 	$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
 	aux_total = ($("#cantM").val() * $("#pesoM").val() * $("#precioM").val()) * ($("#descuentoM").val());
-	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-##,###,##0.00',1));
+	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
 	$("#subtotalM").attr('valor',aux_total.toFixed(2));
 	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();
 	$("#precioM").val(aux_precdesc);

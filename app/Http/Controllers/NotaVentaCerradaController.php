@@ -152,8 +152,3 @@ class NotaVentaCerradaController extends Controller
         }
     }
 }
-
-
-function prueba($v){
-    dd($v);
-}

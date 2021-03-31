@@ -491,6 +491,14 @@ class NotaVentaConsultaController extends Controller
                 if(in_array('4',$request->aprobstatus)){
                     $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
                 }
+                if(in_array('7',$request->aprobstatus)){
+                    $aux_aprobstatus = "notaventa.id in (SELECT notaventa_id
+                                                            FROM notaventacerrada
+                                                            WHERE ISNULL(notaventacerrada.deleted_at))";
+                }
+                if(in_array('8',$request->aprobstatus)){
+                    $aux_aprobstatus = "!isnull(notaventa.anulada)";
+                }
             }
         }else{
             switch ($request->aprobstatus) {
@@ -506,7 +514,15 @@ class NotaVentaConsultaController extends Controller
                 case 4:
                     $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
                     break;
-            }
+                case 7:
+                    $aux_aprobstatus = "notaventa.id in (SELECT notaventa_id
+                                                            FROM notaventacerrada
+                                                            WHERE ISNULL(notaventacerrada.deleted_at))";
+                    break;
+                case 8:
+                    $aux_aprobstatus = "!isnull(notaventa.anulada)";
+                    break;
+                }
         }
         
         $aux_condproducto_id = " true";
