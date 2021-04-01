@@ -3,10 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarNotaVentaCerrada;
+use App\Models\AreaProduccion;
+use App\Models\CategoriaProd;
+use App\Models\Cliente;
 use App\Models\ClienteBloqueado;
 use App\Models\ClienteSucursal;
+use App\Models\Comuna;
+use App\Models\Giro;
 use App\Models\NotaVentaCerrada;
 use App\Models\Seguridad\Usuario;
+use App\Models\TipoEntrega;
+use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -62,8 +69,58 @@ class NotaVentaCerradaController extends Controller
     public function crear()
     {
         can('crear-cerrar-nota-venta');
+        $user = Usuario::findOrFail(auth()->id());
+        $arrayvend = Vendedor::vendedores(); //Esto viene del modelo vendedores
+        $vendedores1 = $arrayvend['vendedores'];
+        $clientevendedorArray = $arrayvend['clientevendedorArray'];
+
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
+        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->pluck('cliente_sucursal.cliente_id')->toArray())
+        ->whereIn('cliente.id',$clientevendedorArray)
+        ->get();
+        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
+
+        $giros = Giro::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $fechaServ = [
+                    'fecha1erDiaMes' => date("01/m/Y"),
+                    'fechaAct' => date("d/m/Y"),
+                    ];
+        //dd($fechaServ);
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
+        //******************* */
+        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
+        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
+        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
+        ->select([
+                'producto.id',
+                'producto.nombre',
+                'claseprod.cla_nombre',
+                'producto.codintprod',
+                'producto.diamextmm',
+                'producto.diamextpg',
+                'producto.espesor',
+                'producto.long',
+                'producto.peso',
+                'producto.tipounion',
+                'producto.precioneto',
+                'categoriaprod.precio',
+                'categoriaprod.unidadmedida_id',
+                'categoriaprodsuc.sucursal_id'
+                ])
+                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+                ->get();
+        $comunas = Comuna::orderBy('id')->get();
         $aux_editar = 0;
-        return view('notaventacerrar.crear', compact('aux_editar'));
+        return view('notaventacerrar.crear', compact('aux_editar','clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaServ','productos','comunas'));
     }
 
     /**

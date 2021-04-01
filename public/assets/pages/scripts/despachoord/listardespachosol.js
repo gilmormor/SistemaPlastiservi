@@ -20,6 +20,8 @@ $(document).ready(function () {
         consultar(datos());
     });
 
+
+
     $("#btnpdf1").click(function()
     {
         consultarpdf(datos());
@@ -162,6 +164,20 @@ function datos(){
 function consultar(data){
     $.ajax({
         url: '/despachosol/reportesoldesp',
+        type: 'POST',
+        data: data,
+        success: function (datos) {
+            if(datos['tabla'].length>0){
+                $("#tablaconsulta").html(datos['tabla']);
+                configurarTabla('.tablascons');
+            }
+        }
+    });
+}
+
+function consultarcerrarNV(data){
+    $.ajax({
+        url: '/despachosol/reportesoldespcerrarNV',
         type: 'POST',
         data: data,
         success: function (datos) {

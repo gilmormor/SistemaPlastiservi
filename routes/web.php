@@ -489,6 +489,7 @@ Route::get('despachosol/{id}/{stareport}/exportPdf', 'DespachoSolController@expo
 Route::post('despachosol/aproborddesp/{id}', 'DespachoSolController@aproborddesp')->name('aproborddesp_despachosol');
 Route::get('despachosol/listarsoldesp', 'DespachoSolController@listarsoldesp')->name('listarsoldesp_despachosol');
 Route::post('despachosol/reportesoldesp', 'DespachoSolController@reportesoldesp')->name('reportesoldesp_despachosol');
+Route::post('despachosol/reportesoldespcerrarNV', 'DespachoSolController@reportesoldespcerrarNV')->name('reportesoldespcerrarNV_despachosol');
 Route::get('despachosol/{id}/{stareport}/pdfSolDespPrev', 'DespachoSolController@pdfSolDespPrev')->name('pdfSolDespPrev_despachosol');
 Route::post('despachosol/devolversoldesp', 'DespachoSolController@devolversoldesp')->name('devolversoldesp_despachosol');
 Route::post('despachosol/cerrarsoldesp', 'DespachoSolController@cerrarsoldesp')->name('cerrarsoldesp_despachosol');

@@ -30,7 +30,7 @@ Notas de Venta Cerradas
                             <th class="width70">ID</th>
                             <th>Observación</th>
                             <th>NotaVenta</th>
-                            <th class="width150">PDF | Acciones</th>
+                            <th class="width150">PDF | Acción</th>
                         </tr>
                     </thead>
                 </table>

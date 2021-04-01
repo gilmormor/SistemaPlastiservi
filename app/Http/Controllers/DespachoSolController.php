@@ -739,6 +739,12 @@ class DespachoSolController extends Controller
         return $respuesta;
     }
 
+    public function reportesoldespcerrarNV(Request $request){
+        $respuesta = reportesoldespcerrarNV1($request);
+        return $respuesta;
+    }
+
+
     public function anular(Request $request)
     {
         if ($request->ajax()) {
@@ -1513,6 +1519,123 @@ function reportesoldesp1($request){
         $respuesta['tabla'] .= "
         </tbody>
         </table>";
+        return $respuesta;
+    }
+
+}
+
+function reportesoldespcerrarNV1($request){
+    $respuesta = array();
+    $respuesta['exito'] = false;
+    $respuesta['mensaje'] = "Código no Existe";
+    $respuesta['tabla'] = "";
+    $respuesta['tabla2'] = "";
+    $respuesta['tabla3'] = "";
+
+    if($request->ajax()){
+        $datas = consulta($request,1,1);
+        $aux_colvistoth = "";
+        if(auth()->id()==1 or auth()->id()==2){
+            $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
+        }
+        $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
+
+        $respuesta['tabla'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='10'>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Razón Social</th>
+                <th class='tooltipsC' title='Orden de Compra'>OC</th>
+                <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                <th>Comuna</th>
+            </tr>
+        </thead>
+        <tbody>";
+
+        $i = 0;
+        $aux_Tpvckg = 0;
+        $aux_Tpvcpesos= 0;
+        $aux_Tcankg = 0;
+        $aux_Tcanpesos = 0;
+        $aux_totalKG = 0;
+        $aux_totalps = 0;
+        $aux_prom = 0;
+        foreach ($datas as $data) {
+            $colorFila = "";
+            $aux_data_toggle = "";
+            $aux_title = "";
+            
+            if(empty($data->oc_file)){
+                $aux_enlaceoc = $data->oc_id;
+            }else{
+                $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
+            }
+            $nuevoSolDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->id,2)'>
+                                <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                            </a>";
+            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
+            if(count($clibloq) > 0){
+                $aux_descbloq = $clibloq[0]->descripcion;
+                $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
+                                    <i class='fa fa-fw fa-lock text-danger'></i>
+                                </a>";
+            }else{
+                $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
+                $nuevoSolDesp .= "<a href='$ruta_nuevoSolDesp' class='btn-accion-tabla tooltipsC' title='Hacer solicitud despacho: $data->tipentnombre'>
+                    <i class='fa fa-fw $data->icono'></i>
+                    </a>";
+            }
+            if(!empty($data->anulada)){
+                $colorFila = 'background-color: #87CEEB;';
+                $aux_data_toggle = "tooltip";
+                $aux_title = "Anulada Fecha:" . $data->anulada;
+                $nuevoSolDesp = "";
+            }
+
+            $respuesta['tabla'] .= "
+            <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
+                <td id='id$i' name='id$i'>
+                    <a href='#' class='copiar_notaventaid' onclick='copiar_notaventaid($data->id)'> $data->id </a>
+                </td>
+                <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
+                <td>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->id,1)'>
+                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->id
+                    </a>
+                </td>
+                <td>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV($data->id,2)'>
+                        <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                    </a>
+                </td>
+                <td>$data->comunanombre</td>
+            </tr>";
+
+            if(empty($data->anulada)){
+                $aux_Tpvckg += $data->pvckg;
+                $aux_Tpvcpesos += $data->pvcpesos;
+                $aux_Tcankg += $data->cankg;
+                $aux_Tcanpesos += $data->canpesos;
+                $aux_totalKG += ($data->totalkilos - $data->totalkgsoldesp);
+                $aux_totalps += ($data->subtotal - $data->totalsubtotalsoldesp);    
+            }
+
+
+            //dd($data->contacto);
+        }
+
+        $aux_promGeneral = 0;
+        if($aux_totalKG>0){
+            $aux_promGeneral = $aux_totalps / $aux_totalKG;
+        }
+        $respuesta['tabla'] .= "
+        </tbody>
+        </table>";
+
         return $respuesta;
     }
 

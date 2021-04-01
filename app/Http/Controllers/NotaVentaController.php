@@ -961,7 +961,6 @@ class NotaVentaController extends Controller
     }
 
     public function buscarNV(Request $request){
-        /*
         $sql = "SELECT COUNT(*) as cont
             FROM notaventa
             where id = $request->id
@@ -971,8 +970,16 @@ class NotaVentaController extends Controller
         if($datas[0]->cont > 0){
             return response()->json(['mensaje' => 'anulada']);
         }
-        */
-
+        $sql = "SELECT COUNT(*) as cont
+            FROM notaventa
+            where id = $request->id
+            and isnull(Anulada)
+            and id in (SELECT notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+            and isnull(notaventa.deleted_at);";
+        $datas = DB::select($sql);
+        if($datas[0]->cont > 0){
+            return response()->json(['mensaje' => 'Cerrada']);
+        }
 
         if($request->ajax()){
             $sql = "SELECT COUNT(*) as cont
