@@ -26,7 +26,6 @@
                             </div>
                             <div class="box-body">
                                 <div class="row">
-                                    <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                                         @csrf
                                         <div class="col-xs-12 col-md-10 col-sm-12">
                                             <div class="col-xs-12 col-md-12 col-sm-12">
@@ -203,7 +202,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </form>
                                 </div>
                             </div>
                             <div class="row">

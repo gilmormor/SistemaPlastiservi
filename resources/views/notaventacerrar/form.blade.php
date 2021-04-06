@@ -59,11 +59,3 @@
 <div class="col-xs-12 col-md-8 col-sm-8">
     
 </div>
-
-@include('generales.buscarnotaventa')
-@include('generales.buscarcliente')
-@include('generales.modalpdf')
-@include('generales.verpdf')
-@include('generales.listarorddesp')
-@include('generales.actualizarFileOC')
-@include('generales.buscarproducto')
