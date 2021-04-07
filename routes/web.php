@@ -386,6 +386,7 @@ Route::delete('areaproduccion/{id}', 'AreaProduccionController@eliminar')->name(
 Route::get('nvindicadorxvend', 'NVIndicadorxVendController@index')->name('nvindicadorxvend');
 Route::post('nvindicadorxvend/reporte', 'NVIndicadorxVendController@reporte')->name('nvindicadorxvend_reporte');
 Route::get('nvindicadorxvend/exportPdf', 'NVIndicadorxVendController@exportPdf')->name('nvindicadorxvend_exportPdf');
+Route::get('nvindicadorxvend/exportPdfkg', 'NVIndicadorxVendController@exportPdfkg')->name('nvindicadorxvend_exportPdfkg');
 
 /*RUTAS APROBAR NotaVenta*/
 Route::get('notaventaaprobar', 'NotaventaAprobarController@index')->name('notaventaaprobar');

@@ -274,11 +274,8 @@ class ReportPendienteXProdController extends Controller
             return $pdf->stream("ReportePendienteXProducto.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
-        }
-        
-        
+        } 
     }
-
 }
 
 function reporte1($request){

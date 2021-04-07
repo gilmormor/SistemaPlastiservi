@@ -14,7 +14,7 @@ $(document).ready(function () {
         }
 	});
 */
-
+    $('.col-xs-12').css({'margin-bottom':'0px','margin-left': '0px','margin-right': '0px','padding-left': '5px','padding-right': '5px'});
     $("#btnconsultar").click(function()
     {
         aux_consultaid = $("#consulta_id").val();
@@ -104,7 +104,7 @@ function consultar(data){
         success: function (datos) {
             if(datos['tabla'].length>0){
                 aux_titulo = $("#consulta_id option:selected").html();
-                $("#titulo_grafico").html('Tabla Indicadores ' +aux_titulo+ ' por Vendedor');
+                $("#titulo_grafico").html('Indicadores ' +aux_titulo+ ' por Vendedor');
                 $("#titulo_grafico1").html($("#titulo_grafico").html());
                 $("#tablaconsulta").html(datos['tabla']);
                 $("#tablaconsultadinero").html(datos['tabladinero']);
@@ -194,4 +194,34 @@ function grafico(datos){
 	$("#graficos").show();
 	$("#graficos1").show();
     $("#reporte1").show();
+}
+
+$("#btnpdf").click(function(event){
+    aux_consultaid = $("#consulta_id").val();
+    consultar(datos(aux_consultaid));
+    aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
+    aux_consultaid = $("#consulta_id").val()
+    data = datos(aux_consultaid);
+    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
+            "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
+            "&categoriaprod_id=" + data.categoriaprod_id +
+            "&areaproduccion_id="+data.areaproduccion_id +
+            "&idcons="+data.idcons + "&statusact_id="+data.statusact_id +
+            "&aux_titulo="+aux_titulo
+    $('#contpdf').attr('src', '/nvindicadorxvend/exportPdfkg/'+cadena);
+	$("#myModalpdf").modal('show');
+});
+
+function btnpdfKg(){
+    aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
+    aux_consultaid = $("#consulta_id").val()
+    data = datos(aux_consultaid);
+    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
+            "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
+            "&categoriaprod_id=" + data.categoriaprod_id +
+            "&areaproduccion_id="+data.areaproduccion_id +
+            "&idcons="+data.idcons + "&statusact_id="+data.statusact_id +
+            "&aux_titulo="+aux_titulo
+    $('#contpdf').attr('src', '/nvindicadorxvend/exportPdfkg/'+cadena);
+	$("#myModalpdf").modal('show');
 }

@@ -375,6 +375,70 @@ class NVIndicadorxVendController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         }
     }
+
+    public function exportPdfkg()
+    {
+        $request = new Request();
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->giro_id = $_GET["giro_id"];
+        $request->categoriaprod_id = $_GET["categoriaprod_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->idcons = $_GET["idcons"];
+        $request->statusact_id = $_GET["statusact_id"];
+        $request->aux_titulo = $_GET["aux_titulo"];
+        if($request->idcons == "1"){
+            $datas = consulta($request);
+        }
+        if($request->idcons == "2" or $request->idcons == "3"){
+            $datas = consultaODcerrada($request);
+        }
+
+        //$datas = consulta($request);
+
+        $aux_fdesde= $request->fechad;
+        if(empty($request->fechad)){
+            $aux_fdesde= '  /  /    ';
+        }
+        $aux_fhasta= $request->fechah;
+
+        $aux_plazoentregad= $request->plazoentregad;
+        if(empty($request->plazoentregad)){
+            $aux_plazoentregad= '  /  /    ';
+        }
+        $aux_plazoentregah= $request->plazoentregah;
+
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+
+        //return armarReportehtml($request);
+        if($datas){
+            if(env('APP_DEBUG')){
+                return view('nvindicadorxvendedor.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request'));
+            }
+            
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            
+            $pdf = PDF::loadView('nvindicadorxvendedor.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request')); //->setPaper('a4', 'landscape');
+            //return $pdf->download('cotizacion.pdf');
+            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+            return $pdf->stream("KilosporVendedor.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        } 
+    }
     
 }
 
@@ -612,11 +676,12 @@ function consultaODcerrada($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
-    and notaventa.anulada is null
+    and isnull(notaventa.anulada)
     and $aux_condstatusact_id
-    and despachoord.deleted_at is null 
-    and notaventadetalle.deleted_at is null 
-    and notaventa.deleted_at is null
+    and isnull(despachoord.deleted_at) 
+    and isnull(notaventadetalle.deleted_at) 
+    and isnull(notaventa.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY grupoprod.id,grupoprod.gru_nombre;";
     //dd($sql);
     //" and " . $aux_condrut .
@@ -649,11 +714,12 @@ function consultaODcerrada($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
-    and notaventa.anulada is null
+    and isnull(notaventa.anulada)
     and $aux_condstatusact_id
-    and despachoord.deleted_at is null 
-    and notaventadetalle.deleted_at is null 
-    and notaventa.deleted_at is null
+    and isnull(despachoord.deleted_at) 
+    and isnull(notaventadetalle.deleted_at) 
+    and isnull(notaventa.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY persona.id,persona.nombre;";
 
     $datas = DB::select($sql);
@@ -685,11 +751,12 @@ function consultaODcerrada($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
-    and notaventa.anulada is null
+    and isnull(notaventa.anulada)
     and $aux_condstatusact_id
-    and despachoord.deleted_at is null 
-    and notaventadetalle.deleted_at is null 
-    and notaventa.deleted_at is null
+    and isnull(despachoord.deleted_at) 
+    and isnull(notaventadetalle.deleted_at) 
+    and isnull(notaventa.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY grupoprod.id,grupoprod.gru_nombre,persona.id,persona.nombre;";
 
     $datas = DB::select($sql);

@@ -23,7 +23,7 @@ Productos Notas de Venta
                 <div class="row">
                     <form action="{{route('prodxnotaventa_exportPdf')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
-                        <div class="col-xs-12 col-md-8 col-sm-8">
+                        <div class="col-xs-12 col-md-7 col-sm-7">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
@@ -116,47 +116,32 @@ Productos Notas de Venta
                             </div>
 
                         </div>
-                        <div class="col-xs-12 col-md-4 col-sm-4">
-                            <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-8 col-sm-8" data-toggle='tooltip' title="Consulta">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label>Consulta:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="consulta_id" id="consulta_id" class="selectpicker form-control consulta_id">
-                                            <option value="1">Nota de Venta</option>
-                                            <option value="2">Facturado (Fecha FC)</option>
-                                            <option value="3">Facturado (Fecha NV)</option>
-                                        </select>
-                                    </div>
+                        <div class="col-xs-12 col-md-5 col-sm-5">
+                            <div class="col-xs-12 col-md-6 col-sm-6">
+                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                    <label>Consulta:</label>
                                 </div>
-
-                                <div class="col-xs-12 col-md-4 col-sm-4">
-                                    <div class="col-xs-12 col-md-12 col-sm-12 text-center">
-                                        <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success" data-toggle='tooltip' title="Consultar">Consultar</button>
-                                        <!--<button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>
-                                        </button>-->
-                                        <!--
-                                        <button type="button" id="btnpdf1" name="btnpdf1" class="btn-accion-tabla tooltipsC" title="PDF1">
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>
-                                        </button>-->
-                                    </div>
+                                <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <select name="consulta_id" id="consulta_id" class="selectpicker form-control consulta_id">
+                                        <option value="1">Nota de Venta</option>
+                                        <option value="2">Facturado (Fecha FC)</option>
+                                        <option value="3">Facturado (Fecha NV)</option>
+                                    </select>
                                 </div>
+                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                    <label>Estatus NV:</label>
+                                </div>
+                                <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <select name="statusact_id" id="statusact_id" class="selectpicker form-control statusact_id">
+                                        <option value="1" selected>Activas</option>
+                                        <option value="2">Cerradas</option>
+                                        <option value="3">Todas: Activas + cerradas</option>
+                                    </select>
+                                </div>    
                             </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-8 col-sm-8" data-toggle='tooltip' title="NV Actias, Activas + Cerradas">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label>Estatus NV:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="statusact_id" id="statusact_id" class="selectpicker form-control statusact_id">
-                                            <option value="1" selected>Activas</option>
-                                            <option value="2">Cerradas</option>
-                                            <option value="3">Todas: Activas + cerradas</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            <div class="col-xs-12 col-md-6 col-sm-6">
+                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success" data-toggle='tooltip' title="Consultar">Consultar</button>
+                                <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success' title='Reporte'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                             </div>
                         </div>
                     </form>
@@ -301,4 +286,5 @@ Productos Notas de Venta
     </div>
 </div>
 @include('generales.buscarcliente')
+@include('generales.modalpdf')
 @endsection
