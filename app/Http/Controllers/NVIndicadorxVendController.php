@@ -543,6 +543,8 @@ function consulta($request){
     ON notaventa.vendedor_id=vendedor.id
     INNER JOIN persona
     ON vendedor.persona_id=persona.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
     WHERE $aux_condFecha
     and $vendedorcond
     and $aux_condcategoriaprod_id
@@ -572,6 +574,8 @@ function consulta($request){
     ON notaventa.vendedor_id=vendedor.id
     INNER JOIN persona
     ON vendedor.persona_id=persona.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
     WHERE $aux_condFecha
     and $vendedorcond
     and $aux_condcategoriaprod_id
@@ -708,6 +712,8 @@ function consultaODcerrada($request){
     ON notaventa.vendedor_id=vendedor.id
     INNER JOIN persona
     ON vendedor.persona_id=persona.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -745,6 +751,8 @@ function consultaODcerrada($request){
     ON notaventa.vendedor_id=vendedor.id
     INNER JOIN persona
     ON vendedor.persona_id=persona.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond

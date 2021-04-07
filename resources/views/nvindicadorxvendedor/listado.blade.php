@@ -21,7 +21,7 @@
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
 					<p>Area Producción: {{$nombreAreaproduccion}}</p>
 					<p>Giro: {{$nombreGiro}} </p>
-					<p>Nota Venta Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
+					<p>Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
 				</div>
 			</td>
 		</tr>
