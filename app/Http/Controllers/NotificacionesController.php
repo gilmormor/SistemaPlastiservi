@@ -274,8 +274,9 @@ class NotificacionesController extends Controller
     {
         $notificacion = Notificaciones::findOrFail($id);
         $notificaciones = Notificaciones::where('mensaje','=',$notificacion->mensaje)
-                                          ->where('icono','=',$notificacion->icono)
-                                          ->update(['status' => 2]);
+                                            ->where('usuariodestino_id','=',auth()->id())
+                                            ->where('icono','=',$notificacion->icono)
+                                            ->update(['status' => 2]);
         return redirect($notificacion->rutadestino);
     }
 }

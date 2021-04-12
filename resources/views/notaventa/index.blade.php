@@ -27,7 +27,7 @@ Nota de Venta
             </div>
             <div class="box-body">
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                    <table class="table display table-striped AllDataTables table-hover table-condensed " id="tabla-data">
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>
@@ -38,8 +38,8 @@ Nota de Venta
                                     <th class="width30"><label for="" title='Cerrar Nota de venta' data-toggle='tooltip'>CNV</label></th>
                                     <th class="width30"><label for="" title='Anular Nota de venta' data-toggle='tooltip'>Anular</label></th>
                                 @endif
-                                <th class="width30"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
-                                <th class="width70"></th>
+                                <th class="width70"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
+                                <th class="width70">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -116,7 +116,7 @@ Nota de Venta
         </div>
     </div> 
     <div class="modal fade" id="myModalnumcot" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" id="mdialTamanio">
+        <div class="modal-dialog modal-dialog-centered" id="mdialTamanio1">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
@@ -170,7 +170,8 @@ Nota de Venta
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="aux_numfila" id="aux_numfila" value="0">
-                    <table class="table table-striped table-bordered table-hover tablas" id="tabla-data-productos">
+                    <table class="table display table-striped AllDataTables table-hover table-condensed tablas" id="tabla-data-productos">
+                        <!--table display table-striped AllDataTables table-hover table-condensed-->
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>

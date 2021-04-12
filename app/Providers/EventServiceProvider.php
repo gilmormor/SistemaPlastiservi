@@ -8,9 +8,11 @@ use App\Events\FinSesionUsuario;
 use App\Events\GuardarFacturaDespacho;
 use App\Events\GuardarGuiaDespacho;
 use App\Events\InicioSesionUsuario;
+use App\Events\Notificacion;
 use App\Listeners\BitFinSesionUsuario;
 use App\Listeners\BitInicioSesionUsuario;
 use App\Listeners\CerrarSolDespNotificacion;
+use App\Listeners\CrearNotificacion;
 use App\Listeners\DevolverSolDespNotificacion;
 use App\Listeners\NotifyMailGuardarFacturaDespacho;
 use App\Listeners\NotifyMailGuardarGuiaDespacho;
@@ -49,6 +51,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         CerrarSolDesp::class => [
             CerrarSolDespNotificacion::class,
+        ],
+        Notificacion::class => [
+            CrearNotificacion::class,
         ]
     ];
 

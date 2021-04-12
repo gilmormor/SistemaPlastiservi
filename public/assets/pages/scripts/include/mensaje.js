@@ -3,7 +3,6 @@ $(document).ready(function () {
     //$("#divmensaje").hide();
     /*
     if($("#mensaje").html()){
-        
         Biblioteca.notificaciones($("#mensaje").html(), 'Plastiservi', 'error');
     }
     */

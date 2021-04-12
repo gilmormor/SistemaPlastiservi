@@ -12,6 +12,7 @@ class Notificaciones extends Model
     protected $fillable = [
         'usuarioorigen_id',
         'usuariodestino_id',
+        'vendedor_id',
         'status',
         'nombretabla',
         'mensaje',
@@ -20,7 +21,8 @@ class Notificaciones extends Model
         'rutaorigen',
         'rutadestino',
         'tabla_id',
-        'accion'
+        'accion',
+        'icono'
     ];
 
     //RELACION INVERSA Usuario

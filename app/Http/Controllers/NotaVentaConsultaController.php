@@ -423,54 +423,66 @@ class NotaVentaConsultaController extends Controller
             $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
         }
     
-        $aux_aprobstatus = " true";
+        $aux_aprobstatus = "";
+        //dd($request->aprobstatus);
         if(is_array($request->aprobstatus)){
             if(!empty($request->aprobstatus)){
                 if(in_array('1',$request->aprobstatus)){
-                    $aux_aprobstatus = "notaventa.aprobstatus='0'";
+                    $aux_aprobstatus = " notaventa.aprobstatus='0'";
                 }
                 if(in_array('2',$request->aprobstatus)){
-                    $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                    
+                    $aux_aprobstatus .= " or notaventa.aprobstatus='2'";
                 }
                 if(in_array('3',$request->aprobstatus)){
-                    $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
+                    $aux_aprobstatus .= " or (notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
                 }
                 if(in_array('4',$request->aprobstatus)){
-                    $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                    $aux_aprobstatus .= " or notaventa.aprobstatus='4'";
                 }
                 if(in_array('7',$request->aprobstatus)){
-                    $aux_aprobstatus = "notaventa.id in (SELECT notaventa_id
+                    $aux_aprobstatus .= " or notaventa.id in (SELECT notaventa_id
                                                             FROM notaventacerrada
                                                             WHERE ISNULL(notaventacerrada.deleted_at))";
                 }
                 if(in_array('8',$request->aprobstatus)){
-                    $aux_aprobstatus = "!isnull(notaventa.anulada)";
+                    $aux_aprobstatus .= " or !isnull(notaventa.anulada)";
                 }
             }
         }else{
+            //dd($request->aprobstatus);
             switch ($request->aprobstatus) {
                 case 1:
-                    $aux_aprobstatus = "notaventa.aprobstatus='0'";
+                    $aux_aprobstatus = " notaventa.aprobstatus='0'";
                     break;
                 case 2:
-                    $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                    $aux_aprobstatus = " notaventa.aprobstatus='$request->aprobstatus'";
                     break;    
                 case 3:
-                    $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
+                    $aux_aprobstatus = " (notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
                     break;
                 case 4:
-                    $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                    $aux_aprobstatus = " notaventa.aprobstatus='$request->aprobstatus'";
                     break;
                 case 7:
-                    $aux_aprobstatus = "notaventa.id in (SELECT notaventa_id
+                    $aux_aprobstatus = " notaventa.id in (SELECT notaventa_id
                                                             FROM notaventacerrada
                                                             WHERE ISNULL(notaventacerrada.deleted_at))";
                     break;
                 case 8:
-                    $aux_aprobstatus = "!isnull(notaventa.anulada)";
+                    $aux_aprobstatus = " !isnull(notaventa.anulada)";
                     break;
                 }
         }
+        if (empty($aux_aprobstatus)){
+            $aux_aprobstatus = " true ";
+        }else{
+            if (substr($aux_aprobstatus, 0, 4) == " or "){
+                $aux_aprobstatus = substr($aux_aprobstatus, 4, 500);
+            }
+            $aux_aprobstatus = "(" . $aux_aprobstatus . ")";    
+        }
+        //dd($aux_aprobstatus);
         
         $aux_condproducto_id = " true";
         if(!empty($request->producto_idM)){

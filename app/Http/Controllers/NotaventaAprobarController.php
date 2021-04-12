@@ -27,7 +27,7 @@ class NotaventaAprobarController extends Controller
      */
     public function index()
     {
-        can('listar-notaventa');
+        can('listar-aprobar-notaventa');
         //session(['aux_aproNV' => '0']) 0=Pantalla Normal CRUD de Nota de Venta
         //session(['aux_aproNV' => '1']) 1=Pantalla Solo para aprobar Nota de Venta para luego emitir Guia de Despacho
         session(['aux_aproNV' => '1']);
@@ -126,7 +126,7 @@ class NotaventaAprobarController extends Controller
      */
     public function editar($id)
     {
-        can('editar-notaventa');
+        can('editar-aprobar-notaventa');
         $data = NotaVenta::findOrFail($id);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
         $detalles = $data->notaventadetalles()->get();

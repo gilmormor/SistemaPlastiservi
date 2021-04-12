@@ -150,6 +150,7 @@ $("#btnnuevaNV").click(function(event){
 	}).then((value) => {
 		if (value) {
 			limpiarCampos();
+			$("#myModalnumcot .modal-body").removeAttr("style");
 			$("#myModalnumcot").modal('show');
 		}else{
 			//alert('Sin Cotizacion');
@@ -173,6 +174,7 @@ $("#btnbuscarcotizacion").click(function(event){
 
 function cargarpantallaBC(){
     limpiarCampos();
+	$("#myModalBusquedaCot .modal-body").removeAttr("style");
     $("#myModalBusquedaCot").modal('show');
 }
 

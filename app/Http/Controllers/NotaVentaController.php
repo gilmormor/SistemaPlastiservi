@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Notificacion;
 use App\Http\Requests\ValidarCotizacion;
 use App\Http\Requests\ValidarNotaVenta;
 use App\Models\CategoriaProd;
@@ -18,6 +19,7 @@ use App\Models\Giro;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\NotaVentaDetalle;
+use App\Models\Notificaciones;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
@@ -671,6 +673,51 @@ class NotaVentaController extends Controller
                 $notaventa->aprobobs = 'Aprobado por el vendedor';
             }
             if ($notaventa->save()) {
+                $sql = "SELECT COUNT(*) as cont
+                    FROM notaventadetalle 
+                    WHERE notaventadetalle.notaventa_id=$notaventa->id 
+                    and notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal
+                    and isnull(notaventadetalle.deleted_at);";
+                //where usuario_id='.auth()->id();
+                //dd($sql);
+                $datas = DB::select($sql);
+                if($datas[0]->cont > 0){
+                    //Notificaciones cuando el precio esta por debajo de lo establecido en tabla de productos
+                    //Notificacion para Cristian
+                    $notificacion = [
+                        'usuarioorigen_id' => auth()->id(),
+                        'usuariodestino_id' => 2,
+                        'vendedor_id' => $notaventa->vendedor_id,
+                        'status' => 1,
+                        'nombretabla' => 'notaventa',
+                        'mensaje' => 'Precio menor NV: '. $notaventa->id,
+                        'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
+                        'nombrepantalla' => 'notaventa.index',
+                        'rutaorigen' => 'notaventa',
+                        'rutadestino' => 'notaventaaprobar',
+                        'tabla_id' => $notaventa->id,
+                        'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
+                        'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
+                    ];
+                    event(new Notificacion($notificacion));
+                    //Notificacion para el usuario que aprobo la Nota Venta
+                    $notificacion = [
+                        'usuarioorigen_id' => auth()->id(),
+                        'usuariodestino_id' => auth()->id(),
+                        'vendedor_id' => $notaventa->vendedor_id,
+                        'status' => 1,
+                        'nombretabla' => 'notaventa',
+                        'mensaje' => 'Precio menor NV: '. $notaventa->id,
+                        'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
+                        'nombrepantalla' => 'notaventa.index',
+                        'rutaorigen' => 'notaventa',
+                        'rutadestino' => 'notaventaconsulta',
+                        'tabla_id' => $notaventa->id,
+                        'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
+                        'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
+                    ];
+                    event(new Notificacion($notificacion));
+                }
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -798,10 +845,10 @@ class NotaVentaController extends Controller
                 FROM notaventa inner join cliente
                 on notaventa.cliente_id = cliente.id
                 where $aux_condvend
-                and anulada is null
+                and isnull(anulada)
                 and (aprobstatus=1 or aprobstatus=3)
                 and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
-                and notaventa.deleted_at is null;";
+                and isnull(notaventa.deleted_at);";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);
