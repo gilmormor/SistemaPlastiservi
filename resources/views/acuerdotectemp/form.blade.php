@@ -11,7 +11,7 @@
                             {{'selected'}}
                         @endif
                         >
-                        {{$clientedirec->cliente->razonsocial}} - {{$clientedirec->direccion}}
+                        {{$clientedirec->cliente['razonsocial']}} - {{$clientedirec->direccion}}
                     </option>
                 @endforeach
             </select>

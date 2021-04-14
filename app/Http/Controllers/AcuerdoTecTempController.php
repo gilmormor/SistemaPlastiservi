@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidarColor;
 use App\Models\AcuerdoTecTemp;
 use App\Models\CategoriaProd;
 use App\Models\Certificado;
@@ -38,6 +39,11 @@ class AcuerdoTecTempController extends Controller
     {
         can('crear-acuerdo-tecnico-temp');
         $clientedirecs = ClienteDirec::orderBy('id')->get();
+        /*
+        foreach($clientedirecs as $clientedirec){
+            dd($clientedirec->cliente->razonsocial);
+        }
+        */
         //$clientedirecs = ClienteDirec::findOrFail(1);
         //dd($clientedirecs->cliente->razonsocial);
         /*
