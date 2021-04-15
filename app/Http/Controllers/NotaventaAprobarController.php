@@ -135,8 +135,11 @@ class NotaventaAprobarController extends Controller
         session(['aux_aprocot' => '2']);
         //dd($clienteselec[0]->rut);
 
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
         //dd($sucurArray);
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
@@ -166,8 +169,6 @@ class NotaventaAprobarController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $users = Usuario::findOrFail(auth()->id());
 
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
@@ -191,14 +192,16 @@ class NotaventaAprobarController extends Controller
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
         //****************** */
+        /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal */
+        // Filtro solos los clientes que esten asignados a la sucursal
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
 
         //dd($clientes);
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {

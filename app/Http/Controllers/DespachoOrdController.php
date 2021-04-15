@@ -137,8 +137,11 @@ class DespachoOrdController extends Controller
         //session(['aux_aprocot' => '0']);
         //dd($clienteselec[0]->rut);
 
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $clientesArray = Cliente::clientesxUsuario($vendedor_id);
+        $clientes = $clientesArray['clientes'];
+        //$vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
         //dd($sucurArray);
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
@@ -167,8 +170,6 @@ class DespachoOrdController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
 
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
@@ -192,14 +193,17 @@ class DespachoOrdController extends Controller
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
         //****************** */
+        /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal */
+        // Filtro solos los clientes que esten asignados a la sucursal
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
+
 
         //dd($clientes);
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
@@ -227,17 +231,6 @@ class DespachoOrdController extends Controller
         $aux_sta=2;
         $aux_statusPant = 0;
 
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-        }
         //dd($clientedirecs);
         return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
         
@@ -362,6 +355,12 @@ class DespachoOrdController extends Controller
 
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
+
+        $clientesArray = Cliente::clientesxUsuario($vendedor_id);
+        $clientes = $clientesArray['clientes'];
+        //$vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
         //dd($sucurArray);
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
@@ -390,8 +389,6 @@ class DespachoOrdController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
 
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
@@ -415,14 +412,16 @@ class DespachoOrdController extends Controller
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
         //****************** */
+        /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal */
+        // Filtro solos los clientes que esten asignados a la sucursal 
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
 
         //dd($clientes);
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
@@ -450,18 +449,6 @@ class DespachoOrdController extends Controller
         $aux_sta=2;
         $aux_statusPant = 0;
 
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-        }
-        //dd($clientedirecs);
         return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
   
     }

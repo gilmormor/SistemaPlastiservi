@@ -69,6 +69,7 @@ class ClienteBloqueadoController extends Controller
     public function crear()
     {
         can('crear-cliente-bloqueado');
+        /*
         $user = Usuario::findOrFail(auth()->id());
         //$vendedor_id=$user->persona->vendedor->id;
         $sql= 'SELECT COUNT(*) AS contador
@@ -85,11 +86,8 @@ class ClienteBloqueadoController extends Controller
         }else{
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
-        //dd($vendedor_id);
-        //dd($sucurArray);
-        //$clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
     
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
@@ -98,6 +96,10 @@ class ClienteBloqueadoController extends Controller
         ->whereIn('cliente.id',$clientevendedorArray)
         ->whereNotIn('cliente.id', ClienteBloqueado::pluck('cliente_id')->toArray())
         ->get();
+        */
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+
         $aux_editar = 0;
         return view('clientebloqueado.crear', compact('clientes','aux_editar'));
     }
@@ -167,6 +169,7 @@ class ClienteBloqueadoController extends Controller
     {
         can('editar-cliente-bloqueado');
         $data = ClienteBloqueado::findOrFail($id);
+        /*
         $user = Usuario::findOrFail(auth()->id());
         //$vendedor_id=$user->persona->vendedor->id;
         $sql= 'SELECT COUNT(*) AS contador
@@ -183,11 +186,8 @@ class ClienteBloqueadoController extends Controller
         }else{
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
-        //dd($vendedor_id);
-        //dd($sucurArray);
-        //$clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
     
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
@@ -195,6 +195,10 @@ class ClienteBloqueadoController extends Controller
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+
         $aux_editar = 1;
         return view('clientebloqueado.editar', compact('data','clientes','aux_editar'));
     }

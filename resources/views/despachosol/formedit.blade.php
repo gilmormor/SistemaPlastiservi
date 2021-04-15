@@ -542,11 +542,11 @@
                                 <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="14" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="15" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="14" style="text-align:right"><b>Total</b></td>
+                                <td colspan="15" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
                             </tr>
                         @endif

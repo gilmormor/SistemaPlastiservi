@@ -27,74 +27,25 @@ class NVIndicadorxVendController extends Controller
     public function index()
     {
         can('indicador-nv-x-vendedor');
-        $user = Usuario::findOrFail(auth()->id());
-        /*
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->where('vendedor.id','=',$vendedor_id)
-                ->groupBy('vendedor.id')
-                ->get();
-    
-        }else{
-            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->groupBy('vendedor.id')
-                ->get();
-    
-        }
-        */
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
+        
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
-
+        /*
         $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
@@ -161,19 +112,23 @@ class NVIndicadorxVendController extends Controller
                 $respuesta['tabla'] .= "
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                         <td id='producto$i' name='producto$i'>$producto->gru_nombre</td>";
-                $respuesta['tabladinero'] = $respuesta['tabla'];
+                $respuesta['tabladinero'] .= "
+                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                        <td id='producto$i' name='producto$i'>$producto->gru_nombre</td>";
+
                 foreach($datas['vendedores'] as $vendedor){
                     $aux_encontrado = false;
                     foreach($datas['totales'] as $total){
                         if($total->grupoprod_id == $producto->id and $total->persona_id==$vendedor->id){
                             $aux_encontrado = true;
+                            //dd($total->subtotal);
                             $respuesta['tabla'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>" . number_format($total->totalkilos, 2, ",", ".") . "</td>";
-                            $respuesta['tabladinero'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>" . number_format($total->subtotal, 2, ",", ".") . "</td>";
+                            $respuesta['tabladinero'] .= "<td id='vendedord$i' name='vendedord$i' style='text-align:right'>" . number_format($total->subtotal, 0, ",", ".") . "</td>";
                         } 
                     }
                     if($aux_encontrado==false){
                         $respuesta['tabla'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>0.00</td>";
-                        $respuesta['tabladinero'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>0.00</td>";
+                        $respuesta['tabladinero'] .= "<td id='vendedordt$i' name='vendedordt$i' style='text-align:right'>0</td>";
                     }
                 }
                 
@@ -181,7 +136,7 @@ class NVIndicadorxVendController extends Controller
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
                     </tr>";
                 $respuesta['tabladinero'] .= "
-                    <td id='totalsubtotal$i' name='totalsubtotal$i' style='text-align:right'>" . number_format($producto->subtotal, 2, ",", ".") . "</td>
+                    <td id='totalsubtotal$i' name='totalsubtotal$i' style='text-align:right'>" . number_format($producto->subtotal, 0, ",", ".") . "</td>
                     </tr>";
 
                 $i++;
@@ -205,7 +160,7 @@ class NVIndicadorxVendController extends Controller
                 $respuesta['tabla'] .= "
                     <th style='text-align:right'>". number_format($vendedor->totalkilos, 2, ",", ".") ."</th>";
                 $respuesta['tabladinero'] .= "
-                <th style='text-align:right'>". number_format($vendedor->subtotal, 2, ",", ".") ."</th>";
+                <th style='text-align:right'>". number_format($vendedor->subtotal, 0, ",", ".") ."</th>";
             }
             $respuesta['tabla'] .= "
                         <th style='text-align:right'>". number_format($totalgeneral, 2, ",", ".") ."</th>
@@ -213,7 +168,7 @@ class NVIndicadorxVendController extends Controller
                 </tfoot>
             </table>";
             $respuesta['tabladinero'] .= "
-                        <th style='text-align:right'>". number_format($totalgeneralDinero, 2, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($totalgeneralDinero, 0, ",", ".") ."</th>
                     </tr>
                 </tfoot>
             </table>";
@@ -658,8 +613,8 @@ function consultaODcerrada($request){
 
 
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * cantdesp)) AS subtotal
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
     INNER JOIN despachoord
@@ -694,8 +649,8 @@ function consultaODcerrada($request){
     $respuesta['productos'] = $datas;
 
     $sql = "SELECT persona.id,persona.nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * cantdesp)) AS subtotal
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
     INNER JOIN despachoord
@@ -733,8 +688,8 @@ function consultaODcerrada($request){
 
 
     $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * cantdesp)) AS subtotal
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
     INNER JOIN despachoord

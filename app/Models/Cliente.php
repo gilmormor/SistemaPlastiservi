@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Cliente extends Model
 {
@@ -97,6 +99,44 @@ class Cliente extends Model
     public function plazopago()
     {
         return $this->belongsTo(PlazoPago::class);
+    }
+
+    public static function clientesxUsuario($vendedor_id = '0'){
+        $respuesta = array();
+        $user = Usuario::findOrFail(auth()->id());
+        //$vendedor_id=$user->persona->vendedor->id;
+        if($vendedor_id == '0'){
+            $sql= 'SELECT COUNT(*) AS contador
+                FROM vendedor INNER JOIN persona
+                ON vendedor.persona_id=persona.id
+                INNER JOIN usuario 
+                ON persona.usuario_id=usuario.id
+                WHERE usuario.id=' . auth()->id();
+            $counts = DB::select($sql);
+            $vendedor_id = '0';
+            if($counts[0]->contador>0){
+                $vendedor_id=$user->persona->vendedor->id;
+                $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            }else{
+                $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            }
+        }else{
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray(); 
+        }
+        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
+        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
+                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
+        ->pluck('cliente_sucursal.cliente_id')->toArray())
+        ->whereIn('cliente.id',$clientevendedorArray)
+        ->get();
+
+        $respuesta['vendedor_id'] = $vendedor_id;
+        $respuesta['clientes'] = $clientes;
+        $respuesta['sucurArray'] = $sucurArray;
+
+        return $respuesta;
     }
     
 }

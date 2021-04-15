@@ -81,16 +81,21 @@ class CotizacionConsultaController extends Controller
         */
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
+        /*
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
 
         $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $fechaServ = ['fechaAct' => date("d/m/Y"),
                     'fecha1erDiaMes' => date("01/m/Y")

@@ -54,72 +54,25 @@ class DespachoSolController extends Controller
 
     public function listarnv()
     {
-        $user = Usuario::findOrFail(auth()->id());
-        /*
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->where('vendedor.id','=',$vendedor_id)
-                ->groupBy('vendedor.id')
-                ->get();
-        }else{
-            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->groupBy('vendedor.id')
-                ->get();
-        }
-        */
+
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
 
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $sucurArray = $clientesArray['sucurArray'];
+
+        /*
         $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
@@ -208,9 +161,12 @@ class DespachoSolController extends Controller
         //session(['aux_aprocot' => '0']);
         //dd($clienteselec[0]->rut);
 
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //dd($sucurArray);
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
+
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
         $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
@@ -238,8 +194,6 @@ class DespachoSolController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
 
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
@@ -263,14 +217,16 @@ class DespachoSolController extends Controller
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
         //****************** */
+        /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal */
+        // Filtro solos los clientes que esten asignados a la sucursal 
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
 
         //dd($clientes);
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
@@ -297,18 +253,6 @@ class DespachoSolController extends Controller
         $aux_sta=2;
         $aux_statusPant = 0;
 
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-        }
-        //dd($clientedirecs);
         return view('despachosol.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
         
     }
@@ -435,8 +379,12 @@ class DespachoSolController extends Controller
         //session(['aux_aprocot' => '0']);
         //dd($clienteselec[0]->rut);
 
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
+
         //dd($sucurArray);
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
@@ -465,8 +413,6 @@ class DespachoSolController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
 
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
@@ -490,14 +436,16 @@ class DespachoSolController extends Controller
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
         //****************** */
+        /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal */
+        // Filtro solos los clientes que esten asignados a la sucursal 
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
 
         //dd($clientes);
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
@@ -524,17 +472,6 @@ class DespachoSolController extends Controller
         $aux_sta=2;
         $aux_statusPant = 0;
 
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-        }
         //dd($clientedirecs);
         return view('despachosol.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
   
@@ -634,72 +571,25 @@ class DespachoSolController extends Controller
 
     public function listarsoldesp() //Listar solicitudes de despacho
     {
-        $user = Usuario::findOrFail(auth()->id());
-        /*
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->where('vendedor.id','=',$vendedor_id)
-                ->groupBy('vendedor.id')
-                ->get();
-        }else{
-            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
-            $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                        })
-                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                ->join('vendedor', function ($join) {
-                    $join->on('persona.id', '=', 'vendedor.persona_id')
-                        ->where('vendedor.sta_activo', '=', 1);
-                })
-                ->select([
-                    'vendedor.id',
-                    'persona.nombre',
-                    'persona.apellido'
-                ])
-                ->groupBy('vendedor.id')
-                ->get();
-        }
-        */
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
 
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
+        /*
         $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
@@ -707,23 +597,6 @@ class DespachoSolController extends Controller
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
-
-
-        /*
-        $request = [
-            'fechad'            => '',
-            'fechah'            => '',
-            'rut'               => '',
-            'vendedor_id'       => '',
-            'oc_id'             => '',
-            'giro_id'           => '',
-            'areaproduccion_id' => '',
-            'tipoentrega_id'    => '',
-            'notaventa_id'      => '',
-            'aprobstatus'       => ''
-        ];
-        $respuesta = reporte1($request);
-        */ 
 
         return view('despachoord.listardespachosol', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
 

@@ -69,19 +69,26 @@ class NotaVentaCerradaController extends Controller
     public function crear()
     {
         can('crear-cerrar-nota-venta');
-        $user = Usuario::findOrFail(auth()->id());
+
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
         $arrayvend = Vendedor::vendedores(); //Esto viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
 
+        /*
         $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
@@ -92,8 +99,6 @@ class NotaVentaCerradaController extends Controller
                     'fechaAct' => date("d/m/Y"),
                     ];
         //dd($fechaServ);
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')

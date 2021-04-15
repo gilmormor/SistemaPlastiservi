@@ -110,6 +110,7 @@ class NotaVentaController extends Controller
     public function crear()
     {
         can('crear-notaventa');
+        /*
         $user = Usuario::findOrFail(auth()->id());
         //$vendedor_id=$user->persona->vendedor->id;
         $sql= 'SELECT COUNT(*) AS contador
@@ -126,11 +127,7 @@ class NotaVentaController extends Controller
         }else{
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
-        //dd($vendedor_id);
-        //dd($sucurArray);
-        //$clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-    
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
@@ -138,6 +135,11 @@ class NotaVentaController extends Controller
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+
         $fecha = date("d/m/Y");
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
@@ -211,8 +213,11 @@ class NotaVentaController extends Controller
         $clienteselec = $data->cliente()->get();
         //dd($clienteselec);
 
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
         $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
@@ -243,8 +248,6 @@ class NotaVentaController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $users = Usuario::findOrFail(auth()->id());
 
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
@@ -268,14 +271,16 @@ class NotaVentaController extends Controller
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
         //****************** */
+        /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal */
+        // Filtro solos los clientes que esten asignados a la sucursal
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
 /*
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
         ->whereIn('cliente.id' , 
@@ -404,8 +409,11 @@ class NotaVentaController extends Controller
         //session(['aux_aprocot' => '0']);
         //dd($clienteselec[0]->rut);
 
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
         //dd($sucurArray);
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
@@ -434,8 +442,6 @@ class NotaVentaController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
 
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
@@ -461,14 +467,16 @@ class NotaVentaController extends Controller
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
         //****************** */
+        /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal */
+        // Filtro solos los clientes que esten asignados a la sucursal 
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
 
         //dd($clientes);
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
@@ -495,18 +503,6 @@ class NotaVentaController extends Controller
         $aux_sta=2;
         $aux_statusPant = 0;
 
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-        }
-        //dd($clientedirecs);
         return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
     }
 

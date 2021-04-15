@@ -94,6 +94,7 @@ class CotizacionController extends Controller
     {
         can('crear-cotizacion');
         //dd('Entro');
+        /*
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
@@ -112,13 +113,18 @@ class CotizacionController extends Controller
         }
         //dd($vendedor_id);
         $sucurArray = $user->sucursales->pluck('id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado*/
+        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                 ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+
         //dd($clientes);
         //pluck('id','rut','cliente.razonsocial','cliente.direccionprinc')->toArray();
 
@@ -313,8 +319,6 @@ class CotizacionController extends Controller
         }
         //dd($clienteselec);
 
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
         $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
@@ -342,10 +346,15 @@ class CotizacionController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $provincias = Provincia::orderBy('id')->get();
         $regiones = Region::orderBy('id')->get();
-        $users = Usuario::findOrFail(auth()->id());
-
+        /*
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
+        */
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
@@ -371,8 +380,9 @@ class CotizacionController extends Controller
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
         //****************** */
+        /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        //* Filtro solos los clientes que esten asignados a la sucursal */
+        // Filtro solos los clientes que esten asignados a la sucursal
         
         $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
         ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
@@ -380,6 +390,8 @@ class CotizacionController extends Controller
         ->pluck('cliente_sucursal.cliente_id')->toArray())
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
+        */
+
 
         //dd($clientes);
 
@@ -407,6 +419,7 @@ class CotizacionController extends Controller
                 'persona.apellido'
             ])
             ->get();
+        /*
         $sql= 'SELECT COUNT(*) AS contador
         FROM vendedor INNER JOIN persona
         ON vendedor.persona_id=persona.id
@@ -418,6 +431,7 @@ class CotizacionController extends Controller
         if($counts[0]->contador>0){
             $vendedor_id=$user->persona->vendedor->id;
         }
+        */
         //dd($clientedirecs);
         return view('cotizacion.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','cotizacionDetalles','comunas','provincias','regiones','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','sucursales','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
     }

@@ -643,7 +643,7 @@ class ClienteController extends Controller
                 ->pluck('cliente_sucursal.cliente_id')->toArray())
                 ->whereIn('cliente.id',$clientevendedorArray)
                 ->get();
-            dd($clientes);
+            //dd($clientes);
             $clientedirecs = Cliente::where('cliente.id', $request->id)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
@@ -670,4 +670,5 @@ class ClienteController extends Controller
             return response()->json($clientedirecs->get());
         }
     }
+
 }
