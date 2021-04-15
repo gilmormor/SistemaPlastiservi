@@ -831,16 +831,23 @@ function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
 }
 
 $(document).on("click", ".btngenpdfNV1", function(){	
-    fila = $(this).closest("tr");	        
-    id = fila.find('td:eq(0)').text();
-    //form = $(this);
+    fila = $(this).closest("tr");
+	form = $(this);
+	if(form.attr('col')){
+		id = fila.find('td:eq('+form.attr('col')+')').text();
+	}else{
+		id = fila.find('td:eq(0)').text();
+	}
 	genpdfNV(id,1);
 });
 
 $(document).on("click", ".btngenpdfNV2", function(){	
     fila = $(this).closest("tr");	        
-    id = fila.find('td:eq(0)').text();
-    //form = $(this);
+	if(form.attr('col')){
+		id = fila.find('td:eq('+form.attr('col')+')').text();
+	}else{
+		id = fila.find('td:eq(0)').text();
+	}
 	genpdfNV(id,2);
 });
 

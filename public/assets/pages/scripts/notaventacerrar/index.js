@@ -15,10 +15,10 @@ $(document).ready(function () {
             {data: 'observacion'},
             {data: 'notaventa_id'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
-            {defaultContent : "<a class='btn-accion-tabla btn-sm btngenpdfNV1 tooltipsC' title='Nota de venta'>" +
+            {defaultContent : "<a class='btn-accion-tabla btn-sm btngenpdfNV1 tooltipsC' title='Nota de venta' col='2'>" +
                                     "<i class='fa fa-fw fa-file-pdf-o'></i>" +
                                "</a>"+
-                               "<a class='btn-accion-tabla btn-sm btngenpdfNV2 tooltipsC' title='Precio x Kg'>" +
+                               "<a class='btn-accion-tabla btn-sm btngenpdfNV2 tooltipsC' title='Precio x Kg' col='2'>" +
                                     "<i class='fa fa-fw fa-file-pdf-o'></i>" +
                                "</a> | " +
                                "<a href='notaventacerrada' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>" +

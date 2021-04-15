@@ -216,10 +216,11 @@ class ProductoController extends Controller
 
     public function buscarproducto()
     {
+        $productos = Producto::productosxUsuario();
+        /*
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
         ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
         ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
@@ -239,8 +240,8 @@ class ProductoController extends Controller
                 'categoriaprodsuc.sucursal_id'
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
-        //****************** */
-        return response()->json($productos->get());
+        */
+        return response()->json($productos);
     }
 
     public function buscarUnProducto(Request $request)
