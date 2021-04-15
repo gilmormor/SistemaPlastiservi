@@ -12,6 +12,7 @@ use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\PlazoPago;
+use App\Models\Producto;
 use App\Models\Provincia;
 use App\Models\Region;
 use App\Models\Seguridad\Usuario;
@@ -143,10 +144,10 @@ class CotizacionAprobarClienteController extends Controller
         $regiones = Region::orderBy('id')->get();
         $users = Usuario::findOrFail(auth()->id());
 
+        /*
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
         ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
         ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
@@ -167,6 +168,8 @@ class CotizacionAprobarClienteController extends Controller
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
+        */
+        $productos = Producto::productosxUsuario();
         //****************** */
         /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();

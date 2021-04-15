@@ -124,6 +124,7 @@ class CotizacionController extends Controller
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
 
         //dd($clientes);
         //pluck('id','rut','cliente.razonsocial','cliente.direccionprinc')->toArray();
@@ -138,10 +139,11 @@ class CotizacionController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $provincias = Provincia::orderBy('id')->get();
         $regiones = Region::orderBy('id')->get();
+        $productos = Producto::productosxUsuario();
+        /*
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
         ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
         ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
@@ -164,6 +166,7 @@ class CotizacionController extends Controller
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
+        */
         //****************** */
         //dd($clientedirecs);
         $empresa = Empresa::findOrFail(1);
@@ -354,9 +357,9 @@ class CotizacionController extends Controller
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
         $sucurArray = $clientesArray['sucurArray'];
-
+        $productos = Producto::productosxUsuario();
+        /*
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
         ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
         ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
@@ -379,6 +382,7 @@ class CotizacionController extends Controller
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
+        */
         //****************** */
         /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();

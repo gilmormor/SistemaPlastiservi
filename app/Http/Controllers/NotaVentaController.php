@@ -139,16 +139,18 @@ class NotaVentaController extends Controller
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
 
         $fecha = date("d/m/Y");
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $comunas = Comuna::orderBy('id')->get();
+        $productos = Producto::productosxUsuario();
+        /*
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
         ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
         ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
@@ -171,7 +173,7 @@ class NotaVentaController extends Controller
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
-        //****************** */
+        */
         //dd($clientedirecs);
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
@@ -246,10 +248,10 @@ class NotaVentaController extends Controller
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
+        $productos = Producto::productosxUsuario();
+        /*
         $users = Usuario::findOrFail(auth()->id());
-
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
         ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
         ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
@@ -270,7 +272,7 @@ class NotaVentaController extends Controller
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
-        //****************** */
+        */
         /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
         // Filtro solos los clientes que esten asignados a la sucursal
@@ -441,9 +443,9 @@ class NotaVentaController extends Controller
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-
+        $productos = Producto::productosxUsuario();
+        /*
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
         ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
         ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
@@ -466,7 +468,7 @@ class NotaVentaController extends Controller
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
-        //****************** */
+        */
         /*
         $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
         // Filtro solos los clientes que esten asignados a la sucursal 

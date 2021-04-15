@@ -11,6 +11,7 @@ use App\Models\ClienteSucursal;
 use App\Models\Comuna;
 use App\Models\Giro;
 use App\Models\NotaVentaCerrada;
+use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
@@ -98,9 +99,9 @@ class NotaVentaCerradaController extends Controller
                     'fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y"),
                     ];
-        //dd($fechaServ);
+        $productos = Producto::productosxUsuario();
+        /*
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
         ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
         ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
@@ -123,6 +124,7 @@ class NotaVentaCerradaController extends Controller
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
+        */
         $comunas = Comuna::orderBy('id')->get();
         $aux_editar = 0;
         return view('notaventacerrar.crear', compact('aux_editar','clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaServ','productos','comunas'));

@@ -25,48 +25,7 @@ class ClienteController extends Controller
     public function index()
     {
         can('listar-cliente');
-        $datas = Cliente::orderBy('id')->get();
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-            $datas = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-            ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                                     ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-            ->pluck('cliente_sucursal.cliente_id')->toArray())
-            ->whereIn('cliente.id',$clientevendedorArray)
-            ->get();    
-        }else{
-            $datas = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-            ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                                     ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-            ->pluck('cliente_sucursal.cliente_id')->toArray())
-            ->get();
-        }
-        /*
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        $datas = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccionprinc','cliente.telefono'])
-        ->whereIn('cliente.id' , 
-                    ClienteDirec::select(['clientedirec.cliente_id'])
-                    ->whereIn('clientedirec.id', SucursalClienteDirec::select(['sucursalclientedirec.clientedirec_id'])
-                                                 ->whereIn('sucursalclientedirec.sucursal_id', $sucurArray))
-        ->pluck('clientedirec.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
-
-        //$datas = datatables($datas)->toJson();
         return view('cliente.index');
-        //return view('cliente.index', compact('datas'));
     }
 
     public function clientepage(){

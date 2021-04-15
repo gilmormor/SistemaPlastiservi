@@ -10,6 +10,7 @@ use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
@@ -55,8 +56,9 @@ class NotaVentaConsultaController extends Controller
                     'fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y"),
                     ];
+        $productos = Producto::productosxUsuario();
+        /*
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
         ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
         ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
@@ -79,6 +81,7 @@ class NotaVentaConsultaController extends Controller
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->get();
+        */
         $comunas = Comuna::orderBy('id')->get();
         return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaServ','productos','comunas'));
 
