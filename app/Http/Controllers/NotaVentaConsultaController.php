@@ -248,7 +248,7 @@ class NotaVentaConsultaController extends Controller
                                     ->notaventacerradas;
                 if(count($notaventacerrada)>0){
                     $aux_feccierre = date('d-m-Y h:i A', strtotime($notaventacerrada[0]->created_at));
-                    $aux_iconiInf .= "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cerrada $aux_feccierre' data-toggle='tooltip'>
+                    $aux_iconiInf .= "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cerrada: $aux_feccierre' data-toggle='tooltip'>
                                         <i class='fa fa-fw fa-archive'></i>
                                     </a>";
                 }

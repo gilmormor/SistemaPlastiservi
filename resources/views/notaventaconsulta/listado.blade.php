@@ -62,8 +62,8 @@
 					?>
 					@foreach($notaventas as $notaventa)
 						<?php
+							$i++;
 							if(empty($notaventa->anulada)){
-								$i++;
 								$aux_totalKG += $notaventa->totalkilos;
 								$aux_totalps += $notaventa->totalps;
 							}
