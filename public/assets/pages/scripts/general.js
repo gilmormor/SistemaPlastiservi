@@ -856,6 +856,11 @@ function genpdfSD(id,stareport){ //GENERAR PDF Solicitud de Despacho
 	$('#contpdf').attr('src', '/despachosol/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 }
+function genpdfVPOD(id,stareport){ //GENERAR PDF Vista Previa Orden Despacho
+	$('#contpdf').attr('src', '/despachosol/'+id+'/'+stareport+'/vistaprevODPdf');
+	$("#myModalpdf").modal('show')
+}
+
 
 function genpdfOD(id,stareport){ //GENERAR PDF Orden de Despacho
 	$('#contpdf').attr('src', '/despachoord/'+id+'/'+stareport+'/exportPdf');

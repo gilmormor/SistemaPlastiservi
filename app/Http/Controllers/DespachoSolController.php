@@ -764,6 +764,34 @@ class DespachoSolController extends Controller
         }
     }
 
+    public function vistaprevODPdf($id,$stareport = '1')
+    {
+        $despachosol = DespachoSol::findOrFail($id);
+        $despachosoldets = $despachosol->despachosoldets()->get();
+        //dd($despachosol);
+        $empresa = Empresa::orderBy('id')->get();
+        $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
+        //dd($empresa[0]['iva']);
+        if($stareport == '1'){
+            if(env('APP_DEBUG')){
+                return view('despachosol.vistaprevod', compact('despachosol','despachosoldets','empresa'));
+            }
+        
+            $pdf = PDF::loadView('despachosol.vistaprevod', compact('despachosol','despachosoldets','empresa'));
+            //return $pdf->download('cotizacion.pdf');
+            return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
+        }else{
+            if($stareport == '2'){
+                return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));        
+                $pdf = PDF::loadView('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
+                //return $pdf->download('cotizacion.pdf');
+                return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
+    
+            }
+        }
+    }
+
+
     //Reporte previo a la solicitud de Despacho, para saber como esta la nota de venta
     public function pdfSolDespPrev($id,$stareport = '1')
     {
@@ -1309,6 +1337,7 @@ function reportesoldesp1($request){
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th>Comuna</th>
                 <th class='tooltipsC' title='Total Kg Pendientes'>Total Kg</th>
+                <th class='tooltipsC' title='Vista Previa Orden Despacho'>VP</th>
                 <th class='tooltipsC' title='Acción'>Acción</th>
             </tr>
         </thead>
@@ -1382,6 +1411,12 @@ function reportesoldesp1($request){
                 <td style='text-align:right'>".
                     number_format($data->totalkilos - $data->totalkilosdesp, 2, ",", ".") .
                 "</td>
+                <td>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa' onclick='genpdfVPOD($data->id,1)'>
+                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                    </a>
+                </td>
+
                 <td>
                     $nuevoOrdDesp
                 </td>

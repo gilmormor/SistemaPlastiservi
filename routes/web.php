@@ -494,6 +494,7 @@ Route::post('despachosol/reportesoldespcerrarNV', 'DespachoSolController@reporte
 Route::get('despachosol/{id}/{stareport}/pdfSolDespPrev', 'DespachoSolController@pdfSolDespPrev')->name('pdfSolDespPrev_despachosol');
 Route::post('despachosol/devolversoldesp', 'DespachoSolController@devolversoldesp')->name('devolversoldesp_despachosol');
 Route::post('despachosol/cerrarsoldesp', 'DespachoSolController@cerrarsoldesp')->name('cerrarsoldesp_despachosol');
+Route::get('despachosol/{id}/{stareport}/vistaprevODPdf', 'DespachoSolController@vistaprevODPdf')->name('vistaprevODPdf_despachosol');
 
 Route::get('despachosol/reporteindex', 'DespachoSolController@reporteindex')->name('reporteindex_despachosol');
 
