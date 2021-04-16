@@ -10,6 +10,7 @@ use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\NotaVenta;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
@@ -143,12 +144,13 @@ class NotaVentaConsultaController extends Controller
                 $colorFila = "";
                 $aux_data_toggle = "";
                 $aux_title = "";
+                /*
                 if(!empty($data->anulada)){
                     $colorFila = 'background-color: #87CEEB;';
                     $aux_data_toggle = "tooltip";
                     $aux_title = "Anulada Fecha:" . $data->anulada;
                 }
-    
+                */
                 $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
                 $prompvc = 0;
                 $promcan = 0;
@@ -203,15 +205,21 @@ class NotaVentaConsultaController extends Controller
                     $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
                 }
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
-                $aux_icodespacho = "";
-                $aux_obsdespacho = "No ha iniciado el despacho";
+                $aux_icono = "";
+                $aux_ObsIcono = ""; //"No ha iniciado el despacho";
                 if(!empty($data->inidespacho)){
-                    $aux_icodespacho = "fa-star-o";
-                    $aux_obsdespacho = "Ini: " . date('d-m-Y', strtotime($data->inidespacho)) . " Guia: " . $data->guiasdespacho;
+                    $aux_icono = "fa-star-o";
+                    $aux_ObsIcono = "Ini: " . date('d-m-Y', strtotime($data->inidespacho)) . " Guia: " . $data->guiasdespacho;
                 }
                 if(!empty($data->findespacho)){
-                    $aux_icodespacho = " fa-star";
-                    $aux_obsdespacho = "Ini:" . date('d-m-Y', strtotime($data->inidespacho)) . " Fin:" . date('d-m-Y', strtotime($data->findespacho)) . " Guia: " . $data->guiasdespacho;
+                    $aux_icono = " fa-star";
+                    $aux_ObsIcono = "Ini:" . date('d-m-Y', strtotime($data->inidespacho)) . " Fin:" . date('d-m-Y', strtotime($data->findespacho)) . " Guia: " . $data->guiasdespacho;
+                }
+                $aux_iconiInf = "";
+                if(!empty($aux_icono)){
+                    $aux_iconiInf = "<a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_ObsIcono' data-toggle='tooltip'>
+                                        <i class='fa fa-fw $aux_icono'></i>                                    
+                                    </a>";
                 }
 
                 $aux_icodespachoNew = "";
@@ -225,16 +233,29 @@ class NotaVentaConsultaController extends Controller
                         $aux_obsdespachoNew = "Fin despacho";
                     }
                 }
+                $aux_iconiInf .= "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->id)' title='$aux_obsdespachoNew' data-toggle='tooltip'>
+                                    <i class='fa fa-fw $aux_icodespachoNew text-aqua'></i>                                    
+                                </a>";
                 $comuna = Comuna::findOrFail($data->comunaentrega_id);
+
+                if(!empty($data->anulada)){
+                    $aux_fecanulada = date('d-m-Y h:i A', strtotime($data->anulada));
+                    $aux_iconiInf .= "<a class='btn-accion-tabla btn-sm tooltipsC' title='Anulada: $aux_fecanulada' data-toggle='tooltip'>
+                                        <span class='glyphicon glyphicon-remove text-danger'></span>
+                                    </a>";
+                }
+                $notaventacerrada = NotaVenta::findOrFail($data->id)
+                                    ->notaventacerradas;
+                if(count($notaventacerrada)>0){
+                    $aux_feccierre = date('d-m-Y h:i A', strtotime($notaventacerrada[0]->created_at));
+                    $aux_iconiInf .= "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cerrada $aux_feccierre' data-toggle='tooltip'>
+                                        <i class='fa fa-fw fa-archive'></i>
+                                    </a>";
+                }
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                     <td id='id$i' name='id$i'>$data->id
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_obsdespacho' data-toggle='tooltip'>
-                            <i class='fa fa-fw $aux_icodespacho'></i>                                    
-                        </a>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->id)' title='$aux_obsdespachoNew' data-toggle='tooltip'>
-                            <i class='fa fa-fw $aux_icodespachoNew text-danger'></i>                                    
-                        </a>
+                        $aux_iconiInf
                     </td>
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>

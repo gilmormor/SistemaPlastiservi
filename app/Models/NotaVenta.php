@@ -134,5 +134,11 @@ class NotaVenta extends Model
     {
         return $this->belongsTo(TipoEntrega::class);
     }
+    //RELACION DE UNO A MUCHOS NotaVentaCerrada
+    public function notaventacerradas()
+    {
+        return $this->hasMany(NotaVentaCerrada::class,'notaventa_id');
+    }
+    
     
 }

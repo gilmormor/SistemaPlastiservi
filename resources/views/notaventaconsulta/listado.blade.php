@@ -1,5 +1,6 @@
 <?php
 	use App\Models\Comuna;
+	use App\Models\NotaVenta;
 ?>
 <link rel="stylesheet" href="{{asset("assets/css/factura.css")}}">
 
@@ -40,24 +41,10 @@
 	<div class="round">
 		<table id="factura_detalle">
 				<thead>
-<!--
 					<tr>
 						<th style='text-align:left'>#</th>
 						<th style='text-align:left'>NV ID</th>
-						<th class="textcenter">Fecha</th>
-						<th class="textleft">Razón Social</th>
-						<th style='text-align:right'>PVC Kg</th>
-						<th style='text-align:right'>PVC $</th>
-						<th style='text-align:right'>Cañeria Kg</th>
-						<th style='text-align:right'>Cañeria $</th>
-						<th style='text-align:right'>Total Kg</th>
-						<th style='text-align:right'>Total $</th>
-					</tr>
--->
-					<tr>
-						<th style='text-align:left'>#</th>
-						<th style='text-align:left'>NV ID</th>
-						<th style='text-align:left'>D</th>
+						<th style='text-align:left'>Inf</th>
 						<th style='text-align:left'>OC</th>
 						<th class="textcenter">Fecha</th>
 						<th class="textleft">Razón Social</th>
@@ -95,30 +82,14 @@
 							}
 							$comuna = Comuna::findOrFail($notaventa->comunaentrega_id);
 
-						?>
-<!--
-						<tr style='{{$colorFila}}' title='{{$aux_title}}' data-toggle='{{$aux_data_toggle}}' class='btn-accion-tabla tooltipsC'>
-							<td>{{$i}}</td>
-							<td>{{$notaventa->id}}</td>
-							<td style='text-align:center'>{{date('d-m-Y', strtotime($notaventa->fechahora))}}</td>
-							<td>{{$notaventa->razonsocial}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->pvckg, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->pvcpesos, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->cankg, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->canpesos, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->totalkilos, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->totalps, 2, ",", ".")}}</td>
-						</tr>
--->
-						<?php
 							$sql = "SELECT notaventa_id,sum(cantdesp) AS cantdesp 
-							FROM despachoord JOIN despachoorddet 
-							ON despachoord.id = despachoorddet.despachoord_id
-							WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
-							and despachoord.numfactura is not null
-							and despachoord.notaventa_id=$notaventa->id
-							and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
-							group by despachoord.notaventa_id;";
+								FROM despachoord JOIN despachoorddet 
+								ON despachoord.id = despachoorddet.despachoord_id
+								WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
+								and despachoord.numfactura is not null
+								and despachoord.notaventa_id=$notaventa->id
+								and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
+								group by despachoord.notaventa_id;";
 							//dd("$sql");
 							$datas = DB::select($sql);
 							$aux_cant = 0;
@@ -132,6 +103,16 @@
 									$ifd = "starl";
 								}
 							}
+							$aux_iconiInf = '';
+							$aux_ban = '';
+							if(!empty($notaventa->anulada)){
+								$aux_ban = 'A';
+							}
+							$notaventacerrada = NotaVenta::findOrFail($notaventa->id)
+                                    			->notaventacerradas;
+							if(count($notaventacerrada)>0){
+								$aux_ban .= 'C';
+							}
 
 						?>
 						<tr style='{{$colorFila}}' title='{{$aux_title}}' data-toggle='{{$aux_data_toggle}}' class='btn-accion-tabla tooltipsC'>
@@ -139,8 +120,9 @@
 							<td>{{$notaventa->id}}</td>
 							<td>
 								@if (!empty($ifd))
-									<div></div><img src="{{asset("assets/$theme/dist/img/$ifd.png")}}" style="max-width:100%;width:10;height:10;">	
+									<img src="{{asset("assets/$theme/dist/img/$ifd.png")}}" style="max-width:100%;width:10;height:10;">	
 								@endif
+								{{$aux_ban}}
 							</td>
 							
 							<td>{{$notaventa->oc_id}}</td>
@@ -185,25 +167,15 @@
 				</tfoot>
 		</table>
 	</div>
-
-	<!--
-	<div class="round">
-		<table id="factura_detalle">
-			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>NETO</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($notaventa->pvckg, 2, ",", ".")}}</strong></span></td>
-			</tr>
-			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$empresa[0]['iva']}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($notaventa->pvckg, 2, ",", ".")}}</strong></span></td>
-			</tr>
-			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($notaventa->pvckg, 2, ",", ".")}}</strong></span></td>
-			</tr>
-		</table>
-	</div>
 	<br>
-	-->
-
+	<a>
+		<i class='fa fa-fw $aux_icodespachoNew text-danger'>
+			<p><small>
+				<img src="{{asset("assets/$theme/dist/img/starb.png")}}" style="max-width:100%;width:10;height:10;">= Inicio Despacho,
+				<img src="{{asset("assets/$theme/dist/img/starl.png")}}" style="max-width:100%;width:10;height:10;">= Fin Despacho,
+				A= Anulada,
+				C= Cerrada.
+			</small></p>
+		</i>                                    
+	</a>
 </div>
