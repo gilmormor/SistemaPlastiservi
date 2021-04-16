@@ -112,7 +112,7 @@
 							$aux_sumtotalkilos += $totalkilos;
 					?>
 					<tr class="headt" style="height:150%;">
-						<td class="textcenter">{{number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".")}}</td>
+						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">
 							{{number_format($sumacantorddesp, 0, ",", ".")}}
 						</td>
