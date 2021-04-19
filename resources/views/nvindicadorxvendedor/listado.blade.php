@@ -122,9 +122,15 @@
 									}
 								?>
 							@endforeach
+							<?php
+								$aux_prom = 0;
+								if($producto->totalkilos>0){
+									$aux_prom = $producto->subtotal/$producto->totalkilos
+								}
+							?>
 							<td style='text-align:right'>{{number_format($producto->subtotal, 0, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($producto->totalkilos, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($producto->subtotal/$producto->totalkilos, 2, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</td>
 						</tr>
 						<?php
 							$totalgeneral += $producto->subtotal;
@@ -138,11 +144,18 @@
 						@foreach($datas['vendedores'] as $vendedor)
 							<th style='text-align:right'>{{number_format($vendedor->subtotal, 0, ",", ".")}}</th>
 						@endforeach
+						<?php
+							$aux_prom = 0;
+							if($totalgeneralKilos>0){
+								$aux_prom = $totalgeneral/$totalgeneralKilos
+							}
+						?>
+
 						<th style='text-align:right'>{{number_format($totalgeneral, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($totalgeneralKilos, 2, ",", ".")}}</th>
-						<th style='text-align:right'>{{number_format($totalgeneral/$totalgeneralKilos, 2, ",", ".")}}</th>
+						<th style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</th>
 					</tr>
-				</tfoot>		
+				</tfoot>
 		</table>
 	</div>
 </div>
