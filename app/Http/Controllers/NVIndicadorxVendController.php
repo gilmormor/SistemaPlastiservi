@@ -80,6 +80,7 @@ class NVIndicadorxVendController extends Controller
 		$respuesta['mensaje'] = "Código encontrado";
 		$respuesta['tabla'] = "";
 		$respuesta['tabladinero'] = "";
+		$respuesta['tablaagruxproducto'] = "";
 
         if($request->ajax()){
             //dd($request->idcons);
@@ -93,10 +94,18 @@ class NVIndicadorxVendController extends Controller
 			<thead>
 				<tr>
 					<th>Productos</th>";
-
+            $respuesta['tabladinero'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+            <thead>
+                <tr>
+                    <th>Productos</th>";
             foreach($datas['vendedores'] as $vendedor){
                 $nombreven = $vendedor->nombre;
                 $respuesta['tabla'] .= "
+                        <th style='text-align:right' class='tooltipsC' title='$nombreven'>$nombreven</th>";
+            }
+            foreach($datas['vendedores'] as $vendedor){
+                $nombreven = $vendedor->nombre;
+                $respuesta['tabladinero'] .= "
                         <th style='text-align:right' class='tooltipsC' title='$nombreven'>$nombreven</th>";
             }
             $respuesta['tabla'] .= "
@@ -104,10 +113,17 @@ class NVIndicadorxVendController extends Controller
                 </tr>
             </thead>
             <tbody>";
-            $respuesta['tabladinero'] = $respuesta['tabla'];
+            $respuesta['tabladinero'] .= "
+                    <th style='text-align:right' class='tooltipsC' title='Total'>TOTAL</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total'>KG</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total'>Prom</th>
+                </tr>
+            </thead>
+            <tbody>";
             $i = 0;
             $totalgeneral = 0;
             $totalgeneralDinero = 0;
+            $precpromedio = 0;
             foreach($datas['productos'] as $producto){
                 $respuesta['tabla'] .= "
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
@@ -135,15 +151,21 @@ class NVIndicadorxVendController extends Controller
                 $respuesta['tabla'] .= "
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
                     </tr>";
+                $aux_precpromkilo = 0;
+                if($producto->totalkilos>0){
+                    $aux_precpromkilo = $producto->subtotal/$producto->totalkilos;
+                }
                 $respuesta['tabladinero'] .= "
-                    <td id='totalsubtotal$i' name='totalsubtotal$i' style='text-align:right'>" . number_format($producto->subtotal, 0, ",", ".") . "</td>
+                        <td id='totalsubtotal$i' name='totalsubtotal$i' style='text-align:right'>" . number_format($producto->subtotal, 0, ",", ".") . "</td>
+                        <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
+                        <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>" . number_format($aux_precpromkilo, 2, ",", ".") . "</td>
                     </tr>";
 
                 $i++;
                 $totalgeneral += $producto->totalkilos;
                 $totalgeneralDinero += $producto->subtotal;
-
             }
+            $precpromedio = $totalgeneralDinero / $totalgeneral;
             $respuesta['tabla'] .= "
             </tbody>
                 <tfoot>
@@ -160,7 +182,7 @@ class NVIndicadorxVendController extends Controller
                 $respuesta['tabla'] .= "
                     <th style='text-align:right'>". number_format($vendedor->totalkilos, 2, ",", ".") ."</th>";
                 $respuesta['tabladinero'] .= "
-                <th style='text-align:right'>". number_format($vendedor->subtotal, 0, ",", ".") ."</th>";
+                    <th style='text-align:right'>". number_format($vendedor->subtotal, 0, ",", ".") ."</th>";
             }
             $respuesta['tabla'] .= "
                         <th style='text-align:right'>". number_format($totalgeneral, 2, ",", ".") ."</th>
@@ -169,6 +191,8 @@ class NVIndicadorxVendController extends Controller
             </table>";
             $respuesta['tabladinero'] .= "
                         <th style='text-align:right'>". number_format($totalgeneralDinero, 0, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($totalgeneral, 2, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($precpromedio, 2, ",", ".") ."</th>
                     </tr>
                 </tfoot>
             </table>";
@@ -192,6 +216,63 @@ class NVIndicadorxVendController extends Controller
                 $respuesta['nombredinero'][$i] .= " " . number_format($subtotaldinero1, 2, ",", ".") . "%";
                 $i++;
             }
+
+            //TABLA TOTALES POR PRODUCTO
+            $respuesta['tablaagruxproducto'] .= "<table id='tablaagruxproducto' name='tablaagruxproducto' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+                <thead>
+                    <tr>
+                        <th>Productos</th>
+                        <th>Diametro</th>
+                        <th>Longitud</th>
+                        <th>Clase</th>
+                        <th>PesoUnid</th>
+                        <th>TU</th>
+                        <th>Color</th>
+                        <th style='text-align:right'>Unid</th>
+                        <th style='text-align:right'>KG</th>
+                        <th style='text-align:right'>Prom Unit</th>
+                        <th style='text-align:right'>Prom Kilo</th>
+                    </tr>
+                </thead>
+                <tbody>";
+            $aux_sumpromkilo = 0;
+            foreach($datas['agruxproducto'] as $producto){
+                $aux_promunit = 0;
+                if($producto->cant>0){
+                    $aux_promunit = $producto->subtotal/$producto->cant;
+                }
+                $aux_promkilo = 0;
+                if($producto->totalkilos>0){
+                    $aux_promkilo = $producto->subtotal/$producto->totalkilos;
+                }
+                $aux_sumpromkilo += $aux_promkilo;
+                $respuesta['tablaagruxproducto'] .= "
+                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                        <td>$producto->nombre</td>
+                        <td>$producto->diametro</td>
+                        <td>$producto->long</td>
+                        <td>$producto->cla_nombre</td>
+                        <td>$producto->peso</td>
+                        <td>$producto->tipounion</td>
+                        <td>$producto->color</td>
+                        <td style='text-align:right'>$producto->cant</td>
+                        <td style='text-align:right'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
+                        <td style='text-align:right'>" . number_format($aux_promunit, 2, ",", ".") . "</td>
+                        <td style='text-align:right'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>";
+            }
+            $aux_promkilogen = $aux_sumpromkilo / count($datas['agruxproducto']);
+            $respuesta['tablaagruxproducto'] .= "
+                </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>TOTAL</th>
+                        <th colspan='8' style='text-align:right'>". number_format($totalgeneral, 2, ",", ".") ."</th>
+                        <th></th>
+                        <th style='text-align:right'>". number_format($aux_promkilogen, 2, ",", ".") ."</th>
+                    </tr>
+                </tfoot>
+            </table>";
 
             return $respuesta;
         }
@@ -410,6 +491,7 @@ function consulta($request){
     $respuesta['mensaje'] = "Código encontrado";
     $respuesta['productos'] = "";
     $respuesta['vendedores'] = "";
+    $respuesta['agruxproducto'] = "";
 
     if(empty($aux_vendedor )){
             $vendedorcond = " true ";
@@ -544,6 +626,42 @@ function consulta($request){
     $datas = DB::select($sql);
     $respuesta['totales'] = $datas;
     //dd($respuesta['totales']);
+
+    
+    $sql = "SELECT categoriaprod.nombre,claseprod.cla_nombre,
+    producto.long,if(categoriaprod.unidadmedida_id != 3 , CONCAT(diamextmm, 'mm') , diamextpg) AS diametro,
+    producto.tipounion,notaventadetalle.peso,color.nombre as color,
+    sum(notaventadetalle.cant) AS cant,
+    sum(notaventadetalle.totalkilos) AS totalkilos,
+    sum(notaventadetalle.subtotal) AS subtotal
+    FROM notaventadetalle INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id
+    INNER JOIN claseprod
+    ON producto.claseprod_id=claseprod.id
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
+    LEFT JOIN color
+    ON producto.color_id=color.id
+    WHERE $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condareaproduccion_id
+    and isnull(notaventa.anulada)
+    and $aux_condstatusact_id
+    and isnull(notaventadetalle.deleted_at)
+    and isnull(notaventa.deleted_at)
+    GROUP BY producto.id;";
+    //dd($sql);
+    //" and " . $aux_condrut .
+
+    $datas = DB::select($sql);
+    $respuesta['agruxproducto'] = $datas;
+
     return $respuesta;
 }
 
@@ -725,5 +843,45 @@ function consultaODcerrada($request){
     $datas = DB::select($sql);
     $respuesta['totales'] = $datas;
     //dd($respuesta['totales']);
+
+    $sql = "SELECT categoriaprod.nombre,claseprod.cla_nombre,
+    producto.long,if(categoriaprod.unidadmedida_id != 3 , CONCAT(diamextmm, 'mm') , diamextpg) AS diametro,
+    producto.tipounion,notaventadetalle.peso,color.nombre as color,
+    sum(despachoorddet.cantdesp) AS cant,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
+    FROM despachoorddet INNER JOIN notaventadetalle 
+    ON despachoorddet.notaventadetalle_id=notaventadetalle.id
+    INNER JOIN despachoord
+    ON despachoorddet.despachoord_id=despachoord.id
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id
+    INNER JOIN claseprod
+    ON producto.claseprod_id=claseprod.id
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
+    LEFT JOIN color
+    ON producto.color_id=color.id
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condareaproduccion_id
+    and isnull(notaventa.anulada)
+    and $aux_condstatusact_id
+    and isnull(despachoord.deleted_at) 
+    and isnull(notaventadetalle.deleted_at) 
+    and isnull(notaventa.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    GROUP BY producto.id;";
+
+    $datas = DB::select($sql);
+    $respuesta['agruxproducto'] = $datas;
+
     return $respuesta;
 }

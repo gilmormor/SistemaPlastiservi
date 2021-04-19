@@ -167,6 +167,7 @@ Productos Notas de Venta
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Cantidad</a></li>
             <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Dinero</a></li>
+            <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Productos</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
@@ -281,6 +282,32 @@ Productos Notas de Venta
                     </div>
                 </div>
 
+            </div>
+
+            <div class="tab-pane" id="tab_3">
+                <div class="row" id="graficos2" name="graficos2" style="display:none;">
+                    <div class="col-lg-12">
+                    <!-- DONUT CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title" id="titulo_grafico2" name="titulo_grafico2"></h3>
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="table-responsive" id="tablaconsultaproducto">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>                
+                </div>
             </div>
         </div>
     </div>

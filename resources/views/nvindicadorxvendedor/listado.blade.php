@@ -92,12 +92,15 @@
 						@foreach($datas['vendedores'] as $vendedor)
 							<th style='text-align:right' >{{$vendedor->nombre}}</th>
 						@endforeach
-						<th style='text-align:right' class='tooltipsC' title='Total'>TOTAL</th>
+						<th style='text-align:right' class='tooltipsC' title='Total'>TOTAL $</th>
+						<th style='text-align:right' class='tooltipsC' title='Total'>KG</th>
+						<th style='text-align:right' class='tooltipsC' title='Total'>Prom $</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
 					<?php
 						$totalgeneral = 0;
+						$totalgeneralKilos = 0;
 					?>
 					@foreach($datas['productos'] as $producto)
 						<tr class='btn-accion-tabla tooltipsC'>
@@ -120,9 +123,12 @@
 								?>
 							@endforeach
 							<td style='text-align:right'>{{number_format($producto->subtotal, 0, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($producto->totalkilos, 2, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($producto->subtotal/$producto->totalkilos, 2, ",", ".")}}</td>
 						</tr>
 						<?php
 							$totalgeneral += $producto->subtotal;
+							$totalgeneralKilos += $producto->totalkilos;
 						?>
 					@endforeach
 				</tbody>
@@ -133,6 +139,8 @@
 							<th style='text-align:right'>{{number_format($vendedor->subtotal, 0, ",", ".")}}</th>
 						@endforeach
 						<th style='text-align:right'>{{number_format($totalgeneral, 0, ",", ".")}}</th>
+						<th style='text-align:right'>{{number_format($totalgeneralKilos, 2, ",", ".")}}</th>
+						<th style='text-align:right'>{{number_format($totalgeneral/$totalgeneralKilos, 2, ",", ".")}}</th>
 					</tr>
 				</tfoot>		
 		</table>

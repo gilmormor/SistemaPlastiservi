@@ -106,8 +106,10 @@ function consultar(data){
                 aux_titulo = $("#consulta_id option:selected").html();
                 $("#titulo_grafico").html('Indicadores ' +aux_titulo+ ' por Vendedor');
                 $("#titulo_grafico1").html($("#titulo_grafico").html());
+                $("#titulo_grafico2").html('Indicadores ' +aux_titulo);
                 $("#tablaconsulta").html(datos['tabla']);
                 $("#tablaconsultadinero").html(datos['tabladinero']);
+                $("#tablaconsultaproducto").html(datos['tablaagruxproducto']);
                 $("#tituloPie1").html("Gráfico " + aux_titulo+ " por Vendedor");
                 $("#tituloPie2").html($("#tituloPie1").html() + " $");
             
@@ -139,6 +141,7 @@ function consultarpdf(data){
 function grafico(datos){
     $("#graficos").show();
     $("#graficos1").show();
+    $("#graficos2").show();
     $("#reporte1").show();
     $('.resultadosPie1').html('<canvas id="graficoPie1"></canvas>');
     $('.resultadosPie2').html('<canvas id="graficoPie2"></canvas>');
@@ -193,6 +196,7 @@ function grafico(datos){
     myPie2.clear();
 	$("#graficos").show();
 	$("#graficos1").show();
+	$("#graficos2").show();
     $("#reporte1").show();
 }
 
