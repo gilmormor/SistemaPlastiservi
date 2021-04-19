@@ -125,7 +125,7 @@
 							<?php
 								$aux_prom = 0;
 								if($producto->totalkilos>0){
-									$aux_prom = $producto->subtotal/$producto->totalkilos
+									$aux_prom = $producto->subtotal/$producto->totalkilos;
 								}
 							?>
 							<td style='text-align:right'>{{number_format($producto->subtotal, 0, ",", ".")}}</td>
@@ -147,7 +147,7 @@
 						<?php
 							$aux_prom = 0;
 							if($totalgeneralKilos>0){
-								$aux_prom = $totalgeneral/$totalgeneralKilos
+								$aux_prom = $totalgeneral/$totalgeneralKilos;
 							}
 						?>
 
