@@ -52,6 +52,7 @@ class Usuario extends Authenticatable
             'usuario' => $this->usuario,
             'usuario_id' => $this->id,
             'nombre_usuario' => $this->nombre,
+            'nombre_corto' => strstr($this->nombre, ' ', true),
             'foto_usuario' => $this->foto
         ]);
         if (count($roles) == 1) {

@@ -131,7 +131,7 @@
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <img src="/storage/imagenes/usuario/{{session()->get('foto_usuario')}}" class="user-image" alt="User Image">
-            <span class="hidden-xs">Hola, {{session()->get('nombre_usuario') ?? 'Invitado'}}</span>
+            <span class="hidden-xs">Hola {{session()->get('nombre_corto') ?? 'Invitado'}}</span>
           </a>
           <ul class="dropdown-menu">
             <!-- User image -->
