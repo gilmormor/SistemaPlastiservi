@@ -83,7 +83,7 @@
 </div>
 
 <div id="page_pdf">
-	Dinero
+	Facturado
 	<div class="round">
 		<table id="factura_detalle">
 				<thead>

@@ -166,7 +166,7 @@ Productos Notas de Venta
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Cantidad</a></li>
-            <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Dinero</a></li>
+            <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Facturado</a></li>
             <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Productos</a></li>
         </ul>
         <div class="tab-content">
