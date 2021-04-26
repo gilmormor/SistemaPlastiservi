@@ -237,14 +237,19 @@ function visto(id,visto){
 }
 
 $("#btnbuscarproducto").click(function(event){
-    $(this).val("");
+    //$(this).val("");
     $(".input-sm").val('');
     $("#myModalBuscarProd").modal('show');
 });
 
 function copiar_codprod(id,codintprod){
     $("#myModalBuscarProd").modal('hide');
-	$("#producto_idM").val(id);
+    aux_id = $("#producto_idM").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#producto_idM").val(id);
+    }else{
+        $("#producto_idM").val(aux_id + "," + id);
+    }
 	//$("#producto_idM").blur();
 	$("#producto_idM").focus();
 }

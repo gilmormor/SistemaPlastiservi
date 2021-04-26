@@ -37,5 +37,5 @@
 
 
 @include('generales.buscarnotaventa')
-
+@include('generales.modalpdf')
 @endsection

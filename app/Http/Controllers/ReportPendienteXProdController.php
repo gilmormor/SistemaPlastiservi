@@ -516,10 +516,17 @@ function consulta($request,$aux_sql,$orden){
 
     $aux_condproducto_id = " true";
     if(!empty($request->producto_id)){
+        /*
         $aux_condproducto_id = str_replace(".","",$request->producto_id);
         $aux_condproducto_id = str_replace("-","",$aux_condproducto_id);
         $aux_condproducto_id = "notaventadetalle.producto_id='$aux_condproducto_id'";
+        */
+
+        $aux_codprod = explode(",", $request->producto_id);
+        $aux_codprod = implode ( ',' , $aux_codprod);
+        $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
     }
+
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){
