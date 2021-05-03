@@ -32,6 +32,7 @@ class NotifyMailGuardarGuiaDespacho
      */
     public function handle(GuardarGuiaDespacho $event)
     {
+        $rutaorigen = urlPrevio();
         $despachoord = $event->despachoord;
         $notificaciones = new Notificaciones();
         $notificaciones->usuarioorigen_id = auth()->id();
@@ -41,7 +42,7 @@ class NotifyMailGuardarGuiaDespacho
         $notificaciones->nombretabla = 'despachoord';
         $notificaciones->mensaje = 'Inicio Despacho OD:'.$despachoord->id.' NV:'.$despachoord->notaventa_id;
         $notificaciones->nombrepantalla = 'despachoord.indexguiafact';
-        $notificaciones->rutaorigen = 'despachoord/indexguia';
+        $notificaciones->rutaorigen = $rutaorigen;
         $notificaciones->rutadestino = 'notaventaconsulta';
         $notificaciones->tabla_id = $despachoord->id;
         $notificaciones->accion = 'Despacho Iniciado.';

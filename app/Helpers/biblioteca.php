@@ -42,4 +42,38 @@ if (!function_exists('canUser')) {
         }
     }
 }
+if (!function_exists('canUser')) {
+    function urlActual(){
+        //$ruta = url()->previous();
+        $ruta = url()->current();
+        $pos = 0;
+        $cont = 0;
+        for( $i=0 ; $i < strlen($ruta) ; $i++){
+            if((substr($ruta,$i,1) == '/') and $cont < 3){
+                $cont++;
+                $pos = $i;
+            }
+        }
+        return substr($ruta,$pos+1,(strlen($ruta)-1));
+
+    }
+}
+
+if (!function_exists('canUser')) {
+    function urlPrevio(){
+        $ruta = url()->previous();
+        //$ruta = url()->current();
+        $pos = 0;
+        $cont = 0;
+        for( $i=0 ; $i < strlen($ruta) ; $i++){
+            if((substr($ruta,$i,1) == '/') and $cont < 3){
+                $cont++;
+                $pos = $i;
+            }
+        }
+        return substr($ruta,$pos+1,(strlen($ruta)-1));
+
+    }
+}
+
 ?>
