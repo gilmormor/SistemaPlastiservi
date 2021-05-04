@@ -54,7 +54,7 @@ class CotizacionTransController extends Controller
         //dd($datas);
        
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
-        return view('cotizaciontrans.index', compact('datas'));
+        return view('cotizaciontransito.index', compact('datas'));
     }
 
     /**
