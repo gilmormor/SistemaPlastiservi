@@ -4,7 +4,7 @@ Cotización
 @endsection
 
 @section("scripts")
-<script src="{{asset("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/cotizacion/index.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -31,9 +31,9 @@ Cotización
                                 <th class="width70">ID</th>
                                 <th class="width200">Fecha</th>
                                 <th>Cliente</th>
-                                <th class="my_class">aprobstatus</th>
-                                <th class="my_class">aprobobs</th>
-                                <th class="my_class">contador</th>
+                                <th class="ocultar">aprobstatus</th>
+                                <th class="ocultar">aprobobs</th>
+                                <th class="ocultar">contador</th>
                                 <th class="width70"></th>
                             </tr>
                         </thead>

@@ -186,3 +186,18 @@ tfoot input {
 #modalpdf{
     width: 70% !important;
 }
+
+.ocultar{
+    display: none;
+}
+
+tr.preciomenor{
+    font-weight: bold;
+    color: blue;
+    /*background-color: #87CEEB;*/
+}
+
+td.highlight {
+    font-weight: bold;
+    color: blue;
+}

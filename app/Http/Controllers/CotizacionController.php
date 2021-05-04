@@ -42,6 +42,8 @@ class CotizacionController extends Controller
         can('listar-cotizacion');
         //session(['aux_aprocot' => '0']) 0=Pantalla Normal CRUD de Cotizaciones
         //session(['aux_aprocot' => '1']) 1=Pantalla Solo para aprobar cotizacion para luego emitir la Nota de Venta
+
+        /*
         
         session(['aux_aprocot' => '0']);
         $user = Usuario::findOrFail(auth()->id());
@@ -76,12 +78,13 @@ class CotizacionController extends Controller
                 ORDER BY cotizacion.id desc;';
 
         $datas = DB::select($sql);
+        */
         
         //dd(session('aux_aprocot'));
        
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
-        return view('cotizacion.index_sin_datatable_servidor', compact('datas'));
-        //return view('cotizacion.index');
+        //return view('cotizacion.index_sin_datatable_servidor', compact('datas'));
+        return view('cotizacion.index');
     }
 
     public function cotizacionpage(){

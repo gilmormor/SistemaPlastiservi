@@ -1,6 +1,5 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-    $(".my_class").css("display", "none");
 
     $('#tabla-data-cotizacion').DataTable({
     'paging'      : true, 
@@ -12,13 +11,14 @@ $(document).ready(function () {
     'processing'  : true,
     'serverSide'  : true,
     'ajax'        : "cotizacionpage",
+    "order": [[ 0, "desc" ]],
     'columns'     : [
         {data: 'id'},
         {data: 'fechahora'},
         {data: 'razonsocial'},
-        {data: 'aprobstatus',className:"p my_class"},
-        {data: 'aprobobs',className:"p my_class"},
-        {data: 'contador',className:"p my_class"},
+        {data: 'aprobstatus',className:"ocultar"},
+        {data: 'aprobobs',className:"ocultar"},
+        {data: 'contador',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
             "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV' title='Enviar a Nota de venta'>"+
@@ -33,25 +33,51 @@ $(document).ready(function () {
     ],
     "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+    },
+    "createdRow": function ( row, data, index ) {
+        if ( data.contador * 1 > 0 ) {
+            //console.log(row);
+            ///$('tr').addClass('preciomenor');
+            //$('td', row).parent().addClass('preciomenor tooltipsC');
+            $('td', row).eq(0).html(
+                "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='Precio menor al valor en tabla'>"+
+                $('td', row).eq(0).html()+
+                "</a>"
+            );
+            $('td', row).eq(1).html(
+                "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='Precio menor al valor en tabla'>"+
+                $('td', row).eq(1).html()+
+                "</a>"
+            );
+            $('td', row).eq(2).html(
+                "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='Precio menor al valor en tabla'>"+
+                $('td', row).eq(2).html()+
+                "</a>"
+            );
+            //$('td', row).parent().prop("title","Precio menor al valor en tabla")
+        }
     }
     });
 
 
 });
 
-
 $(document).on("click", ".btnEnviarNV", function(event){
     event.preventDefault();
     fila = $(this).closest("tr");
     form = $(this);
     id = fila.find('td:eq(0)').text();
-
+    contador = fila.find('td:eq(5)').text();
+    aprobstatus = 1;
+    if(contador>0){
+        aprobstatus = 2;
+    }
     var data = {
 		id: id,
         aprobstatus : aprobstatus,
         _token: $('input[name=_token]').val()
 	};
-	var ruta = '/cotizacion/aprobarcotvend/'+i;
+	var ruta = '/cotizacion/aprobarcotvend/'+id;
 	swal({
 		title: '¿ Está seguro que desea hacer nota de venta ?',
 		text: "Esta acción no se puede deshacer!",

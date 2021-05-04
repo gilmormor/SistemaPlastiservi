@@ -721,8 +721,8 @@ class DespachoOrdController extends Controller
 					<th class='textright'>Largo</th>
                     <th class='textcenter'>TU</th>
                     <th class='textcenter'>Peso</th>
-                    <th class='textcenter'>FecFact</th>
                     <th class='textcenter'>Guia</th>
+                    <th class='textcenter'>FecFact</th>
                     <th class='textcenter'>Nfact</th>
                 </tr>
             </thead>
@@ -764,8 +764,8 @@ class DespachoOrdController extends Controller
 						<td class='textright'>$long mts</td>
                         <td class='textcenter'>$tipounion</td>
                         <td class='textcenter'>$peso</td>
-                        <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->guiadespacho ." </td>
+                        <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->numfactura . "</td>
                     </tr>";
                     $respuesta['exito'] = true;
