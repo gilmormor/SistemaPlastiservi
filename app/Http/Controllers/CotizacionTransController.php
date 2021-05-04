@@ -51,6 +51,7 @@ class CotizacionTransController extends Controller
                 and T1.deleted_at is null;';
 
         $datas = DB::select($sql);
+        dd($datas);
        
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
         return view('cotizaciontrans.index', compact('datas'));
