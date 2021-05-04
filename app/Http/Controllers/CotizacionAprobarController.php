@@ -45,7 +45,7 @@ class CotizacionAprobarController extends Controller
         //dd($datas);
         
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
-        return view('cotizacion.index', compact('datas'));
+        return view('cotizacionaprobar.index', compact('datas'));
     }
 
     /**

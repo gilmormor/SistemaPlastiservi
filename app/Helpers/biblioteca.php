@@ -42,10 +42,11 @@ if (!function_exists('canUser')) {
         }
     }
 }
-if (!function_exists('canUser')) {
+
+if (!function_exists('urlActual')) {
     function urlActual(){
-        //$ruta = url()->previous();
         $ruta = url()->current();
+        //$ruta = url()->current();
         $pos = 0;
         $cont = 0;
         for( $i=0 ; $i < strlen($ruta) ; $i++){
@@ -59,7 +60,7 @@ if (!function_exists('canUser')) {
     }
 }
 
-if (!function_exists('canUser')) {
+if (!function_exists('urlPrevio')) {
     function urlPrevio(){
         $ruta = url()->previous();
         //$ruta = url()->current();

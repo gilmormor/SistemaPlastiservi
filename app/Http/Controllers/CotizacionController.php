@@ -42,6 +42,7 @@ class CotizacionController extends Controller
         can('listar-cotizacion');
         //session(['aux_aprocot' => '0']) 0=Pantalla Normal CRUD de Cotizaciones
         //session(['aux_aprocot' => '1']) 1=Pantalla Solo para aprobar cotizacion para luego emitir la Nota de Venta
+        
         session(['aux_aprocot' => '0']);
         $user = Usuario::findOrFail(auth()->id());
         $aux_statusPant = 0;
@@ -75,9 +76,53 @@ class CotizacionController extends Controller
                 ORDER BY cotizacion.id desc;';
 
         $datas = DB::select($sql);
+        
+        //dd(session('aux_aprocot'));
        
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
-        return view('cotizacion.index', compact('datas'));
+        return view('cotizacion.index_sin_datatable_servidor', compact('datas'));
+        //return view('cotizacion.index');
+    }
+
+    public function cotizacionpage(){
+        session(['aux_aprocot' => '0']);
+        $user = Usuario::findOrFail(auth()->id());
+        $aux_statusPant = 0;
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id and persona.deleted_at is null
+            WHERE usuario.id=' . auth()->id() . ';';
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $aux_condvend = 'cotizacion.vendedor_id = ' . $vendedor_id;
+        }else{
+            $aux_condvend = 'true';
+        }
+        //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
+        $sql = 'SELECT cotizacion.id,cotizacion.fechahora,
+                    if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
+                    aprobstatus,aprobobs, 
+                    (SELECT COUNT(*) 
+                    FROM cotizaciondetalle 
+                    WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
+                    cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador
+                FROM cotizacion left join cliente
+                on cotizacion.cliente_id = cliente.id
+                left join clientetemp
+                on cotizacion.clientetemp_id = clientetemp.id
+                where ' . $aux_condvend . ' and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
+                and cotizacion.deleted_at is null
+                ORDER BY cotizacion.id desc;';
+
+        $datas = DB::select($sql);
+        //dd($datas);
+
+        return datatables($datas)->toJson();
+
+        
     }
     /*
     public function consulta(){

@@ -29,7 +29,8 @@ class NotifyMailGuardarFacturaDespacho
      */
     public function handle(GuardarFacturaDespacho $event)
     {
-        $rutaorigen = urlPrevio();
+        $rutaPantalla = urlPrevio();
+        $rutaOrigen = urlActual();
         $despachoord = $event->despachoord;
         $notificaciones = new Notificaciones();
         $notificaciones->usuarioorigen_id = auth()->id();
@@ -38,8 +39,8 @@ class NotifyMailGuardarFacturaDespacho
         $notificaciones->status = 1;                    
         $notificaciones->nombretabla = 'despachoord';
         $notificaciones->mensaje = 'Despacho entregado OD:'.$despachoord->id.' NV:'.$despachoord->notaventa_id;
-        $notificaciones->nombrepantalla = 'despachoord.indexguiafact';
-        $notificaciones->rutaorigen = $rutaorigen; //'despachoord/indexfactura';
+        $notificaciones->nombrepantalla = $rutaPantalla; //'despachoord.indexguiafact';
+        $notificaciones->rutaorigen = $rutaOrigen; //'despachoord/indexfactura';
         $notificaciones->rutadestino = 'notaventaconsulta';
         $notificaciones->tabla_id = $despachoord->id;
         $notificaciones->accion = 'Despacho entregado.';

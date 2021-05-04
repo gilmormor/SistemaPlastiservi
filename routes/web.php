@@ -269,6 +269,7 @@ Route::delete('tipoentrega/{id}', 'TipoEntregaController@eliminar')->name('elimi
 
 /*RUTAS COTIZACION*/
 Route::get('cotizacion', 'CotizacionController@index')->name('cotizacion');
+Route::get('cotizacionpage', 'CotizacionController@cotizacionpage')->name('cotizacionpage');
 Route::get('cotizacion/crear', 'CotizacionController@crear')->name('crear_cotizacion');
 Route::post('cotizacion', 'CotizacionController@guardar')->name('guardar_cotizacion');
 Route::get('cotizacion/{id}/editar', 'CotizacionController@editar')->name('editar_cotizacion');

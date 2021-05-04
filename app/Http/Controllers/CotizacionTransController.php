@@ -53,7 +53,7 @@ class CotizacionTransController extends Controller
         $datas = DB::select($sql);
        
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
-        return view('cotizacion.index', compact('datas'));
+        return view('cotizaciontrans.index', compact('datas'));
     }
 
     /**
