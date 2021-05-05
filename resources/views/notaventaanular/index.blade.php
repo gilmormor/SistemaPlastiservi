@@ -19,7 +19,8 @@ Anular Nota de Venta
             </div>
             <div class="box-body">
                 <div class="table-responsive">
-                    <table class="table display AllDataTables table-striped table-condensed" id="tabla-dataanularnv">
+                    <!--<table class="table display AllDataTables table-striped table-condensed" id="tabla-dataanularnv">-->
+                    <table class="table display AllDataTables table-condensed table-hover" id="tabla-dataanularnv">
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>

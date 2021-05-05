@@ -16,6 +16,7 @@ $(document).ready(function () {
         {data: 'id'},
         {data: 'fechahora'},
         {data: 'razonsocial'},
+        {data: 'pdfcot'},
         {data: 'aprobstatus',className:"ocultar"},
         {data: 'aprobobs',className:"ocultar"},
         {data: 'contador',className:"ocultar"},
@@ -35,6 +36,14 @@ $(document).ready(function () {
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "createdRow": function ( row, data, index ) {
+
+        //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
+        aux_text = 
+            "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
+                "<i class='fa fa-fw fa-file-pdf-o'></i>"+
+            "</a>";
+        $('td', row).eq(3).html(aux_text);
+
         if ( data.contador * 1 > 0 ) {
             //console.log(row);
             ///$('tr').addClass('preciomenor');

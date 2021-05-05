@@ -105,9 +105,9 @@ class CotizacionController extends Controller
             $aux_condvend = 'true';
         }
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = 'SELECT cotizacion.id,cotizacion.fechahora,
+        $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
-                    aprobstatus,aprobobs, 
+                    aprobstatus,aprobobs,'' as pdfcot,
                     (SELECT COUNT(*) 
                     FROM cotizaciondetalle 
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
@@ -116,9 +116,9 @@ class CotizacionController extends Controller
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
-                where ' . $aux_condvend . ' and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
+                where $aux_condvend and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
                 and cotizacion.deleted_at is null
-                ORDER BY cotizacion.id desc;';
+                ORDER BY cotizacion.id desc;";
 
         $datas = DB::select($sql);
         //dd($datas);
@@ -723,4 +723,28 @@ class CotizacionController extends Controller
         return $pdf->stream(str_pad($cotizacion->id, 5, "0", STR_PAD_LEFT) .' - '. $aux_razonsocial . '.pdf');
         
     }
+
+    public function exportPdfM($id,$stareport = '1')
+    {
+        $cotizacion = Cotizacion::findOrFail($id);
+        $cotizacionDetalles = $cotizacion->cotizaciondetalles()->get();
+        $empresa = Empresa::orderBy('id')->get();
+        if($cotizacion->cliente){
+            $aux_razonsocial = $cotizacion->cliente->razonsocial;
+        }else{
+            $aux_razonsocial = $cotizacion->clientetemp->razonsocial;
+        }
+        //dd($cotizacion->cliente);
+        //$rut = number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 );
+        //dd($empresa[0]['iva']);
+        //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
+        if(env('APP_DEBUG')){
+            return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
+        }
+        $pdf = PDF::loadView('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
+        //return $pdf->download('cotizacion.pdf');
+        return $pdf->stream(str_pad($cotizacion->id, 5, "0", STR_PAD_LEFT) .' - '. $aux_razonsocial . '.pdf');
+        
+    }
+
 }

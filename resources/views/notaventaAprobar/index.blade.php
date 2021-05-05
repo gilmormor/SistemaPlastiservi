@@ -4,9 +4,9 @@ Aprobar Nota de Venta
 @endsection
 
 @section("scripts")
-    <script type="text/javascript" src="{{asset("assets/js/jquery-barcode.js")}}"></script>
-    <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/notaventa/index.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{asset("assets/pages/scripts/notaventaaprobar/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -19,63 +19,24 @@ Aprobar Nota de Venta
             </div>
             <div class="box-body">
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                    <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
+                    <table class="table display AllDataTables table-condensed table-hover" id="tabla-data">
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>
                                 <th class="width30">Nro Cot</th>
-                                <th class="width30">Fecha</th>
+                                <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th class="width30"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
-                                <th class="width70"></th>
+                                <th class="ocultar">contador</th>
+                                <th class="ocultar">aprobstatus</th>
+                                <th class="ocultar">aprobobs</th>
+                                <th class="ocultar">oc_file</th>
+                                <th class='tooltipsC width50' title='Orden de Compra'>OC</th>
+                                <th><label title='PDF' data-toggle='tooltip'>PDF</label></th>
+                                <th class="width70">Acción</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $aux_nfila = 0; ?>
-                            @foreach ($datas as $data)
-                            <?php 
-                                $aux_nfila++; 
-                                $colorFila = "";
-                                $aprobstatus = 1;
-                                $aux_mensaje = "";
-                                $aux_data_toggle = "";
-                                $aux_title = "";
-                                if($data->contador>0){
-                                    //$colorFila = 'background-color: #87CEEB;';
-                                    $aprobstatus = 2;
-                                    $aux_data_toggle = "tooltip";
-                                    $aux_title = "Precio menor al valor en tabla";
-                                }
-                                if($data->aprobstatus==4){
-                                    $colorFila = 'background-color: #FFC6C6;';  //" style=background-color: #FFC6C6;  title=Rechazo por: $data->aprobobs data-toggle=tooltip"; //'background-color: #FFC6C6;'; 
-                                    $aux_data_toggle = "tooltip";
-                                    $aux_title = "Rechazado por: " . $data->aprobobs;
-                                }
-                            ?>
-                            <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}" style="{{$colorFila}}" title="{{$aux_title}}" data-toggle="{{$aux_data_toggle}}">
-                                <td>{{$data->id}}</td>
-                                <td >{{$data->cotizacion_id}}</td>
-                                <!--<td class="width200">{{$data->fechahora}}</td>-->
-                                <td class="width200">{{date('d-m-Y', strtotime($data->fechahora))}} {{date("h:i:s A", strtotime($data->fechahora))}}</td>
-                                <td >{{$data->razonsocial}}</td>
-                                <td>
-                                    <a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="Nota de Venta" target="_blank">
-                                        <i class="fa fa-fw fa-file-pdf-o"></i>                                    
-                                    </a>
-                                    <a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2'])}}" class="btn-accion-tabla tooltipsC" title="Precio x Kg" target="_blank">
-                                        <i class="fa fa-fw fa-file-pdf-o"></i>                                    
-                                    </a>
-                                </td>
-                                <td>
-                                    @if (session('aux_aproNV')=='1' and $aux_statusPant==0)    
-                                        <a href="{{route('editar_notaventaaprobar', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                            <i class="fa fa-fw fa-pencil"></i>                                    
-                                        </a>
-                                    @endif    
-                                </td>
-                            </tr>
-                            @endforeach
-
                         </tbody>
                     </table>
                 </div>
@@ -83,4 +44,5 @@ Aprobar Nota de Venta
         </div>
     </div> 
 </div>
+@include('generales.modalpdf')
 @endsection

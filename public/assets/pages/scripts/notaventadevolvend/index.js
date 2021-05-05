@@ -29,6 +29,28 @@ $(document).ready(function () {
         ],
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            codigo = data.cotizacion_id;
+            if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
+                aux_text = "";
+            }else{
+                aux_text = 
+                "<a href='#' class='tooltipsC' title='Cotización' onclick='genpdfCOT(\"" + data.cotizacion_id + "\",1)'>" + data.cotizacion_id + "</a>";
+            }
+            $('td', row).eq(1).html(aux_text);
+
+            aux_text = 
+                "<a class='btn-accion-tabla btn-sm verpdf1 tooltipsC' title='Nota de venta: " + data.id + "' >"+
+                "<i class='fa fa-fw fa-file-pdf-o'></i></a>"+
+                "<a class='btn-accion-tabla btn-sm verpdf2 tooltipsC' title='Precio x Kg: " + data.id + "' >"+
+                "<i class='fa fa-fw fa-file-pdf-o'></i></a>";
+            $('td', row).eq(5).html(aux_text);
+
+            aux_text = 
+                "<a class='btn btn-primary btn-xs tooltipsC btndevnvven' title='Devolver a vendedor: " + data.id + "' >"+
+                "<i class='fa fa-fw fa-reply'></i></a>";
+            $('td', row).eq(6).html(aux_text);
         }
       });
 

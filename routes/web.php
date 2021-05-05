@@ -280,6 +280,7 @@ Route::post('cotizacion/aprobarcotvend/{id}', 'CotizacionController@aprobarcotve
 Route::post('cotizacion/aprobarcotsup/{id}', 'CotizacionController@aprobarcotsup')->name('aprobarcotsup');
 Route::post('cotizacion/buscarCotizacion', 'CotizacionController@buscarCotizacion')->name('buscarCotizacion');
 Route::get('cotizacion/{id}/exportPdf', 'CotizacionController@exportPdf')->name('exportPdf_cotizacion');
+Route::get('cotizacion/{id}/{stareport}/exportPdfM', 'CotizacionController@exportPdfM')->name('exportPdfM_cotizacion');
 
 
 /*RUTAS CONSULTAR COTIZACION*/
@@ -290,6 +291,7 @@ Route::get('cotizacionconsulta/exportPdf', 'CotizacionConsultaController@exportP
 
 /*RUTAS APROBAR COTIZACION*/
 Route::get('cotizacionaprobar', 'CotizacionAprobarController@index')->name('cotizacionaprobar');
+Route::get('cotizacionaprobarpage', 'CotizacionAprobarController@cotizacionaprobarpage')->name('cotizacionaprobarpage');
 
 /*RUTAS GIRO*/
 Route::get('giro', 'GiroController@index')->name('giro');
@@ -301,6 +303,7 @@ Route::delete('giro/{id}', 'GiroController@eliminar')->name('eliminar_giro');
 
 /*RUTAS NOTA DE VENTA*/
 Route::get('notaventa', 'NotaVentaController@index')->name('notaventa');
+Route::get('notaventapage', 'NotaVentaController@notaventapage')->name('notaventapage');
 Route::get('notaventa/crear', 'NotaVentaController@crear')->name('crear_notaventa');
 Route::get('notaventa/crearcot/{id}', 'NotaVentaController@crearcot')->name('crearcot_notaventa');
 Route::post('notaventa', 'NotaVentaController@guardar')->name('guardar_notaventa');
@@ -316,6 +319,7 @@ Route::post('notaventa/{id}/{stareport}/exportPdfh', 'NotaVentaController@export
 Route::post('notaventa/aprobarnotaventa/{id}', 'NotaVentaController@aprobarnotaventa')->name('aprobar_notaventa');
 Route::post('notaventa/anularnotaventa/{id}', 'NotaVentaController@anularnotaventa')->name('anular_notaventa');
 Route::get('notaventacerr', 'NotaVentaController@notaventacerr')->name('notaventacerr');
+Route::get('notaventacerrpage', 'NotaVentaController@notaventacerrpage')->name('notaventacerrpage');
 Route::post('notaventa/visto/{id}', 'NotaVentaController@visto')->name('visto_notaventa');
 Route::post('notaventa/inidespacho/{id}', 'NotaVentaController@inidespacho')->name('inidespacho_notaventa');
 Route::post('notaventa/buscarguiadespacho/{id}', 'NotaVentaController@buscarguiadespacho')->name('buscarguiadespacho_notaventa');
@@ -361,6 +365,7 @@ Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm'
 
 /*RUTAS COTIZACIONES EN TRANSITO*/
 Route::get('cotizaciontrans', 'CotizacionTransController@index')->name('cotizaciontrans');
+Route::get('cotizaciontranspage', 'CotizacionTransController@cotizaciontranspage')->name('cotizaciontranspage');
 Route::get('cotizaciontrans/{id}/editar', 'CotizacionTransController@editar')->name('editar_cotizaciontrans');
 
 
@@ -391,6 +396,7 @@ Route::get('nvindicadorxvend/exportPdfkg', 'NVIndicadorxVendController@exportPdf
 
 /*RUTAS APROBAR NotaVenta*/
 Route::get('notaventaaprobar', 'NotaventaAprobarController@index')->name('notaventaaprobar');
+Route::get('notaventaaprobarpage', 'NotaventaAprobarController@notaventaaprobarpage')->name('notaventaaprobarpage');
 Route::get('notaventaaprobar/{id}/editar', 'NotaventaAprobarController@editar')->name('editar_notaventaaprobar');
 
 /*RUTAS DESPACHO TEMPORAL NOTA DE VENTA*/

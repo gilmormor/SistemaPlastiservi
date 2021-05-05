@@ -102,6 +102,66 @@ class NotaVentaController extends Controller
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
         return view('notaventa.index', compact('datas','cotizaciones','aux_statusPant'));
     }
+
+    public function notaventapage(){
+        //session(['aux_aproNV' => '0']) 0=Pantalla Normal CRUD de Nota de Venta
+        //session(['aux_aproNV' => '1']) 1=Pantalla Solo para aprobar Nota de Venta para luego emitir Guia de Despacho
+        session(['aux_aproNV' => '0']);
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+        FROM vendedor INNER JOIN persona
+        ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
+        INNER JOIN usuario 
+        ON persona.usuario_id=usuario.id and persona.deleted_at is null
+        WHERE usuario.id=' . auth()->id() . ';';
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $aux_condvend = 'notaventa.vendedor_id = ' . $vendedor_id;
+            $aux_condvendcot = 'cotizacion.vendedor_id = ' . $vendedor_id;
+        }else{
+            $aux_condvend = 'true';
+            $aux_condvendcot = 'true';
+        }
+
+        //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
+        $sql = "SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,
+                    (SELECT COUNT(*) 
+                    FROM notaventadetalle 
+                    WHERE notaventadetalle.notaventa_id=notaventa.id and 
+                    notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
+                FROM notaventa inner join cliente
+                on notaventa.cliente_id = cliente.id
+                where $aux_condvend
+                and anulada is null
+                and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
+                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+                and notaventa.deleted_at is null;";
+        //where usuario_id='.auth()->id();
+        //dd($sql);
+        $datas = DB::select($sql);
+
+        //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
+        $sql = 'SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
+                    clientebloqueado.descripcion as descripbloqueo,
+                    (SELECT COUNT(*) 
+                    FROM cotizaciondetalle 
+                    WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
+                    cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador
+                FROM cotizacion inner join cliente
+                on cotizacion.cliente_id = cliente.id
+                LEFT join clientebloqueado
+                on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
+                where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3) and 
+                cotizacion.id not in (SELECT cotizacion_id from notaventa WHERE !(cotizacion_id is NULL) and (anulada is null))
+                and cotizacion.deleted_at is null;';
+        //where usuario_id='.auth()->id();
+        //dd($sql);
+        $cotizaciones = DB::select($sql);
+        $aux_statusPant = 0; //Estatus para validar loq ue se muestra en la pantalla
+        
+        return datatables($datas)->toJson();  
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -815,6 +875,7 @@ class NotaVentaController extends Controller
         can('listar-nota-venta-cerrada');
         //session(['aux_aproNV' => '0']) 0=Pantalla Normal CRUD de Nota de Venta
         //session(['aux_aproNV' => '1']) 1=Pantalla Solo para aprobar Nota de Venta para luego emitir Guia de Despacho
+        /*
         session(['aux_aproNV' => '0']);
         $user = Usuario::findOrFail(auth()->id());
 
@@ -866,10 +927,68 @@ class NotaVentaController extends Controller
         //dd($sql);
         $cotizaciones = DB::select($sql);
         $aux_statusPant = 1; //Estatus para validar loq ue se muestra en la pantalla
-        
+        */
         //dd($cotizaciones);
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
-        return view('notaventacerrada.index', compact('datas','cotizaciones','aux_statusPant'));
+        //return view('notaventacerrada.index', compact('datas','cotizaciones','aux_statusPant'));
+        return view('notaventacerrada.index', compact('cotizaciones'));
+    }
+
+    public function notaventacerrpage(){
+        session(['aux_aproNV' => '0']);
+        $user = Usuario::findOrFail(auth()->id());
+
+        $sql= 'SELECT COUNT(*) AS contador
+        FROM vendedor INNER JOIN persona
+        ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
+        INNER JOIN usuario 
+        ON persona.usuario_id=usuario.id and persona.deleted_at is null
+        WHERE usuario.id=' . auth()->id() . ';';
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $aux_condvend = 'notaventa.vendedor_id = ' . $vendedor_id;
+            $aux_condvendcot = 'cotizacion.vendedor_id = ' . $vendedor_id;
+        }else{
+            $aux_condvend = 'true';
+            $aux_condvendcot = 'true';
+        }
+
+        //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
+        $sql = "SELECT notaventa.id,DATE_FORMAT(notaventa.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
+                    notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_id,oc_file,
+                    (SELECT COUNT(*) 
+                    FROM notaventadetalle 
+                    WHERE notaventadetalle.notaventa_id=notaventa.id and 
+                    notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
+                FROM notaventa inner join cliente
+                on notaventa.cliente_id = cliente.id
+                where $aux_condvend
+                and isnull(anulada)
+                and (aprobstatus=1 or aprobstatus=3)
+                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+                and isnull(notaventa.deleted_at);";
+        //where usuario_id='.auth()->id();
+        //dd($sql);
+        $datas = DB::select($sql);
+        /*
+        //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
+        $sql = "SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total, 
+                    (SELECT COUNT(*) 
+                    FROM cotizaciondetalle 
+                    WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
+                    cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador
+                FROM cotizacion inner join cliente
+                on cotizacion.cliente_id = cliente.id
+                where $aux_condvendcot and (aprobstatus=1 or aprobstatus=3) and 
+                cotizacion.id not in (SELECT cotizacion_id from notaventa WHERE !(cotizacion_id is NULL) and (anulada is null))
+                and cotizacion.deleted_at is null;";
+        //where usuario_id='.auth()->id();
+        //dd($sql);
+        $cotizaciones = DB::select($sql);
+        */
+        
+        return datatables($datas)->toJson();  
     }
 
     public function visto(Request $request)

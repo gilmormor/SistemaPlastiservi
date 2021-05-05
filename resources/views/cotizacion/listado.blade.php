@@ -13,7 +13,7 @@
 					<p>RUT: {{$empresa[0]['rut']}}</p>
 					<p>{{$cotizacion->sucursal->direccion}}</p>
 					<p>Teléfono: {{$cotizacion->sucursal->telefono1}}</p>
-					<p>Email: {{$cotizacion->sucursal->email}}</p>
+					<!--<p>Email: {{$cotizacion->sucursal->email}}</p>-->
 				</div>
 			</td>
 			<td class="info_empresa">

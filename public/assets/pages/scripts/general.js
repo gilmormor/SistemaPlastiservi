@@ -825,6 +825,22 @@ function llenarComuna(obj,i){
 //FIN FUNCIONES DE COTIZACION Y NOTA DE VENTA
 
 
+$(document).on("click", ".btngenpdfCot1", function(){
+    fila = $(this).closest("tr");
+	form = $(this);        
+	if(form.attr('col')){
+		id = fila.find('td:eq('+form.attr('col')+')').text();
+	}else{
+		id = fila.find('td:eq(0)').text();
+	}
+	genpdfCOT(id,1);
+});
+function genpdfCOT(id,stareport){ //GENERAR PDF COTIZACION
+	$('#contpdf').attr('src', '/cotizacion/'+id+'/'+stareport+'/exportPdfM');
+	$("#myModalpdf").modal('show')
+}
+
+
 function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
 	$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')

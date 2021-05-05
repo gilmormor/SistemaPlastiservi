@@ -24,13 +24,13 @@ Notas de Venta Cerradas
             </div>
             <div class="box-body">
                 <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
-                <table class="table display table-striped AllDataTables table-hover table-condensed" id="tabla-data">
+                <table class="table display AllDataTables table-hover table-condensed table-hover" id="tabla-data">
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
                             <th>Observación</th>
-                            <th class="width70">NotaVenta</th>
-                            <th class="width150">PDF | Acción</th>
+                            <th class="width100">NotaVenta</th>
+                            <th class="width30">Acción</th>
                         </tr>
                     </thead>
                 </table>

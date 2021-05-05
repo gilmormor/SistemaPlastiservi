@@ -20,7 +20,7 @@ Devolver Nota de Venta a Vendedor
             <div class="box-body">
                 <div class="table-responsive">
                     <!--<table class="table table-striped table-bordered table-hover" id="tabla-datadesc">-->
-                    <table class="table display AllDataTables table-striped table-condensed table-hover" id="tabla-datadesc">
+                    <table class="table display AllDataTables table-condensed table-hover" id="tabla-datadesc">
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>
