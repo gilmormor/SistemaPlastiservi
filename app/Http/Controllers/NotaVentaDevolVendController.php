@@ -165,7 +165,8 @@ function consulta($id){
     }
     //Consultar registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
 
-    $sql = "SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_id,oc_file,
+    $sql = "SELECT notaventa.id,DATE_FORMAT(notaventa.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
+            notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_id,oc_file,
             CONCAT(persona.nombre, ' ', persona.apellido) as nombrevendedor,
                 (SELECT COUNT(*) 
                 FROM notaventadetalle 
