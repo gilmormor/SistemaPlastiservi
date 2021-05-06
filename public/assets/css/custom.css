@@ -201,3 +201,55 @@ td.highlight {
     font-weight: bold;
     color: blue;
 }
+/*
+@media (max-width: 800px){
+    .logo{
+        display: none;
+    }
+    .col-lg-12{
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+*/
+@media only screen and (max-width: 600px) {
+    .logo{
+        display: none;
+    }
+    .col-lg-12{
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    .col-xs-12{
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    .content{
+        padding-left: 2px;
+        padding-right: 2px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+    .box-body{
+        padding-top: 5px; 
+        padding-bottom: 0px;
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    .col-sm-9{
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    .box-header{
+        padding-left: 2px;
+        padding-right: 2px;
+
+    }
+    .col-sm-3{
+        padding-left: 2px;
+        padding-right: 2px;
+
+    }
+}
+
+
