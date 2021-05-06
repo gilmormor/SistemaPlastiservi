@@ -214,7 +214,14 @@ td.highlight {
 */
 @media only screen and (max-width: 600px) {
     .logo{
-        display: none;
+        display: none !important;
+    }
+    .content-wrapper{
+        padding-top: 50px !important;
+    }
+    .col-lg-6{
+        padding-left: 2px;
+        padding-right: 2px;
     }
     .col-lg-12{
         padding-left: 2px;
