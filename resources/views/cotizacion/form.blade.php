@@ -103,8 +103,9 @@
         </div>
         <div class="form-group col-xs-12 col-sm-2">
             <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
-            <select name="vendedor_idD" id="vendedor_idD" class="selectpicker form-control vendedor_idD" required readonly disabled>
-                <option value="">Seleccione...</option>
+            <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" data-live-search='true'  required readonly disabled>
+            <!--<select name="vendedor_idD" id="vendedor_idD" class="selectpicker form-control vendedor_idD" required readonly disabled>-->
+                    <option value="">Seleccione...</option>
                 @foreach($vendedores1 as $vendedor)
                     <option
                         value="{{$vendedor->id}}"
@@ -174,7 +175,7 @@
 
     <div class="row">
         <div class="form-group col-xs-12 col-sm-3">
-            <label id="lblclientedirec_id" name="lblclientedirec_id" for="clientedirec_id" class="control-label">Dirección adicional</label>
+            <label id="lblclientedirec_id" name="lblclientedirec_id" for="clientedirec_id" class="control-label requerido">Dirección adicional</label>
             <select name="clientedirec_id" id="clientedirec_id" class="form-control select2 clientedirec_id" data-live-search='true' {{$disabledReadOnly}}>
                 <option value="">Seleccione...</option>
                 @if ($aux_sta==2)
@@ -245,10 +246,10 @@
                     <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                         <thead>
                             <tr>
-                                <th class="width30">ID</th>
+                                <th style="display:none;" class="width30">ID</th>
                                 <th style="display:none;">cotizacionDetalle_ID</th>
                                 <th style="display:none;">Codigo Producto</th>
-                                <th>Cód Int</th>
+                                <th style="display:none;">Cód Int</th>
                                 <th style="display:none;">CódInterno</th>
                                 <th>Cant</th>
                                 <th style="display:none;">Cant</th>
@@ -287,7 +288,7 @@
                                 @foreach($cotizacionDetalles as $CotizacionDetalle)
                                     <?php $aux_nfila++; ?>
                                     <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                        <td name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">
+                                        <td style="display:none;" name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">
                                             {{$CotizacionDetalle->id}}
                                         </td>
                                         <td style="display:none;">
@@ -296,7 +297,7 @@
                                         <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}" style="display:none;">
                                             <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto_id}}" style="display:none;"/>
                                         </td>
-                                        <td name="codintprodTD{{$aux_nfila}}" id="codintprodTD{{$aux_nfila}}">
+                                        <td style="display:none;" name="codintprodTD{{$aux_nfila}}" id="codintprodTD{{$aux_nfila}}">
                                             {{$CotizacionDetalle->producto->codintprod}}
                                         </td>
                                         <td style="display:none;">
@@ -405,15 +406,15 @@
                                     <?php $i++;?>
                                 @endforeach
                                 <tr id="trneto" name="trneto">
-                                    <td colspan="14" style="text-align:right"><b>Neto</b></td>
+                                    <td colspan="12" style="text-align:right"><b>Neto</b></td>
                                     <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                                 </tr>
                                 <tr id="triva" name="triva">
-                                    <td colspan="14" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                    <td colspan="12" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                     <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
                                 </tr>
                                 <tr id="trtotal" name="trtotal">
-                                    <td colspan="14" style="text-align:right"><b>Total</b></td>
+                                    <td colspan="12" style="text-align:right"><b>Total</b></td>
                                     <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
                                 </tr>
                             @endif

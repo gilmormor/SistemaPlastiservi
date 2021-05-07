@@ -39,8 +39,13 @@
                         <button type="reset" class="btn btn-default">Cancel</button>
                         <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Actualizar</button>
                     @endif
+                    <!--
                     <a href="{{route('exportPdf_cotizacion', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="PDF" target="_blank">
                         <i class="fa fa-fw fa-file-pdf-o"></i>                                    
+                    </a>
+                    -->
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion: {{$data->id}}' onclick='genpdfCOT({{$data->id}},1)'>
+                        <i class='fa fa-fw fa-file-pdf-o'></i>
                     </a>
                 </div>
                 <!-- /.box-footer -->
@@ -48,4 +53,5 @@
         </div>
     </div>
 </div>
+@include('generales.modalpdf')
 @endsection

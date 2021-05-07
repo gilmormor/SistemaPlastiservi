@@ -360,11 +360,11 @@
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                     <thead>
                         <tr>
-                            <th class="width30">ID</th>
+                            <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">NotaVentaDetalle_ID</th>
                             <th style="display:none;">cotizacion_ID</th>
                             <th style="display:none;">Codigo Producto</th>
-                            <th>Cód Int</th>
+                            <th style="display:none;">Cód Int</th>
                             <th style="display:none;">CódInterno</th>
                             <th>Cant</th>
                             <th style="display:none;">Cant</th>
@@ -405,7 +405,7 @@
                             @foreach($detalles as $detalle)
                                 <?php $aux_nfila++; ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                    <td name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
+                                    <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
                                         @if ($aux_sta==2)
                                             {{$detalle->id}}
                                         @else
@@ -429,7 +429,7 @@
                                     <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}" style="display:none;">
                                         <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$detalle->producto_id}}" style="display:none;"/>
                                     </td>
-                                    <td name="codintprodTD{{$aux_nfila}}" id="codintprodTD{{$aux_nfila}}">
+                                    <td style="display:none;" name="codintprodTD{{$aux_nfila}}" id="codintprodTD{{$aux_nfila}}">
                                         {{$detalle->producto->codintprod}}
                                     </td>
                                     <td style="display:none;">
@@ -547,15 +547,15 @@
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="14" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="12" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="14" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="12" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="14" style="text-align:right"><b>Total</b></td>
+                                <td colspan="12" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
                             </tr>
                         @endif

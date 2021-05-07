@@ -16,13 +16,11 @@ Cotización
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Cotización</h3>
-                <!--@if (session('aux_aprocot') == '0')-->
-                    <div class="box-tools pull-right">
-                        <a href="{{route('crear_cotizacion')}}" class="btn btn-block btn-success btn-sm">
-                            <i class="fa fa-fw fa-plus-circle"></i> Crear Cotización
-                        </a>
-                    </div>                        
-                <!--@endif-->
+                <div class="box-tools pull-right">
+                    <a href="{{route('crear_cotizacion')}}" class="btn btn-block btn-success btn-sm">
+                        <i class="fa fa-fw fa-plus-circle"></i> Crear Cotización
+                    </a>
+                </div>                        
             </div>
             <div class="box-body">
                 <div class="table-responsive">

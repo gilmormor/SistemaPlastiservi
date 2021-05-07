@@ -108,7 +108,7 @@ ANIMAR LOS CHECKBOX
     border-radius: .25em;
     width: 1.3em;
     height: 1.3em;
-    float: left;
+    /*float: left;*/
     margin-right: .5em;
 }
 
@@ -182,11 +182,11 @@ tfoot input {
 #mdialTamanio{
     width: 80% !important;
 }
-
+/*
 #modalpdf{
     width: 70% !important;
 }
-
+*/
 .ocultar{
     display: none;
 }

@@ -737,10 +737,10 @@ function verificar()
 {
 	var v1=0,v2=0,v3=0,v4=0,v5=0,v6=0,v7=0,v8=0,v9=0,v10=0,v11=0,v12=0,v13,v14=0;
 	
-	v5=validacion('precionetoM','texto');
-	v4=validacion('precioM','texto');
+	v5=validacion('precionetoM','numerico');
+	v4=validacion('precioM','numerico');
 	v3=validacion('descuentoM','combobox');
-	v2=validacion('cantM','texto');
+	v2=validacion('cantM','numerico');
 	v1=validacion('producto_idM','textootro');
 
 	if (v1===false || v2===false || v3===false || v4===false || v5===false || v6===false || v7===false || v8===false || v9===false || v10===false || v11===false || v12===false || v13===false || v14===false)
@@ -756,8 +756,12 @@ function verificar()
 }
 
 function quitarverificar(){
+	
+	//quitarValidacion('producto_idM','texto');
 	quitarValidacion('descuentoM','combobox');
 	quitarValidacion('cantM','texto');
+	quitarValidacion('precioM','texto');
+	quitarValidacion('precionetoM','texto');
 	quitarValidacion('producto_idM','textootro');
 }
 

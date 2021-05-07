@@ -37,7 +37,7 @@
             <div class="row">
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="cantM" class="control-label" data-toggle='tooltip'>Cant</label>
-                    <input type="text" name="cantM" id="cantM" class="form-control" value="{{old('cantM', $data->cantM ?? '')}}" tipoval="numerico" placeholder="Cant"/>
+                    <input type="text" name="cantM" id="cantM" class="form-control requeridos" tipoval="numerico" value="{{old('cantM', $data->cantM ?? '')}}" tipoval="numerico" placeholder="Cant"/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
@@ -72,12 +72,12 @@
                 </div>
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="precioM" class="control-label" data-toggle='tooltip'>Precio Kg</label>
-                    <input type="text" name="precioM" id="precioM" class="form-control" style="text-align:right" value="{{old('precioM', $data->precio ?? '')}}" valor="0.00" placeholder="Precio Kg"/>
+                    <input type="text" name="precioM" id="precioM" class="form-control requeridos" tipoval="numerico" style="text-align:right" value="{{old('precioM', $data->precio ?? '')}}" valor="0.00" placeholder="Precio Kg"/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="precionetoM" class="control-label" data-toggle='tooltip'>PrecioUnit</label>
-                    <input type="text" name="precionetoM" style="text-align:right" id="precionetoM" class="form-control numerico" value="{{old('precionetoM', $data->precioneto ?? '')}}" placeholder="PrecioUnit" valor="0.00"/>
+                    <input type="text" name="precionetoM" style="text-align:right" id="precionetoM" class="form-control numerico requeridos" tipoval="numerico" value="{{old('precionetoM', $data->precioneto ?? '')}}" placeholder="PrecioUnit" valor="0.00"/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">

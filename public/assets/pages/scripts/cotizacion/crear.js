@@ -23,6 +23,7 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
 	});
+	/*
 	$('.form-group').css({'margin-bottom':'0px','margin-left': '0px','margin-right': '0px'});
 	$('.table').css({'margin-bottom':'0px','padding-top': '0px','padding-bottom': '0px'});
 	$(".box-body").css({'padding-top': '5px','padding-bottom': '0px'});
@@ -30,7 +31,7 @@ $(document).ready(function () {
 	$(".box-header").css({'padding-bottom': '5px'});
 	$("#mdialTamanio").css({'width': '50% !important'});
 	$(".control-label").css({'padding-top': '2px'});
-	
+	*/
 	/*
     var styles = {
 		backgroundColor : "#ddd",
@@ -179,7 +180,6 @@ $("#botonNewProd").click(function(event)
 		mensaje('Debes Incluir RUT del cliente','','error');
 		return 0;
 	}else{
-		event.preventDefault();
 		limpiarInputOT();
 		quitarverificar();
 		$("#aux_sta").val('1');
@@ -231,7 +231,7 @@ function insertarTabla(){
 	//alert(aux_descuento);
 
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
-			'<td name="cotdet_idTD'+ aux_nfila + '" id="cotdet_idTD'+ aux_nfila + '">'+ 
+			'<td style="display:none;" name="cotdet_idTD'+ aux_nfila + '" id="cotdet_idTD'+ aux_nfila + '">'+ 
 				'0'+
 			'</td>'+
 			'<td style="display:none;">'+
@@ -240,7 +240,7 @@ function insertarTabla(){
 			'<td name="producto_idTD'+ aux_nfila + '" id="producto_idTD'+ aux_nfila + '" style="display:none;">'+ 
 				'<input type="text" name="producto_id[]" id="producto_id'+ aux_nfila + '" class="form-control" value="'+ $("#producto_idM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="codintprodTD'+ aux_nfila + '" id="codintprodTD'+ aux_nfila + '">'+ 
+			'<td style="display:none;" name="codintprodTD'+ aux_nfila + '" id="codintprodTD'+ aux_nfila + '">'+ 
 				codintprod+
 			'</td>'+
 			'<td style="display:none;">'+ 
@@ -339,15 +339,15 @@ function insertarTabla(){
 			'</td>'+
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+
-			'<td colspan="14" style="text-align:right"><b>Neto</b></td>'+
+			'<td colspan="12" style="text-align:right"><b>Neto</b></td>'+
 			'<td id="tdneto" name="tdneto" style="text-align:right">0.00</td>'+
 		'</tr>'+
 		'<tr id="triva" name="triva">'+
-			'<td colspan="14" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
+			'<td colspan="12" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
 			'<td id="tdiva" name="tdiva" style="text-align:right">0.00</td>'+
 		'</tr>'+
 		'<tr id="trtotal" name="trtotal">'+
-			'<td colspan="14" style="text-align:right"><b>Total</b></td>'+
+			'<td colspan="12" style="text-align:right"><b>Total</b></td>'+
 			'<td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>'+
 		'</tr>';
 	
@@ -637,7 +637,7 @@ $("#rut").blur(function(){
 							if(respuesta[0]['direcciondetalle']!=null){
 								$("#clientedirec_id").prop("disabled",false);
 								$("#clientedirec_id").prop("readonly",false);	
-								$('#lblclientedirec_id').attr("class", 'requerido');
+								//$('#lblclientedirec_id').attr("class", 'requerido');
 								$('#clientedirec_id').attr("required", true);
 								$("#clientedirec_id").append("<option value=''>Seleccione...</option>")
 								for(var i=0;i<respuesta.length;i++){
@@ -816,6 +816,8 @@ $("#producto_idM").blur(function(){
 					
 					//$("#cantM").change();
 					$("#cantM").focus();
+
+					validardatoscant();
 			
 					totalizarItem(1);
 				}else{
@@ -972,6 +974,12 @@ $(".requeridos").keyup(function(){
 	//alert($(this).parent().attr('class'));
 	validacion($(this).prop('name'),$(this).attr('tipoval'));
 });
+
+$(".requeridos").change(function(){
+	//alert($(this).parent().attr('class'));
+	validacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+
 function verificarAproRech()
 {
 	var v1=0;
@@ -1085,4 +1093,11 @@ function limpiarclientemp(){
 	$("#regionp_idCTM").val($('#comunap_idCTM option:selected').attr("region_id"));
 	$("#provinciap_idCTM").val($('#comunap_idCTM option:selected').attr("provincia_id"));
 	$(".selectpicker").selectpicker('refresh');
+}
+
+function validardatoscant(){
+	validacion('cantM','texto');
+	validacion('precioM','texto');
+	validacion('precionetoM','texto');
+
 }
