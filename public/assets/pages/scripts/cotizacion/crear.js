@@ -1,7 +1,7 @@
 $(document).ready(function () {
 	Biblioteca.validacionGeneral('form-general');
-	$("#comuna_idD").html($("#comunax").val());
-	$(".selectpicker").selectpicker('refresh');
+	//$("#comuna_idD").html($("#comunax").val());
+	//$(".selectpicker").selectpicker('refresh');
 	//$(".select2").selectmenu('refresh', true);
 	/*
 	$('#tabla-data-clientes').DataTable({
