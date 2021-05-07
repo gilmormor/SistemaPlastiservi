@@ -11,7 +11,8 @@ class UnidadMedida extends Model
     protected $table = "unidadmedida";
     protected $fillable = [
         'nombre',
-        'descripcion'
+        'descripcion',
+        'mostrarfact'
     ];
 
     public function acuerdotectempanchos()

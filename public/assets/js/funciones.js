@@ -11,6 +11,8 @@ var Biblioteca = function(){
                 ignore: "",
                 highlight: function(element,errorClass,validClass){
                     $(element).closest('.form-group').addClass('has-error');
+                    aux_obj = $(element).closest('.form-group');
+                    alertify.error("Falta incluir información: " + aux_obj.children('label').html());
                 },
                 unhighlight: function(element){
                     $(element).closest('.form-group').removeClass('has-error');

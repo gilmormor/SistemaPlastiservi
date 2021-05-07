@@ -9,8 +9,6 @@
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
 <input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $sucurArray[0] ?? '')}}">
-<input type="hidden" name="comunax" id="comunax" value="{{$respuesta['comuna']}}">
-
 
 @if($aux_sta==1)
     <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $vendedor_id ?? '')}}">
@@ -91,6 +89,16 @@
             <label for="comuna_idD" class="control-label requerido">Comuna</label>
             <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
                 <option value="">Seleccione...</option>
+                @foreach($comunas as $comuna)
+                    <option
+                        value="{{$comuna->id}}"
+                        @if ($aux_sta==2 and $comuna->id==$data->comuna_id)
+                            {{'selected'}}
+                        @endif
+                        >
+                        {{$comuna->nombre}}
+                    </option>
+                @endforeach
             </select>
         </div>
         <div class="form-group col-xs-12 col-sm-2">

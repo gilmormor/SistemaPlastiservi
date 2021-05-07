@@ -26,6 +26,7 @@ class ValidarUnidadMedida extends FormRequest
         return [
             'nombre' => 'required|max:20|unique:color,nombre,' . $this->route('id'),
             'descripcion' => 'required|max:100',
+            'mostrarfact' => 'required|max:1',
         ];
     }
 }
