@@ -255,8 +255,21 @@ class CotizacionController extends Controller
                     ->get();
 
         //dd($vendedores1);
+        $respuesta = array();
+        $respuesta['exito'] = false;
+        $respuesta['comuna'] = "";
+        $respuesta['comuna'] = "<option value='' selected>Seleccione...</option>";
+        foreach($comunas as $comuna){
+            $respuesta['comuna'] .= 
+            "<option
+                value=$comuna->id>
+                $comuna->nombre
+            </option>";
+        }
+        //dd($respuesta['comuna']);
 
-        return view('cotizacion.crear',compact('clientes','formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','provincias','regiones','productos','empresa','tipoentregas','vendedor_id','giros','sucurArray','sucursales','aux_sta','aux_statusPant'));
+
+        return view('cotizacion.crear',compact('clientes','formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','provincias','regiones','productos','empresa','tipoentregas','vendedor_id','giros','sucurArray','sucursales','aux_sta','aux_statusPant','respuesta'));
     }
     /**
      * Store a newly created resource in storage.

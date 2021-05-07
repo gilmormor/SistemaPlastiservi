@@ -1,5 +1,8 @@
 $(document).ready(function () {
 	Biblioteca.validacionGeneral('form-general');
+	$("#comuna_idD").html($("#comunax").val());
+	$(".selectpicker").selectpicker('refresh');
+	//$(".select2").selectmenu('refresh', true);
 	/*
 	$('#tabla-data-clientes').DataTable({
 		'paging'      : true, 
@@ -1096,6 +1099,7 @@ function limpiarclientemp(){
 }
 
 function validardatoscant(){
+	validacion('producto_idM','textootro');
 	validacion('cantM','texto');
 	validacion('precioM','texto');
 	validacion('precionetoM','texto');

@@ -91,6 +91,16 @@
             <label for="comuna_idD" class="control-label requerido">Comuna</label>
             <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
                 <option value="">Seleccione...</option>
+                @foreach($comunas as $comuna)
+                    <option
+                        value="{{$comuna->id}}"
+                        @if ($aux_sta==2 and $comuna->id==$data->comuna_id)
+                            {{'selected'}}
+                        @endif
+                        >
+                        {{$comuna->nombre}}
+                    </option>
+                @endforeach
             </select>
         </div>
         <div class="form-group col-xs-12 col-sm-2">

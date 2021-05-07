@@ -23,7 +23,7 @@
                     </div>
                     <span class="help-block"></span>
                 </div>
-                <div class="col-xs-12 col-sm-2">
+                <div class="col-xs-12 col-sm-2" style="display:none;">
                     <label for="codintprodM" class="control-label" data-toggle='tooltip'>Cod Inerno</label>
                     <input type="text" name="codintprodM" id="codintprodM" class="form-control" value="{{old('codintprodM', $data->codintprodM ?? '')}}" placeholder="Cod Interno Prducto" disabled/>
                     <span class="help-block"></span>
