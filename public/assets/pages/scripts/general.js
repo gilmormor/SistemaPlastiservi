@@ -662,7 +662,11 @@ function totalizar(){
 
 	$("#neto").val(total_neto);
 	$("#iva").val(aux_iva);
-	$("#total").val(aux_total);
+	if(aux_total == 0){
+		$("#total").val("");
+	}else{
+		$("#total").val(aux_total);
+	}
 }
 
 function totalizardespacho(){
@@ -702,7 +706,11 @@ function totalizardespacho(){
 
 	$("#neto").val(total_neto);
 	$("#iva").val(aux_iva);
-	$("#total").val(aux_total);
+	if(aux_total == 0){
+		$("#total").val("");
+	}else{
+		$("#total").val(aux_total);
+	}
 }
 
 

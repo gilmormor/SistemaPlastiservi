@@ -22,7 +22,11 @@
 <input type="hidden" name="neto" id="neto" value="{{old('neto', $data->neto ?? '')}}">
 <input type="hidden" name="piva" id="piva" value="{{old('piva', $tablas['empresa']->iva ?? '')}}">
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
-<input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}">
+<div class="form-group col-xs-4 col-sm-4" style="display:none;">
+    <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
+    <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
+</div>
+
 
 <?php
     $disabledReadOnly = "";
@@ -230,200 +234,198 @@
     </div>
 </div>
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
-        <div class="box-header with-border">
-            <h3 class="box-title">Detalle</h3>
-            @if (session('aux_aprocot')=='0') <!--Estatus en 0 si puede incluir -->
-                <div class="box-tools pull-right">
-                    <a id="botonNewProd" name="botonNewProd" href="#" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo Producto
-                    </a>
-                </div>                    
-            @endif
-            <div class="box-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
-                        <thead>
-                            <tr>
-                                <th style="display:none;" class="width30">ID</th>
-                                <th style="display:none;">cotizacionDetalle_ID</th>
-                                <th style="display:none;">Codigo Producto</th>
-                                <th style="display:none;">Cód Int</th>
-                                <th style="display:none;">CódInterno</th>
-                                <th>Cant</th>
-                                <th style="display:none;">Cant</th>
-                                <th>Nombre</th>
-                                <th style="display:none;">UnidadMedida</th>
-                                <th>Clase</th>
-                                <th>Diam</th>
-                                <th style="display:none;">Diametro</th>
-                                <th>Esp</th>
-                                <th style="display:none;">Espesor</th>
-                                <th>Largo</th>
-                                <th style="display:none;">Largo</th>
-                                <th>Peso</th>
-                                <th style="display:none;">Peso</th>
-                                <th>TU</th>
-                                <th style="display:none;">TUnion</th>
-                                <th>Desc</th>
-                                <th style="display:none;">DescPorc</th>
-                                <th style="display:none;">DescVal</th>
-                                <th>P Neto Unit</th>
-                                <th style="display:none;">Precio Neto Unit</th>
-                                <th>V Kilo</th>
-                                <th style="display:none;">Precio X Kilo</th>
-                                <th style="display:none;">Precio X Kilo Real</th>
-                                <th>Total Kilos</th>
-                                <th style="display:none;">Total Kilos</th>
-                                <th>Sub Total</th>
-                                <th style="display:none;">Sub Total Neto</th>
-                                <th style="display:none;">Sub Total Neto Sin Formato</th>
-                                <th class="width70"></th>
+    <div class="box-header with-border">
+        <h3 class="box-title">Detalle</h3>
+        @if (session('aux_aprocot')=='0') <!--Estatus en 0 si puede incluir -->
+            <div class="box-tools pull-right">
+                <a id="botonNewProd" name="botonNewProd" href="#" class="btn btn-block btn-success btn-sm">
+                    <i class="fa fa-fw fa-plus-circle"></i> Nuevo Producto
+                </a>
+            </div>                    
+        @endif
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
+                    <thead>
+                        <tr>
+                            <th style="display:none;" class="width30">ID</th>
+                            <th style="display:none;">cotizacionDetalle_ID</th>
+                            <th style="display:none;">Codigo Producto</th>
+                            <th style="display:none;">Cód Int</th>
+                            <th style="display:none;">CódInterno</th>
+                            <th>Cant</th>
+                            <th style="display:none;">Cant</th>
+                            <th>Nombre</th>
+                            <th style="display:none;">UnidadMedida</th>
+                            <th>Clase</th>
+                            <th>Diam</th>
+                            <th style="display:none;">Diametro</th>
+                            <th>Esp</th>
+                            <th style="display:none;">Espesor</th>
+                            <th>Largo</th>
+                            <th style="display:none;">Largo</th>
+                            <th>Peso</th>
+                            <th style="display:none;">Peso</th>
+                            <th>TU</th>
+                            <th style="display:none;">TUnion</th>
+                            <th>Desc</th>
+                            <th style="display:none;">DescPorc</th>
+                            <th style="display:none;">DescVal</th>
+                            <th>P Neto Unit</th>
+                            <th style="display:none;">Precio Neto Unit</th>
+                            <th>V Kilo</th>
+                            <th style="display:none;">Precio X Kilo</th>
+                            <th style="display:none;">Precio X Kilo Real</th>
+                            <th>Total Kilos</th>
+                            <th style="display:none;">Total Kilos</th>
+                            <th>Sub Total</th>
+                            <th style="display:none;">Sub Total Neto</th>
+                            <th style="display:none;">Sub Total Neto Sin Formato</th>
+                            <th class="width70"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if ($aux_sta==2)
+                            <?php $aux_nfila = 0; $i = 0;?>
+                            @foreach($cotizacionDetalles as $CotizacionDetalle)
+                                <?php $aux_nfila++; ?>
+                                <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
+                                    <td style="display:none;" name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">
+                                        {{$CotizacionDetalle->id}}
+                                    </td>
+                                    <td style="display:none;">
+                                        <input type="text" name="cotdet_id[]" id="cotdet_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->id}}" style="display:none;"/>
+                                    </td>
+                                    <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}" style="display:none;">
+                                        <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto_id}}" style="display:none;"/>
+                                    </td>
+                                    <td style="display:none;" name="codintprodTD{{$aux_nfila}}" id="codintprodTD{{$aux_nfila}}">
+                                        {{$CotizacionDetalle->producto->codintprod}}
+                                    </td>
+                                    <td style="display:none;">
+                                        <input type="text" name="codintprod[]" id="codintprod{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->codintprod}}" style="display:none;"/>
+                                    </td>
+                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
+                                        {{$CotizacionDetalle->cant}}
+                                    </td>
+                                    <td style="text-align:right;display:none;">
+                                        <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->cant}}" style="display:none;"/>
+                                    </td>
+                                    <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
+                                        {{$CotizacionDetalle->producto->nombre}}
+                                    </td>
+                                    <td style="display:none;">
+                                        <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->unidadmedida_id}}" style="display:none;"/>
+                                    </td>
+                                    <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
+                                        {{$CotizacionDetalle->producto->claseprod->cla_nombre}}
+                                    </td>
+                                    <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
+                                        @if ($CotizacionDetalle->producto->categoriaprod->unidadmedida_id==3)
+                                            {{$CotizacionDetalle->producto->diamextpg}}
+                                        @else
+                                            {{$CotizacionDetalle->producto->diamextmm}}mm
+                                        @endif
+                                    </td>
+                                    <td style="display:none;">
+                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diamextmm}}" style="display:none;"/>
+                                    </td>
+                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
+                                        {{$CotizacionDetalle->producto->espesor}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->espesor}}" style="display:none;"/>
+                                    </td>
+                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
+                                        {{$CotizacionDetalle->producto->long}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->long}}" style="display:none;"/>
+                                    </td>
+                                    <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
+                                        {{$CotizacionDetalle->producto->peso}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->peso}}" style="display:none;"/>
+                                    </td>
+                                    <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
+                                        {{$CotizacionDetalle->producto->tipounion}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->tipounion}}" style="display:none;"/>
+                                    </td>
+                                    <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right">
+                                        <?php $aux_descPorc = $CotizacionDetalle->descuento * 100; ?>
+                                        {{$aux_descPorc}}%
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="descuento[]" id="descuento{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->descuento}}" style="display:none;"/>
+                                    </td>
+                                    <td style="text-align:right;display:none;">
+                                        <?php $aux_descVal = 1 - $CotizacionDetalle->descuento; ?>
+                                        <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
+                                    </td>
+                                    <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
+                                        {{number_format($CotizacionDetalle->preciounit, 2, '.', ',')}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->preciounit}}" style="display:none;"/>
+                                    </td>
+                                    <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
+                                        {{number_format($CotizacionDetalle->precioxkilo, 2, '.', ',')}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->precioxkilo}}" style="display:none;"/>
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->precioxkiloreal}}" style="display:none;"/>
+                                    </td>
+                                    <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
+                                        {{number_format($CotizacionDetalle->totalkilos, 2, '.', ',')}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->totalkilos}}" style="display:none;"/>
+                                    </td>
+                                    <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
+                                        {{number_format($CotizacionDetalle->subtotal, 2, '.', ',')}}
+                                    </td>
+                                    <td class="subtotalCF" style="text-align:right;display:none;"> 
+                                        <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->subtotal}}" style="display:none;"/>
+                                    </td>
+                                    <td name="subtotalSFTD{{$aux_nfila}}" id="subtotalSFTD{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
+                                        {{$CotizacionDetalle->subtotal}}
+                                    </td>
+                                    <td>
+                                        @if(session('aux_aprocot')=='0')
+                                            <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                            <i class="fa fa-fw fa-pencil"></i>
+                                            </a>
+                                            <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
+                                            <i class="fa fa-fw fa-trash text-danger"></i></a>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <?php $i++;?>
+                            @endforeach
+                            <tr id="trneto" name="trneto">
+                                <td colspan="12" style="text-align:right"><b>Neto</b></td>
+                                <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @if ($aux_sta==2)
-                                <?php $aux_nfila = 0; $i = 0;?>
-                                @foreach($cotizacionDetalles as $CotizacionDetalle)
-                                    <?php $aux_nfila++; ?>
-                                    <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                        <td style="display:none;" name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">
-                                            {{$CotizacionDetalle->id}}
-                                        </td>
-                                        <td style="display:none;">
-                                            <input type="text" name="cotdet_id[]" id="cotdet_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->id}}" style="display:none;"/>
-                                        </td>
-                                        <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}" style="display:none;">
-                                            <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto_id}}" style="display:none;"/>
-                                        </td>
-                                        <td style="display:none;" name="codintprodTD{{$aux_nfila}}" id="codintprodTD{{$aux_nfila}}">
-                                            {{$CotizacionDetalle->producto->codintprod}}
-                                        </td>
-                                        <td style="display:none;">
-                                            <input type="text" name="codintprod[]" id="codintprod{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->codintprod}}" style="display:none;"/>
-                                        </td>
-                                        <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
-                                            {{$CotizacionDetalle->cant}}
-                                        </td>
-                                        <td style="text-align:right;display:none;">
-                                            <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->cant}}" style="display:none;"/>
-                                        </td>
-                                        <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                            {{$CotizacionDetalle->producto->nombre}}
-                                        </td>
-                                        <td style="display:none;">
-                                            <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->unidadmedida_id}}" style="display:none;"/>
-                                        </td>
-                                        <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
-                                            {{$CotizacionDetalle->producto->claseprod->cla_nombre}}
-                                        </td>
-                                        <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                            @if ($CotizacionDetalle->producto->categoriaprod->unidadmedida_id==3)
-                                                {{$CotizacionDetalle->producto->diamextpg}}
-                                            @else
-                                                {{$CotizacionDetalle->producto->diamextmm}}mm
-                                            @endif
-                                        </td>
-                                        <td style="display:none;">
-                                            <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diamextmm}}" style="display:none;"/>
-                                        </td>
-                                        <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
-                                            {{$CotizacionDetalle->producto->espesor}}
-                                        </td>
-                                        <td style="text-align:right;display:none;"> 
-                                            <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->espesor}}" style="display:none;"/>
-                                        </td>
-                                        <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
-                                            {{$CotizacionDetalle->producto->long}}
-                                        </td>
-                                        <td style="text-align:right;display:none;"> 
-                                            <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->long}}" style="display:none;"/>
-                                        </td>
-                                        <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
-                                            {{$CotizacionDetalle->producto->peso}}
-                                        </td>
-                                        <td style="text-align:right;display:none;"> 
-                                            <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->peso}}" style="display:none;"/>
-                                        </td>
-                                        <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
-                                            {{$CotizacionDetalle->producto->tipounion}}
-                                        </td>
-                                        <td style="text-align:right;display:none;"> 
-                                            <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->tipounion}}" style="display:none;"/>
-                                        </td>
-                                        <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right">
-                                            <?php $aux_descPorc = $CotizacionDetalle->descuento * 100; ?>
-                                            {{$aux_descPorc}}%
-                                        </td>
-                                        <td style="text-align:right;display:none;"> 
-                                            <input type="text" name="descuento[]" id="descuento{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->descuento}}" style="display:none;"/>
-                                        </td>
-                                        <td style="text-align:right;display:none;">
-                                            <?php $aux_descVal = 1 - $CotizacionDetalle->descuento; ?>
-                                            <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
-                                        </td>
-                                        <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
-                                            {{number_format($CotizacionDetalle->preciounit, 2, '.', ',')}}
-                                        </td>
-                                        <td style="text-align:right;display:none;"> 
-                                            <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->preciounit}}" style="display:none;"/>
-                                        </td>
-                                        <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
-                                            {{number_format($CotizacionDetalle->precioxkilo, 2, '.', ',')}}
-                                        </td>
-                                        <td style="text-align:right;display:none;"> 
-                                            <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->precioxkilo}}" style="display:none;"/>
-                                        </td>
-                                        <td style="text-align:right;display:none;"> 
-                                            <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->precioxkiloreal}}" style="display:none;"/>
-                                        </td>
-                                        <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
-                                            {{number_format($CotizacionDetalle->totalkilos, 2, '.', ',')}}
-                                        </td>
-                                        <td style="text-align:right;display:none;"> 
-                                            <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->totalkilos}}" style="display:none;"/>
-                                        </td>
-                                        <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
-                                            {{number_format($CotizacionDetalle->subtotal, 2, '.', ',')}}
-                                        </td>
-                                        <td class="subtotalCF" style="text-align:right;display:none;"> 
-                                            <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->subtotal}}" style="display:none;"/>
-                                        </td>
-                                        <td name="subtotalSFTD{{$aux_nfila}}" id="subtotalSFTD{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
-                                            {{$CotizacionDetalle->subtotal}}
-                                        </td>
-                                        <td>
-                                            @if(session('aux_aprocot')=='0')
-                                                <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
-                                                <i class="fa fa-fw fa-pencil"></i>
-                                                </a>
-                                                <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
-                                                <i class="fa fa-fw fa-trash text-danger"></i></a>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    <?php $i++;?>
-                                @endforeach
-                                <tr id="trneto" name="trneto">
-                                    <td colspan="12" style="text-align:right"><b>Neto</b></td>
-                                    <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
-                                </tr>
-                                <tr id="triva" name="triva">
-                                    <td colspan="12" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
-                                    <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
-                                </tr>
-                                <tr id="trtotal" name="trtotal">
-                                    <td colspan="12" style="text-align:right"><b>Total</b></td>
-                                    <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
-
-                </div>
-
+                            <tr id="triva" name="triva">
+                                <td colspan="12" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
+                                <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
+                            </tr>
+                            <tr id="trtotal" name="trtotal">
+                                <td colspan="12" style="text-align:right"><b>Total</b></td>
+                                <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
 @include('generales.calcprecioprodsn')
 @include('generales.buscarcliente')

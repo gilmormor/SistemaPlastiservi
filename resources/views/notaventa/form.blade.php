@@ -23,7 +23,10 @@
 <input type="hidden" name="neto" id="neto" value="{{old('neto', $data->neto ?? '')}}">
 <input type="hidden" name="piva" id="piva" value="{{old('piva', $empresa->iva ?? '')}}">
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
-<input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}">
+<div class="form-group col-xs-4 col-sm-4" style="display:none;">
+    <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
+    <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
+</div>
 <input type="hidden" name="imagen" id="imagen" value="{{old('imagen', $data->oc_file ?? '')}}">
 
 <?php

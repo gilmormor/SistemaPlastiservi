@@ -172,7 +172,6 @@ $(document).ready(function () {
 	}
 	formato_rut($('#rut'));
 
-
 });
 
 $("#botonNewProd").click(function(event)
