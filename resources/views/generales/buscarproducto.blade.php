@@ -44,7 +44,11 @@
                                         @if ($producto->unidadmedida_id==3)
                                             {{$producto->diamextpg}}
                                         @else
-                                            {{$producto->diamextmm}}mm
+                                            @if ($producto->diamextmm==0)
+                                                {{$producto->diamextpg}}
+                                            @else
+                                                {{$producto->diamextmm}}mm
+                                            @endif
                                         @endif
                                     </td>
                                     <td name="productocla_nombreBtd{{$aux_nfila}}" id="productocla_nombreBtd{{$aux_nfila}}">

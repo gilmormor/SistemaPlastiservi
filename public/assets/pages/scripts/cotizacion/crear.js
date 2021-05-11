@@ -259,7 +259,7 @@ function insertarTabla(){
 				aux_nombre+
 			'</td>'+
 			'<td style="display:none;">'+ 
-				'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id'+ aux_nfila + '" class="form-control" value="4" style="display:none;"/>'+
+				'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id'+ aux_nfila + '" class="form-control" value="'+ $("#unidadmedida_idM option:selected").attr('value') + '" style="display:none;"/>'+
 			'</td>'+
 			'<td name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '">'+ 
 				$("#cla_nombreM").val()+
@@ -815,6 +815,9 @@ $("#producto_idM").blur(function(){
 					$("#precionetoM").val(respuesta[0]['precioneto']);
 					//$("#precionetoM").attr(respuesta[0]['precioneto']);
 					//alert(respuesta[0]['precio']);
+
+					$("#unidadmedida_idM").val(respuesta[0]['unidadmedidafact_id']);
+					$(".selectpicker").selectpicker('refresh');
 					
 					
 					//$("#cantM").change();
@@ -1100,8 +1103,9 @@ function limpiarclientemp(){
 
 function validardatoscant(){
 	validacion('producto_idM','textootro');
-	validacion('cantM','texto');
+	//validacion('cantM','texto');
 	validacion('precioM','texto');
 	validacion('precionetoM','texto');
+	validacion('unidadmedida_idM','combobox');
 
 }

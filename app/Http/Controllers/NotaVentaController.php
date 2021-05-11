@@ -25,6 +25,7 @@ use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\SucursalClienteDirec;
 use App\Models\TipoEntrega;
+use App\Models\UnidadMedida;
 use App\Models\Vendedor;
 use DateTime;
 use Illuminate\Http\Request;
@@ -257,8 +258,11 @@ class NotaVentaController extends Controller
                 'persona.apellido'
             ])
             ->get();
+        $tablas = array();
+        $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+    
         //dd($vendedor_id);
-        return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','productos','clientes','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant'));
+        return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','productos','clientes','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant','tablas'));
     }
 
     public function crearcot($id)
@@ -380,8 +384,11 @@ class NotaVentaController extends Controller
         session(['aux_aproNV' => '1']);
         
         $aux_statusPant = 0;
+        $tablas = array();
+        $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+
         //dd($aux_aproNV);
-        return view('notaventa.crear', compact('data','clienteselec','clientedirecs','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant'));
+        return view('notaventa.crear', compact('data','clienteselec','clientedirecs','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas'));
 
 
     }
@@ -564,8 +571,10 @@ class NotaVentaController extends Controller
         $giros = Giro::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
+        $tablas = array();
+        $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
 
-        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
+        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }
 
     /**

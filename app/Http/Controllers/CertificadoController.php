@@ -20,8 +20,7 @@ class CertificadoController extends Controller
     public function index()
     {
         can('listar-certificado');
-        $datas = Certificado::orderBy('id')->get();
-        return view('certificado.index', compact('datas'));
+        return view('certificado.index');
     }
 
     public function certificadopage(){

@@ -77,4 +77,12 @@ if (!function_exists('urlPrevio')) {
     }
 }
 
+function autoVer($url)
+{
+  $path = pathinfo($url);
+  $ver = '?v=' . filemtime($_SERVER['DOCUMENT_ROOT'].$url);
+  //return $path['dirname'].'/'.$path['basename'].$ver;
+  //dd(asset($url).$ver);
+  return (asset($url).$ver);
+}
 ?>

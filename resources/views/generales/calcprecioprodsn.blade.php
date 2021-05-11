@@ -33,6 +33,21 @@
                     <input type="text" name="nombreprodM" id="nombreprodM" class="form-control" value="{{old('nombreprodM', $data->nombreprodM ?? '')}}" placeholder="Nombre Producto" disabled/>
                     <span class="help-block"></span>
                 </div>
+
+                <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
+                    <label for="unidadmedida_idM" class="control-label">UniMedida</label>
+                    <select name="unidadmedida_idM" id="unidadmedida_idM" class="selectpicker form-control unidadmedida_idM" data-live-search='true'>
+                        <option value="">Seleccione...</option>
+                        @foreach($tablas['unidadmedida'] as $unidadmedida)
+                            <option
+                                value="{{$unidadmedida->id}}"
+                                >
+                                {{$unidadmedida->nombre}}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">

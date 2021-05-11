@@ -229,6 +229,7 @@ Route::delete('acuerdotectemp/{id}', 'AcuerdoTecTempController@eliminar')->name(
 
 /*RUTAS UNIDADMEDIDA*/
 Route::get('unidadmedida', 'UnidadMedidaController@index')->name('unidadmedida');
+Route::get('unidadmedidapage', 'UnidadMedidaController@unidadmedidapage')->name('unidadmedidapage');
 Route::get('unidadmedida/crear', 'UnidadMedidaController@crear')->name('crear_unidadmedida');
 Route::post('unidadmedida', 'UnidadMedidaController@guardar')->name('guardar_unidadmedida');
 Route::get('unidadmedida/{id}/editar', 'UnidadMedidaController@editar')->name('editar_unidadmedida');

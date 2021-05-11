@@ -4,8 +4,8 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/cotizacion/crear.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cotizacion/crear.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -32,7 +32,7 @@
                 <!-- /.box-body -->
                 <div class="box-footer text-center">
                     @if (session('aux_aprocot')=='0')
-                        @if (($data->vendedor_id == $vendedor_id) or ($data->usuario_id == auth()->id())) <!-- Solo deja modificar si el el mismo vendedor o si fue el usuario que creo el registro -->
+                        @if (($data->vendedor_id == $tablas['vendedor_id']) or ($data->usuario_id == auth()->id())) <!-- Solo deja modificar si el el mismo vendedor o si fue el usuario que creo el registro -->
                             @include('includes.boton-form-editar')
                         @endif
                     @else

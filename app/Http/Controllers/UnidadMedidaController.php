@@ -20,6 +20,13 @@ class UnidadMedidaController extends Controller
         return view('unidadmedida.index', compact('datas'));
     }
 
+    public function unidadmedidapage(){
+        return datatables()
+            ->eloquent(UnidadMedida::query())
+            ->toJson();
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *

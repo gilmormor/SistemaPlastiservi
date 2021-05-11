@@ -98,7 +98,7 @@
                             <!--<th>Desp</th>-->
                             <th>OrdDesp</th>
                             <th>Saldo</th>
-                            <th class='tooltipsC' title='Marcar todo'>
+                            <th class='tooltipsC' title='Marcar todo' style="text-align:center">
                                 <div class='checkbox'>
                                     <label style='font-size: 1.2em'>
                                         <input type='checkbox' id='marcarTodo' name='marcarTodo'>
@@ -324,57 +324,4 @@
         </div>
     </div>
 </div>
-<!--
-<div class="file-loading">
-    <input id="oc_file" name="oc_file" type="file" multiple>
-</div>
--->
-
-@include('generales.calcprecioprodsn')
-@include('generales.buscarcliente')
-@include('generales.buscarproducto')
-@if (session('aux_aproNV')=='1')
-    @include('generales.aprobarcotnv')
-@endif
-
-
-<div class="modal fade" id="myModalFotoOC" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h3 class="modal-title">Producto</h3>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="form-group col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            <label for="foto" class="control-label">Orden de Compra</label>
-                            <!--<input type="file" name="oc_file" id="oc_file" class="form-control" data-initial-preview="{{isset($data->oc_file) ? Storage::url("/storage/imagenes/notaventa/$data->oc_file") : "http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=Foto+Certificado"}}" accept="image/*"/>-->
-                            <!--<input type="file" name="oc_file" id="oc_file" class="form-control" data-initial-preview="{{isset($data->oc_file) ? "/storage/imagenes/notaventa/$data->oc_file" : "http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=Foto+Certificado"}}" accept="image/*"/>-->
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btnOrdenCompra" name="btnOrdenCompra" title="Guardar" data-dismiss="modal">Aceptar</button>
-            </div>
-        </div>
-        
-    </div>
-</div>
-
-@if ($aux_sta==2 or $aux_sta==3)
-    @if ($data->oc_file)
-        <?php 
-            $ruta = "imagenes/notaventa/";
-            $nameFile = $data->oc_file
-        ?>
-        @include('generales.verfoto')
-    @endif
-@endif
-
 @include('generales.modalpdf')

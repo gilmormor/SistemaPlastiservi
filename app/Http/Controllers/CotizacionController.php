@@ -23,6 +23,7 @@ use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\SucursalClienteDirec;
 use App\Models\TipoEntrega;
+use App\Models\UnidadMedida;
 use App\Models\Vendedor;
 use DateTime;
 use Illuminate\Http\Request;
@@ -40,57 +41,12 @@ class CotizacionController extends Controller
     public function index()
     {
         can('listar-cotizacion');
-        //session(['aux_aprocot' => '0']) 0=Pantalla Normal CRUD de Cotizaciones
-        //session(['aux_aprocot' => '1']) 1=Pantalla Solo para aprobar cotizacion para luego emitir la Nota de Venta
-
-        /*
-        
-        session(['aux_aprocot' => '0']);
-        $user = Usuario::findOrFail(auth()->id());
-        $aux_statusPant = 0;
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id and persona.deleted_at is null
-            WHERE usuario.id=' . auth()->id() . ';';
-        $counts = DB::select($sql);
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $aux_condvend = 'cotizacion.vendedor_id = ' . $vendedor_id;
-        }else{
-            $aux_condvend = 'true';
-        }
-        //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = 'SELECT cotizacion.id,cotizacion.fechahora,
-                    if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
-                    aprobstatus,aprobobs, 
-                    (SELECT COUNT(*) 
-                    FROM cotizaciondetalle 
-                    WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
-                    cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador
-                FROM cotizacion left join cliente
-                on cotizacion.cliente_id = cliente.id
-                left join clientetemp
-                on cotizacion.clientetemp_id = clientetemp.id
-                where ' . $aux_condvend . ' and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
-                and cotizacion.deleted_at is null
-                ORDER BY cotizacion.id desc;';
-
-        $datas = DB::select($sql);
-        */
-        
-        //dd(session('aux_aprocot'));
-       
-        //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
-        //return view('cotizacion.index_sin_datatable_servidor', compact('datas'));
         return view('cotizacion.index');
     }
 
     public function cotizacionpage(){
         session(['aux_aprocot' => '0']);
         $user = Usuario::findOrFail(auth()->id());
-        $aux_statusPant = 0;
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
             ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
@@ -141,121 +97,30 @@ class CotizacionController extends Controller
     public function crear()
     {
         can('crear-cotizacion');
-        //dd('Entro');
-        /*
-        $user = Usuario::findOrFail(auth()->id());
-        $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        //dd($counts[0]->contador);
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        }else{
-            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
-        }
-        //dd($vendedor_id);
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
+        //CLIENTES POR USUARIO. SOLO MUESTRA LOS CLIENTES QUE PUEDE VER UN USUARIO
+        $tablas = array();
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
-
-        //dd($clientes);
-        //pluck('id','rut','cliente.razonsocial','cliente.direccionprinc')->toArray();
-
+        $tablas['vendedor_id'] = $clientesArray['vendedor_id'];
+        $tablas['sucurArray'] = $clientesArray['sucurArray'];
         $fecha = date("d/m/Y");
-
-        $formapagos = FormaPago::orderBy('id')->get();
-        $plazopagos = PlazoPago::orderBy('id')->get();
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-/*        $vendedores1 = Vendedor::findOrFail(1);
-        dd($vendedores1->persona->usuario);*/
-        $comunas = Comuna::orderBy('id')->get();
-        $provincias = Provincia::orderBy('id')->get();
-        $regiones = Region::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
-        /*
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.diamextpg',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprodsuc.sucursal_id',
-                'categoriaprod.unidadmedida_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->get();
-        */
-        //****************** */
-        //dd($clientedirecs);
-        $empresa = Empresa::findOrFail(1);
-        $tipoentregas = TipoEntrega::orderBy('id')->get();
-        $giros = Giro::orderBy('id')->get();
-        $sucursales = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
+        $tablas['formapagos'] = FormaPago::orderBy('id')->get();
+        $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['provincias'] = Provincia::orderBy('id')->get();
+        $tablas['regiones'] = Region::orderBy('id')->get();
+        $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
+        $tablas['giros'] = Giro::orderBy('id')->get();
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
+        $tablas['empresa'] = Empresa::findOrFail(1);
+        $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $aux_sta=1;
-        $aux_statusPant='0';
-        //dd($sucurArray);
-        $sql = "SELECT usuario,usuario.email,persona.nombre
-        FROM usuario INNER JOIN sucursal_usuario
-        ON usuario.id=sucursal_usuario.usuario_id
-        INNER JOIN persona 
-        ON usuario.id=persona.usuario_id
-        INNER JOIN vendedor 
-        ON persona.id=vendedor.persona_id AND vendedor.sta_activo=1
-        where sucursal_usuario.sucursal_id IN (" . implode(",",$sucurArray) . ")";
-        $vend = DB::select($sql);
+        $vendedor = Vendedor::vendedores();
+        $tablas['vendedores'] = $vendedor['vendedores'];
+        $productos = Producto::productosxUsuario();
+        //dd($tablas['unidadmedida']);
 
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-
-        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-                                $user = Usuario::findOrFail(auth()->id());
-                                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-                                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                            })
-                    ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-                    ->join('vendedor', function ($join) {
-                        $join->on('persona.id', '=', 'vendedor.persona_id')
-                            ->where('vendedor.sta_activo', '=', 1);
-                    })
-                    ->select([
-                        'vendedor.id',
-                        'persona.nombre',
-                        'persona.apellido'
-                    ])
-                    ->get();
-
-        //dd($vendedores1);
-        return view('cotizacion.crear',compact('clientes','formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','provincias','regiones','productos','empresa','tipoentregas','vendedor_id','giros','sucurArray','sucursales','aux_sta','aux_statusPant'));
+        return view('cotizacion.crear',compact('clientes','fecha','productos','aux_sta','tablas'));
     }
     /**
      * Store a newly created resource in storage.
@@ -386,105 +251,33 @@ class CotizacionController extends Controller
                                 'clientedirec.direcciondetalle',
                             ])->get();
         //dd($clientedirecs);
-
+        //VENDEDORES POR SUCURSAL
+        $tablas = array();
+        $vendedor = Vendedor::vendedores();
+        $tablas['vendedores'] = $vendedor['vendedores'];
+        
         $clienteDirec = $data->clientedirec()->get();
-        //dd($clienteDirec);
         $fecha = date("d/m/Y", strtotime($data->fechahora));
-        $formapagos = FormaPago::orderBy('id')->get();
-        $plazopagos = PlazoPago::orderBy('id')->get();
-        $vendedores = Vendedor::orderBy('id')->get();
-        $comunas = Comuna::orderBy('id')->get();
-        $provincias = Provincia::orderBy('id')->get();
-        $regiones = Region::orderBy('id')->get();
-        /*
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
-        */
+
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
+        $tablas['vendedor_id'] = $clientesArray['vendedor_id'];
+        $tablas['sucurArray'] = $clientesArray['sucurArray'];
         $productos = Producto::productosxUsuario();
-        /*
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.diamextpg',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprodsuc.sucursal_id',
-                'categoriaprod.unidadmedida_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->get();
-        */
-        //****************** */
-        /*
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal
-        
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
 
-
-        //dd($clientes);
-
-        $empresa = Empresa::findOrFail(1);
-        $tipoentregas = TipoEntrega::orderBy('id')->get();
-        $giros = Giro::orderBy('id')->get();
-        $sucursales = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
+        $tablas['formapagos'] = FormaPago::orderBy('id')->get();
+        $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['provincias'] = Provincia::orderBy('id')->get();
+        $tablas['regiones'] = Region::orderBy('id')->get();
+        $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
+        $tablas['giros'] = Giro::orderBy('id')->get();
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
+        $tablas['empresa'] = Empresa::findOrFail(1);
+        $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $aux_sta=2;
-        $aux_statusPant = 0;
 
-        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-            $user = Usuario::findOrFail(auth()->id());
-            $sucurArray = $user->sucursales->pluck('id')->toArray();
-            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                    })
-            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-            ->join('vendedor', function ($join) {
-                $join->on('persona.id', '=', 'vendedor.persona_id')
-                    ->where('vendedor.sta_activo', '=', 1);
-            })
-            ->select([
-                'vendedor.id',
-                'persona.nombre',
-                'persona.apellido'
-            ])
-            ->get();
-        /*
-        $sql= 'SELECT COUNT(*) AS contador
-        FROM vendedor INNER JOIN persona
-        ON vendedor.persona_id=persona.id
-        INNER JOIN usuario 
-        ON persona.usuario_id=usuario.id
-        WHERE usuario.id=' . auth()->id();
-        $counts = DB::select($sql);
-        $vendedor_id = '0';
-        if($counts[0]->contador>0){
-            $vendedor_id=$user->persona->vendedor->id;
-        }
-        */
-        //dd($clientedirecs);
-        return view('cotizacion.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','cotizacionDetalles','comunas','provincias','regiones','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','sucursales','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
+        return view('cotizacion.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','cotizacionDetalles','productos','fecha','aux_sta','aux_cont','tablas'));
     }
 
     /**
@@ -550,8 +343,7 @@ class CotizacionController extends Controller
                 }
             }
         }
-        //return redirect('cotizacion/'.$id.'/editar')->with('mensaje','Cliente actualizado con exito!');
-        return redirect('cotizacion')->with('mensaje','Cliente actualizado con exito!');
+        return redirect('cotizacion')->with('mensaje','Cotización actualizada con exito!');
     }
 
     /**

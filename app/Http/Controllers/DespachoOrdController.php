@@ -498,10 +498,16 @@ class DespachoOrdController extends Controller
                     $cont_producto = count($request->producto_id);
                     if($cont_producto>0){
                         for ($i=0; $i < $cont_producto ; $i++){
-                            if(is_null($request->producto_id[$i])==false && is_null($request->cantord[$i])==false){
+                            if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
                                 $despachoorddet = DespachoOrdDet::findOrFail($request->NVdet_id[$i]);
                                 $despachoorddet->cantdesp = $request->cantord[$i];
                                 if($despachoorddet->save()){
+                                    if($request->cantord[$i]==0){
+                                        $despachoorddet->usuariodel_id = auth()->id();
+                                        $despachoorddet->save();
+                                        $despachoorddet->delete();
+                                    }
+
                                     /*
                                     $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
                                     $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];

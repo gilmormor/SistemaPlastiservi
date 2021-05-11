@@ -589,6 +589,8 @@ function modificarTabla(i){
 	$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-#,###,###,##0.00',1));
 	$("#subtotal"+i).val($("#subtotalM").attr('valor'));
 	$("#subtotalSFTD"+i).html($("#subtotalM").attr('valor'));
+
+	$("#unidadmedida_id"+i).val($("#unidadmedida_idM option:selected").attr('value'));
 	totalizar();
 
 }
@@ -737,6 +739,7 @@ function verificar()
 {
 	var v1=0,v2=0,v3=0,v4=0,v5=0,v6=0,v7=0,v8=0,v9=0,v10=0,v11=0,v12=0,v13,v14=0;
 	
+	v6=validacion('unidadmedida_idM','combobox');
 	v5=validacion('precionetoM','numerico');
 	v4=validacion('precioM','numerico');
 	v3=validacion('descuentoM','combobox');
@@ -763,6 +766,8 @@ function quitarverificar(){
 	quitarValidacion('precioM','texto');
 	quitarValidacion('precionetoM','texto');
 	quitarValidacion('producto_idM','textootro');
+	quitarValidacion('unidadmedida_idM','combobox');
+
 }
 
 function editarRegistro(i){
@@ -784,7 +789,8 @@ function editarRegistro(i){
 	$("#cantM").val($("#cant"+i).val());
 	$("#descuentoM").val($.trim($("#descuentoval"+i).val()));
 	$("#precionetoM").attr('valor',$("#preciounit"+i).val());
-	$("#precionetoM").val(MASK(0, $("#preciounit"+i).val(), '-##,###,##0.00',1));
+	$("#precionetoM").val($("#preciounit"+i).val());
+	//$("#precionetoM").val(MASK(0, $("#preciounit"+i).val(), '-##,###,##0.00',1));
 	$("#precioM").attr('valor',$("#precioxkilo"+i).val());
 	$("#precioM").val($("#precioxkilo"+i).val());
 	//$("#precioM").val(MASK(0, $("#precioxkilo"+i).val(), '-##,###,##0.00',1));
@@ -798,6 +804,7 @@ function editarRegistro(i){
 	$("#espesorM").val($("#espesor"+i).val());
 	$("#longM").val($("#long"+i).val());
 	$("#pesoM").val($("#peso"+i).val());
+	$("#unidadmedida_idM").val($("#unidadmedida_id"+i).val());
 	
 
 	$(".selectpicker").selectpicker('refresh');

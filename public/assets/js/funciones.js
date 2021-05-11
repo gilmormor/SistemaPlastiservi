@@ -11,8 +11,16 @@ var Biblioteca = function(){
                 ignore: "",
                 highlight: function(element,errorClass,validClass){
                     $(element).closest('.form-group').addClass('has-error');
+
                     aux_obj = $(element).closest('.form-group');
-                    alertify.error("Falta incluir información: " + aux_obj.children('label').html());
+                    //alertify.error("Falta incluir información: " + aux_obj.children('label').html());
+                    if(aux_obj.children('input').attr('type') != 'email'){
+                        aux_label = "Información.";
+                        if(aux_obj.children('label').html() != undefined){
+                            aux_label = aux_obj.children('label').html();
+                        }
+                        alertify.error("Falta: " + aux_label);
+                    }
                 },
                 unhighlight: function(element){
                     $(element).closest('.form-group').removeClass('has-error');

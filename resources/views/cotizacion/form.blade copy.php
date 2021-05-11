@@ -1,6 +1,6 @@
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
-<input type="hidden" name="aux_iva" id="aux_iva" value="{{$tablas['empresa']->iva}}">
+<input type="hidden" name="aux_iva" id="aux_iva" value="{{$empresa->iva}}">
 <input type="hidden" name="direccioncot" id="direccioncot" value="{{old('direccioncot', $data->direccioncot ?? '')}}">
 <input type="hidden" name="cliente_id" id="cliente_id" value="{{old('cliente_id', $data->cliente_id ?? '')}}">
 <input type="hidden" name="contacto" id="contacto" value="{{old('contacto', $data->contacto ?? '')}}">
@@ -8,10 +8,10 @@
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
-<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $tablas['sucurArray'][0] ?? '')}}">
+<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $sucurArray[0] ?? '')}}">
 
 @if($aux_sta==1)
-    <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $tablas['vendedor_id'] ?? '')}}">
+    <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $vendedor_id ?? '')}}">
 @else
     <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $data->vendedor_id ?? '')}}">
 @endif
@@ -20,13 +20,15 @@
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
 
 <input type="hidden" name="neto" id="neto" value="{{old('neto', $data->neto ?? '')}}">
-<input type="hidden" name="piva" id="piva" value="{{old('piva', $tablas['empresa']->iva ?? '')}}">
+<input type="hidden" name="piva" id="piva" value="{{old('piva', $empresa->iva ?? '')}}">
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
 <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}">
 
 <?php
     $disabledReadOnly = "";
     //Si la pantalla es de aprobacion de Cotizacion desactiva todos input
+    //$aux_statusPant=='0', Pantalla normal CRUD de Cotizacion
+    //$aux_statusPant=='1', Aprobar o rechazar cotización. Y colocar una observacion
     if(session('aux_aprocot')=='1'){
         $disabledReadOnly = ' disabled ';
     }
@@ -65,7 +67,7 @@
         </div>
 
         <div class="form-group col-xs-12 col-sm-4">
-            <label for="direccion" class="control-label">Dirección Principal</label>
+            <label for="direccion" class="control-label">Dirección Princ</label>
             <input type="text" name="direccion" id="direccion" class="form-control" value="{{old('direccion', $clienteselec[0]->direccion ?? '')}}" required placeholder="Dirección principal" readonly/>
         </div>
         <div class="form-group col-xs-12 col-sm-2">
@@ -87,7 +89,7 @@
             <label for="comuna_idD" class="control-label requerido">Comuna</label>
             <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
                 <option value="">Seleccione...</option>
-                @foreach($tablas['comunas'] as $comuna)
+                @foreach($comunas as $comuna)
                     <option
                         value="{{$comuna->id}}"
                         @if ($aux_sta==2 and $comuna->id==$data->comuna_id)
@@ -104,10 +106,10 @@
             <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" data-live-search='true'  required readonly disabled>
             <!--<select name="vendedor_idD" id="vendedor_idD" class="selectpicker form-control vendedor_idD" required readonly disabled>-->
                     <option value="">Seleccione...</option>
-                @foreach($tablas['vendedores'] as $vendedor)
+                @foreach($vendedores1 as $vendedor)
                     <option
                         value="{{$vendedor->id}}"
-                        @if (($aux_sta==1) and ($tablas['vendedor_id'] == $vendedor->id))
+                        @if (($aux_sta==1) and ($vendedor_id==$vendedor->id))
                             {{'selected'}}
                         @endif
                         @if (($aux_sta==2) and ($data->vendedor_id==$vendedor->id))
@@ -123,7 +125,7 @@
             <label for="plazopago_idD" class="control-label requerido">Plazo</label>
             <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
                 <option value=''>Seleccione...</option>
-                @foreach($tablas['plazopagos'] as $plazopago)
+                @foreach($plazopagos as $plazopago)
                     <option
                         value="{{$plazopago->id}}"
                         @if (($aux_sta==2) and ($data->plazopago_id==$plazopago->id))
@@ -140,7 +142,7 @@
             <label for="formapago_idD" class="control-label requerido">Forma de Pago</label>
             <select name="formapago_idD" id="formapago_idD" class="form-control selectpicker formapago_idD" required readonly disabled>
                 <option value=''>Seleccione...</option>
-                @foreach($tablas['formapagos'] as $formapago)
+                @foreach($formapagos as $formapago)
                     <option
                         value="{{$formapago->id}}"
                         @if (($aux_sta==2) and ($data->formapago_id==$formapago->id))
@@ -156,7 +158,7 @@
             <label for="giro_idD" class="control-label requerido">Giro</label>
             <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
                 <option value=''>Seleccione...</option>
-                @foreach($tablas['giros'] as $giro)
+                @foreach($giros as $giro)
                     <option
                         value="{{$giro->id}}"
                         @if (($aux_sta==2) and ($data->giro_id==$giro->id))
@@ -209,7 +211,7 @@
             <label for="tipoentrega_id" class="control-label requerido">Tipo Entrega</label>
             <select name="tipoentrega_id" id="tipoentrega_id" class="form-control select2 tipoentrega_id" required {{$disabledReadOnly}}>
                 <option value=''>Seleccione...</option>
-                @foreach($tablas['tipoentregas'] as $tipoentrega)
+                @foreach($tipoentregas as $tipoentrega)
                     <option
                         value="{{$tipoentrega->id}}"
                         @if (($aux_sta==2) and ($data->tipoentrega_id==$tipoentrega->id))
@@ -311,7 +313,7 @@
                                             {{$CotizacionDetalle->producto->nombre}}
                                         </td>
                                         <td style="display:none;">
-                                            <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->unidadmedida_id}}" style="display:none;"/>
+                                            <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="4" style="display:none;"/>
                                         </td>
                                         <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
                                             {{$CotizacionDetalle->producto->claseprod->cla_nombre}}
@@ -408,7 +410,7 @@
                                     <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                                 </tr>
                                 <tr id="triva" name="triva">
-                                    <td colspan="12" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
+                                    <td colspan="12" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                     <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
                                 </tr>
                                 <tr id="trtotal" name="trtotal">
@@ -473,7 +475,7 @@
                         <label for="giro_idCTM" class="control-label" data-toggle='tooltip' title="Giro">Giro</label>
                         <select name="giro_idCTM" id="giro_idCTM" class="selectpicker form-control requeridos" tipoval="texto" value="{{old('giro_idCTM')}}">
                             <option value="">Seleccione...</option>
-                            @foreach($tablas['giros'] as $giro)
+                            @foreach($giros as $giro)
                                 <option
                                     value="{{$giro->id}}"
                                     >
@@ -487,7 +489,7 @@
                         <label for="formapago_idCTM" class="control-label">Forma de Pago</label>
                         <select name="formapago_idCTM" id="formapago_idCTM" class="selectpicker form-control requeridos" tipoval="texto" data-live-search='true' title='Seleccione...' value="{{old('formapago_idCTM')}}">
                             <option value="">Seleccione...</option>
-                            @foreach($tablas['formapagos'] as $formapago)
+                            @foreach($formapagos as $formapago)
                                 <option
                                     value="{{$formapago->id}}"
                                     >
@@ -501,7 +503,7 @@
                         <label for="plazopago_idCTM" class="control-label">Plazo de Pago</label>
                         <select name="plazopago_idCTM" id="plazopago_idCTM" class="selectpicker form-control requeridos" tipoval="texto" data-live-search='true' title='Seleccione...' value="{{old('plazopago_idCTM')}}">
                             <option value="">Seleccione...</option>
-                            @foreach($tablas['plazopagos'] as $plazopago)
+                            @foreach($plazopagos as $plazopago)
                                 <option
                                     value="{{$plazopago->id}}"
                                     >
@@ -517,7 +519,7 @@
                         <label for="comunap_idCTM" class="control-label">Comuna</label>
                         <select name="comunap_idCTM" id="comunap_idCTM" class="selectpicker form-control requeridos" tipoval="texto" data-live-search='true' title='Seleccione...' value="{{old('comunap_idCTM')}}">
                             <option value="">Seleccione...</option>
-                            @foreach($tablas['comunas'] as $comuna)
+                            @foreach($comunas as $comuna)
                                 <option
                                     value="{{$comuna->id}}"
                                     region_id="{{$comuna->provincia->region_id}}"
@@ -532,7 +534,7 @@
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="provinciap_idCTM" class="control-label">Provincia</label>
                         <select name="provinciap_idCTM" id="provinciap_idCTM" class="selectpicker form-control provinciap_id" tipoval="texto" title='Seleccione...' disabled readonly value="{{old('provinciap_idCTM')}}">
-                            @foreach($tablas['provincias'] as $provincia)
+                            @foreach($provincias as $provincia)
                                 <option
                                     value="{{$provincia->id}}"
                                     >
@@ -545,7 +547,7 @@
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="regionp_idCTM" class="control-label">Región</label>
                         <select name="regionp_idCTM" id="regionp_idCTM" class="selectpicker form-control regionp_id" tipoval="texto" title='Seleccione...' disabled readonly value="{{old('regionp_idCTM')}}">
-                            @foreach($tablas['regiones'] as $region)
+                            @foreach($regiones as $region)
                                 <option
                                     value="{{$region->id}}"
                                     >
@@ -594,7 +596,7 @@
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="sucursal_idCTM" class="control-label">Sucursal</label>
                         <select name="sucursal_idCTM" id="sucursal_idCTM" class="selectpicker form-control requeridos" tipoval="texto" title='Seleccione...'>
-                            @foreach($tablas['sucursales'] as $sucursal)
+                            @foreach($sucursales as $sucursal)
                                 <option
                                     value="{{$sucursal->id}}"
                                     >
