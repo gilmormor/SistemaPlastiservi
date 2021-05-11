@@ -80,7 +80,9 @@ if (!function_exists('urlPrevio')) {
 function autoVer($url)
 {
   $path = pathinfo($url);
-  $ver = '?v=' . filemtime($_SERVER['DOCUMENT_ROOT'].$url);
+  //dd($url);
+  //$ver = '?v=' . filemtime($_SERVER['DOCUMENT_ROOT'].$url);
+  $ver = '?v=' . filemtime($url);
   //return $path['dirname'].'/'.$path['basename'].$ver;
   //dd(asset($url).$ver);
   return (asset($url).$ver);
