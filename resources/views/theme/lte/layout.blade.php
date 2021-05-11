@@ -172,7 +172,8 @@
         <script src="{{asset("assets/js/alertify.min.js")}}"></script>
         
         <script src="{{asset("assets/js/scripts.js")}}"></script>
-        <script src="{{asset("assets/js/funciones.js")}}"></script>
+        <!--<script src="{{asset("assets/js/funciones.js")}}"></script>-->
+        <script src="{{autoVer("assets/js/funciones.js")}}"></script>
 
         @yield('scripts')
 
