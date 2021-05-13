@@ -52,7 +52,8 @@ $(document).ready(function () {
                 aux_color = "btn btn-danger";
             }else{
                 codigo = data.clientetemp_id;
-                if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
+                aux_validacion = (codigo == null || codigo.length == 0 || /^\s+$/.test(codigo))
+                if ( aux_validacion != true ){
                     aux_mensaje= aux_mensaje + " - Cliente Nuevo";
                     aux_icono = "glyphicon glyphicon-thumbs-up";
                     aux_color = "btn btn-success";
