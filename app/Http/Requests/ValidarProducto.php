@@ -27,10 +27,11 @@ class ValidarProducto extends FormRequest
     {
         //'descripcion' => 'required|max:100|unique:producto,descripcion,' . $this->route('id'),
         return [
-            'codintprod' => ['numeric','max:12', new ValidarCampoCodIntProd],
-            'codbarra' => ['numeric','max:45', new ValidarCampoCodBarraProd],
+            //'codintprod' => ['numeric','max:12', new ValidarCampoCodIntProd],
+            //'codbarra' => ['numeric','max:45', new ValidarCampoCodBarraProd],
             'clase' => 'required|max:6',
-            'diamext' => 'required|numeric',
+            //'diamext' => 'required|numeric',
+            'diametro' => 'required',
             'espesor' => 'required|numeric',
             'long' => 'required|numeric',
             'peso' => 'required|numeric',

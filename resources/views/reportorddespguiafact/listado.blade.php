@@ -79,13 +79,7 @@
 							<td>
 								<?php
 									$producto = Producto::findOrFail($notaventa->producto_id);
-									$aum_uniMed = '';
-									if ($producto->categoriaprod->unidadmedida_id==3){
-										$aum_uniMed = $producto->diamextpg;
-									}
-									else{
-										$aum_uniMed = $producto->diamextmm . 'mm';
-									}
+									$aum_uniMed = $producto->diametro;
 								?>
 								{{$aum_uniMed}}
 							</td>

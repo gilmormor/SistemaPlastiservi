@@ -317,10 +317,10 @@
                                             {{$CotizacionDetalle->producto->claseprod->cla_nombre}}
                                         </td>
                                         <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                            {{$CotizacionDetalle->producto->diamextmm}}
+                                            {{$CotizacionDetalle->producto->diametro}}
                                         </td>
                                         <td style="display:none;">
-                                            <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diamextmm}}" style="display:none;"/>
+                                            <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diametro}}" style="display:none;"/>
                                         </td>
                                         <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
                                             {{$CotizacionDetalle->producto->espesor}}
@@ -672,7 +672,7 @@
                                         {{$producto->codintprod}}
                                     </td>
                                     <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
-                                        {{$producto->diamextmm}}
+                                        {{$producto->diametro}}
                                     </td>
                                     <td name="productoespesorBtd{{$aux_nfila}}" id="productoespesorBtd{{$aux_nfila}}">
                                         {{$producto->espesor}}

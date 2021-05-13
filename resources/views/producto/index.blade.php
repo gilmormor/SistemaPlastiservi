@@ -5,8 +5,12 @@ Productos
 
 @section("scripts")
     <script type="text/javascript" src="{{asset("assets/js/jquery-barcode.js")}}"></script>
+    <!--
     <script src="{{asset("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{asset("assets/pages/scripts/producto/index.js")}}" type="text/javascript"></script>
+    -->
+    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -32,8 +36,7 @@ Productos
                                 <th class="width30">ID</th>
                                 <th>Nombre</th>
                                 <th>Categoria</th>
-                                <th>DiamExt</th>
-                                <th>DiaPulg</th>
+                                <th>Diametro</th>
                                 <th>Espesor mm</th>
                                 <th>Largo</th>
                                 <th>Peso</th>

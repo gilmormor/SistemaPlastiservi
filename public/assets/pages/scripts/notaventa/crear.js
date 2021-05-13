@@ -126,19 +126,19 @@ $(document).ready(function () {
 		}
 	});
 	$("#btnbuscarproducto").click(function(e){
-		e.preventDefault();
+		//e.preventDefault();
 		$(this).val("");
 		$(".input-sm").val('');
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
 
 		$('#myModal')
-               .modal('hide')
-               .on('hidden.bs.modal', function (e) {
-                   $('#myModalBuscarProd').modal('show');
+			.modal('hide')
+			.on('hidden.bs.modal', function (e) {
+				$('#myModalBuscarProd').modal('show');
 
-                   $(this).off('hidden.bs.modal'); // Remove the 'on' event binding
-               });
+				$(this).off('hidden.bs.modal'); // Remove the 'on' event binding
+			});
 
 	});
 
@@ -825,11 +825,14 @@ $("#producto_idM").blur(function(){
 					$("#nombreprodM").val(respuesta[0]['nombre']);
 					$("#codintprodM").val(respuesta[0]['codintprod']);
 					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
+					/*
 					if (respuesta[0]['unidadmedida_id']=='3'){
 						$("#diamextmmM").val(respuesta[0]['diamextpg']);
 					}else{
 						$("#diamextmmM").val(respuesta[0]['diamextmm']+'mm');
 					}
+					*/
+					$("#diamextmmM").val(respuesta[0]['diametro']);
 					$("#espesorM").val(respuesta[0]['espesor']);
 					$("#longM").val(respuesta[0]['long']);
 					$("#pesoM").val(respuesta[0]['peso']);

@@ -109,7 +109,7 @@
             <div class="row">
                 <div class="col-xs-12 col-sm-2">
                     <label for="diamextmmM" class="control-label" data-toggle='tooltip'>Diametro</label>
-                    <input type="text" name="diamextmmM" id="diamextmmM" class="form-control" value="{{old('diamextmmM', $data->diamextmmM ?? '')}}" placeholder="Diametro" readonly Disabled/>
+                    <input type="text" name="diamextmmM" id="diamextmmM" class="form-control" value="{{old('diamextmmM', $data->diametro ?? '')}}" placeholder="Diametro" readonly Disabled/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">

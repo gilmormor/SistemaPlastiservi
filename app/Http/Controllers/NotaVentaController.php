@@ -32,6 +32,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use SplFileInfo;
 use Barryvdh\DomPDF\Facade as PDF;
+use PhpParser\Node\Stmt\Foreach_;
 
 class NotaVentaController extends Controller
 {
@@ -208,34 +209,7 @@ class NotaVentaController extends Controller
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $comunas = Comuna::orderBy('id')->get();
         $productos = Producto::productosxUsuario();
-        /*
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.diamextpg',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprod.unidadmedida_id',
-                'categoriaprodsuc.sucursal_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->get();
-        */
-        //dd($clientedirecs);
+
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $giros = Giro::orderBy('id')->get();
@@ -313,52 +287,6 @@ class NotaVentaController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $productos = Producto::productosxUsuario();
-        /*
-        $users = Usuario::findOrFail(auth()->id());
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprodsuc.sucursal_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->get();
-        */
-        /*
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
-/*
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
-        ->whereIn('cliente.id' , 
-                    ClienteDirec::select(['clientedirec.cliente_id'])
-                    ->whereIn('clientedirec.id', SucursalClienteDirec::select(['sucursalclientedirec.clientedirec_id'])
-                                                 ->whereIn('sucursalclientedirec.sucursal_id', $sucurArray))
-        ->pluck('clientedirec.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-*/
-        //dd($clientes);
-
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $giros = Giro::orderBy('id')->get();
@@ -422,6 +350,7 @@ class NotaVentaController extends Controller
         }
         $cont_producto = count($request->producto_id);
         if($cont_producto>0){
+            
             for ($i=0; $i < $cont_producto ; $i++){
                 if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
                     $producto = Producto::findOrFail($request->producto_id[$i]);
@@ -438,6 +367,15 @@ class NotaVentaController extends Controller
                     $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                     $notaventadetalle->totalkilos = $request->totalkilos[$i];
                     $notaventadetalle->subtotal = $request->subtotal[$i];
+
+                    $notaventadetalle->producto_nombre = $producto->nombre;
+                    $notaventadetalle->espesor = $producto->espesor;
+                    $notaventadetalle->long = $producto->long;
+                    $notaventadetalle->diametro = $producto->diametro;
+                    $notaventadetalle->categoriaprod_id = $producto->categoriaprod_id;
+                    $notaventadetalle->claseprod_id = $producto->claseprod_id;
+                    $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
+                    $notaventadetalle->color_id = $producto->color_id;
                     $notaventadetalle->save();
                     $idDireccion = $notaventadetalle->id;
                 }
@@ -511,43 +449,7 @@ class NotaVentaController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $productos = Producto::productosxUsuario();
-        /*
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.diamextpg',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprod.unidadmedida_id',
-                'categoriaprodsuc.sucursal_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->get();
-        */
-        /*
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal 
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
 
-        //dd($clientes);
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -628,6 +530,15 @@ class NotaVentaController extends Controller
                         $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                         $notaventadetalle->totalkilos = $request->totalkilos[$i];
                         $notaventadetalle->subtotal = $request->subtotal[$i];
+                        
+                        $notaventadetalle->producto_nombre = $producto->nombre;
+                        $notaventadetalle->espesor = $producto->espesor;
+                        $notaventadetalle->long = $producto->long;
+                        $notaventadetalle->diametro = $producto->diametro;
+                        $notaventadetalle->categoriaprod_id = $producto->categoriaprod_id;
+                        $notaventadetalle->claseprod_id = $producto->claseprod_id;
+                        $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
+                        $notaventadetalle->color_id = $producto->color_id;    
                         $notaventadetalle->save();
                         $idcotizaciondet = $notaventadetalle->id;
                         //dd($idDireccion);
@@ -647,6 +558,14 @@ class NotaVentaController extends Controller
                                 'precioxkiloreal' => $request->precioxkiloreal[$i],
                                 'totalkilos' => $request->totalkilos[$i],
                                 'subtotal' => $request->subtotal[$i],
+                                'producto_nombre' => $producto->nombre,
+                                'espesor' => $producto->espesor,
+                                'long' => $producto->long,
+                                'diametro' => $producto->diametro,
+                                'categoriaprod_id' => $producto->categoriaprod_id,
+                                'claseprod_id' => $producto->claseprod_id,
+                                'grupoprod_id' => $producto->grupoprod_id,
+                                'color_id' => $producto->color_id
                             ]
                         );
                     }
@@ -1179,6 +1098,51 @@ class NotaVentaController extends Controller
             if($data->save()){
                 return response()->json(['mensaje' => 'ok']); 
             }
+        }
+    }
+
+    public function cambiarUnidadMedida(){
+        $datas = Producto::orderBy('id')->get();
+        foreach ($datas as $data) {
+            $producto = Producto::findOrFail($data->id);
+            if ($data->categoriaprod->unidadmedida_id==3){
+                $producto->diametro = $data->diamextpg;
+            }else{
+                if($data->diamextmm == 0){
+                    $producto->diametro = $data->diamextpg;
+                }else{
+                    $producto->diametro = $data->diamextmm . "mm";
+                }
+            }
+            $producto->save();
+        }
+        $datas = CotizacionDetalle::orderBy('id')->get();
+        foreach ($datas as $data) {
+            $cotizaciondetalle = CotizacionDetalle::findOrFail($data->id);
+            $cotizaciondetalle->unidadmedida_id = $data->producto->categoriaprod->unidadmedidafact_id;
+            $cotizaciondetalle->producto_nombre = $data->producto->nombre;
+            $cotizaciondetalle->espesor = $data->producto->espesor;
+            $cotizaciondetalle->long = $data->producto->long;
+            $cotizaciondetalle->diametro = $data->producto->diametro;
+            $cotizaciondetalle->categoriaprod_id = $data->producto->categoriaprod_id;
+            $cotizaciondetalle->claseprod_id = $data->producto->claseprod_id;
+            $cotizaciondetalle->grupoprod_id = $data->producto->grupoprod_id;
+            $cotizaciondetalle->color_id = $data->producto->color_id;
+            $cotizaciondetalle->save();
+        }
+        $datas = NotaVentaDetalle::orderBy('id')->get();
+        foreach ($datas as $data) {
+            $notaventadetalle = NotaVentaDetalle::findOrFail($data->id);
+            $notaventadetalle->unidadmedida_id = $data->producto->categoriaprod->unidadmedidafact_id;
+            $notaventadetalle->producto_nombre = $data->producto->nombre;
+            $notaventadetalle->espesor = $data->producto->espesor;
+            $notaventadetalle->long = $data->producto->long;
+            $notaventadetalle->diametro = $data->producto->diametro;
+            $notaventadetalle->categoriaprod_id = $data->producto->categoriaprod_id;
+            $notaventadetalle->claseprod_id = $data->producto->claseprod_id;
+            $notaventadetalle->grupoprod_id = $data->producto->grupoprod_id;
+            $notaventadetalle->color_id = $data->producto->color_id;
+            $notaventadetalle->save();
         }
     }
 

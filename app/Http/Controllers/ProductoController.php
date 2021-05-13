@@ -217,30 +217,6 @@ class ProductoController extends Controller
     public function buscarproducto()
     {
         $productos = Producto::productosxUsuario();
-        /*
-        $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprodsuc.sucursal_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
-        */
         return response()->json($productos);
     }
 
@@ -264,6 +240,7 @@ class ProductoController extends Controller
                     'producto.codintprod',
                     'producto.diamextmm',
                     'producto.diamextpg',
+                    'producto.diametro',
                     'producto.espesor',
                     'producto.long',
                     'producto.peso',

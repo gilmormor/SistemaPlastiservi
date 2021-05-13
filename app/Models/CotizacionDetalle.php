@@ -20,7 +20,17 @@ class CotizacionDetalle extends Model
         'iva',
         'total',
         'usuariodel_id',
-        'precioxkiloreal'
+        'precioxkiloreal',
+        'producto_nombre',
+        'ancho',
+        'largo',
+        'espesor',
+        'long',
+        'diametro',
+        'categoriaprod_id',
+        'claseprod_id',
+        'grupoprod_id',
+        'color_id'
     ];
     //RELACION DE UNO A MUCHOS NotaVentaDetalle
     public function notaventadetalles()

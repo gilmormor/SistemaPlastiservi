@@ -317,10 +317,10 @@
                                             {{$CotizacionDetalle->producto->claseprod->cla_nombre}}
                                         </td>
                                         <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                            {{$CotizacionDetalle->producto->diamextmm}}
+                                            {{$CotizacionDetalle->producto->diametro}}
                                         </td>
                                         <td style="display:none;">
-                                            <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diamextmm}}" style="display:none;"/>
+                                            <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diametro}}" style="display:none;"/>
                                         </td>
                                         <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
                                             {{$CotizacionDetalle->producto->espesor}}
@@ -468,31 +468,7 @@
                 </div>
             </div>
             <div class="row">
-                <!--
-                <div class="col-xs-12 col-sm-2">
-                    <label for="producto_idM" class="control-label">Producto</label>
-                    <select name="producto_idM" id="producto_idM" class="selectpicker form-control producto_idM" data-live-search='true' title='Seleccione...'>
-                        @foreach($productos as $producto)
-                            <option
-                                value="{{$producto->id}}"
-                                nombre="{{$producto->nombre}}"
-                                cla_nombre="{{$producto->cla_nombre}}"
-                                diamextmm="{{$producto->diamextmm}}"
-                                espesor="{{$producto->espesor}}"
-                                long="{{$producto->long}}"
-                                peso="{{$producto->peso}}"
-                                tipounion="{{$producto->tipounion}}"
-                                precioneto="{{$producto->precioneto}}"
-                                precio="{{$producto->precio}}"
-                                codintprod="{{$producto->codintprod}}"
-                                >
-                                {{$producto->nombre}} - {{$producto->codintprod}} - {{$producto->cla_nombre}}
-                            </option>
-                        @endforeach
-                    </select>
-                    <span class="help-block"></span>
-                </div>-->
-                
+                                
                 <div class="col-xs-12 col-sm-2">
                     <label for="cantM" class="control-label" data-toggle='tooltip'>Cant</label>
                     <input type="text" name="cantM" id="cantM" class="form-control" value="{{old('cantM', $data->cantM ?? '')}}" placeholder="Cant"/>
@@ -561,7 +537,7 @@
                 </div>
                 <div class="col-xs-12 col-sm-2">
                     <label for="diamextmmM" class="control-label" data-toggle='tooltip'>Diametro</label>
-                    <input type="text" name="diamextmmM" id="diamextmmM" class="form-control" value="{{old('diamextmmM', $data->diamextmmM ?? '')}}" placeholder="Diametro" readonly Disabled/>
+                    <input type="text" name="diamextmmM" id="diamextmmM" class="form-control" value="{{old('diamextmmM', $data->diametro ?? '')}}" placeholder="Diametro" readonly Disabled/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">
@@ -696,7 +672,7 @@
                                         {{$producto->codintprod}}
                                     </td>
                                     <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
-                                        {{$producto->diamextmm}}
+                                        {{$producto->diametro}}
                                     </td>
                                     <td name="productoespesorBtd{{$aux_nfila}}" id="productoespesorBtd{{$aux_nfila}}">
                                         {{$producto->espesor}}

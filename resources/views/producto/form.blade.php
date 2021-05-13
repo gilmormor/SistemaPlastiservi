@@ -12,6 +12,7 @@
         </div>
     </div>
 </div>
+<!--
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
         <label for="codintprod" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Códigp interno de producto">Cód Int Prod</label>
@@ -26,8 +27,15 @@
         </div>
     </div>
 </div>
-
+-->
 <div class="row">
+    <div class="form-group col-xs-12 col-sm-6">
+        <label for="diametro" class="col-lg-3 control-label requerido" title="Diámetro" data-toggle='tooltip' title="Diámetro">Diámetro</label>
+        <div class="col-lg-9">
+        <input type="text" name="diametro" id="diametro" class="form-control" value="{{old('diametro', $data->diametro ?? '')}}" required/>
+        </div>
+    </div>
+<!--
     <div class="form-group col-xs-12 col-sm-6">
         <label for="diamextmm" class="col-lg-3 control-label requerido" title="Diámetro Ext mm" data-toggle='tooltip' title="Diámetro">Diámetro mm</label>
         <div class="col-lg-9">
@@ -40,6 +48,7 @@
         <input type="text" name="diamextpg" id="diamextpg" class="form-control" value="{{old('diamextpg', $data->diamextpg ?? '')}}" required/>
         </div>
     </div>
+-->
 </div>
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
@@ -175,6 +184,8 @@
             </div>
         </div>
     @endif
+</div>
+<div class="row">
     <div class="form-group col-xs-12 col-sm-6">
         <label for="precioneto" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Precio Neto">Precio Neto</label>
         <div class="col-lg-9">
@@ -210,6 +221,8 @@
             </div>
         </div>
     @endif
+</div>
+<div class="row">
     <div class="form-group col-xs-12 col-sm-6">
         <label for="color_id" class="col-lg-3 control-label" data-toggle='tooltip' title="Color">Color</label>
         <div class="col-lg-9">
@@ -226,6 +239,4 @@
             </select>
         </div>
     </div>
-
-
 </div>

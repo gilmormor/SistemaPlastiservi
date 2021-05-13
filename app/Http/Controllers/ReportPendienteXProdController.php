@@ -56,31 +56,6 @@ class ReportPendienteXProdController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $productos = Producto::productosxUsuario();
-        /*
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.diamextpg',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprod.unidadmedida_id',
-                'categoriaprodsuc.sucursal_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->get();
-        */
 
         return view('reportpendientexprod.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos'));
     
@@ -320,10 +295,6 @@ function reporte1($request){
             }
             $comuna = Comuna::findOrFail($data->comunaentrega_id);
             $producto = Producto::findOrFail($data->producto_id);
-            $diametro = $producto->diamextpg;
-            if ($producto->categoriaprod->unidadmedida_id != 3){
-                $diametro = $producto->diamextmm . 'mm';
-            }
 
             $respuesta['tabla3'] .= "
             <tr>
@@ -339,7 +310,7 @@ function reporte1($request){
                 <td>$comuna->nombre</td>
                 <td>$data->producto_id</td>
                 <td>$data->nombre</td>
-                <td>$diametro</td>
+                <td>$producto->diametro</td>
                 <td>$data->cla_nombre</td>
                 <td>$data->long</td>
                 <td>$data->peso</td>
@@ -596,7 +567,7 @@ function consulta($request,$aux_sql,$orden){
         notaventadetalle.cant,if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS cantdesp,
         producto.nombre,cliente.razonsocial,notaventadetalle.id,
         notaventadetalle.notaventa_id,oc_file,
-        if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,notaventa.oc_id,
+        producto.diametro,notaventa.oc_id,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
         notaventadetalle.totalkilos,
         subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega

@@ -76,7 +76,7 @@ $(document).on("click", ".btnEnviarNV", function(event){
     fila = $(this).closest("tr");
     form = $(this);
     id = fila.find('td:eq(0)').text();
-    contador = fila.find('td:eq(5)').text();
+    contador = fila.find('td:eq(6)').text();
     aprobstatus = 1;
     if(contador>0){
         aprobstatus = 2;

@@ -119,19 +119,12 @@ class ProducxNotaVentaController extends Controller
                 $totalsumcant += $data->sumcant;
                 
                 $producto = Producto::findOrFail($data->producto_id);
-                $aum_uniMed = '';
-                if ($producto->categoriaprod->unidadmedida_id==3){
-                    $aum_uniMed = $producto->diamextpg;
-                }
-                else{
-                    $aum_uniMed = $producto->diamextmm . 'mm';
-                }
                 $porcentajeKg = ($data->sumtotalkilos * 100) / $aux_totalkilosP;
                 $aux_totalporcenkg += $porcentajeKg;
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                     <td id='nombre$i' name='nombre$i'>$data->nombre</td>
-                    <td id='diamextmm$i' name='diamextmm$i'>$aum_uniMed</td>
+                    <td id='diamextmm$i' name='diamextmm$i'>$producto->diametro</td>
                     <td id='cla_nombre$i' name='cla_nombre$i'>$data->cla_nombre</td>
                     <td id='long$i' name='long$i'>$data->long</td>
                     <td id='peso$i' name='peso$i' style='text-align:right'>".number_format($data->peso, 2, ",", ".") ."</td>
@@ -295,7 +288,7 @@ function consulta($request){
 
     $sql = "SELECT notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,
-    producto.diamextmm,producto.long,claseprod.cla_nombre,
+    producto.diamextmm,producto.diametro,producto.long,claseprod.cla_nombre,
     producto.peso,producto.tipounion,
     sum(notaventadetalle.cant) AS sumcant,
     sum(notaventadetalle.totalkilos) AS sumtotalkilos,
@@ -324,7 +317,7 @@ function consulta($request){
     and isnull(notaventa.anulada)
     and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
     GROUP BY notaventadetalle.producto_id,categoriaprod.nombre,
-    grupoprod.gru_nombre,producto.diamextmm,claseprod.cla_nombre,
+    grupoprod.gru_nombre,producto.diamextmm,producto.diametro,claseprod.cla_nombre,
     producto.long,producto.peso,producto.tipounion;";
 
     //" and " . $aux_condrut .

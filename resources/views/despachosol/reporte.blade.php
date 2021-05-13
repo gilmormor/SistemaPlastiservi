@@ -113,11 +113,7 @@
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 						<td class="textleft">{{$despachosoldet->notaventadetalle->producto->nombre}}</td>
 						<td class="textcenter">
-							@if ($despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedida_id==3)
-								{{$despachosoldet->notaventadetalle->producto->diamextpg}}								
-							@else
-								{{$despachosoldet->notaventadetalle->producto->diamextmm}}mm
-							@endif
+							{{$despachosoldet->notaventadetalle->producto->diametro}}
 						</td>
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
 						<td class="textright">{{$despachosoldet->notaventadetalle->producto->long}} mts</td>

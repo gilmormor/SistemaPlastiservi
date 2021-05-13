@@ -228,17 +228,13 @@
                                         {{$detalle->notaventadetalle->producto->nombre}}
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                        @if ($detalle->notaventadetalle->producto->categoriaprod->unidadmedida_id==3)
-                                            {{$detalle->notaventadetalle->producto->diamextpg}}
-                                        @else
-                                            {{$detalle->notaventadetalle->producto->diamextmm}}
-                                        @endif
+                                        {{$detalle->notaventadetalle->producto->diametro}}
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
                                         {{$detalle->notaventadetalle->producto->claseprod->cla_nombre}}
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->diamextmm}}" style="display:none;"/>
+                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->diametro}}" style="display:none;"/>
                                     </td>
                                     <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
                                         {{$detalle->notaventadetalle->producto->espesor}}

@@ -5,8 +5,8 @@ Productos
 
 @section("scripts")
     <script type="text/javascript" src="{{asset("assets/js/jquery-barcode.js")}}"></script>
-    <script src="{{asset("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/producto/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -33,8 +33,7 @@ Productos
                                 <th>Categoria</th>
                                 <th>Cod-Int</th>
                                 <th>Cod Barra</th>
-                                <th>DiamExt</th>
-                                <th>DiaPulg</th>
+                                <th>Diametro</th>
                                 <th>Espesor mm</th>
                                 <th>Largo</th>
                                 <th>Peso</th>
@@ -53,8 +52,7 @@ Productos
                                 <td>{{$data->categoriaprod->nombre}}
                                 <td>{{$data->codintprod}}</td>
                                 <td id="barcodeTarget{{$aux_nfila}}" class="barcodeTarget" onLoad="generateBarcode()">{{$data->codbarra}}</td>
-                                <td>{{$data->diamextmm}}</td>
-                                <td>{{$data->diamextpg}}</td>
+                                <td>{{$data->diametro}}</td>
                                 <td>{{$data->espesor}}</td>
                                 <td>{{$data->long}}</td>
                                 <td>{{$data->peso}}</td>

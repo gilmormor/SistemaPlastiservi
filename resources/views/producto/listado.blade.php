@@ -31,7 +31,7 @@
 							<td class="textcenter">{{$producto->categoriaprod->nombre}}</td>
 							<td class="textleft">{{$producto->codintprod}}</td>
 							<td class="textleft">{{$producto->claseprod->cla_nombre}}</td>
-							<td class="textleft">{{$producto->diamextmm}}</td>
+							<td class="textleft">{{$producto->diametro}}</td>
 							<td class="textright">{{$producto->long}}</td>
 							<td class="textright">{{$producto->espesor}}</td>
 							<td class="textright">{{$producto->peso}}</td>

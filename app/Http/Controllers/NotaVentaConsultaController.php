@@ -58,31 +58,7 @@ class NotaVentaConsultaController extends Controller
                     'fechaAct' => date("d/m/Y"),
                     ];
         $productos = Producto::productosxUsuario();
-        /*
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.diamextpg',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprod.unidadmedida_id',
-                'categoriaprodsuc.sucursal_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->get();
-        */
+
         $comunas = Comuna::orderBy('id')->get();
         return view('notaventaconsulta.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaServ','productos','comunas'));
 

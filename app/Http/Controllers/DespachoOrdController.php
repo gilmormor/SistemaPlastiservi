@@ -171,43 +171,7 @@ class DespachoOrdController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $productos = Producto::productosxUsuario();
-        /*
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprodsuc.sucursal_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->get();
-        */
 
-        /*
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
-
-
-        //dd($clientes);
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -391,41 +355,7 @@ class DespachoOrdController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $productos = Producto::productosxUsuario();
-        /*
-        //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
-        $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-        ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
-        ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
-        ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-        ->select([
-                'producto.id',
-                'producto.nombre',
-                'claseprod.cla_nombre',
-                'producto.codintprod',
-                'producto.diamextmm',
-                'producto.espesor',
-                'producto.long',
-                'producto.peso',
-                'producto.tipounion',
-                'producto.precioneto',
-                'categoriaprod.precio',
-                'categoriaprodsuc.sucursal_id'
-                ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->get();
-        */
-        /*
-        $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal 
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.giro_id'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
 
-        //dd($clientes);
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -748,10 +678,13 @@ class DespachoOrdController extends Controller
                     $i++;
                     $unidades = $despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre;
                     $nombreproduc = $despachoorddet->notaventadetalle->producto->nombre;
+                    $diametro = $despachoorddet->notaventadetalle->producto->diametro;
+                    /*
                     $diametro = $despachoorddet->notaventadetalle->producto->diamextpg;
                     if ($despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedida_id != 3){
                         $diametro = $despachoorddet->notaventadetalle->producto->diamextmm . 'mm';
                     }
+                    */
                     $cla_nombre = $despachoorddet->notaventadetalle->producto->claseprod->cla_nombre;
                     $long = $despachoorddet->notaventadetalle->producto->long;
                     $tipounion = $despachoorddet->notaventadetalle->producto->tipounion;

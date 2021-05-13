@@ -21,7 +21,17 @@ class NotaVentaDetalle extends Model
         'iva',
         'total',
         'usuariodel_id',
-        'precioxkiloreal'
+        'precioxkiloreal',
+        'producto_nombre',
+        'ancho',
+        'largo',
+        'espesor',
+        'long',
+        'diametro',
+        'categoriaprod_id',
+        'claseprod_id',
+        'grupoprod_id',
+        'color_id'
     ];
     
     //RELACION INVERSA NotaVenta

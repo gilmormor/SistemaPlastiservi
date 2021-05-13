@@ -330,7 +330,7 @@ Route::post('notaventa/buscaroc_id', 'NotaVentaController@buscaroc_id')->name('b
 Route::get('notaventa/cerrartodasNV', 'NotaVentaController@cerrartodasNV')->name('cerrartodasNV_notaventa');
 Route::post('notaventa/buscarNV', 'NotaVentaController@buscarNV')->name('buscarNV_notaventa');
 
-
+Route::get('notaventa/cambiarUnidadMedida', 'NotaVentaController@cambiarUnidadMedida')->name('cambiarUnidadMedida');
 
 /*RUTAS CONSULTAR NOTA DE VENTA*/
 Route::get('notaventaconsulta', 'NotaVentaConsultaController@index')->name('notaventaconsulta');

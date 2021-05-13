@@ -321,14 +321,10 @@
                                         {{$CotizacionDetalle->producto->claseprod->cla_nombre}}
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                        @if ($CotizacionDetalle->producto->categoriaprod->unidadmedida_id==3)
-                                            {{$CotizacionDetalle->producto->diamextpg}}
-                                        @else
-                                            {{$CotizacionDetalle->producto->diamextmm}}mm
-                                        @endif
+                                        {{$CotizacionDetalle->producto->diametro}}
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diamextmm}}" style="display:none;"/>
+                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diametro}}" style="display:none;"/>
                                     </td>
                                     <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
                                         {{$CotizacionDetalle->producto->espesor}}

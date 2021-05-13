@@ -1,11 +1,12 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
     $( "#nombre" ).focus();
-
+    /*
     $("#diamextmm").blur(function(){
         //$("#diamextpg").val($(this).val()*0.039370);
         $("#diamextpg").val(mmAPg($(this).val()));
     });
+    */
     
     $(".numerico").numeric();
     

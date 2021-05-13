@@ -147,11 +147,7 @@
 							<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 							<td class="textleft">{{$notaventaDetalle->producto->nombre}}</td>
 							<td class="textleft">
-								@if ($notaventaDetalle->producto->categoriaprod->unidadmedida_id==3)
-									{{$notaventaDetalle->producto->diamextpg}}								
-								@else
-									{{$notaventaDetalle->producto->diamextmm}}mm
-								@endif
+								{{$notaventaDetalle->producto->diametro}}
 							</td>
 							<td class="textleft">{{$notaventaDetalle->producto->claseprod->cla_nombre}}</td>
 							<td class="textright">{{$notaventaDetalle->producto->long}} mts</td>

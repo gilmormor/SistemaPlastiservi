@@ -25,11 +25,11 @@ class CreateTableNotaventadetalle extends Migration
             $table->unsignedBigInteger('unidadmedida_id');
             $table->foreign('unidadmedida_id','fk_notaventadetalle_unidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
             $table->float('descuento',5,2)->comment('Porcentaje Descuento por renglon.');
-            $table->float('preciounit',10,2)->comment('Precio Unitario sin IVA');
+            $table->float('preciounit',18,2)->comment('Precio Unitario sin IVA');
             $table->float('precioxkilo',10,2)->comment('Precio por Kilo');
             $table->float('precioxkiloreal',10,2)->comment('Precio por Kilo real. Precio fijado en categoria.');
             $table->float('totalkilos',10,2)->comment('Total Kilos');
-            $table->float('subtotal',15,2)->comment('SubTotal Precio neto (cant x preciounit) sin IVA');
+            $table->float('subtotal',18,2)->comment('SubTotal Precio neto (cant x preciounit) sin IVA');
             $table->engine = 'InnoDB';
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();

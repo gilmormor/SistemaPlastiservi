@@ -629,7 +629,7 @@ function consulta($request){
 
     
     $sql = "SELECT categoriaprod.nombre,claseprod.cla_nombre,
-    producto.long,if(categoriaprod.unidadmedida_id != 3 , CONCAT(diamextmm, 'mm') , diamextpg) AS diametro,
+    producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
     sum(notaventadetalle.cant) AS cant,
     sum(notaventadetalle.totalkilos) AS totalkilos,
@@ -845,7 +845,7 @@ function consultaODcerrada($request){
     //dd($respuesta['totales']);
 
     $sql = "SELECT categoriaprod.nombre,claseprod.cla_nombre,
-    producto.long,if(categoriaprod.unidadmedida_id != 3 , CONCAT(diamextmm, 'mm') , diamextpg) AS diametro,
+    producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
     sum(despachoorddet.cantdesp) AS cant,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,

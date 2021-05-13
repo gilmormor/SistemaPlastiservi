@@ -825,11 +825,14 @@ $("#producto_idM").blur(function(){
 					$("#nombreprodM").val(respuesta[0]['nombre']);
 					$("#codintprodM").val(respuesta[0]['codintprod']);
 					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
+					/*
 					if (respuesta[0]['unidadmedida_id']=='3'){
 						$("#diamextmmM").val(respuesta[0]['diamextpg']);
 					}else{
 						$("#diamextmmM").val(respuesta[0]['diamextmm']+'mm');
 					}
+					*/
+					$("#diamextmmM").val(respuesta[0]['diametro']);
 					$("#espesorM").val(respuesta[0]['espesor']);
 					$("#longM").val(respuesta[0]['long']);
 					$("#pesoM").val(respuesta[0]['peso']);
