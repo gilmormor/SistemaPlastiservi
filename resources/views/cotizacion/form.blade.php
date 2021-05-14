@@ -27,7 +27,6 @@
     <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
 </div>
 
-
 <?php
     $disabledReadOnly = "";
     //Si la pantalla es de aprobacion de Cotizacion desactiva todos input

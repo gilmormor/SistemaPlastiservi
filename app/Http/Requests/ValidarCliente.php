@@ -42,7 +42,8 @@ class ValidarCliente extends FormRequest
             'contactotelef' => 'required|max:50',
             'finanzascontacto' => 'required|max:50',
             'finanzanemail' => 'required|max:50',
-            'finanzastelefono' => 'required|max:50'
+            'finanzastelefono' => 'required|max:50',
+            'mostrarguiasfacturas' => 'boolean'
         ];
     }
 }

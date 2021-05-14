@@ -118,6 +118,17 @@
     </div>
 </div>
 
+<div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_mostdatosad" name="aux_mostdatosad">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Mostrar Datos adicionales (Ancho, Largo, Espesor, Observaciones)
+        </label>
+    </div>
+</div>
+<input type="hidden" name="mostdatosad" id="mostdatosad" value="{{old('mostdatosad', $data->mostdatosad ?? '0')}}">
+
 <div class="col-md-6">
     <div class="box box-primary">
         <div class="box-header with-border">

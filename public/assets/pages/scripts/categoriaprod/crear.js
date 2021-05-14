@@ -27,6 +27,19 @@ $(document).ready(function () {
 		}
 	});
     */
+    if($("#mostdatosad").val() == '1'){
+        $("#aux_mostdatosad").prop("checked", true);    
+    }else{
+        $("#aux_mostdatosad").prop("checked", false);    
+    }
+});
+
+$("#aux_mostdatosad").change(function() {
+    estaSeleccionado = $("#aux_mostdatosad").is(":checked");
+    $("#mostdatosad").val('0');
+    if(estaSeleccionado){
+        $("#mostdatosad").val('1');
+    }
 });
 
 function agregarEliminar(fila){

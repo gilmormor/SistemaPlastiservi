@@ -249,7 +249,8 @@ class ProductoController extends Controller
                     'categoriaprod.precio',
                     'categoriaprodsuc.sucursal_id',
                     'categoriaprod.unidadmedida_id',
-                    'categoriaprod.unidadmedidafact_id'
+                    'categoriaprod.unidadmedidafact_id',
+                    'categoriaprod.mostdatosad'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
             //dd($productos);

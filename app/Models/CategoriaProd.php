@@ -17,7 +17,8 @@ class CategoriaProd extends Model
         'sta_precioxkilo',
         'unidadmedida_id',
         'unidadmedidafact_id',
-        'usuariodel_id'
+        'usuariodel_id',
+        'mostdatosad'
     ];
 
     public function productos()

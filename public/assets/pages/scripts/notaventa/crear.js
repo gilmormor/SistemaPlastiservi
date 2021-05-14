@@ -256,9 +256,7 @@ $(document).ready(function () {
 	});
 */
 });
-
-
-
+/*
 $("#botonNewProd").click(function(event)
 {
 	clientedirec_id = $("#clientedirec_id").val();
@@ -276,7 +274,7 @@ $("#botonNewProd").click(function(event)
 		$("#producto_idM").focus();	
 	}
 });
-
+*/
 
 function insertarTabla(){
 	$("#trneto").remove();
@@ -803,7 +801,7 @@ $("#rut").blur(function(){
 		}
 	}
 });
-
+/*
 $("#producto_idM").blur(function(){
 	codigo = $("#producto_idM").val();
 	//limpiarCampos();
@@ -825,13 +823,6 @@ $("#producto_idM").blur(function(){
 					$("#nombreprodM").val(respuesta[0]['nombre']);
 					$("#codintprodM").val(respuesta[0]['codintprod']);
 					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
-					/*
-					if (respuesta[0]['unidadmedida_id']=='3'){
-						$("#diamextmmM").val(respuesta[0]['diamextpg']);
-					}else{
-						$("#diamextmmM").val(respuesta[0]['diamextmm']+'mm');
-					}
-					*/
 					$("#diamextmmM").val(respuesta[0]['diametro']);
 					$("#espesorM").val(respuesta[0]['espesor']);
 					$("#longM").val(respuesta[0]['long']);
@@ -872,6 +863,7 @@ $("#producto_idM").blur(function(){
 		});
 	}
 });
+*/
 
 function mensaje(titulo,texto,icono){
 	swal({

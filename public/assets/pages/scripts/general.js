@@ -58,6 +58,43 @@ $(document).ready(function () {
 		$('#myModalpdf .modal-body').css('height',$( window ).height()*0.75);
 	});
 
+	//*******************************************************************
+	// Validar campos numericos de pantalla agregar_conveniosofitasa.php
+    $('.numerico').numeric('.');
+	$('.numerico4d').numeric('.');
+    //*******************************************************************
+
+	$(".numerico").blur(function(e){
+		$(this).attr('valor',$(this).val());
+		$(this).val(MASK(0, $(this).val(), '-###,###,###,##0.00',1));
+	});
+	$(".numerico").focus(function(e){
+		$(this).val($(this).attr('valor'));
+	});
+
+	$(".numerico4d").blur(function(e){
+		$(this).attr('valor',$(this).val());
+		$(this).val(MASK(0, $(this).val(), '-###,###,##0.0000',1));
+	});
+	$(".numerico4d").focus(function(e){
+		$(this).val($(this).attr('valor'));
+	});
+
+/*
+ 	$(".numerico").on({
+		"focus": function (event) {
+			$(event.target).select();
+		},
+		"keyup": function (event) {
+		$(event.target).val(function (index, value ) {
+			return value.replace(/\D/g, "")
+				.replace(/([0-9])([0-9]{2})$/, '$1,$2')
+				.replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
+		});
+		}
+	});
+*/
+
 });
 
 
@@ -540,6 +577,11 @@ function totalizarItem(aux_estprec){
 	//$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
 	$("#precionetoM").val(Math.round(aux_precioUnit));
 	$("#precionetoM").attr('valor',Math.round(aux_precioUnit));
+	if($("#unidadmedida_idM option:selected").attr('value') == 7){
+		aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
+		$("#totalkilosM").val(aux_cant);
+		$("#totalkilosM").attr('valor',$("#cantM").val());
+	}
 
 }
 
@@ -740,6 +782,7 @@ function limpiarInputOT(){
 	$("#precionetoM").attr('valor','0.00');
 	$("#precioM").val('');
 	$("#precioM").attr('valor','0.00');
+	$("#observacionM").val('');
     $(".selectpicker").selectpicker('refresh');
 }
 
@@ -748,7 +791,7 @@ function verificar()
 	var v1=0,v2=0,v3=0,v4=0,v5=0,v6=0,v7=0,v8=0,v9=0,v10=0,v11=0,v12=0,v13,v14=0;
 	
 	v6=validacion('unidadmedida_idM','combobox');
-	v5=validacion('precionetoM','numerico');
+	v5=validacion('precionetoM','texto');
 	v4=validacion('precioM','numerico');
 	v3=validacion('descuentoM','combobox');
 	v2=validacion('cantM','numerico');
@@ -981,3 +1024,100 @@ function configurarTablageneral(aux_tabla){
 		}
 	});    
 }
+
+$("#producto_idM").blur(function(){
+	codigo = $("#producto_idM").val();
+	//limpiarCampos();
+	aux_sta = $("#aux_sta").val();
+	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
+	{
+		//totalizar();
+		var data = {
+			id: $("#producto_idM").val(),
+			_token: $('input[name=_token]').val()
+		};
+		$.ajax({
+			url: '/producto/buscarUnProducto',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				if(respuesta.length>0){
+
+					$("#nombreprodM").val(respuesta[0]['nombre']);
+					$("#codintprodM").val(respuesta[0]['codintprod']);
+					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
+					$("#diamextmmM").val(respuesta[0]['diametro']);
+					$("#espesorM").val(respuesta[0]['espesor']);
+					$("#longM").val(respuesta[0]['long']);
+					$("#pesoM").val(respuesta[0]['peso']);
+					$("#tipounionM").val(respuesta[0]['tipounion']);
+					$("#precioM").val(respuesta[0]['precio']);
+					$("#precioM").attr('valor',respuesta[0]['precio']);
+					$("#precioxkilorealM").val(respuesta[0]['precio']);
+					$("#precioxkilorealM").attr('valor',respuesta[0]['precio']);
+					$("#precionetoM").val(respuesta[0]['precioneto']);
+					$("#precionetoM").attr('valor',respuesta[0]['precioneto']);
+					//alert(respuesta[0]['precio']);
+
+					$("#unidadmedida_idM").val(respuesta[0]['unidadmedidafact_id']);
+					if(respuesta[0]['mostdatosad']== 0){
+						$(".mostrar1").css({'display':'none'});
+						$(".mostrar0").css({'display':'block'});
+					}else{
+						$(".mostrar0").css({'display':'none'});
+						$(".mostrar1").css({'display':'block'});
+					}
+					
+					$(".selectpicker").selectpicker('refresh');
+					
+					
+					//$("#cantM").change();
+					quitarverificar();
+					$("#cantM").focus();
+					totalizarItem(1);
+					
+				}else{
+					swal({
+						title: 'Producto no existe.',
+						text: "Presione F2 para buscar",
+						icon: 'error',
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+							$("#rut").focus();
+						}
+					});
+				}
+			}
+		});
+	}
+});
+
+function validardatoscant(){
+	validacion('producto_idM','textootro');
+	//validacion('cantM','texto');
+	validacion('precioM','texto');
+	validacion('precionetoM','texto');
+	validacion('unidadmedida_idM','combobox');
+
+}
+
+//AL HACER CLIC EN BOTON INCLUIR NUEVO PRODUCTO. COTIZACION NOTA DE VENTA ETC
+$("#botonNewProd").click(function(event)
+{
+	clientedirec_id = $("#clientedirec_id").val();
+	aux_rut = $("#rut").val();
+	if(aux_rut==""){
+		mensaje('Debes Incluir RUT del cliente','','error');
+		return 0;
+	}else{
+		limpiarInputOT();
+		quitarverificar();
+		$("#aux_sta").val('1');
+		$("#myModal").modal('show');
+		$("#direccionM").focus();	
+	}
+});
