@@ -4,7 +4,7 @@ Guia Interna
 @endsection
 
 @section("scripts")
-    <script src="{{asset("assets/pages/scripts/estadisticaventagi/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/estadisticaventagi/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')

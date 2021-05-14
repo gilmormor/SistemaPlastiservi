@@ -15,7 +15,7 @@
 @endsection
 
 @section("scripts")
-    <script src="{{asset("assets/pages/scripts/admin/usuario/crear.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/usuario/crear.js")}}" type="text/javascript"></script>
 @endsection
 
 

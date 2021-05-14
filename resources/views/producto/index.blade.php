@@ -5,10 +5,6 @@ Productos
 
 @section("scripts")
     <script type="text/javascript" src="{{asset("assets/js/jquery-barcode.js")}}"></script>
-    <!--
-    <script src="{{asset("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/producto/index.js")}}" type="text/javascript"></script>
-    -->
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/producto/index.js")}}" type="text/javascript"></script>
 @endsection

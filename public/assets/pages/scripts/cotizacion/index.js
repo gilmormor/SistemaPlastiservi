@@ -67,8 +67,6 @@ $(document).ready(function () {
         }
     }
     });
-
-
 });
 
 $(document).on("click", ".btnEnviarNV", function(event){

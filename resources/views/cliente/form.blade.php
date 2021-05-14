@@ -210,36 +210,36 @@
 
 <div class="row">
     <div class="form-group col-xs-12 col-sm-4">
-        <label for="contactonombreM" class="col-form-label" data-toggle='tooltip' title="Nombre Contacto">Nombre Contacto</label>
-        <input type="text" name="contactonombre" id="contactonombre" class="form-control" value="{{old('contactonombre', $data->contactonombre ?? '')}}" placeholder="Nombre Contacto"/>
+        <label for="contactonombreM" class="col-form-label requerido" data-toggle='tooltip' title="Nombre Contacto">Nombre Contacto</label>
+        <input type="text" name="contactonombre" id="contactonombre" class="form-control" value="{{old('contactonombre', $data->contactonombre ?? '')}}" placeholder="Nombre Contacto"required/>
         <span class="help-block"></span>
     </div>
     <div class="form-group col-xs-12 col-sm-4">
-        <label for="contactoemailM" class="col-form-label" data-toggle='tooltip' title="Email Contacto">Email Contacto</label>
-        <input type="text" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" placeholder="Email Contacto"/>
+        <label for="contactoemailM" class="col-form-label requerido" data-toggle='tooltip' title="Email Contacto">Email Contacto</label>
+        <input type="text" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" placeholder="Email Contacto"required/>
         <span class="help-block"></span>
     </div>
     <div class="form-group col-xs-12 col-sm-4">
-        <label for="contactotelefM" class="col-form-label" data-toggle='tooltip' title="Teléfono Contacto">Teléfono Contacto</label>
-        <input type="text" name="contactotelef" id="contactotelef" class="form-control" value="{{old('contactotelef', $data->contactotelef ?? '')}}" placeholder="Teléfono Contacto"/>
+        <label for="contactotelefM" class="col-form-label requerido" data-toggle='tooltip' title="Teléfono Contacto">Teléfono Contacto</label>
+        <input type="text" name="contactotelef" id="contactotelef" class="form-control" value="{{old('contactotelef', $data->contactotelef ?? '')}}" placeholder="Teléfono Contacto"required/>
         <span class="help-block"></span>
     </div>
 </div>
 
 <div class="row">
     <div class="form-group col-xs-12 col-sm-4">
-        <label for="finanzascontacto" class="col-form-label" data-toggle='tooltip' title="Contacto Finanzas">Contacto Finanzas</label>
-        <input type="text" name="finanzascontacto" id="finanzascontacto" class="form-control" value="{{old('finanzascontacto', $data->finanzascontacto ?? '')}}" placeholder="Contacto Finanzas"/>
+        <label for="finanzascontacto" class="col-form-label requerido" data-toggle='tooltip' title="Contacto Finanzas">Contacto Finanzas</label>
+        <input type="text" name="finanzascontacto" id="finanzascontacto" class="form-control" value="{{old('finanzascontacto', $data->finanzascontacto ?? '')}}" placeholder="Contacto Finanzas"required/>
         <span class="help-block"></span>
     </div>
     <div class="form-group col-xs-12 col-sm-4">
-        <label for="finanzanemail" class="col-form-label" data-toggle='tooltip' title="Email Finanzas">Email Finanzas</label>
-        <input type="text" name="finanzanemail" id="finanzanemail" class="form-control" value="{{old('finanzanemail', $data->finanzanemail ?? '')}}" placeholder="Email Finanzas"/>
+        <label for="finanzanemail" class="col-form-label requerido" data-toggle='tooltip' title="Email Finanzas">Email Finanzas</label>
+        <input type="text" name="finanzanemail" id="finanzanemail" class="form-control" value="{{old('finanzanemail', $data->finanzanemail ?? '')}}" placeholder="Email Finanzas"required/>
         <span class="help-block"></span>
     </div>
     <div class="form-group col-xs-12 col-sm-4">
-        <label for="finanzastelefono" class="col-form-label" data-toggle='tooltip' title="Teléfono Finanzas">Teléfono Finanzas</label>
-        <input type="text" name="finanzastelefono" id="finanzastelefono" class="form-control" value="{{old('finanzastelefono', $data->finanzastelefono ?? '')}}" placeholder="Teléfono Finanzas"/>
+        <label for="finanzastelefono" class="col-form-label requerido" data-toggle='tooltip' title="Teléfono Finanzas">Teléfono Finanzas</label>
+        <input type="text" name="finanzastelefono" id="finanzastelefono" class="form-control" value="{{old('finanzastelefono', $data->finanzastelefono ?? '')}}" placeholder="Teléfono Finanzas"required/>
         <span class="help-block"></span>
     </div>
 </div>

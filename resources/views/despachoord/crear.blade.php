@@ -4,7 +4,7 @@
 @endsection
 
 @section("scripts")
-    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/despachoord/crear.js")}}" type="text/javascript"></script>
 @endsection
 

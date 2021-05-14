@@ -4,8 +4,8 @@ Pendiente x Producto
 @endsection
 
 @section("scripts")
-    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/reportpendientexprod/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/reportpendientexprod/index.js")}}" type="text/javascript"></script>
 @endsection
 
 

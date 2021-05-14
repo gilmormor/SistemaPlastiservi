@@ -16,10 +16,6 @@
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/notaventa/crear.js")}}" type="text/javascript"></script>
-<!--
-    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/notaventa/crear.js")}}" type="text/javascript"></script>
--->
 @endsection
 
 @section('contenido')

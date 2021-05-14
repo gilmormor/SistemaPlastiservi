@@ -7,9 +7,9 @@ Orden de despacho
 ?>
 
 @section("scripts")
-    <script src="{{asset("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{asset("assets/pages/scripts/despachoord/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/despachoord/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')

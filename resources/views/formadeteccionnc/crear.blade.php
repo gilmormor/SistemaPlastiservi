@@ -4,7 +4,7 @@ Forma de Detección no conformidad
 @endsection
 
 @section("scripts")
-    <script src="{{asset("assets/pages/scripts/formadeteccionnc/crear.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/formadeteccionnc/crear.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
