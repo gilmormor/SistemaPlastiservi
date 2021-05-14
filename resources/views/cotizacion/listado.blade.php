@@ -96,7 +96,7 @@
 			<tbody id="detalle_productos">
 				@foreach($cotizacionDetalles as $CotizacionDetalle)
 					<tr class="headt" style="height:150%;">
-						<td class="textcenter">{{number_format($CotizacionDetalle->cant,0)}}</td>
+						<td class="textcenter">{{number_format($CotizacionDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$CotizacionDetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->nombre}}</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->claseprod->cla_nombre}}</td>
