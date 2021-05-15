@@ -233,6 +233,7 @@ class ProductoController extends Controller
             ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
             ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
             ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
+            ->join('unidadmedida', 'categoriaprod.unidadmedidafact_id', '=', 'unidadmedida.id')
             ->select([
                     'producto.id',
                     'producto.nombre',
@@ -249,7 +250,10 @@ class ProductoController extends Controller
                     'categoriaprod.precio',
                     'categoriaprodsuc.sucursal_id',
                     'categoriaprod.unidadmedida_id',
-                    'categoriaprod.unidadmedidafact_id'
+                    'categoriaprod.unidadmedidafact_id',
+                    'categoriaprod.mostdatosad',
+                    'categoriaprod.mostunimed',
+                    'unidadmedida.nombre as unidadmedidanombre'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
             //dd($productos);

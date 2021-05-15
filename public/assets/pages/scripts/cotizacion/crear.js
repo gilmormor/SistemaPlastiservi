@@ -175,39 +175,6 @@ $(document).ready(function () {
 
 });
 
-$("#botonNewProd").click(function(event)
-{
-	clientedirec_id = $("#clientedirec_id").val();
-	aux_rut = $("#rut").val();
-	if(aux_rut==""){
-		mensaje('Debes Incluir RUT del cliente','','error');
-		return 0;
-	}else{
-		limpiarInputOT();
-		quitarverificar();
-		$("#aux_sta").val('1');
-		$("#myModal").modal('show');
-		$("#direccionM").focus();	
-	}
-	/*
-	if(clientedirec_id==""){
-		mensaje('Debes seleccionar una dirección','','error');
-		return 0;
-	}
-	
-	if(clientedirec_id!="" && aux_rut!=""){
-		event.preventDefault();
-		limpiarInputOT();
-		quitarverificar();
-		$("#aux_sta").val('1');
-		$("#myModal").modal('show');
-		$("#direccionM").focus();	
-	}
-	*/
-});
-
-
-
 function insertarTabla(){
 	$("#trneto").remove();
 	$("#triva").remove();
@@ -223,7 +190,6 @@ function insertarTabla(){
 	aux_iva = $("#subtotalM").attr("valor") * (aux_porciva/100);
 	aux_total = $("#subtotalM").attr("valor") + aux_iva;
 	aux_descuento = $("#descuentoM option:selected").attr('porc');
-	//alert($("#totalkilosM").attr("valor"));
 	aux_precioxkilo = $("#precioM").attr("valor");
 	aux_precioxkiloreal = $("#precioxkilorealM").val();
 	if($("#pesoM").val()==0)
@@ -774,7 +740,7 @@ $("#rut").blur(function(){
 		}
 	}
 });
-
+/*
 $("#producto_idM").blur(function(){
 	codigo = $("#producto_idM").val();
 	//limpiarCampos();
@@ -796,13 +762,6 @@ $("#producto_idM").blur(function(){
 					$("#nombreprodM").val(respuesta[0]['nombre']);
 					$("#codintprodM").val(respuesta[0]['codintprod']);
 					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
-					/*
-					if (respuesta[0]['diamextmm']=='0'){
-						$("#diamextmmM").val(respuesta[0]['diamextpg']);
-					}else{
-						$("#diamextmmM").val(respuesta[0]['diamextmm'] +' - '+ respuesta[0]['diamextpg']);
-					}
-					*/
 					$("#diamextmmM").val(respuesta[0]['diametro']);
 					$("#espesorM").val(respuesta[0]['espesor']);
 					$("#longM").val(respuesta[0]['long']);
@@ -849,6 +808,7 @@ $("#producto_idM").blur(function(){
 		});
 	}
 });
+*/
 
 function mensaje(titulo,texto,icono){
 	swal({
@@ -1102,13 +1062,4 @@ function limpiarclientemp(){
 	$("#regionp_idCTM").val($('#comunap_idCTM option:selected').attr("region_id"));
 	$("#provinciap_idCTM").val($('#comunap_idCTM option:selected').attr("provincia_id"));
 	$(".selectpicker").selectpicker('refresh');
-}
-
-function validardatoscant(){
-	validacion('producto_idM','textootro');
-	//validacion('cantM','texto');
-	validacion('precioM','texto');
-	validacion('precionetoM','texto');
-	validacion('unidadmedida_idM','combobox');
-
 }

@@ -27,6 +27,31 @@ $(document).ready(function () {
 		}
 	});
     */
+    if($("#mostdatosad").val() == '1'){
+        $("#aux_mostdatosad").prop("checked", true);    
+    }else{
+        $("#aux_mostdatosad").prop("checked", false);    
+    }
+    if($("#mostunimed").val() == '1'){
+        $("#aux_mostunimed").prop("checked", true);    
+    }else{
+        $("#aux_mostunimed").prop("checked", false);    
+    }
+});
+
+$("#aux_mostdatosad").change(function() {
+    estaSeleccionado = $("#aux_mostdatosad").is(":checked");
+    $("#mostdatosad").val('0');
+    if(estaSeleccionado){
+        $("#mostdatosad").val('1');
+    }
+});
+$("#aux_mostunimed").change(function() {
+    estaSeleccionado = $("#aux_mostunimed").is(":checked");
+    $("#mostunimed").val('0');
+    if(estaSeleccionado){
+        $("#mostunimed").val('1');
+    }
 });
 
 function agregarEliminar(fila){
