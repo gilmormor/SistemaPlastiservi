@@ -18,7 +18,8 @@ class CategoriaProd extends Model
         'unidadmedida_id',
         'unidadmedidafact_id',
         'usuariodel_id',
-        'mostdatosad'
+        'mostdatosad',
+        'mostunimed'
     ];
 
     public function productos()

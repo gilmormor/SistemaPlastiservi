@@ -65,16 +65,22 @@ $(document).ready(function () {
     //*******************************************************************
 
 	$(".numerico").blur(function(e){
-		$(this).attr('valor',$(this).val());
-		$(this).val(MASK(0, $(this).val(), '-###,###,###,##0.00',1));
+		if($(this).attr('valor')){
+			$(this).attr('valor',$(this).val());
+			$(this).val(MASK(0, $(this).val(), '-###,###,###,##0.00',1));
+		}
 	});
 	$(".numerico").focus(function(e){
-		$(this).val($(this).attr('valor'));
+		if($(this).attr('valor')){
+			$(this).val($(this).attr('valor'));
+		}
 	});
 
 	$(".numerico4d").blur(function(e){
-		$(this).attr('valor',$(this).val());
-		$(this).val(MASK(0, $(this).val(), '-###,###,##0.0000',1));
+		if($(this).attr('valor')){
+			$(this).attr('valor',$(this).val());
+			$(this).val(MASK(0, $(this).val(), '-###,###,##0.0000',1));
+		}
 	});
 	$(".numerico4d").focus(function(e){
 		$(this).val($(this).attr('valor'));
@@ -1060,16 +1066,24 @@ $("#producto_idM").blur(function(){
 					//alert(respuesta[0]['precio']);
 
 					$("#unidadmedida_idM").val(respuesta[0]['unidadmedidafact_id']);
-					if(respuesta[0]['mostdatosad']== 0){
-						$(".mostrar1").css({'display':'none'});
-						$(".mostrar0").css({'display':'block'});
+					if(respuesta[0]['mostdatosad'] == 0){
+						$(".mostdatosad1").css({'display':'none'});
+						$(".mostdatosad0").css({'display':'block'});
 					}else{
-						$(".mostrar0").css({'display':'none'});
-						$(".mostrar1").css({'display':'block'});
+						$(".mostdatosad0").css({'display':'none'});
+						$(".mostdatosad1").css({'display':'block'});
 					}
-					
+
+					if(respuesta[0]['mostunimed'] == 0){
+						$("#mostunimed1").css({'display':'none'});
+						$("#mostunimed0").css({'display':'block'});
+					}else{
+						$("#mostunimed0").css({'display':'none'});
+						$("#mostunimed1").css({'display':'block'});
+					}
+					$("#unidadmedida_textoM").val(respuesta[0]['unidadmedidanombre']);
+
 					$(".selectpicker").selectpicker('refresh');
-					
 					
 					//$("#cantM").change();
 					quitarverificar();

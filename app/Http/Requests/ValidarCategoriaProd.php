@@ -31,6 +31,7 @@ class ValidarCategoriaProd extends FormRequest
             'unidadmedida_id' => 'required|max:200',
             'unidadmedidafact_id' => 'required|max:200',
             'mostdatosad' => 'boolean',
+            'mostunimed' => 'boolean'
         ];
     }
 }

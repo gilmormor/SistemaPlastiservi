@@ -12,6 +12,68 @@
         </div>
     </div>
 </div>
+<div class="row">
+    @if ($aux_sta==1)
+        <div class="form-group col-xs-12 col-sm-6">
+            <label for="categoriaprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Categoría">Categoría</label>
+            <div class="col-lg-9">
+                <select name="categoriaprod_id" id="categoriaprod_id" class="form-control select2 categoriaprod_id" required>
+                    <option value="" precio="0">Seleccione...</option>
+                    @foreach($categoriaprods as $categoriaprod)
+                        <option
+                            value="{{$categoriaprod->id}}" precio="{{$categoriaprod->precio}}">
+                            {{$categoriaprod->nombre}}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+            <label for="claseprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Clase">Clase</label>
+            <div class="col-lg-9">
+                <select name="claseprod_id" id="claseprod_id" class="form-control select2 claseprod_id" required>
+                    <option value="">Seleccione...</option>
+                </select>
+            </div>
+        </div>
+    @else
+        <div class="form-group col-xs-12 col-sm-6">
+            <label for="categoriaprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Categoría">Categoría</label>
+            <div class="col-lg-9">
+                <select name="categoriaprod_id" id="categoriaprod_id" class="form-control select2 categoriaprod_id" required>
+                    <option value="" precio="0">Seleccione...</option>
+                    @foreach($categoriaprods as $categoriaprod)
+                        <option
+                            value="{{$categoriaprod->id}}" precio="{{$categoriaprod->precio}}"
+                            @if ($data->categoriaprod_id==$categoriaprod->id)
+                                {{'selected'}}
+                            @endif
+                            >
+                            {{$categoriaprod->nombre}}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+            <label for="claseprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Clase">Clase</label>
+            <div class="col-lg-9">
+                <select name="claseprod_id" id="claseprod_id" class="form-control select2 claseprod_id" required>
+                    <option value="">Seleccione...</option>
+                    @foreach($claseprods as $claseprod)
+                        <option value="{{$claseprod->id}}"
+                            @if ($data->claseprod_id==$claseprod->id)
+                                {{'selected'}}
+                            @endif
+                            >
+                            {{$claseprod->cla_nombre}}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    @endif
+</div>
 <!--
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
@@ -29,12 +91,41 @@
 </div>
 -->
 <div class="row">
+    @if ($aux_sta==1)
+        <div class="form-group col-xs-12 col-sm-6">
+            <label for="grupoprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Campo de agrupación">Grupo</label>
+            <div class="col-lg-9">
+                <select name="grupoprod_id" id="grupoprod_id" class="form-control select2 grupoprod_id" required>
+                    <option value="">Seleccione...</option>
+                </select>
+            </div>
+        </div>
+    @else
+        <div class="form-group col-xs-12 col-sm-6">
+            <label for="grupoprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Campo de agrupación">Grupo</label>
+            <div class="col-lg-9">
+                <select name="grupoprod_id" id="grupoprod_id" class="form-control select2 grupoprod_id" required>
+                    <option value="">Seleccione...</option>
+                    @foreach($grupoprods as $grupoprod)
+                        <option value="{{$grupoprod->id}}"
+                            @if ($data->grupoprod_id==$grupoprod->id)
+                                {{'selected'}}
+                            @endif
+                            >
+                            {{$grupoprod->gru_nombre}}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    @endif
     <div class="form-group col-xs-12 col-sm-6">
         <label for="diametro" class="col-lg-3 control-label requerido" title="Diámetro" data-toggle='tooltip' title="Diámetro">Diámetro</label>
         <div class="col-lg-9">
         <input type="text" name="diametro" id="diametro" class="form-control" value="{{old('diametro', $data->diametro ?? '')}}" required/>
         </div>
     </div>
+
 <!--
     <div class="form-group col-xs-12 col-sm-6">
         <label for="diamextmm" class="col-lg-3 control-label requerido" title="Diámetro Ext mm" data-toggle='tooltip' title="Diámetro">Diámetro mm</label>
@@ -123,68 +214,7 @@
         </div>
     </div>
 </div>
-<div class="row">
-    @if ($aux_sta==1)
-        <div class="form-group col-xs-12 col-sm-6">
-            <label for="categoriaprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Categoría">Categoría</label>
-            <div class="col-lg-9">
-                <select name="categoriaprod_id" id="categoriaprod_id" class="form-control select2 categoriaprod_id" required>
-                    <option value="" precio="0">Seleccione...</option>
-                    @foreach($categoriaprods as $categoriaprod)
-                        <option
-                            value="{{$categoriaprod->id}}" precio="{{$categoriaprod->precio}}">
-                            {{$categoriaprod->nombre}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="form-group col-xs-12 col-sm-6">
-            <label for="claseprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Clase">Clase</label>
-            <div class="col-lg-9">
-                <select name="claseprod_id" id="claseprod_id" class="form-control select2 claseprod_id" required>
-                    <option value="">Seleccione...</option>
-                </select>
-            </div>
-        </div>
-    @else
-        <div class="form-group col-xs-12 col-sm-6">
-            <label for="categoriaprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Categoría">Categoría</label>
-            <div class="col-lg-9">
-                <select name="categoriaprod_id" id="categoriaprod_id" class="form-control select2 categoriaprod_id" required>
-                    <option value="" precio="0">Seleccione...</option>
-                    @foreach($categoriaprods as $categoriaprod)
-                        <option
-                            value="{{$categoriaprod->id}}" precio="{{$categoriaprod->precio}}"
-                            @if ($data->categoriaprod_id==$categoriaprod->id)
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$categoriaprod->nombre}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="form-group col-xs-12 col-sm-6">
-            <label for="claseprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Clase">Clase</label>
-            <div class="col-lg-9">
-                <select name="claseprod_id" id="claseprod_id" class="form-control select2 claseprod_id" required>
-                    <option value="">Seleccione...</option>
-                    @foreach($claseprods as $claseprod)
-                        <option value="{{$claseprod->id}}"
-                            @if ($data->claseprod_id==$claseprod->id)
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$claseprod->cla_nombre}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-    @endif
-</div>
+
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
         <label for="precioneto" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Precio Neto">Precio Neto</label>
@@ -192,37 +222,6 @@
         <input type="text" name="precioneto" id="precioneto" class="form-control numerico" value="{{old('precioneto', $data->precioneto ?? '')}}" required/>
         </div>
     </div>
-
-    @if ($aux_sta==1)
-        <div class="form-group col-xs-12 col-sm-6">
-            <label for="grupoprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Campo de agrupación">Grupo</label>
-            <div class="col-lg-9">
-                <select name="grupoprod_id" id="grupoprod_id" class="form-control select2 grupoprod_id" required>
-                    <option value="">Seleccione...</option>
-                </select>
-            </div>
-        </div>
-    @else
-        <div class="form-group col-xs-12 col-sm-6">
-            <label for="grupoprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Campo de agrupación">Grupo</label>
-            <div class="col-lg-9">
-                <select name="grupoprod_id" id="grupoprod_id" class="form-control select2 grupoprod_id" required>
-                    <option value="">Seleccione...</option>
-                    @foreach($grupoprods as $grupoprod)
-                        <option value="{{$grupoprod->id}}"
-                            @if ($data->grupoprod_id==$grupoprod->id)
-                                {{'selected'}}
-                            @endif
-                            >
-                            {{$grupoprod->gru_nombre}}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-    @endif
-</div>
-<div class="row">
     <div class="form-group col-xs-12 col-sm-6">
         <label for="color_id" class="col-lg-3 control-label" data-toggle='tooltip' title="Color">Color</label>
         <div class="col-lg-9">

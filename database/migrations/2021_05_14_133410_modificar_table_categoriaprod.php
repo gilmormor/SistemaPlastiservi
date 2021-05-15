@@ -14,7 +14,8 @@ class ModificarTableCategoriaprod extends Migration
     public function up()
     {
         Schema::table('categoriaprod', function (Blueprint $table) {
-            $table->integer('mostdatosad')->comment('Estatus para mostrar los datos adicionales para cada item de los productos. Ancho, Largo, Espesor y observaciones.')->after('unidadmedidafact_id');
+            $table->integer('mostdatosad')->comment('Estatus para mostrar o no datos adicionales en la pantalla seleccionas productos calcprecioprodsn. Ancho, Largo, Espesor y observaciones. Para el caso de productos Santa Ester. Esto es al momento de agregar productos a cotizaciones, nota de venta, facturas etc.')->after('unidadmedidafact_id');
+            $table->integer('mostunimed')->comment('Estatus para mostrar y editar unidad de medida en la pantalla seleccionar productos calcprecioprodsn. Ancho, Largo, Espesor y observaciones. Esto es al momento de agregar productos a cotizaciones, nota de venta, facturas etc.')->after('mostdatosad');
         });
     }
 

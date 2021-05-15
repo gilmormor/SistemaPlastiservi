@@ -34,9 +34,9 @@
                     <span class="help-block"></span>
                 </div>
 
-                <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
-                    <label for="unidadmedida_idM" class="control-label">UniMedida</label>
-                    <select name="unidadmedida_idM" id="unidadmedida_idM" class="selectpicker form-control unidadmedida_idM" data-live-search='true'>
+                <div class="col-xs-12 col-sm-2" id="mostunimed1" classorig="col-xs-12 col-sm-2" style="display:none;">
+                    <label for="unidadmedida_idM" class="control-label unidadmedidacombo" >UniMedida</label>
+                    <select name="unidadmedida_idM" id="unidadmedida_idM"  class="selectpicker form-control unidadmedida_idM" data-live-search='true'>
                         <option value="">Seleccione...</option>
                         @foreach($tablas['unidadmedida'] as $unidadmedida)
                             <option
@@ -47,12 +47,16 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="col-xs-12 col-sm-2" id="mostunimed0" classorig="col-xs-12 col-sm-2" style="display:none;">
+                    <label for="unidadmedida_textoM" class="control-label unidadmedidatexto" >UniMedida</label>
+                    <input type="text" name="unidadmedida_textoM" id="unidadmedida_textoM" class="form-control unidadmedidatexto" disabled readonly/>
+                </div>
 
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="cantM" class="control-label" data-toggle='tooltip'>Cant</label>
-                    <input type="text" name="cantM" id="cantM" class="form-control requeridos" tipoval="numerico" value="{{old('cantM', $data->cantM ?? '')}}" tipoval="numerico" placeholder="Cant"/>
+                    <input type="text" name="cantM" id="cantM" class="form-control requeridos" tipoval="numerico" value="{{old('cantM', $data->cantM ?? '')}}" placeholder="Cant"/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
@@ -106,7 +110,7 @@
                     <span class="help-block"></span>
                 </div>
             </div>
-            <div class="row mostrar0" style="display:none;">
+            <div class="row mostdatosad0" style="display:none;">
                 <div class="col-xs-12 col-sm-2">
                     <label for="diamextmmM" class="control-label" data-toggle='tooltip'>Diametro</label>
                     <input type="text" name="diamextmmM" id="diamextmmM" class="form-control" value="{{old('diamextmmM', $data->diametro ?? '')}}" placeholder="Diametro" readonly Disabled/>
@@ -138,7 +142,7 @@
                     <span class="help-block"></span>
                 </div>
             </div>
-            <div class="row mostrar1" style="display:none;">
+            <div class="row mostdatosad1" style="display:none;">
                 <div class="col-xs-12 col-sm-2">
                     <label for="anchoM" class="control-label" data-toggle='tooltip'>Ancho</label>
                     <input type="text" name="anchoM" id="anchoM" style="text-align:right" class="form-control numerico" value="{{old('anchoM', $data->anchoM ?? '')}}" placeholder="0.00"/>

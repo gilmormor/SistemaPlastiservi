@@ -32,6 +32,11 @@ $(document).ready(function () {
     }else{
         $("#aux_mostdatosad").prop("checked", false);    
     }
+    if($("#mostunimed").val() == '1'){
+        $("#aux_mostunimed").prop("checked", true);    
+    }else{
+        $("#aux_mostunimed").prop("checked", false);    
+    }
 });
 
 $("#aux_mostdatosad").change(function() {
@@ -39,6 +44,13 @@ $("#aux_mostdatosad").change(function() {
     $("#mostdatosad").val('0');
     if(estaSeleccionado){
         $("#mostdatosad").val('1');
+    }
+});
+$("#aux_mostunimed").change(function() {
+    estaSeleccionado = $("#aux_mostunimed").is(":checked");
+    $("#mostunimed").val('0');
+    if(estaSeleccionado){
+        $("#mostunimed").val('1');
     }
 });
 

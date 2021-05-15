@@ -128,6 +128,16 @@
     </div>
 </div>
 <input type="hidden" name="mostdatosad" id="mostdatosad" value="{{old('mostdatosad', $data->mostdatosad ?? '0')}}">
+<div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_mostunimed" name="aux_mostunimed">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Mostrar y editar Unidad de medida en Seleccionar Producto
+        </label>
+    </div>
+</div>
+<input type="hidden" name="mostunimed" id="mostunimed" value="{{old('mostunimed', $data->mostunimed ?? '0')}}">
 
 <div class="col-md-6">
     <div class="box box-primary">
