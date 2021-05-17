@@ -1,6 +1,6 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-
+/*
     function generateBarcode(codbar,i){
         var value = codbar; //"7626513231424"; //$("#barcodeValue").val();
         var btype = "ean13" //$("input[name=btype]:checked").val();
@@ -17,13 +17,7 @@ $(document).ready(function () {
             posY: "5", //$("#posY").val(),
             addQuietZone: "1" //$("#quietZoneSize").val()
         };
-        /*
-        if ($("#rectangular").is(':checked') || $("#rectangular").attr('checked')){
-            value = {code:value, rect: true};
-        }
-        */
-        //alert(value);
-        if (renderer == 'canvas'){
+7        if (renderer == 'canvas'){
             clearCanvas();
             $("#barcodeTarget").hide();
             $("#canvasTarget").show().barcode(value, btype, settings);
@@ -32,6 +26,7 @@ $(document).ready(function () {
             $("#barcodeTarget" + i).html("").show().barcode(value, btype, settings);
         }
     }
+*/
     $('.tablas').DataTable({
 		'paging'      : true, 
 		'lengthChange': true,
@@ -46,13 +41,13 @@ $(document).ready(function () {
 
     $("#btnGuardarM").click(function()
     {
-        generateBarcode();
+        //generateBarcode();
     });
 
     aux_nfila=parseInt($("#tabla-data >tbody >tr").length);
     for(i=1; i<=aux_nfila; i++){
-        codbar = $("#barcodeTarget" + i).html();
-        generateBarcode(codbar,i);
+        //codbar = $("#barcodeTarget" + i).html();
+        //generateBarcode(codbar,i);
     }
     //alert(aux_nfila);
 

@@ -21,7 +21,7 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
       });
-
+/*
     function generateBarcode(codbar,i){
         var value = codbar; //"7626513231424"; //$("#barcodeValue").val();
         var btype = "ean13" //$("input[name=btype]:checked").val();
@@ -38,12 +38,6 @@ $(document).ready(function () {
             posY: "5", //$("#posY").val(),
             addQuietZone: "1" //$("#quietZoneSize").val()
         };
-        /*
-        if ($("#rectangular").is(':checked') || $("#rectangular").attr('checked')){
-            value = {code:value, rect: true};
-        }
-        */
-        //alert(value);
         if (renderer == 'canvas'){
             clearCanvas();
             $("#barcodeTarget").hide();
@@ -53,16 +47,16 @@ $(document).ready(function () {
             $("#barcodeTarget" + i).html("").show().barcode(value, btype, settings);
         }
     }
-
+*/
     $("#btnGuardarM").click(function()
     {
-        generateBarcode();
+        //generateBarcode();
     });
 
     aux_nfila=parseInt($("#tabla-data >tbody >tr").length);
     for(i=1; i<=aux_nfila; i++){
-        codbar = $("#barcodeTarget" + i).html();
-        generateBarcode(codbar,i);
+        //codbar = $("#barcodeTarget" + i).html();
+        //generateBarcode(codbar,i);
     }
     //alert(aux_nfila);
 

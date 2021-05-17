@@ -1,6 +1,6 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-
+/*
     function generateBarcode(codbar,i){
         var value = codbar; //"7626513231424"; //$("#barcodeValue").val();
         var btype = "ean13" //$("input[name=btype]:checked").val();
@@ -17,12 +17,6 @@ $(document).ready(function () {
             posY: "5", //$("#posY").val(),
             addQuietZone: "1" //$("#quietZoneSize").val()
         };
-        /*
-        if ($("#rectangular").is(':checked') || $("#rectangular").attr('checked')){
-            value = {code:value, rect: true};
-        }
-        */
-        //alert(value);
         if (renderer == 'canvas'){
             clearCanvas();
             $("#barcodeTarget").hide();
@@ -44,6 +38,7 @@ $(document).ready(function () {
         generateBarcode(codbar,i);
     }
     //alert(aux_nfila);
+    */
 
     $('#tabla-data-productos').DataTable( {
         "language": {
