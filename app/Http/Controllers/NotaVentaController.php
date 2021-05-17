@@ -369,13 +369,15 @@ class NotaVentaController extends Controller
                     $notaventadetalle->subtotal = $request->subtotal[$i];
 
                     $notaventadetalle->producto_nombre = $producto->nombre;
-                    $notaventadetalle->espesor = $producto->espesor;
-                    $notaventadetalle->long = $producto->long;
+                    $notaventadetalle->ancho = $request->ancho[$i];
+                    $notaventadetalle->largo = $request->long[$i];
+                    $notaventadetalle->espesor = $request->espesor[$i];
                     $notaventadetalle->diametro = $producto->diametro;
                     $notaventadetalle->categoriaprod_id = $producto->categoriaprod_id;
                     $notaventadetalle->claseprod_id = $producto->claseprod_id;
                     $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
                     $notaventadetalle->color_id = $producto->color_id;
+                    $notaventadetalle->obs = $request->obs[$i];
                     $notaventadetalle->save();
                     $idDireccion = $notaventadetalle->id;
                 }
@@ -532,13 +534,16 @@ class NotaVentaController extends Controller
                         $notaventadetalle->subtotal = $request->subtotal[$i];
                         
                         $notaventadetalle->producto_nombre = $producto->nombre;
-                        $notaventadetalle->espesor = $producto->espesor;
+                        $notaventadetalle->ancho = $request->ancho[$i];
+                        $notaventadetalle->largo = $request->long[$i];
+                        $notaventadetalle->espesor = $request->espesor[$i];    
                         $notaventadetalle->long = $producto->long;
                         $notaventadetalle->diametro = $producto->diametro;
                         $notaventadetalle->categoriaprod_id = $producto->categoriaprod_id;
                         $notaventadetalle->claseprod_id = $producto->claseprod_id;
                         $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
-                        $notaventadetalle->color_id = $producto->color_id;    
+                        $notaventadetalle->color_id = $producto->color_id; 
+                        $notaventadetalle->obs = $request->obs[$i];   
                         $notaventadetalle->save();
                         $idcotizaciondet = $notaventadetalle->id;
                         //dd($idDireccion);
@@ -559,13 +564,15 @@ class NotaVentaController extends Controller
                                 'totalkilos' => $request->totalkilos[$i],
                                 'subtotal' => $request->subtotal[$i],
                                 'producto_nombre' => $producto->nombre,
-                                'espesor' => $producto->espesor,
-                                'long' => $producto->long,
+                                'espesor' => $request->espesor[$i],
+                                'ancho' => $request->ancho[$i],
+                                'largo' => $request->long[$i],
                                 'diametro' => $producto->diametro,
                                 'categoriaprod_id' => $producto->categoriaprod_id,
                                 'claseprod_id' => $producto->claseprod_id,
                                 'grupoprod_id' => $producto->grupoprod_id,
-                                'color_id' => $producto->color_id
+                                'color_id' => $producto->color_id,
+                                'obs' => $request->obs[$i],
                             ]
                         );
                     }
@@ -1122,7 +1129,7 @@ class NotaVentaController extends Controller
             $cotizaciondetalle->unidadmedida_id = $data->producto->categoriaprod->unidadmedidafact_id;
             $cotizaciondetalle->producto_nombre = $data->producto->nombre;
             $cotizaciondetalle->espesor = $data->producto->espesor;
-            $cotizaciondetalle->long = $data->producto->long;
+            $cotizaciondetalle->largo = $data->producto->long;
             $cotizaciondetalle->diametro = $data->producto->diametro;
             $cotizaciondetalle->categoriaprod_id = $data->producto->categoriaprod_id;
             $cotizaciondetalle->claseprod_id = $data->producto->claseprod_id;
@@ -1136,7 +1143,7 @@ class NotaVentaController extends Controller
             $notaventadetalle->unidadmedida_id = $data->producto->categoriaprod->unidadmedidafact_id;
             $notaventadetalle->producto_nombre = $data->producto->nombre;
             $notaventadetalle->espesor = $data->producto->espesor;
-            $notaventadetalle->long = $data->producto->long;
+            $notaventadetalle->largo = $data->producto->long;
             $notaventadetalle->diametro = $data->producto->diametro;
             $notaventadetalle->categoriaprod_id = $data->producto->categoriaprod_id;
             $notaventadetalle->claseprod_id = $data->producto->claseprod_id;

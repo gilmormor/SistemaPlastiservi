@@ -194,15 +194,18 @@ class CotizacionController extends Controller
                     $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                     $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
                     $cotizaciondetalle->subtotal = $request->subtotal[$i];
-
                     $cotizaciondetalle->producto_nombre = $producto->nombre;
-                    $cotizaciondetalle->espesor = $producto->espesor;
-                    $cotizaciondetalle->long = $producto->long;
+                    $cotizaciondetalle->espesor = $request->espesor[$i];
                     $cotizaciondetalle->diametro = $producto->diametro;
                     $cotizaciondetalle->categoriaprod_id = $producto->categoriaprod_id;
                     $cotizaciondetalle->claseprod_id = $producto->claseprod_id;
                     $cotizaciondetalle->grupoprod_id = $producto->grupoprod_id;
                     $cotizaciondetalle->color_id = $producto->color_id;
+
+                    $cotizaciondetalle->ancho = $request->ancho[$i];
+                    $cotizaciondetalle->largo = $request->long[$i];
+                    $cotizaciondetalle->obs = $request->obs[$i];
+
                     $cotizaciondetalle->save();
                     $idDireccion = $cotizaciondetalle->id;
                 }
@@ -324,16 +327,17 @@ class CotizacionController extends Controller
                     $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $cotizaciondetalle->descuento = $request->descuento[$i];
                     $cotizaciondetalle->preciounit = $request->preciounit[$i];
-                    $cotizaciondetalle->peso = $producto->peso;
+                    $cotizaciondetalle->peso = $request->peso[$i];
                     $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
                     $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                     $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
                     $cotizaciondetalle->subtotal = $request->subtotal[$i];
 
                     $cotizaciondetalle->producto_nombre = $producto->nombre;
-                    $cotizaciondetalle->espesor = $producto->espesor;
-                    $cotizaciondetalle->long = $producto->long;
-                    $cotizaciondetalle->diametro = $producto->diametro;
+                    $cotizaciondetalle->ancho = $request->ancho[$i];
+                    $cotizaciondetalle->largo = $request->long[$i];
+                    $cotizaciondetalle->espesor = $request->espesor[$i];
+                    $cotizaciondetalle->diametro = $request->diametro[$i];
                     $cotizaciondetalle->categoriaprod_id = $producto->categoriaprod_id;
                     $cotizaciondetalle->claseprod_id = $producto->claseprod_id;
                     $cotizaciondetalle->grupoprod_id = $producto->grupoprod_id;
@@ -357,8 +361,9 @@ class CotizacionController extends Controller
                             'totalkilos' => $request->totalkilos[$i],
                             'subtotal' => $request->subtotal[$i],
                             'producto_nombre' => $producto->nombre,
-                            'espesor' => $producto->espesor,
-                            'long' => $producto->long,
+                            'espesor' => $request->espesor[$i],
+                            'ancho' => $request->ancho[$i],
+                            'largo' => $request->long[$i],
                             'diametro' => $producto->diametro,
                             'categoriaprod_id' => $producto->categoriaprod_id,
                             'claseprod_id' => $producto->claseprod_id,

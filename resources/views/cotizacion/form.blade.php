@@ -326,22 +326,24 @@
                                         <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diametro}}" style="display:none;"/>
                                     </td>
                                     <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$CotizacionDetalle->producto->espesor}}
+                                        {{$CotizacionDetalle->espesor}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->espesor}}" style="display:none;"/>
+                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->espesor}}" style="display:none;"/>
+                                        <input type="text" name="ancho[]" id="ancho{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->ancho}}" style="display:none;"/>
+                                        <input type="text" name="obs[]" id="obs{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->obs}}" style="display:none;"/>
                                     </td>
                                     <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$CotizacionDetalle->producto->long}}
+                                        {{$CotizacionDetalle->largo}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->long}}" style="display:none;"/>
+                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->largo}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
-                                        {{$CotizacionDetalle->producto->peso}}
+                                        {{$CotizacionDetalle->peso}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->peso}}" style="display:none;"/>
+                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->peso}}" style="display:none;"/>
                                     </td>
                                     <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
                                         {{$CotizacionDetalle->producto->tipounion}}

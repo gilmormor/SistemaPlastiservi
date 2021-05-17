@@ -298,7 +298,10 @@ function insertarTabla(){
 		aux_precioxkilo = 0; //$("#precioM").attr("valor");
 		aux_precioxkiloreal = 0; // $("#precioxkilorealM").val();
 	}
-
+	if($("#unidadmedida_idM option:selected").attr('value') == 7){
+		aux_precioxkilo = $("#precioM").attr("valor");
+		aux_precioxkiloreal = $("#precioM").attr("valor");		
+	}
 
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
 			'<td style="display:none;" name="NVdet_idTD'+ aux_nfila + '" id="NVdet_idTD'+ aux_nfila + '">'+ 
@@ -338,16 +341,18 @@ function insertarTabla(){
 				'<input type="text" name="diamextmm[]" id="diamextmm'+ aux_nfila + '" class="form-control" value="'+ $("#diamextmmM").val() +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right">'+ 
-				$("#espesorM").val()+
+				$("#espesor1M").attr('valor')+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
-				'<input type="text" name="espesor[]" id="espesor'+ aux_nfila + '" class="form-control" value="'+ $("#espesorM").val() +'" style="display:none;"/>'+
+				'<input type="text" name="espesor[]" id="espesor'+ aux_nfila + '" class="form-control" value="'+ $("#espesor1M").attr('valor') +'" style="display:none;"/>'+
+				'<input type="text" name="ancho[]" id="ancho'+ aux_nfila + '" class="form-control" value="'+ $("#anchoM").attr('valor') +'" style="display:none;"/>'+
+				'<input type="text" name="obs[]" id="obs'+ aux_nfila + '" class="form-control" value="'+ $("#obsM").val() +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right">'+ 
-				$("#longM").val()+
+				$("#largoM").attr('valor')+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
-				'<input type="text" name="long[]" id="long'+ aux_nfila + '" class="form-control" value="'+ $("#longM").val() +'" style="display:none;"/>'+
+				'<input type="text" name="long[]" id="long'+ aux_nfila + '" class="form-control" value="'+ $("#largoM").attr('valor') +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="pesoTD'+ aux_nfila + '" id="pesoTD'+ aux_nfila + '" style="text-align:right;">'+ 
 				$("#pesoM").val()+

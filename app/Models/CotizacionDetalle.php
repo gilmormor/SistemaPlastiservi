@@ -25,12 +25,12 @@ class CotizacionDetalle extends Model
         'ancho',
         'largo',
         'espesor',
-        'long',
         'diametro',
         'categoriaprod_id',
         'claseprod_id',
         'grupoprod_id',
-        'color_id'
+        'color_id',
+        'observacion'
     ];
     //RELACION DE UNO A MUCHOS NotaVentaDetalle
     public function notaventadetalles()

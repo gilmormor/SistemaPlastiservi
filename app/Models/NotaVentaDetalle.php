@@ -26,12 +26,12 @@ class NotaVentaDetalle extends Model
         'ancho',
         'largo',
         'espesor',
-        'long',
         'diametro',
         'categoriaprod_id',
         'claseprod_id',
         'grupoprod_id',
-        'color_id'
+        'color_id',
+        'obs'
     ];
     
     //RELACION INVERSA NotaVenta

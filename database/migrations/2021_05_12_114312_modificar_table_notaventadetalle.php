@@ -18,8 +18,7 @@ class ModificarTableNotaventadetalle extends Migration
             $table->float('ancho',10,2)->comment('Ancho')->nullable()->after('producto_nombre');
             $table->float('largo',10,2)->comment('Largo')->nullable()->after('ancho');
             $table->float('espesor',10,4)->comment('espesor')->nullable()->after('largo');
-            $table->float('long',10,2)->comment('Longitud Mts')->nullable()->after('espesor');
-            $table->string('diametro',25)->comment('Diametro')->nullable()->after('long');
+            $table->string('diametro',25)->comment('Diametro')->nullable()->after('espesor');
             $table->unsignedBigInteger('categoriaprod_id')->nullable()->after('diametro');
             $table->foreign('categoriaprod_id','fk_notaventadetalle_categoriaprod')->references('id')->on('categoriaprod')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('claseprod_id')->nullable()->after('categoriaprod_id');
@@ -28,7 +27,7 @@ class ModificarTableNotaventadetalle extends Migration
             $table->foreign('grupoprod_id','fk_notaventadetalle_grupoprod')->references('id')->on('grupoprod')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('color_id')->comment("Color")->nullable()->after('grupoprod_id');
             $table->foreign('color_id','fk_notaventadetalle_color')->references('id')->on('color')->onDelete('restrict')->onUpdate('restrict');
-            $table->string('observacion')->comment('Observaciones')->nullable()->after('color_id');
+            $table->string('obs')->comment('Observaciones')->nullable()->after('color_id');
         });
     }
 

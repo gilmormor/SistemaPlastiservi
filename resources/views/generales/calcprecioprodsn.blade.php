@@ -145,22 +145,22 @@
             <div class="row mostdatosad1" style="display:none;">
                 <div class="col-xs-12 col-sm-2">
                     <label for="anchoM" class="control-label" data-toggle='tooltip'>Ancho</label>
-                    <input type="text" name="anchoM" id="anchoM" style="text-align:right" class="form-control numerico" value="{{old('anchoM', $data->anchoM ?? '')}}" placeholder="0.00"/>
+                    <input type="text" name="anchoM" id="anchoM" style="text-align:right" valor="" class="form-control numerico" value="{{old('anchoM', $data->anchoM ?? '')}}" placeholder="0.00"/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">
                     <label for="largoM" class="control-label" data-toggle='tooltip'>Largo</label>
-                    <input type="text" name="largoM" id="largoM" style="text-align:right" class="form-control numerico" value="{{old('largoM', $data->largoM ?? '')}}" placeholder="0.00"/>
+                    <input type="text" name="largoM" id="largoM" style="text-align:right" valor="" class="form-control numerico" value="{{old('largoM', $data->largoM ?? '')}}" placeholder="0.00"/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">
                     <label for="espesor1M" class="control-label" data-toggle='tooltip'>Espesor</label>
-                    <input type="text" name="espesor1M" id="espesor1M" style="text-align:right" class="form-control numerico4d" value="{{old('espesor1M', $data->espesor1M ?? '')}}" placeholder="0.0000"/>
+                    <input type="text" name="espesor1M" id="espesor1M" style="text-align:right" valor="" class="form-control numerico4d" value="{{old('espesor1M', $data->espesor1M ?? '')}}" placeholder="0.0000"/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-6">
-                    <label for="observacionM" class="control-label" data-toggle='tooltip' title="Observación">Observación</label>
-                    <textarea name="observacionM" id="observacionM" class="form-control" value="{{old('observacionM', $data->observacionM ?? '')}}">{{old('observacionM', $data->observacionM ?? '')}}</textarea>
+                    <label for="obsM" class="control-label" data-toggle='tooltip' title="Observación">Observación</label>
+                    <textarea name="obsM" id="obsM" class="form-control" value="{{old('obsM', $data->obsM ?? '')}}">{{old('obsM', $data->obsM ?? '')}}</textarea>
                 </div>
 
             </div>

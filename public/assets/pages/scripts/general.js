@@ -65,26 +65,35 @@ $(document).ready(function () {
     //*******************************************************************
 
 	$(".numerico").blur(function(e){
-		if($(this).attr('valor')){
+		if($(this).attr('valor') != undefined){
 			$(this).attr('valor',$(this).val());
 			$(this).val(MASK(0, $(this).val(), '-###,###,###,##0.00',1));
 		}
 	});
 	$(".numerico").focus(function(e){
-		if($(this).attr('valor')){
+		if($(this).attr('valor') != undefined){
 			$(this).val($(this).attr('valor'));
 		}
 	});
 
 	$(".numerico4d").blur(function(e){
-		if($(this).attr('valor')){
+		if($(this).attr('valor') != undefined){
 			$(this).attr('valor',$(this).val());
 			$(this).val(MASK(0, $(this).val(), '-###,###,##0.0000',1));
 		}
 	});
 	$(".numerico4d").focus(function(e){
-		$(this).val($(this).attr('valor'));
+		if($(this).attr('valor') != undefined){
+			$(this).val($(this).attr('valor'));
+		}
 	});
+	$("#espesor1M").blur(function(e){
+		$("#espesorM").val($("#espesor1M").val());
+	});
+	$("#largoM").blur(function(e){
+		$("#longM").val($("#largoM").attr('valor'));
+	});
+	
 
 /*
  	$(".numerico").on({
@@ -612,10 +621,17 @@ function modificarTabla(i){
 	$("#cla_nombreTD"+i).html($("#cla_nombreM").val());
 	$("#diamextmmTD"+i).html($("#diamextmmM").val());
 	$("#diamextmm"+i).val($("#diamextmmM").val());
-	$("#espesorTD"+i).html($("#espesorM").val());
-	$("#espesor"+i).val($("#espesorM").val());
+/*
 	$("#longTD"+i).html($("#longM").val());
 	$("#long"+i).val($("#longM").val());
+*/
+	$("#longTD"+i).html($("#largoM").attr('valor'));
+	$("#long"+i).val($("#largoM").attr('valor'));
+	$("#ancho"+i).val($("#anchoM").attr('valor'));
+	$("#largo"+i).val($("#largoM").attr('valor'));
+	$("#espesorTD"+i).html($("#espesor1M").attr('valor'));
+	$("#espesor"+i).val($("#espesor1M").attr('valor'));
+	$("#obs"+i).val($("#obsM").val());
 	$("#pesoTD"+i).html($("#pesoM").val());
 	$("#peso"+i).val($("#pesoM").val());
 	$("#tipounionTD"+i).html($("#tipounionM").val());
@@ -629,6 +645,9 @@ function modificarTabla(i){
 	if($("#pesoM").val()==0)
 	{
 		aux_precioxkilo = 0; //$("#precioM").attr("valor");
+	}
+	if($("#unidadmedida_idM option:selected").attr('value') == 7){
+		aux_precioxkilo = $("#precioM").attr("valor");
 	}
 	$("#precioxkiloTD"+i).html(MASK(0, aux_precioxkilo, '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
 	$("#precioxkilo"+i).val(aux_precioxkilo);
@@ -788,7 +807,13 @@ function limpiarInputOT(){
 	$("#precionetoM").attr('valor','0.00');
 	$("#precioM").val('');
 	$("#precioM").attr('valor','0.00');
-	$("#observacionM").val('');
+	$("#anchoM").val('');
+	$("#anchoM").attr('valor','');
+	$("#largoM").val('');
+	$("#largoM").attr('valor','');
+	$("#espesor1M").val('');
+	$("#espesor1M").attr('valor','');
+	$("#obsM").val('');
     $(".selectpicker").selectpicker('refresh');
 }
 
@@ -859,10 +884,33 @@ function editarRegistro(i){
 	$("#tipounionM").val($("#tipounion"+i).val());
 	$("#diamextmmM").val($("#diamextmm"+i).val());
 	$("#espesorM").val($("#espesor"+i).val());
+	$("#espesor1M").val($("#espesor"+i).val());
+	$("#espesor1M").attr('valor',$("#espesor"+i).val());
 	$("#longM").val($("#long"+i).val());
 	$("#pesoM").val($("#peso"+i).val());
 	$("#unidadmedida_idM").val($("#unidadmedida_id"+i).val());
-	
+
+	$("#anchoM").val($("#ancho"+i).val());
+	$("#anchoM").attr('valor',$("#ancho"+i).val());
+	$("#largoM").val($("#long"+i).val());
+	$("#largoM").attr('valor',$("#long"+i).val());
+	$("#obsM").val($("#obs"+i).val());
+
+	var data = {
+		id: $("#producto_idM").val(),
+		_token: $('input[name=_token]').val()
+	};
+	$.ajax({
+		url: '/producto/buscarUnProducto',
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			if(respuesta.length>0){
+				mostrardatosadUniMed(respuesta);
+			}
+		}
+	});
+
 
 	$(".selectpicker").selectpicker('refresh');
     $("#myModal").modal('show');
@@ -1009,11 +1057,9 @@ function listarorddespxNV(id,producto_id = null){
 			$("#tablalistarorddesp").html(respuesta.tabla);
 			//$("#tablaconsulta").html(datos['tabla']);
 			configurarTabla('#tabladespachoorddet');
-
 			$("#myModalTablaOD").modal('show');
         }
     });
-
 }
 
 function configurarTablageneral(aux_tabla){
@@ -1048,13 +1094,27 @@ $("#producto_idM").blur(function(){
 			data: data,
 			success: function (respuesta) {
 				if(respuesta.length>0){
-
 					$("#nombreprodM").val(respuesta[0]['nombre']);
 					$("#codintprodM").val(respuesta[0]['codintprod']);
 					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
 					$("#diamextmmM").val(respuesta[0]['diametro']);
-					$("#espesorM").val(respuesta[0]['espesor']);
+					if(respuesta[0]['espesor'] == 0){
+						$("#espesorM").val('');
+						$("#espesor1M").val('');
+						$("#espesor1M").attr('valor','');
+					}else{
+						$("#espesorM").val(respuesta[0]['espesor']);
+						$("#espesor1M").val(respuesta[0]['espesor']);
+						$("#espesor1M").attr('valor',respuesta[0]['espesor']);
+					}
 					$("#longM").val(respuesta[0]['long']);
+					if(respuesta[0]['long'] == 0){
+						$("#largoM").val('');
+						$("#largoM").attr('valor','');
+					}else{
+						$("#largoM").val(respuesta[0]['long']);
+						$("#largoM").attr('valor',respuesta[0]['long']);	
+					}
 					$("#pesoM").val(respuesta[0]['peso']);
 					$("#tipounionM").val(respuesta[0]['tipounion']);
 					$("#precioM").val(respuesta[0]['precio']);
@@ -1066,22 +1126,10 @@ $("#producto_idM").blur(function(){
 					//alert(respuesta[0]['precio']);
 
 					$("#unidadmedida_idM").val(respuesta[0]['unidadmedidafact_id']);
-					if(respuesta[0]['mostdatosad'] == 0){
-						$(".mostdatosad1").css({'display':'none'});
-						$(".mostdatosad0").css({'display':'block'});
-					}else{
-						$(".mostdatosad0").css({'display':'none'});
-						$(".mostdatosad1").css({'display':'block'});
-					}
-
-					if(respuesta[0]['mostunimed'] == 0){
-						$("#mostunimed1").css({'display':'none'});
-						$("#mostunimed0").css({'display':'block'});
-					}else{
-						$("#mostunimed0").css({'display':'none'});
-						$("#mostunimed1").css({'display':'block'});
-					}
-					$("#unidadmedida_textoM").val(respuesta[0]['unidadmedidanombre']);
+					$("#anchoM").val('');
+					$("#anchoM").attr('valor','');
+					$("#obsM").val('');
+					mostrardatosadUniMed(respuesta);
 
 					$(".selectpicker").selectpicker('refresh');
 					
@@ -1135,3 +1183,22 @@ $("#botonNewProd").click(function(event)
 		$("#direccionM").focus();	
 	}
 });
+
+function mostrardatosadUniMed(respuesta){
+	if(respuesta[0]['mostdatosad'] == 0){
+		$(".mostdatosad1").css({'display':'none'});
+		$(".mostdatosad0").css({'display':'block'});
+	}else{
+		$(".mostdatosad0").css({'display':'none'});
+		$(".mostdatosad1").css({'display':'block'});
+	}
+	
+	if(respuesta[0]['mostunimed'] == 0){
+		$("#mostunimed1").css({'display':'none'});
+		$("#mostunimed0").css({'display':'block'});
+	}else{
+		$("#mostunimed0").css({'display':'none'});
+		$("#mostunimed1").css({'display':'block'});
+	}
+	$("#unidadmedida_textoM").val(respuesta[0]['unidadmedidanombre']);	
+}
