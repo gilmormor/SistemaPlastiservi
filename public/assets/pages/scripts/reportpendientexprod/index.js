@@ -110,7 +110,7 @@ function datos(){
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
-        producto_id       : $("#producto_idM").val(),
+        producto_id       : $("#producto_idPxP").val(),
         filtro            : 0,
         _token            : $('input[name=_token]').val()
     };
@@ -244,14 +244,14 @@ $("#btnbuscarproducto").click(function(event){
 
 function copiar_codprod(id,codintprod){
     $("#myModalBuscarProd").modal('hide');
-    aux_id = $("#producto_idM").val();
+    aux_id = $("#producto_idPxP").val();
     if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
-        $("#producto_idM").val(id);
+        $("#producto_idPxP").val(id);
     }else{
-        $("#producto_idM").val(aux_id + "," + id);
+        $("#producto_idPxP").val(aux_id + "," + id);
     }
 	//$("#producto_idM").blur();
-	$("#producto_idM").focus();
+	$("#producto_idPxP").focus();
 }
 
 $("#btnpdf").click(function(event){
