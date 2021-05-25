@@ -612,7 +612,17 @@ class DespachoSolController extends Controller
     {
         if ($request->ajax()) {
             $despachosol = DespachoSol::findOrFail($request->id);
-            if($despachosol->despachoords->count() == 0){
+            //VALIDAR SI LA SOLICITUD DE DESPACHO YA FUE ASIGNADA A UNA ORDEN DE DESPACHO Y QUE NO ESTE ANULADA
+            $sql = "SELECT COUNT(*) AS cont
+                FROM despachosol INNER JOIN despachoord
+                ON despachosol.id=despachoord.despachosol_id
+                WHERE despachosol.id = $request->id
+                AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+                AND isnull(despachosol.deleted_at)
+                AND ISNULL(despachoord.deleted_at)";
+            $cont = DB::select($sql);
+            //if($despachosol->despachoords->count() == 0){
+            if($cont[0]->cont == 0){
                 $despachosol->aprorddesp = 1;
                 $despachosol->aprorddespfh = date("Y-m-d H:i:s");;
                 if ($despachosol->save()) {
