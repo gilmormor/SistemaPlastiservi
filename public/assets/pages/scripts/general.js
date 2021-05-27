@@ -1246,36 +1246,3 @@ function addRemoveItemArray ( arr, item ) {
 	}
 	return arr;
 };
-
-
-function marcarTodasVistas(){
-	swal({
-		title: 'Eliminar todas las Notificaciones?',
-		text: "Acción no se puede deshacer!",
-		icon: "warning",
-		buttons: {
-			cancel: "Cancelar",
-			confirm: "Aceptar"
-},
-	}).then((value) => {
-		if (value) {
-			var data = {
-				_token: $('input[name=_token]').val()
-			};
-		
-			$.ajax({
-				url: '/notificaciones/marcarTodasVista',
-				type: 'POST',
-				data: data,
-				success: function (respuesta) {
-					// *** REDIRECCIONA A UNA RUTA*** 
-					var loc = window.location;
-					window.location = respuesta; //loc.protocol+"//"+loc.hostname+"/notaventaaprobar";
-					// ****************************** 
-					
-				}
-			});		
-		}
-	});
-
-}
