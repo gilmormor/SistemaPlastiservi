@@ -35,6 +35,11 @@ function configurarTabla(aux_tabla){
     });    
 }
 
+$("#notaventa_id").focus(function(){
+    $('#vistaprevNV').hide();
+
+});
+                    
 
 
 $("#notaventa_id").blur(function(){
@@ -61,6 +66,12 @@ $("#notaventa_id").blur(function(){
                     $("#cliente_id").val(respuesta[0]['id']);
                     $("#descripcion").focus();
                     */
+                    $("#observacion").focus();
+                    $("#vpnv1").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
+                    $("#vpnv2").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
+                    $('#vistaprevNV').show();
+                    //$("#vistaprevNV").css('display','block');
+                    //$('#paso2time').css('display','block');
                 }else{
                     aux_mensaje = respuesta.mensaje;
                     if( respuesta.mensaje=="no" ){
@@ -141,5 +152,6 @@ function copiar_notaventaid(id){
 	$("#myModalBuscarNotaVenta").modal('hide');
 	$("#notaventa_id").val(id);
 	//$("#notaventa_id").blur();
-	$("#notaventa_id").focus();
+    $("#notaventa_id").blur();
+	$("#observacion").focus();
 }

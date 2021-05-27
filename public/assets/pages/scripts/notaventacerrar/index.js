@@ -29,10 +29,10 @@ $(document).ready(function () {
         },
         "createdRow": function ( row, data, index ) {
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm btngenpdfNV1 tooltipsC' title='Nota de venta: " + data.id + "'>" +
-                    data.id + "<i class='fa fa-fw fa-file-pdf-o'></i>" +
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de venta: " + data.notaventa_id + "' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
+                    data.notaventa_id + "<i class='fa fa-fw fa-file-pdf-o'></i>" +
                 "</a>"+
-                "<a class='btn-accion-tabla btn-sm btngenpdfNV2 tooltipsC' title='Precio x Kg: " + data.id + "'>" +
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg: " + data.notaventa_id + "' onclick='genpdfNV(" + data.notaventa_id + ",2)'>" +
                     "<i class='fa fa-fw fa-file-pdf-o'></i>" +
                 "</a>";
             $('td', row).eq(2).html(aux_text);

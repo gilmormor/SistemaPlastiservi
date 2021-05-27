@@ -32,12 +32,16 @@
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($productos as $producto)
                                 <?php $aux_nfila++; ?>
-                                <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
+                                <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" prodid="{{$producto->id}}">
                                     <td name="producto_idBtd{{$aux_nfila}}" id="producto_idBtd{{$aux_nfila}}">
                                         {{$producto->id}}
                                     </td>
                                     <td name="productonombreBtd{{$aux_nfila}}" id="productonombreBtd{{$aux_nfila}}">
-                                        <a href="#" class="copiar_id" onclick="copiar_codprod({{$producto->id}},'{{$producto->codintprod}}')"> {{$producto->nombre}} </a>
+                                        @if (isset($selecmultprod)) <!-- Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
+                                            <a href="#" class="copiar_id" onclick="llenarlistaprod({{$aux_nfila}},{{$producto->id}})"> {{$producto->nombre}} </a>                                            
+                                        @else
+                                            <a href="#" class="copiar_id" onclick="copiar_codprod({{$producto->id}},'{{$producto->codintprod}}')"> {{$producto->nombre}} </a>
+                                        @endif
                                     </td>
                                     <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
                                         {{$producto->diametro}}
@@ -83,6 +87,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
+            <input type="hidden" name="totalreg" id="totalreg" value="{{$aux_nfila}}">
         </div>
         
     </div>

@@ -523,9 +523,12 @@ function consultaorddesp($request){
             and $aux_conddespachosol_id
             and $aux_condguiadespacho
             and $aux_condnumfactura
-            and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(despachoord.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             GROUP BY despachoord.id;";
+            
+            //Linea en comentario para poder mostrar todos los registros incluso las notas de venta que  que fueron cerradas de manera forzada
+            //and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+
             //and despachoord.id not in (SELECT despachoord_id from despachoordanul where isnull(deleted_at))
 
     //dd($sql);

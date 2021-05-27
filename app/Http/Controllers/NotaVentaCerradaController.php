@@ -42,8 +42,7 @@ class NotaVentaCerradaController extends Controller
                 'notaventacerrada.id',
                 'notaventacerrada.notaventa_id',
                 'notaventacerrada.observacion',
-                'notaventacerrada.motcierre_id',
-                'notaventacerrada.notaventa_id'
+                'notaventacerrada.motcierre_id'
                 ])
             ->whereIn('notaventa.sucursal_id', $sucurArray)
             )

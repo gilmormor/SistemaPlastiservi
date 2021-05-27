@@ -113,6 +113,8 @@
 							if(count($notaventacerrada)>0){
 								$aux_ban .= 'C';
 							}
+							$aux_razonsocial = ucwords(strtolower($notaventa->razonsocial));
+							$aux_razonsocial = ucwords($aux_razonsocial,".");
 
 						?>
 						<tr style='{{$colorFila}}' title='{{$aux_title}}' data-toggle='{{$aux_data_toggle}}' class='btn-accion-tabla tooltipsC'>
@@ -127,7 +129,7 @@
 							
 							<td>{{$notaventa->oc_id}}</td>
 							<td style='text-align:center'>{{date('d-m-Y', strtotime($notaventa->fechahora))}}</td>
-							<td>{{$notaventa->razonsocial}}</td>
+							<td>{{$aux_razonsocial}}</td>
 							<td>{{$comuna->nombre}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->totalkilos, 2, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($notaventa->totalps, 0, ",", ".")}}</td>

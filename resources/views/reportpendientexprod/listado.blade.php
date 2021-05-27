@@ -38,13 +38,13 @@
 				<thead>
 					<tr>
 						<th class='width30'>NV</th>
-						<th class='width50'>OC</th>
+						<th class='width60'>OC</th>
 						<th class='width50'>Fecha</th>
 						<th class='width50'>Plazo<br>Entrega</th>
 						<th>Razón Social</th>
 						<th class='width50'>Comuna</th>
-						<th style='text-align:left' class='width10'>CP</th>
-						<th style='text-align:left' class='width50'>Descripción</th>
+						<th style='text-align:left' class='width10'>Cod</th>
+						<th style='text-align:left' class='width90'>Descripción</th>
 						<th style='text-align:left' class='width30'>Diam</th>
 						<th style='text-align:left' class='width40'>Clase</th>
 						<th style='text-align:left' class='width10'>L</th>
@@ -107,13 +107,16 @@
 							$aux_cantsaldo = $data->cant-$sumacantdesp;
 							$comuna = Comuna::findOrFail($data->comunaentrega_id);
 							$producto = Producto::findOrFail($data->producto_id);
+							$aux_razonsocial = ucwords(strtolower($data->razonsocial));
+							$aux_razonsocial = ucwords($aux_razonsocial,".");
+
 						?>
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td>{{$data->notaventa_id}}</td>
 							<td>{{$data->oc_id}}</td>
 							<td>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
 							<td>{{date('d-m-Y', strtotime($data->plazoentrega))}}</td>
-							<td>{{$data->razonsocial}}</td>
+							<td>{{$aux_razonsocial}}</td>
 							<td>{{$comuna->nombre}}</td>
 							<td>{{$data->producto_id}}</td>
 							<td>{{$data->nombre}}</td>

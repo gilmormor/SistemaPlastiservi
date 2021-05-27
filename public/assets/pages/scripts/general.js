@@ -1202,3 +1202,80 @@ function mostrardatosadUniMed(respuesta){
 	}
 	$("#unidadmedida_textoM").val(respuesta[0]['unidadmedidanombre']);	
 }
+
+$("#selectmultprod").click(function(event){
+
+	//var cells = [];
+	/*
+	var rows = $("#tabla-data-productos").dataTable().fnGetData();
+	for(var i=0;i<rows.length;i++)
+	{
+		//console.log(rows[i]);
+		//console.log($(rows[i]).children());
+		//$(rows[i]).children("td").each(function () {
+		$(rows[i]).each(function () {
+				console.log($(this).text());
+		});
+	}
+	*/
+});
+
+
+function llenarlistaprod(i,producto_id){
+	aux_id = $("#producto_idPxP").val();
+	if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#producto_idPxP").val(producto_id);
+    }else{
+		cadenaADividir = $("#producto_idPxP").val();
+		arraynew = cadenaADividir.split(',')
+		console.log(arraynew);
+		arraynew1 = addRemoveItemArray ( arraynew, producto_id );
+		console.log(arraynew1);
+		$("#producto_idPxP").val(arraynew1.toString());
+	
+        //$("#producto_idPxP").val(aux_id + "," + producto_id);
+    }
+}
+
+function addRemoveItemArray ( arr, item ) {
+    var i = arr.indexOf( item.toString() );
+    if(i !== -1){
+		arr.splice( i, 1 );
+	}else{
+		arr.push(item);
+	}
+	return arr;
+};
+
+
+function marcarTodasVistas(){
+	swal({
+		title: 'Eliminar todas las Notificaciones?',
+		text: "Acción no se puede deshacer!",
+		icon: "warning",
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+},
+	}).then((value) => {
+		if (value) {
+			var data = {
+				_token: $('input[name=_token]').val()
+			};
+		
+			$.ajax({
+				url: '/notificaciones/marcarTodasVista',
+				type: 'POST',
+				data: data,
+				success: function (respuesta) {
+					// *** REDIRECCIONA A UNA RUTA*** 
+					var loc = window.location;
+					window.location = respuesta; //loc.protocol+"//"+loc.hostname+"/notaventaaprobar";
+					// ****************************** 
+					
+				}
+			});		
+		}
+	});
+
+}

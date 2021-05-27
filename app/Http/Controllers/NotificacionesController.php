@@ -233,9 +233,11 @@ class NotificacionesController extends Controller
             </li>";
 
             $htmlNotif .= "
-            <li class='footer'>
-                <a href='#'>Fin</a>
+            <li class='footer tooltipsC' title='Marcar todas como vistas'>
+                <a href='#' onclick='marcarTodasVistas()'>Marcar como vistas</a>
             </li>";
+
+            //<a href='" . route('marcarTodasVista_notificaciones') . "'>Marcar como vistas</a>
         }
 
 
@@ -278,6 +280,13 @@ class NotificacionesController extends Controller
                                             ->where('icono','=',$notificacion->icono)
                                             ->update(['status' => 2]);
         return redirect($notificacion->rutadestino);
+    }
+
+    public function marcarTodasVista()
+    {
+        $notificaciones = Notificaciones::where('usuariodestino_id','=',auth()->id())
+                                        ->update(['status' => 2]);
+        return url()->previous();
     }
 }
 

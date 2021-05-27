@@ -90,6 +90,7 @@ class Producto extends Model
                 'categoriaprod.unidadmedida_id'
                 ])
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+                ->orderBy('producto.id', 'asc')
                 ->get();
         return $productos;
     }

@@ -476,6 +476,9 @@ Route::post('noconformidadrecep/actvalai/{id}', 'NoConformidadRecepController@ac
 /*RUTAS Validar Notificaciones */
 Route::get('notificaciones', 'NotificacionesController@notificaciones')->name('notificaciones');
 Route::get('notificaciones/vista/{id}', 'NotificacionesController@vista')->name('vista_notificaciones');
+Route::post('notificaciones/marcarTodasVista', 'NotificacionesController@marcarTodasVista')->name('marcarTodasVista_notificaciones');
+
+
 
 
 /*RUTAS Validar No Conformidad */

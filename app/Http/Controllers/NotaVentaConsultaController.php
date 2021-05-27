@@ -91,7 +91,7 @@ class NotaVentaConsultaController extends Controller
                     <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
                     <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
-                    $aux_colvistoth
+                    <!--$aux_colvistoth-->
 				</tr>
 			</thead>
             <tbody>";
@@ -253,7 +253,7 @@ class NotaVentaConsultaController extends Controller
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
                     </td>
-                    $aux_colvistotd
+                    <!--$aux_colvistotd-->
                 </tr>";
 
                 if(empty($data->anulada)){

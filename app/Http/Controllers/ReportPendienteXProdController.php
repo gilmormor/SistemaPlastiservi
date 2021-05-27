@@ -38,16 +38,6 @@ class ReportPendienteXProdController extends Controller
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
-        /*
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
@@ -56,8 +46,9 @@ class ReportPendienteXProdController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $productos = Producto::productosxUsuario();
+        $selecmultprod = 1;
 
-        return view('reportpendientexprod.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos'));
+        return view('reportpendientexprod.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos','selecmultprod'));
     
     }
 
@@ -226,7 +217,7 @@ function reporte1($request){
                 <th>Plazo<br>Entrega</th>
                 <th>Razón Social</th>
                 <th>Comuna</th>
-                <th class='tooltipsC' title='Código Producto'>CP</th>
+                <th class='tooltipsC' title='Código Producto'>Cod</th>
                 <th>Descripción</th>
                 <th>Diametro</th>
                 <th>Clase</th>
