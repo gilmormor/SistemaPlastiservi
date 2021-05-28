@@ -11,10 +11,8 @@
             <div class="modal-body">
                 <input type="hidden" name="aux_numfila" id="aux_numfila" value="0">
                 <div class="table-responsive">
-                    
                     <!--<table class="table table-striped table-bordered table-hover display tablas" id="tabla-data-productos" style="width:100%">-->
                     <table id="tabla-data-productos" class="table-striped table-hover display" style="width:100%">
-                        
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -83,12 +81,14 @@
                         </tfoot>
                     </table>
                 </div>
+                @if (isset($selecmultprod)) <!-- Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
+                    <label id="producto_idBP" data-toggle='tooltip' title="Productos Seleccionados"></label>
+                @endif
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
             <input type="hidden" name="totalreg" id="totalreg" value="{{$aux_nfila}}">
         </div>
-        
     </div>
 </div>

@@ -1235,6 +1235,7 @@ function llenarlistaprod(i,producto_id){
 	
         //$("#producto_idPxP").val(aux_id + "," + producto_id);
     }
+	$("#producto_idBP").html('Cod Prod: ' + $("#producto_idPxP").val());
 }
 
 function addRemoveItemArray ( arr, item ) {

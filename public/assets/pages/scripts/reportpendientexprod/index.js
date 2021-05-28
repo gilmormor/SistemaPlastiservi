@@ -239,6 +239,7 @@ function visto(id,visto){
 $("#btnbuscarproducto").click(function(event){
     //$(this).val("");
     $(".input-sm").val('');
+    $("#producto_idBP").html('Cod Prod: ' + $("#producto_idPxP").val());
     $("#myModalBuscarProd").modal('show');
 });
 
