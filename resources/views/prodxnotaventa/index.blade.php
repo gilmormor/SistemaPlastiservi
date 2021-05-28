@@ -4,7 +4,7 @@ Productos Notas de Venta
 @endsection
 
 @section("scripts")
-    <script src="{{autoVer("assets/pages/scripts/general.jss")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/prodxnotaventa/index.js")}}" type="text/javascript"></script>
 

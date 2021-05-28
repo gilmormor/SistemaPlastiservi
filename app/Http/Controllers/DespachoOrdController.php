@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\GuardarFacturaDespacho;
 use App\Events\GuardarGuiaDespacho;
+use App\Events\Notificacion;
 use App\Http\Requests\ValidarDespachoOrd;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
@@ -587,7 +588,33 @@ class DespachoOrdController extends Controller
             $despachoord = DespachoOrd::findOrFail($request->id);
             $despachoord->aprguiadesp = 1;
             $despachoord->aprguiadespfh = date("Y-m-d H:i:s");;
+
             if ($despachoord->save()) {
+                Event(new Notificacion( //ENVIO ARRAY CON LOS DATOS PARA CREAR LA NOTIFICACION
+                    [
+                        'usuarioorigen_id' => auth()->id(),
+                        'usuariodestino_id' => $despachoord->notaventa->vendedor->persona->usuario->id,
+                        'vendedor_id' => $despachoord->notaventa->vendedor_id,
+                        'status' => 1,
+                        'nombretabla' => 'despachoord',
+                        'mensaje' => 'Nueva Orden Despacho Nro:'.$despachoord->id,
+                        'rutadestino' => 'notaventaconsulta',
+                        'tabla_id' => $despachoord->id,
+                        'accion' => 'Nueva Orden Despacho',
+                        'mensajetitle' => 'OD:'.$despachoord->id.' NV:'.$despachoord->notaventa_id,
+                        'icono' => 'fa fa-fw fa-male text-primary',
+                        'detalle' => "
+                            <p><b>Datos:</b></p>
+                            <ul>
+                                <li><b>Nro. Nota Venta: </b> $despachoord->notaventa_id </li>
+                                <li><b>Nro. Orden Despacho: </b> $despachoord->id </li>
+                                <li><b>RUT:</b> " . $despachoord->notaventa->cliente->rut . "</li>
+                                <li><b>Razon Social:</b> " . $despachoord->notaventa->cliente->razonsocial . "</li>
+                                <li><b>Vendedor:</b> " . $despachoord->notaventa->vendedor->persona->nombre . " " . $despachoord->notaventa->vendedor->persona->apellido . "</li>
+                            </ul>                    
+                        "
+                    ]
+                ));
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);

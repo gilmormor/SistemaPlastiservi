@@ -108,4 +108,17 @@ class Vendedor extends Model
         return $this->hasMany(ClienteTemp::class);
     }
 
+    public static function selectvendedores(){
+        $vendedores1 = Vendedor::vendedores();
+         $respuesta = "
+            <select name='vendedor_id' id='vendedor_id' class='selectpicker form-control vendedor_id'>
+            <option value=''>Todos</option>";
+        foreach($vendedores1['vendedores'] as $vendedor){
+            $respuesta .= "
+                <option value='$vendedor->id'>$vendedor->nombre $vendedor->apellido</option>";
+        }
+        $respuesta .= "</select>";
+        return $respuesta;
+    }
+
 }

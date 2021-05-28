@@ -42,5 +42,17 @@ class Comuna extends Model
         return $this->hasMany(DespachoOrd::class,'comunap_id','comunaentrega_id');
     }
 
+    public static function selectcomunas(){
+        $comunas = Comuna::orderBy('id')->get();
+        $respuesta = "
+        <select name='comuna_id' id='comuna_id' class='selectpicker form-control comuna_id' data-live-search='true'>
+            <option value=''>Todos</option>";
+            foreach($comunas as $comuna){
+                $respuesta .= "
+                    <option value='$comuna->id'>$comuna->nombre</option>";
+            }
+        $respuesta .= "</select>";
+        return $respuesta;
+    }
 
 }
