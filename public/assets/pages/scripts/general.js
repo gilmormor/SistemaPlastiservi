@@ -1235,7 +1235,12 @@ function llenarlistaprod(i,producto_id){
 	
         //$("#producto_idPxP").val(aux_id + "," + producto_id);
     }
-	$("#producto_idBP").html('Cod Prod: ' + $("#producto_idPxP").val());
+	aux_id = $("#producto_idPxP").val();
+	if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+		$("#producto_idBP").html('');
+	}else{
+		$("#producto_idBP").html('Cod Prod: ' + $("#producto_idPxP").val());		
+	}
 }
 
 function addRemoveItemArray ( arr, item ) {
