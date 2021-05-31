@@ -143,8 +143,10 @@ function grafico(datos){
     $("#graficos1").show();
     $("#graficos2").show();
     $("#reporte1").show();
+    $("#grafbarra1").show();
     $('.resultadosPie1').html('<canvas id="graficoPie1"></canvas>');
     $('.resultadosPie2').html('<canvas id="graficoPie2"></canvas>');
+    $('.resultadosBarra1').html('<canvas id="graficoBarra1"></canvas>');
     var config1 = {
         type: 'pie',
         data: {
@@ -194,10 +196,103 @@ function grafico(datos){
     var ctxPie2 = document.getElementById('graficoPie2').getContext('2d');
     window.myPie2 = new Chart(ctxPie2, config2);
     myPie2.clear();
+
+
+    //GRAFICO BARRAS
+    var color = Chart.helpers.color;
+    var Datos = {
+        labels : datos['nombrebar'],
+        datasets : [{
+                label: 'Nota Venta',
+                backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.red,
+                borderWidth: 1,
+                data : datos['totalkilosbarNV']
+            },
+            {
+                label: 'Facturado (Fecha FC)',
+                backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.blue,
+                borderWidth: 1,
+                data : datos['totalkilosbarFecFC']
+            },
+            {
+                label: 'Facturado (Fecha NV)',
+                backgroundColor: color(window.chartColors.yellow).alpha(0.8).rgbString(),
+                borderColor: window.chartColors.yellow,
+                borderWidth: 1,
+                data : datos['totalkilosbarFecNV']
+            }
+        ]
+    }
+    var ctxbar1 = document.getElementById('graficoBarra1').getContext('2d');
+
+    window.myBar1 = new Chart(ctxbar1, {
+        type: 'bar',
+        data: Datos,
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Nota Ventas vs Facturado (Kg)'
+            }
+        }
+    });
+    myBar1.clear();
+
+    var Datos = {
+        labels : datos['nombrebar'],
+        datasets : [{
+                label: 'Nota Venta',
+                backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.red,
+                borderWidth: 1,
+                data : datos['totaldinerobarNV']
+            },
+            {
+                label: 'Facturado (Fecha FC)',
+                backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.blue,
+                borderWidth: 1,
+                data : datos['totaldineroFecFC']
+            },
+            {
+                label: 'Facturado (Fecha NV)',
+                backgroundColor: color(window.chartColors.yellow).alpha(0.8).rgbString(),
+                borderColor: window.chartColors.yellow,
+                borderWidth: 1,
+                data : datos['totaldineroFecNV']
+            }
+        ]
+    }
+    var ctxbar2 = document.getElementById('graficoBarra2').getContext('2d');
+
+    window.myBar2 = new Chart(ctxbar2, {
+        type: 'bar',
+        data: Datos,
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Nota Ventas vs Facturado ($)'
+            }
+        }
+    });
+    myBar2.clear();
+    //
+
+
 	$("#graficos").show();
 	$("#graficos1").show();
 	$("#graficos2").show();
     $("#reporte1").show();
+    $("#grafbarra1").show();
 }
 
 $("#btnpdf").click(function(event){

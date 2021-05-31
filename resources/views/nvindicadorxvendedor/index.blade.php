@@ -168,6 +168,7 @@ Productos Notas de Venta
             <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Cantidad</a></li>
             <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Facturado</a></li>
             <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Productos</a></li>
+            <li><a href="#tab_4" data-toggle="tab" id="tab4" name="tab4">Nota Venta vs Facturado</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
@@ -253,7 +254,7 @@ Productos Notas de Venta
                     </div>
                 
                 
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 col-md-offset-3">
                     <!-- DONUT CHART -->
                         <div class="box box-danger">
                             <div class="box-header with-border">
@@ -307,6 +308,58 @@ Productos Notas de Venta
                         </div>
                         <!-- /.box -->
                     </div>                
+                </div>
+            </div>
+            <div class="tab-pane active" id="tab_4">
+                <div class="row" id="grafbarra1" name="grafbarra1" style="display:none;">
+                    <div class="col-lg-8 col-md-offset-2">
+                    <!-- BARRA CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Gráfico Barra Kg</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="resultadosBarra1 text-center" style="width: 100%;">
+                                        <canvas id="graficoBarra1"></canvas>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+                    <div class="col-lg-8 col-md-offset-2">
+                    <!-- BARRA CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Gráfico Barra $</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="resultadosBarra2 text-center" style="width: 100%;">
+                                        <canvas id="graficoBarra2"></canvas>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
                 </div>
             </div>
         </div>

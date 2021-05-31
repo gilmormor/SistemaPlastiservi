@@ -84,12 +84,33 @@ class NVIndicadorxVendController extends Controller
 
         if($request->ajax()){
             //dd($request->idcons);
+            $aux_idcons = $request->idcons;
+            $request['idcons'] = "1";
+            $datasNV = consulta($request); //TODAS LAS NOTAS DE VENTA
+            $request['idcons'] = "2";
+            $datasFecFC = consultaODcerrada($request); //TODO LO FACTURADO POR FECHA DE FACTURA
+            $request['idcons'] = "3";
+            $datasFecNV = consultaODcerrada($request); //LO FACTURADO POR FECHA DE NOTA DE VENTA
+
+            if($aux_idcons == "1"){
+                $datas = $datasNV;
+            }
+            if($aux_idcons == "2"){
+                $datas = $datasFecFC;
+            }
+            if($aux_idcons == "3"){
+                $datas = $datasFecNV;
+            }
+            /*
             if($request->idcons == "1"){
                 $datas = consulta($request);
             }
             if($request->idcons == "2" or $request->idcons == "3"){
                 $datas = consultaODcerrada($request);
             }
+            */
+
+
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
@@ -216,6 +237,15 @@ class NVIndicadorxVendController extends Controller
                 $respuesta['nombredinero'][$i] .= " " . number_format($subtotaldinero1, 2, ",", ".") . "%";
                 $i++;
             }
+
+            $respuesta['nombrebar'] = array_column($datasNV['vendedores'], 'nombre');
+            $respuesta['totalkilosbarNV'] = array_column($datasNV['vendedores'], 'totalkilos');
+            $respuesta['totalkilosbarFecFC'] = array_column($datasFecFC['vendedores'], 'totalkilos');
+            $respuesta['totalkilosbarFecNV'] = array_column($datasFecNV['vendedores'], 'totalkilos');
+
+            $respuesta['totaldinerobarNV'] = array_column($datasNV['vendedores'], 'subtotal');
+            $respuesta['totaldineroFecFC'] = array_column($datasFecFC['vendedores'], 'subtotal');
+            $respuesta['totaldineroFecNV'] = array_column($datasFecNV['vendedores'], 'subtotal');
 
             //TABLA TOTALES POR PRODUCTO
             $respuesta['tablaagruxproducto'] .= "<table id='tablaagruxproducto' name='tablaagruxproducto' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
@@ -566,7 +596,7 @@ function consulta($request){
     $respuesta['productos'] = $datas;
 
     $sql = "SELECT persona.id,persona.nombre,
-    sum(notaventadetalle.totalkilos) AS totalkilos,
+    ROUND(sum(notaventadetalle.totalkilos),2) AS totalkilos,
     sum(notaventadetalle.subtotal) AS subtotal
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
@@ -767,7 +797,7 @@ function consultaODcerrada($request){
     $respuesta['productos'] = $datas;
 
     $sql = "SELECT persona.id,persona.nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    ROUND(sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp),2) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id
