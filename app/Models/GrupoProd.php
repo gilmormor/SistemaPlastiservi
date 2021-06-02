@@ -25,4 +25,11 @@ class GrupoProd extends Model
     {
         return $this->belongsTo(CategoriaProd::class);
     }
+
+    //RELACION UNO A MUCHOS 
+    public function categoriagrupocostos()
+    {
+        return $this->hasMany(CategoriaGrupoCosto::class);
+    }
+    
 }

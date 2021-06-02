@@ -186,7 +186,9 @@ class NVIndicadorxVendController extends Controller
                 $totalgeneral += $producto->totalkilos;
                 $totalgeneralDinero += $producto->subtotal;
             }
-            $precpromedio = $totalgeneralDinero / $totalgeneral;
+            if($totalgeneral > 0){
+                $precpromedio = $totalgeneralDinero / $totalgeneral;
+            }
             $respuesta['tabla'] .= "
             </tbody>
                 <tfoot>
@@ -290,7 +292,10 @@ class NVIndicadorxVendController extends Controller
                         <td style='text-align:right'>" . number_format($aux_promunit, 2, ",", ".") . "</td>
                         <td style='text-align:right'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>";
             }
-            $aux_promkilogen = $aux_sumpromkilo / count($datas['agruxproducto']);
+            $aux_promkilogen = 0;
+            if(count($datas['agruxproducto']) > 0){
+                $aux_promkilogen = $aux_sumpromkilo / count($datas['agruxproducto']);
+            }
             $respuesta['tablaagruxproducto'] .= "
                 </tr>
                 </tbody>
