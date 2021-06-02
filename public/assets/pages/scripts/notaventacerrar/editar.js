@@ -13,7 +13,6 @@ $(document).ready(function () {
 	});
     $( "#notaventa_id" ).focus();
     codigo = $("#notaventa_id").val();
-    alert(codigo);
 	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
 	{
         $("#vpnv1").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
