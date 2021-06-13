@@ -4,7 +4,10 @@
 @endsection
 
 @section("scripts")
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
+<!--    <script src="{{autoVer("assets/pages/scripts/categoriagrupocosto/crear.js")}}" type="text/javascript"></script>-->
     <script src="{{autoVer("assets/pages/scripts/categoriagrupocosto/crear.js")}}" type="text/javascript"></script>
+
 @endsection
 
 @section('contenido')

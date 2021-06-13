@@ -63,7 +63,8 @@ class ProductoController extends Controller
     {
         can('crear-producto');
         //$categoriaprods = CategoriaProd::orderBy('id')->get();//->pluck('nombre', 'id')->toArray();
-
+        $categoriaprods = CategoriaProd::categoriasxUsuario();
+        /*
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -81,6 +82,7 @@ class ProductoController extends Controller
                 'categoriaprod.unidadmedidafact_id'
             ])
             ->get();
+        */
         $colores = Color::orderBy('id')->get();
         $aux_sta=1;
         return view('producto.crear',compact('categoriaprods','colores','aux_sta'));
@@ -123,6 +125,8 @@ class ProductoController extends Controller
         can('editar-producto');
         $data = Producto::findOrFail($id);
         //$categoriaprods = CategoriaProd::orderBy('id')->get();
+        $categoriaprods = CategoriaProd::categoriasxUsuario();
+        /*
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -140,7 +144,7 @@ class ProductoController extends Controller
                 'categoriaprod.unidadmedidafact_id'
             ])
             ->get();
-
+        */
         $claseprods = ClaseProd::where('categoriaprod_id',$data->categoriaprod_id)->orderBy('id')->get();
         $grupoprods = GrupoProd::where('categoriaprod_id',$data->categoriaprod_id)->orderBy('id')->get();
         //dd($claseprods);

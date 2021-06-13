@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidarCategoriaGrupoCosto;
 use App\Models\CategoriaGrupoCosto;
+use App\Models\CategoriaProd;
+use App\Models\GrupoProd;
+use App\Models\UnidadMedida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +21,7 @@ class CategoriaGrupoCostoController extends Controller
     {
         can('listar-costo-por-categoria');
         $datas = CategoriaGrupoCosto::orderBy('id')->get();
-        return view('categoriagrupocosto.index', compact('datas'));
+        return view('categoriagrupocosto.index', compact('datas','categoriaprods'));
     }
 
     public function categoriagrupocostopage(){
@@ -41,7 +45,8 @@ class CategoriaGrupoCostoController extends Controller
     public function crear()
     {
         can('crear-costo-por-categoria');
-        return view('categoriagrupocosto.crear');
+        $unidadmedidas = UnidadMedida::orderBy('id')->pluck('descripcion', 'id')->toArray();
+        return view('categoriagrupocosto.crear', compact('unidadmedidas'));
 
     }
 
@@ -51,9 +56,13 @@ class CategoriaGrupoCostoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    //public function guardar(Request $request)
+    public function guardar(ValidarCategoriaGrupoCosto $request)
     {
-        //
+        can('guardar-costo-por-categoria');
+        $request["annomes"] = CategoriaGrupoCosto::annomes($request->annomes);
+        CategoriaGrupoCosto::create($request->all());
+        return redirect('categoriagrupocosto')->with('mensaje','Registro creado con exito.');
     }
 
     /**
@@ -73,9 +82,20 @@ class CategoriaGrupoCostoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editar($id)
     {
-        //
+        can('editar-costo-por-categoria');
+        $data = CategoriaGrupoCosto::findOrFail($id);
+        //$categoriaprods = CategoriaProd::categoriasxUsuario();
+        $request['id'] = $data->id;
+        $request['annomes'] = $data->annomes;
+        $request['categoriaprod_id'] = $data->grupoprod->categoriaprod_id;
+        $categoriaprods = CategoriaProd::catxUsuCostoAnnoMes($request);
+        $grupoprods = CategoriaGrupoCosto::catgrupNoCreados($request);
+        //$grupoprods = GrupoProd::where('categoriaprod_id',$data->grupoprod->categoriaprod_id)->get();
+        $unidadmedidas = UnidadMedida::orderBy('id')->pluck('descripcion', 'id')->toArray();
+        return view('categoriagrupocosto.editar', compact('data','categoriaprods','unidadmedidas','grupoprods'));
+
     }
 
     /**
@@ -85,9 +105,13 @@ class CategoriaGrupoCostoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function actualizar(ValidarCategoriaGrupoCosto $request, $id)
     {
-        //
+        //dd($request);
+        can('editar-costo-por-categoria');
+        $request["annomes"] = CategoriaGrupoCosto::annomes($request->annomes);
+        CategoriaGrupoCosto::findOrFail($id)->update($request->all());
+        return redirect('categoriagrupocosto')->with('mensaje','Registro actualizado con exito.');
     }
 
     /**
@@ -100,4 +124,15 @@ class CategoriaGrupoCostoController extends Controller
     {
         //
     }
+
+    public function categoriagrupocostofilcat(Request $request){
+        $datas = CategoriaProd::catxUsuCostoAnnoMes($request);
+        return $datas; //response()->json($data)
+    }
+
+    public function categoriagrupocostofilgrupos(Request $request){
+        $datas = CategoriaGrupoCosto::catgrupNoCreados($request);
+        return $datas; //response()->json($data)
+    }
+
 }

@@ -10,6 +10,7 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
         'ajax'        : "categoriagrupocostopage",
+        "order": [[ 1, "asc" ]],
         'columns'     : [
             {data: 'id'},
             {data: 'annomes'},
@@ -25,6 +26,15 @@ $(document).ready(function () {
         ],
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            $('td', row).eq(1).html(mesanno(data.annomes));
+            $('td', row).eq(1).attr('data-search',mesanno(data.annomes));
+            $('td', row).eq(4).attr('data-order',data.costo);
+            $('td', row).eq(4).attr('data-search',data.costo);
+            $('td', row).eq(4).attr('style','text-align:right');
+            $('td', row).eq(4).html(MASK(0, data.costo, '-###,###,###,##0.00',1));
+            
         }
       });
 

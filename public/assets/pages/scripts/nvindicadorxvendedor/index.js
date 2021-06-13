@@ -14,17 +14,12 @@ $(document).ready(function () {
         }
 	});
 */
-    $('.col-xs-12').css({'margin-bottom':'0px','margin-left': '0px','margin-right': '0px','padding-left': '5px','padding-right': '5px'});
+    //$('.col-xs-12').css({'margin-bottom':'0px','margin-left': '0px','margin-right': '0px','padding-left': '5px','padding-right': '5px'});
     $("#btnconsultar").click(function()
     {
-        aux_consultaid = $("#consulta_id").val();
-        consultar(datos(aux_consultaid));
+        consultar(datos());
     });
 
-    $("#btnpdf1").click(function()
-    {
-        consultarpdf(datos());
-    });
 
     //alert(aux_nfila);
     $('.datepicker').datepicker({
@@ -41,7 +36,7 @@ $(document).ready(function () {
 
 });
 
-function datos(idcons){
+function datos(){
     var data = {
         fechad: $("#fechad").val(),
         fechah: $("#fechah").val(),
@@ -49,7 +44,7 @@ function datos(idcons){
         giro_id: $("#giro_id").val(),
         categoriaprod_id: $("#categoriaprod_id").val(),
         areaproduccion_id : $("#areaproduccion_id").val(),
-        idcons : idcons,
+        idcons : $("#consulta_id").val(),
         statusact_id : $("#statusact_id").val(),
         _token: $('input[name=_token]').val()
     };
@@ -97,6 +92,7 @@ function ajaxRequest(data,url,funcion) {
 
 function consultar(data){
     $("#graficos").hide();
+    $("#grafbarra1").hide();
     $.ajax({
         url: '/nvindicadorxvend/reporte',
         type: 'POST',
@@ -110,8 +106,6 @@ function consultar(data){
                 $("#tablaconsulta").html(datos['tabla']);
                 $("#tablaconsultadinero").html(datos['tabladinero']);
                 $("#tablaconsultaproducto").html(datos['tablaagruxproducto']);
-                $("#tituloPie1").html("Gráfico " + aux_titulo+ " por Vendedor");
-                $("#tituloPie2").html($("#tituloPie1").html() + " $");
             
                 configurarTabla('.tablascons');
                 grafico(datos);
@@ -139,14 +133,18 @@ function consultarpdf(data){
 
 
 function grafico(datos){
+    grafico_pie1(datos);
+    grafico_pie2(datos);
+    corechartprueba(datos);
     $("#graficos").show();
     $("#graficos1").show();
     $("#graficos2").show();
     $("#reporte1").show();
     $("#grafbarra1").show();
-    $('.resultadosPie1').html('<canvas id="graficoPie1"></canvas>');
-    $('.resultadosPie2').html('<canvas id="graficoPie2"></canvas>');
-    $('.resultadosBarra1').html('<canvas id="graficoBarra1"></canvas>');
+    $('.resultadosPie1').html('<canvas id="graficoPie1" act="0"></canvas>');
+    $('.resultadosPie2').html('<canvas id="graficoPie2" act="0"></canvas>');
+    $('.resultadosBarra1').html('<canvas id="graficoBarra1" act="0"></canvas>');
+    $('.resultadosBarra2').html('<canvas id="graficoBarra2" act="0"></canvas>');
     var config1 = {
         type: 'pie',
         data: {
@@ -163,13 +161,21 @@ function grafico(datos){
             }],
             labels: datos['nombre']
         },
-        options: {
-            responsive: true
+        options: {/*
+            responsive: true,
+            animation: {
+                onComplete: function() {
+                    generarPNGgraf(myPie1.toBase64Image(),"graficoPie1");
+                }
+            },*/
+            title: {
+                display: true,
+                text: 'Venta por Vendedor Kg.'
+            }
         }
     };
-
     var ctxPie1 = document.getElementById('graficoPie1').getContext('2d');
-    window.myPie1 = new Chart(ctxPie1, config1);
+    window.myPie1 = new Chart(ctxPie1,config1);
     myPie1.clear();
 
     var config2 = {
@@ -186,13 +192,22 @@ function grafico(datos){
                 ],
                 label: 'Dataset 1'
             }],
-            labels: datos['nombre']
+            labels: datos['nombredinero']
         },
         options: {
-            responsive: true
+            responsive: true,
+            /*animation: {
+                onComplete: function() {
+                    //console.log(myPie2.toBase64Image());
+                    generarPNGgraf(myPie2.toBase64Image(),"graficoPie2");
+                }
+            },*/
+            title: {
+                display: true,
+                text: 'Venta por Vendedor $'
+            }
         }
     };
-
     var ctxPie2 = document.getElementById('graficoPie2').getContext('2d');
     window.myPie2 = new Chart(ctxPie2, config2);
     myPie2.clear();
@@ -238,10 +253,15 @@ function grafico(datos){
             title: {
                 display: true,
                 text: 'Nota Ventas vs Facturado (Kg)'
-            }
+            },/*
+            animation: {
+                onComplete: function() {
+                    generarPNGgraf(myBar1.toBase64Image(),"graficoBarra1");
+                }
+            }*/
         }
     });
-    myBar1.clear();
+    //myBar1.clear();
 
     var Datos = {
         labels : datos['nombrebar'],
@@ -268,6 +288,7 @@ function grafico(datos){
             }
         ]
     }
+
     var ctxbar2 = document.getElementById('graficoBarra2').getContext('2d');
 
     window.myBar2 = new Chart(ctxbar2, {
@@ -281,13 +302,17 @@ function grafico(datos){
             title: {
                 display: true,
                 text: 'Nota Ventas vs Facturado ($)'
-            }
+            },/*
+            animation: {
+                onComplete: function() {
+                    generarPNGgraf(myBar2.toBase64Image(),"graficoBarra2");
+                }
+            }*/
         }
     });
-    myBar2.clear();
+
+    //myBar2.clear();
     //
-
-
 	$("#graficos").show();
 	$("#graficos1").show();
 	$("#graficos2").show();
@@ -295,32 +320,157 @@ function grafico(datos){
     $("#grafbarra1").show();
 }
 
-$("#btnpdf").click(function(event){
-    aux_consultaid = $("#consulta_id").val();
-    consultar(datos(aux_consultaid));
-    aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
-    aux_consultaid = $("#consulta_id").val()
-    data = datos(aux_consultaid);
-    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
-            "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
-            "&categoriaprod_id=" + data.categoriaprod_id +
-            "&areaproduccion_id="+data.areaproduccion_id +
-            "&idcons="+data.idcons + "&statusact_id="+data.statusact_id +
-            "&aux_titulo="+aux_titulo
-    $('#contpdf').attr('src', '/nvindicadorxvend/exportPdfkg/'+cadena);
-	$("#myModalpdf").modal('show');
-});
+function generarPNGgraf(base64,filename){
+    //alert($("#"+filename).attr("act"))
+    if($("#"+filename).attr("act")=="0"){
+        var data = {
+            filename : filename,
+            base64 : base64,
+            _token: $('input[name=_token]').val()
+        };
+        $.ajax({
+            url: '/nvindicadorxvend/imagengrafico',
+            type: 'POST',
+            data: data,
+            success: function (datos) {
+                //alert(datos);
+        
+            }
+        });
+        $("#"+filename).attr("act","1")
+    } 
+}
 
-function btnpdfKg(){
-    aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
-    aux_consultaid = $("#consulta_id").val()
-    data = datos(aux_consultaid);
-    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
-            "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
-            "&categoriaprod_id=" + data.categoriaprod_id +
-            "&areaproduccion_id="+data.areaproduccion_id +
-            "&idcons="+data.idcons + "&statusact_id="+data.statusact_id +
-            "&aux_titulo="+aux_titulo
-    $('#contpdf').attr('src', '/nvindicadorxvend/exportPdfkg/'+cadena);
-	$("#myModalpdf").modal('show');
+function corechartprueba(datos){
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawVisualization);
+
+    function drawVisualization() {
+      // Some raw data (not necessarily accurate)
+      arraygrafico = [
+        ['Vendedores','Nota Venta','Fecha FC','Fecha NV','Promedio']
+    ];
+
+    for (i = 0; i < datos['nombrebar'].length; i++) {
+        promedio = (datos['totalkilosbarNV'][i]+datos['totalkilosbarFecFC'][i]+datos['totalkilosbarFecNV'][i])/3;
+        arraygrafico.push([datos['nombrebar'][i],datos['totalkilosbarNV'][i],datos['totalkilosbarFecFC'][i],datos['totalkilosbarFecNV'][i],promedio]);
+    }
+
+      var data = google.visualization.arrayToDataTable(arraygrafico);
+
+      var options = {
+        title : 'Monthly Coffee Production by Country',
+        vAxis: {title: 'Kilos'},
+        hAxis: {title: 'Vendedores'},
+        seriesType: 'bars',
+        series: {3: {type: 'line'}},
+        legend: {position: 'top', maxLines: 4},
+      };
+
+      var chart = new google.visualization.ComboChart(document.getElementById('chart_div11'));
+      chart.draw(data, options);
+    }
+
+}
+
+function grafico_pie1(datos){
+    google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        arraygrafico = [
+            ['Vendedores','Kilos']
+        ];
+        for (i = 0; i < datos['nombre'].length; i++) {
+            arraygrafico.push([datos['nombre'][i],datos['totalkilos'][i]]);        
+        }
+        var data = google.visualization.arrayToDataTable(arraygrafico);
+        var options = {
+          title: 'Ventas por Vendedor Kg',
+          is3D: true
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d1'));
+        chart.draw(data, options);
+
+        $("#base64pie1").val(chart.getImageURI());
+
+        //console.log(chart.getImageURI());
+      }
+
+
+}
+
+function grafico_pie2(datos){
+    google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        arraygrafico = [
+            ['Vendedores','Kilos']
+        ];
+        for (i = 0; i < datos['nombredinero'].length; i++) {
+            arraygrafico.push([datos['nombredinero'][i],datos['totaldinero'][i]]);        
+        }
+        var data = google.visualization.arrayToDataTable(arraygrafico);
+        var options = {
+          title: 'Ventas por Vendedor $',
+          is3D: true
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d2'));
+        chart.draw(data, options);
+
+        $("#base64pie2").val(chart.getImageURI());
+
+        //console.log(chart.getImageURI());
+      }
+
+
+}
+
+function btnpdf(numrep){
+    base64 = "";
+    base64b1 = "";
+    base64b2 = "";
+    if(numrep==1){
+        //base64 = myPie1.toBase64Image();
+        base64 = $("#base64pie1").val();
+    }
+    if(numrep==2){
+        //base64 = myPie2.toBase64Image();
+        base64 = $("#base64pie2").val();
+    }
+    if(numrep==4){
+        //base64 = myPie2.toBase64Image();
+        base64b1 = myBar1.toBase64Image();
+        base64b2 = myBar2.toBase64Image();
+    }
+    var data = {
+        numrep : numrep,
+        filename : "graficoPie1",
+        base64 : base64,
+        base64b1 : base64b1,
+        base64b2 : base64b2,
+        _token: $('input[name=_token]').val()
+    };
+    $.ajax({
+        url: '/nvindicadorxvend/imagengrafico',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
+            data = datos();
+            cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
+                    "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
+                    "&categoriaprod_id=" + data.categoriaprod_id +
+                    "&areaproduccion_id="+data.areaproduccion_id +
+                    "&idcons="+data.idcons + "&statusact_id="+data.statusact_id +
+                    "&aux_titulo="+aux_titulo +
+                    "&numrep="+numrep
+            $('#contpdf').attr('src', '/nvindicadorxvend/exportPdfkg/'+cadena);
+            $("#myModalpdf").modal('show');
+    
+        },
+        error: function () {
+        }
+    }); 
 }

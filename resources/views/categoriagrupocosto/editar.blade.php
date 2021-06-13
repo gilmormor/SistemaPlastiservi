@@ -1,10 +1,11 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-    Unidad de Medida
+Costo por Categoria y grupo
 @endsection
 
 @section('scripts')
-    <script src="{{autoVer("assets/pages/scripts/unidadmedida/crear.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/categoriagrupocosto/crear.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -14,17 +15,17 @@
         @include('includes.mensaje')
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Editar Unidad de Medida</h3>
+                <h3 class="box-title">Editar Costo por Categoria y grupo</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('unidadmedida')}}" class="btn btn-block btn-info btn-sm">
+                    <a href="{{route('categoriagrupocosto')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>
             </div>
-            <form action="{{route('actualizar_unidadmedida', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
+            <form action="{{route('actualizar_categoriagrupocosto', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
                 @csrf @method("put")
                 <div class="box-body">
-                    @include('unidadmedida.form')
+                    @include('categoriagrupocosto.form')
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer text-center">

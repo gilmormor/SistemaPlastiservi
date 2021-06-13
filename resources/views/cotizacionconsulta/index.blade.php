@@ -62,7 +62,7 @@ Cotización
                                         <label>Vendedor</label>
                                     </div>
                                     <div class="col-xs-12 col-md-9 col-sm-9">
-                                        <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
+                                        <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id" data-live-search='true'>
                                             <option value="">Todos</option>
                                             @foreach($vendedores1 as $vendedor)
                                                 <option

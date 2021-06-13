@@ -394,6 +394,9 @@ Route::get('nvindicadorxvend', 'NVIndicadorxVendController@index')->name('nvindi
 Route::post('nvindicadorxvend/reporte', 'NVIndicadorxVendController@reporte')->name('nvindicadorxvend_reporte');
 Route::get('nvindicadorxvend/exportPdf', 'NVIndicadorxVendController@exportPdf')->name('nvindicadorxvend_exportPdf');
 Route::get('nvindicadorxvend/exportPdfkg', 'NVIndicadorxVendController@exportPdfkg')->name('nvindicadorxvend_exportPdfkg');
+Route::get('nvindicadorxvend/exportPdfdn', 'NVIndicadorxVendController@exportPdfdn')->name('nvindicadorxvend_exportPdfdn');
+Route::post('nvindicadorxvend/imagengrafico', 'NVIndicadorxVendController@imagengrafico')->name('nvindicadorxvend_imagengrafico');
+
 
 /*RUTAS APROBAR NotaVenta*/
 Route::get('notaventaaprobar', 'NotaventaAprobarController@index')->name('notaventaaprobar');
@@ -636,3 +639,5 @@ Route::post('categoriagrupocosto', 'CategoriaGrupoCostoController@guardar')->nam
 Route::get('categoriagrupocosto/{id}/editar', 'CategoriaGrupoCostoController@editar')->name('editar_categoriagrupocosto');
 Route::put('categoriagrupocosto/{id}', 'CategoriaGrupoCostoController@actualizar')->name('actualizar_categoriagrupocosto');
 Route::delete('categoriagrupocosto/{id}', 'CategoriaGrupoCostoController@eliminar')->name('eliminar_categoriagrupocosto');
+Route::post('categoriagrupocostofilcat', 'CategoriaGrupoCostoController@categoriagrupocostofilcat')->name('categoriagrupocostofilcat');
+Route::post('categoriagrupocostofilgrupos', 'CategoriaGrupoCostoController@categoriagrupocostofilgrupos')->name('categoriagrupocostofilgrupos');

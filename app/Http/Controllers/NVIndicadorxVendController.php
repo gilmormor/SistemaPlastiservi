@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
 
-
 class NVIndicadorxVendController extends Controller
 {
     /**
@@ -36,17 +35,9 @@ class NVIndicadorxVendController extends Controller
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
-        /*
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
         $giros = Giro::orderBy('id')->get();
+        $categoriaprods = CategoriaProd::categoriasxUsuario();
+        /*
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -64,7 +55,7 @@ class NVIndicadorxVendController extends Controller
                 'categoriaprod.unidadmedidafact_id'
             ])
             ->get();
-
+        */
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
@@ -459,6 +450,10 @@ class NVIndicadorxVendController extends Controller
         $request->idcons = $_GET["idcons"];
         $request->statusact_id = $_GET["statusact_id"];
         $request->aux_titulo = $_GET["aux_titulo"];
+        $request->numrep = $_GET["numrep"];
+
+        //dd($request);
+
         if($request->idcons == "1"){
             $datas = consulta($request);
         }
@@ -496,21 +491,35 @@ class NVIndicadorxVendController extends Controller
 
         //return armarReportehtml($request);
         if($datas){
-            if(env('APP_DEBUG')){
-                return view('nvindicadorxvendedor.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request'));
+                if(env('APP_DEBUG')){
+                    return view('nvindicadorxvendedor.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request'));
+                }
+                $pdf = PDF::loadView('nvindicadorxvendedor.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request')); //->setPaper('a4', 'landscape');
+                //return $pdf->download('cotizacion.pdf');
+                //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+                return $pdf->stream("KilosporVendedor.pdf");    
+            if($request->numrep=='2'){
+                $pdf = PDF::loadView('nvindicadorxvendedor.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request')); //->setPaper('a4', 'landscape');
+                return $pdf->stream("KilosporVendedor.pdf");    
             }
-            
-            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
-            
-            $pdf = PDF::loadView('nvindicadorxvendedor.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request')); //->setPaper('a4', 'landscape');
-            //return $pdf->download('cotizacion.pdf');
-            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("KilosporVendedor.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 
     }
-    
+
+    public function imagengrafico(Request $request){
+        /*
+        $img = $request['base64'];
+        $img = str_replace('data:image/png;base64,', '', $img);
+        $fileData = base64_decode($img);
+        $file_name = $request['filename'] . '.png';
+        Storage::disk('public')->put("imagenes/charts/$file_name", $fileData);
+        */
+        session(['grafico' => $request['base64']]);
+        session(['grafico1' => $request['base64b1']]);
+        session(['grafico2' => $request['base64b2']]);
+        return "";
+    }
 }
 
 

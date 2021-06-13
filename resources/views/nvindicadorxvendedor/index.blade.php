@@ -4,6 +4,7 @@ Productos Notas de Venta
 @endsection
 
 @section("scripts")
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/nvindicadorxvendedor/index.js")}}" type="text/javascript"></script>
@@ -141,7 +142,6 @@ Productos Notas de Venta
                             </div>
                             <div class="col-xs-12 col-md-6 col-sm-6">
                                 <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success" data-toggle='tooltip' title="Consultar">Consultar</button>
-                                <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success' title='Reporte'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                             </div>
                         </div>
                     </form>
@@ -173,12 +173,11 @@ Productos Notas de Venta
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
                 <div class="row" id="graficos" name="graficos" style="display:none;">
-                    <div class="col-lg-6">
+                    <div class="col-lg-12">
                     <!-- DONUT CHART -->
                         <div class="box box-danger">
                             <div class="box-header with-border">
                                 <h3 class="box-title" id="titulo_grafico" name="titulo_grafico"></h3>
-                        
                                 <div class="box-tools pull-right">
                                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                                     </button>
@@ -198,7 +197,7 @@ Productos Notas de Venta
                     </div>
                 
                 
-                    <div class="col-lg-6">
+                    <div class="col-lg-12" style="display:none;">
                     <!-- DONUT CHART -->
                         <div class="box box-danger">
                             <div class="box-header with-border">
@@ -212,9 +211,6 @@ Productos Notas de Venta
                             </div>
                             <div class="box-body">
                                 <div class="col-xs-12 col-sm-12">
-                                    <div class="col-xs-12 col-sm-12 text-center">
-                                        <label id="tituloPie1" name="tituloPie1">Gráfico Números</label>
-                                    </div>
                                     <div class="resultadosPie1 text-center" style="width: 100%;">
                                         <canvas id="graficoPie1"></canvas>
                                     </div>
@@ -224,6 +220,35 @@ Productos Notas de Venta
                             <!-- /.box-body -->
                         </div>
                         <!-- /.box -->
+                    </div>
+                    <div class="col-lg-12">
+                        <!-- DONUT CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Gráfico Pie</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12 text-center" style="width: 100%;text-align:center;">
+                                    <div class="resultadosPie12">
+                                        <div id="piechart_3d1" style="width: 900px; height: 500px;"></div>
+                                        <input type="hidden" name="base64pie1" id="base64pie1">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+    
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf1' name='btnpdf1' class='btn btn-success' title='Reporte' onclick="btnpdf(1)"><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
             </div>
@@ -254,7 +279,7 @@ Productos Notas de Venta
                     </div>
                 
                 
-                    <div class="col-lg-6 col-md-offset-3">
+                    <div class="col-lg-6 col-md-offset-3" style="display:none;">
                     <!-- DONUT CHART -->
                         <div class="box box-danger">
                             <div class="box-header with-border">
@@ -268,9 +293,6 @@ Productos Notas de Venta
                             </div>
                             <div class="box-body">
                                 <div class="col-xs-12 col-sm-12">
-                                    <div class="col-xs-12 col-sm-12 text-center">
-                                        <label id="tituloPie2" name="tituloPie2">Gráfico Números</label>
-                                    </div>
                                     <div class="resultadosPie2 text-center" style="width: 100%;">
                                         <canvas id="graficoPie2"></canvas>
                                     </div>
@@ -281,8 +303,35 @@ Productos Notas de Venta
                         </div>
                         <!-- /.box -->
                     </div>
+                    <div class="col-lg-12">
+                    <!-- DONUT CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Gráfico Pie</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="resultadosPie12" style="width: 100%;text-align:center;">
+                                        <div class="text-center" id="piechart_3d2" style="width: 900px; height: 500px;"></div>
+                                        <input type="hidden" name="base64pie2" id="base64pie2">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success' title='Reporte' onclick='btnpdf(2)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    </div>
                 </div>
-
             </div>
 
             <div class="tab-pane" id="tab_3">
@@ -310,7 +359,7 @@ Productos Notas de Venta
                     </div>                
                 </div>
             </div>
-            <div class="tab-pane active" id="tab_4">
+            <div class="tab-pane" id="tab_4">
                 <div class="row" id="grafbarra1" name="grafbarra1" style="display:none;">
                     <div class="col-lg-8 col-md-offset-2">
                     <!-- BARRA CHART -->
@@ -360,11 +409,40 @@ Productos Notas de Venta
                         </div>
                         <!-- /.box -->
                     </div>
+                    <div class="col-lg-8 col-md-offset-2" style="display:none;">
+                    <!-- BARRA CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Gráfico Barra $</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div id="chart_div11" style="width: 900px; height: 500px;"></div>
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf4' name='btnpdf4' class='btn btn-success' title='Reporte' onclick='btnpdf(4)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
+
 @include('generales.buscarcliente')
 @include('generales.modalpdf')
 @endsection

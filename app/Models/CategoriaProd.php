@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class CategoriaProd extends Model
 {
@@ -55,6 +57,56 @@ class CategoriaProd extends Model
     {
         return $this->belongsTo(UnidadMedida::class,'unidadmedidafact_id');
     }
-    
+
+    public static function categoriasxUsuario(){
+        $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+            ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
+                    })
+            ->select([
+                'categoriaprod.id',
+                'categoriaprod.nombre',
+                'categoriaprod.descripcion',
+                'categoriaprod.precio',
+                'categoriaprod.areaproduccion_id',
+                'categoriaprod.sta_precioxkilo',
+                'categoriaprod.unidadmedida_id',
+                'categoriaprod.unidadmedidafact_id'
+            ])
+            ->get();
+        return $categoriaprods;
+    }
+
+    public static function catxUsuCostoAnnoMes($request){
+        if(empty($request['categoriaprod_id'])){
+            $cond_categoria = "";
+        }else{
+            $aux_categoriaprod_id = $request['categoriaprod_id'];
+            $cond_categoria = " and grupoprod.categoriaprod_id!=$aux_categoriaprod_id";
+        }
+        $annomes = $request['annomes'];
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurCadena = implode(",",$sucurArray);
+        $sql = "
+            SELECT categoriaprod.id,categoriaprod.nombre
+            FROM categoriaprod INNER JOIN grupoprod
+            ON categoriaprod.id=grupoprod.categoriaprod_id
+            INNER JOIN categoriaprodsuc
+            ON categoriaprod.id=categoriaprodsuc.categoriaprod_id AND categoriaprodsuc.sucursal_id in ($sucurCadena)
+            WHERE ISNULL(categoriaprod.deleted_at) AND ISNULL(grupoprod.deleted_at)
+            AND grupoprod.id NOT IN (SELECT grupoprod_id 
+                                        FROM categoriagrupocosto inner join grupoprod
+                                        on categoriagrupocosto.grupoprod_id=grupoprod.id $cond_categoria
+                                        WHERE annomes=$annomes 
+                                        and isnull(categoriagrupocosto.deleted_at) )
+            GROUP BY categoriaprod.id,categoriaprod.nombre 
+        ";
+        $datas = DB::select($sql);
+        return $datas;
+    }
+
     
 }

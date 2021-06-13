@@ -4,6 +4,7 @@
 @endsection
 
 @section("scripts")
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/cotizacion/crear.js")}}" type="text/javascript"></script>
 @endsection
 

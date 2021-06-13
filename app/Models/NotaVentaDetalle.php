@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Session;
+
 
 class NotaVentaDetalle extends Model
 {
@@ -65,5 +67,4 @@ class NotaVentaDetalle extends Model
     {
         return $this->hasMany(DespachoOrdDet::class);
     }
-    
 }
