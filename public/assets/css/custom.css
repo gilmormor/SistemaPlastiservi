@@ -276,7 +276,7 @@ td.highlight {
     }
 }
 
-/*SOLUCION AL PROBLEMA DE LOS GRAFICOS EN TAB */
+/*SOLUCION AL PROBLEMA DE LOS GRAFICOS GOOGLE CHART EN TAB(Pestañas) */
 .tab-content > .tab-pane,
 .pill-content > .pill-pane {
     display: block;     

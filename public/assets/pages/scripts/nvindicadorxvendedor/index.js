@@ -385,8 +385,8 @@ function grafico_pie1(datos){
         }
         var data = google.visualization.arrayToDataTable(arraygrafico);
         var options = {
-          title: 'Ventas por Vendedor Kg',
-          is3D: true
+            title: 'Ventas por Vendedor Kg',
+            is3D: true
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart_3d1'));

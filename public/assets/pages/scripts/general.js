@@ -1222,26 +1222,26 @@ $("#selectmultprod").click(function(event){
 
 
 function llenarlistaprod(i,producto_id){
-	aux_id = $("#producto_idPxP").val();
-	if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
-        $("#producto_idPxP").val(producto_id);
-    }else{
-		cadenaADividir = $("#producto_idPxP").val();
-		arraynew = cadenaADividir.split(',')
-		console.log(arraynew);
-		arraynew1 = addRemoveItemArray ( arraynew, producto_id );
-		console.log(arraynew1);
-		$("#producto_idPxP").val(arraynew1.toString());
-	
-        //$("#producto_idPxP").val(aux_id + "," + producto_id);
-    }
-	aux_id = $("#producto_idPxP").val();
-	if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
-		$("#producto_idBP").html('');
-	}else{
-		$("#producto_idBP").html('Cod Prod: ' + $("#producto_idPxP").val());		
+	aux_array = $("#productos").val();
+	$("#productos").html("");
+	for(var i = 0; i < aux_array.length; i++){
+		$("#productos").append("<option value='" + aux_array[i] + "' selected>" + aux_array[i] + "</option>")
+	}
+	if(aux_array.indexOf(producto_id.toString()) == -1){
+		$("#productos").append("<option value='" + producto_id + "' selected>" + producto_id + "</option>")
+	}
+	aux_array = $("#productos").val();
+	aux_array = aux_array.sort((a,b) => parseInt(a) > parseInt(b) ? 1 : -1);
+	$("#productos").html("");
+	for(var i = 0; i < aux_array.length; i++){
+		$("#productos").append("<option value='" + aux_array[i] + "' selected>" + aux_array[i] + "</option>")
 	}
 }
+
+//ACEPTAR LOS PRODUCTOS SELECCIONADOS Y ASIGNAR EL VALOR AL CAMPO DE BUSQUEDA
+$("#aceptarmbp").click(function(){
+	$("#producto_idPxP").val($("#productos").val());
+});
 
 function addRemoveItemArray ( arr, item ) {
     var i = arr.indexOf( item.toString() );
