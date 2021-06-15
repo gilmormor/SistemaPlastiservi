@@ -8,7 +8,10 @@ Unidad de Medida
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/categoriagrupocosto/index.js")}}" type="text/javascript"></script>
 @endsection
-
+<?php
+    use App\Models\CategoriaGrupoCosto;
+    $aux_mesanno = categoriagrupocosto::mesanno(date("Y") . date("m"));
+?>
 @section('contenido')
 <div class="row">
     <div class="col-lg-12">
@@ -23,7 +26,19 @@ Unidad de Medida
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                <div class="row">
+                    <div class="col-sm-offset-3 col-xs-12 col-md-5 col-sm-5">
+                        <div class="form-group">
+                            <div class="col-xs-12 col-md-2 col-sm-2 text-left">
+                                <label for="annomes" class="control-label">Fecha:</label>
+                            </div>
+                            <div class="col-xs-12 col-md-6 col-sm-6">
+                                <input type="text" name="annomes" id="annomes" class="form-control date-picker" value="{{old('annomes', $aux_mesanno ?? '')}}" readonly required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-bordered table-hover" id="tabla-data" data-page-length="25">
                     <thead>
                         <tr>
                             <th class="width70">ID</th>

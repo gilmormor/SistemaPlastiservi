@@ -633,7 +633,7 @@ Route::get('reportclientes/exportPdf', 'ReportClientesController@exportPdf')->na
 
 /*RUTAS CATEGORIAGRUPOCOSTO*/
 Route::get('categoriagrupocosto', 'CategoriaGrupoCostoController@index')->name('categoriagrupocosto');
-Route::get('categoriagrupocostopage', 'CategoriaGrupoCostoController@categoriagrupocostopage')->name('categoriagrupocostopage');
+Route::get('categoriagrupocostopage/{mesanno}', 'CategoriaGrupoCostoController@categoriagrupocostopage')->name('categoriagrupocostopage');
 Route::get('categoriagrupocosto/crear', 'CategoriaGrupoCostoController@crear')->name('crear_categoriagrupocosto');
 Route::post('categoriagrupocosto', 'CategoriaGrupoCostoController@guardar')->name('guardar_categoriagrupocosto');
 Route::get('categoriagrupocosto/{id}/editar', 'CategoriaGrupoCostoController@editar')->name('editar_categoriagrupocosto');

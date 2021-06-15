@@ -995,6 +995,9 @@ function genpdfVPOD(id,stareport){ //GENERAR PDF Vista Previa Orden Despacho
 
 
 function genpdfOD(id,stareport){ //GENERAR PDF Orden de Despacho
+	if($("#myModalTablaOD")){
+		$("#myModalTablaOD").modal('hide');
+	}
 	$('#contpdf').attr('src', '/despachoord/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 }
@@ -1222,6 +1225,7 @@ $("#selectmultprod").click(function(event){
 
 
 function llenarlistaprod(i,producto_id){
+	$("#divprodselec").show();
 	aux_array = $("#productos").val();
 	$("#productos").html("");
 	for(var i = 0; i < aux_array.length; i++){

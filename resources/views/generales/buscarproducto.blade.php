@@ -99,7 +99,7 @@
                                         </table>
                                     </div>
                                     @if (isset($selecmultprod)) <!-- Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
-                                        <div class="col-xs-12">
+                                        <div class="col-xs-12" id="divprodselec" name="divprodselec">
                                             <div class="col-xs-12 col-md-1 col-sm-1 text-left" data-toggle='tooltip' title="Productos seleccionados">
                                                 <label for="productos">Selección:</label>
                                             </div>

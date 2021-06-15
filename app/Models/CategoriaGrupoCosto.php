@@ -141,7 +141,8 @@ class CategoriaGrupoCosto extends Model
             and grupoprod.id NOT IN (SELECT grupoprod_id 
                                         FROM categoriagrupocosto 
                                         WHERE $cond_annomes and $cond_categoriagrupocosto
-                                        and isnull(categoriagrupocosto.deleted_at) )
+                                        and isnull(categoriagrupocosto.deleted_at))
+            and ISNULL(categoriaprod.deleted_at) AND ISNULL(grupoprod.deleted_at)
             order BY categoriaprod.id
         ";
         //dd($sql);

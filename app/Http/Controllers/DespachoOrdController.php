@@ -718,7 +718,7 @@ class DespachoOrdController extends Controller
                     $cantsoldesp = $despachoorddet->despachosoldet->cantsoldesp;
                     $peso = $despachoorddet->notaventadetalle->peso;
                     $respuesta['tabla'] .= "
-                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC' onclick='genpdfOD($despachoorddet->despachoord_id,1)'>
                         <td id='id$i' name='id$i'>$despachoorddet->despachoord_id</td>
                         <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($despachoorddet->created_at)) . "</td>
                         <td style='text-align:right'>". number_format($cantsoldesp, 0, ",", ".") ."</td>

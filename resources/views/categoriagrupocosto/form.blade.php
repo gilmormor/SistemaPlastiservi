@@ -9,7 +9,7 @@
 <div class="form-group">
     <label for="annomes" class="col-lg-3 control-label requerido">Fecha</label>
     <div class="col-lg-8">
-        <input type="text" name="annomes" id="annomes" class="form-control date-picker" value="{{old('costo', $mesanno ?? '')}}" readonly required>
+        <input type="text" name="annomes" id="annomes" class="form-control date-picker" value="{{old('annomes', $mesanno ?? '')}}" readonly required>
     </div>
 </div>
 

@@ -19,12 +19,13 @@ class CategoriaGrupoCostoController extends Controller
      */
     public function index()
     {
-        can('listar-costo-por-categoria');
+        can('listar-costo-por-categoria-grupo');
         $datas = CategoriaGrupoCosto::orderBy('id')->get();
         return view('categoriagrupocosto.index', compact('datas','categoriaprods'));
     }
 
-    public function categoriagrupocostopage(){
+    public function categoriagrupocostopage($mesanno){
+        $aux_annomes = categoriagrupocosto::annomes($mesanno);
         $sql = "SELECT categoriagrupocosto.*,
         grupoprod.gru_nombre,
         categoriaprod.nombre as categorianombre
@@ -32,7 +33,8 @@ class CategoriaGrupoCostoController extends Controller
         ON categoriagrupocosto.grupoprod_id = grupoprod.id
         INNER JOIN categoriaprod
         ON grupoprod.categoriaprod_id = categoriaprod.id
-        WHERE isnull(categoriagrupocosto.deleted_at) AND isnull(grupoprod.deleted_at)";
+        WHERE annomes='$aux_annomes'
+        and isnull(categoriagrupocosto.deleted_at) AND isnull(grupoprod.deleted_at)";
         $datas = DB::select($sql);
         return datatables($datas)->toJson();
     }
@@ -44,7 +46,7 @@ class CategoriaGrupoCostoController extends Controller
      */
     public function crear()
     {
-        can('crear-costo-por-categoria');
+        can('crear-costo-por-categoria-grupo');
         $unidadmedidas = UnidadMedida::orderBy('id')->pluck('descripcion', 'id')->toArray();
         return view('categoriagrupocosto.crear', compact('unidadmedidas'));
 
@@ -59,7 +61,7 @@ class CategoriaGrupoCostoController extends Controller
     //public function guardar(Request $request)
     public function guardar(ValidarCategoriaGrupoCosto $request)
     {
-        can('guardar-costo-por-categoria');
+        can('guardar-costo-por-categoria-grupo');
         $request["annomes"] = CategoriaGrupoCosto::annomes($request->annomes);
         CategoriaGrupoCosto::create($request->all());
         return redirect('categoriagrupocosto')->with('mensaje','Registro creado con exito.');
@@ -84,7 +86,7 @@ class CategoriaGrupoCostoController extends Controller
      */
     public function editar($id)
     {
-        can('editar-costo-por-categoria');
+        can('editar-costo-por-categoria-grupo');
         $data = CategoriaGrupoCosto::findOrFail($id);
         //$categoriaprods = CategoriaProd::categoriasxUsuario();
         $request['id'] = $data->id;
@@ -108,7 +110,7 @@ class CategoriaGrupoCostoController extends Controller
     public function actualizar(ValidarCategoriaGrupoCosto $request, $id)
     {
         //dd($request);
-        can('editar-costo-por-categoria');
+        can('editar-costo-por-categoria-grupo');
         $request["annomes"] = CategoriaGrupoCosto::annomes($request->annomes);
         CategoriaGrupoCosto::findOrFail($id)->update($request->all());
         return redirect('categoriagrupocosto')->with('mensaje','Registro actualizado con exito.');
