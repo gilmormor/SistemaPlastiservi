@@ -44,7 +44,7 @@
                                                             //<a href="#" class="copiar_id" onclick="copiar_codprod({{$producto->id}},'{{$producto->codintprod}}')"> {{$producto->nombre}} </a>
                                                         }
                                                     ?>
-                                                    <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" prodid="{{$producto->id}}" {{$aux_onclick}} class="btn-accion-tabla copiar_id">
+                                                    <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" prodid="{{$producto->id}}" {{$aux_onclick}} class="btn-accion-tabla copiar_id" data-toggle='tooltip' title="Click para seleccionar producto">
                                                         <td name="producto_idBtd{{$aux_nfila}}" id="producto_idBtd{{$aux_nfila}}">
                                                             {{$producto->id}}
                                                         </td>
