@@ -18,7 +18,7 @@ class CategoriaGrupoValMesController extends Controller
      */
     public function index()
     {
-        can('listar-costo-por-categoria-grupo');
+        can('listar-categoria-grupo-valor-mes');
         $datas = CategoriaGrupoValMes::orderBy('id')->get();
         return view('categoriagrupovalmes.index', compact('datas','categoriaprods'));
     }
@@ -45,7 +45,7 @@ class CategoriaGrupoValMesController extends Controller
      */
     public function crear()
     {
-        can('crear-costo-por-categoria-grupo');
+        can('crear-categoria-grupo-valor-mes');
         $unidadmedidas = UnidadMedida::orderBy('id')->pluck('descripcion', 'id')->toArray();
         return view('categoriagrupovalmes.crear', compact('unidadmedidas'));
 
@@ -60,7 +60,7 @@ class CategoriaGrupoValMesController extends Controller
     //public function guardar(Request $request)
     public function guardar(ValidarCategoriaGrupoValMes $request)
     {
-        can('guardar-costo-por-categoria-grupo');
+        can('guardar-categoria-grupo-valor-mes');
         $request["annomes"] = CategoriaGrupoValMes::annomes($request->annomes);
         CategoriaGrupoValMes::create($request->all());
         return redirect('categoriagrupovalmes')->with('mensaje','Registro creado con exito.');
@@ -85,7 +85,7 @@ class CategoriaGrupoValMesController extends Controller
      */
     public function editar($id)
     {
-        can('editar-costo-por-categoria-grupo');
+        can('editar-categoria-grupo-valor-mes');
         $data = CategoriaGrupoValMes::findOrFail($id);
         //$categoriaprods = CategoriaProd::categoriasxUsuario();
         $request['id'] = $data->id;
@@ -109,7 +109,7 @@ class CategoriaGrupoValMesController extends Controller
     public function actualizar(ValidarCategoriaGrupoValMes $request, $id)
     {
         //dd($request);
-        can('editar-costo-por-categoria-grupo');
+        can('editar-categoria-grupo-valor-mes');
         $request["annomes"] = CategoriaGrupoValMes::annomes($request->annomes);
         CategoriaGrupoValMes::findOrFail($id)->update($request->all());
         return redirect('categoriagrupovalmes')->with('mensaje','Registro actualizado con exito.');
