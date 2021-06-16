@@ -27,9 +27,9 @@ class GrupoProd extends Model
     }
 
     //RELACION UNO A MUCHOS 
-    public function categoriagrupocostos()
+    public function categoriagrupovalmes()
     {
-        return $this->hasMany(CategoriaGrupoCosto::class);
+        return $this->hasMany(CategoriaGrupoValMes::class);
     }
     
 }

@@ -11,6 +11,7 @@ $(document).ready(function () {
 		todayHighlight: true
     }).datepicker("setDate");
     $("#costoV").val(MASK(0, $("#costoV").attr('valor'), '-###,###,###,##0.00',1));
+    $("#metacomerkgV").val(MASK(0, $("#metacomerkgV").attr('valor'), '-###,###,###,##0.00',1));
     //$("#annomes").focus();
 });
 
@@ -25,7 +26,7 @@ $('#annomes').on('change', function () {
     $(".grupoprod_id").empty();
     $(".grupoprod_id").append("<option value=''>Seleccione...</option>");
     $.ajax({
-        url: '/categoriagrupocostofilcat',
+        url: '/categoriagrupovalmesfilcat',
         type: 'POST',
         data: data,
         success: function (respuesta) {
@@ -50,7 +51,7 @@ $('.categoriaprod_id').on('change', function () {
     $(".grupoprod_id").empty();
     $(".grupoprod_id").append("<option value=''>Seleccione...</option>");
     $.ajax({
-        url: '/categoriagrupocostofilgrupos',
+        url: '/categoriagrupovalmesfilgrupos',
         type: 'POST',
         data: data,
         success: function (grupoprod) {
@@ -70,5 +71,11 @@ $('.categoriaprod_id').on('change', function () {
 $("#costoV").blur(function(e){
     if($("#costoV").attr('valor') != undefined){
         $("#costo").val($(this).val());
+    }
+});
+
+$("#metacomerkgV").blur(function(e){
+    if($("#metacomerkgV").attr('valor') != undefined){
+        $("#metacomerkg").val($(this).val());
     }
 });

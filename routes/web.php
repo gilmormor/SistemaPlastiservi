@@ -631,13 +631,13 @@ Route::post('reportclientes/reporte', 'ReportClientesController@reporte')->name(
 Route::get('reportclientes/exportPdf', 'ReportClientesController@exportPdf')->name('reportclientes_exportPdf');
 
 
-/*RUTAS CATEGORIAGRUPOCOSTO*/
-Route::get('categoriagrupocosto', 'CategoriaGrupoCostoController@index')->name('categoriagrupocosto');
-Route::get('categoriagrupocostopage/{mesanno}', 'CategoriaGrupoCostoController@categoriagrupocostopage')->name('categoriagrupocostopage');
-Route::get('categoriagrupocosto/crear', 'CategoriaGrupoCostoController@crear')->name('crear_categoriagrupocosto');
-Route::post('categoriagrupocosto', 'CategoriaGrupoCostoController@guardar')->name('guardar_categoriagrupocosto');
-Route::get('categoriagrupocosto/{id}/editar', 'CategoriaGrupoCostoController@editar')->name('editar_categoriagrupocosto');
-Route::put('categoriagrupocosto/{id}', 'CategoriaGrupoCostoController@actualizar')->name('actualizar_categoriagrupocosto');
-Route::delete('categoriagrupocosto/{id}', 'CategoriaGrupoCostoController@eliminar')->name('eliminar_categoriagrupocosto');
-Route::post('categoriagrupocostofilcat', 'CategoriaGrupoCostoController@categoriagrupocostofilcat')->name('categoriagrupocostofilcat');
-Route::post('categoriagrupocostofilgrupos', 'CategoriaGrupoCostoController@categoriagrupocostofilgrupos')->name('categoriagrupocostofilgrupos');
+/*RUTAS CATEGORIAGRUPOVALMES*/
+Route::get('categoriagrupovalmes', 'CategoriaGrupoValMesController@index')->name('categoriagrupovalmes');
+Route::get('categoriagrupovalmespage/{mesanno}', 'CategoriaGrupoValMesController@categoriagrupovalmespage')->name('categoriagrupovalmespage');
+Route::get('categoriagrupovalmes/crear', 'CategoriaGrupoValMesController@crear')->name('crear_categoriagrupovalmes');
+Route::post('categoriagrupovalmes', 'CategoriaGrupoValMesController@guardar')->name('guardar_categoriagrupovalmes');
+Route::get('categoriagrupovalmes/{id}/editar', 'CategoriaGrupoValMesController@editar')->name('editar_categoriagrupovalmes');
+Route::put('categoriagrupovalmes/{id}', 'CategoriaGrupoValMesController@actualizar')->name('actualizar_categoriagrupovalmes');
+Route::delete('categoriagrupovalmes/{id}', 'CategoriaGrupoValMesController@eliminar')->name('eliminar_categoriagrupovalmes');
+Route::post('categoriagrupovalmesfilcat', 'CategoriaGrupoValMesController@categoriagrupovalmesfilcat')->name('categoriagrupovalmesfilcat');
+Route::post('categoriagrupovalmesfilgrupos', 'CategoriaGrupoValMesController@categoriagrupovalmesfilgrupos')->name('categoriagrupovalmesfilgrupos');

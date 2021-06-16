@@ -78,3 +78,10 @@
         <input type="hidden" name="costo" id="costo" value="{{old('costo', $data->costo ?? '')}}" required/>
     </div>
 </div>
+<div class="form-group">
+    <label for="metacomerkg" class="col-lg-3 control-label requerido">Meta Comercial</label>
+    <div class="col-lg-8">
+        <input type="text" name="metacomerkgV" id="metacomerkgV" class="form-control numerico" valor="{{old('metacomerkg', $data->metacomerkg ?? '')}}" value="{{old('metacomerkg', $data->metacomerkg ?? '')}}" required/>
+        <input type="hidden" name="metacomerkg" id="metacomerkg" value="{{old('metacomerkg', $data->metacomerkg ?? '')}}" required/>
+    </div>
+</div>

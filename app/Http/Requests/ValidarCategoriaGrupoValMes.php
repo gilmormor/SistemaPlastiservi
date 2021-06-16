@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ValidarCategoriaGrupoCosto extends FormRequest
+class ValidarCategoriaGrupoValMes extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,8 @@ class ValidarCategoriaGrupoCosto extends FormRequest
             'grupoprod_id' => 'required',
             'unidadmedida_id' => 'required',
             'annomes' => 'required',
-            'costo' => 'required|numeric'
+            'costo' => 'required|numeric',
+            'metacomerkg' => 'required|numeric'
         ];
     }
 }

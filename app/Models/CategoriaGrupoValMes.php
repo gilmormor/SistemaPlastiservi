@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
-use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
-class CategoriaGrupoCosto extends Model
+class CategoriaGrupoValMes extends Model
 {
     use SoftDeletes;
-    protected $table = "categoriagrupocosto";
+    protected $table = "categoriagrupovalmes";
     protected $fillable = [
         'grupoprod_id',
         'unidadmedida_id',
         'annomes',
-        'costo'
+        'costo',
+        'metacomerkg'
     ];
 
     //RELACION INVERSA PARA BUSCAR EL PADRE DE UNA CLASE
@@ -128,10 +128,10 @@ class CategoriaGrupoCosto extends Model
 
         }
         if(empty($request['id'])){
-            $cond_categoriagrupocosto = " true ";
+            $cond_categoriagrupovalmes = " true ";
         }else{
             $id = $request['id'];
-            $cond_categoriagrupocosto = " categoriagrupocosto.id!=$id";
+            $cond_categoriagrupovalmes = " categoriagrupovalmes.id!=$id";
         }
         $sql = "
             SELECT grupoprod.id,grupoprod.gru_nombre
@@ -139,9 +139,9 @@ class CategoriaGrupoCosto extends Model
             ON grupoprod.categoriaprod_id=categoriaprod.id
             WHERE $cond_categoriaprod_id
             and grupoprod.id NOT IN (SELECT grupoprod_id 
-                                        FROM categoriagrupocosto 
-                                        WHERE $cond_annomes and $cond_categoriagrupocosto
-                                        and isnull(categoriagrupocosto.deleted_at))
+                                        FROM categoriagrupovalmes 
+                                        WHERE $cond_annomes and $cond_categoriagrupovalmes
+                                        and isnull(categoriagrupovalmes.deleted_at))
             and ISNULL(categoriaprod.deleted_at) AND ISNULL(grupoprod.deleted_at)
             order BY categoriaprod.id
         ";

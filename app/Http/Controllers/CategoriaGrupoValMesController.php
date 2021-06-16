@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ValidarCategoriaGrupoCosto;
-use App\Models\CategoriaGrupoCosto;
+use App\Http\Requests\ValidarCategoriaGrupoValMes;
+use App\Models\CategoriaGrupoValMes;
 use App\Models\CategoriaProd;
-use App\Models\GrupoProd;
 use App\Models\UnidadMedida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CategoriaGrupoCostoController extends Controller
+class CategoriaGrupoValMesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,21 +19,21 @@ class CategoriaGrupoCostoController extends Controller
     public function index()
     {
         can('listar-costo-por-categoria-grupo');
-        $datas = CategoriaGrupoCosto::orderBy('id')->get();
-        return view('categoriagrupocosto.index', compact('datas','categoriaprods'));
+        $datas = CategoriaGrupoValMes::orderBy('id')->get();
+        return view('categoriagrupovalmes.index', compact('datas','categoriaprods'));
     }
 
-    public function categoriagrupocostopage($mesanno){
-        $aux_annomes = categoriagrupocosto::annomes($mesanno);
-        $sql = "SELECT categoriagrupocosto.*,
+    public function CategoriaGrupoValMespage($mesanno){
+        $aux_annomes = CategoriaGrupoValMes::annomes($mesanno);
+        $sql = "SELECT categoriagrupovalmes.*,
         grupoprod.gru_nombre,
         categoriaprod.nombre as categorianombre
-        FROM categoriagrupocosto INNER JOIN grupoprod
-        ON categoriagrupocosto.grupoprod_id = grupoprod.id
+        FROM categoriagrupovalmes INNER JOIN grupoprod
+        ON categoriagrupovalmes.grupoprod_id = grupoprod.id
         INNER JOIN categoriaprod
         ON grupoprod.categoriaprod_id = categoriaprod.id
         WHERE annomes='$aux_annomes'
-        and isnull(categoriagrupocosto.deleted_at) AND isnull(grupoprod.deleted_at)";
+        and isnull(categoriagrupovalmes.deleted_at) AND isnull(grupoprod.deleted_at)";
         $datas = DB::select($sql);
         return datatables($datas)->toJson();
     }
@@ -48,7 +47,7 @@ class CategoriaGrupoCostoController extends Controller
     {
         can('crear-costo-por-categoria-grupo');
         $unidadmedidas = UnidadMedida::orderBy('id')->pluck('descripcion', 'id')->toArray();
-        return view('categoriagrupocosto.crear', compact('unidadmedidas'));
+        return view('categoriagrupovalmes.crear', compact('unidadmedidas'));
 
     }
 
@@ -59,12 +58,12 @@ class CategoriaGrupoCostoController extends Controller
      * @return \Illuminate\Http\Response
      */
     //public function guardar(Request $request)
-    public function guardar(ValidarCategoriaGrupoCosto $request)
+    public function guardar(ValidarCategoriaGrupoValMes $request)
     {
         can('guardar-costo-por-categoria-grupo');
-        $request["annomes"] = CategoriaGrupoCosto::annomes($request->annomes);
-        CategoriaGrupoCosto::create($request->all());
-        return redirect('categoriagrupocosto')->with('mensaje','Registro creado con exito.');
+        $request["annomes"] = CategoriaGrupoValMes::annomes($request->annomes);
+        CategoriaGrupoValMes::create($request->all());
+        return redirect('categoriagrupovalmes')->with('mensaje','Registro creado con exito.');
     }
 
     /**
@@ -87,16 +86,16 @@ class CategoriaGrupoCostoController extends Controller
     public function editar($id)
     {
         can('editar-costo-por-categoria-grupo');
-        $data = CategoriaGrupoCosto::findOrFail($id);
+        $data = CategoriaGrupoValMes::findOrFail($id);
         //$categoriaprods = CategoriaProd::categoriasxUsuario();
         $request['id'] = $data->id;
         $request['annomes'] = $data->annomes;
         $request['categoriaprod_id'] = $data->grupoprod->categoriaprod_id;
         $categoriaprods = CategoriaProd::catxUsuCostoAnnoMes($request);
-        $grupoprods = CategoriaGrupoCosto::catgrupNoCreados($request);
+        $grupoprods = CategoriaGrupoValMes::catgrupNoCreados($request);
         //$grupoprods = GrupoProd::where('categoriaprod_id',$data->grupoprod->categoriaprod_id)->get();
         $unidadmedidas = UnidadMedida::orderBy('id')->pluck('descripcion', 'id')->toArray();
-        return view('categoriagrupocosto.editar', compact('data','categoriaprods','unidadmedidas','grupoprods'));
+        return view('categoriagrupovalmes.editar', compact('data','categoriaprods','unidadmedidas','grupoprods'));
 
     }
 
@@ -107,13 +106,13 @@ class CategoriaGrupoCostoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function actualizar(ValidarCategoriaGrupoCosto $request, $id)
+    public function actualizar(ValidarCategoriaGrupoValMes $request, $id)
     {
         //dd($request);
         can('editar-costo-por-categoria-grupo');
-        $request["annomes"] = CategoriaGrupoCosto::annomes($request->annomes);
-        CategoriaGrupoCosto::findOrFail($id)->update($request->all());
-        return redirect('categoriagrupocosto')->with('mensaje','Registro actualizado con exito.');
+        $request["annomes"] = CategoriaGrupoValMes::annomes($request->annomes);
+        CategoriaGrupoValMes::findOrFail($id)->update($request->all());
+        return redirect('categoriagrupovalmes')->with('mensaje','Registro actualizado con exito.');
     }
 
     /**
@@ -127,13 +126,13 @@ class CategoriaGrupoCostoController extends Controller
         //
     }
 
-    public function categoriagrupocostofilcat(Request $request){
+    public function CategoriaGrupoValMesfilcat(Request $request){
         $datas = CategoriaProd::catxUsuCostoAnnoMes($request);
         return $datas; //response()->json($data)
     }
 
-    public function categoriagrupocostofilgrupos(Request $request){
-        $datas = CategoriaGrupoCosto::catgrupNoCreados($request);
+    public function CategoriaGrupoValMesfilgrupos(Request $request){
+        $datas = CategoriaGrupoValMes::catgrupNoCreados($request);
         return $datas; //response()->json($data)
     }
 

@@ -9,8 +9,8 @@ Unidad de Medida
     <script src="{{autoVer("assets/pages/scripts/categoriagrupovalmes/index.js")}}" type="text/javascript"></script>
 @endsection
 <?php
-    use App\Models\categoriagrupovalmes;
-    $aux_mesanno = categoriagrupovalmes::mesanno(date("Y") . date("m"));
+    use App\Models\CategoriaGrupoValMes;
+    $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Y") . date("m"));
 ?>
 @section('contenido')
 <div class="row">
@@ -46,6 +46,7 @@ Unidad de Medida
                             <th>Categoria</th>
                             <th>Grupo</th>
                             <th>Costo</th>
+                            <th>Meta Comercial</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>

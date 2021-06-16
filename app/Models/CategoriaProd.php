@@ -98,10 +98,10 @@ class CategoriaProd extends Model
             ON categoriaprod.id=categoriaprodsuc.categoriaprod_id AND categoriaprodsuc.sucursal_id in ($sucurCadena)
             WHERE ISNULL(categoriaprod.deleted_at) AND ISNULL(grupoprod.deleted_at)
             AND grupoprod.id NOT IN (SELECT grupoprod_id 
-                                        FROM categoriagrupocosto inner join grupoprod
-                                        on categoriagrupocosto.grupoprod_id=grupoprod.id $cond_categoria
+                                        FROM categoriagrupovalmes inner join grupoprod
+                                        on categoriagrupovalmes.grupoprod_id=grupoprod.id $cond_categoria
                                         WHERE annomes=$annomes 
-                                        and isnull(categoriagrupocosto.deleted_at) )
+                                        and isnull(categoriagrupovalmes.deleted_at) )
             GROUP BY categoriaprod.id,categoriaprod.nombre 
         ";
         $datas = DB::select($sql);
