@@ -231,14 +231,37 @@ class NVIndicadorxVendController extends Controller
                 $i++;
             }
 
+            $i = 0;
+            //$datasFecNV['vendedores'][$i] += [ "pendiente" => 3000000, "three" => 3 ];
+            //$datasFecNV['vendedores'][$i]->pendientekg = 20000;
+            //dd($datasFecNV['vendedores'][$i]);
+            //array_push($datasFecNV['vendedores'][$i], [ "pendiente" => 3000000, "three" => 3 ]);
+            //dd($datasFecFC['vendedores']);
+            foreach($datasNV['vendedores'] as $datasNVs){
+                $aux_totalfackg = 0;
+                $aux_totalfacdin = 0;
+                foreach($datasFecNV['vendedores'] as $datasFecNVs){
+                    if($datasFecNVs->id == $datasNVs->id){
+                        $aux_totalfackg = $datasFecNVs->totalkilos;
+                        $aux_totalfacdin = $datasFecNVs->subtotal;    
+                    }
+                }
+                $datasNV['vendedores'][$i]->pendientekg = $datasNVs->totalkilos - $aux_totalfackg;
+                $datasNV['vendedores'][$i]->pendienteDinero = $datasNVs->subtotal - $aux_totalfacdin;
+                $i++;
+            }
+
+
             $respuesta['nombrebar'] = array_column($datasNV['vendedores'], 'nombre');
             $respuesta['totalkilosbarNV'] = array_column($datasNV['vendedores'], 'totalkilos');
             $respuesta['totalkilosbarFecFC'] = array_column($datasFecFC['vendedores'], 'totalkilos');
             $respuesta['totalkilosbarFecNV'] = array_column($datasFecNV['vendedores'], 'totalkilos');
+            $respuesta['totalkilosbarNVPendiente'] = array_column($datasNV['vendedores'], 'pendientekg');
 
             $respuesta['totaldinerobarNV'] = array_column($datasNV['vendedores'], 'subtotal');
             $respuesta['totaldineroFecFC'] = array_column($datasFecFC['vendedores'], 'subtotal');
             $respuesta['totaldineroFecNV'] = array_column($datasFecNV['vendedores'], 'subtotal');
+            $respuesta['totaldineroNVPendiente'] = array_column($datasNV['vendedores'], 'pendienteDinero');
 
             //TABLA TOTALES POR PRODUCTO
             $respuesta['tablaagruxproducto'] .= "<table id='tablaagruxproducto' name='tablaagruxproducto' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>

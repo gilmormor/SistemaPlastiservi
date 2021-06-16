@@ -212,24 +212,17 @@ function grafico(datos){
     window.myPie2 = new Chart(ctxPie2, config2);
     myPie2.clear();
 
-
+    console.log(datos);
     //GRAFICO BARRAS
     var color = Chart.helpers.color;
     var Datos = {
         labels : datos['nombrebar'],
         datasets : [{
                 label: 'Nota Venta',
-                backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-                borderColor: window.chartColors.red,
+                backgroundColor: color(window.chartColors.purple).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.purple,
                 borderWidth: 1,
                 data : datos['totalkilosbarNV']
-            },
-            {
-                label: 'Facturado (Fecha FC)',
-                backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-                borderColor: window.chartColors.blue,
-                borderWidth: 1,
-                data : datos['totalkilosbarFecFC']
             },
             {
                 label: 'Facturado (Fecha NV)',
@@ -237,6 +230,20 @@ function grafico(datos){
                 borderColor: window.chartColors.yellow,
                 borderWidth: 1,
                 data : datos['totalkilosbarFecNV']
+            },
+            {
+                label: 'Pendiente',
+                backgroundColor: color(window.chartColors.red).alpha(0.8).rgbString(),
+                borderColor: window.chartColors.red,
+                borderWidth: 1,
+                data : datos['totalkilosbarNVPendiente']
+            },
+            {
+                label: 'Facturado (Fecha FC)',
+                backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.blue,
+                borderWidth: 1,
+                data : datos['totalkilosbarFecFC']
             }
         ]
     }
@@ -267,17 +274,10 @@ function grafico(datos){
         labels : datos['nombrebar'],
         datasets : [{
                 label: 'Nota Venta',
-                backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-                borderColor: window.chartColors.red,
+                backgroundColor: color(window.chartColors.purple).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.purple,
                 borderWidth: 1,
                 data : datos['totaldinerobarNV']
-            },
-            {
-                label: 'Facturado (Fecha FC)',
-                backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-                borderColor: window.chartColors.blue,
-                borderWidth: 1,
-                data : datos['totaldineroFecFC']
             },
             {
                 label: 'Facturado (Fecha NV)',
@@ -285,6 +285,20 @@ function grafico(datos){
                 borderColor: window.chartColors.yellow,
                 borderWidth: 1,
                 data : datos['totaldineroFecNV']
+            },
+            {
+                label: 'Pendiente',
+                backgroundColor: color(window.chartColors.red).alpha(0.8).rgbString(),
+                borderColor: window.chartColors.red,
+                borderWidth: 1,
+                data : datos['totaldineroNVPendiente']
+            },
+            {
+                label: 'Facturado (Fecha FC)',
+                backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.blue,
+                borderWidth: 1,
+                data : datos['totaldineroFecFC']
             }
         ]
     }
