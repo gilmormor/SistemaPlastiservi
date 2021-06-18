@@ -163,7 +163,7 @@ Productos Notas de Venta
 
 <div class="row" id="reporte1" name="reporte1" style="display:none;">
     <!-- Custom Tabs -->
-    <div class="nav-tabs-custom">
+    <div class="nav-tabs-custom" id="tabs">
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Cantidad</a></li>
             <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Facturado</a></li>
@@ -489,11 +489,9 @@ Productos Notas de Venta
                         </div>
                         <!-- /.box -->
                     </div>
-                    <!--
                     <div class="col-lg-12 text-center">
                         <button type='button' id='btnpdf5' name='btnpdf5' class='btn btn-success' title='Reporte' onclick='btnpdf(5)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
-                    -->
                 </div>
                 
             </div>

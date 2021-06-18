@@ -17,17 +17,21 @@ $(document).ready(function () {
     //$('.col-xs-12').css({'margin-bottom':'0px','margin-left': '0px','margin-right': '0px','padding-left': '5px','padding-right': '5px'});
     $("#btnconsultar").click(function()
     {
+        //$( "#tabs" ).tabs({ active: "tab_1" });
+        $('a[href="#tab_1"]').click();
         consultar(datos());
     });
 
     $("#tab2").click(function(){
         //$(".hideshowdinero").css({'display':'none'});
-        $(".hideshowdinero").show()    
+        $(".hideshowdinero").show();
+        $(".hskilos").hide();
     });
 
     $("#tab5").click(function(){
         //$(".hideshowdinero").css({'display':'none'});
         $(".hideshowdinero").hide()    
+        $(".hskilos").show();
     });
 
     //alert(aux_nfila);

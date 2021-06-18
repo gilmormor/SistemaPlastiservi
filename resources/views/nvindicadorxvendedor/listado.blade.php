@@ -87,7 +87,7 @@
 </div>
 
 
-@if ($request->numrep=='2')
+@if ($request->numrep=='2' or $request->numrep=='5')
 	<div id="page_pdf">
 		NV ($)
 		<div class="round">
@@ -95,71 +95,87 @@
 					<thead>
 						<tr>
 							<th>Productos</th>
-							@foreach($datas['vendedores'] as $vendedor)
-								<th style='text-align:right' >{{$vendedor->nombre}}</th>
-							@endforeach
-							<th style='text-align:right' class='tooltipsC' title='Total'>TOTAL $</th>
-							<th style='text-align:right' class='tooltipsC' title='Total'>KG</th>
-							<th style='text-align:right' class='tooltipsC' title='Total'>Prom $</th>
+							@if ($request->numrep=='2')
+								@foreach($datas['vendedores'] as $vendedor)
+									<th style='text-align:right' >{{$vendedor->nombre}}</th>
+								@endforeach
+								<th style='text-align:right'>TOTAL $</th>
+							@endif
+							@if ($request->numrep=='5')
+								<th style='text-align:right'>Meta Comercial KG</th>
+								<th style='text-align:right'>KG</th>
+								<th style='text-align:right'>Precio Kg <br> Promedio $</th>
+							@endif
 						</tr>
 					</thead>
 					<tbody id="detalle_productos">
 						<?php
 							$totalgeneral = 0;
 							$totalgeneralKilos = 0;
+							$totalMCkg = 0;
 						?>
 						@foreach($datas['productos'] as $producto)
 							<tr class='btn-accion-tabla tooltipsC'>
 								<td>{{$producto->gru_nombre}}</td>
-								@foreach($datas['vendedores'] as $vendedor)
-									<?php
-										$aux_encontrado = false;
-										foreach($datas['totales'] as $total){
-											if($total->grupoprod_id == $producto->id and $total->persona_id==$vendedor->id){
-												$aux_encontrado = true;
-												?>
-												<td style='text-align:right'>{{number_format($total->subtotal, 0, ",", ".")}}</td>
+								@if ($request->numrep=='2')
+									@foreach($datas['vendedores'] as $vendedor)
+										<?php
+											$aux_encontrado = false;
+											foreach($datas['totales'] as $total){
+												if($total->grupoprod_id == $producto->id and $total->persona_id==$vendedor->id){
+													$aux_encontrado = true;
+													?>
+													<td style='text-align:right'>{{number_format($total->subtotal, 0, ",", ".")}}</td>
+													<?php
+												} 
+											}
+											if($aux_encontrado==false){ ?>
+												<td style='text-align:right'>0.00</td>
 												<?php
-											} 
-										}
-										if($aux_encontrado==false){ ?>
-											<td style='text-align:right'>0.00</td>
-											<?php
-										}
-									?>
-								@endforeach
+											}
+										?>
+									@endforeach
+									<td style='text-align:right'>{{number_format($producto->subtotal, 0, ",", ".")}}</td>
+								@endif
 								<?php
 									$aux_prom = 0;
 									if($producto->totalkilos>0){
 										$aux_prom = $producto->subtotal/$producto->totalkilos;
 									}
 								?>
-								<td style='text-align:right'>{{number_format($producto->subtotal, 0, ",", ".")}}</td>
-								<td style='text-align:right'>{{number_format($producto->totalkilos, 2, ",", ".")}}</td>
-								<td style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</td>
+								@if ($request->numrep=='5')
+									<td style='text-align:right'>{{number_format($producto->metacomerkg, 2, ",", ".")}}</td>
+									<td style='text-align:right'>{{number_format($producto->totalkilos, 2, ",", ".")}}</td>
+									<td style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</td>
+								@endif
 							</tr>
 							<?php
 								$totalgeneral += $producto->subtotal;
 								$totalgeneralKilos += $producto->totalkilos;
+								$totalMCkg += $producto->metacomerkg;
 							?>
 						@endforeach
 					</tbody>
 					<tfoot id="detalle_totales">
 						<tr>
-							<th>TOTAL $</th>
-							@foreach($datas['vendedores'] as $vendedor)
-								<th style='text-align:right'>{{number_format($vendedor->subtotal, 0, ",", ".")}}</th>
-							@endforeach
-							<?php
-								$aux_prom = 0;
-								if($totalgeneralKilos>0){
-									$aux_prom = $totalgeneral/$totalgeneralKilos;
-								}
-							?>
-
-							<th style='text-align:right'>{{number_format($totalgeneral, 0, ",", ".")}}</th>
-							<th style='text-align:right'>{{number_format($totalgeneralKilos, 2, ",", ".")}}</th>
-							<th style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</th>
+							<th>TOTAL</th>
+							@if ($request->numrep=='2')
+								@foreach($datas['vendedores'] as $vendedor)
+									<th style='text-align:right'>{{number_format($vendedor->subtotal, 0, ",", ".")}}</th>
+								@endforeach
+								<?php
+									$aux_prom = 0;
+									if($totalgeneralKilos>0){
+										$aux_prom = $totalgeneral/$totalgeneralKilos;
+									}
+								?>
+								<th style='text-align:right'>{{number_format($totalgeneral, 0, ",", ".")}}</th>
+							@endif
+							@if ($request->numrep=='5')
+								<th style='text-align:right'>{{number_format($totalMCkg, 2, ",", ".")}}</th>
+								<th style='text-align:right'>{{number_format($totalgeneralKilos, 2, ",", ".")}}</th>
+								<th style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</th>
+							@endif
 						</tr>
 					</tfoot>
 			</table>

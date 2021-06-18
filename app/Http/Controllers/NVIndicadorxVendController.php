@@ -128,8 +128,9 @@ class NVIndicadorxVendController extends Controller
             $areaproduccion = DB::select($sql);
             if($areaproduccion[0]->stapromkg == "1"){
                 $respuesta['tabladinero'] .= "
-                    <th style='text-align:right' class='tooltipsC' title='Total'>KG</th>
-                    <th style='text-align:right' class='tooltipsC' title='Total'>Prom</th>";
+                    <th style='text-align:right' class='tooltipsC hskilos' title='Meta comercial KG'>Meta comercial KG</th>
+                    <th style='text-align:right' class='tooltipsC hskilos' title='Total Kilos'>KG</th>
+                    <th style='text-align:right' class='tooltipsC hskilos' title='Promedio'>Prom</th>";
             }
 
             $respuesta['tabladinero'] .= "
@@ -140,6 +141,7 @@ class NVIndicadorxVendController extends Controller
             $totalgeneralfilakg = 0;
             $totalgeneralDinero = 0;
             $precpromediofinal = 0;
+            $totalmetacomercialkg = 0;
             foreach($datas['productos'] as $producto){
                 $respuesta['tabla'] .= "
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
@@ -175,14 +177,16 @@ class NVIndicadorxVendController extends Controller
                         <td id='totalsubtotal$i' name='totalsubtotal$i' style='text-align:right' class='hideshowdinero' data-order='$producto->subtotal'>" . number_format($producto->subtotal, 0, ",", ".") . "</td>";
                 if($areaproduccion[0]->stapromkg == "1"){
                     $respuesta['tabladinero'] .= "
-                        <td id='totalkilos$i' name='totalkilos$i' style='text-align:right' data-order='$producto->totalkilos'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
-                        <td id='totalkilos$i' name='totalkilos$i' style='text-align:right' data-order='$aux_precpromkilo'>" . number_format($aux_precpromkilo, 2, ",", ".") . "</td>";
+                        <td style='text-align:right' data-order='$producto->metacomerkg' class=' hskilos'>" . number_format($producto->metacomerkg, 2, ",", ".") . "</td>
+                        <td style='text-align:right' data-order='$producto->totalkilos' class=' hskilos'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
+                        <td style='text-align:right' data-order='$aux_precpromkilo' class=' hskilos'>" . number_format($aux_precpromkilo, 2, ",", ".") . "</td>";
                 }
                 $respuesta['tabladinero'] .= "
                     </tr>";
                 $i++;
                 $totalgeneralfilakg += $producto->totalkilos;
                 $totalgeneralDinero += $producto->subtotal;
+                $totalmetacomercialkg += $producto->metacomerkg;
             }
             if($totalgeneralfilakg > 0){
                 $precpromediofinal = $totalgeneralDinero / $totalgeneralfilakg;
@@ -214,8 +218,9 @@ class NVIndicadorxVendController extends Controller
                         <th style='text-align:right' class='hideshowdinero'>". number_format($totalgeneralDinero, 0, ",", ".") ."</th>";
             if($areaproduccion[0]->stapromkg == "1"){
                 $respuesta['tabladinero'] .= "
-                        <th style='text-align:right'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
-                        <th style='text-align:right'>". number_format($precpromediofinal, 2, ",", ".") ."</th>";
+                    <th style='text-align:right' class=' hskilos'>". number_format($totalmetacomercialkg, 2, ",", ".") ."</th>
+                    <th style='text-align:right' class=' hskilos'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
+                    <th style='text-align:right' class=' hskilos'>". number_format($precpromediofinal, 2, ",", ".") ."</th>";
             }
             $respuesta['tabladinero'] .= "
                     </tr>
