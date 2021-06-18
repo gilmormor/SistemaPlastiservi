@@ -583,12 +583,14 @@ function consulta($request){
     //dd($vendedorcond);
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
+        $annomes = date("Y") . date("m");
     }else{
         $fecha = date_create_from_format('d/m/Y', $request->fechad);
         $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
         $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
+        $annomes = date_format($fecha, 'Ym');
     }
     if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";
@@ -634,7 +636,7 @@ function consulta($request){
     INNER JOIN cliente
     ON notaventa.cliente_id=cliente.id
     LEFT JOIN categoriagrupovalmes
-    ON grupoprod.id=categoriagrupovalmes.grupoprod_id
+    ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
     WHERE $aux_condFecha
     and $vendedorcond
     and $aux_condcategoriaprod_id
@@ -771,6 +773,7 @@ function consultaODcerrada($request){
     //dd($vendedorcond);
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
+        $annomes = date("Y") . date("m");
     }else{
         if($request->idcons == "2"){
             $fecha = date_create_from_format('d/m/Y', $request->fechad);
@@ -783,8 +786,9 @@ function consultaODcerrada($request){
             $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
             $fecha = date_create_from_format('d/m/Y', $request->fechah);
             $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
-            $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";    
+            $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
         }
+        $annomes = date_format($fecha, 'Ym');
     }
     if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";
@@ -835,7 +839,7 @@ function consultaODcerrada($request){
     INNER JOIN cliente
     ON notaventa.cliente_id=cliente.id
     LEFT JOIN categoriagrupovalmes
-    ON grupoprod.id=categoriagrupovalmes.grupoprod_id
+    ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
