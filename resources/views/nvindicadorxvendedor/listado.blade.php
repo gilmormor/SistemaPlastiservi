@@ -166,7 +166,7 @@
 		</div>
 	</div>
 @endif
-@if ($request->numrep=='1' or $request->numrep=='2')
+@if ($request->numrep=='1' or $request->numrep=='2' or $request->numrep=='5')
 <div id="page_pdf">
 	<div class="round">
 		<img src="{{session('grafico')}}" style="width:auto;height:auto;text-align:center;">	

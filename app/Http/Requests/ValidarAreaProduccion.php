@@ -25,7 +25,9 @@ class ValidarAreaProduccion extends FormRequest
     {
         return [
             'nombre' => 'required|max:100|unique:areaproduccion,nombre,' . $this->route('id'),
-            'descripcion' => 'required|max:100'
+            'descripcion' => 'required|max:100',
+            'stapromkg' => 'required',
+            
         ];
     }
 }

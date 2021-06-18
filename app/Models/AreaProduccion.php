@@ -12,6 +12,7 @@ class AreaProduccion extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
+        'stapromkg',
         'usuariodel_id'
     ];
     //RELACION UNO A MUCHOS CATEGORIAPROD
