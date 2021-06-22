@@ -182,6 +182,70 @@
 		</div>
 	</div>
 @endif
+@if ($request->numrep=='6')
+	<div id="page_pdf">
+		Indicadores Comerciales al {{$aux_fhasta}}.
+		<div class="round">
+			<table id="factura_detalle">
+					<thead>
+						<tr>
+							<th>Area Produccion</th>
+							<th style='text-align:right'>Kg Facturado<br>al dia {{$aux_fhasta}}</th>
+							<th style='text-align:right'>Kg Facturado<br>Acumulado</th>
+							<th style='text-align:right'>Precio<br>Promedio Kg</th>
+						</tr>
+					</thead>
+					<tbody id="detalle_productos">
+						<?php
+							$aux_totalkiloshoy = 0;
+							$aux_totalkgfacacum = 0;
+							$aux_totalmonto = 0;
+						?>
+						@foreach($datas['areaproduccion'] as $areaproduccion)
+							<?php 
+								$aux_promkilo = 0;
+								if($areaproduccion->totalkilos>0){
+									$aux_promkilo = $areaproduccion->subtotal/$areaproduccion->totalkilos;
+								}
+								$aux_kiloshoy = 0;
+								foreach($datas['areaproduccionhoy'] as $areaproduccionhoy){
+									if($areaproduccionhoy->id == $areaproduccion->id){
+										$aux_kiloshoy = $areaproduccionhoy->totalkilos;
+									}  
+								}
+							?>
+							<tr class='btn-accion-tabla'>
+								<td>{{$areaproduccion->nombre}}</td>
+								<td style='text-align:right'>{{number_format($aux_kiloshoy, 2, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($areaproduccion->totalkilos, 2, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($aux_promkilo, 2, ",", ".")}}</td>
+							</tr>
+							<?php
+								$aux_totalkgfacacum += $areaproduccion->totalkilos;
+								$aux_totalmonto += $areaproduccion->subtotal;
+								$aux_totalkiloshoy += $aux_kiloshoy;
+							?>
+						@endforeach
+						<?php 
+							$aux_promkilogen = 0;
+							if($aux_totalkgfacacum > 0){
+								$aux_promkilogen = $aux_totalmonto / $aux_totalkgfacacum;
+							}
+						?>
+					</tbody>
+					<tfoot id="detalle_totales">
+						<tr>
+							<th>TOTAL</th>
+							<th style='text-align:right'>{{number_format($aux_totalkiloshoy, 2, ",", ".")}}</th>
+							<th style='text-align:right'>{{number_format($aux_totalkgfacacum, 2, ",", ".")}}</th>
+							<th style='text-align:right'>{{number_format($aux_promkilogen, 2, ",", ".")}}</th>
+						</tr>
+					</tfoot>
+			</table>
+		</div>
+	</div>
+@endif
+
 @if ($request->numrep=='1' or $request->numrep=='2' or $request->numrep=='5')
 <div id="page_pdf">
 	<div class="round">

@@ -345,13 +345,13 @@ class NVIndicadorxVendController extends Controller
 			<thead>
 				<tr>
 					<th>Area Prod</th>
-                    <th>Facturado<b>al dia</th>
-                    <th>Facturado<b>Acumulado</th>
-                    <th>Precio<b>Promedio Kg</th>
+                    <th style='text-align:right'>Kg Facturado<br>al dia $request->fechah</th>
+                    <th style='text-align:right'>Kg Facturado<br>Acumulado</th>
+                    <th style='text-align:right'>Precio<br>Promedio Kg</th>
                 </tr>
             </thead>
             <tbody>";
-            $aux_totalkgfacdia = 0;
+            $aux_totalkiloshoy = 0;
             $aux_totalkgfacacum = 0;
             $aux_totalmonto = 0;
             foreach($datas['areaproduccion'] as $areaproduccion){
@@ -359,120 +359,45 @@ class NVIndicadorxVendController extends Controller
                 if($areaproduccion->totalkilos>0){
                     $aux_promkilo = $areaproduccion->subtotal/$areaproduccion->totalkilos;
                 }
-                $respuesta['areaproduccion'] .= "
+                $aux_kiloshoy = 0;
+                foreach($datas['areaproduccionhoy'] as $areaproduccionhoy){
+                    if($areaproduccionhoy->id == $areaproduccion->id){
+                        $aux_kiloshoy = $areaproduccionhoy->totalkilos;
+                    }  
+                }
+                
+                $respuesta['tablaareaproduccion'] .= "
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                        <td>$areaproduccion->nombre</td>
-                        <td style='text-align:right' data-order='$producto->totalkilos' data-search='$producto->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
-                        <td style='text-align:right' data-order='$producto->totalkilos' data-search='$producto->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
+                        <td data-order='$areaproduccion->id' >$areaproduccion->nombre</td>
+                        <td style='text-align:right' data-order='$aux_kiloshoy' data-search='$aux_kiloshoy'>" . number_format($aux_kiloshoy, 2, ",", ".") . "</td>
+                        <td style='text-align:right' data-order='$areaproduccion->totalkilos' data-search='$areaproduccion->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>";
                 //$aux_totalfacdia += 0;
                 $aux_totalkgfacacum += $areaproduccion->totalkilos;
                 $aux_totalmonto += $areaproduccion->subtotal;
+                $aux_totalkiloshoy += $aux_kiloshoy;
             }
             $aux_promkilogen = 0;
-            if(count($datas['agruxproducto']) > 0){
+            if($aux_totalkgfacacum > 0){
                 $aux_promkilogen = $aux_totalmonto / $aux_totalkgfacacum;
             }
-            $respuesta['tablaagruxproducto'] .= "
+            $respuesta['tablaareaproduccion'] .= "
                 </tr>
                 </tbody>
                 <tfoot>
                     <tr>
                         <th>TOTAL</th>
-                        <th style='text-align:right'>". number_format(0, 2, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($aux_totalkiloshoy, 2, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($aux_totalkgfacacum, 2, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($aux_promkilogen, 2, ",", ".") ."</th>
                     </tr>
                 </tfoot>
             </table>";
-
-
             return $respuesta;
         }
     }
 
-    public function reporteDinero(Request $request){
-        //dd($request);
-        $respuesta = array();
-		$respuesta['exito'] = true;
-		$respuesta['mensaje'] = "Código encontrado";
-		$respuesta['tabla'] = "";
 
-        if($request->ajax()){
-            if($request->idcons == "1"){
-                $datas = consulta($request);
-            }
-            if($request->idcons == "2" or $request->idcons == "3"){
-                $datas = consultaODcerrada($request);
-            }
-            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
-			<thead>
-				<tr>
-					<th>Productos</th>";
-
-            foreach($datas['vendedores'] as $vendedor){
-                $nombreven = $vendedor->nombre;
-                $respuesta['tabla'] .= "
-                        <th style='text-align:right' class='tooltipsC' title='$nombreven'>$nombreven</th>";
-            }
-            $respuesta['tabla'] .= "
-                    <th style='text-align:right' class='tooltipsC' title='Total'>TOTAL</th>
-                </tr>
-            </thead>
-            <tbody>";
-            $i = 0;
-            $totalgeneral = 0;
-            foreach($datas['productos'] as $producto){
-                $respuesta['tabla'] .= "
-                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                        <td id='producto$i' name='producto$i'>$producto->gru_nombre</td>";
-                foreach($datas['vendedores'] as $vendedor){
-                    $aux_encontrado = false;
-                    foreach($datas['totales'] as $total){
-                        if($total->grupoprod_id == $producto->id and $total->persona_id==$vendedor->id){
-                            $aux_encontrado = true;
-                            $respuesta['tabla'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>" . number_format($total->totalkilos, 2, ",", ".") . "</td>";
-                        } 
-                    }
-                    if($aux_encontrado==false){
-                        $respuesta['tabla'] .= "<td id='vendedor$i' name='vendedor$i' style='text-align:right'>0.00</td>";
-                    }
-                }
-                
-                $respuesta['tabla'] .= "
-                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
-                    </tr>";
-                $i++;
-                $totalgeneral += $producto->totalkilos;
-
-            }
-            $respuesta['tabla'] .= "
-            </tbody>
-                <tfoot>
-                    <tr>
-                        <th>TOTAL KG</th>";
-
-            foreach($datas['vendedores'] as $vendedor){
-                $respuesta['tabla'] .= "
-                    <th style='text-align:right'>". number_format($vendedor->totalkilos, 2, ",", ".") ."</th>";
-            }
-            $respuesta['tabla'] .= "
-                        <th style='text-align:right'>". number_format($totalgeneral, 2, ",", ".") ."</th>
-                    </tr>
-                </tfoot>
-            </table>";
-            $respuesta['nombre'] = array_column($datas['vendedores'], 'nombre');
-            $respuesta['totalkilos'] = array_column($datas['vendedores'], 'totalkilos');
-            $i = 0;
-            foreach($respuesta['totalkilos'] as &$kilos){
-                $kilos = round($kilos,2);
-                $kilos1 = round(($kilos / $totalgeneral) * 100,2);
-                $respuesta['nombre'][$i] .= " " . number_format($kilos1, 2, ",", ".") . "%";
-                $i++;
-            }
-            return $respuesta;
-        }
-    }
 
     public function exportPdf(Request $request)
     {
@@ -824,12 +749,8 @@ function consulta($request){
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
     ON producto.categoriaprod_id=categoriaprod.id
-    INNER JOIN grupoprod
-    ON producto.grupoprod_id=grupoprod.id
     INNER JOIN notaventa 
     ON notaventadetalle.notaventa_id=notaventa.id
-    INNER JOIN cliente
-    ON notaventa.cliente_id=cliente.id
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id
     WHERE $aux_condFecha
@@ -837,14 +758,17 @@ function consulta($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condstatusact_id
+    and areaproduccion.stapromkg=1
     and notaventa.anulada is null
     and notaventadetalle.deleted_at is null and notaventa.deleted_at is null
-    GROUP BY categoriaprod.areaproduccion_id;";
+    GROUP BY categoriaprod.areaproduccion_id
+    ORDER BY categoriaprod.areaproduccion_id;";
     //dd($sql);
     //" and " . $aux_condrut .
 
     $datas = DB::select($sql);
     $respuesta['areaproduccion'] = $datas;
+    //dd($respuesta['areaproduccion']);
 
 
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
@@ -854,12 +778,8 @@ function consulta($request){
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
     ON producto.categoriaprod_id=categoriaprod.id
-    INNER JOIN grupoprod
-    ON producto.grupoprod_id=grupoprod.id
     INNER JOIN notaventa 
     ON notaventadetalle.notaventa_id=notaventa.id
-    INNER JOIN cliente
-    ON notaventa.cliente_id=cliente.id
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id
     WHERE $aux_condFechahoy
@@ -867,14 +787,17 @@ function consulta($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condstatusact_id
+    and areaproduccion.stapromkg=1
     and notaventa.anulada is null
     and notaventadetalle.deleted_at is null and notaventa.deleted_at is null
-    GROUP BY categoriaprod.areaproduccion_id;";
+    GROUP BY categoriaprod.areaproduccion_id
+    ORDER BY categoriaprod.areaproduccion_id;";
     //dd($sql);
     //" and " . $aux_condrut .
 
     $datas = DB::select($sql);
     $respuesta['areaproduccionhoy'] = $datas;
+    //dd($respuesta['areaproduccionhoy']);
 
     return $respuesta;
 }
@@ -1134,12 +1057,8 @@ function consultaODcerrada($request){
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
     ON producto.categoriaprod_id=categoriaprod.id
-    INNER JOIN grupoprod
-    ON producto.grupoprod_id=grupoprod.id
     INNER JOIN notaventa 
     ON notaventadetalle.notaventa_id=notaventa.id
-    INNER JOIN cliente
-    ON notaventa.cliente_id=cliente.id
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
@@ -1147,13 +1066,15 @@ function consultaODcerrada($request){
     and $vendedorcond
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
-    and isnull(notaventa.anulada)
     and $aux_condstatusact_id
+    and areaproduccion.stapromkg=1
+    and isnull(notaventa.anulada)
     and isnull(despachoord.deleted_at) 
     and isnull(notaventadetalle.deleted_at) 
     and isnull(notaventa.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
-    GROUP BY categoriaprod.areaproduccion_id;";
+    GROUP BY categoriaprod.areaproduccion_id
+    ORDER BY categoriaprod.areaproduccion_id;";
 
     $datas = DB::select($sql);
     $respuesta['areaproduccion'] = $datas;
@@ -1169,12 +1090,8 @@ function consultaODcerrada($request){
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
     ON producto.categoriaprod_id=categoriaprod.id
-    INNER JOIN grupoprod
-    ON producto.grupoprod_id=grupoprod.id
     INNER JOIN notaventa 
     ON notaventadetalle.notaventa_id=notaventa.id
-    INNER JOIN cliente
-    ON notaventa.cliente_id=cliente.id
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
@@ -1182,13 +1099,15 @@ function consultaODcerrada($request){
     and $vendedorcond
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
-    and isnull(notaventa.anulada)
     and $aux_condstatusact_id
+    and areaproduccion.stapromkg=1
+    and isnull(notaventa.anulada)
     and isnull(despachoord.deleted_at) 
     and isnull(notaventadetalle.deleted_at) 
     and isnull(notaventa.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
-    GROUP BY categoriaprod.areaproduccion_id;";
+    GROUP BY categoriaprod.areaproduccion_id
+    ORDER BY categoriaprod.areaproduccion_id;";
 
     $datas = DB::select($sql);
     $respuesta['areaproduccionhoy'] = $datas;

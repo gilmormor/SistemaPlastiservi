@@ -522,9 +522,8 @@ Productos Notas de Venta
                         <!-- /.box -->
                     </div>
                 
-                
+                    <!--
                     <div class="col-lg-12">
-                    <!-- DONUT CHART -->
                         <div class="box box-danger">
                             <div class="box-header with-border">
                                 <h3 class="box-title">Gráfico Pie</h3>
@@ -544,12 +543,11 @@ Productos Notas de Venta
                                 </div>
                                 
                             </div>
-                            <!-- /.box-body -->
                         </div>
-                        <!-- /.box -->
                     </div>
+                    -->
                     <div class="col-lg-12 text-center">
-                        <button type='button' id='btnpdf5' name='btnpdf5' class='btn btn-success' title='Reporte' onclick='btnpdf(5)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                        <button type='button' id='btnpdf6' name='btnpdf6' class='btn btn-success' title='Reporte' onclick='btnpdf(6)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
                 

@@ -107,6 +107,7 @@ function consultar(data){
     $("#graficos").hide();
     $("#grafbarra1").hide();
     $("#graficosMC1").hide();
+    $("#graficosAP1").hide();
     
     $.ajax({
         url: '/nvindicadorxvend/reporte',
@@ -121,6 +122,7 @@ function consultar(data){
                 $("#tablaconsulta").html(datos['tabla']);
                 $("#tablaconsultadinero").html(datos['tabladinero']);
                 $("#tablaconsultaproducto").html(datos['tablaagruxproducto']);
+                $("#tablaAP").html(datos['tablaareaproduccion']);
 
                 $("#tablaMC").html(datos['tabladinero']);
 
@@ -160,6 +162,7 @@ function grafico(datos){
     $("#reporte1").show();
     $("#grafbarra1").show();
     $("#graficosMC1").show();
+    $("#graficosAP1").show();
     $('.resultadosPie1').html('<canvas id="graficoPie1" act="0"></canvas>');
     $('.resultadosPie2').html('<canvas id="graficoPie2" act="0"></canvas>');
     $('.resultadosBarra1').html('<canvas id="graficoBarra1" act="0"></canvas>');
@@ -352,6 +355,7 @@ function grafico(datos){
     $("#reporte1").show();
     $("#grafbarra1").show();
     $("#graficosMC1").show();
+    $("#graficosAP1").show();
 }
 
 function generarPNGgraf(base64,filename){
