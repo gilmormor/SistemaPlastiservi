@@ -130,7 +130,7 @@ class NVIndicadorxVendController extends Controller
                 $respuesta['tabladinero'] .= "
                     <th style='text-align:right' class='tooltipsC hskilos' title='Meta comercial KG'>Meta comercial KG</th>
                     <th style='text-align:right' class='tooltipsC hskilos' title='Total Kilos'>KG</th>
-                    <th style='text-align:right' class='tooltipsC hskilos' title='Promedio'>Prom</th>";
+                    <th style='text-align:right' class='tooltipsC hskilos' title='Promedio x Kg'>Prom</th>";
             }
 
             $respuesta['tabladinero'] .= "
@@ -200,7 +200,7 @@ class NVIndicadorxVendController extends Controller
             </tbody>
                 <tfoot>
                     <tr>
-                        <th>TOTAL $</th>";
+                        <th>TOTAL</th>";
             
 
             foreach($datas['vendedores'] as $vendedor){
