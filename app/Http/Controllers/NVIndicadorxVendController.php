@@ -72,6 +72,7 @@ class NVIndicadorxVendController extends Controller
 		$respuesta['tabla'] = "";
 		$respuesta['tabladinero'] = "";
 		$respuesta['tablaagruxproducto'] = "";
+		$respuesta['tablaareaproduccion'] = "";
 
         if($request->ajax()){
             //dd($request->idcons);
@@ -338,6 +339,54 @@ class NVIndicadorxVendController extends Controller
                 </tfoot>
             </table>";
             $respuesta['productos'] = $datas['productos'];
+
+            //TABLA POR AREA DE PRODUCCION
+            $respuesta['tablaareaproduccion'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+			<thead>
+				<tr>
+					<th>Area Prod</th>
+                    <th>Facturado<b>al dia</th>
+                    <th>Facturado<b>Acumulado</th>
+                    <th>Precio<b>Promedio Kg</th>
+                </tr>
+            </thead>
+            <tbody>";
+            $aux_totalkgfacdia = 0;
+            $aux_totalkgfacacum = 0;
+            $aux_totalmonto = 0;
+            foreach($datas['areaproduccion'] as $areaproduccion){
+                $aux_promkilo = 0;
+                if($areaproduccion->totalkilos>0){
+                    $aux_promkilo = $areaproduccion->subtotal/$areaproduccion->totalkilos;
+                }
+                $respuesta['areaproduccion'] .= "
+                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                        <td>$areaproduccion->nombre</td>
+                        <td style='text-align:right' data-order='$producto->totalkilos' data-search='$producto->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
+                        <td style='text-align:right' data-order='$producto->totalkilos' data-search='$producto->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
+                        <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>";
+                //$aux_totalfacdia += 0;
+                $aux_totalkgfacacum += $areaproduccion->totalkilos;
+                $aux_totalmonto += $areaproduccion->subtotal;
+            }
+            $aux_promkilogen = 0;
+            if(count($datas['agruxproducto']) > 0){
+                $aux_promkilogen = $aux_totalmonto / $aux_totalkgfacacum;
+            }
+            $respuesta['tablaagruxproducto'] .= "
+                </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>TOTAL</th>
+                        <th style='text-align:right'>". number_format(0, 2, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($aux_totalkgfacacum, 2, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($aux_promkilogen, 2, ",", ".") ."</th>
+                    </tr>
+                </tfoot>
+            </table>";
+
+
             return $respuesta;
         }
     }
@@ -584,6 +633,11 @@ function consulta($request){
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
         $annomes = date("Y") . date("m");
+        /*CONSULTAR FECHA DE HOY SI LOS CAMPOS DE FECHA ESTAN VACIOS $aux_condFechahoy*/
+        $fechadhoy = date('Y-m-d')." 00:00:00";
+        $fechahhoy = date('Y-m-d')." 23:59:59";
+        $aux_condFechahoy = "notaventa.fechahora>='$fechadhoy' and notaventa.fechahora<='$fechahhoy'";
+    
     }else{
         $fecha = date_create_from_format('d/m/Y', $request->fechad);
         $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
@@ -592,6 +646,19 @@ function consulta($request){
         $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
         $annomes = date_format($fecha, 'Ym');
     }
+
+    if(empty($request->fechah)){
+        /*CONSULTAR FECHA DE HOY SI EL CAMPO FECHA HASTA ESTA VACIO $aux_condFechahoy*/
+        $fechahoy = date('Y-m-d');
+        $aux_condFechahoy = "date_format(notaventa.fechahora,'%Y-%m-%d')='$fechahoy'";
+    
+    }else{
+        /*DE LO CONTRARIO TOMO LA FECHA DE $request->fechah */
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
+        $fechahoy = date_format($fecha, 'Y-m-d');
+        $aux_condFechahoy = "date_format(notaventa.fechahora,'%Y-%m-%d')='$fechahoy'";
+    }
+
     if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";
     }else{
@@ -750,6 +817,65 @@ function consulta($request){
     $datas = DB::select($sql);
     $respuesta['agruxproducto'] = $datas;
 
+    $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
+    sum(notaventadetalle.totalkilos) AS totalkilos,
+    sum(notaventadetalle.subtotal) AS subtotal
+    FROM notaventadetalle INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id = areaproduccion.id
+    WHERE $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condstatusact_id
+    and notaventa.anulada is null
+    and notaventadetalle.deleted_at is null and notaventa.deleted_at is null
+    GROUP BY categoriaprod.areaproduccion_id;";
+    //dd($sql);
+    //" and " . $aux_condrut .
+
+    $datas = DB::select($sql);
+    $respuesta['areaproduccion'] = $datas;
+
+
+    $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
+    sum(notaventadetalle.totalkilos) AS totalkilos,
+    sum(notaventadetalle.subtotal) AS subtotal
+    FROM notaventadetalle INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id = areaproduccion.id
+    WHERE $aux_condFechahoy
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condstatusact_id
+    and notaventa.anulada is null
+    and notaventadetalle.deleted_at is null and notaventa.deleted_at is null
+    GROUP BY categoriaprod.areaproduccion_id;";
+    //dd($sql);
+    //" and " . $aux_condrut .
+
+    $datas = DB::select($sql);
+    $respuesta['areaproduccionhoy'] = $datas;
+
     return $respuesta;
 }
 
@@ -780,7 +906,7 @@ function consultaODcerrada($request){
             $fechad = date_format($fecha, 'Y-m-d'); //." 00:00:00";
             $fecha = date_create_from_format('d/m/Y', $request->fechah);
             $fechah = date_format($fecha, 'Y-m-d'); //." 23:59:59";
-            $aux_condFecha = "despachoord.fechafactura>='$fechad' and despachoord.fechafactura<='$fechah'";    
+            $aux_condFecha = "despachoord.fechafactura>='$fechad' and despachoord.fechafactura<='$fechah'";
         }else{
             $fecha = date_create_from_format('d/m/Y', $request->fechad);
             $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
@@ -790,6 +916,26 @@ function consultaODcerrada($request){
         }
         $annomes = date_format($fecha, 'Ym');
     }
+
+    if($request->idcons == "2"){
+        $auxVarcampoFecha = "despachoord.fechafactura";
+    }else{
+        $auxVarcampoFecha = "notaventa.fechahora";
+    }
+
+    
+    if(empty($request->fechah)){
+        /*CONSULTAR FECHA DE HOY SI EL CAMPO FECHA HASTA ESTA VACIO $aux_condFechahoy*/
+        $fechahoy = date('Y-m-d');
+        $aux_condFechahoy = "date_format($auxVarcampoFecha,'%Y-%m-%d')='$fechahoy'";
+    
+    }else{
+        /*DE LO CONTRARIO TOMO LA FECHA DE $request->fechah */
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
+        $fechahoy = date_format($fecha, 'Y-m-d');
+        $aux_condFechahoy = "date_format($auxVarcampoFecha,'%Y-%m-%d')='$fechahoy'";
+    }
+
     if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";
     }else{
@@ -975,6 +1121,77 @@ function consultaODcerrada($request){
 
     $datas = DB::select($sql);
     $respuesta['agruxproducto'] = $datas;
+
+    
+    $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
+    FROM despachoorddet INNER JOIN notaventadetalle 
+    ON despachoorddet.notaventadetalle_id=notaventadetalle.id
+    INNER JOIN despachoord
+    ON despachoorddet.despachoord_id=despachoord.id
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id = areaproduccion.id
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and isnull(notaventa.anulada)
+    and $aux_condstatusact_id
+    and isnull(despachoord.deleted_at) 
+    and isnull(notaventadetalle.deleted_at) 
+    and isnull(notaventa.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    GROUP BY categoriaprod.areaproduccion_id;";
+
+    $datas = DB::select($sql);
+    $respuesta['areaproduccion'] = $datas;
+
+    $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
+    FROM despachoorddet INNER JOIN notaventadetalle 
+    ON despachoorddet.notaventadetalle_id=notaventadetalle.id
+    INNER JOIN despachoord
+    ON despachoorddet.despachoord_id=despachoord.id
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id = areaproduccion.id
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condFechahoy
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and isnull(notaventa.anulada)
+    and $aux_condstatusact_id
+    and isnull(despachoord.deleted_at) 
+    and isnull(notaventadetalle.deleted_at) 
+    and isnull(notaventa.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    GROUP BY categoriaprod.areaproduccion_id;";
+
+    $datas = DB::select($sql);
+    $respuesta['areaproduccionhoy'] = $datas;
 
     return $respuesta;
 }

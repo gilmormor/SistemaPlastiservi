@@ -170,6 +170,7 @@ Productos Notas de Venta
             <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Productos</a></li>
             <li><a href="#tab_4" data-toggle="tab" id="tab4" name="tab4">Nota Venta vs Facturado</a></li>
             <li><a href="#tab_5" data-toggle="tab" id="tab5" name="tab5">Meta Comercial</a></li>
+            <li><a href="#tab_6" data-toggle="tab" id="tab6" name="tab6">Por area de Producción</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
@@ -495,6 +496,65 @@ Productos Notas de Venta
                 </div>
                 
             </div>
+            <div class="tab-pane" id="tab_6">
+                <div class="row" id="graficosAP1" name="graficosAP1" style="display:none;">
+                    <div class="col-lg-12">
+                    <!-- DONUT CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title" id="titulo_graficoAP1" name="titulo_graficoAP1"></h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="table-responsive" id="tablaAP">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+                
+                
+                    <div class="col-lg-12">
+                    <!-- DONUT CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Gráfico Pie</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="resultadosPie12" style="width: 100%;text-align:center;">
+                                        <div class="text-center" id="piechart_3d3" style="width: 900px; height: 500px;"></div>
+                                        <input type="hidden" name="base64pie3" id="base64pie3">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf5' name='btnpdf5' class='btn btn-success' title='Reporte' onclick='btnpdf(5)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    </div>
+                </div>
+                
+            </div>
+
 
         </div>
     </div>
