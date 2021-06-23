@@ -347,6 +347,7 @@ class NVIndicadorxVendController extends Controller
 					<th>Area Prod</th>
                     <th style='text-align:right'>Kg Facturado<br>al dia $request->fechah</th>
                     <th style='text-align:right'>Kg Facturado<br>Acumulado</th>
+                    <th style='text-align:right'>$</th>
                     <th style='text-align:right'>Precio<br>Promedio Kg</th>
                 </tr>
             </thead>
@@ -371,6 +372,7 @@ class NVIndicadorxVendController extends Controller
                         <td data-order='$areaproduccion->id' >$areaproduccion->nombre</td>
                         <td style='text-align:right' data-order='$aux_kiloshoy' data-search='$aux_kiloshoy'>" . number_format($aux_kiloshoy, 2, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$areaproduccion->totalkilos' data-search='$areaproduccion->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
+                        <td style='text-align:right' data-order='$areaproduccion->subtotal' data-search='$areaproduccion->subtotal'>" . number_format($areaproduccion->subtotal, 0, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>";
                 //$aux_totalfacdia += 0;
                 $aux_totalkgfacacum += $areaproduccion->totalkilos;
@@ -389,6 +391,7 @@ class NVIndicadorxVendController extends Controller
                         <th>TOTAL</th>
                         <th style='text-align:right'>". number_format($aux_totalkiloshoy, 2, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($aux_totalkgfacacum, 2, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($aux_totalmonto, 0, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($aux_promkilogen, 2, ",", ".") ."</th>
                     </tr>
                 </tfoot>

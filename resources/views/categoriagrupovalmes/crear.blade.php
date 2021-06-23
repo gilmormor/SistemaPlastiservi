@@ -5,7 +5,6 @@
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-<!--    <script src="{{autoVer("assets/pages/scripts/categoriagrupovalmes/crear.js")}}" type="text/javascript"></script>-->
     <script src="{{autoVer("assets/pages/scripts/categoriagrupovalmes/crear.js")}}" type="text/javascript"></script>
 
 @endsection

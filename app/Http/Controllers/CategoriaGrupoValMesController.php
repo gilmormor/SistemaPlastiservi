@@ -62,8 +62,17 @@ class CategoriaGrupoValMesController extends Controller
     {
         can('guardar-categoria-grupo-valor-mes');
         $request["annomes"] = CategoriaGrupoValMes::annomes($request->annomes);
-        CategoriaGrupoValMes::create($request->all());
-        return redirect('categoriagrupovalmes')->with('mensaje','Registro creado con exito.');
+        $categoriagrupovalmes = CategoriaGrupoValMes::where('grupoprod_id',$request->grupoprod_id)
+                                ->where('annomes',$request->annomes)->count();
+        if($categoriagrupovalmes == 0){
+            CategoriaGrupoValMes::create($request->all());
+            return redirect('categoriagrupovalmes')->with('mensaje','Registro creado con exito.');
+        }else{
+            return redirect('categoriagrupovalmes')->with([
+                'mensaje'=>'Registro no fue creado. Registro ya existe',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
     }
 
     /**
@@ -111,8 +120,19 @@ class CategoriaGrupoValMesController extends Controller
         //dd($request);
         can('editar-categoria-grupo-valor-mes');
         $request["annomes"] = CategoriaGrupoValMes::annomes($request->annomes);
-        CategoriaGrupoValMes::findOrFail($id)->update($request->all());
-        return redirect('categoriagrupovalmes')->with('mensaje','Registro actualizado con exito.');
+        $categoriagrupovalmes = CategoriaGrupoValMes::where('id','!=',$id)
+                        ->where('grupoprod_id',$request->grupoprod_id)
+                        ->where('annomes',$request->annomes)->count();
+        if($categoriagrupovalmes == 0){
+            CategoriaGrupoValMes::findOrFail($id)->update($request->all());
+            return redirect('categoriagrupovalmes')->with('mensaje','Registro actualizado con exito.');
+        }else{
+            return redirect('categoriagrupovalmes')->with([
+                'mensaje'=>'Registro no fue modificado. Registro ya existe',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
     }
 
     /**
@@ -121,9 +141,25 @@ class CategoriaGrupoValMesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
+    public function eliminar(Request $request,$id)
+    {        
+        if(can('eliminar-categoria-grupo-valor-mes',false)){
+            if ($request->ajax()) {
+                if (CategoriaGrupoValMes::destroy($request->id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $producto = CategoriaGrupoValMes::withTrashed()->findOrFail($request->id);
+                    $producto->usuariodel_id = auth()->id();
+                    $producto->save();
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }
+            } else {
+                abort(404);
+            }
+        }else{
+            return response()->json(['mensaje' => 'ne']);
+        }
     }
 
     public function CategoriaGrupoValMesfilcat(Request $request){

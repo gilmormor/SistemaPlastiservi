@@ -155,21 +155,14 @@ class ReportOrdDespGuiaFactController extends Controller
                     $aux_enlaceOD = "<small class='label pull-left bg-red'>Anulado</small>";
                 }
 
-                $aux_fechaguia = $data->guiadespachofec == null ? "" : date('Y-m-d', strtotime($data->guiadespachofec));
+                $aux_fechaguia = $data->guiadespachofec == null ? "" : date('d-m-Y', strtotime($data->guiadespachofec));
 
                 $detalleGF = "
-                <td id='guiadespacho$i' name='guiadespacho$i'>
-                    $data->guiadespacho
-                </td>
-                <td id='fechaguia$i' name='fechaguia$i'>
-                    $aux_fechaguia
-                </td>
-                <td id='numfactura$i' name='numfactura$i'>
-                    $data->numfactura
-                </td>
-                <td id='fechafactura$i' name='fechafactura$i'>
-                    $data->fechafactura
-                </td>";
+                    <td>$data->guiadespacho</td>
+                    <td data-order='$data->guiadespachofec'>$aux_fechaguia</td>
+                    <td>$data->numfactura</td>
+                    <td data-order='$data->fechafactura'>" . date('d-m-Y', strtotime($data->fechafactura)) . "</td>";
+                    
                 if ($request->statusOD >= 1 and $request->statusOD <=3){
                     $detalleGF = "";
                 }
@@ -191,27 +184,24 @@ class ReportOrdDespGuiaFactController extends Controller
 
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                    <td id='id$i' name='id$i'>$data->id
-                    </td>
-                    <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                    <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
-                    <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
-                    <td>
-                        $aux_enlaceOD
-                    </td>
+                    <td>$data->id</td>
+                    <td data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                    <td data-order='$data->fechaestdesp'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
+                    <td>$data->razonsocial</td>
+                    <td>$aux_enlaceOD</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->despachosol_id,1)'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>$data->despachosol_id
                         </a>
                     </td>
-                    <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
+                    <td>$aux_enlaceoc</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
                         </a>
                     </td>
-                    <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
-                    <td style='text-align:right'>".
+                    <td>$data->comunanombre</td>
+                    <td style='text-align:right' data-order='$data->totalkilos'>".
                         number_format($data->totalkilos, 2, ",", ".") .
                     "</td>
                     $detalleGF

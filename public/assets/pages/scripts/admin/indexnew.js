@@ -10,9 +10,6 @@ $(document).ready(function () {
         //alert(loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+"/editar");
         window.location = loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+"/editar";
     });
-     
-
-    
 });
 
 $(document).on("click", ".btnEliminar", function(event){

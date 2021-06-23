@@ -227,9 +227,9 @@ class NotaVentaConsultaController extends Controller
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td id='comuna$i' name='comuna$i'>$comuna->nombre</td>
                     <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</a></td>
-                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
-                    <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
-                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
+                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right' data-order='$data->totalkilos'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
+                    <td id='totalps$i' name='totalps$i' style='text-align:right' data-order='$data->subtotal'>".number_format($data->subtotal, 2, ",", ".") ."</td>
+                    <td id='prompvc$i' name='prompvc$i' style='text-align:right' data-order='$aux_prom'>".number_format($aux_prom, 2, ",", ".") ."</td>
                     <td>
                         <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
                         <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
