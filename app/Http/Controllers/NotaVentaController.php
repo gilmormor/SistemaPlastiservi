@@ -537,7 +537,6 @@ class NotaVentaController extends Controller
                         $notaventadetalle->ancho = $request->ancho[$i];
                         $notaventadetalle->largo = $request->long[$i];
                         $notaventadetalle->espesor = $request->espesor[$i];    
-                        $notaventadetalle->long = $producto->long;
                         $notaventadetalle->diametro = $producto->diametro;
                         $notaventadetalle->categoriaprod_id = $producto->categoriaprod_id;
                         $notaventadetalle->claseprod_id = $producto->claseprod_id;
