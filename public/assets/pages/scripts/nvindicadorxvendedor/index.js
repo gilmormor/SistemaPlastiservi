@@ -108,6 +108,7 @@ function consultar(data){
     $("#grafbarra1").hide();
     $("#graficosMC1").hide();
     $("#graficosAP1").hide();
+    $("#margen").hide();
     
     $.ajax({
         url: '/nvindicadorxvend/reporte',
@@ -122,6 +123,8 @@ function consultar(data){
                 $("#tablaconsulta").html(datos['tabla']);
                 $("#tablaconsultadinero").html(datos['tabladinero']);
                 $("#tablaconsultaproducto").html(datos['tablaagruxproducto']);
+                $("#tablaconsultaproductomargen").html(datos['tablaagruxproductomargen']);
+                //console.log(datos['tablaagruxproductomargen']);
                 $("#tablaAP").html(datos['tablaareaproduccion']);
 
                 $("#tablaMC").html(datos['tabladinero']);
@@ -163,6 +166,8 @@ function grafico(datos){
     $("#grafbarra1").show();
     $("#graficosMC1").show();
     $("#graficosAP1").show();
+    $("#margen").show();
+    $("#graficoVentasxMes").show();
     $('.resultadosPie1').html('<canvas id="graficoPie1" act="0"></canvas>');
     $('.resultadosPie2').html('<canvas id="graficoPie2" act="0"></canvas>');
     $('.resultadosBarra1').html('<canvas id="graficoBarra1" act="0"></canvas>');
@@ -349,6 +354,46 @@ function grafico(datos){
 
     //myBar2.clear();
     //
+
+
+    const DATA_COUNT = 7;
+    const NUMBER_CFG = {count: DATA_COUNT, min: -100, max: 100};
+    
+    const data = {
+      labels: datos['vetasxmesmeses'],
+      datasets: [
+        {
+          label: 'Ventas x Mes',
+          data: datos['ventasxmesdinero'],
+          borderColor: window.chartColors.blue,
+          backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+        }
+      ]
+    };
+
+    const config3 = {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: 'Chart.js Line Chart'
+            }
+          }
+        },
+      };
+
+    var ctxline1 = document.getElementById('graficoline1').getContext('2d');
+    window.myline1 = new Chart(ctxline1,config3);
+    myline1.clear();
+
+
+
 	$("#graficos").show();
 	$("#graficos1").show();
 	$("#graficos2").show();
@@ -356,6 +401,8 @@ function grafico(datos){
     $("#grafbarra1").show();
     $("#graficosMC1").show();
     $("#graficosAP1").show();
+    $("#margen").show();
+
 }
 
 function generarPNGgraf(base64,filename){
@@ -457,7 +504,7 @@ function grafico_pie2(datos){
 
         $("#base64pie2").val(chart.getImageURI());
 
-        console.log(arraygrafico);
+        //console.log(arraygrafico);
       }
 }
 
@@ -483,8 +530,8 @@ function grafico_pie3(datos){
 
         $("#base64pie3").val(chart.getImageURI());
 
-        console.log(arraygrafico);
-        console.log(datos['productos']);
+        //console.log(arraygrafico);
+        //console.log(datos['productos']);
       }
 }
 

@@ -171,6 +171,8 @@ Productos Notas de Venta
             <li><a href="#tab_4" data-toggle="tab" id="tab4" name="tab4">Nota Venta vs Facturado</a></li>
             <li><a href="#tab_5" data-toggle="tab" id="tab5" name="tab5">Meta Comercial</a></li>
             <li><a href="#tab_6" data-toggle="tab" id="tab6" name="tab6">Por area de Producción</a></li>
+            <li><a href="#tab_7" data-toggle="tab" id="tab7" name="tab7">Productos $</a></li>
+            <li><a href="#tab_8" data-toggle="tab" id="tab8" name="tab8">Ventas x Mes</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
@@ -360,6 +362,9 @@ Productos Notas de Venta
                         <!-- /.box -->
                     </div>                
                 </div>
+                <div class="col-lg-12 text-center">
+                    <button type='button' id='btnpdf3' name='btnpdf3' class='btn btn-success' title='Reporte' onclick='btnpdf(3)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                </div>
             </div>
             <div class="tab-pane" id="tab_4">
                 <div class="row" id="grafbarra1" name="grafbarra1" style="display:none;">
@@ -494,7 +499,6 @@ Productos Notas de Venta
                         <button type='button' id='btnpdf5' name='btnpdf5' class='btn btn-success' title='Reporte' onclick='btnpdf(5)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
-                
             </div>
             <div class="tab-pane" id="tab_6">
                 <div class="row" id="graficosAP1" name="graficosAP1" style="display:none;">
@@ -552,15 +556,67 @@ Productos Notas de Venta
                 </div>
                 
             </div>
+            <div class="tab-pane" id="tab_7">
+                <div class="row" id="margen" name="margen" style="display:none;">
+                    <div class="col-lg-12">
+                    <!-- DONUT CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title" id="titulo_grafico2" name="titulo_grafico2"></h3>
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="table-responsive" id="tablaconsultaproductomargen">
 
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf7' name='btnpdf7' class='btn btn-success' title='Reporte' onclick='btnpdf(7)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="tab_8">
+                <div class="row" id="graficoVentasxMes" name="graficoVentasxMes" style="display:none;">
+                    <div class="col-lg-12">
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Gráfico Pie</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="graficoVentasxMes12" style="width: 100%;text-align:center;">
+                                    <canvas id="graficoline1"></canvas>
+                                    <input type="hidden" name="base64line1" id="base64line1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf8' name='btnpdf8' class='btn btn-success' title='Reporte' onclick='btnpdf(8)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    </div>
+                </div>
+                
+            </div>
 
         </div>
     </div>
 </div>
-
-
-
-
 
 @include('generales.buscarcliente')
 @include('generales.modalpdf')

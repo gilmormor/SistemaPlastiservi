@@ -182,6 +182,80 @@
 		</div>
 	</div>
 @endif
+@if ($request->numrep=='3')
+	<div id="page_pdf">
+		Indicadores Comerciales al {{$aux_fhasta}}.
+		<div class="round">
+			<table id="factura_detalle">
+					<thead>
+						<tr>
+							<th>Productos</th>
+							<th>Diam</th>
+							<th>Long</th>
+							<th>Clase</th>
+							<th>PesoUnid</th>
+							<th>TU</th>
+							<th>Color</th>
+							<th style='text-align:right'>Unid</th>
+							<th style='text-align:right'>KG</th>
+							<th style='text-align:right'>Prom Unit</th>
+							<th style='text-align:right'>Prom Kilo</th>
+						</tr>
+					</thead>
+					<tbody id="detalle_productos">
+						<?php
+							$aux_sumpromkilo = 0;
+							$totalgeneralfilakg = 0;
+						?>
+						@foreach($datas['agruxproducto'] as $producto)
+							<?php 
+								$aux_promunit = 0;
+								if($producto->cant>0){
+									$aux_promunit = $producto->subtotal/$producto->cant;
+								}
+								$aux_promkilo = 0;
+								if($producto->totalkilos>0){
+									$aux_promkilo = $producto->subtotal/$producto->totalkilos;
+								}
+								$aux_sumpromkilo += $aux_promkilo;
+
+							?>
+							<tr class='btn-accion-tabla'>
+								<td>{{$producto->nombre}}</td>
+								<td>{{$producto->diametro}}</td>
+								<td>{{$producto->long}}</td>
+								<td>{{$producto->cla_nombre}}</td>
+								<td>{{$producto->peso}}</td>
+								<td>{{$producto->tipounion}}</td>
+								<td>{{$producto->color}}</td>
+								<td style='text-align:right'>{{$producto->cant}}</td>
+								<td style='text-align:right'>{{number_format($producto->totalkilos, 2, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($aux_promunit, 2, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($aux_promkilo, 2, ",", ".")}}</td>
+
+								<?php
+									$totalgeneralfilakg += $producto->totalkilos;
+									$aux_promkilogen = 0;
+									if(count($datas['agruxproducto']) > 0){
+										$aux_promkilogen = $aux_sumpromkilo / count($datas['agruxproducto']);
+									}
+								?>
+							</tr>
+						@endforeach
+					</tbody>
+					<tfoot id="detalle_totales">
+						<tr>
+							<th>TOTAL</th>
+							<th colspan='8' style='text-align:right'>{{number_format($totalgeneralfilakg, 2, ",", ".")}}</th>
+							<th></th>
+							<th style='text-align:right'>{{number_format($aux_promkilogen, 2, ",", ".")}}</th>	
+						</tr>
+					</tfoot>
+			</table>
+		</div>
+	</div>
+@endif
+
 @if ($request->numrep=='6')
 	<div id="page_pdf">
 		Indicadores Comerciales al {{$aux_fhasta}}.
@@ -239,6 +313,111 @@
 							<th style='text-align:right'>{{number_format($aux_totalkiloshoy, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_totalkgfacacum, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_promkilogen, 2, ",", ".")}}</th>
+						</tr>
+					</tfoot>
+			</table>
+		</div>
+	</div>
+@endif
+
+@if ($request->numrep=='7')
+	<div id="page_pdf">
+		Indicadores Comerciales al {{$aux_fhasta}}.
+		<div class="round">
+			<table id="factura_detalle">
+					<thead>
+						<tr>
+							<th>Productos</th>
+							<th>Diametro</th>
+							<th>Long</th>
+							<th>Clase</th>
+							<th>Peso Unid</th>
+							<th>TU</th>
+							<th>Color</th>
+							<th style='text-align:right'>Unid</th>
+							<th style='text-align:right'>KG</th>
+							<th style='text-align:right'>Prom Unit</th>
+							<th style='text-align:right'>Prom Kilo</th>
+							<th style='text-align:right'>Ventas $</th>
+							<th style='text-align:right'>Costo formula Kg</th>
+							<th style='text-align:right'>Margen Aporte</th>
+							<th style='text-align:right'>Margen venta</th>
+							<th style='text-align:right'>Prom Grupo</th>
+						</tr>
+					</thead>
+					<tbody id="detalle_productos">
+						<?php
+							$aux_sumpromkilo = 0;
+							$totalgeneralfilakg = 0;
+							$aux_totalsubtotal = 0;
+							$aux_totalmargenVenta = 0;
+							$sum_grupo = 0;
+							$sum_KgGrupo = 0;
+							$i = 0;
+
+						?>
+						@foreach($datas['agruxproducto'] as $producto)
+							<?php 
+								$aux_promunit = 0;
+								if($producto->cant>0){
+									$aux_promunit = $producto->subtotal/$producto->cant;
+								}
+								$aux_promkilo = 0;
+								if($producto->totalkilos>0){
+									$aux_promkilo = $producto->subtotal/$producto->totalkilos;
+								}
+								$aux_sumpromkilo += $aux_promkilo;
+								$aux_margenAporte = $aux_promkilo - $producto->costo;
+								$aux_margenVenta = $aux_promkilo * $aux_margenAporte;
+								$sum_grupo += $producto->subtotal;
+								$sum_KgGrupo += $producto->totalkilos;
+							?>
+							<tr class='btn-accion-tabla'>
+								<td>{{$producto->nombre}}</td>
+								<td>{{$producto->diametro}}</td>
+								<td>{{$producto->long}}</td>
+								<td>{{$producto->cla_nombre}}</td>
+								<td>{{$producto->peso}}</td>
+								<td>{{$producto->tipounion}}</td>
+								<td>{{$producto->color}}</td>
+								<td style='text-align:right'>{{$producto->cant}}</td>
+								<td style='text-align:right'>{{number_format($producto->totalkilos, 2, ",", ".")}} </td>
+								<td style='text-align:right'>{{number_format($aux_promunit, 2, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($aux_promkilo, 2, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($producto->subtotal, 0, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($producto->costo, 0, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($aux_margenAporte, 0, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($aux_margenVenta, 0, ",", ".")}}</td>";
+								<?php
+									$aux_td = "";
+									if( (count($datas['agruxproducto']) == ($i +1)) or ($producto->gru_id != $datas['agruxproducto'][$i + 1]->gru_id)){
+										$aux_promgrup = ($sum_grupo / $sum_KgGrupo);
+										$aux_td = "<td style='text-align:right' data-order='$aux_promgrup' data-search='$aux_promgrup' class='tooltipsC' title='$producto->gru_nombre'><b>" . number_format($aux_promgrup, 0, ",", ".") . "</b></td>";
+										$sum_grupo = 0;
+										$sum_KgGrupo = 0;        
+									}else{
+										$aux_td = "<td style='text-align:right' data-order='' data-search=''></td>";
+									}
+									$totalgeneralfilakg += $producto->totalkilos;
+									$aux_totalsubtotal += $producto->subtotal;
+									$aux_totalmargenVenta += $aux_margenVenta;
+									$i++;
+									echo $aux_td;
+								?>
+							</tr>
+						@endforeach
+					</tbody>
+					<tfoot id="detalle_totales">
+						<tr>
+							<th>TOTAL</th>
+							<th colspan='8' style='text-align:right'> {{number_format($totalgeneralfilakg, 2, ",", ".")}} </th>
+							<th></th>
+							<th style='text-align:right'> {{number_format($aux_totalsubtotal/$totalgeneralfilakg, 2, ",", ".")}} </th>
+							<th style='text-align:right'> {{number_format($aux_totalsubtotal, 0, ",", ".")}} </th>
+							<th style='text-align:right'></th>
+							<th style='text-align:right'> {{number_format(($aux_totalmargenVenta/$aux_totalsubtotal)*100, 0, ",", ".")}} %</th>
+							<th style='text-align:right'> {{number_format($aux_totalmargenVenta, 0, ",", ".")}} </th>
+							<th style='text-align:right'></th>			
 						</tr>
 					</tfoot>
 			</table>
