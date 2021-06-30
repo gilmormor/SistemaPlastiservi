@@ -821,6 +821,9 @@ function consulta($request){
     $respuesta['areaproduccionhoy'] = $datas;
     //dd($respuesta['areaproduccionhoy']);
 
+    $sql = " SET lc_time_names = 'es_ES';";
+    $datas = DB::select($sql);
+
     $sql = "SELECT date_format(notaventa.fechahora,'%Y%m') AS annomes,
     MONTHNAME(notaventa.fechahora) AS mes,
     sum(notaventadetalle.cant) AS cant,

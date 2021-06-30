@@ -588,7 +588,7 @@ Productos Notas de Venta
 
             <div class="tab-pane" id="tab_8">
                 <div class="row" id="graficoVentasxMes" name="graficoVentasxMes" style="display:none;">
-                    <div class="col-lg-12">
+                    <div class="col-lg-8 col-md-offset-2">
                         <div class="box box-danger">
                             <div class="box-header with-border">
                                 <h3 class="box-title">Gráfico Pie</h3>
