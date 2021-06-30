@@ -1170,8 +1170,8 @@ function consultaODcerrada($request){
     $sql = " SET lc_time_names = 'es_ES';";
     $datas = DB::select($sql);
 
-    $sql = "SELECT date_format(notaventa.fechahora,'%Y%m') AS annomes,
-    MONTHNAME(notaventa.fechahora) AS mes,
+    $sql = "SELECT date_format(despachoord.fechafactura,'%Y%m') AS annomes,
+    MONTHNAME(despachoord.fechafactura) AS mes,
     sum(despachoorddet.cantdesp) AS cant,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
@@ -1201,7 +1201,7 @@ function consultaODcerrada($request){
     and isnull(notaventa.anulada)
     and isnull(despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
-    GROUP BY date_format(notaventa.fechahora,'%Y%m');";
+    GROUP BY date_format(despachoord.fechafactura,'%Y%m');";
 
     //dd($sql);
     $datas = DB::select($sql);
