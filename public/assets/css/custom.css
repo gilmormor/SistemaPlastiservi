@@ -66,6 +66,12 @@ label.requerido:after{
 .d-inline{
     display: inline;
 }
+.width10{
+    width: 10px !important;
+}
+.width20{
+    width: 20px !important;
+}
 .width30{
     width: 30px !important;
 }

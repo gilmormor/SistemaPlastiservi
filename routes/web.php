@@ -397,6 +397,20 @@ Route::get('nvindicadorxvend/exportPdfkg', 'NVIndicadorxVendController@exportPdf
 Route::get('nvindicadorxvend/exportPdfdn', 'NVIndicadorxVendController@exportPdfdn')->name('nvindicadorxvend_exportPdfdn');
 Route::post('nvindicadorxvend/imagengrafico', 'NVIndicadorxVendController@imagengrafico')->name('nvindicadorxvend_imagengrafico');
 
+/*RUTAS CONSULTAR INDICADORES*/
+Route::get('indicadores', 'IndicadoresController@index')->name('indicadores');
+Route::get('indicadores/comercial', 'IndicadoresController@indexcomercial')->name('indicadores_comercial');
+Route::get('indicadores/gestion', 'IndicadoresController@indexgestion')->name('indicadores_gestion');
+Route::post('indicadores/reportecomercial', 'IndicadoresController@reportecomercial')->name('indicadores_reportecomercial');
+Route::post('indicadores/reportegestion', 'IndicadoresController@reportegestion')->name('indicadores_reportegestion');
+//Route::post('indicadores/reporte', 'IndicadoresController@reporte')->name('indicadores_reporte');
+Route::get('indicadores/comercialPdf', 'IndicadoresController@comercialPdf')->name('indicadores_comercialPdf');
+Route::get('indicadores/gestionPdf', 'IndicadoresController@gestionPdf')->name('indicadores_gestionPdf');
+Route::get('indicadores/exportPdfkg', 'IndicadoresController@exportPdfkg')->name('indicadores_exportPdfkg');
+Route::get('indicadores/comercialPdfkg', 'IndicadoresController@comercialPdfkg')->name('indicadores_comercialPdfkg');
+Route::get('indicadores/exportPdfdn', 'IndicadoresController@exportPdfdn')->name('indicadores_exportPdfdn');
+Route::post('indicadores/imagengrafico', 'IndicadoresController@imagengrafico')->name('indicadores_imagengrafico');
+
 
 /*RUTAS APROBAR NotaVenta*/
 Route::get('notaventaaprobar', 'NotaventaAprobarController@index')->name('notaventaaprobar');
