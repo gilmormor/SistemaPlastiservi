@@ -65,6 +65,7 @@
 						<th style='text-align:right' class='width50'>Kilos<br>Pend</th>
 						<th class='width30'></th>
 						<th class='width30'></th>
+						<th class='width30'></th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
@@ -142,6 +143,7 @@
 							<td style='text-align:right'>{{number_format($aux_cantsaldo * $data->peso, 2, ",", ".")}}</td>
 							<td></td>
 							<td></td>
+							<td></td>
 						</tr>
 						<?php
 							$aux_totalcant += $data->cant;
@@ -168,6 +170,7 @@
 						-->
 						<th style='text-align:right'>{{number_format($aux_totalcantpend, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalkilospend, 2, ",", ".")}}</th>
+						<th> </th>
 						<th> </th>
 						<th> </th>
 					</tr>
