@@ -408,6 +408,7 @@ Route::get('indicadores/comercialPdf', 'IndicadoresController@comercialPdf')->na
 Route::get('indicadores/gestionPdf', 'IndicadoresController@gestionPdf')->name('indicadores_gestionPdf');
 Route::get('indicadores/exportPdfkg', 'IndicadoresController@exportPdfkg')->name('indicadores_exportPdfkg');
 Route::get('indicadores/comercialPdfkg', 'IndicadoresController@comercialPdfkg')->name('indicadores_comercialPdfkg');
+Route::get('indicadores/gestionPdfkg', 'IndicadoresController@gestionPdfkg')->name('indicadores_gestionPdfkg');
 Route::get('indicadores/exportPdfdn', 'IndicadoresController@exportPdfdn')->name('indicadores_exportPdfdn');
 Route::post('indicadores/imagengrafico', 'IndicadoresController@imagengrafico')->name('indicadores_imagengrafico');
 

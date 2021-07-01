@@ -780,6 +780,7 @@ class IndicadoresController extends Controller
 		$respuesta['mensaje'] = "Código encontrado";
 		$respuesta['tabla'] = "";
 		$respuesta['tabladinero'] = "";
+		$respuesta['metacomercial'] = "";
 		$respuesta['tablaagruxproducto'] = "";
 		$respuesta['tablaareaproduccion'] = "";
 
@@ -814,25 +815,36 @@ class IndicadoresController extends Controller
             }
 
             $respuesta['tabladinero'] .= "
-                    <th style='text-align:right' class='tooltipsC ' title='Total'>TOTAL</th>";
+                    <th style='text-align:right' class='tooltipsC ' title='Total'>TOTAL</th>               
+                </tr>
+            </thead>
+            <tbody>";
+    
 
+        
             $sql = "SELECT areaproduccion.*
                 FROM areaproduccion
                 WHERE areaproduccion.id='$request->areaproduccion_id'
                 and isnull(areaproduccion.deleted_at)
             ";
             $areaproduccion = DB::select($sql);
+
+            $respuesta['metacomercial'] .= "<table id='metacomercial' name='metacomercial' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+            <thead>
+                <tr>
+                    <th>Productos</th>";
             if($areaproduccion[0]->stapromkg == "1"){
-                $respuesta['tabladinero'] .= "
+                $respuesta['metacomercial'] .= "
                     <th style='text-align:right' class='tooltipsC hskilos' title='Meta comercial KG'>Meta comercial KG</th>
                     <th style='text-align:right' class='tooltipsC hskilos' title='Total Kilos'>KG</th>
                     <th style='text-align:right' class='tooltipsC hskilos' title='Promedio x Kg'>Prom</th>";
             }
-
-            $respuesta['tabladinero'] .= "
+            $respuesta['metacomercial'] .= "
                 </tr>
             </thead>
             <tbody>";
+
+
             $i = 0;
             $totalgeneralfilakg = 0;
             $totalgeneralDinero = 0;
@@ -840,8 +852,13 @@ class IndicadoresController extends Controller
             $totalmetacomercialkg = 0;
             foreach($datas['productos'] as $producto){
                 $respuesta['tabladinero'] .= "
-                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                    <tr class='btn-accion-tabla tooltipsC'>
                         <td id='producto$i' name='producto$i'>$producto->gru_nombre</td>";
+
+                $respuesta['metacomercial'] .= "
+                    <tr class='btn-accion-tabla tooltipsC'>
+                        <td id='producto$i' name='producto$i'>$producto->gru_nombre</td>";
+    
 
                 foreach($datas['vendedores'] as $vendedor){
                     $aux_encontrado = false;
@@ -864,12 +881,14 @@ class IndicadoresController extends Controller
                 $respuesta['tabladinero'] .= "
                         <td id='totalsubtotal$i' name='totalsubtotal$i' style='text-align:right' class='' data-order='$producto->subtotal'>" . number_format($producto->subtotal, 0, ",", ".") . "</td>";
                 if($areaproduccion[0]->stapromkg == "1"){
-                    $respuesta['tabladinero'] .= "
+                    $respuesta['metacomercial'] .= "
                         <td style='text-align:right' data-order='$producto->metacomerkg' class=' hskilos'>" . number_format($producto->metacomerkg, 2, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$producto->totalkilos' class=' hskilos'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$aux_precpromkilo' class=' hskilos'>" . number_format($aux_precpromkilo, 2, ",", ".") . "</td>";
                 }
                 $respuesta['tabladinero'] .= "
+                    </tr>";
+                $respuesta['metacomercial'] .= "
                     </tr>";
                 $i++;
                 $totalgeneralfilakg += $producto->totalkilos;
@@ -884,8 +903,16 @@ class IndicadoresController extends Controller
                 <tfoot>
                     <tr>
                         <th>TOTAL</th>";
-            
 
+            $respuesta['metacomercial'] .= "
+            </tbody>
+                <tfoot>
+                    <tr>
+                        <th>TOTAL</th>";
+    
+                        
+
+                        
             foreach($datas['vendedores'] as $vendedor){
                 $respuesta['tabladinero'] .= "
                     <th style='text-align:right' class=''>". number_format($vendedor->subtotal, 0, ",", ".") ."</th>";
@@ -893,12 +920,17 @@ class IndicadoresController extends Controller
             $respuesta['tabladinero'] .= "
                         <th style='text-align:right' class=''>". number_format($totalgeneralDinero, 0, ",", ".") ."</th>";
             if($areaproduccion[0]->stapromkg == "1"){
-                $respuesta['tabladinero'] .= "
+                $respuesta['metacomercial'] .= "
                     <th style='text-align:right' class=' hskilos'>". number_format($totalmetacomercialkg, 2, ",", ".") ."</th>
                     <th style='text-align:right' class=' hskilos'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
                     <th style='text-align:right' class=' hskilos'>". number_format($precpromediofinal, 2, ",", ".") ."</th>";
             }
             $respuesta['tabladinero'] .= "
+                    </tr>
+                </tfoot>
+            </table>";
+
+            $respuesta['metacomercial'] .= "
                     </tr>
                 </tfoot>
             </table>";
@@ -948,68 +980,6 @@ class IndicadoresController extends Controller
             $respuesta['totaldineroFecFC'] = array_column($datasFecFC['vendedores'], 'subtotal');
             $respuesta['totaldineroFecNV'] = array_column($datasFecNV['vendedores'], 'subtotal');
             $respuesta['totaldineroNVPendiente'] = array_column($datasNV['vendedores'], 'pendienteDinero');
-
-            //TABLA TOTALES POR PRODUCTO
-            $respuesta['tablaagruxproducto'] .= "<table id='tablaagruxproducto' name='tablaagruxproducto' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
-                <thead>
-                    <tr>
-                        <th>Productos</th>
-                        <th>Diametro</th>
-                        <th>Longitud</th>
-                        <th>Clase</th>
-                        <th>PesoUnid</th>
-                        <th>TU</th>
-                        <th>Color</th>
-                        <th style='text-align:right'>Unid</th>
-                        <th style='text-align:right'>KG</th>
-                        <th style='text-align:right'>Prom Unit</th>
-                        <th style='text-align:right'>Prom Kilo</th>
-                    </tr>
-                </thead>
-                <tbody>";
-            $aux_sumpromkilo = 0;
-            $totalgeneralfilakg = 0;
-            foreach($datas['agruxproducto'] as $producto){
-                $aux_promunit = 0;
-                if($producto->cant>0){
-                    $aux_promunit = $producto->subtotal/$producto->cant;
-                }
-                $aux_promkilo = 0;
-                if($producto->totalkilos>0){
-                    $aux_promkilo = $producto->subtotal/$producto->totalkilos;
-                }
-                $aux_sumpromkilo += $aux_promkilo;
-                $respuesta['tablaagruxproducto'] .= "
-                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                        <td>$producto->nombre</td>
-                        <td>$producto->diametro</td>
-                        <td>$producto->long</td>
-                        <td>$producto->cla_nombre</td>
-                        <td>$producto->peso</td>
-                        <td>$producto->tipounion</td>
-                        <td>$producto->color</td>
-                        <td style='text-align:right' data-order='$producto->cant' data-search='$producto->cant'>$producto->cant</td>
-                        <td style='text-align:right' data-order='$producto->totalkilos' data-search='$producto->totalkilos'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
-                        <td style='text-align:right' data-order='$aux_promunit' data-search='$aux_promunit'>" . number_format($aux_promunit, 2, ",", ".") . "</td>
-                        <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>
-                    </tr>";
-                    $totalgeneralfilakg += $producto->totalkilos;
-            }
-            $aux_promkilogen = 0;
-            if(count($datas['agruxproducto']) > 0){
-                $aux_promkilogen = $aux_sumpromkilo / count($datas['agruxproducto']);
-            }
-            $respuesta['tablaagruxproducto'] .= "
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th>TOTAL</th>
-                        <th colspan='8' style='text-align:right'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
-                        <th></th>
-                        <th style='text-align:right'>". number_format($aux_promkilogen, 2, ",", ".") ."</th>
-                    </tr>
-                </tfoot>
-            </table>";
             
             $respuesta['tablaagruxproductomargen'] = tablaAgruxProductoMargen($datas['agruxproducto']);
 
@@ -1331,6 +1301,79 @@ class IndicadoresController extends Controller
         } 
     }
 
+    public function gestionPdfkg()
+    {
+        //dd(session('grafico2'));
+        $request = new Request();
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->giro_id = $_GET["giro_id"];
+        $request->categoriaprod_id = $_GET["categoriaprod_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->idcons = $_GET["idcons"];
+        $request->statusact_id = $_GET["statusact_id"];
+        $request->aux_titulo = $_GET["aux_titulo"];
+        $request->numrep = $_GET["numrep"];
+
+        //dd($request);
+
+        if($request->idcons == "1"){
+            $datas = consulta($request);
+        }
+        if($request->idcons == "2" or $request->idcons == "3"){
+            $datas = consultaODcerrada($request);
+        }
+
+        //$datas = consulta($request);
+
+        $aux_fdesde= $request->fechad;
+        if(empty($request->fechad)){
+            $aux_fdesde= '  /  /    ';
+        }
+        $aux_fhasta= $request->fechah;
+
+        $aux_plazoentregad= $request->plazoentregad;
+        if(empty($request->plazoentregad)){
+            $aux_plazoentregad= '  /  /    ';
+        }
+        $aux_plazoentregah= $request->plazoentregah;
+
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+
+        //return armarReportehtml($request);
+        if($datas){
+                if(env('APP_DEBUG')){
+                    return view('indicadorgestion.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request'));
+                }
+                if($request->numrep=='7'){
+                    $pdf = PDF::loadView('indicadorgestion.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request'))->setPaper('a4', 'landscape');
+                    return $pdf->stream("KilosporVendedor.pdf");        
+                }    
+                $pdf = PDF::loadView('indicadorgestion.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request')); //->setPaper('a4', 'landscape');
+                //return $pdf->download('cotizacion.pdf');
+                //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+                return $pdf->stream("KilosporVendedor.pdf");
+            if($request->numrep=='2'){
+                $pdf = PDF::loadView('indicadorgestion.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request')); //->setPaper('a4', 'landscape');
+                return $pdf->stream("KilosporVendedor.pdf");    
+            }
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        } 
+    }
 
     public function imagengrafico(Request $request){
         /*

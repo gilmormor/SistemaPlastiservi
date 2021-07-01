@@ -165,17 +165,15 @@ Productos Notas de Venta
     <!-- Custom Tabs -->
     <div class="nav-tabs-custom" id="tabs">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Facturado</a></li>
-            <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Productos</a></li>
+            <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Por Vendedor</a></li>
             <li><a href="#tab_4" data-toggle="tab" id="tab4" name="tab4">Nota Venta vs Facturado</a></li>
-            <li><a href="#tab_5" data-toggle="tab" id="tab5" name="tab5">Meta Comercial</a></li>
             <li><a href="#tab_6" data-toggle="tab" id="tab6" name="tab6">Por area de Producción</a></li>
             <li><a href="#tab_7" data-toggle="tab" id="tab7" name="tab7">Productos $</a></li>
             <li><a href="#tab_8" data-toggle="tab" id="tab8" name="tab8">Ventas x Mes</a></li>
         </ul>
         <div class="tab-content">
-            <div class="tab-pane" id="tab_2">
-                <div class="row" id="graficos1" name="graficos1" style="display:none;">
+            <div class="tab-pane active" id="tab_1">
+                <div class="row" id="graficos1" name="graficos1">
                     <div class="col-lg-12">
                     <!-- DONUT CHART -->
                         <div class="box box-danger">
@@ -256,60 +254,8 @@ Productos Notas de Venta
                 </div>
             </div>
 
-            <div class="tab-pane" id="tab_3">
-                <div class="row" id="graficos2" name="graficos2" style="display:none;">
-                    <div class="col-lg-12">
-                    <!-- DONUT CHART -->
-                        <div class="box box-danger">
-                            <div class="box-header with-border">
-                                <h3 class="box-title" id="titulo_grafico2" name="titulo_grafico2"></h3>
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                                </div>
-                            </div>
-                            <div class="box-body">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div class="table-responsive" id="tablaconsultaproducto">
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.box-body -->
-                        </div>
-                        <!-- /.box -->
-                    </div>                
-                </div>
-                <div class="col-lg-12 text-center">
-                    <button type='button' id='btnpdf3' name='btnpdf3' class='btn btn-success' title='Reporte' onclick='btnpdf(3)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
-                </div>
-            </div>
             <div class="tab-pane" id="tab_4">
                 <div class="row" id="grafbarra1" name="grafbarra1" style="display:none;">
-                    <div class="col-lg-8 col-md-offset-2">
-                    <!-- BARRA CHART -->
-                        <div class="box box-danger">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Gráfico Barra Kg</h3>
-                        
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                                </div>
-                            </div>
-                            <div class="box-body">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div class="resultadosBarra1 text-center" style="width: 100%;">
-                                        <canvas id="graficoBarra1"></canvas>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                            <!-- /.box-body -->
-                        </div>
-                        <!-- /.box -->
-                    </div>
                     <div class="col-lg-8 col-md-offset-2">
                     <!-- BARRA CHART -->
                         <div class="box box-danger">
@@ -334,90 +280,12 @@ Productos Notas de Venta
                         </div>
                         <!-- /.box -->
                     </div>
-                    <div class="col-lg-8 col-md-offset-2" style="display:none;">
-                    <!-- BARRA CHART -->
-                        <div class="box box-danger">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Gráfico Barra $</h3>
-                        
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                                </div>
-                            </div>
-                            <div class="box-body">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div id="chart_div11" style="width: 900px; height: 500px;"></div>
-                                </div>
-                            </div>
-                            <!-- /.box-body -->
-                        </div>
-                        <!-- /.box -->
-                    </div>
                     <div class="col-lg-12 text-center">
                         <button type='button' id='btnpdf4' name='btnpdf4' class='btn btn-success' title='Reporte' onclick='btnpdf(4)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
             </div>
 
-            <div class="tab-pane" id="tab_5">
-                <div class="row" id="graficosMC1" name="graficosMC1" style="display:none;">
-                    <div class="col-lg-12">
-                    <!-- DONUT CHART -->
-                        <div class="box box-danger">
-                            <div class="box-header with-border">
-                                <h3 class="box-title" id="titulo_graficoMC1" name="titulo_graficoMC1"></h3>
-                        
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                                </div>
-                            </div>
-                            <div class="box-body">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div class="table-responsive" id="tablaMC">
-                                    </div>
-                                </div>
-                                
-                            </div>
-                            <!-- /.box-body -->
-                        </div>
-                        <!-- /.box -->
-                    </div>
-                
-                
-                    <div class="col-lg-12">
-                    <!-- DONUT CHART -->
-                        <div class="box box-danger">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Gráfico Pie</h3>
-                        
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                                </div>
-                            </div>
-                            <div class="box-body">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div class="resultadosPie12" style="width: 100%;text-align:center;">
-                                        <div class="text-center" id="piechart_3d3" style="width: 900px; height: 500px;"></div>
-                                        <input type="hidden" name="base64pie3" id="base64pie3">
-                                    </div>
-                                </div>
-                                
-                            </div>
-                            <!-- /.box-body -->
-                        </div>
-                        <!-- /.box -->
-                    </div>
-                    <div class="col-lg-12 text-center">
-                        <button type='button' id='btnpdf5' name='btnpdf5' class='btn btn-success' title='Reporte' onclick='btnpdf(5)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
-                    </div>
-                </div>
-            </div>
             <div class="tab-pane" id="tab_6">
                 <div class="row" id="graficosAP1" name="graficosAP1" style="display:none;">
                     <div class="col-lg-12">
@@ -444,30 +312,6 @@ Productos Notas de Venta
                         <!-- /.box -->
                     </div>
                 
-                    <!--
-                    <div class="col-lg-12">
-                        <div class="box box-danger">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Gráfico Pie</h3>
-                        
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                                </div>
-                            </div>
-                            <div class="box-body">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div class="resultadosPie12" style="width: 100%;text-align:center;">
-                                        <div class="text-center" id="piechart_3d3" style="width: 900px; height: 500px;"></div>
-                                        <input type="hidden" name="base64pie3" id="base64pie3">
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                    -->
                     <div class="col-lg-12 text-center">
                         <button type='button' id='btnpdf6' name='btnpdf6' class='btn btn-success' title='Reporte' onclick='btnpdf(6)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>

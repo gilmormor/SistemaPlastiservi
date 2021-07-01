@@ -31,7 +31,7 @@
 </div>
 
 
-@if ($request->numrep=='2' or $request->numrep=='5')
+@if ($request->numrep=='2')
 	<div id="page_pdf">
 		NV ($)
 		<div class="round">
@@ -44,11 +44,6 @@
 									<th style='text-align:right' >{{$vendedor->nombre}}</th>
 								@endforeach
 								<th style='text-align:right'>TOTAL $</th>
-							@endif
-							@if ($request->numrep=='5')
-								<th style='text-align:right'>Meta Comercial KG</th>
-								<th style='text-align:right'>KG</th>
-								<th style='text-align:right'>Precio Kg <br> Promedio $</th>
 							@endif
 						</tr>
 					</thead>
@@ -87,11 +82,6 @@
 										$aux_prom = $producto->subtotal/$producto->totalkilos;
 									}
 								?>
-								@if ($request->numrep=='5')
-									<td style='text-align:right'>{{number_format($producto->metacomerkg, 2, ",", ".")}}</td>
-									<td style='text-align:right'>{{number_format($producto->totalkilos, 2, ",", ".")}}</td>
-									<td style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</td>
-								@endif
 							</tr>
 							<?php
 								$totalgeneral += $producto->subtotal;
@@ -115,84 +105,6 @@
 								?>
 								<th style='text-align:right'>{{number_format($totalgeneral, 0, ",", ".")}}</th>
 							@endif
-							@if ($request->numrep=='5')
-								<th style='text-align:right'>{{number_format($totalMCkg, 2, ",", ".")}}</th>
-								<th style='text-align:right'>{{number_format($totalgeneralKilos, 2, ",", ".")}}</th>
-								<th style='text-align:right'>{{number_format($aux_prom, 2, ",", ".")}}</th>
-							@endif
-						</tr>
-					</tfoot>
-			</table>
-		</div>
-	</div>
-@endif
-@if ($request->numrep=='3')
-	<div id="page_pdf">
-		Indicadores Comerciales al {{$aux_fhasta}}.
-		<div class="round">
-			<table id="factura_detalle">
-					<thead>
-						<tr>
-							<th>Productos</th>
-							<th>Diam</th>
-							<th>Long</th>
-							<th>Clase</th>
-							<th>PesoUnid</th>
-							<th>TU</th>
-							<th>Color</th>
-							<th style='text-align:right'>Unid</th>
-							<th style='text-align:right'>KG</th>
-							<th style='text-align:right'>Prom Unit</th>
-							<th style='text-align:right'>Prom Kilo</th>
-						</tr>
-					</thead>
-					<tbody id="detalle_productos">
-						<?php
-							$aux_sumpromkilo = 0;
-							$totalgeneralfilakg = 0;
-						?>
-						@foreach($datas['agruxproducto'] as $producto)
-							<?php 
-								$aux_promunit = 0;
-								if($producto->cant>0){
-									$aux_promunit = $producto->subtotal/$producto->cant;
-								}
-								$aux_promkilo = 0;
-								if($producto->totalkilos>0){
-									$aux_promkilo = $producto->subtotal/$producto->totalkilos;
-								}
-								$aux_sumpromkilo += $aux_promkilo;
-
-							?>
-							<tr class='btn-accion-tabla'>
-								<td>{{$producto->nombre}}</td>
-								<td>{{$producto->diametro}}</td>
-								<td>{{$producto->long}}</td>
-								<td>{{$producto->cla_nombre}}</td>
-								<td>{{$producto->peso}}</td>
-								<td>{{$producto->tipounion}}</td>
-								<td>{{$producto->color}}</td>
-								<td style='text-align:right'>{{$producto->cant}}</td>
-								<td style='text-align:right'>{{number_format($producto->totalkilos, 2, ",", ".")}}</td>
-								<td style='text-align:right'>{{number_format($aux_promunit, 2, ",", ".")}}</td>
-								<td style='text-align:right'>{{number_format($aux_promkilo, 2, ",", ".")}}</td>
-
-								<?php
-									$totalgeneralfilakg += $producto->totalkilos;
-									$aux_promkilogen = 0;
-									if(count($datas['agruxproducto']) > 0){
-										$aux_promkilogen = $aux_sumpromkilo / count($datas['agruxproducto']);
-									}
-								?>
-							</tr>
-						@endforeach
-					</tbody>
-					<tfoot id="detalle_totales">
-						<tr>
-							<th>TOTAL</th>
-							<th colspan='8' style='text-align:right'>{{number_format($totalgeneralfilakg, 2, ",", ".")}}</th>
-							<th></th>
-							<th style='text-align:right'>{{number_format($aux_promkilogen, 2, ",", ".")}}</th>	
 						</tr>
 					</tfoot>
 			</table>
@@ -210,6 +122,7 @@
 							<th>Area Produccion</th>
 							<th style='text-align:right'>Kg Facturado<br>al dia {{$aux_fhasta}}</th>
 							<th style='text-align:right'>Kg Facturado<br>Acumulado</th>
+							<th style='text-align:right'>$</th>
 							<th style='text-align:right'>Precio<br>Promedio Kg</th>
 						</tr>
 					</thead>
@@ -236,6 +149,7 @@
 								<td>{{$areaproduccion->nombre}}</td>
 								<td style='text-align:right'>{{number_format($aux_kiloshoy, 2, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($areaproduccion->totalkilos, 2, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($areaproduccion->subtotal, 0, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($aux_promkilo, 2, ",", ".")}}</td>
 							</tr>
 							<?php
@@ -256,6 +170,7 @@
 							<th>TOTAL</th>
 							<th style='text-align:right'>{{number_format($aux_totalkiloshoy, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_totalkgfacacum, 2, ",", ".")}}</th>
+							<th style='text-align:right'>{{number_format($aux_totalmonto, 0, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_promkilogen, 2, ",", ".")}}</th>
 						</tr>
 					</tfoot>
@@ -369,7 +284,7 @@
 	</div>
 @endif
 
-@if ($request->numrep=='2' or $request->numrep=='5')
+@if ($request->numrep=='2')
 <div id="page_pdf">
 	<div class="round">
 		<img src="{{session('grafico')}}" style="width:auto;height:auto;text-align:center;">	
@@ -377,11 +292,6 @@
 </div>
 @endif
 @if ($request->numrep=='4')
-	<div id="page_pdf">
-		<div class="round">
-			<img src="{{session('grafico1')}}" style="width:550;height:300;text-align:center;">	
-		</div>
-	</div>
 	<div id="page_pdf">
 		<div class="round">
 			<img src="{{session('grafico2')}}" style="width:550;height:300;text-align:center;">	
