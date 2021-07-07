@@ -31,6 +31,14 @@ $(document).ready(function () {
     configurarTabla('.tablas');
 
     $("#areaproduccion_id").val('1'); 
+    $('.date-picker').datepicker({
+        language: "es",
+        format: "yyyy",
+        viewMode: "years", 
+        minViewMode: "years",
+        autoclose: true,
+		todayHighlight: true
+    }).datepicker("setDate");
 
 });
 
@@ -44,6 +52,7 @@ function datos(){
         areaproduccion_id : $("#areaproduccion_id").val(),
         idcons : $("#consulta_id").val(),
         statusact_id : $("#statusact_id").val(),
+        anno : $("#anno").val(),
         _token: $('input[name=_token]').val()
     };
     return data;

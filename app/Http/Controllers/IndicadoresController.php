@@ -55,7 +55,8 @@ class IndicadoresController extends Controller
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
-                    'fechaAct' => date("d/m/Y")
+                    'fechaAct' => date("d/m/Y"),
+                    'anno' => date('Y')
                     ];
         return view('indicadorcomercial.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
     }
@@ -77,7 +78,8 @@ class IndicadoresController extends Controller
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
-                    'fechaAct' => date("d/m/Y")
+                    'fechaAct' => date("d/m/Y"),
+                    'anno' => date('Y')
                     ];
         return view('indicadorgestion.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
     }
@@ -909,9 +911,6 @@ class IndicadoresController extends Controller
                 <tfoot>
                     <tr>
                         <th>TOTAL</th>";
-    
-                        
-
                         
             foreach($datas['vendedores'] as $vendedor){
                 $respuesta['tabladinero'] .= "
@@ -993,6 +992,7 @@ class IndicadoresController extends Controller
                     <th style='text-align:right'>Kg Facturado<br>al dia $request->fechah</th>
                     <th style='text-align:right'>Kg Facturado<br>Acumulado</th>
                     <th style='text-align:right'>$</th>
+                    <th style='text-align:right'>Monto mas iva</th>
                     <th style='text-align:right'>Precio<br>Promedio Kg</th>
                 </tr>
             </thead>
@@ -1000,6 +1000,7 @@ class IndicadoresController extends Controller
             $aux_totalkiloshoy = 0;
             $aux_totalkgfacacum = 0;
             $aux_totalmonto = 0;
+            $aux_totalmasiva = 0;
             foreach($datas['areaproduccion'] as $areaproduccion){
                 $aux_promkilo = 0;
                 if($areaproduccion->totalkilos>0){
@@ -1018,12 +1019,14 @@ class IndicadoresController extends Controller
                         <td style='text-align:right' data-order='$aux_kiloshoy' data-search='$aux_kiloshoy'>" . number_format($aux_kiloshoy, 2, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$areaproduccion->totalkilos' data-search='$areaproduccion->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$areaproduccion->subtotal' data-search='$areaproduccion->subtotal'>" . number_format($areaproduccion->subtotal, 0, ",", ".") . "</td>
+                        <td style='text-align:right' data-order='$areaproduccion->totalmasiva' data-search='$areaproduccion->totalmasiva'>" . number_format($areaproduccion->totalmasiva, 0, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>
                     </tr>";
                         //$aux_totalfacdia += 0;
                 $aux_totalkgfacacum += $areaproduccion->totalkilos;
                 $aux_totalmonto += $areaproduccion->subtotal;
                 $aux_totalkiloshoy += $aux_kiloshoy;
+                $aux_totalmasiva += $areaproduccion->totalmasiva;
             }
             $aux_promkilogen = 0;
             if($aux_totalkgfacacum > 0){
@@ -1037,6 +1040,7 @@ class IndicadoresController extends Controller
                         <th style='text-align:right'>". number_format($aux_totalkiloshoy, 2, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($aux_totalkgfacacum, 2, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($aux_totalmonto, 0, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($aux_totalmasiva, 0, ",", ".") ."</th>
                         <!--<th style='text-align:right'>". number_format($aux_promkilogen, 2, ",", ".") ."</th>-->
                         <th></th>
                     </tr>
@@ -1468,9 +1472,22 @@ function consulta($request){
             break;
     }
 
+    /*CONDICION PARA CONSULTAR TODO EL AÑO SELECCIONADO PARA REPORTES DE TODO EL AÑO PARA LOS GRAFICOS ETC*/
+    if(empty($request->anno)){
+        $aux_condanno = " false ";
+    }else{
+        $aux_condanno = "date_format(notaventa.fechahora,'%Y')='$request->anno'";
+        if(!empty($request->fechah)){
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+            $aux_condanno .= " and notaventa.fechahora<='$fechah'";
+        }
+    }
+
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
     sum(notaventadetalle.totalkilos) AS totalkilos,
     sum(notaventadetalle.subtotal) AS subtotal,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at)
@@ -1503,7 +1520,8 @@ function consulta($request){
 
     $sql = "SELECT persona.id,persona.nombre,
     ROUND(sum(notaventadetalle.totalkilos),2) AS totalkilos,
-    sum(notaventadetalle.subtotal) AS subtotal
+    sum(notaventadetalle.subtotal) AS subtotal,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at)
     INNER JOIN categoriaprod
@@ -1534,7 +1552,8 @@ function consulta($request){
 
     $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
     sum(notaventadetalle.totalkilos) AS totalkilos,
-    sum(notaventadetalle.subtotal) AS subtotal
+    sum(notaventadetalle.subtotal) AS subtotal,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1570,7 +1589,8 @@ function consulta($request){
     grupoprod.id as gru_id,grupoprod.gru_nombre,
     sum(notaventadetalle.cant) AS cant,
     sum(notaventadetalle.totalkilos) AS totalkilos,
-    sum(notaventadetalle.subtotal) AS subtotal
+    sum(notaventadetalle.subtotal) AS subtotal,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1604,7 +1624,8 @@ function consulta($request){
 
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
     sum(notaventadetalle.totalkilos) AS totalkilos,
-    sum(notaventadetalle.subtotal) AS subtotal
+    sum(notaventadetalle.subtotal) AS subtotal,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1633,7 +1654,8 @@ function consulta($request){
 
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
     sum(notaventadetalle.totalkilos) AS totalkilos,
-    sum(notaventadetalle.subtotal) AS subtotal
+    sum(notaventadetalle.subtotal) AS subtotal,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1666,7 +1688,8 @@ function consulta($request){
     MONTHNAME(notaventa.fechahora) AS mes,
     sum(notaventadetalle.cant) AS cant,
     sum(notaventadetalle.totalkilos) AS totalkilos,
-    sum(notaventadetalle.subtotal) AS subtotal
+    sum(notaventadetalle.subtotal) AS subtotal,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1679,7 +1702,7 @@ function consulta($request){
     ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
     INNER JOIN grupoprod
     ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
-    WHERE $aux_condFecha
+    WHERE $aux_condanno
     and $vendedorcond
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
@@ -1693,7 +1716,6 @@ function consulta($request){
 
     $datas = DB::select($sql);
     $respuesta['ventasxmes'] = $datas;
-
 
     return $respuesta;
 }
@@ -1711,7 +1733,7 @@ function consultaODcerrada($request){
     $respuesta['vendedores'] = "";
 
     if(empty($aux_vendedor )){
-            $vendedorcond = " true ";
+        $vendedorcond = " true ";
     }else{
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
     }
@@ -1784,10 +1806,24 @@ function consultaODcerrada($request){
             break;
     }
 
+    /*CONDICION PARA CONSULTAR TODO EL AÑO SELECCIONADO PARA REPORTES DE TODO EL AÑO PARA LOS GRAFICOS ETC*/
+    if(empty($request->anno)){
+        $aux_condanno = " false ";
+    }else{
+        $aux_condanno = "date_format(despachoord.fechafactura,'%Y')='$request->anno'";
+        if(!empty($request->fechah)){
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+            $aux_condanno .= " and despachoord.fechafactura<='$fechah' ";
+        }
+    }
+
+    //dd($aux_condanno);
 
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
@@ -1824,7 +1860,8 @@ function consultaODcerrada($request){
 
     $sql = "SELECT persona.id,persona.nombre,
     ROUND(sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp),2) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at)
     INNER JOIN despachoord
@@ -1861,7 +1898,8 @@ function consultaODcerrada($request){
 
     $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -1905,7 +1943,8 @@ function consultaODcerrada($request){
     grupoprod.id as gru_id,grupoprod.gru_nombre,
     sum(despachoorddet.cantdesp) AS cant,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -1945,7 +1984,8 @@ function consultaODcerrada($request){
     
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -1976,7 +2016,8 @@ function consultaODcerrada($request){
 
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -2012,7 +2053,8 @@ function consultaODcerrada($request){
     MONTHNAME(despachoord.fechafactura) AS mes,
     sum(despachoorddet.cantdesp) AS cant,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -2030,7 +2072,7 @@ function consultaODcerrada($request){
     INNER JOIN grupoprod
     ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
-    and $aux_condFecha
+    and $aux_condanno
     and $vendedorcond
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
@@ -2130,6 +2172,14 @@ function tablaAgruxProductoMargen($datas){
         $aux_totalmargenVenta += $aux_margenVenta;
         $i++;
     }
+    $aux_prom1 = 0;
+    if($totalgeneralfilakg > 0){
+        $aux_prom1 = $aux_totalsubtotal/$totalgeneralfilakg;
+    }
+    $aux_prom2 = 0;
+    if($aux_totalsubtotal > 0){
+        $aux_prom2 = $aux_totalmargenVenta/$aux_totalsubtotal;
+    }
     $tabla .= "
         </tbody>
         <tfoot>
@@ -2137,10 +2187,10 @@ function tablaAgruxProductoMargen($datas){
                 <th>TOTAL</th>
                 <th colspan='8' style='text-align:right'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
                 <th></th>
-                <th style='text-align:right'>". number_format($aux_totalsubtotal/$totalgeneralfilakg, 2, ",", ".") ."</th>
+                <th style='text-align:right'>". number_format($aux_prom1, 2, ",", ".") ."</th>
                 <th style='text-align:right'>". number_format($aux_totalsubtotal, 0, ",", ".") ."</th>
                 <th style='text-align:right'></th>
-                <th style='text-align:right'>". number_format(($aux_totalmargenVenta/$aux_totalsubtotal)*100, 0, ",", ".") ."%</th>
+                <th style='text-align:right'>". number_format(($aux_prom2)*100, 0, ",", ".") ."%</th>
                 <th style='text-align:right'>". number_format($aux_totalmargenVenta, 0, ",", ".") ."</th>
                 <th style='text-align:right'></th>
             </tr>

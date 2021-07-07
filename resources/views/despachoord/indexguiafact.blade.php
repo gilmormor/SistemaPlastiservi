@@ -46,7 +46,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $aux_nfila = 0; ?>
+                            <?php 
+                                $aux_nfila = 0;
+                                $aux_totalgenkg = 0;
+                                $aux_totalgenkg = 0;
+                                $aux_subtotalgen = 0;
+                            ?>
                             @foreach ($datas as $data)
                             <?php
                                 $aux_nfila++;
@@ -54,8 +59,10 @@
                                 $subtotal = 0;
                                 foreach($data->despachoorddets as $despachoorddet){
                                     $aux_totalkg += $despachoorddet->cantdesp * ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant);
-                                    $subtotal += $despachoorddet->cantdesp * $despachoorddet->notaventadetalle->preciounit;
+                                    $subtotal += round(($despachoorddet->cantdesp * $despachoorddet->notaventadetalle->preciounit) * (($despachoorddet->notaventadetalle->notaventa->piva+100)/100));
                                 }
+                                $aux_totalgenkg += $aux_totalkg;
+                                $aux_subtotalgen += $subtotal;
                             ?>
                             <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
                                 <td>{{$data->id}}</td>
@@ -82,10 +89,10 @@
                                         <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
                                     </a>
                                 </td>
-                                <td style='text-align:right'>
+                                <td style='text-align:right' data-order='{{$aux_totalkg}}'>
                                     {{number_format($aux_totalkg, 2, ",", ".")}}
                                 </td>
-                                <td style='text-align:right'>
+                                <td style='text-align:right' data-order='{{$subtotal}}'>
                                     {{number_format($subtotal, 0, ",", ".")}}
                                 </td>
                                 
@@ -129,6 +136,15 @@
                             </tr>
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan='8' style='text-align:left'>TOTALES</th>
+                                <th style='text-align:right'>{{number_format($aux_totalgenkg, 2, ",", ".")}}</th>
+                                <th style='text-align:right'>{{number_format($aux_subtotalgen, 0, ",", ".")}}</th>
+                                <th colspan='3'></th>
+                            </tr>
+                        </tfoot>
+        
                     </table>
                 </div>
             </div>

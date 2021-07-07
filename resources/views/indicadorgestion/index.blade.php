@@ -117,39 +117,40 @@ Productos Notas de Venta
                             </div>
 
                         </div>
-                        <div class="col-xs-12 col-md-5 col-sm-5">
-                            <div class="col-xs-12 col-md-6 col-sm-6">
-                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                    <label>Consulta:</label>
-                                </div>
-                                <div class="col-xs-12 col-md-8 col-sm-8">
-                                    <select name="consulta_id" id="consulta_id" class="selectpicker form-control consulta_id">
-                                        <option value="1">Nota de Venta</option>
-                                        <option value="2">Facturado (Fecha FC)</option>
-                                        <option value="3">Facturado (Fecha NV)</option>
-                                    </select>
-                                </div>
-                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                    <label>Estatus NV:</label>
-                                </div>
-                                <div class="col-xs-12 col-md-8 col-sm-8">
-                                    <select name="statusact_id" id="statusact_id" class="selectpicker form-control statusact_id">
-                                        <option value="1" selected>Activas</option>
-                                        <option value="2">Cerradas</option>
-                                        <option value="3">Todas: Activas + cerradas</option>
-                                    </select>
-                                </div>    
+                        <div class="col-xs-12 col-md-4 col-sm-4">
+                            <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                <label>Consulta:</label>
                             </div>
-                            <div class="col-xs-12 col-md-6 col-sm-6">
-                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success" data-toggle='tooltip' title="Consultar">Consultar</button>
+                            <div class="col-xs-12 col-md-8 col-sm-8">
+                                <select name="consulta_id" id="consulta_id" class="selectpicker form-control consulta_id">
+                                    <option value="2">Facturado (Fecha FC)</option>
+                                    <option value="1">Nota de Venta</option>
+                                    <option value="3">Facturado (Fecha NV)</option>
+                                </select>
                             </div>
+                            <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                <label>Estatus NV:</label>
+                            </div>
+                            <div class="col-xs-12 col-md-8 col-sm-8">
+                                <select name="statusact_id" id="statusact_id" class="selectpicker form-control statusact_id">
+                                    <option value="1" selected>Activas</option>
+                                    <option value="2">Cerradas</option>
+                                    <option value="3">Todas: Activas + cerradas</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                <label>Año:</label>
+                            </div>
+                            <div class="col-xs-12 col-md-8 col-sm-8">
+                                <input type="text" name="anno" id="anno" class="form-control date-picker" value="{{old('anno', $fechaServ['anno'] ?? '')}}" readonly required>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-1 col-sm-1 text-center">
+                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success" data-toggle='tooltip' title="Consultar">Consultar</button>
                         </div>
                     </form>
                 </div>
             </div>
-
-
-
             <div class="row">
                 <div class="col-lg-12">
                     <div>
@@ -353,7 +354,7 @@ Productos Notas de Venta
                     <div class="col-lg-8 col-md-offset-2">
                         <div class="box box-danger">
                             <div class="box-header with-border">
-                                <h3 class="box-title">Gráfico Pie</h3>
+                                <h3 class="box-title">Ventas x Mes $</h3>
                         
                                 <div class="box-tools pull-right">
                                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>

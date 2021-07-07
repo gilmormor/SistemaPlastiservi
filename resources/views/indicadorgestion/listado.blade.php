@@ -123,6 +123,7 @@
 							<th style='text-align:right'>Kg Facturado<br>al dia {{$aux_fhasta}}</th>
 							<th style='text-align:right'>Kg Facturado<br>Acumulado</th>
 							<th style='text-align:right'>$</th>
+							<th style='text-align:right'>Monto<br>mas iva</th>
 							<th style='text-align:right'>Precio<br>Promedio Kg</th>
 						</tr>
 					</thead>
@@ -131,6 +132,7 @@
 							$aux_totalkiloshoy = 0;
 							$aux_totalkgfacacum = 0;
 							$aux_totalmonto = 0;
+							$aux_totalmasiva = 0;
 						?>
 						@foreach($datas['areaproduccion'] as $areaproduccion)
 							<?php 
@@ -150,12 +152,15 @@
 								<td style='text-align:right'>{{number_format($aux_kiloshoy, 2, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($areaproduccion->totalkilos, 2, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($areaproduccion->subtotal, 0, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($areaproduccion->totalmasiva, 0, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($aux_promkilo, 2, ",", ".")}}</td>
 							</tr>
 							<?php
 								$aux_totalkgfacacum += $areaproduccion->totalkilos;
 								$aux_totalmonto += $areaproduccion->subtotal;
 								$aux_totalkiloshoy += $aux_kiloshoy;
+								$aux_totalmasiva += $areaproduccion->totalmasiva;
+
 							?>
 						@endforeach
 						<?php 
@@ -171,6 +176,7 @@
 							<th style='text-align:right'>{{number_format($aux_totalkiloshoy, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_totalkgfacacum, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_totalmonto, 0, ",", ".")}}</th>
+							<th style='text-align:right'>{{number_format($aux_totalmasiva, 0, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_promkilogen, 2, ",", ".")}}</th>
 						</tr>
 					</tfoot>

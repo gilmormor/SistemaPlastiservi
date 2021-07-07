@@ -38,7 +38,6 @@ $(document).ready(function () {
     });
 
 	configurarTabla('.tablas');
-
 });
 
 function configurarTabla(aux_tabla){
