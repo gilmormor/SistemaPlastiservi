@@ -20,13 +20,9 @@
 			</td>
 			<td class="info_factura">
 				<div class="round">
-					<span class="h3">Informe Producto x Nota Venta</span>
+					<span class="h3">Consultar Orden Despacho, Guia, Factura, cerrada</span>
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
-					<p>Area Producción: {{$nombreAreaproduccion}}</p>
-					<p>Categoria: {{$nombreCategoria}} </p>
-					<p>Vendedor: {{$nomvendedor}} </p>
-					<p>Giro: {{$nombreGiro}} </p>
-					<p>Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
+					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
 				</div>
 			</td>
 		</tr>
@@ -36,18 +32,19 @@
 		<table id="factura_detalle">
 				<thead>
 					<tr>
-						<th style='text-align:left'>Descripción</th>
-						<th style='text-align:left'>Diametro</th>
-						<th style='text-align:left'>Clase</th>
-						<th style='text-align:center'>Long</th>
-						<th style='text-align:right'>Peso x Unidad</th>
-						<th style='text-align:center'>U</th>
+						<th style='text-align:center'>OD</th>
+						<th style='text-align:center'>Fecha</th>
+						<th style='text-align:center'>Razon Social</th>
+						<th style='text-align:center'>SD</th>
+						<th style='text-align:center'>OC</th>
+						<th style='text-align:center'>NV</th>
+						<th style='text-align:right'>Comuna</th>	
+						<th style='text-align:right'>Kg</th>
 						<th style='text-align:right'>$</th>
-						<th style='text-align:right'>Precio Prom Unit</th>
-						<th style='text-align:right'>Precio Prom Kg</th>	
-						<th style='text-align:right'>Unid</th>
-						<th style='text-align:right'>Total Kg</th>
-						<th style='text-align:right'>%</th>
+						<th style='text-align:center'>NumGuia</th>
+						<th style='text-align:center'>F Guia</th>
+						<th style='text-align:center'>NumFact</th>
+						<th style='text-align:center'>F Fact</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
@@ -56,58 +53,51 @@
 						$aux_totalkilos = 0;
 						$totalsumsubtotal = 0;
             			$totalsumcant = 0;
-
 					?>
-					<?php
-						$aux_totalkilosP = 0;
-						$aux_totalporcenkg = 0;
-						foreach ($notaventas as $notaventa) {
-							$aux_totalkilosP += $notaventa->sumtotalkilos;
-						}
-					?>
-					@foreach($notaventas as $notaventa)
+					@foreach($datas as $data)
 						<?php
 							$i++;
-							$aux_totalkilos = $aux_totalkilos + $notaventa->sumtotalkilos;
-							$totalsumsubtotal += $notaventa->sumsubtotal;
-							$totalsumcant += $notaventa->sumcant;
-							$porcentajeKg = ($notaventa->sumtotalkilos * 100) / $aux_totalkilosP;
-                			$aux_totalporcenkg += $porcentajeKg;
+							$aux_totalkilos += $data->totalkilos;
+							$totalsumsubtotal += $data->subtotal;
 						?>
 						<tr class='btn-accion-tabla tooltipsC'>
-							<td>{{$notaventa->nombre}}</td>
 							<td>
-								<?php
-									$producto = Producto::findOrFail($notaventa->producto_id);
-									$aum_uniMed = $producto->diametro;
-								?>
-								{{$aum_uniMed}}
+								{{$data->id}}
+								@if ($data->despachoordanul_id != null)
+									A
+								@endif
 							</td>
-							<td>{{$notaventa->cla_nombre}}</td>
-							<td style='text-align:center'>{{$notaventa->long}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->peso, 2, ",", ".")}}</td>
-							<td style='text-align:center'>{{$notaventa->tipounion}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->sumsubtotal, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->prompreciounit, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->promprecioxkilo, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->sumcant, 0, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($notaventa->sumtotalkilos, 2, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($porcentajeKg, 2, ",", ".")}}</td>
+							<td style='text-align:center'>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
+							<td>{{$data->razonsocial}}</td>
+							<td style='text-align:center'>{{$data->despachosol_id}}</td>
+							<td style='text-align:center'>{{$data->oc_id}}</td>
+							<td style='text-align:center'>{{$data->notaventa_id}}</td>
+							<td>{{$data->comunanombre}}</td>
+							<td style='text-align:right'>{{number_format($data->totalkilos, 2, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($data->subtotal, 0, ",", ".")}}</td>
+							<td style='text-align:center'>{{$data->guiadespacho}}</td>
+							<td style='text-align:center'>{{date('d-m-Y', strtotime($data->guiadespachofec))}}</td>
+							<td style='text-align:center'>{{$data->numfactura}}</td>
+							<td style='text-align:center'>{{date('d-m-Y', strtotime($data->fechafactura))}}</td>
 						</tr>
-
 					@endforeach
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr class="headt">
-						<th colspan="6" style='text-align:left'>TOTAL</th>
-						<th class="textright">{{number_format($totalsumsubtotal, 2, ",", ".")}}</th>
-						<th style="text-align:right">{{number_format($totalsumsubtotal/$totalsumcant, 2, ",", ".")}}</th>
-                        <th style="text-align:right">{{number_format($totalsumsubtotal/$aux_totalkilos, 2, ",", ".")}}</th>
-						<th class="textright">{{number_format($totalsumcant, 0, ",", ".")}}</th>
-						<th class="textright">{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
-						<th class="textright">{{number_format($aux_totalporcenkg, 2, ",", ".")}}</th>
+						<th colspan="7" style='text-align:left'>TOTAL</th>
+						<th style="text-align:right">{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
+						<th style="text-align:right">{{number_format($totalsumsubtotal, 0, ",", ".")}}</th>
 					</tr>
 				</tfoot>
 		</table>
 	</div>
+	<br>
+	<a>
+		<i class='fa fa-fw text-danger'>
+			<p><small>
+				A= Anulada
+			</small></p>
+		</i>                                    
+	</a>
+
 </div>

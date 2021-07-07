@@ -230,3 +230,41 @@ function visto(id,visto){
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
 }
+
+function btnpdf(){
+
+}
+
+$("#btnpdf").click(function()
+{
+    var data = datos();
+    $.ajax({
+        url: '/indicadores/imagengrafico',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            aux_titulo = "Orden Despacho";
+            data = datos();
+            cadena = "?id=" +
+                    "&fechad="+data.fechad+"&fechah="+data.fechah +
+                    "&fechadfac="+data.fechadfac+"&fechahfac="+data.fechahfac +
+                    "&fechaestdesp="+data.fechaestdesp +
+                    "&rut="+data.rut +
+                    "&oc_id="+data.oc_id +
+                    "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
+                    "&tipoentrega_id="+data.tipoentrega_id +
+                    "&notaventa_id="+data.notaventa_id +
+                    "&statusOD=" + data.statusOD +
+                    "&areaproduccion_id="+data.areaproduccion_id +
+                    "&comuna_id="+data.comuna_id +
+                    "&aux_titulo="+aux_titulo +
+                    "&guiadespacho="+data.guiadespacho +
+                    "&aux_verestado="+data.aux_verestado
+            $('#contpdf').attr('src', '/reportorddespguiafact/exportPdf/'+cadena);
+            $("#myModalpdf").modal('show');
+        },
+        error: function () {
+        }
+    });
+    
+});

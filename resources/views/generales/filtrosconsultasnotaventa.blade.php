@@ -168,7 +168,7 @@
         <div class="col-xs-12 col-sm-12">
             <div class="col-xs-12 col-md-12 col-sm-12 text-center">
                 <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consulta</button>
-                <button type="submit" class="btn btn-success tooltipsC" title="Reporte"><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                <button type="submit" class="btn btn-success tooltipsC" title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>
                 <!--<button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
                     <i class="fa fa-fw fa-file-pdf-o"></i>
                 </button>-->

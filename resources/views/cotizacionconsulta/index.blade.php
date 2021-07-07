@@ -79,9 +79,9 @@ Cotización
                         <div class="col-xs-12 col-md-4 col-sm-4">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-12 col-sm-12">
-                                    <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success">Consultar</button>
-                                    <button type="submit" class="btn-accion-tabla tooltipsC" title="Consultar">
-                                        <i class="fa fa-fw fa-file-pdf-o"></i>
+                                    <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                                    <button type="submit" class="btn btn-success tooltipsC" title="Reporte PDF">
+                                        <i class="glyphicon glyphicon-print"></i>Reporte
                                     </button>
                                 </div>
                             </div>

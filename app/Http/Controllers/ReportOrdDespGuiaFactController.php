@@ -3,17 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CategoriaProd;
 use App\Models\Cliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
+use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
+
 
 class ReportOrdDespGuiaFactController extends Controller
 {
@@ -124,6 +128,7 @@ class ReportOrdDespGuiaFactController extends Controller
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
                     <th>Comuna</th>
                     <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                    <th class='tooltipsC' title='Subtotal $'>$</th>
                     $encabezadoGF
                     $encabezadoeditarguiafac
                 </tr>
@@ -131,6 +136,8 @@ class ReportOrdDespGuiaFactController extends Controller
             <tbody>";
     
             $i = 0;
+            $aux_totalkilos = 0;
+            $totalsumsubtotal = 0;
             foreach ($datas as $data) {
                 $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
                 if(empty($data->oc_file)){
@@ -204,21 +211,75 @@ class ReportOrdDespGuiaFactController extends Controller
                     <td style='text-align:right' data-order='$data->totalkilos'>".
                         number_format($data->totalkilos, 2, ",", ".") .
                     "</td>
+                    <td style='text-align:right' data-order='$data->subtotal'>".
+                        number_format($data->subtotal, 0, ",", ".") .
+                    "</td>
                     $detalleGF
                     $detalleeditarguiafac
                 </tr>";
                 $i++;
-    
-                //dd($data->contacto);
+                $aux_totalkilos += $data->totalkilos;
+                $totalsumsubtotal += $data->subtotal;
             }
-    
             $respuesta['tabla'] .= "
             </tbody>
+                <tfoot>
+                    <tr>
+                        <th style='text-align:right' colspan='9'>TOTAL</th>
+                        <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($totalsumsubtotal, 0, ",", ".") ."</th>
+                        <th colspan='4'></th>
+                    </tr>
+                </tfoot>
             </table>";
             return $respuesta;
         }
         
         return $respuesta;
+    }
+
+    public function exportPdf(Request $request)
+    {
+        //dd($request);
+        $datas = consultaorddesp($request);
+        
+
+        $aux_fdesde= $request->fechad;
+        $aux_fhasta= $request->fechah;
+
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+
+        $nomvendedor = "Todos";
+        if(!empty($request->vendedor_id)){
+            $vendedor = Vendedor::findOrFail($request->vendedor_id);
+            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+        }
+        $nombreCategoria = "Todos";
+        if($request->categoriaprod_id){
+            $categoriaprod = CategoriaProd::findOrFail($request->categoriaprod_id);
+            $nombreCategoria=$categoriaprod->nombre;
+        }
+
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+
+        if($datas){
+            $pdf = PDF::loadView('reportorddespguiafact.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');;
+            //return $pdf->download('cotizacion.pdf');
+            return $pdf->stream("prueba");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        }
     }
 
     /**
@@ -471,10 +532,12 @@ function consultaorddesp($request){
 
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
 
-    $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
+    $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,
+            cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
             despachoord.notaventa_id,despachoord.fechaestdesp,
             sum(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
+            sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
             despachoord.aprguiadesp,despachoord.aprguiadespfh,
             despachoord.guiadespacho,despachoord.guiadespachofec,despachoord.numfactura,despachoord.fechafactura,
             despachoordanul.id as despachoordanul_id

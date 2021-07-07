@@ -213,7 +213,7 @@ Pendiente x Producto
                     </div>
                     <div class="col-xs-12 col-md-3 col-sm-12">
                         <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                        <button type="button" id="btnpdf" name="btnpdf" class="btn btn-success tooltipsC" title="Reporte"><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                        <button type="button" id="btnpdf" name="btnpdf" class="btn btn-success tooltipsC" title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
             </div>

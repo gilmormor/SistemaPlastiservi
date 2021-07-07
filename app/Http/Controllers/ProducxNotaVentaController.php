@@ -38,25 +38,6 @@ class ProducxNotaVentaController extends Controller
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
-        /*
-        $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
-            $user = Usuario::findOrFail(auth()->id());
-            $sucurArray = $user->sucursales->pluck('id')->toArray();
-            $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-            ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
-                    })
-            ->select([
-                'categoriaprod.id',
-                'categoriaprod.nombre',
-                'categoriaprod.descripcion',
-                'categoriaprod.precio',
-                'categoriaprod.areaproduccion_id',
-                'categoriaprod.sta_precioxkilo',
-                'categoriaprod.unidadmedida_id',
-                'categoriaprod.unidadmedidafact_id'
-            ])
-            ->get();
-        */
 
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();

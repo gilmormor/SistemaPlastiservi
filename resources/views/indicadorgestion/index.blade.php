@@ -249,7 +249,7 @@ Productos Notas de Venta
                         <!-- /.box -->
                     </div>
                     <div class="col-lg-12 text-center">
-                        <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success' title='Reporte' onclick='btnpdf(2)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                        <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(2)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
             </div>
@@ -281,7 +281,7 @@ Productos Notas de Venta
                         <!-- /.box -->
                     </div>
                     <div class="col-lg-12 text-center">
-                        <button type='button' id='btnpdf4' name='btnpdf4' class='btn btn-success' title='Reporte' onclick='btnpdf(4)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                        <button type='button' id='btnpdf4' name='btnpdf4' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(4)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
             </div>
@@ -313,7 +313,7 @@ Productos Notas de Venta
                     </div>
                 
                     <div class="col-lg-12 text-center">
-                        <button type='button' id='btnpdf6' name='btnpdf6' class='btn btn-success' title='Reporte' onclick='btnpdf(6)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                        <button type='button' id='btnpdf6' name='btnpdf6' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(6)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
                 
@@ -343,7 +343,7 @@ Productos Notas de Venta
                         <!-- /.box -->
                     </div>
                     <div class="col-lg-12 text-center">
-                        <button type='button' id='btnpdf7' name='btnpdf7' class='btn btn-success' title='Reporte' onclick='btnpdf(7)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                        <button type='button' id='btnpdf7' name='btnpdf7' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(7)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
             </div>
@@ -370,7 +370,7 @@ Productos Notas de Venta
                         </div>
                     </div>
                     <div class="col-lg-12 text-center">
-                        <button type='button' id='btnpdf8' name='btnpdf8' class='btn btn-success' title='Reporte' onclick='btnpdf(8)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                        <button type='button' id='btnpdf8' name='btnpdf8' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(8)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                     </div>
                 </div>
                 

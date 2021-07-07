@@ -140,13 +140,9 @@ Productos Notas de Venta
                                 <div class="col-xs-12 col-sm-12">
                                     <div class="col-xs-12 col-md-9 col-sm-9 text-center">
                                         <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success" data-toggle='tooltip' title="Consultar">Consultar</button>
-                                        <button type="submit" class="btn-accion-tabla tooltipsC" title="PDF">
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>
+                                        <button type="submit" class="btn btn-success"  data-toggle='tooltip' title="Reporte PDF">
+                                            <i class="glyphicon glyphicon-print"></i> Reporte
                                         </button>
-                                        <!--
-                                        <button type="button" id="btnpdf1" name="btnpdf1" class="btn-accion-tabla tooltipsC" title="PDF1">
-                                            <i class="fa fa-fw fa-file-pdf-o"></i>
-                                        </button>-->
                                     </div>
                                 </div>
                             </div>
