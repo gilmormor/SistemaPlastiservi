@@ -3,7 +3,7 @@ $(document).ready(function () {
     $("#btnconsultar").click(function()
     {
         //$( "#tabs" ).tabs({ active: "tab_1" });
-        $('a[href="#tab_1"]').click();
+        //$('a[href="#tab_1"]').click();
         consultar(datos());
     });
 

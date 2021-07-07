@@ -128,7 +128,7 @@ class ReportOrdDespGuiaFactController extends Controller
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
                     <th>Comuna</th>
                     <th class='tooltipsC' title='Total Kg'>Total Kg</th>
-                    <th class='tooltipsC' title='Subtotal $'>$</th>
+                    <th class='tooltipsC' title='Monto Documento'>Monto<br>Documento</th>
                     $encabezadoGF
                     $encabezadoeditarguiafac
                 </tr>
@@ -155,7 +155,7 @@ class ReportOrdDespGuiaFactController extends Controller
                 $aux_enlaceOD = "";
                 if ($data->aprguiadesp == 1){
                     $aux_enlaceOD = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD($data->id,1)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->id
+                                        $data->id
                                     </a>";
                 }
                 if ($data->despachoordanul_id != null){
@@ -198,13 +198,13 @@ class ReportOrdDespGuiaFactController extends Controller
                     <td>$aux_enlaceOD</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->despachosol_id,1)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>$data->despachosol_id
+                            $data->despachosol_id
                         </a>
                     </td>
                     <td>$aux_enlaceoc</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
+                            $data->notaventa_id
                         </a>
                     </td>
                     <td>$data->comunanombre</td>
@@ -276,7 +276,7 @@ class ReportOrdDespGuiaFactController extends Controller
         if($datas){
             $pdf = PDF::loadView('reportorddespguiafact.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');;
             //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream("prueba");
+            return $pdf->stream("Despachoguiafact");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         }
@@ -537,7 +537,7 @@ function consultaorddesp($request){
             comuna.nombre as comunanombre,
             despachoord.notaventa_id,despachoord.fechaestdesp,
             sum(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) AS totalkilos,
-            sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+            round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS subtotal,
             despachoord.aprguiadesp,despachoord.aprguiadespfh,
             despachoord.guiadespacho,despachoord.guiadespachofec,despachoord.numfactura,despachoord.fechafactura,
             despachoordanul.id as despachoordanul_id

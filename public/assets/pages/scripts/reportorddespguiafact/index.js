@@ -231,10 +231,6 @@ function visto(id,visto){
     ajaxRequest(data,ruta,'vistonotaventa');
 }
 
-function btnpdf(){
-
-}
-
 $("#btnpdf").click(function()
 {
     var data = datos();

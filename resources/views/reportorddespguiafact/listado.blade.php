@@ -40,7 +40,7 @@
 						<th style='text-align:center'>NV</th>
 						<th style='text-align:right'>Comuna</th>	
 						<th style='text-align:right'>Kg</th>
-						<th style='text-align:right'>$</th>
+						<th style='text-align:right'>Monto<br>Documento</th>
 						<th style='text-align:center'>NumGuia</th>
 						<th style='text-align:center'>F Guia</th>
 						<th style='text-align:center'>NumFact</th>

@@ -902,7 +902,7 @@ class IndicadoresController extends Controller
             </tbody>
                 <tfoot>
                     <tr>
-                        <th>TOTAL</th>";
+                        <th>TOTAL $</th>";
 
             $respuesta['metacomercial'] .= "
             </tbody>
