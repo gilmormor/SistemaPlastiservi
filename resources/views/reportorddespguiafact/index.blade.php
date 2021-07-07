@@ -34,7 +34,7 @@
                                         <label for="fecha">Fecha Ini OD:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad"  value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final Orden Despacho">
@@ -42,7 +42,7 @@
                                         <label for="dep_fecha">Fecha Fin OD:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" value="{{old('fechah', $fechaServ['fechaAct'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah"placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                             </div>
@@ -52,7 +52,7 @@
                                         <label for="fechaIniFac">F Ini Fact:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechadfac" id="fechadfac" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechadfac" value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" id="fechadfac" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final Factura">
@@ -60,7 +60,7 @@
                                         <label for="fechaFinFac">F Fin Fact:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control datepicker" name="fechahfac" id="fechahfac" value="{{old('fechah', $fechaAct ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" class="form-control datepicker" name="fechahfac" id="fechahfac" value="{{old('fechah', $fechaServ['fechaAct'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                             </div>
