@@ -652,6 +652,7 @@ class IndicadoresController extends Controller
                 <thead>
                     <tr>
                         <th>Productos</th>
+                        <th>cod</th>
                         <th>Diametro</th>
                         <th>Longitud</th>
                         <th>Clase</th>
@@ -680,6 +681,7 @@ class IndicadoresController extends Controller
                 $respuesta['tablaagruxproducto'] .= "
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                         <td>$producto->nombre</td>
+                        <td>$producto->producto_id</td>
                         <td>$producto->diametro</td>
                         <td>$producto->long</td>
                         <td>$producto->cla_nombre</td>
@@ -702,7 +704,7 @@ class IndicadoresController extends Controller
                 <tfoot>
                     <tr>
                         <th>TOTAL</th>
-                        <th colspan='8' style='text-align:right'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
+                        <th colspan='9' style='text-align:right'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
                         <th></th>
                         <th style='text-align:right'>". number_format($aux_promkilogen, 2, ",", ".") ."</th>
                     </tr>
@@ -1582,7 +1584,7 @@ function consulta($request){
     $respuesta['totales'] = $datas;
     //dd($respuesta['totales']);
 
-    $sql = "SELECT categoriaprod.nombre,claseprod.cla_nombre,
+    $sql = "SELECT producto.id as producto_id,categoriaprod.nombre,claseprod.cla_nombre,
     producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,
@@ -1936,7 +1938,7 @@ function consultaODcerrada($request){
     $respuesta['totales'] = $datas;
     //dd($respuesta['totales']);
 
-    $sql = "SELECT categoriaprod.nombre,claseprod.cla_nombre,
+    $sql = "SELECT producto.id as producto_id,categoriaprod.nombre,claseprod.cla_nombre,
     producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,
@@ -1975,7 +1977,7 @@ function consultaODcerrada($request){
     and isnull(notaventa.anulada)
     and isnull(despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
-    GROUP BY producto.id,grupoprod.id;";
+    GROUP BY producto.id;";
 
     //dd($sql);
     $datas = DB::select($sql);
@@ -2096,6 +2098,7 @@ function tablaAgruxProductoMargen($datas){
         <thead>
             <tr>
                 <th>Productos</th>
+                <th>Cod</th>
                 <th>Diametro</th>
                 <th>Long</th>
                 <th>Clase</th>
@@ -2139,6 +2142,7 @@ function tablaAgruxProductoMargen($datas){
         $tabla .= "
             <tr class='btn-accion-tabla tooltipsC'>
                 <td>$producto->nombre</td>
+                <td>$producto->producto_id</td>
                 <td>$producto->diametro</td>
                 <td>$producto->long</td>
                 <td>$producto->cla_nombre</td>

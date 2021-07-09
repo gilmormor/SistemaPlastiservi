@@ -638,7 +638,7 @@
             <div class="modal-body">
                 <input type="hidden" name="aux_numfila" id="aux_numfila" value="0">
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover tablas" id="tabla-data-productos">
+                    <table class="table table-striped table-bordered table-hover tablas" id="tabla-data-productos1">
                         <thead>
                             <tr>
                                 <th>ID</th>

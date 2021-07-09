@@ -20,13 +20,24 @@ $(document).ready(function () {
     });
 
     //alert(aux_nfila);
-    $('.datepicker').datepicker({
+    fecha = charToDate($("#fechah").val());
+    $("#fechad").datepicker({
 		language: "es",
         autoclose: true,
         clearBtn : true,
-		todayHighlight: true
+		todayHighlight: true,
+        endDate: fecha
     }).datepicker("setDate");
-    
+
+    fecha = charToDate($("#fechad").val());
+	$("#fechah").datepicker({
+		language: "es",
+		autoclose: true,
+        clearBtn : true,
+		startDate: fecha,
+		todayHighlight: true
+	}).datepicker("setDate");
+
 
     configurarTabla('.tablas');
 
@@ -39,6 +50,44 @@ $(document).ready(function () {
         autoclose: true,
 		todayHighlight: true
     }).datepicker("setDate");
+
+});
+
+function charToDate(fechachar){
+    var arregloFecha = fechachar.split("/");
+    var anio = arregloFecha[2];
+    var mes = arregloFecha[1] - 1;
+    var dia = arregloFecha[0];
+    var fecha = new Date(anio, mes, dia); 
+    return fecha;
+}
+
+$('#fechad').on('change', function () {
+    getfecd = $('#fechad').datepicker("getDate");
+    $("#fechah").datepicker("destroy");
+    $("#fechah").datepicker({
+		language: "es",
+		autoclose: true,
+        clearBtn : true,
+		startDate: getfecd,
+		todayHighlight: true,
+    });
+    $("#fechah").datepicker("refresh");
+
+});
+
+
+$('#fechah').on('change', function () {
+    getfech = $('#fechah').datepicker("getDate");
+    $("#fechad").datepicker("destroy");
+    $("#fechad").datepicker({
+		language: "es",
+		autoclose: true,
+        clearBtn : true,
+		endDate: getfech,
+		todayHighlight: true,
+    });
+    $("#fechad").datepicker("refresh");
 
 });
 
