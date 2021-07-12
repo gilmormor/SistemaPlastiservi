@@ -21,9 +21,11 @@
 				<div class="round">
 					<span class="h3">{{$request->aux_titulo}}</span>
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
-					<p>Area Producción: {{$nombreAreaproduccion}}</p>
-					<p>Giro: {{$nombreGiro}} </p>
-					<p>Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
+					@if ($request->numrep != '9')
+						<p>Area Producción: {{$nombreAreaproduccion}}</p>
+						<p>Giro: {{$nombreGiro}} </p>
+						<p>Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
+					@endif
 				</div>
 			</td>
 		</tr>
@@ -430,6 +432,90 @@
 	<div id="page_pdf">
 		<div class="round">
 			<img src="{{session('grafico1')}}" style="width:550;height:300;text-align:center;">	
+		</div>
+	</div>
+@endif
+
+@if ($request->numrep=='9')
+	<div id="page_pdf">
+		Indicador Comercial {{$request->anno}}.
+		<div class="round">
+			<table id="factura_detalle">
+				<thead>
+					<tr>
+						<th>Area Prod</th>
+						@foreach($datas['ventasxmes'] as $ventasxmes)
+							<th style='text-align:right'>{{ucfirst($ventasxmes->mes)}}</th>
+						@endforeach
+					</tr>
+				</thead>
+				<tbody id="detalle_productos">
+					@foreach($datas['areaproduccion'] as $areaproduccion){
+						@if ($areaproduccion->id != 3)
+							<tr class='btn-accion-tabla tooltipsC'>
+								<td>{{$areaproduccion->nombre}}</td>
+								@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+									@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+										<td style='text-align:right'>{{number_format($ventasareaprodxmes->totalkilos, 2, ",", ".")}}</td>
+									@endif
+								@endforeach
+							</tr>
+						@endif
+					@endforeach
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div id="page_pdf">
+		<div class="round">
+			<img src="{{session('grafico')}}" style="width:550;height:300;text-align:center;">	
+		</div>
+	</div>
+@endif
+
+@if ($request->numrep=='10')
+	<div id="page_pdf">
+		Indicador Comercial {{$request->anno}}.
+		<div class="round">
+			<table id="factura_detalle">
+				<thead>
+					<tr>
+						<th>{{$request->anno}}</th>
+						@foreach($datas['ventasxmes'] as $ventasxmes)
+							<th style='text-align:right'>{{ucfirst($ventasxmes->mes)}}</th>
+						@endforeach
+					</tr>
+				</thead>
+				<tbody id="detalle_productos">
+					@foreach($datas['areaproduccion'] as $areaproduccion){
+						@if ($areaproduccion->id == 1)
+							<tr>
+								<td>{{$areaproduccion->nombre}}</td>
+								@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+									@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+										<td style='text-align:right'>{{number_format($ventasareaprodxmes->totalkilos, 2, ",", ".")}}</td>
+									@endif
+								@endforeach
+							</tr>
+							<tr>
+								<td>Precio Kg($)</td>
+								@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+									@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+										<td style='text-align:right'>{{number_format($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos, 0, ",", ".")}}</td>
+									@endif
+								@endforeach
+							</tr>
+						@endif
+					@endforeach
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div id="page_pdf">
+		<div class="round">
+			<img src="{{session('grafico')}}" style="width:550;height:300;text-align:center;">	
 		</div>
 	</div>
 @endif

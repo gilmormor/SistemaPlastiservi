@@ -31,7 +31,7 @@ Productos Notas de Venta
                                         <label for="fecha">Fecha Ini:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" required readonly="">
+                                        <input type="text" bsDaterangepicker class="form-control datepickerdesde" name="fechad" id="fechad" placeholder="DD/MM/AAAA" value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" required readonly="">
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Fin">
@@ -39,7 +39,7 @@ Productos Notas de Venta
                                         <label for="dep_fecha">Fecha Fin:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" value="{{old('fechah', $fechaServ['fechaAct'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" class="form-control datepickerhasta" name="fechah" id="fechah" value="{{old('fechah', $fechaServ['fechaAct'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                             </div>
@@ -175,6 +175,8 @@ Productos Notas de Venta
             <li><a href="#tab_5" data-toggle="tab" id="tab5" name="tab5">Meta Comercial</a></li>
             <li><a href="#tab_6" data-toggle="tab" id="tab6" name="tab6">Por area de Producción</a></li>
             <li><a href="#tab_8" data-toggle="tab" id="tab8" name="tab8">Ventas x Mes</a></li>
+            <li><a href="#tab_9" data-toggle="tab" id="tab9" name="tab9">Ventas x Mes AreaProd</a></li>
+            <li><a href="#tab_10" data-toggle="tab" id="tab10" name="tab10">Ventas PVC</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
@@ -479,6 +481,110 @@ Productos Notas de Venta
                 </div>
                 
             </div>
+            <div class="tab-pane" id="tab_9">
+                <div class="row" id="graficoVentasMesAP" name="graficoVentasMesAP" style="display:none;">
+                    <div class="col-lg-12">
+                    <!-- DONUT CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title" id="titulo_tablaventasmesap" name="titulo_tablaventasmesap"></h3>
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="table-responsive" id="tablaventasmesap">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+    
+                    <div class="col-lg-10 col-md-offset-1">
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Ventas Mes Area Prod Kg</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12 text-center" style="width: 100%;text-align:center;">
+                                    <div class="resultadosventasmesxAP">
+                                        <div id="graficoventasmesAP" style="width: 900px; height: 500px;"></div>
+                                        <input type="hidden" name="base64ventasmesAP" id="base64ventasmesAP">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf9' name='btnpdf9' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(9)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="tab_10">
+                <div class="row" id="graficoVentasPVC" name="graficoVentasPVC" style="display:none;">
+                    <div class="col-lg-12">
+                    <!-- DONUT CHART -->
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title" id="titulo_tablaventaPVC" name="titulo_tablaventaPVC"></h3>
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="table-responsive" id="tablaventaPVC">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+    
+                    <div class="col-lg-10 col-md-offset-1">
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Ventas Mes Area Prod Kg</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12 text-center" style="width: 100%;text-align:center;">
+                                    <div class="resultadosventaspvc">
+                                        <div id="graficoventaspvc" style="width: 900px; height: 500px;"></div>
+                                        <input type="hidden" name="base64ventaspvc" id="base64ventaspvc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf10' name='btnpdf10' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(10)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    </div>
+                </div>
+            </div>
+
 
         </div>
     </div>

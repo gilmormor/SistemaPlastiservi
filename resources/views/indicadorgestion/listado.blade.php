@@ -132,7 +132,7 @@
 							$aux_totalkiloshoy = 0;
 							$aux_totalkgfacacum = 0;
 							$aux_totalmonto = 0;
-							$aux_totalmasiva = 0;
+							$aux_totalmas_iva = 0;
 						?>
 						@foreach($datas['areaproduccion'] as $areaproduccion)
 							<?php 
@@ -152,14 +152,14 @@
 								<td style='text-align:right'>{{number_format($aux_kiloshoy, 2, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($areaproduccion->totalkilos, 2, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($areaproduccion->subtotal, 0, ",", ".")}}</td>
-								<td style='text-align:right'>{{number_format($areaproduccion->totalmasiva, 0, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($areaproduccion->totalmas_iva, 0, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($aux_promkilo, 2, ",", ".")}}</td>
 							</tr>
 							<?php
 								$aux_totalkgfacacum += $areaproduccion->totalkilos;
 								$aux_totalmonto += $areaproduccion->subtotal;
 								$aux_totalkiloshoy += $aux_kiloshoy;
-								$aux_totalmasiva += $areaproduccion->totalmasiva;
+								$aux_totalmas_iva += $areaproduccion->totalmas_iva;
 
 							?>
 						@endforeach
@@ -176,7 +176,7 @@
 							<th style='text-align:right'>{{number_format($aux_totalkiloshoy, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_totalkgfacacum, 2, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_totalmonto, 0, ",", ".")}}</th>
-							<th style='text-align:right'>{{number_format($aux_totalmasiva, 0, ",", ".")}}</th>
+							<th style='text-align:right'>{{number_format($aux_totalmas_iva, 0, ",", ".")}}</th>
 							<th style='text-align:right'>{{number_format($aux_promkilogen, 2, ",", ".")}}</th>
 						</tr>
 					</tfoot>
@@ -301,6 +301,13 @@
 	<div id="page_pdf">
 		<div class="round">
 			<img src="{{session('grafico2')}}" style="width:550;height:300;text-align:center;">	
+		</div>
+	</div>
+@endif
+@if ($request->numrep=='9')
+	<div id="page_pdf">
+		<div class="round">
+			<img src="{{session('grafico')}}" style="width:550;height:300;text-align:center;">	
 		</div>
 	</div>
 @endif

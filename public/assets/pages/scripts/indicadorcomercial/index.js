@@ -37,8 +37,10 @@ $(document).ready(function () {
 		startDate: fecha,
 		todayHighlight: true
 	}).datepicker("setDate");
-
-
+/*
+    validarFechaDesdeHasta('ini','fechad','fechah');
+    validarFechaDesdeHasta('fin','fechah','fechad');
+*/
     configurarTabla('.tablas');
 
     $("#areaproduccion_id").val('1'); 
@@ -52,6 +54,37 @@ $(document).ready(function () {
     }).datepicker("setDate");
 
 });
+/*
+function validarFechaDesdeHasta(status,objeto1,objeto2){
+    if(status=='ini'){
+        configurarFechaDesde(objeto1,objeto2);
+    }else{
+        configurarFechaHasta(objeto1,objeto2);
+    }
+}
+
+function configurarFechaDesde(objeto1,objeto2){
+    fecha = charToDate($("#"+objeto2).val());
+    $("#"+objeto1).datepicker({
+        language: "es",
+        autoclose: true,
+        clearBtn : true,
+        todayHighlight: true,
+        endDate: fecha
+    }).datepicker("setDate");
+
+}
+function configurarFechaHasta(objeto1,objeto2){
+    fecha = charToDate($("#"+objeto2).val());
+    $("#"+objeto1).datepicker({
+        language: "es",
+        autoclose: true,
+        clearBtn : true,
+        startDate: fecha,
+        todayHighlight: true
+    }).datepicker("setDate");
+}
+*/
 
 function charToDate(fechachar){
     var arregloFecha = fechachar.split("/");
@@ -73,7 +106,6 @@ $('#fechad').on('change', function () {
 		todayHighlight: true,
     });
     $("#fechah").datepicker("refresh");
-
 });
 
 
@@ -168,6 +200,11 @@ function consultar(data){
 
                 $("#tablaMC").html(datos['tabladinero']);
 
+                $("#tablaventasmesap").html(datos['tablaventasmesap']);
+                $("#tablaventaPVC").html(datos['tablaventaPVC']);
+
+                //console.log(datos['ventasmesxareaprod']);
+
                 configurarTabla('.tablascons');
                 grafico(datos);
             }
@@ -192,10 +229,11 @@ function consultarpdf(data){
     });
 }
 
-
 function grafico(datos){
     grafico_pie1(datos);
     grafico_pie3(datos);
+    grafico_VentasMesxAreaProd(datos);
+    grafico_VentasMesPVC(datos);
     //corechartprueba(datos);
     $("#graficos").show();
     $("#graficos2").show();
@@ -204,6 +242,8 @@ function grafico(datos){
     $("#graficosMC1").show();
     $("#graficosAP1").show();
     $("#graficoVentasxMes").show();
+    $("#graficoVentasMesAP").show();
+    $("#graficoVentasPVC").show();
     $('.resultadosPie1').html('<canvas id="graficoPie1" act="0"></canvas>');
     $('.resultadosBarra1').html('<canvas id="graficoBarra1" act="0"></canvas>');
     var config1 = {
@@ -238,7 +278,6 @@ function grafico(datos){
     var ctxPie1 = document.getElementById('graficoPie1').getContext('2d');
     window.myPie1 = new Chart(ctxPie1,config1);
     myPie1.clear();
-
 
     //console.log(datos);
     //GRAFICO BARRAS
@@ -482,6 +521,77 @@ function grafico_pie3(datos){
       }
 }
 
+function grafico_VentasMesxAreaProd(datos){
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawVisualization);
+
+    function drawVisualization() {
+        // Some raw data (not necessarily accurate)
+        var data = google.visualization.arrayToDataTable(datos['ventasmesxareaprod']);
+        var options = {
+            title : 'Ventas por Area de Producción Año '+$("#anno").val(),
+            vAxis: {title: 'Kilos'},
+            hAxis: {title: 'Meses'},
+            seriesType: 'bars',
+            //series: {5: {type: 'line'}}
+        };
+        var chart = new google.visualization.ComboChart(document.getElementById('graficoventasmesAP'));
+        chart.draw(data, options);
+        $("#base64ventasmesAP").val(chart.getImageURI());
+    }
+}
+
+function grafico_VentasMesPVC(datos){
+    /*
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawVisualization);
+
+    function drawVisualization() {
+        // Some raw data (not necessarily accurate)
+        var data = google.visualization.arrayToDataTable(datos['ventasmespvc']);
+        var options = {
+            title : 'Ventas PVC Año '+$("#anno").val(),
+            vAxis: {title: 'Kilos'},
+            hAxis: {title: 'Meses'},
+            seriesType: 'bars',
+            series: {1: {type: 'line'}}
+        };
+        var chart = new google.visualization.ComboChart(document.getElementById('graficoventaspvc'));
+        chart.draw(data, options);
+        $("#base64ventaspvc").val(chart.getImageURI());
+    }
+    */
+    google.charts.load('current', {'packages':['corechart', 'bar']});
+    google.charts.setOnLoadCallback(drawStuff);
+
+    function drawStuff() {
+
+      var chartDiv = document.getElementById('graficoventaspvc');
+
+      var data = google.visualization.arrayToDataTable(datos['ventasmespvc']);
+
+      var classicOptions = {
+        width: 900,
+        series: {
+          0: {targetAxisIndex: 0},
+          1: {targetAxisIndex: 1,type: 'line'}
+        },
+        title: 'Ventas PVC Año '+$("#anno").val(),
+        vAxes: {
+          // Adds titles to each axis.
+          0: {title: 'Kilos'},
+          1: {title: 'Precio Kg($)'}
+        },
+        hAxis: {title: 'Meses'}
+      };
+
+        var classicChart = new google.visualization.ColumnChart(chartDiv);
+        classicChart.draw(data, classicOptions);
+        $("#base64ventaspvc").val(classicChart.getImageURI());
+
+  };
+}
+
 function btnpdf(numrep){
     base64 = "";
     base64b1 = "";
@@ -495,6 +605,12 @@ function btnpdf(numrep){
     }
     if(numrep==5){
         base64 = $("#base64pie3").val();
+    }
+    if(numrep==9){
+        base64 = $("#base64ventasmesAP").val();
+    }
+    if(numrep==10){
+        base64 = $("#base64ventaspvc").val();
     }
     var data = {
         numrep : numrep,
@@ -517,7 +633,8 @@ function btnpdf(numrep){
                     "&areaproduccion_id="+data.areaproduccion_id +
                     "&idcons="+data.idcons + "&statusact_id="+data.statusact_id +
                     "&aux_titulo="+aux_titulo +
-                    "&numrep="+numrep
+                    "&numrep="+numrep +
+                    "&anno="+$("#anno").val()
             $('#contpdf').attr('src', '/indicadores/comercialPdfkg/'+cadena);
             $("#myModalpdf").modal('show');
     

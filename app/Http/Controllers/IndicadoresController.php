@@ -773,6 +773,161 @@ class IndicadoresController extends Controller
             $respuesta['ventasxmeskilos'] = array_column($datas['ventasxmes'], 'totalkilos');
             $respuesta['ventasxmesdinero'] = array_column($datas['ventasxmes'], 'subtotal');
 
+
+
+            /******Tabla Ventas Mensual por Unidad de Produccion***** */
+            /******************************************************** */
+            $respuesta['tablaventasmesap'] = "<table id='tablaventasmesareaprod' name='tablaventasmesareaprod' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+            <thead>
+                <tr>
+                    <th>Area Prod</th>";
+            foreach($datas['ventasxmes'] as $ventasxmes){
+                $mes = $ventasxmes->mes;
+                $respuesta['tablaventasmesap'] .= "
+                        <th style='text-align:right' class='tooltipsC' title='$mes'>" . ucfirst($mes) . "</th>";
+            }
+            $respuesta['tablaventasmesap'] .= "
+                </tr>
+            </thead>
+            <tbody>";
+            foreach($datas['areaproduccion'] as $areaproduccion){
+                if($areaproduccion->id != 3){
+                    $respuesta['tablaventasmesap'] .= "
+                    <tr class='btn-accion-tabla tooltipsC'>
+                        <td data-order='$areaproduccion->id'>$areaproduccion->nombre</td>";
+                    foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                        if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+                            $respuesta['tablaventasmesap'] .= "
+                                <td style='text-align:right'>" . number_format($ventasareaprodxmes->totalkilos, 2, ",", ".") . "</td>";
+                        }
+                    }
+                    $respuesta['tablaventasmesap'] .= "
+                    </tr>";
+                }
+            }
+            $respuesta['tablaventasmesap'] .= "
+            </tbody>
+            </table>";
+            /*************************************** */
+            
+            
+            /* GRAFICO VENTAS MENSUAL POR AREA DE PRODUCCION*/
+            /********************************************** */
+            $array_ventasmesxareaprod = [];
+            $array_vectorTemp[] = 'Mes';
+            foreach($datas['areaproduccion'] as $areaproduccion){
+                if($areaproduccion->id != 3){
+                    $array_vectorTemp[] = $areaproduccion->nombre;
+                }
+            }
+            $array_ventasmesxareaprod[] = $array_vectorTemp;
+            $array_vectorTemp = [];
+            foreach($datas['ventasxmes'] as $ventasxmes){
+                $array_vectorTemp[] = ucfirst($ventasxmes->mes);
+                $i = 1;
+                foreach($datas['areaproduccion'] as $areaproduccion){
+                    if($areaproduccion->id != 3){
+                        $array_vectorTemp[] = 0.00;
+                            foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                                if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+                                    $array_vectorTemp[$i] = round($ventasareaprodxmes->totalkilos,2);
+                                    break;
+                                }
+                            }
+                        $i++;    
+                    }
+                }
+                $array_ventasmesxareaprod[] = $array_vectorTemp;
+                $array_vectorTemp = [];
+            }
+            $respuesta['ventasmesxareaprod'] = $array_ventasmesxareaprod;
+            //dd($respuesta['ventasmesxareaprod']);
+            /********************************************** */
+
+            /******Tabla Ventas Mensual PVC y precio promedio venta ***** */
+            /************************************************************ */
+            $respuesta['tablaventaPVC'] = "<table id='tablaventaPVC' name='tablaventaPVC' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+            <thead>
+                <tr>
+                    <th>Area Prod</th>";
+            foreach($datas['ventasxmes'] as $ventasxmes){
+                $mes = $ventasxmes->mes;
+                $respuesta['tablaventaPVC'] .= "
+                        <th style='text-align:right' class='tooltipsC' title='$mes'>" . ucfirst($mes) . "</th>";
+            }
+            $respuesta['tablaventaPVC'] .= "
+                </tr>
+            </thead>
+            <tbody>";
+            foreach($datas['areaproduccion'] as $areaproduccion){
+                if($areaproduccion->id == 1){
+                    $respuesta['tablaventaPVC'] .= "
+                    <tr class='btn-accion-tabla tooltipsC'>
+                        <td data-order='$areaproduccion->id'>$areaproduccion->nombre</td>";
+                    foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                        if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+                            $respuesta['tablaventaPVC'] .= "
+                                <td style='text-align:right'>" . number_format($ventasareaprodxmes->totalkilos, 2, ",", ".") . "</td>";
+                        }
+                    }
+                    $respuesta['tablaventaPVC'] .= "
+                    </tr>";
+                    $respuesta['tablaventaPVC'] .= "
+                    <tr class='btn-accion-tabla tooltipsC'>
+                        <td data-order='Precio Kg($)'>Precio Kg($)</td>";
+                    foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                        if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+                            $respuesta['tablaventaPVC'] .= "
+                                <td style='text-align:right'>" . number_format($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos, 0, ",", ".") . "</td>";
+                        }
+                    }
+                    $respuesta['tablaventaPVC'] .= "
+                    </tr>";
+
+
+                }
+            }
+            $respuesta['tablaventaPVC'] .= "
+            </tbody>
+            </table>";
+            /*************************************** */
+
+            /* GRAFICO VENTAS MENSUAL PVC*/
+            /********************************************** */
+            $array_ventasmespvc = [];
+            $array_vectorTemp[] = 'Mes';
+            foreach($datas['areaproduccion'] as $areaproduccion){
+                if($areaproduccion->id == 1){
+                    $array_vectorTemp[] = $areaproduccion->nombre;
+                }
+            }
+            $array_vectorTemp[] = 'Precio Kg($)';
+            $array_ventasmespvc[] = $array_vectorTemp;
+            $array_vectorTemp = [];
+            foreach($datas['ventasxmes'] as $ventasxmes){
+                $array_vectorTemp[] = ucfirst($ventasxmes->mes);
+                $i = 1;
+                foreach($datas['areaproduccion'] as $areaproduccion){
+                    if($areaproduccion->id == 1){
+                        $array_vectorTemp[] = 0.00;
+                        foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                            if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+                                $array_vectorTemp[$i] = round($ventasareaprodxmes->totalkilos,2);
+                                $array_vectorTemp[] = round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,2);
+                                break;
+                            }
+                        }
+                        $i++;    
+                    }
+                }
+                $array_ventasmespvc[] = $array_vectorTemp;
+                //$array_ventasmespvc[] = $array_vectorTemp1;
+                $array_vectorTemp = [];
+            }
+            $respuesta['ventasmespvc'] = $array_ventasmespvc;
+            //dd($respuesta['ventasmespvc']);
+            /********************************************** */
+
             return $respuesta;
         }
     }
@@ -1002,7 +1157,7 @@ class IndicadoresController extends Controller
             $aux_totalkiloshoy = 0;
             $aux_totalkgfacacum = 0;
             $aux_totalmonto = 0;
-            $aux_totalmasiva = 0;
+            $aux_totalmas_iva = 0;
             foreach($datas['areaproduccion'] as $areaproduccion){
                 $aux_promkilo = 0;
                 if($areaproduccion->totalkilos>0){
@@ -1021,14 +1176,14 @@ class IndicadoresController extends Controller
                         <td style='text-align:right' data-order='$aux_kiloshoy' data-search='$aux_kiloshoy'>" . number_format($aux_kiloshoy, 2, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$areaproduccion->totalkilos' data-search='$areaproduccion->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$areaproduccion->subtotal' data-search='$areaproduccion->subtotal'>" . number_format($areaproduccion->subtotal, 0, ",", ".") . "</td>
-                        <td style='text-align:right' data-order='$areaproduccion->totalmasiva' data-search='$areaproduccion->totalmasiva'>" . number_format($areaproduccion->totalmasiva, 0, ",", ".") . "</td>
+                        <td style='text-align:right' data-order='$areaproduccion->totalmas_iva' data-search='$areaproduccion->totalmas_iva'>" . number_format($areaproduccion->totalmas_iva, 0, ",", ".") . "</td>
                         <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>
                     </tr>";
                         //$aux_totalfacdia += 0;
                 $aux_totalkgfacacum += $areaproduccion->totalkilos;
                 $aux_totalmonto += $areaproduccion->subtotal;
                 $aux_totalkiloshoy += $aux_kiloshoy;
-                $aux_totalmasiva += $areaproduccion->totalmasiva;
+                $aux_totalmas_iva += $areaproduccion->totalmas_iva;
             }
             $aux_promkilogen = 0;
             if($aux_totalkgfacacum > 0){
@@ -1042,7 +1197,7 @@ class IndicadoresController extends Controller
                         <th style='text-align:right'>". number_format($aux_totalkiloshoy, 2, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($aux_totalkgfacacum, 2, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($aux_totalmonto, 0, ",", ".") ."</th>
-                        <th style='text-align:right'>". number_format($aux_totalmasiva, 0, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($aux_totalmas_iva, 0, ",", ".") ."</th>
                         <!--<th style='text-align:right'>". number_format($aux_promkilogen, 2, ",", ".") ."</th>-->
                         <th></th>
                     </tr>
@@ -1052,6 +1207,33 @@ class IndicadoresController extends Controller
             $respuesta['vetasxmesmeses'] = array_column($datas['ventasxmes'], 'mes');
             $respuesta['ventasxmeskilos'] = array_column($datas['ventasxmes'], 'totalkilos');
             $respuesta['ventasxmesdinero'] = array_column($datas['ventasxmes'], 'subtotal');
+
+            /* GRAFICO VENTAS MENSUAL POR AREA DE PRODUCCION*/
+            $array_ventasmesxareaprod = [];
+            $array_vectorTemp[] = 'Mes';
+            foreach($datas['areaproduccion'] as $areaproduccion){
+                $array_vectorTemp[] = $areaproduccion->nombre;
+            }
+            $array_ventasmesxareaprod[] = $array_vectorTemp;
+            $array_vectorTemp = [];
+            foreach($datas['ventasxmes'] as $ventasxmes){
+                $array_vectorTemp[] = ucfirst($ventasxmes->mes);
+                $i = 1;
+                foreach($datas['areaproduccion'] as $areaproduccion){
+                    $array_vectorTemp[] = 0.00;
+                    foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                        if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+                            $array_vectorTemp[$i] = $ventasareaprodxmes->subtotal;
+                            break;
+                        }
+                    }
+                    $i++;
+                }
+                $array_ventasmesxareaprod[] = $array_vectorTemp;
+                $array_vectorTemp = [];
+            }
+            $respuesta['ventasmesxareaprod'] = $array_ventasmesxareaprod;
+            
 
             return $respuesta;
         }
@@ -1247,9 +1429,9 @@ class IndicadoresController extends Controller
         $request->statusact_id = $_GET["statusact_id"];
         $request->aux_titulo = $_GET["aux_titulo"];
         $request->numrep = $_GET["numrep"];
+        $request->anno = $_GET["anno"];
 
         //dd($request);
-
         if($request->idcons == "1"){
             $datas = consulta($request);
         }
@@ -1489,7 +1671,7 @@ function consulta($request){
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
     sum(notaventadetalle.totalkilos) AS totalkilos,
     sum(notaventadetalle.subtotal) AS subtotal,
-    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmas_iva,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at)
@@ -1523,7 +1705,7 @@ function consulta($request){
     $sql = "SELECT persona.id,persona.nombre,
     ROUND(sum(notaventadetalle.totalkilos),2) AS totalkilos,
     sum(notaventadetalle.subtotal) AS subtotal,
-    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at)
     INNER JOIN categoriaprod
@@ -1555,7 +1737,7 @@ function consulta($request){
     $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
     sum(notaventadetalle.totalkilos) AS totalkilos,
     sum(notaventadetalle.subtotal) AS subtotal,
-    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1592,7 +1774,7 @@ function consulta($request){
     sum(notaventadetalle.cant) AS cant,
     sum(notaventadetalle.totalkilos) AS totalkilos,
     sum(notaventadetalle.subtotal) AS subtotal,
-    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1627,7 +1809,7 @@ function consulta($request){
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
     sum(notaventadetalle.totalkilos) AS totalkilos,
     sum(notaventadetalle.subtotal) AS subtotal,
-    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1653,11 +1835,10 @@ function consulta($request){
     $respuesta['areaproduccion'] = $datas;
     //dd($respuesta['areaproduccion']);
 
-
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
     sum(notaventadetalle.totalkilos) AS totalkilos,
     sum(notaventadetalle.subtotal) AS subtotal,
-    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1688,10 +1869,11 @@ function consulta($request){
 
     $sql = "SELECT date_format(notaventa.fechahora,'%Y%m') AS annomes,
     MONTHNAME(notaventa.fechahora) AS mes,
+    MONTH(notaventa.fechahora) AS nummes,
     sum(notaventadetalle.cant) AS cant,
     sum(notaventadetalle.totalkilos) AS totalkilos,
     sum(notaventadetalle.subtotal) AS subtotal,
-    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM notaventadetalle INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id
     INNER JOIN categoriaprod
@@ -1718,6 +1900,47 @@ function consulta($request){
 
     $datas = DB::select($sql);
     $respuesta['ventasxmes'] = $datas;
+
+
+    $sql = "SELECT date_format(notaventa.fechahora,'%Y%m') AS annomes,
+    categoriaprod.areaproduccion_id,areaproduccion.nombre,
+    MONTHNAME(notaventa.fechahora) AS mes,
+    MONTH(notaventa.fechahora) AS nummes,
+    sum(notaventadetalle.cant) AS cant,
+    sum(notaventadetalle.totalkilos) AS totalkilos,
+    sum(notaventadetalle.subtotal) AS subtotal,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM notaventadetalle INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at)
+    INNER JOIN claseprod
+    ON producto.claseprod_id=claseprod.id and isnull(claseprod.deleted_at)
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id=areaproduccion.id and isnull(areaproduccion.deleted_at)
+    WHERE $aux_condanno
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condstatusact_id
+    and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+    and isnull(notaventa.anulada)
+    and isnull(notaventadetalle.deleted_at)
+    GROUP BY categoriaprod.areaproduccion_id,date_format(notaventa.fechahora,'%Y%m')
+    ORDER BY date_format(notaventa.fechahora,'%Y%m'),categoriaprod.areaproduccion_id;";
+    //dd($sql);
+    //" and " . $aux_condrut .
+
+    $datas = DB::select($sql);
+    $respuesta['ventasareaprodxmes'] = $datas;
+
+
 
     return $respuesta;
 }
@@ -1825,7 +2048,7 @@ function consultaODcerrada($request){
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
@@ -1863,7 +2086,7 @@ function consultaODcerrada($request){
     $sql = "SELECT persona.id,persona.nombre,
     ROUND(sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp),2) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at)
     INNER JOIN despachoord
@@ -1901,7 +2124,7 @@ function consultaODcerrada($request){
     $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -1946,7 +2169,7 @@ function consultaODcerrada($request){
     sum(despachoorddet.cantdesp) AS cant,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -1983,11 +2206,10 @@ function consultaODcerrada($request){
     $datas = DB::select($sql);
     $respuesta['agruxproducto'] = $datas;
 
-    
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -2012,14 +2234,14 @@ function consultaODcerrada($request){
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY categoriaprod.areaproduccion_id
     ORDER BY categoriaprod.areaproduccion_id;";
-
+    //dd($sql);
     $datas = DB::select($sql);
     $respuesta['areaproduccion'] = $datas;
 
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -2056,7 +2278,7 @@ function consultaODcerrada($request){
     sum(despachoorddet.cantdesp) AS cant,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmasiva
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
     FROM despachoorddet INNER JOIN notaventadetalle 
     ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
@@ -2088,6 +2310,44 @@ function consultaODcerrada($request){
     //dd($sql);
     $datas = DB::select($sql);
     $respuesta['ventasxmes'] = $datas;
+    //dd($respuesta['ventasxmes']);
+
+    $sql = "SELECT date_format(despachoord.fechafactura,'%Y%m') AS annomes,
+    categoriaprod.areaproduccion_id,areaproduccion.nombre,
+    MONTHNAME(despachoord.fechafactura) AS mes,
+    MONTH(despachoord.fechafactura) AS nummes,
+    sum(despachoorddet.cantdesp) AS cant,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM despachoorddet INNER JOIN notaventadetalle 
+    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    INNER JOIN despachoord
+    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at) 
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id=areaproduccion.id and isnull(areaproduccion.deleted_at)
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condanno
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condstatusact_id
+    and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+    and isnull(notaventa.anulada)
+    and isnull(despachoorddet.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    GROUP BY categoriaprod.areaproduccion_id,date_format(despachoord.fechafactura,'%Y%m')
+    ORDER BY date_format(despachoord.fechafactura,'%Y%m'),categoriaprod.areaproduccion_id;";
+
+    //dd($sql);
+    $datas = DB::select($sql);
+    $respuesta['ventasareaprodxmes'] = $datas;
 
     return $respuesta;
 }

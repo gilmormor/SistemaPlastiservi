@@ -171,6 +171,7 @@ Productos Notas de Venta
             <li><a href="#tab_6" data-toggle="tab" id="tab6" name="tab6">Por area de Producción</a></li>
             <li><a href="#tab_7" data-toggle="tab" id="tab7" name="tab7">Productos $</a></li>
             <li><a href="#tab_8" data-toggle="tab" id="tab8" name="tab8">Ventas x Mes</a></li>
+            <li><a href="#tab_9" data-toggle="tab" id="tab9" name="tab9">Ventas x Mes AreaProd</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
@@ -376,7 +377,34 @@ Productos Notas de Venta
                 </div>
                 
             </div>
-
+            <div class="tab-pane" id="tab_9">
+                <div class="row" id="graficoVentasMesAP" name="graficoVentasMesAP" style="display:none;">
+                    <div class="col-lg-10 col-md-offset-1">
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Ventas Mes Area Prod Kg</h3>
+                        
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12 text-center" style="width: 100%;text-align:center;">
+                                    <div class="resultadosventasmesxAP">
+                                        <div id="graficoventasmesAP" style="width: 900px; height: 500px;"></div>
+                                        <input type="hidden" name="base64ventasmesAP" id="base64ventasmesAP">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf9' name='btnpdf9' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(9)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -19,14 +19,23 @@ $(document).ready(function () {
         $(".hskilos").show();
     });
 
-    //alert(aux_nfila);
-    $('.datepicker').datepicker({
+    fecha = charToDate($("#fechah").val());
+    $("#fechad").datepicker({
 		language: "es",
         autoclose: true,
         clearBtn : true,
-		todayHighlight: true
+		todayHighlight: true,
+        endDate: fecha
     }).datepicker("setDate");
-    
+
+    fecha = charToDate($("#fechad").val());
+	$("#fechah").datepicker({
+		language: "es",
+		autoclose: true,
+        clearBtn : true,
+		startDate: fecha,
+		todayHighlight: true
+	}).datepicker("setDate");
 
     configurarTabla('.tablas');
 
@@ -42,6 +51,44 @@ $(document).ready(function () {
 
 
 });
+
+function charToDate(fechachar){
+    var arregloFecha = fechachar.split("/");
+    var anio = arregloFecha[2];
+    var mes = arregloFecha[1] - 1;
+    var dia = arregloFecha[0];
+    var fecha = new Date(anio, mes, dia); 
+    return fecha;
+}
+
+$('#fechad').on('change', function () {
+    getfecd = $('#fechad').datepicker("getDate");
+    $("#fechah").datepicker("destroy");
+    $("#fechah").datepicker({
+		language: "es",
+		autoclose: true,
+        clearBtn : true,
+		startDate: getfecd,
+		todayHighlight: true,
+    });
+    $("#fechah").datepicker("refresh");
+});
+
+
+$('#fechah').on('change', function () {
+    getfech = $('#fechah').datepicker("getDate");
+    $("#fechad").datepicker("destroy");
+    $("#fechad").datepicker({
+		language: "es",
+		autoclose: true,
+        clearBtn : true,
+		endDate: getfech,
+		todayHighlight: true,
+    });
+    $("#fechad").datepicker("refresh");
+
+});
+
 
 function datos(){
     var data = {
@@ -144,12 +191,14 @@ function consultarpdf(data){
 
 function grafico(datos){
     grafico_pie2(datos);
+    grafico_VentasMesxAreaProd(datos);
     $("#graficos1").show();
     $("#reporte1").show();
     $("#grafbarra1").show();
     $("#graficosAP1").show();
     $("#margen").show();
     $("#graficoVentasxMes").show();
+    $("#graficoVentasMesAP").show();
     $('.resultadosPie2').html('<canvas id="graficoPie2" act="0"></canvas>');
     $('.resultadosBarra2').html('<canvas id="graficoBarra2" act="0"></canvas>');
 
@@ -340,6 +389,26 @@ function grafico_pie2(datos){
 
         //console.log(arraygrafico);
       }
+}
+
+function grafico_VentasMesxAreaProd(datos){
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawVisualization);
+
+    function drawVisualization() {
+        // Some raw data (not necessarily accurate)
+        var data = google.visualization.arrayToDataTable(datos['ventasmesxareaprod']);
+        var options = {
+            title : 'Ventas por Area de Producción Año '+$("#anno").val(),
+            vAxis: {title: '$'},
+            hAxis: {title: 'Meses'},
+            seriesType: 'bars',
+            series: {5: {type: 'line'}}
+        };
+        var chart = new google.visualization.ComboChart(document.getElementById('graficoventasmesAP'));
+        chart.draw(data, options);
+        $("#base64ventasmesAP").val(chart.getImageURI());
+    }
 }
 
 function btnpdf(numrep){
