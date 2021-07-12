@@ -509,7 +509,7 @@ Productos Notas de Venta
                     <div class="col-lg-10 col-md-offset-1">
                         <div class="box box-danger">
                             <div class="box-header with-border">
-                                <h3 class="box-title">Ventas Mes Area Prod Kg</h3>
+                                <h3 class="box-title" id="tituloventasmesxAP"></h3>
                         
                                 <div class="box-tools pull-right">
                                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -561,7 +561,7 @@ Productos Notas de Venta
                     <div class="col-lg-10 col-md-offset-1">
                         <div class="box box-danger">
                             <div class="box-header with-border">
-                                <h3 class="box-title">Ventas Mes Area Prod Kg</h3>
+                                <h3 class="box-title" id="tituloventaspvc"></h3>
                         
                                 <div class="box-tools pull-right">
                                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>

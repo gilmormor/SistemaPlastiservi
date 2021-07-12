@@ -527,10 +527,11 @@ function grafico_VentasMesxAreaProd(datos){
 
     function drawVisualization() {
         // Some raw data (not necessarily accurate)
+        $("#tituloventasmesxAP").html('Ventas por Area de Producción Año '+$("#anno").val());
         var data = google.visualization.arrayToDataTable(datos['ventasmesxareaprod']);
         var options = {
-            title : 'Ventas por Area de Producción Año '+$("#anno").val(),
-            vAxis: {title: 'Kilos'},
+            title : $("#tituloventasmesxAP").html(),
+            vAxis: {title: 'Kg.'+$("#consulta_id option:selected").html()},
             hAxis: {title: 'Meses'},
             seriesType: 'bars',
             //series: {5: {type: 'line'}}
@@ -542,54 +543,34 @@ function grafico_VentasMesxAreaProd(datos){
 }
 
 function grafico_VentasMesPVC(datos){
-    /*
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawVisualization);
-
-    function drawVisualization() {
-        // Some raw data (not necessarily accurate)
-        var data = google.visualization.arrayToDataTable(datos['ventasmespvc']);
-        var options = {
-            title : 'Ventas PVC Año '+$("#anno").val(),
-            vAxis: {title: 'Kilos'},
-            hAxis: {title: 'Meses'},
-            seriesType: 'bars',
-            series: {1: {type: 'line'}}
-        };
-        var chart = new google.visualization.ComboChart(document.getElementById('graficoventaspvc'));
-        chart.draw(data, options);
-        $("#base64ventaspvc").val(chart.getImageURI());
-    }
-    */
     google.charts.load('current', {'packages':['corechart', 'bar']});
     google.charts.setOnLoadCallback(drawStuff);
 
     function drawStuff() {
 
-      var chartDiv = document.getElementById('graficoventaspvc');
+        $("#tituloventaspvc").html('Ventas PVC Año '+$("#anno").val());
+        var chartDiv = document.getElementById('graficoventaspvc');
 
-      var data = google.visualization.arrayToDataTable(datos['ventasmespvc']);
+        var data = google.visualization.arrayToDataTable(datos['ventasmespvc']);
 
-      var classicOptions = {
-        width: 900,
-        series: {
-          0: {targetAxisIndex: 0},
-          1: {targetAxisIndex: 1,type: 'line'}
-        },
-        title: 'Ventas PVC Año '+$("#anno").val(),
-        vAxes: {
-          // Adds titles to each axis.
-          0: {title: 'Kilos'},
-          1: {title: 'Precio Kg($)'}
-        },
-        hAxis: {title: 'Meses'}
-      };
-
+        var classicOptions = {
+            width: 900,
+            series: {
+                0: {targetAxisIndex: 0},
+                1: {targetAxisIndex: 1,type: 'line'}
+            },
+            title: $("#tituloventaspvc").html(),
+            vAxes: {
+                // Adds titles to each axis.
+                0: {title: 'Kg.'+$("#consulta_id option:selected").html()},
+                1: {title: 'Precio Kg($)'}
+            },
+            hAxis: {title: 'Meses'}
+        };
         var classicChart = new google.visualization.ColumnChart(chartDiv);
         classicChart.draw(data, classicOptions);
         $("#base64ventaspvc").val(classicChart.getImageURI());
-
-  };
+    };
 }
 
 function btnpdf(numrep){
