@@ -798,7 +798,7 @@ class IndicadoresController extends Controller
                     foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
                         if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
                             $respuesta['tablaventasmesap'] .= "
-                                <td style='text-align:right'>" . number_format($ventasareaprodxmes->totalkilos, 2, ",", ".") . "</td>";
+                                <td style='text-align:right'>" . number_format(round($ventasareaprodxmes->totalkilos,0), 0, ",", ".") . "</td>";
                         }
                     }
                     $respuesta['tablaventasmesap'] .= "
@@ -830,7 +830,7 @@ class IndicadoresController extends Controller
                         $array_vectorTemp[] = 0.00;
                             foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
                                 if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-                                    $array_vectorTemp[$i] = round($ventasareaprodxmes->totalkilos,2);
+                                    $array_vectorTemp[$i] = round($ventasareaprodxmes->totalkilos,0);
                                     break;
                                 }
                             }
@@ -867,7 +867,7 @@ class IndicadoresController extends Controller
                     foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
                         if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
                             $respuesta['tablaventaPVC'] .= "
-                                <td style='text-align:right'>" . number_format($ventasareaprodxmes->totalkilos, 2, ",", ".") . "</td>";
+                                <td style='text-align:right'>" . number_format(round($ventasareaprodxmes->totalkilos,0), 0, ",", ".") . "</td>";
                         }
                     }
                     $respuesta['tablaventaPVC'] .= "
@@ -878,7 +878,7 @@ class IndicadoresController extends Controller
                     foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
                         if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
                             $respuesta['tablaventaPVC'] .= "
-                                <td style='text-align:right'>" . number_format($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos, 0, ",", ".") . "</td>";
+                                <td style='text-align:right'>" . number_format(round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0), 0, ",", ".") . "</td>";
                         }
                     }
                     $respuesta['tablaventaPVC'] .= "
@@ -912,8 +912,8 @@ class IndicadoresController extends Controller
                         $array_vectorTemp[] = 0.00;
                         foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
                             if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-                                $array_vectorTemp[$i] = round($ventasareaprodxmes->totalkilos,2);
-                                $array_vectorTemp[] = round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,2);
+                                $array_vectorTemp[$i] = round($ventasareaprodxmes->totalkilos,0);
+                                $array_vectorTemp[] = round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0);
                                 break;
                             }
                         }

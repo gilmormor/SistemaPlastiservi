@@ -456,7 +456,7 @@
 								<td>{{$areaproduccion->nombre}}</td>
 								@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
 									@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-										<td style='text-align:right'>{{number_format($ventasareaprodxmes->totalkilos, 2, ",", ".")}}</td>
+										<td style='text-align:right'>{{number_format(round($ventasareaprodxmes->totalkilos,0), 0, ",", ".")}}</td>
 									@endif
 								@endforeach
 							</tr>
@@ -494,7 +494,7 @@
 								<td>{{$areaproduccion->nombre}}</td>
 								@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
 									@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-										<td style='text-align:right'>{{number_format($ventasareaprodxmes->totalkilos, 2, ",", ".")}}</td>
+										<td style='text-align:right'>{{number_format(round($ventasareaprodxmes->totalkilos,0), 2, ",", ".")}}</td>
 									@endif
 								@endforeach
 							</tr>
@@ -502,7 +502,7 @@
 								<td>Precio Kg($)</td>
 								@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
 									@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-										<td style='text-align:right'>{{number_format($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos, 0, ",", ".")}}</td>
+										<td style='text-align:right'>{{number_format(round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0), 0, ",", ".")}}</td>
 									@endif
 								@endforeach
 							</tr>
