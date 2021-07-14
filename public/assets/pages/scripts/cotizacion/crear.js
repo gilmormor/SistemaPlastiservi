@@ -199,10 +199,8 @@ function insertarTabla(){
 	}
 	if($("#unidadmedida_idM option:selected").attr('value') == 7){
 		aux_precioxkilo = $("#precioM").attr("valor");
-		aux_precioxkiloreal = $("#precioM").attr("valor");		
+		aux_precioxkiloreal = $("#precioM").attr("valor");
 	}
-	//alert(aux_descuento);
-
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
 			'<td style="display:none;" name="cotdet_idTD'+ aux_nfila + '" id="cotdet_idTD'+ aux_nfila + '">'+ 
 				'0'+
@@ -370,7 +368,6 @@ $('.provincia_id').on('change', function () {
 
 function eliminarRegistro(i){
 	event.preventDefault();
-	//alert($('input[name=_token]').val());
 	var data = {
 		id: $("#cotdet_idTD"+i).html(),
 		nfila : i

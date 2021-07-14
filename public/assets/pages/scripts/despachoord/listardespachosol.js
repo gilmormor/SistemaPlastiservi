@@ -384,3 +384,47 @@ $(".requeridos").change(function(){
 	//alert($(this).parent().attr('class'));
 	quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
 });
+
+function btnpdf(numrep){
+    if(numrep==1){
+        aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
+        data = datos();
+        cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
+                "&fechaestdesp=" + data.fechaestdesp +
+                "&rut=" + data.rut +
+                "&vendedor_id=" + data.vendedor_id +
+                "&oc_id=" + data.oc_id +
+                "&giro_id=" + data.giro_id + 
+                "&areaproduccion_id=" + data.areaproduccion_id +
+                "&tipoentrega_id=" + data.tipoentrega_id +
+                "&notaventa_id=" + data.notaventa_id +
+                "&aprobstatus=" + data.aprobstatus +
+                "&comuna_id=" + data.comuna_id +
+                "&id=" + data.id +
+                "&filtro=" + data.filtro;
+        $('#contpdf').attr('src', '/despachosol/pdfpendientesoldesp/'+cadena);
+        $("#myModalpdf").modal('show'); 
+    }
+}
+
+$("#btnpdf2").click(function()
+{
+    aux_titulo = 'Pendientes Solicitud Despacho';
+    data = datos();
+    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
+            "&fechaestdesp=" + data.fechaestdesp +
+            "&rut=" + data.rut +
+            "&vendedor_id=" + data.vendedor_id +
+            "&oc_id=" + data.oc_id +
+            "&giro_id=" + data.giro_id + 
+            "&areaproduccion_id=" + data.areaproduccion_id +
+            "&tipoentrega_id=" + data.tipoentrega_id +
+            "&notaventa_id=" + data.notaventa_id +
+            "&aprobstatus=" + data.aprobstatus +
+            "&comuna_id=" + data.comuna_id +
+            "&id=" + data.id +
+            "&filtro=" + data.filtro +
+            "&aux_titulo=" + aux_titulo;
+    $('#contpdf').attr('src', '/despachosol/pdfpendientesoldesp/'+cadena);
+    $("#myModalpdf").modal('show'); 
+});

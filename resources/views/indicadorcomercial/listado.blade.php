@@ -21,7 +21,7 @@
 				<div class="round">
 					<span class="h3">{{$request->aux_titulo}}</span>
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
-					@if ($request->numrep != '9')
+					@if (($request->numrep == '9' or $request->numrep == 10) != true)
 						<p>Area Producción: {{$nombreAreaproduccion}}</p>
 						<p>Giro: {{$nombreGiro}} </p>
 						<p>Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
@@ -435,7 +435,13 @@
 		</div>
 	</div>
 @endif
-
+@if ($request->numrep=='8')
+	<div id="page_pdf">
+		<div class="round">
+			<img src="{{session('grafico')}}" style="width:550;height:300;text-align:center;">
+		</div>
+	</div>
+@endif
 @if ($request->numrep=='9')
 	<div id="page_pdf">
 		Indicador Comercial {{$request->anno}}.

@@ -237,7 +237,7 @@ class ProductoController extends Controller
             ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
             ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
             ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
-            ->join('unidadmedida', 'categoriaprod.unidadmedidafact_id', '=', 'unidadmedida.id')
+            ->leftJoin('unidadmedida', 'categoriaprod.unidadmedidafact_id', '=', 'unidadmedida.id')
             ->select([
                     'producto.id',
                     'producto.nombre',

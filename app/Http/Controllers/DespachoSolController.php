@@ -709,6 +709,58 @@ class DespachoSolController extends Controller
         //return $pdf->download('cotizacion.pdf');
         return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');        
     }
+
+    public function pdfpendientesoldesp()
+    {
+        $request = new Request();
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->fechaestdesp = $_GET["fechaestdesp"];
+        $request->rut = $_GET["rut"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->oc_id = $_GET["oc_id"];
+        $request->giro_id = $_GET["giro_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->tipoentrega_id = $_GET["tipoentrega_id"];
+        $request->notaventa_id = $_GET["notaventa_id"];
+        $request->aprobstatus = $_GET["aprobstatus"];
+        $request->comuna_id = $_GET["comuna_id"];
+        $request->id = $_GET["id"];
+        $request->filtro = $_GET["filtro"];
+        $request->aux_titulo = $_GET["aux_titulo"];
+
+        $datas = consultasoldesp($request);
+
+        $aux_fdesde= $request->fechad;
+        if(empty($request->fechad)){
+            $aux_fdesde= '  /  /    ';
+        }
+        $aux_fhasta= $request->fechah;
+
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+
+        //return armarReportehtml($request);
+        if($datas){
+                if(env('APP_DEBUG')){
+                    return view('despachoord.listadosolpend', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request'));
+                }
+                $pdf = PDF::loadView('despachoord.listadosolpend', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request')); //->setPaper('a4', 'landscape');
+                return $pdf->stream("soldespend.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        } 
+    }
 }
 
 
@@ -1231,15 +1283,15 @@ function reportesoldesp1($request){
         $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
         <thead>
             <tr>
-                <th>ID</th>
+                <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                 <th>Fecha</th>
                 <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
                 <th>Razón Social</th>
-                <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th>Comuna</th>
                 <th class='tooltipsC' title='Total Kg Pendientes'>Total Kg</th>
+                <th class='tooltipsC' title='Total $'>$</th>
                 <th class='tooltipsC' title='Vista Previa Orden Despacho'>VP</th>
                 <th class='tooltipsC' title='Acción'>Acción</th>
             </tr>
@@ -1247,12 +1299,14 @@ function reportesoldesp1($request){
         <tbody>";
 
         $i = 0;
+        $aux_Ttotalkilos = 0;
+        $aux_Tsubtotal = 0;
         foreach ($datas as $data) {
             $rut = number_format( substr ( $data->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->rut, strlen($data->rut) -1 , 1 );
             if(empty($data->oc_file)){
                 $aux_enlaceoc = $data->oc_id;
             }else{
-                $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
+                $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)' class='tooltipsC' title='Orden de Compra'>$data->oc_id</a>";
             }
             $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
             //dd($ruta_nuevoSolDesp);
@@ -1289,37 +1343,40 @@ function reportesoldesp1($request){
                 $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
                                     <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-archive'></i></button>
                                 </a>";
-                                
             }
+            $aux_totalkilos = $data->totalkilos - $data->totalkilosdesp;
+            $aux_subtotal = $data->subtotalsoldesp - $data->subtotaldesp;
+            $aux_Ttotalkilos += $aux_totalkilos;
+            $aux_Tsubtotal += $aux_subtotal;
 
             $respuesta['tabla'] .= "
             <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                <td id='id$i' name='id$i'>$data->id
+                <td id='id$i' name='id$i'>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->id,1)'>
+                        $data->id
+                    </a>
                 </td>
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
-                <td>
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->id
-                    </a>
-                </td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
-                    <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
+                        $data->notaventa_id
                     </a>
                 </td>
                 <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
-                <td style='text-align:right'>".
-                    number_format($data->totalkilos - $data->totalkilosdesp, 2, ",", ".") .
+                <td style='text-align:right' data-order='$aux_totalkilos' data-search='$aux_totalkilos'>".
+                    number_format($aux_totalkilos, 2, ",", ".") .
+                "</td>
+                <td style='text-align:right' data-order='$aux_subtotal' data-search='$aux_subtotal'>".
+                    number_format($aux_subtotal, 0, ",", ".") .
                 "</td>
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa' onclick='genpdfVPOD($data->id,1)'>
                         <i class='fa fa-fw fa-file-pdf-o'></i>
                     </a>
                 </td>
-
                 <td>
                     $nuevoOrdDesp
                 </td>
@@ -1330,6 +1387,15 @@ function reportesoldesp1($request){
 
         $respuesta['tabla'] .= "
         </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='7'  style='text-align:right'>TOTAL</th>
+                    <th style='text-align:right'>". number_format($aux_Ttotalkilos, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_Tsubtotal, 0, ",", ".") ."</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
         </table>";
         return $respuesta;
     }
@@ -1583,7 +1649,9 @@ function consultasoldesp($request){
             comuna.nombre as comunanombre,
             despachosol.notaventa_id,despachosol.fechaestdesp,tipoentrega.nombre as tipentnombre,tipoentrega.icono,
             IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
-            vista_despsoltotales.totalkilos
+            IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
+            vista_despsoltotales.totalkilos,
+            vista_despsoltotales.subtotalsoldesp
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas

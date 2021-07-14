@@ -29,7 +29,7 @@ class ValidarCategoriaProd extends FormRequest
             'precio' => 'required|max:99999.99|numeric',
             'sta_precioxkilo' => 'required|max:200',
             'unidadmedida_id' => 'required|max:200',
-            'unidadmedidafact_id' => 'required|max:200',
+            //'unidadmedidafact_id' => 'required|max:200',
             'mostdatosad' => 'boolean',
             'mostunimed' => 'boolean'
         ];

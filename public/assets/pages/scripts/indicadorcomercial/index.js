@@ -404,7 +404,7 @@ function grafico(datos){
 
     var ctxline1 = document.getElementById('graficoline1').getContext('2d');
     window.myline1 = new Chart(ctxline1,config3);
-    myline1.clear();
+    //myline1.clear();
 
 
 
@@ -586,6 +586,9 @@ function btnpdf(numrep){
     }
     if(numrep==5){
         base64 = $("#base64pie3").val();
+    }
+    if(numrep==8){
+        base64 = myline1.toBase64Image();;
     }
     if(numrep==9){
         base64 = $("#base64ventasmesAP").val();

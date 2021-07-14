@@ -2,7 +2,7 @@
     <div class="row">
         <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
             @csrf
-            <div class="col-xs-12 col-md-10 col-sm-12">
+            <div class="col-xs-12 col-md-9 col-sm-12">
                 <div class="col-xs-12 col-md-12 col-sm-12">
                     <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
                         <div class="col-xs-12 col-md-4 col-sm-4 text-left">
@@ -178,14 +178,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12 col-md-2 col-sm-12">
-                <div class="col-xs-12 col-md-12 col-sm-12">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="col-xs-12 col-md-8 col-sm-8 text-center">
-                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-xs-12 col-md-3 col-sm-12 text-center">
+                    <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                    <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                        <i class='glyphicon glyphicon-print'></i> Reporte
+                    </button>
             </div>
         </form>
     </div>

@@ -578,6 +578,15 @@ function totalizarItem(aux_estprec){
 	if($("#pesoM").val()>0){	
 		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
 		$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
+	}else{
+		if($("#unidadmedida_idM option:selected").attr('value') == 7){
+			aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
+			$("#totalkilosM").val(aux_cant);
+			$("#totalkilosM").attr('valor',$("#cantM").val());
+		}else{
+			$("#totalkilosM").val(0.00);
+			$("#totalkilosM").attr('valor','0.00');
+		}
 	}
 	//aux_total = ($("#cantM").val() * aux_peso * $("#precioM").val()) * ($("#descuentoM").val());
 	aux_total = ($("#cantM").val() * $("#precionetoM").val()) * ($("#descuentoM").val());
@@ -592,11 +601,11 @@ function totalizarItem(aux_estprec){
 	//$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
 	$("#precionetoM").val(Math.round(aux_precioUnit));
 	$("#precionetoM").attr('valor',Math.round(aux_precioUnit));
-	if($("#unidadmedida_idM option:selected").attr('value') == 7){
-		aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
-		$("#totalkilosM").val(aux_cant);
-		$("#totalkilosM").attr('valor',$("#cantM").val());
-	}
+	/*
+	else{
+		$("#totalkilosM").val(0.00);
+		$("#totalkilosM").attr('valor',0.00);
+	}*/
 
 }
 
@@ -1096,6 +1105,7 @@ $("#producto_idM").blur(function(){
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
+				console.log(respuesta);
 				if(respuesta.length>0){
 					$("#nombreprodM").val(respuesta[0]['nombre']);
 					$("#codintprodM").val(respuesta[0]['codintprod']);
@@ -1426,3 +1436,8 @@ function annomes(mesanno){
     resultado = arraymesanno[1] + mes;
     return resultado;
 }
+
+
+$("#unidadmedida_idM").change(function(){
+	totalizarItem(0);
+});
