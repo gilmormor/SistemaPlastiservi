@@ -104,27 +104,11 @@
 							{{$CotizacionDetalle->producto->diametro}}
 						</td>
 						<td class="textright">{{$CotizacionDetalle->producto->long}} mts</td>
-						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 2, ",", ".")}}</td>
-						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 0, ",", ".")}}</td>
+						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 0, ",", ".")}}</td>
 					</tr>
 				@endforeach
 			</tbody>
-			<!--
-			<tfoot id="detalle_totales">
-				<tr class="headt">
-					<td colspan="7" class="textright"><span>NETO</span></td>
-					<td class="textright"><span>{{number_format($cotizacion->neto, 2, ",", ".")}}</span></td>
-				</tr>
-				<tr class="headt">
-					<td colspan="7" class="textright"><span>IVA {{$empresa[0]['iva']}}%</span></td>
-					<td class="textright"><span>{{number_format($cotizacion->iva, 2, ",", ".")}}</span></td>
-				</tr>
-				<tr class="headt">
-					<td colspan="7" class="textright"><span>TOTAL</span></td>
-					<td class="textright"><span>{{number_format($cotizacion->total, 2, ",", ".")}}</span></td>
-				</tr>
-			</tfoot>
-			-->
 	</table>
 	</div>
 
@@ -132,15 +116,15 @@
 		<table id="factura_detalle">
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>NETO</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->neto, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->neto, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$cotizacion->piva}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->iva, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->iva, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->total, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->total, 0, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>
