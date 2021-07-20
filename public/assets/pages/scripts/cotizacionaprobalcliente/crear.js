@@ -327,13 +327,13 @@ function modificarTabla(i){
 	$("#descuentoTD"+i).html($("#descuentoM option:selected").html());
 	$("#descuento"+i).val($("#descuentoM option:selected").attr('porc'));
 	$("#descuentoval"+i).val($("#descuentoM option:selected").attr('value'));
-	$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
+	$("#preciounitTD"+i).html(MASKLA($("#precionetoM").attr('valor'),0)); //$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
 	$("#preciounit"+i).val($("#precionetoM").attr('valor'));
-	$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").attr('valor'), '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
+	$("#precioxkiloTD"+i).html(MASKLA($("#precioM").attr('valor'),0)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").attr('valor'), '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
 	$("#precioxkilo"+i).val($("#precioM").attr('valor'));
-	$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
+	$("#totalkilosTD"+i).html(MASKLA($("#totalkilosM").attr('valor'),2)); //$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
 	$("#totalkilos"+i).val($("#totalkilosM").attr('valor'));
-	$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-#,###,###,##0.00',1));
+	$("#subtotalCFTD"+i).html(MASKLA($("#subtotalM").attr('valor'),0)); //$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-#,###,###,##0.00',1));
 	$("#subtotal"+i).val($("#subtotalM").attr('valor'));
 	$("#subtotalSFTD"+i).html($("#subtotalM").attr('valor'));
 	totalizar();
@@ -496,9 +496,9 @@ function totalizar(){
 	aux_porciva = parseFloat(aux_porciva);
 	aux_iva = total_neto * (aux_porciva/100);
 	aux_total = total_neto + aux_iva;
-	aux_netoform = MASK(0, total_neto, '-##,###,##0.00',1)
-	aux_ivaform = MASK(0, aux_iva, '-##,###,##0.00',1)
-	aux_tdtotalform = MASK(0, aux_total, '-##,###,##0.00',1)
+	aux_netoform = MASKLA(total_neto,0); //MASK(0, total_neto, '-##,###,##0.00',1)
+	aux_ivaform = MASKLA(aux_iva,0); //MASK(0, aux_iva, '-##,###,##0.00',1)
+	aux_tdtotalform = MASKLA(aux_total,0); //MASK(0, aux_total, '-##,###,##0.00',1)
 	
 	//$("#tdneto").html(total_neto.toFixed(2));
 	$("#tdneto").html(aux_netoform);
@@ -845,7 +845,7 @@ function editarRegistro(i){
 	$("#aux_numfila").val(i);
 
 	$("#precioxkilorealM").attr('valor',$("#precioxkiloreal"+i).val());
-	$("#precioxkilorealM").val(MASK(0, $("#precioxkiloreal"+i).val(), '-##,###,##0.00',1));
+	$("#precioxkilorealM").val(MASKLA($("#precioxkiloreal"+i).val(),0)); //$("#precioxkilorealM").val(MASK(0, $("#precioxkiloreal"+i).val(), '-##,###,##0.00',1));
 	$("#codintprodM").val($.trim($("#codintprodTD"+i).html()));
 	$("#nombreprodM").val($.trim($("#nombreProdTD"+i).html()));
 	$("#producto_idM").val($("#producto_id"+i).val());
@@ -854,13 +854,13 @@ function editarRegistro(i){
 	$("#cantM").val($("#cant"+i).val());
 	$("#descuentoM").val($.trim($("#descuentoval"+i).val()));
 	$("#precionetoM").attr('valor',$("#preciounit"+i).val());
-	$("#precionetoM").val(MASK(0, $("#preciounit"+i).val(), '-##,###,##0.00',1));
+	$("#precionetoM").val(MASKLA($("#preciounit"+i).val(),0)); //$("#precionetoM").val(MASK(0, $("#preciounit"+i).val(), '-##,###,##0.00',1));
 	$("#precioM").attr('valor',$("#precioxkilo"+i).val());
-	$("#precioM").val(MASK(0, $("#precioxkilo"+i).val(), '-##,###,##0.00',1));
+	$("#precioM").val(MASKLA($("#precioxkilo"+i).val(),0)); //$("#precioM").val(MASK(0, $("#precioxkilo"+i).val(), '-##,###,##0.00',1));
 	$("#totalkilosM").attr('valor',$("#totalkilos"+i).val());
-	$("#totalkilosM").val(MASK(0, $("#totalkilos"+i).val(), '-##,###,##0.00',1));
+	$("#totalkilosM").val(MASKLA($("#totalkilos"+i).val(),2)); //$("#totalkilosM").val(MASK(0, $("#totalkilos"+i).val(), '-##,###,##0.00',1));
 	$("#subtotalM").attr('valor',$("#subtotal"+i).val());
-	$("#subtotalM").val(MASK(0, $("#subtotal"+i).val(), '-#,###,###,##0.00',1));
+	$("#subtotalM").val(MASKLA($("#subtotal"+i).val(),0)); //$("#subtotalM").val(MASK(0, $("#subtotal"+i).val(), '-#,###,###,##0.00',1));
 	$("#cla_nombreM").val($.trim( $("#cla_nombreTD"+i).html() ));
 	$("#tipounionM").val($("#tipounion"+i).val());
 	$("#diamextmmM").val($("#diamextmm"+i).val());
@@ -1174,16 +1174,16 @@ function totalizarItem(aux_estprec){
 		$(".selectpicker").selectpicker('refresh');
 	}
 	aux_tk = $("#cantM").val()*$("#pesoM").val();
-	$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
+	$("#totalkilosM").val(MASKLA(aux_tk.toFixed(2),2)); //$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
 	$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
 	aux_total = ($("#cantM").val() * $("#pesoM").val() * $("#precioM").val()) * ($("#descuentoM").val());
-	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
+	$("#subtotalM").val(MASKLA(aux_total.toFixed(2),0)); //$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
 	$("#subtotalM").attr('valor',aux_total.toFixed(2));
 	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();
 	$("#precioM").val(aux_precdesc);
 	$("#precioM").attr('valor',aux_precdesc);
 	aux_precioUnit = aux_precdesc * $("#pesoM").val();
-	$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
+	$("#precionetoM").val(MASKLA(Math.round(aux_precioUnit),0)); //$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
 	$("#precionetoM").attr('valor',Math.round(aux_precioUnit));
 }
 

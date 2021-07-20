@@ -376,13 +376,13 @@ function insertarTabla(){
 				'<input type="text" name="descuentoval[]" id="descuentoval'+ aux_nfila + '" class="form-control" value="'+ $("#descuentoM option:selected").attr('value') +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="preciounitTD'+ aux_nfila + '" id="preciounitTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
+				MASKLA($("#precionetoM").attr("valor"),0) + //MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="preciounit[]" id="preciounit'+ aux_nfila + '" class="form-control" value="'+ $("#precionetoM").attr("valor") +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="precioxkiloTD'+ aux_nfila + '" id="precioxkiloTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASK(0, aux_precioxkilo, '-##,###,##0.00',1)+
+				MASKLA(aux_precioxkilo,0) + //MASK(0, aux_precioxkilo, '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="precioxkilo[]" id="precioxkilo'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkilo +'" style="display:none;"/>'+
@@ -391,13 +391,13 @@ function insertarTabla(){
 				'<input type="text" name="precioxkiloreal[]" id="precioxkiloreal'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkiloreal +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="totalkilosTD'+ aux_nfila + '" id="totalkilosTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASK(0, $("#totalkilosM").attr("valor"), '-##,###,##0.00',1)+
+				MASKLA($("#totalkilosM").attr("valor"),2) + //MASK(0, $("#totalkilosM").attr("valor"), '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ $("#totalkilosM").attr("valor") +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="subtotalCFTD'+ aux_nfila + '" id="subtotalCFTD'+ aux_nfila + '" class="subtotalCF" style="text-align:right">'+ 
-				MASK(0, $("#subtotalM").attr("valor"), '-#,###,###,##0.00',1)+
+				MASKLA($("#subtotalM").attr("valor"),0) + //MASK(0, $("#subtotalM").attr("valor"), '-#,###,###,##0.00',1)+
 			'</td>'+
 			'<td class="subtotalCF" style="text-align:right;display:none;">'+ 
 				'<input type="text" name="subtotal[]" id="subtotal'+ aux_nfila + '" class="form-control" value="'+ $("#subtotalM").attr("valor") +'" style="display:none;"/>'+

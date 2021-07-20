@@ -30,9 +30,8 @@ Solicitud de despacho
                     <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
                         <thead>
                             <tr>
-                                <th class="width70">ID</th>
+                                <th class="width70 tooltipsC" title='Solicitud de Despacho'>SD</th>
                                 <th>Razón Social</th>
-                                <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
@@ -54,25 +53,24 @@ Solicitud de despacho
                                     }
                                 ?>
                                 <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
-                                    <td>{{$data->id}}</td>
+                                    <td>
+                                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho PDF' onclick='genpdfSD({{$data->id}},1)'>
+                                            {{$data->id}}
+                                        </a>    
+                                    </td>
                                     <td>{{$data->notaventa->cliente->razonsocial}}</td>
                                     <td>
-                                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->id}},1)'>
-                                            <i class='fa fa-fw fa-file-pdf-o'></i>{{$data->id}}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a class='btn-accion-tabla btn-sm' onclick='verpdf2("{{$data->notaventa->oc_file}}",2)'>
+                                        <a class='btn-accion-tabla btn-sm tooltipsC' onclick='verpdf2("{{$data->notaventa->oc_file}}",2)' title='Orden de Compra'>
                                             {{$data->notaventa->oc_id}}
                                         </a>
                                     </td>
                                     <td>
-                                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV({{$data->notaventa_id}},1)'>
-                                            <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
+                                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta PDF' onclick='genpdfNV({{$data->notaventa_id}},1)'>
+                                            {{$data->notaventa_id}}
                                         </a>
                                     </td>
                                     <td>
-                                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV({{$data->notaventa_id}},2)'>
+                                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg PDF' onclick='genpdfNV({{$data->notaventa_id}},2)'>
                                             <i class='fa fa-fw fa-file-pdf-o'></i>
                                         </a>
                                     </td>

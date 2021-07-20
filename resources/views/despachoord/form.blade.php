@@ -238,8 +238,8 @@
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$peso}}" style="display:none;"/>
                                     </td>
-                                    <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right" class="subtotalkg">
-                                        0.00 <!--{{number_format($detalle->notaventadetalle->totalkilos, 2, '.', ',')}}-->
+                                    <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right" class="subtotalkg" valor="0.00">
+                                        0,00 <!--{{number_format($detalle->notaventadetalle->totalkilos, 2, '.', ',')}}-->
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->totalkilos}}" style="display:none;"/>
@@ -262,13 +262,13 @@
                                         <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                     </td>
                                     <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right;"> 
-                                        {{number_format($detalle->notaventadetalle->preciounit, 2, '.', ',')}}
+                                        {{number_format($detalle->notaventadetalle->preciounit, 0, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->preciounit}}" style="display:none;"/>
                                     </td>
                                     <td style="display:none;" name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
-                                        {{number_format($detalle->notaventadetalle->precioxkilo, 2, '.', ',')}}
+                                        {{number_format($detalle->notaventadetalle->precioxkilo, 0, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->precioxkilo}}" style="display:none;"/>
@@ -277,13 +277,13 @@
                                         <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->precioxkiloreal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCFTD" style="text-align:right"> 
-                                        0.00
+                                        0,00
                                     </td>
                                     <td class="subtotalCF" style="text-align:right;display:none;"> 
                                         <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->subtotal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalSFTD{{$aux_nfila}}" id="subtotalSFTD{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
-                                        0.00
+                                        0,00
                                     </td>
                                 </tr>
                                 <?php $i++;
@@ -300,17 +300,17 @@
                                     </div>
                                 </td>
                                 <td colspan="6" style="text-align:right"><b>Total Kg</b></td>
-                                <td id="totalkg" name="totalkg" style="text-align:right">0.00</td>
+                                <td id="totalkg" name="totalkg" style="text-align:right">0,00</td>
                                 <td colspan="2" style="text-align:right"><b>Neto</b></td>
-                                <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
+                                <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
                                 <td colspan="14" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
-                                <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
+                                <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
                                 <td colspan="14" style="text-align:right"><b>Total</b></td>
-                                <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
+                                <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif
                     </tbody>

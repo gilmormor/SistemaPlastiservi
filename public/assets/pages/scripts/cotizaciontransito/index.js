@@ -34,31 +34,37 @@ $(document).ready(function () {
                 aux_mensaje = "Aprobado Vendedor";
                 aux_icono = "glyphicon glyphicon-thumbs-up";
                 aux_color = "btn btn-success";
-            }
-            if (data.aprobstatus=='2'){
-                aux_mensaje= "Precio menor en Tabla";
-                aux_icono = "glyphicon glyphicon-thumbs-down";
-                aux_color = "btn btn-danger";            
-            }
-            if (data.aprobstatus=='3'){
-                aux_mensaje= "Precio menor Aprobado por supervisor";
-                aux_icono = "glyphicon glyphicon-thumbs-up";
-                aux_color = "btn btn-success";
-            }
-            codigo = data.cliente_id;
-            if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
-                aux_mensaje = aux_mensaje + " - Cliente Nuevo debe ser Validado";
-                aux_icono = "glyphicon glyphicon-thumbs-down";
-                aux_color = "btn btn-danger";
             }else{
-                codigo = data.clientetemp_id;
-                aux_validacion = (codigo == null || codigo.length == 0 || /^\s+$/.test(codigo))
-                if ( aux_validacion != true ){
-                    aux_mensaje= aux_mensaje + " - Cliente Nuevo";
-                    aux_icono = "glyphicon glyphicon-thumbs-up";
-                    aux_color = "btn btn-success";
+                if (data.aprobstatus=='2'){
+                    aux_mensaje= "Precio menor en Tabla - Debe ser Aprobado";
+                    aux_icono = "glyphicon glyphicon-thumbs-down";
+                    aux_color = "btn btn-danger";            
+                }else{
+                    if (data.aprobstatus=='3'){
+                        aux_mensaje= "Precio menor Aprobado por supervisor";
+                        aux_icono = "glyphicon glyphicon-thumbs-up";
+                        aux_color = "btn btn-success";
+                    }
                 }
             }
+            if (data.aprobstatus != '2'){
+                codigo = data.cliente_id;
+                validacioncliente_id = (codigo == null || codigo.length == 0 || /^\s+$/.test(codigo));
+                if( validacioncliente_id ){
+                    aux_mensaje = aux_mensaje + " - Cliente Nuevo debe ser Validado";
+                    aux_icono = "glyphicon glyphicon-thumbs-down";
+                    aux_color = "btn btn-danger";
+                }else{
+                    codigo = data.clientetemp_id;
+                    aux_validacion = (codigo == null || codigo.length == 0 || /^\s+$/.test(codigo))
+                    if ( aux_validacion != true ){
+                        aux_mensaje= aux_mensaje + " - Cliente Nuevo";
+                        aux_icono = "glyphicon glyphicon-thumbs-up";
+                        aux_color = "btn btn-success";
+                    }
+                }    
+            }
+
             aux_text = 
                 "<a class='btn-xs tooltipsC "+aux_color+"' title='"+ aux_mensaje +"'>"+
                     "<span class='"+aux_icono+"' style='bottom: 0px;top: 2px;'></span>"+

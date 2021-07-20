@@ -31,10 +31,10 @@ Orden de despacho
                     <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
                         <thead>
                             <tr>
-                                <th class="width70">ID</th>
+                                <th class="width70 tooltipsC" title='Orden Despacho'>OD</th>
+                                <th class='tooltipsC' title='Fecha'>Fecha</th>
                                 <th class='tooltipsC' title='fecha estimada de Despacho'>Fecha ED</th>
                                 <th>Razón Social</th>
-                                <th class='tooltipsC' title='Orden Despacho'>OD</th>
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
@@ -55,17 +55,17 @@ Orden de despacho
                                 }
                             ?>
                             <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
-                                <td>{{$data->id}}</td>
-                                <td>{{$data->fechaestdesp}}</td>
-                                <td>{{$data->notaventa->cliente->razonsocial}}</td>
                                 <td>
-                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD({{$data->id}},1)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i>{{$data->id}}
+                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho PDF' onclick='genpdfOD({{$data->id}},1)'>
+                                        {{$data->id}}
                                     </a>
                                 </td>
+                                <td data-order='{{$data->fechahora}}' data-search='{{$data->fechahora}}'>{{date('d-m-Y', strtotime($data->fechahora))}}</td> 
+                                <td data-order='{{$data->fechaestdesp}}' data-search='{{$data->fechaestdesp}}'>{{date('d-m-Y', strtotime($data->fechaestdesp))}}</td> 
+                                <td>{{$data->notaventa->cliente->razonsocial}}</td>
                                 <td>
-                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD({{$data->despachosol_id}},1)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->despachosol_id}}
+                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho PDF' onclick='genpdfSD({{$data->despachosol_id}},1)'>
+                                        {{$data->despachosol_id}}
                                     </a>
                                 </td>
                                 <td>
@@ -74,8 +74,8 @@ Orden de despacho
                                     </a>
                                 </td>
                                 <td>
-                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV({{$data->notaventa_id}},1)'>
-                                        <i class='fa fa-fw fa-file-pdf-o'></i> {{$data->notaventa_id}}
+                                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta PDF' onclick='genpdfNV({{$data->notaventa_id}},1)'>
+                                        {{$data->notaventa_id}}
                                     </a>
                                 </td>
                                 <td>{{$data->comunaentrega->nombre}}</td>

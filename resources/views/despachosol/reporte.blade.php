@@ -121,8 +121,8 @@
 						<td class="textright">{{number_format($despachosoldet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
 						<!--<td class="textright">{{number_format($despachosoldet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>-->
 						<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>
-						<td class="textright">{{number_format($despachosoldet->notaventadetalle->preciounit, 2, ",", ".")}}</td>
-						<td class="textright">{{number_format($subtotal, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($despachosoldet->notaventadetalle->preciounit, 0, ",", ".")}}</td>
+						<td class="textright">{{number_format($subtotal, 0, ",", ".")}}</td>
 					</tr>
 				@endforeach
 			</tbody>
@@ -139,15 +139,15 @@
 		<table id="factura_detalle">
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>NETO</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($neto, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($neto, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$despachosol->notaventa->piva}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round(($neto * $despachosol->notaventa->piva)/100), 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round(($neto * $despachosol->notaventa->piva)/100), 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round($neto * ($despachosol->notaventa->piva+100)/100), 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round($neto * ($despachosol->notaventa->piva+100)/100), 0, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>

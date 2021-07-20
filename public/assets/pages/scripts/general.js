@@ -648,7 +648,7 @@ function modificarTabla(i){
 	$("#descuentoTD"+i).html($("#descuentoM option:selected").html());
 	$("#descuento"+i).val($("#descuentoM option:selected").attr('porc'));
 	$("#descuentoval"+i).val($("#descuentoM option:selected").attr('value'));
-	$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
+	$("#preciounitTD"+i).html(MASKLA($("#precionetoM").attr('valor'),0)); //$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
 	$("#preciounit"+i).val($("#precionetoM").attr('valor'));
 	aux_precioxkilo = $("#precioM").attr("valor");
 	if($("#pesoM").val()==0)
@@ -658,11 +658,11 @@ function modificarTabla(i){
 	if($("#unidadmedida_idM option:selected").attr('value') == 7){
 		aux_precioxkilo = $("#precioM").attr("valor");
 	}
-	$("#precioxkiloTD"+i).html(MASK(0, aux_precioxkilo, '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
+	$("#precioxkiloTD"+i).html(MASKLA(aux_precioxkilo,0)); //$("#precioxkiloTD"+i).html(MASK(0, aux_precioxkilo, '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
 	$("#precioxkilo"+i).val(aux_precioxkilo);
-	$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
+	$("#totalkilosTD"+i).html(MASKLA($("#totalkilosM").attr('valor'),2)); //$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
 	$("#totalkilos"+i).val($("#totalkilosM").attr('valor'));
-	$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-#,###,###,##0.00',1));
+	$("#subtotalCFTD"+i).html(MASKLA($("#subtotalM").attr('valor'),0)); //$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-#,###,###,##0.00',1));
 	$("#subtotal"+i).val($("#subtotalM").attr('valor'));
 	$("#subtotalSFTD"+i).html($("#subtotalM").attr('valor'));
 
@@ -714,21 +714,22 @@ function totalizar(){
 		total_neto += valorNum;
 	});
 	$("#tabla-data tr .subtotalkg").each(function() {
-		valor = $(this).html() ;
+		//valor = $(this).html() ;
+		valor = $(this).attr("valor");
 		valor = valor.replace(/,/g, ""); //Elimina comas al valor con formato
 		//alert(valor);
 		valorNum = parseFloat(valor);
 		total_kg += valorNum;
 	});
-	aux_totalkgform = MASK(0, total_kg, '-##,###,##0.00',1)
+	aux_totalkgform = MASKLA(total_kg,2); //MASK(0, total_kg, '-##,###,##0.00',1)
 
-	aux_porciva = $("#aux_iva").val()
+	aux_porciva = $("#aux_iva").val();
 	aux_porciva = parseFloat(aux_porciva);
 	aux_iva = Math.round(total_neto * (aux_porciva/100));
 	aux_total = total_neto + aux_iva;
-	aux_netoform = MASK(0, total_neto, '-#,###,###,##0.00',1)
-	aux_ivaform = MASK(0, aux_iva, '-#,###,###,##0.00',1)
-	aux_tdtotalform = MASK(0, aux_total, '-#,###,###,##0.00',1)
+	aux_netoform = MASKLA(total_neto,0); //MASK(0, total_neto, '-#,###,###,##0.00',1)
+	aux_ivaform = MASKLA(aux_iva,0); //MASK(0, aux_iva, '-#,###,###,##0.00',1)
+	aux_tdtotalform = MASKLA(aux_total,0); //MASK(0, aux_total, '-#,###,###,##0.00',1)
 	
 	//$("#tdneto").html(total_neto.toFixed(2));
 	$("#totalkg").html(aux_totalkgform);
@@ -757,22 +758,24 @@ function totalizardespacho(){
 	});
 	
 	$("#tabla-data tr .subtotalkg").each(function() {
-		valor = $(this).html() ;
+		//valor = $(this).html() ;
+		valor = $(this).attr("valor") ;
 		valor = valor.replace(/,/g, ""); //Elimina comas al valor con formato
 		//alert(valor);
 		valorNum = parseFloat(valor);
 		total_kg += valorNum;
 	});
 	//alert(total_neto);
-	aux_totalkgform = MASK(0, total_kg, '-##,###,##0.00',1)
+	aux_totalkgform = MASKLA(total_kg,2); //MASK(0, total_kg, '-##,###,##0.00',1);
+	//alert(aux_totalkgform);
 	//alert(aux_totalkgform);
 	aux_porciva = $("#aux_iva").val()
 	aux_porciva = parseFloat(aux_porciva);
 	aux_iva = Math.round(total_neto * (aux_porciva/100));
 	aux_total = total_neto + aux_iva;
-	aux_netoform = MASK(0, total_neto, '-#,###,###,##0.00',1)
-	aux_ivaform = MASK(0, aux_iva, '-#,###,###,##0.00',1)
-	aux_tdtotalform = MASK(0, aux_total, '-#,###,###,##0.00',1)
+	aux_netoform = MASKLA(total_neto,0); //MASK(0, total_neto, '-#,###,###,##0.00',1);
+	aux_ivaform = MASKLA(aux_iva,0); //MASK(0, aux_iva, '-#,###,###,##0.00',1);
+	aux_tdtotalform = MASKLA(aux_total,0); //MASK(0, aux_total, '-#,###,###,##0.00',1);
 	
 	//$("#tdneto").html(total_neto.toFixed(2));
 	$("#totalkg").html(aux_totalkgform);
@@ -1441,3 +1444,19 @@ function annomes(mesanno){
 $("#unidadmedida_idM").change(function(){
 	totalizarItem(0);
 });
+
+function MASKLA(num,dec){
+	//num = round(aux_cerodec,dec);
+	aux_num = new Intl.NumberFormat("de-DE").format(num);
+	if(dec>0){
+		aux_repcero = '0'.repeat(dec);
+		if(aux_num.indexOf(",") == -1){
+			aux_num = aux_num + ","+aux_repcero;
+		}else{
+			aux_num = aux_num + aux_repcero;
+			aux_pos = aux_num.indexOf(",");
+			aux_num = aux_num.substr(0,(aux_pos+1+dec));
+		}	
+	}
+	return aux_num;
+}

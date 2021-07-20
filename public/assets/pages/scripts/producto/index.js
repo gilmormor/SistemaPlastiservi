@@ -25,6 +25,12 @@ $(document).ready(function () {
         ],
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            $('td', row).eq(8).attr('data-order',data.precioneto);
+            $('td', row).eq(8).attr('data-search',data.precioneto);
+            $('td', row).eq(8).attr('style','text-align:right');
+            $('td', row).eq(8).html(MASKLA(data.precioneto,2));
         }
       });
 

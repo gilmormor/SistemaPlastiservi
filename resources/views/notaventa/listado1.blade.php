@@ -118,7 +118,7 @@
 					<tr>
 						<td colspan="8" class="textright"><span><strong>Totales</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 0, ",", ".")}}</strong></span></td>
-						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
+						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 0, ",", ".")}}</strong></span></td>
 						<td class="textright"><span><strong>NETO</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($notaventa->neto, 0, ",", ".")}}</strong></span></td>
 					</tr>

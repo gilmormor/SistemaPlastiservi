@@ -505,13 +505,13 @@
                                         <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                     </td>
                                     <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
-                                        {{number_format($detalle->preciounit, 2, '.', ',')}}
+                                        {{number_format($detalle->preciounit, 0, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$detalle->preciounit}}" style="display:none;"/>
                                     </td>
                                     <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
-                                        {{number_format($detalle->precioxkilo, 2, '.', ',')}}
+                                        {{number_format($detalle->precioxkilo, 0, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$detalle->precioxkilo}}" style="display:none;"/>
@@ -520,13 +520,13 @@
                                         <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$detalle->precioxkiloreal}}" style="display:none;"/>
                                     </td>
                                     <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
-                                        {{number_format($detalle->totalkilos, 2, '.', ',')}}
+                                        {{number_format($detalle->totalkilos, 2, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$detalle->totalkilos}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
-                                        {{number_format($detalle->subtotal, 2, '.', ',')}}
+                                        {{number_format($detalle->subtotal, 0, ',', '.')}}
                                     </td>
                                     <td class="subtotalCF" style="text-align:right;display:none;"> 
                                         <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$detalle->subtotal}}" style="display:none;"/>
@@ -548,15 +548,15 @@
                             @endforeach
                             <tr id="trneto" name="trneto">
                                 <td colspan="12" style="text-align:right"><b>Neto</b></td>
-                                <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
+                                <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
                                 <td colspan="12" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
-                                <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
+                                <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
                                 <td colspan="12" style="text-align:right"><b>Total</b></td>
-                                <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
+                                <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif
                     </tbody>
