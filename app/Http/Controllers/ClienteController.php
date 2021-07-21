@@ -511,6 +511,7 @@ class ClienteController extends Controller
             $clientedirecs = Cliente::where('cliente.rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+                    ->join('sucursal', 'cliente_sucursal.sucursal_id', '=', 'sucursal.id')
                     ->leftjoin('clientebloqueado', function ($join) {
                         $join->on('cliente.id', '=', 'clientebloqueado.cliente_id')
                         ->whereNull('clientebloqueado.deleted_at');
@@ -533,7 +534,9 @@ class ClienteController extends Controller
                                 'cliente.comunap_id',
                                 'clientedirec.id as direc_id',
                                 'clientedirec.direcciondetalle',
-                                'clientebloqueado.descripcion'
+                                'clientebloqueado.descripcion',
+                                'cliente_sucursal.sucursal_id',
+                                'sucursal.nombre as sucursalnombre'
                             ]);
             //dd($clientedirecs->get());
             return response()->json($clientedirecs->get());

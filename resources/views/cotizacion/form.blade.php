@@ -8,7 +8,7 @@
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
-<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $tablas['sucurArray'][0] ?? '')}}">
+<!--<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $tablas['sucurArray'][0] ?? '')}}">-->
 
 @if($aux_sta==1)
     <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $tablas['vendedor_id'] ?? '')}}">
@@ -230,6 +230,12 @@
         </div>
     </div>
     <div class="row">
+        <div class="form-group col-xs-12 col-sm-3">
+            <label id="lblsucursal_id" name="lblsucursal_id" for="sucursal_id" class="control-label requerido">Sucursal</label>
+            <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' {{$disabledReadOnly}}>
+                <option value="">Seleccione...</option>
+            </select>
+        </div>
     </div>
 </div>
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">

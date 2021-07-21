@@ -546,17 +546,28 @@ $("#rut").blur(function(){
 						//$("#comuna_idD option[value='101']").attr("selected",true);
 
 						$("#clientedirec_id option").remove();
+						$("#sucursal_id option").remove();
+
 						//alert(respuesta[i]['direcciondetalle']);
 						$('#clientedirec_id').attr("required", false);
+						$('#sucursal_id').attr("required", false);
 						if(respuesta[0]['direcciondetalle']!=null){
 							$("#clientedirec_id").prop("disabled",false);
 							$("#clientedirec_id").prop("readonly",false);	
 							//$('#lblclientedirec_id').attr("class", 'requerido');
 							$('#clientedirec_id').attr("required", true);
 							$("#clientedirec_id").append("<option value=''>Seleccione...</option>")
+
+
+							$("#sucursal_id").prop("disabled",false);
+							$("#sucursal_id").prop("readonly",false);	
+							//$('#lblclientedirec_id').attr("class", 'requerido');
+							$('#sucursal_id').attr("required", true);
+							$("#sucursal_id").append("<option value=''>Seleccione...</option>")
 							for(var i=0;i<respuesta.length;i++){
 								//alert(respuesta[i]['direccion']);
 								$("#clientedirec_id").append("<option provincia_id='" + respuesta[i]['provincia_id'] + "' region_id='" + respuesta[i]['region_id'] + "' comuna_id='" + respuesta[i]['comuna_id'] + "' formapago_id='" + respuesta[i]['formapago_id'] + "' plazopago_id='" + respuesta[i]['plazopago_id'] + "' value='" + respuesta[i]['direc_id'] + "'>" + respuesta[i]['direcciondetalle'] + "</option>")
+								$("#sucursal_id").append("<option value='" + respuesta[i]['sucursal_id'] + "'>" + respuesta[i]['sucursalnombre'] + "</option>")
 							}	
 						}else{
 							$("#clientedirec_id").prop("disabled",true);
