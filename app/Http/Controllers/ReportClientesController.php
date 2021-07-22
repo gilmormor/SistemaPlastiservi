@@ -30,7 +30,6 @@ class ReportClientesController extends Controller
         $sucurArray = $clientesArray['sucurArray'];
 
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
 
         /*
@@ -45,9 +44,11 @@ class ReportClientesController extends Controller
         */
  
         $giros = Giro::orderBy('id')->get();
-        $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
-        return view('reportclientes.index',compact('clientes','vendedores1','giros','comunas','fechaAct'));
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+
+        return view('reportclientes.index',compact('clientes','giros','fechaAct','tablashtml'));
     }
 
     public function reporte(Request $request){
@@ -190,7 +191,14 @@ function consulta($request){
             $vendedorcond = " true ";
         }
     }else{
-        $vendedorcond = "cliente_vendedor.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " cliente_vendedor.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "cliente_vendedor.vendedor_id='$request->vendedor_id'";
     }
 
 
@@ -213,12 +221,24 @@ function consulta($request){
     }else{
         $aux_condgiro_id = "cliente.giro_id='$request->giro_id'";
     }
-
+/*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
         $aux_condcomuna_id = "cliente.comunap_id='$request->comuna_id'";
     }
+*/
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true ";
+    }else{
+        if(is_array($request->comuna_id)){
+            $aux_comuna = implode ( ',' , $request->comuna_id);
+        }else{
+            $aux_comuna = $request->comuna_id;
+        }
+        $aux_condcomuna_id = " cliente.comunap_id in ($aux_comuna) ";
+    }
+
     if(empty($request->bloqueado)){
         $aux_bloqueado = " true";
     }else{

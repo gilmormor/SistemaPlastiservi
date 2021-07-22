@@ -32,19 +32,7 @@ class ReportOrdDespController extends Controller
 
         
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
-        /*
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
@@ -54,7 +42,9 @@ class ReportOrdDespController extends Controller
                     'fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y"),
                     ];
-        return view('reportorddesp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaServ'));
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('reportorddesp.index', compact('clientes','giros','areaproduccions','tipoentregas','comunas','fechaServ','tablashtml'));
 
     }
 
@@ -251,7 +241,14 @@ function consultaorddesp($request){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -313,12 +310,24 @@ function consultaorddesp($request){
         }
         
     }
-
+/*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
+*/
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true ";
+    }else{
+        if(is_array($request->comuna_id)){
+            $aux_comuna = implode ( ',' , $request->comuna_id);
+        }else{
+            $aux_comuna = $request->comuna_id;
+        }
+        $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
+    }
+
 
     if(empty($request->id)){
         $aux_condid = " true";

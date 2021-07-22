@@ -73,16 +73,9 @@ Solicitud Despacho
                                         <label>Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
-                                            <option value="">Todos</option>
-                                            @foreach($vendedores1 as $vendedor)
-                                                <option
-                                                    value="{{$vendedor->id}}"
-                                                    >
-                                                    {{$vendedor->nombre}} {{$vendedor->apellido}}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <?php
+                                            echo $tablashtml['vendedores'];
+                                        ?>
                                     </div>
                                 </div>
                             </div>
@@ -178,16 +171,9 @@ Solicitud Despacho
                                         <label>Comuna:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="comuna_id" id="comuna_id" class="selectpicker form-control comuna_id" data-live-search="true">
-                                            <option value="">Todos</option>
-                                            @foreach($comunas as $comuna)
-                                                <option
-                                                    value="{{$comuna->id}}"
-                                                    >
-                                                    {{$comuna->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <?php
+                                            echo $tablashtml['comunas'];
+                                        ?>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="ID">
