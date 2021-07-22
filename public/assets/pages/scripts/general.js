@@ -1460,3 +1460,9 @@ function MASKLA(num,dec){
 	}
 	return aux_num;
 }
+
+$(".selectpicker").selectpicker({
+	noneSelectedText : "Seleccione...", // by this default "Nothing selected" -->will change to Please Select
+	selectAllText : "Selec todo",
+	deselectAllText : "Borrar todo",
+	});

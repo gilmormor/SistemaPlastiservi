@@ -82,7 +82,9 @@ class DespachoSolController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $productos = Producto::productosxUsuario();
-        return view('despachosol.listarnotaventa', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos'));
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('despachosol.listarnotaventa', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos','tablashtml'));
 
     }
 
@@ -472,7 +474,6 @@ class DespachoSolController extends Controller
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
         $sucurArray = $clientesArray['sucurArray'];
-
         /*
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
@@ -490,9 +491,10 @@ class DespachoSolController extends Controller
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
 
-        return view('despachoord.listardespachosol', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct'));
-
+        return view('despachoord.listardespachosol', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','tablashtml'));
     }
 
     public function reporte(Request $request){
@@ -789,7 +791,14 @@ function consulta($request,$aux_sql,$orden){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -851,12 +860,24 @@ function consulta($request,$aux_sql,$orden){
         }
         
     }
-
+/*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
+*/
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true ";
+    }else{
+        if(is_array($request->comuna_id)){
+            $aux_comuna = implode ( ',' , $request->comuna_id);
+        }else{
+            $aux_comuna = $request->comuna_id;
+        }
+        $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
+    }
+
 
     if(empty($request->plazoentrega)){
         $aux_condplazoentrega = " true";
@@ -1000,11 +1021,10 @@ function reporte1($request){
         $respuesta['tabla'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
         <thead>
             <tr>
-                <th>ID</th>
+                <th class='tooltipsC' title='Nota de Venta PDF'>NV</th>
                 <th>Fecha</th>
                 <th>Razón Social</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
-                <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                 <th>Comuna</th>
                 <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
@@ -1100,16 +1120,14 @@ function reporte1($request){
             //dd($ruta_nuevoSolDesp);
             $respuesta['tabla'] .= "
             <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
-                <td id='id$i' name='id$i'>$data->id</td>
+                <td id='id$i' name='id$i'>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta PDF' onclick='genpdfNV($data->id,1)'>
+                        $data->id
+                    </a>
+                </td>
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
-                <td>
-                    <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->id
-                    </a>
-                </td>
                 <td>
                     <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2']) . "' class='btn-accion-tabla tooltipsC' title='Precio x Kg' target='_blank'>-->
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV($data->id,2)'>
@@ -1146,7 +1164,7 @@ function reporte1($request){
         </tbody>
         <tfoot>
             <tr>
-                <th colspan='7' style='text-align:left'>TOTAL</th>
+                <th colspan='6' style='text-align:left'>TOTAL</th>
                 <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
                 <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
                 <!--<th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>-->
@@ -1539,7 +1557,14 @@ function consultasoldesp($request){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -1601,12 +1626,24 @@ function consultasoldesp($request){
         }
         
     }
-
+/*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
+*/
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true ";
+    }else{
+        if(is_array($request->comuna_id)){
+            $aux_comuna = implode ( ',' , $request->comuna_id);
+        }else{
+            $aux_comuna = $request->comuna_id;
+        }
+        $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
+    }
+
 
     $aux_condaprobord = "true";
     switch ($request->filtro) {

@@ -97,6 +97,9 @@
 					@endforeach
 					@foreach($notaventaDetalles as $notaventaDetalle)
 						<?php
+						if($aux_sumtotalkilos<=0){
+							$aux_sumtotalkilos = 1;
+						}
 							$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
 							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
 							//SUMA TOTAL DE SOLICITADO

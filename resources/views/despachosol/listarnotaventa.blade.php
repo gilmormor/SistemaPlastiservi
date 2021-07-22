@@ -66,6 +66,10 @@ Notas de Venta
                                         <label>Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <?php
+                                            echo $tablashtml['vendedores'];
+                                        ?>
+<!--                    
                                         <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
                                             <option value="">Todos</option>
                                             @foreach($vendedores1 as $vendedor)
@@ -76,6 +80,7 @@ Notas de Venta
                                                 </option>
                                             @endforeach
                                         </select>
+-->
                                     </div>
                                 </div>
                             </div>
@@ -172,6 +177,10 @@ Notas de Venta
                                         <label>Comuna:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <?php
+                                            echo $tablashtml['comunas'];
+                                        ?>
+<!--
                                         <select name="comuna_id" id="comuna_id" class="selectpicker form-control comuna_id" data-live-search="true">
                                             <option value="">Todos</option>
                                             @foreach($comunas as $comuna)
@@ -182,6 +191,7 @@ Notas de Venta
                                                 </option>
                                             @endforeach
                                         </select>
+                                    -->
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Plazo de entrega">

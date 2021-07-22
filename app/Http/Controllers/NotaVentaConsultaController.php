@@ -351,6 +351,7 @@ class NotaVentaConsultaController extends Controller
 
     public function consulta($request,$aux_consulta){
         //dd($request);
+        //dd($request->vendedor_id);
         if(empty($request->vendedor_id)){
             $user = Usuario::findOrFail(auth()->id());
             $sql= 'SELECT COUNT(*) AS contador
@@ -370,7 +371,14 @@ class NotaVentaConsultaController extends Controller
                 $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
             }
         }else{
-            $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+            if(is_array($request->vendedor_id)){
+                $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+            }else{
+                $aux_vendedorid = $request->vendedor_id;
+            }
+            $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+            //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
         }
     
         if(empty($request->fechad) or empty($request->fechah)){
@@ -482,15 +490,24 @@ class NotaVentaConsultaController extends Controller
             $aux_condproducto_id = str_replace("-","",$aux_condproducto_id);
             $aux_condproducto_id = "notaventadetalle.producto_id='$aux_condproducto_id'";
         }
-
+/*
         if(empty($request->comuna_id)){
             $aux_condcomuna_id = " true";
         }else{
             $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
-        }    
-
-        //dd($request->fechad);
-     
+        }
+*/
+        //if(empty($aux_comuna )){
+        if(empty($request->comuna_id)){
+            $aux_condcomuna_id = " true ";
+        }else{
+            if(is_array($request->comuna_id)){
+                $aux_comuna = implode ( ',' , $request->comuna_id);
+            }else{
+                $aux_comuna = $request->comuna_id;
+            }
+            $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
+        }
         
         if($aux_consulta == 1){
             $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,

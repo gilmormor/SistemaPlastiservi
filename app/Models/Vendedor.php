@@ -111,8 +111,7 @@ class Vendedor extends Model
     public static function selectvendedores(){
         $vendedores1 = Vendedor::vendedores();
          $respuesta = "
-            <select name='vendedor_id' id='vendedor_id' class='selectpicker form-control vendedor_id'  data-live-search='true'>
-            <option value=''>Todos</option>";
+            <select name='vendedor_id' id='vendedor_id' class='selectpicker form-control vendedor_id'  data-live-search='true' multiple data-actions-box='true'>";
         foreach($vendedores1['vendedores'] as $vendedor){
             $respuesta .= "
                 <option value='$vendedor->id'>$vendedor->nombre $vendedor->apellido</option>";
