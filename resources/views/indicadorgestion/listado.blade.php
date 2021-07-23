@@ -227,13 +227,13 @@
 								if($producto->cant>0){
 									$aux_promunit = $producto->subtotal/$producto->cant;
 								}
-								$aux_promkilo = 0;
+								$aux_preciopromkilo = 0;
 								if($producto->totalkilos>0){
-									$aux_promkilo = $producto->subtotal/$producto->totalkilos;
+									$aux_preciopromkilo = $producto->subtotal/$producto->totalkilos;
 								}
-								$aux_sumpromkilo += $aux_promkilo;
-								$aux_margenAporte = $aux_promkilo - $producto->costo;
-								$aux_margenVenta = $aux_promkilo * $aux_margenAporte;
+								$aux_sumpromkilo += $aux_preciopromkilo;
+								$aux_margenAporte = $aux_preciopromkilo - $producto->costo;
+								$aux_margenVenta = $producto->totalkilos * $aux_margenAporte;
 								$sum_grupo += $producto->subtotal;
 								$sum_KgGrupo += $producto->totalkilos;
 							?>
@@ -248,7 +248,7 @@
 								<td style='text-align:right'>{{$producto->cant}}</td>
 								<td style='text-align:right'>{{number_format($producto->totalkilos, 2, ",", ".")}} </td>
 								<td style='text-align:right'>{{number_format($aux_promunit, 2, ",", ".")}}</td>
-								<td style='text-align:right'>{{number_format($aux_promkilo, 2, ",", ".")}}</td>
+								<td style='text-align:right'>{{number_format($aux_preciopromkilo, 2, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($producto->subtotal, 0, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($producto->costo, 0, ",", ".")}}</td>
 								<td style='text-align:right'>{{number_format($aux_margenAporte, 0, ",", ".")}}</td>
@@ -305,6 +305,38 @@
 	</div>
 @endif
 @if ($request->numrep=='9')
+	<div id="page_pdf">
+		Ventas x area de Producción $
+		<div class="round">
+			<table id="factura_detalle">
+				<thead>
+					<tr>
+						<th>Area Prod</th>
+						<?php
+							foreach($datas['ventasxmes'] as $ventasxmes){
+								$mes = $ventasxmes->mes;
+								echo "<th style='text-align:right'>" . ucfirst($mes) . "</th>";
+							}
+						?>
+					</tr>
+				</thead>
+				<tbody id="detalle_productos">
+					<?php
+						foreach($datas['areaproduccion'] as $areaproduccion){
+							echo "<tr>
+								<td>$areaproduccion->nombre</td>";
+							foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+								if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+									echo "<td style='text-align:right'>" . number_format(round($ventasareaprodxmes->subtotal,0), 0, ",", ".") . "</td>";
+								}
+							}
+							echo "</tr>";
+						}
+					?>
+				</tbody>
+			</table>
+		</div>
+	</div>
 	<div id="page_pdf">
 		<div class="round">
 			<img src="{{session('grafico')}}" style="width:550;height:300;text-align:center;">	

@@ -392,7 +392,6 @@ class IndicadoresController extends Controller
                         $aux_kiloshoy = $areaproduccionhoy->totalkilos;
                     }  
                 }
-
                 $respuesta['tablaareaproduccion'] .= "
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                         <td data-order='$areaproduccion->id' >$areaproduccion->nombre</td>
@@ -404,7 +403,7 @@ class IndicadoresController extends Controller
                         //$aux_totalfacdia += 0;
                 $aux_totalkgfacacum += $areaproduccion->totalkilos;
                 $aux_totalmonto += $areaproduccion->subtotal;
-                $aux_totalkiloshoy += $aux_kiloshoy;
+                $aux_totalkiloshoy += $aux_kiloshoy;    
             }
             $aux_promkilogen = 0;
             if($aux_totalkgfacacum > 0){
@@ -730,28 +729,30 @@ class IndicadoresController extends Controller
             $aux_totalkgfacacum = 0;
             $aux_totalmonto = 0;
             foreach($datas['areaproduccion'] as $areaproduccion){
-                $aux_promkilo = 0;
-                if($areaproduccion->totalkilos>0){
-                    $aux_promkilo = $areaproduccion->subtotal/$areaproduccion->totalkilos;
+                if($areaproduccion->totalkilos > 0){
+                    $aux_promkilo = 0;
+                    if($areaproduccion->totalkilos>0){
+                        $aux_promkilo = $areaproduccion->subtotal/$areaproduccion->totalkilos;
+                    }
+                    $aux_kiloshoy = 0;
+                    foreach($datas['areaproduccionhoy'] as $areaproduccionhoy){
+                        if($areaproduccionhoy->id == $areaproduccion->id){
+                            $aux_kiloshoy = $areaproduccionhoy->totalkilos;
+                        }  
+                    }
+    
+                    $respuesta['tablaareaproduccion'] .= "
+                        <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                            <td data-order='$areaproduccion->id' >$areaproduccion->nombre</td>
+                            <td style='text-align:right' data-order='$aux_kiloshoy' data-search='$aux_kiloshoy'>" . number_format($aux_kiloshoy, 2, ",", ".") . "</td>
+                            <td style='text-align:right' data-order='$areaproduccion->totalkilos' data-search='$areaproduccion->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
+                            <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>
+                        </tr>";
+                            //$aux_totalfacdia += 0;
+                    $aux_totalkgfacacum += $areaproduccion->totalkilos;
+                    $aux_totalmonto += $areaproduccion->subtotal;
+                    $aux_totalkiloshoy += $aux_kiloshoy;    
                 }
-                $aux_kiloshoy = 0;
-                foreach($datas['areaproduccionhoy'] as $areaproduccionhoy){
-                    if($areaproduccionhoy->id == $areaproduccion->id){
-                        $aux_kiloshoy = $areaproduccionhoy->totalkilos;
-                    }  
-                }
-
-                $respuesta['tablaareaproduccion'] .= "
-                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                        <td data-order='$areaproduccion->id' >$areaproduccion->nombre</td>
-                        <td style='text-align:right' data-order='$aux_kiloshoy' data-search='$aux_kiloshoy'>" . number_format($aux_kiloshoy, 2, ",", ".") . "</td>
-                        <td style='text-align:right' data-order='$areaproduccion->totalkilos' data-search='$areaproduccion->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
-                        <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>
-                    </tr>";
-                        //$aux_totalfacdia += 0;
-                $aux_totalkgfacacum += $areaproduccion->totalkilos;
-                $aux_totalmonto += $areaproduccion->subtotal;
-                $aux_totalkiloshoy += $aux_kiloshoy;
             }
             $aux_promkilogen = 0;
             if($aux_totalkgfacacum > 0){
@@ -1148,8 +1149,8 @@ class IndicadoresController extends Controller
 					<th>Area Prod</th>
                     <th style='text-align:right'>Kg Facturado<br>al dia $request->fechah</th>
                     <th style='text-align:right'>Kg Facturado<br>Acumulado</th>
-                    <th style='text-align:right'>$</th>
-                    <th style='text-align:right'>Monto mas iva</th>
+                    <th style='text-align:right'>Neto $</th>
+                    <th style='text-align:right'>Monto<br>con IVA</th>
                     <th style='text-align:right'>Precio<br>Promedio Kg</th>
                 </tr>
             </thead>
@@ -1207,6 +1208,43 @@ class IndicadoresController extends Controller
             $respuesta['vetasxmesmeses'] = array_column($datas['ventasxmes'], 'mes');
             $respuesta['ventasxmeskilos'] = array_column($datas['ventasxmes'], 'totalkilos');
             $respuesta['ventasxmesdinero'] = array_column($datas['ventasxmes'], 'subtotal');
+
+
+
+
+
+            /******Tabla Ventas Mensual por Unidad de Produccion***** */
+            /******************************************************** */
+            $respuesta['tablaventasmesap'] = "<table id='tablaventasmesareaprod' name='tablaventasmesareaprod' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+            <thead>
+                <tr>
+                    <th>Area Prod</th>";
+            foreach($datas['ventasxmes'] as $ventasxmes){
+                $mes = $ventasxmes->mes;
+                $respuesta['tablaventasmesap'] .= "
+                        <th style='text-align:right' class='tooltipsC' title='" . ucfirst($mes) . "'>" . ucfirst($mes) . "</th>";
+            }
+            $respuesta['tablaventasmesap'] .= "
+                </tr>
+            </thead>
+            <tbody>";
+            foreach($datas['areaproduccion'] as $areaproduccion){
+                $respuesta['tablaventasmesap'] .= "
+                <tr class='btn-accion-tabla tooltipsC'>
+                    <td data-order='$areaproduccion->id'>$areaproduccion->nombre</td>";
+                foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                    if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+                        $respuesta['tablaventasmesap'] .= "
+                            <td style='text-align:right'>" . number_format(round($ventasareaprodxmes->subtotal,0), 0, ",", ".") . "</td>";
+                    }
+                }
+                $respuesta['tablaventasmesap'] .= "
+                </tr>";
+            }
+            $respuesta['tablaventasmesap'] .= "
+            </tbody>
+            </table>";
+            /******************************************************** */
 
             /* GRAFICO VENTAS MENSUAL POR AREA DE PRODUCCION*/
             $array_ventasmesxareaprod = [];
@@ -1502,6 +1540,7 @@ class IndicadoresController extends Controller
         $request->idcons = $_GET["idcons"];
         $request->statusact_id = $_GET["statusact_id"];
         $request->aux_titulo = $_GET["aux_titulo"];
+        $request->anno = $_GET["anno"];
         $request->numrep = $_GET["numrep"];
 
         //dd($request);
@@ -2152,8 +2191,6 @@ function consultaODcerrada($request){
     and isnull(notaventa.anulada)
     and isnull(despachoorddet.deleted_at)
     and $aux_condstatusact_id
-   
-   
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY grupoprod.id,grupoprod.gru_nombre,persona.id,persona.nombre;";
 
@@ -2206,7 +2243,7 @@ function consultaODcerrada($request){
     $datas = DB::select($sql);
     $respuesta['agruxproducto'] = $datas;
 
-    $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
+    $sql = "SELECT areaproduccion.id,areaproduccion.nombre,categoriagrupovalmes.costo,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
     round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
@@ -2222,6 +2259,10 @@ function consultaODcerrada($request){
     ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    LEFT JOIN categoriagrupovalmes
+    ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -2307,10 +2348,8 @@ function consultaODcerrada($request){
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY date_format(despachoord.fechafactura,'%Y%m');";
 
-    //dd($sql);
     $datas = DB::select($sql);
     $respuesta['ventasxmes'] = $datas;
-    //dd($respuesta['ventasxmes']);
 
     $sql = "SELECT date_format(despachoord.fechafactura,'%Y%m') AS annomes,
     categoriaprod.areaproduccion_id,areaproduccion.nombre,
@@ -2390,13 +2429,13 @@ function tablaAgruxProductoMargen($datas){
         if($producto->cant>0){
             $aux_promunit = $producto->subtotal/$producto->cant;
         }
-        $aux_promkilo = 0;
+        $aux_preciopromkilo = 0;
         if($producto->totalkilos>0){
-            $aux_promkilo = $producto->subtotal/$producto->totalkilos;
+            $aux_preciopromkilo = $producto->subtotal/$producto->totalkilos;
         }
-        $aux_sumpromkilo += $aux_promkilo;
-        $aux_margenAporte = $aux_promkilo - $producto->costo;
-        $aux_margenVenta = $aux_promkilo * $aux_margenAporte;
+        $aux_sumpromkilo += $aux_preciopromkilo;
+        $aux_margenAporte = $aux_preciopromkilo - $producto->costo;
+        $aux_margenVenta = $producto->totalkilos * $aux_margenAporte;
         $sum_grupo += $producto->subtotal;
         $sum_KgGrupo += $producto->totalkilos;
         $tabla .= "
@@ -2412,7 +2451,7 @@ function tablaAgruxProductoMargen($datas){
                 <td style='text-align:right' data-order='$producto->cant' data-search='$producto->cant'>$producto->cant</td>
                 <td style='text-align:right' data-order='$producto->totalkilos' data-search='$producto->totalkilos'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
                 <td style='text-align:right' data-order='$aux_promunit' data-search='$aux_promunit'>" . number_format($aux_promunit, 2, ",", ".") . "</td>
-                <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>
+                <td style='text-align:right' data-order='$aux_preciopromkilo' data-search='$aux_preciopromkilo'>" . number_format($aux_preciopromkilo, 2, ",", ".") . "</td>
                 <td style='text-align:right' data-order='$producto->subtotal' data-search='$producto->subtotal'>" . number_format($producto->subtotal, 0, ",", ".") . "</td>
                 <td style='text-align:right' data-order='$producto->costo' data-search='$producto->costo'>" . number_format($producto->costo, 0, ",", ".") . "</td>
                 <td style='text-align:right' data-order='$aux_margenAporte' data-search='$aux_margenAporte'>" . number_format($aux_margenAporte, 0, ",", ".") . "</td>
@@ -2449,7 +2488,7 @@ function tablaAgruxProductoMargen($datas){
         <tfoot>
             <tr>
                 <th>TOTAL</th>
-                <th colspan='8' style='text-align:right'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
+                <th colspan='9' style='text-align:right'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
                 <th></th>
                 <th style='text-align:right'>". number_format($aux_prom1, 2, ",", ".") ."</th>
                 <th style='text-align:right'>". number_format($aux_totalsubtotal, 0, ",", ".") ."</th>

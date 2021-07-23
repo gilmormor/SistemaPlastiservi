@@ -162,8 +162,7 @@ function consultar(data){
                 $("#tablaconsultaproductomargen").html(datos['tablaagruxproductomargen']);
                 //console.log(datos['tabladinero']);
                 $("#tablaAP").html(datos['tablaareaproduccion']);
-
-
+                $("#tablagraficoVentasMesAP").html(datos['tablaventasmesap']);
                 configurarTabla('.tablascons');
                 grafico(datos);
             }
@@ -422,6 +421,9 @@ function btnpdf(numrep){
     if(numrep==4){
         base64b2 = myBar2.toBase64Image();
     }
+    if(numrep==9){
+        base64 = $("#base64ventasmesAP").val();
+    }
     var data = {
         numrep : numrep,
         filename : "graficoPie1",
@@ -437,12 +439,16 @@ function btnpdf(numrep){
         success: function (respuesta) {
             aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
             data = datos();
-            cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
-                    "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
+            cadena = "?fechad="+data.fechad +
+                    "&fechah="+data.fechah +
+                    "&vendedor_id=" + data.vendedor_id +
+                    "&giro_id="+data.giro_id + 
                     "&categoriaprod_id=" + data.categoriaprod_id +
                     "&areaproduccion_id="+data.areaproduccion_id +
-                    "&idcons="+data.idcons + "&statusact_id="+data.statusact_id +
+                    "&idcons="+data.idcons + 
+                    "&statusact_id="+data.statusact_id +
                     "&aux_titulo="+aux_titulo +
+                    "&anno="+data.anno +
                     "&numrep="+numrep
             $('#contpdf').attr('src', '/indicadores/gestionPdfkg/'+cadena);
             $("#myModalpdf").modal('show');
