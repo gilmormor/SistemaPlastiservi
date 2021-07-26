@@ -119,7 +119,7 @@
                 <label>Estatus:</label>
             </div>
             <div class="col-xs-12 col-md-8 col-sm-8">
-                <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus">
+                <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus" multiple>
                     <optgroup label="Nota Venta" data-max-options="0">
                         <option value="0">Todos</option>
                         <option value="1">Emitidas sin aprobar</option>
