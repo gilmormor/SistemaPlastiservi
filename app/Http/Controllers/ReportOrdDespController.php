@@ -61,7 +61,7 @@ class ReportOrdDespController extends Controller
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>OD</th>
                     <th>Fecha</th>
                     <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
                     <th>Razón Social</th>
@@ -92,8 +92,8 @@ class ReportOrdDespController extends Controller
                     $fechaaprob = date('d-m-Y h:i:s A', strtotime($data->aprguiadespfh));
                     $aprguiadesp = "<i class='glyphicon glyphicon-floppy-save text-primary tooltipsC' title='Fecha: $fechaaprob'></i>";
                     $imprOrdDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD($data->id,1)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>
-                        </a>";
+                                $data->id
+                                    </a>";
                 }
                 $listadosoldesp = "";
                 /*
@@ -108,8 +108,9 @@ class ReportOrdDespController extends Controller
                 /*$despachoord = DespachoOrd::findOrFail($data->id)
                                 ->whereNull();*/
                 $respuesta['tabla'] .= "
-                <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                    <td id='id$i' name='id$i'>$data->id
+                <tr id='fila$i' name='fila$i' class='tooltipsC'>
+                    <td id='id$i' name='id$i'>
+                        $data->id
                     </td>
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
@@ -119,13 +120,13 @@ class ReportOrdDespController extends Controller
                     </td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->despachosol_id,1)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>$data->despachosol_id
+                            </i>$data->despachosol_id
                         </a>
                     </td>
                     <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
+                            $data->notaventa_id
                         </a>
                     </td>
                     <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
