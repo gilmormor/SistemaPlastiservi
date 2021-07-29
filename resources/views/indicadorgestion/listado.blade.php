@@ -304,6 +304,13 @@
 		</div>
 	</div>
 @endif
+@if ($request->numrep=='8')
+	<div id="page_pdf">
+		<div class="round">
+			<img src="{{session('grafico2')}}" style="width:550;height:300;text-align:center;">	
+		</div>
+	</div>
+@endif
 @if ($request->numrep=='9')
 	<div id="page_pdf">
 		Ventas x area de Producción $

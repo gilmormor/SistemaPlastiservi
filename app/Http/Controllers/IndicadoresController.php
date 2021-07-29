@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Cliente;
+use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
@@ -84,6 +85,19 @@ class IndicadoresController extends Controller
         return view('indicadorgestion.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
     }
 
+    public function repkilosxtipoentrega(Request $request){
+        can('listar-reporte-kilos-x-tipo-entrega');
+        $giros = Giro::orderBy('id')->get();
+        $categoriaprods = CategoriaProd::categoriasxUsuario();
+        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+
+        $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
+                    'fechaAct' => date("d/m/Y"),
+                    'anno' => date('Y')
+                    ];
+        return view('repkilosxtipoentrega.index', compact('giros','categoriaprods','areaproduccions','fechaServ','tablashtml'));
+    }
 
     public function reporte(Request $request){
         //dd($request);
@@ -1277,6 +1291,53 @@ class IndicadoresController extends Controller
         }
     }
 
+    public function reportekilostipoentrega(Request $request){
+        //dd($request);
+        $respuesta = array();
+		$respuesta['exito'] = true;
+		$respuesta['mensaje'] = "Código encontrado";
+		$respuesta['tabla'] = "";
+
+        if($request->ajax()){
+            //dd($request->idcons);
+            $datas = consultakilostipoentrega($request); //TODAS LAS NOTAS DE VENTA
+
+            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+			<thead>
+				<tr>
+                    <th>Tipo entrega</th>
+                    <th>T</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total KG'>TOTAL Kg</th>
+                </tr>
+            </thead>
+            <tbody>";
+            $aux_totalkilos = 0;
+            foreach($datas['kilosxtipoentrega'] as $kilosxtipoentrega){
+                $respuesta['tabla'] .= "
+                <tr>
+                    <td>
+                        $kilosxtipoentrega->nombre
+                    </td>
+                    <td><i class='fa $kilosxtipoentrega->icono'></i>
+                    </td>
+                    <td style='text-align:right' data-order='$kilosxtipoentrega->totalkilos' data-search='$kilosxtipoentrega->totalkilos'>" . number_format($kilosxtipoentrega->totalkilos, 2, ",", ".") . "</td>
+                </tr>";
+                $aux_totalkilos += $kilosxtipoentrega->totalkilos;
+            }
+            $respuesta['tabla'] .= "
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan='2'>TOTAL</th>
+                        <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
+                    </tr>
+                </tfoot>
+            </table>";
+            //dd($respuesta);
+            return $respuesta;
+        }
+    }
+
     public function exportPdf(Request $request)
     {
         //$cotizaciones = Cotizacion::orderBy('id')->get();
@@ -1615,7 +1676,84 @@ class IndicadoresController extends Controller
         session(['grafico2' => $request['base64b2']]);
         return "";
     }
+
+    public function reportekilostipoentregapdf()
+    {
+        //dd(session('grafico2'));
+        $request = new Request();
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->giro_id = $_GET["giro_id"];
+        $request->categoriaprod_id = $_GET["categoriaprod_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->idcons = $_GET["idcons"];
+        $request->statusact_id = $_GET["statusact_id"];
+        $request->aux_titulo = $_GET["aux_titulo"];
+
+        //dd($request);
+
+        $datas = consultakilostipoentrega($request);
+
+        //$datas = consulta($request);
+
+        $aux_fdesde= $request->fechad;
+        if(empty($request->fechad)){
+            $aux_fdesde= '  /  /    ';
+        }
+        $aux_fhasta= $request->fechah;
+
+        $aux_plazoentregad= $request->plazoentregad;
+        if(empty($request->plazoentregad)){
+            $aux_plazoentregad= '  /  /    ';
+        }
+        $aux_plazoentregah= $request->plazoentregah;
+
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $aux_areaproduccion = implode ( ',' , json_decode($request->areaproduccion_id));
+        if(empty($aux_areaproduccion )){
+            $areaprodcond = " true ";
+        }else{
+            $areaprodcond = " areaproduccion.id in ($aux_areaproduccion) ";
+        }
+
+        $sql = "SELECT nombre
+        FROM areaproduccion 
+        where $areaprodcond
+        ORDER BY id;";
+        //dd($sql);
+        $datas_areaproduccion = DB::select($sql);
+
+        
+        $nombreAreaproduccion = "";
+        /*
+        dd($request->areaproduccion_id);
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        */
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+        //dd($datas);
+
+        //return armarReportehtml($request);
+        if($datas){
+                //return view('repkilosxtipoentrega.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request'));
+                $pdf = PDF::loadView('repkilosxtipoentrega.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request')); //->setPaper('a4', 'landscape');
+                return $pdf->stream("repkilosxtipoentrega.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        } 
+    }
 }
+
+
 
 
 function consulta($request){
@@ -2500,4 +2638,107 @@ function tablaAgruxProductoMargen($datas){
         </tfoot>
     </table>";
     return $tabla;
+}
+
+function consultakilostipoentrega($request){
+    $aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
+    $aux_areaproduccion = implode ( ',' , json_decode($request->areaproduccion_id));
+    $respuesta = array();
+    $respuesta['exito'] = true;
+    $respuesta['mensaje'] = "Código encontrado";
+    $respuesta['productos'] = "";
+    $respuesta['vendedores'] = "";
+
+    if(empty($aux_vendedor )){
+        $vendedorcond = " true ";
+    }else{
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
+    }
+    //dd($vendedorcond);
+    if(empty($request->fechad) or empty($request->fechah)){
+        $aux_condFecha = " true";
+    }else{
+        if($request->idcons == "2"){
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d'); //." 00:00:00";
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d'); //." 23:59:59";
+            $aux_condFecha = "despachoord.fechafactura>='$fechad' and despachoord.fechafactura<='$fechah'";
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+            $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
+        }
+    }
+
+    if(empty($request->categoriaprod_id)){
+        $aux_condcategoriaprod_id = " true";
+    }else{
+        $aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+    }
+    if(empty($request->giro_id)){
+        $aux_condgiro_id = " true";
+    }else{
+        $aux_condgiro_id = "cliente.giro_id='$request->giro_id'";
+    }
+
+    if(empty($aux_areaproduccion )){
+        $aux_condareaproduccion_id = " true ";
+    }else{
+        $aux_condareaproduccion_id = " categoriaprod.areaproduccion_id in ($aux_areaproduccion) ";
+    }
+
+    switch ($request->statusact_id) {
+        case 1:
+            $aux_condstatusact_id = "notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))";
+            break;
+        case 2:
+            $aux_condstatusact_id = "notaventa.id in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))";
+            break;
+        case 3:
+            $aux_condstatusact_id = " true";
+            break;
+    }
+
+    $sql = "SELECT despachoord.tipoentrega_id,tipoentrega.nombre,tipoentrega.icono,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM despachoorddet INNER JOIN notaventadetalle 
+    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    INNER JOIN despachoord
+    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at)
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at)
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    inner join tipoentrega
+    on despachoord.tipoentrega_id=tipoentrega.id
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condstatusact_id
+    and $aux_condareaproduccion_id
+    and areaproduccion.stapromkg=1
+    and isnull(notaventa.anulada)
+    and isnull(despachoorddet.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    GROUP BY despachoord.tipoentrega_id
+    ORDER BY despachoord.tipoentrega_id;";
+    //dd($sql);
+    $datas = DB::select($sql);
+    $respuesta['kilosxtipoentrega'] = $datas;
+    //dd($respuesta['kilosxtipoentrega']);
+
+    return $respuesta;
 }

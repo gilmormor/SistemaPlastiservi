@@ -144,7 +144,6 @@
                                 <th colspan='3'></th>
                             </tr>
                         </tfoot>
-        
                     </table>
                 </div>
             </div>

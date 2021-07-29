@@ -86,8 +86,10 @@ class ReportOrdDespGuiaFactController extends Controller
 
         $aux_verestado='3'; //3 muestra boton de editar Num Guia y Num Fact 
         $titulo = "Editar Número Guia o Factura";
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
 
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado','titulo'));
+        return view('reportorddespguiafact.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','aux_verestado','titulo','tablashtml'));
 
     }
 

@@ -332,7 +332,7 @@ function grafico(datos){
 
     var ctxline1 = document.getElementById('graficoline1').getContext('2d');
     window.myline1 = new Chart(ctxline1,config3);
-    myline1.clear();
+    //myline1.clear();
 
 
 
@@ -391,6 +391,9 @@ function grafico_pie2(datos){
 }
 
 function grafico_VentasMesxAreaProd(datos){
+    aux_titulo = 'Ventas por Area de Producción Año '+$("#anno").val();
+    $("#titulo_TablaVentasMesAP").html(aux_titulo);
+    $("#titulo_graficoVentasMesAP").html(aux_titulo);
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawVisualization);
 
@@ -398,7 +401,7 @@ function grafico_VentasMesxAreaProd(datos){
         // Some raw data (not necessarily accurate)
         var data = google.visualization.arrayToDataTable(datos['ventasmesxareaprod']);
         var options = {
-            title : 'Ventas por Area de Producción Año '+$("#anno").val(),
+            title : aux_titulo,
             vAxis: {title: '$'},
             hAxis: {title: 'Meses'},
             seriesType: 'bars',
@@ -420,6 +423,9 @@ function btnpdf(numrep){
     }
     if(numrep==4){
         base64b2 = myBar2.toBase64Image();
+    }
+    if(numrep==8){
+        base64b2 = myline1.toBase64Image();
     }
     if(numrep==9){
         base64 = $("#base64ventasmesAP").val();

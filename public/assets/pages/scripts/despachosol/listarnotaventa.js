@@ -245,3 +245,25 @@ function visto(id,visto){
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
 }
+
+$("#btnpdf2").click(function()
+{
+    aux_titulo = 'Nota de Venta Pendientes';
+    data = datos();
+    cadena = "?fechad="+data.fechad+
+            "&fechah="+data.fechah +
+            "&rut=" + data.rut +
+            "&vendedor_id=" + data.vendedor_id +
+            "&oc_id=" + data.oc_id +
+            "&giro_id=" + data.giro_id + 
+            "&areaproduccion_id=" + data.areaproduccion_id +
+            "&tipoentrega_id=" + data.tipoentrega_id +
+            "&notaventa_id=" + data.notaventa_id +
+            "&aprobstatus=" + data.aprobstatus +
+            "&comuna_id=" + data.comuna_id +
+            "&plazoentrega=" + data.plazoentrega +
+            "&filtro=" + data.filtro +
+            "&aux_titulo=" + aux_titulo;
+    $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/'+cadena);
+    $("#myModalpdf").modal('show');
+});

@@ -42,15 +42,18 @@ Solicitud de despacho
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $aux_nfila = 0;?>
+                            <?php 
+                                $aux_nfila = 0;
+                                $aux_totalgenKG = 0;
+                            ?>
                             @foreach ($datas as $data)
                                 <?php
-                                    
                                     $aux_nfila++; 
                                     $aux_totalkg = 0;
                                     foreach($data->despachosoldets as $despachosoldet){
                                         $aux_totalkg += $despachosoldet->cantsoldesp * ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant);
                                     }
+                                    $aux_totalgenKG += $aux_totalkg;
                                 ?>
                                 <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}">
                                     <td>
@@ -116,6 +119,13 @@ Solicitud de despacho
                                 </tr>
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan='6' style='text-align:left'>TOTALES</th>
+                                <th style='text-align:right'>{{number_format($aux_totalgenKG, 2, ",", ".")}}</th>
+                                <th colspan='2'></th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

@@ -55,7 +55,6 @@ class DespachoSolController extends Controller
 
     public function listarnv()
     {
-
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
@@ -64,16 +63,6 @@ class DespachoSolController extends Controller
         $clientes = $clientesArray['clientes'];
         $sucurArray = $clientesArray['sucurArray'];
 
-        /*
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
@@ -84,8 +73,7 @@ class DespachoSolController extends Controller
         $productos = Producto::productosxUsuario();
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        return view('despachosol.listarnotaventa', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos','tablashtml'));
-
+        return view('despachosol.listarnotaventa', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','productos','tablashtml'));
     }
 
     /**
@@ -103,26 +91,8 @@ class DespachoSolController extends Controller
         $data = NotaVenta::findOrFail($id);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $detalles = $data->notaventadetalles()->get();
-        /*
-        foreach($detalles as $detalle){
-            dd($detalle);
-            $sql = "SELECT cantsoldesp
-                    FROM vista_sumsoldespdet
-                    WHERE notaventadetalle_id=$detalle->id";
-            $datasuma = DB::select($sql);
-            if(empty($datasuma)){
-                $sumacantsoldesp= 0;
-            }else{
-                $sumacantsoldesp= $datasuma[0]->cantsoldesp;
-            }
-            //if($detalle->cant > $sumacantsoldesp);
-            
-        } */
-        //dd($detalles);
         $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
-        //session(['aux_aprocot' => '0']);
-        //dd($clienteselec[0]->rut);
 
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
@@ -466,35 +436,19 @@ class DespachoSolController extends Controller
 
     public function listarsoldesp() //Listar solicitudes de despacho
     {
-        $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $vendedores1 = $arrayvend['vendedores'];
-        $clientevendedorArray = $arrayvend['clientevendedorArray'];
-
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
         $sucurArray = $clientesArray['sucurArray'];
-        /*
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
-        $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
 
-        return view('despachoord.listardespachosol', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','tablashtml'));
+        return view('despachoord.listardespachosol', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
     public function reporte(Request $request){
@@ -763,6 +717,57 @@ class DespachoSolController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         } 
     }
+
+    public function pdfnotaventapendiente()
+    {
+        $request = new Request();
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->rut = $_GET["rut"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->oc_id = $_GET["oc_id"];
+        $request->giro_id = $_GET["giro_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->tipoentrega_id = $_GET["tipoentrega_id"];
+        $request->notaventa_id = $_GET["notaventa_id"];
+        $request->aprobstatus = $_GET["aprobstatus"];
+        $request->comuna_id = $_GET["comuna_id"];
+        $request->plazoentrega = $_GET["plazoentrega"];
+        $request->filtro = $_GET["filtro"];
+        $request->aux_titulo = $_GET["aux_titulo"];
+
+        $datas = consulta($request,1,1);
+        //dd($datas);
+        $aux_fdesde= $request->fechad;
+        if(empty($request->fechad)){
+            $aux_fdesde= '  /  /    ';
+        }
+        $aux_fhasta= $request->fechah;
+
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+
+        //return armarReportehtml($request);
+        if($datas){
+                if(env('APP_DEBUG')){
+                    return view('despachosol.reportenotaventapendiente', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request'));
+                }
+                $pdf = PDF::loadView('despachosol.reportenotaventapendiente', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request')); //->setPaper('a4', 'landscape');
+                return $pdf->stream("soldespend.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        } 
+    }
 }
 
 
@@ -770,7 +775,7 @@ function consulta($request,$aux_sql,$orden){
     if($orden==1){
         $aux_orden = "notaventadetalle.notaventa_id desc";
     }else{
-        $aux_orden = "notaventa.cliente_id";
+        $aux_orden = "notaventa.cliente_id,notaventa.comunaentrega_id";
     }
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
@@ -995,8 +1000,67 @@ function consulta($request,$aux_sql,$orden){
     }
     
 
+    if($aux_sql==3){
+        $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        comuna.nombre as comunanombre,
+        vista_notaventatotales.cant,
+        vista_notaventatotales.precioxkilo,
+        sum(vista_notaventatotales.totalkilos) as totalkilos,
+        sum(vista_notaventatotales.subtotal) as subtotal,
+        sum(if(areaproduccion.id=1,notaventadetalle.totalkilos,0)) AS pvckg,
+        sum(if(areaproduccion.id=2,notaventadetalle.totalkilos,0)) AS cankg,
+        sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
+        sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
+        sum(notaventadetalle.subtotal) AS totalps,
+        sum((SELECT sum(kgsoldesp) as kgsoldesp
+                FROM vista_sumsoldespdet
+                WHERE notaventa_id=notaventa.id)) as totalkgsoldesp,
+        sum((SELECT sum(subtotalsoldesp) as subtotalsoldesp
+                FROM vista_sumsoldespdet
+                WHERE notaventa_id=notaventa.id)) as totalsubtotalsoldesp,
+        notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
+        tipoentrega.nombre as tipentnombre,tipoentrega.icono
+        FROM notaventa INNER JOIN notaventadetalle
+        ON notaventa.id=notaventadetalle.notaventa_id and 
+        if((SELECT cantsoldesp
+                FROM vista_sumsoldespdet
+                WHERE notaventadetalle_id=notaventadetalle.id
+                ) >= notaventadetalle.cant,false,true)
+        INNER JOIN producto
+        ON notaventadetalle.producto_id=producto.id
+        INNER JOIN categoriaprod
+        ON categoriaprod.id=producto.categoriaprod_id
+        INNER JOIN areaproduccion
+        ON areaproduccion.id=categoriaprod.areaproduccion_id
+        INNER JOIN cliente
+        ON cliente.id=notaventa.cliente_id
+        INNER JOIN comuna
+        ON comuna.id=notaventa.comunaentrega_id
+        INNER JOIN tipoentrega
+        ON tipoentrega.id=notaventa.tipoentrega_id
+        INNER JOIN vista_notaventatotales
+        ON notaventa.id=vista_notaventatotales.id
+        WHERE $vendedorcond
+        and $aux_condFecha
+        and $aux_condrut
+        and $aux_condoc_id
+        and $aux_condgiro_id
+        and $aux_condareaproduccion_id
+        and $aux_condtipoentrega_id
+        and $aux_condnotaventa_id
+        and $aux_aprobstatus
+        and $aux_condcomuna_id
+        and $aux_condplazoentrega
+        and notaventa.anulada is null
+        and notaventa.findespacho is null
+        and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
+        and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        GROUP BY notaventa.cliente_id
+        ORDER BY $aux_orden;";
+        //dd($sql);
+}
 
-    //dd($sql);
     $datas = DB::select($sql);
     //dd($datas);
     return $datas;
@@ -1136,7 +1200,7 @@ function reporte1($request){
                 </td>
                 <td>$data->comunanombre</td>
                 <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos - $data->totalkgsoldesp, 2, ",", ".") ."</td>
-                <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal - $data->totalsubtotalsoldesp, 2, ",", ".") ."</td>
+                <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal - $data->totalsubtotalsoldesp, 0, ",", ".") ."</td>
                 <!--<td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>-->
                 <td>
                     $nuevoSolDesp
@@ -1166,7 +1230,7 @@ function reporte1($request){
             <tr>
                 <th colspan='6' style='text-align:left'>TOTAL</th>
                 <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
-                <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
+                <th style='text-align:right'>". number_format($aux_totalps, 0, ",", ".") ."</th>
                 <!--<th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>-->
                 <th style='text-align:right'></th>
             </tr>
@@ -1177,10 +1241,9 @@ function reporte1($request){
         /*****CONSULTA AGRUPADO POR CLIENTE******/
         $datas = consulta($request,1,2);
         if($datas){
-            $aux_clienteid = $datas[0]->cliente_id;
+            $aux_clienteid = $datas[0]->cliente_id . $datas[0]->comunanombre;
 
         }
-
         $respuesta['tabla2'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
         <thead>
             <tr>
@@ -1198,17 +1261,19 @@ function reporte1($request){
         $aux_comuna  = "";
         $aux_totalkg = 0;
         $aux_totalplata = 0;
+
         foreach ($datas as $data) {
-            if($data->cliente_id!=$aux_clienteid){
+            if(($data->cliente_id . $data->comunanombre)!=$aux_clienteid){
                 $respuesta['tabla2'] .= "
                 <tr>
                     <td>$razonsocial</td>
                     <td>$aux_comuna</td>
                     <td style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
-                    <td style='text-align:right'>".number_format($aux_platapend, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($aux_platapend, 0, ",", ".") ."</td>
                 </tr>";
                 $aux_kgpend = 0;
                 $aux_platapend = 0;
+                $aux_clienteid = $data->cliente_id . $data->comunanombre;
             }
             $aux_kgpend += ($data->totalkilos - $data->totalkgsoldesp);
             $aux_platapend += ($data->subtotal - $data->totalsubtotalsoldesp);
@@ -1218,24 +1283,24 @@ function reporte1($request){
             $aux_comuna  = $data->comunanombre;
 
         }
+        //dd($respuesta['tabla2']);
         $respuesta['tabla2'] .= "
             <tr>
                 <td>$razonsocial</td>
                 <td>$aux_comuna</td>
                 <td style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
-                <td style='text-align:right'>".number_format($aux_platapend, 2, ",", ".") ."</td>
+                <td style='text-align:right'>".number_format($aux_platapend, 0, ",", ".") ."</td>
             </tr>
             </tbody>
             <tfoot>
                 <tr>
                     <th colspan='2' style='text-align:left'>TOTALES</th>
                     <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalplata, 0, ",", ".") ."</th>
                 </tr>
             </tfoot>
 
             </table>";
-
 
         /*****CONSULTA AGRUPADO POR PRODUCTO*****/
         $datas = consulta($request,2,1);
@@ -1270,7 +1335,7 @@ function reporte1($request){
                     <td>$data->tipounion</td>
                     <td style='text-align:right'>$data->saldocant</td>
                     <td style='text-align:right'>".number_format($data->saldokg, 2, ",", ".") ."</td>
-                    <td style='text-align:right'>".number_format($data->saldoplata, 2, ",", ".") ."</td>
+                    <td style='text-align:right'>".number_format($data->saldoplata, 0, ",", ".") ."</td>
                 </tr>";    
             }
         }
@@ -1280,7 +1345,7 @@ function reporte1($request){
                 <tr>
                     <th colspan='7' style='text-align:left'>TOTALES</th>
                     <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalplata, 0, ",", ".") ."</th>
                 </tr>
             </tfoot>
             </table>";

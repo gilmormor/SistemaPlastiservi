@@ -14,7 +14,7 @@ Notas de Venta
         @include('includes.mensaje')
         <div class="box box-primary collapsed-box">
             <div class="box-header with-border">
-                <h3 class="box-title">Pendientes Nota de Venta</h3>
+                <h3 class="box-title">Pendientes Solicitud Despacho</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>
@@ -28,7 +28,7 @@ Notas de Venta
                 <div class="row">
                     <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
-                        <div class="col-xs-12 col-md-10 col-sm-12">
+                        <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
@@ -69,18 +69,6 @@ Notas de Venta
                                         <?php
                                             echo $tablashtml['vendedores'];
                                         ?>
-<!--                    
-                                        <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
-                                            <option value="">Todos</option>
-                                            @foreach($vendedores1 as $vendedor)
-                                                <option
-                                                    value="{{$vendedor->id}}"
-                                                    >
-                                                    {{$vendedor->nombre}} {{$vendedor->apellido}}
-                                                </option>
-                                            @endforeach
-                                        </select>
--->
                                     </div>
                                 </div>
                             </div>
@@ -180,18 +168,6 @@ Notas de Venta
                                         <?php
                                             echo $tablashtml['comunas'];
                                         ?>
-<!--
-                                        <select name="comuna_id" id="comuna_id" class="selectpicker form-control comuna_id" data-live-search="true">
-                                            <option value="">Todos</option>
-                                            @foreach($comunas as $comuna)
-                                                <option
-                                                    value="{{$comuna->id}}"
-                                                    >
-                                                    {{$comuna->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    -->
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Plazo de entrega">
@@ -204,14 +180,11 @@ Notas de Venta
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-md-2 col-sm-12">
-                            <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div class="col-xs-12 col-md-8 col-sm-8 text-center">
-                                        <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="col-xs-12 col-md-3 col-sm-12 text-center">
+                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                            <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                                <i class='glyphicon glyphicon-print'></i> Reporte
+                            </button>                    
                         </div>
                     </form>
                 </div>

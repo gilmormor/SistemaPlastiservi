@@ -411,6 +411,9 @@ Route::get('indicadores/comercialPdfkg', 'IndicadoresController@comercialPdfkg')
 Route::get('indicadores/gestionPdfkg', 'IndicadoresController@gestionPdfkg')->name('indicadores_gestionPdfkg');
 Route::get('indicadores/exportPdfdn', 'IndicadoresController@exportPdfdn')->name('indicadores_exportPdfdn');
 Route::post('indicadores/imagengrafico', 'IndicadoresController@imagengrafico')->name('indicadores_imagengrafico');
+Route::get('indicadores/repkilosxtipoentrega', 'IndicadoresController@repkilosxtipoentrega')->name('indicadores_repkilosxtipoentrega');
+Route::post('indicadores/reportekilostipoentrega', 'IndicadoresController@reportekilostipoentrega')->name('indicadores_reportekilostipoentrega');
+Route::get('indicadores/reportekilostipoentregapdf', 'IndicadoresController@reportekilostipoentregapdf')->name('indicadores_reportekilostipoentregapdf');
 
 
 /*RUTAS APROBAR NotaVenta*/
@@ -526,6 +529,7 @@ Route::post('despachosol/cerrarsoldesp', 'DespachoSolController@cerrarsoldesp')-
 Route::get('despachosol/{id}/{stareport}/vistaprevODPdf', 'DespachoSolController@vistaprevODPdf')->name('vistaprevODPdf_despachosol');
 Route::get('despachosol/reporteindex', 'DespachoSolController@reporteindex')->name('reporteindex_despachosol');
 Route::get('despachosol/pdfpendientesoldesp', 'DespachoSolController@pdfpendientesoldesp')->name('despachosol_pdfpendientesoldesp');
+Route::get('despachosol/pdfnotaventapendiente', 'DespachoSolController@pdfnotaventapendiente')->name('despachosol_pdfnotaventapendiente');
 
 /*RUTAS REPORTE SOLICITUD DESPACHO*/
 Route::get('reportsoldesp', 'ReportSolDespController@index')->name('reportsoldesp');
