@@ -178,7 +178,7 @@ function consultarpdf(data){
 
 
 function btnpdf(numrep){
-    aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
+    aux_titulo = 'Kg por tipo de entrega';
     data = datos();
     cadena = "?fechad="+data.fechad+
             "&fechah="+data.fechah +
