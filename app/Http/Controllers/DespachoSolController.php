@@ -955,7 +955,6 @@ function consulta($request,$aux_sql,$orden){
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
         ORDER BY $aux_orden;";
     }
-    
     if($aux_sql==2){
         //if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,
         $sql = "SELECT notaventadetalle.producto_id,producto.nombre,

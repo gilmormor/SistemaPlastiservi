@@ -133,9 +133,9 @@ Productos Notas de Venta
                             </div>
                             <div class="col-xs-12 col-md-8 col-sm-8">
                                 <select name="statusact_id" id="statusact_id" class="selectpicker form-control statusact_id">
-                                    <option value="1" selected>Activas</option>
+                                    <option value="1">Activas</option>
                                     <option value="2">Cerradas</option>
-                                    <option value="3">Todas: Activas + cerradas</option>
+                                    <option value="3" selected>Todas: Activas + cerradas</option>
                                 </select>
                             </div>
                             <div class="col-xs-12 col-md-4 col-sm-4 text-left">

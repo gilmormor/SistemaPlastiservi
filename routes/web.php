@@ -660,3 +660,8 @@ Route::put('categoriagrupovalmes/{id}', 'CategoriaGrupoValMesController@actualiz
 Route::delete('categoriagrupovalmes/{id}', 'CategoriaGrupoValMesController@eliminar')->name('eliminar_categoriagrupovalmes');
 Route::post('categoriagrupovalmesfilcat', 'CategoriaGrupoValMesController@categoriagrupovalmesfilcat')->name('categoriagrupovalmesfilcat');
 Route::post('categoriagrupovalmesfilgrupos', 'CategoriaGrupoValMesController@categoriagrupovalmesfilgrupos')->name('categoriagrupovalmesfilgrupos');
+
+
+Route::get('reportprodpendsoldesp', 'ReportProdPendSolDespController@index')->name('reportprodpendsoldesp');
+Route::post('reportprodpendsoldesp/reporte', 'ReportProdPendSolDespController@reporte')->name('reportprodpendsoldesp_reporte');
+Route::get('reportprodpendsoldesp/pdf', 'ReportProdPendSolDespController@pdf')->name('reportprodpendsoldesp_pdf');

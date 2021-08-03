@@ -474,7 +474,9 @@ class IndicadoresController extends Controller
             if($aux_idcons == "3"){
                 $datas = $datasFecNV;
             }
-
+            if(count($datas['totales']) <= 0){ //SI LA TABLA TOTALES VIENE VACIA NO ES NECESARIO HACER TODO LO DEMAS, ROMPO AQUI Y ENVIO REPUESTA VACIO
+                return $respuesta;
+            }
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
@@ -977,7 +979,9 @@ class IndicadoresController extends Controller
             if($aux_idcons == "3"){
                 $datas = $datasFecNV;
             }
-
+            if(count($datas['totales']) <= 0){ //SI LA TABLA TOTALES VIENE VACIA NO ES NECESARIO HACER TODO LO DEMAS, ROMPO AQUI Y ENVIO REPUESTA VACIO
+                return $respuesta;
+            }
             $respuesta['tabladinero'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
             <thead>
                 <tr>
@@ -2742,3 +2746,4 @@ function consultakilostipoentrega($request){
 
     return $respuesta;
 }
+

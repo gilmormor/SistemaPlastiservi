@@ -37,7 +37,7 @@ $(document).ready(function () {
 		todayHighlight: true
 	}).datepicker("setDate");
 
-    configurarTabla('.tablas');
+    //configurarTabla('.tablas');
 
     $("#areaproduccion_id").val('1');
     $('.date-picker').datepicker({
