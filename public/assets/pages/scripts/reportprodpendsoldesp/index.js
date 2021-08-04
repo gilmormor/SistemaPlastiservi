@@ -259,8 +259,6 @@ $("#btnpdf").click(function(event){
             "&notaventa_id="+data.notaventa_id + 
             "&comuna_id="+data.comuna_id + 
             "&producto_id="+data.producto_id
-    //alert(cadena);
-    $('#contpdf').attr('src', '/reportpendientexprod/exportPdf/'+cadena);
-    //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
+    $('#contpdf').attr('src', '/reportprodpendsoldesp/exportpdf/'+cadena);
 	$("#myModalpdf").modal('show')
 });

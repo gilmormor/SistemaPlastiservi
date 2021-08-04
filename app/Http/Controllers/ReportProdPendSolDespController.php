@@ -6,6 +6,7 @@ use App\Models\AreaProduccion;
 use App\Models\Cliente;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
+use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
@@ -13,6 +14,7 @@ use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class ReportProdPendSolDespController extends Controller
 {
@@ -58,15 +60,15 @@ class ReportProdPendSolDespController extends Controller
             $respuesta['tabla'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
             <thead>
                 <tr>
-                    <th class='tooltipsC' title='Código Producto'>CodProd</th>
+                    <th class='tooltipsC' title='Código Producto'>Cod<br>Prod</th>
                     <th>Descripción</th>
                     <th>Diametro</th>
                     <th>Clase</th>
                     <th>Largo</th>
                     <th>Peso</th>
                     <th class='tooltipsC' title='Tipo Union'>TU</th>
-                    <th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>CantSol</th>
-                    <th style='text-align:right' class='tooltipsC' title='Kg Solicitados'>KgSol</th>
+                    <th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Cant<br>Solicit</th>
+                    <th style='text-align:right' class='tooltipsC' title='Kg Solicitados'>Kg<br>Solicit</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
                     <th style='text-align:right' class='tooltipsC' title='Kg Despachados'>Kg<br>Desp</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pendiente</th>
@@ -77,25 +79,26 @@ class ReportProdPendSolDespController extends Controller
             $aux_totalcanpend = 0;
             $aux_totalkgpend = 0;
             foreach ($datas as $data) {
+                $aux_cantpend = ($data->cantsoldesp - $data->cantorddesp);
+                $aux_kgpend = ($data->kgsoldesp - $data->kgorddesp);
                 $respuesta['tabla'] .= "
                 <tr>
-                    <td>$data->producto_id</td>
+                    <td data-order='$data->producto_id' data-search='$data->producto_id'>$data->producto_id</td>
                     <td>$data->nombre</td>
                     <td>$data->diametro</td>
                     <td>$data->cla_nombre</td>
                     <td>$data->long</td>
                     <td>$data->peso</td>
                     <td>$data->tipounion</td>
-                    <td style='text-align:right'>". number_format($data->cantsoldesp, 0, ",", ".") ."</td>
-                    <td style='text-align:right'>". number_format($data->kgsoldesp, 2, ",", ".") ."</td>
-                    <td style='text-align:right'>". number_format($data->cantorddesp, 0, ",", ".") ."</td>
-                    <td style='text-align:right'>". number_format($data->kgorddesp, 2, ",", ".") ."</td>
-                    <td style='text-align:right'>". number_format(($data->cantsoldesp - $data->cantorddesp), 0, ",", ".") ."</td>
-                    <td style='text-align:right'>". number_format(($data->kgsoldesp - $data->kgorddesp), 2, ",", ".") ."</td>
+                    <td style='text-align:right' data-order='$data->cantsoldesp' data-search='$data->cantsoldesp'>". number_format($data->cantsoldesp, 0, ",", ".") ."</td>
+                    <td style='text-align:right' data-order='$data->kgsoldesp' data-search='$data->kgsoldesp'>". number_format($data->kgsoldesp, 2, ",", ".") ."</td>
+                    <td style='text-align:right' data-order='$data->cantorddesp' data-search='$data->cantorddesp'>". number_format($data->cantorddesp, 0, ",", ".") ."</td>
+                    <td style='text-align:right' data-order='$data->kgorddesp' data-search='$data->kgorddesp'>". number_format($data->kgorddesp, 2, ",", ".") ."</td>
+                    <td style='text-align:right' data-order='$aux_cantpend' data-search='$aux_cantpend'>". number_format($aux_cantpend, 0, ",", ".") ."</td>
+                    <td style='text-align:right' data-order='$aux_kgpend' data-search='$aux_kgpend'>". number_format($aux_kgpend, 2, ",", ".") ."</td>
                 </tr>";
-                $aux_totalcanpend += ($data->cantsoldesp - $data->cantorddesp);
-                $aux_totalkgpend += ($data->kgsoldesp - $data->kgorddesp);
-    
+                $aux_totalcanpend += $aux_cantpend;
+                $aux_totalkgpend += $aux_kgpend;    
             }
             $respuesta['tabla'] .= "
                 </tbody>
@@ -113,6 +116,61 @@ class ReportProdPendSolDespController extends Controller
         }
     }
     
+    public function exportPdf()
+    {
+        $request = new Request();
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->rut = $_GET["rut"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->notaventa_id = $_GET["notaventa_id"];
+        $request->oc_id = $_GET["oc_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->tipoentrega_id = $_GET["tipoentrega_id"];
+        $request->comuna_id = $_GET["comuna_id"];
+        $request->producto_id = $_GET["producto_id"];
+        $datas = consulta($request);
+
+        $aux_fdesde= $request->fechad;
+        if(empty($request->fechad)){
+            $aux_fdesde= '  /  /    ';
+        }
+        $aux_fhasta= $request->fechah;
+
+        $aux_plazoentregad= $request->plazoentregad;
+        if(empty($request->plazoentregad)){
+            $aux_plazoentregad= '  /  /    ';
+        }
+        $aux_plazoentregah= $request->plazoentregah;
+
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $nomvendedor = "Todos";
+        if(!empty($request->vendedor_id)){
+            $vendedor = Vendedor::findOrFail($request->vendedor_id);
+            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+        }
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreTipoEntrega = "Todos";
+        if($request->tipoentrega_id){
+            $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
+            $nombreTipoEntrega=$tipoentrega->nombre;
+        }
+        
+        if($datas){
+            $pdf = PDF::loadView('reportprodpendsoldesp.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'))->setPaper('a4', 'landscape');
+            //return $pdf->download('cotizacion.pdf');
+            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+            return $pdf->stream("reportprodpendsoldesp.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        } 
+    }
     
 }
 

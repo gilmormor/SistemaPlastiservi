@@ -664,4 +664,4 @@ Route::post('categoriagrupovalmesfilgrupos', 'CategoriaGrupoValMesController@cat
 
 Route::get('reportprodpendsoldesp', 'ReportProdPendSolDespController@index')->name('reportprodpendsoldesp');
 Route::post('reportprodpendsoldesp/reporte', 'ReportProdPendSolDespController@reporte')->name('reportprodpendsoldesp_reporte');
-Route::get('reportprodpendsoldesp/pdf', 'ReportProdPendSolDespController@pdf')->name('reportprodpendsoldesp_pdf');
+Route::get('reportprodpendsoldesp/exportpdf', 'ReportProdPendSolDespController@exportPdf')->name('reportprodpendsoldesp_exportpdf');
