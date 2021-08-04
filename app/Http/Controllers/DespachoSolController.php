@@ -735,8 +735,12 @@ class DespachoSolController extends Controller
         $request->plazoentrega = $_GET["plazoentrega"];
         $request->filtro = $_GET["filtro"];
         $request->aux_titulo = $_GET["aux_titulo"];
+        $request->numrep = $_GET["numrep"];
+        $request->aux_sql = $_GET["aux_sql"];
+        $request->aux_orden = $_GET["aux_orden"];
 
-        $datas = consulta($request,1,1);
+
+        $datas = consulta($request,$request->aux_sql,$request->aux_orden);
         //dd($datas);
         $aux_fdesde= $request->fechad;
         if(empty($request->fechad)){
@@ -759,11 +763,19 @@ class DespachoSolController extends Controller
 
         //return armarReportehtml($request);
         if($datas){
-                if(env('APP_DEBUG')){
-                    return view('despachosol.reportenotaventapendiente', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request'));
-                }
+            if($request->numrep == 1){
                 $pdf = PDF::loadView('despachosol.reportenotaventapendiente', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request')); //->setPaper('a4', 'landscape');
+                return $pdf->stream("reportenotaventapendiente.pdf");
+            }
+            if($request->numrep == 2){
+                $pdf = PDF::loadView('despachosol.reportependientexclientenv', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request')); //->setPaper('a4', 'landscape');
                 return $pdf->stream("soldespend.pdf");
+            }
+            if($request->numrep == 3){
+                $pdf = PDF::loadView('despachosol.reportependientexproductonv', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request')); //->setPaper('a4', 'landscape');
+                return $pdf->stream("reportependientexproductonv.pdf");
+            }
+
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 
@@ -775,7 +787,9 @@ function consulta($request,$aux_sql,$orden){
     if($orden==1){
         $aux_orden = "notaventadetalle.notaventa_id desc";
     }else{
-        $aux_orden = "notaventa.cliente_id,notaventa.comunaentrega_id";
+        //$aux_orden = "notaventa.cliente_id,notaventa.comunaentrega_id";
+        $aux_orden = "cliente.razonsocial,notaventa.comunaentrega_id";
+        
     }
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
@@ -1180,7 +1194,8 @@ function reporte1($request){
                 $aux_title = "Anulada Fecha:" . $data->anulada;
                 $nuevoSolDesp = "";
             }
-            //dd($ruta_nuevoSolDesp);
+            $aux_kgpend = $data->totalkilos - $data->totalkgsoldesp;
+            $aux_dinpend = $data->subtotal - $data->totalsubtotalsoldesp;
             $respuesta['tabla'] .= "
             <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
                 <td id='id$i' name='id$i'>
@@ -1192,15 +1207,13 @@ function reporte1($request){
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td>
-                    <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2']) . "' class='btn-accion-tabla tooltipsC' title='Precio x Kg' target='_blank'>-->
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV($data->id,2)'>
                         <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                     </a>
                 </td>
                 <td>$data->comunanombre</td>
-                <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos - $data->totalkgsoldesp, 2, ",", ".") ."</td>
-                <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal - $data->totalsubtotalsoldesp, 0, ",", ".") ."</td>
-                <!--<td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>-->
+                <td data-order='$aux_kgpend' data-search='$aux_kgpend' style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
+                <td data-order='$aux_dinpend' data-search='$aux_dinpend' style='text-align:right'>".number_format($aux_dinpend, 0, ",", ".") ."</td>
                 <td>
                     $nuevoSolDesp
                 </td>
@@ -1211,8 +1224,8 @@ function reporte1($request){
                 $aux_Tpvcpesos += $data->pvcpesos;
                 $aux_Tcankg += $data->cankg;
                 $aux_Tcanpesos += $data->canpesos;
-                $aux_totalKG += ($data->totalkilos - $data->totalkgsoldesp);
-                $aux_totalps += ($data->subtotal - $data->totalsubtotalsoldesp);    
+                $aux_totalKG += ($aux_kgpend);
+                $aux_totalps += ($aux_dinpend);    
             }
 
 
@@ -1241,7 +1254,6 @@ function reporte1($request){
         $datas = consulta($request,1,2);
         if($datas){
             $aux_clienteid = $datas[0]->cliente_id . $datas[0]->comunanombre;
-
         }
         $respuesta['tabla2'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
         <thead>
@@ -1267,8 +1279,8 @@ function reporte1($request){
                 <tr>
                     <td>$razonsocial</td>
                     <td>$aux_comuna</td>
-                    <td style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
-                    <td style='text-align:right'>".number_format($aux_platapend, 0, ",", ".") ."</td>
+                    <td data-order='$aux_kgpend' data-search='$aux_kgpend' style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
+                    <td data-order='$aux_platapend' data-search='$aux_platapend' style='text-align:right'>".number_format($aux_platapend, 0, ",", ".") ."</td>
                 </tr>";
                 $aux_kgpend = 0;
                 $aux_platapend = 0;
@@ -1287,8 +1299,8 @@ function reporte1($request){
             <tr>
                 <td>$razonsocial</td>
                 <td>$aux_comuna</td>
-                <td style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
-                <td style='text-align:right'>".number_format($aux_platapend, 0, ",", ".") ."</td>
+                <td data-order='$aux_kgpend' data-search='$aux_kgpend' style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
+                <td data-order='$aux_platapend' data-search='$aux_platapend' style='text-align:right'>".number_format($aux_platapend, 0, ",", ".") ."</td>
             </tr>
             </tbody>
             <tfoot>
@@ -1307,6 +1319,7 @@ function reporte1($request){
         <thead>
             <tr>
                 <th>Descripción</th>
+                <th class='tooltipsC' title='Codigo Producto'>Cod<br>Prod</th>
                 <th>Diametro</th>
                 <th>Clase</th>
                 <th>Largo</th>
@@ -1327,14 +1340,15 @@ function reporte1($request){
                 $respuesta['tabla3'] .= "
                 <tr>
                     <td>$data->nombre</td>
+                    <td>$data->producto_id</td>
                     <td>$data->diametro</td>
                     <td>$data->cla_nombre</td>
                     <td>$data->long</td>
                     <td>$data->peso</td>
                     <td>$data->tipounion</td>
-                    <td style='text-align:right'>$data->saldocant</td>
-                    <td style='text-align:right'>".number_format($data->saldokg, 2, ",", ".") ."</td>
-                    <td style='text-align:right'>".number_format($data->saldoplata, 0, ",", ".") ."</td>
+                    <td data-order='$data->saldocant' data-search='$data->saldocant' style='text-align:right'>".number_format($data->saldocant, 0, ",", ".") ."</td>
+                    <td data-order='$data->saldokg' data-search='$data->saldokg' style='text-align:right'>".number_format($data->saldokg, 2, ",", ".") ."</td>
+                    <td data-order='$data->saldoplata' data-search='$data->saldoplata' style='text-align:right'>".number_format($data->saldoplata, 0, ",", ".") ."</td>
                 </tr>";    
             }
         }
@@ -1342,7 +1356,7 @@ function reporte1($request){
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='7' style='text-align:left'>TOTALES</th>
+                    <th colspan='8' style='text-align:left'>TOTAL</th>
                     <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalplata, 0, ",", ".") ."</th>
                 </tr>

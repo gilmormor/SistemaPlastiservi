@@ -246,7 +246,7 @@ function visto(id,visto){
     ajaxRequest(data,ruta,'vistonotaventa');
 }
 
-$("#btnpdf2").click(function()
+$("#btnpdf21").click(function()
 {
     aux_titulo = 'Nota de Venta Pendientes';
     data = datos();
@@ -267,3 +267,44 @@ $("#btnpdf2").click(function()
     $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/'+cadena);
     $("#myModalpdf").modal('show');
 });
+
+function btnpdf(numrep){
+    data = datos();
+    cadena = "?fechad="+data.fechad+
+            "&fechah="+data.fechah +
+            "&rut=" + data.rut +
+            "&vendedor_id=" + data.vendedor_id +
+            "&oc_id=" + data.oc_id +
+            "&giro_id=" + data.giro_id + 
+            "&areaproduccion_id=" + data.areaproduccion_id +
+            "&tipoentrega_id=" + data.tipoentrega_id +
+            "&notaventa_id=" + data.notaventa_id +
+            "&aprobstatus=" + data.aprobstatus +
+            "&comuna_id=" + data.comuna_id +
+            "&plazoentrega=" + data.plazoentrega +
+            "&filtro=" + data.filtro +
+            "&numrep=" + numrep;
+    if(numrep==1){
+        aux_titulo = 'Nota de Venta Pendientes';
+        cadena = cadena +
+            "&aux_titulo=" + aux_titulo +
+            "&aux_sql=1" + 
+            "&aux_orden=1";
+    }
+    if(numrep==2){
+        aux_titulo = 'Pendiente por Cliente y comuna';
+        cadena = cadena +
+            "&aux_titulo=" + aux_titulo +
+            "&aux_sql=1" + 
+            "&aux_orden=2";
+    }
+    if(numrep==3){
+        aux_titulo = 'Pendiente por Producto';
+        cadena = cadena +
+            "&aux_titulo=" + aux_titulo +
+            "&aux_sql=2" + 
+            "&aux_orden=1";
+    }
+    $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/'+cadena);
+    $("#myModalpdf").modal('show');
+}

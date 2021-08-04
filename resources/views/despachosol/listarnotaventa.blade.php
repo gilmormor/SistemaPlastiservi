@@ -182,9 +182,6 @@ Notas de Venta
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
                             <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                            <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
-                                <i class='glyphicon glyphicon-print'></i> Reporte
-                            </button>                    
                         </div>
                     </form>
                 </div>
@@ -210,13 +207,22 @@ Notas de Venta
                             <div class="tab-pane active" id="tab_1">
                                 <div class="table-responsive" id="tablaconsulta">
                                 </div>
+                                <div class="col-lg-12 text-center">
+                                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(1)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                                </div>
                             </div>
                             <div class="tab-pane" id="tab_2">
                                 <div class="table-responsive" id="tablaconsulta2">
                                 </div>
+                                <div class="col-lg-12 text-center">
+                                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(2)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                                </div>
                             </div>
                             <div class="tab-pane" id="tab_3">
                                 <div class="table-responsive" id="tablaconsulta3">
+                                </div>
+                                <div class="col-lg-12 text-center">
+                                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(3)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                                 </div>
                             </div>
                         </div>

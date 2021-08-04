@@ -56,7 +56,7 @@ class ReportProdPendSolDespController extends Controller
     
         if($request->ajax()){
             /*****CONSULTA POR PRODUCTO*****/
-            $datas = consulta($request);
+            $datas = consulta($request,1,'');
             $respuesta['tabla'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
             <thead>
                 <tr>
@@ -81,6 +81,14 @@ class ReportProdPendSolDespController extends Controller
             foreach ($datas as $data) {
                 $aux_cantpend = ($data->cantsoldesp - $data->cantorddesp);
                 $aux_kgpend = ($data->kgsoldesp - $data->kgorddesp);
+                
+                $pendclientes = consulta($request,2,$data->producto_id);
+                $aux_clientescant = "";
+                $aux_clienteskg = "";
+                foreach ($pendclientes as $pendcliente){
+                    $aux_clientescant .= ucwords(strtolower($pendcliente->razonsocial)) . ": " . number_format($pendcliente->cantpend, 0, ",", ".") ."<br>";
+                    $aux_clienteskg .= ucwords(strtolower($pendcliente->razonsocial)) . ": " . number_format($pendcliente->kgpend, 2, ",", ".") ."<br>";
+                }
                 $respuesta['tabla'] .= "
                 <tr>
                     <td data-order='$data->producto_id' data-search='$data->producto_id'>$data->producto_id</td>
@@ -94,8 +102,8 @@ class ReportProdPendSolDespController extends Controller
                     <td style='text-align:right' data-order='$data->kgsoldesp' data-search='$data->kgsoldesp'>". number_format($data->kgsoldesp, 2, ",", ".") ."</td>
                     <td style='text-align:right' data-order='$data->cantorddesp' data-search='$data->cantorddesp'>". number_format($data->cantorddesp, 0, ",", ".") ."</td>
                     <td style='text-align:right' data-order='$data->kgorddesp' data-search='$data->kgorddesp'>". number_format($data->kgorddesp, 2, ",", ".") ."</td>
-                    <td style='text-align:right' data-order='$aux_cantpend' data-search='$aux_cantpend'>". number_format($aux_cantpend, 0, ",", ".") ."</td>
-                    <td style='text-align:right' data-order='$aux_kgpend' data-search='$aux_kgpend'>". number_format($aux_kgpend, 2, ",", ".") ."</td>
+                    <td class='btn-accion-tabla tooltipsC' title='$aux_clientescant' style='text-align:right' data-order='$aux_cantpend' data-search='$aux_cantpend'>". number_format($aux_cantpend, 0, ",", ".") ."</td>
+                    <td class='btn-accion-tabla tooltipsC' title='$aux_clienteskg' style='text-align:right' data-order='$aux_kgpend' data-search='$aux_kgpend'>". number_format($aux_kgpend, 2, ",", ".") ."</td>
                 </tr>";
                 $aux_totalcanpend += $aux_cantpend;
                 $aux_totalkgpend += $aux_kgpend;    
@@ -129,7 +137,7 @@ class ReportProdPendSolDespController extends Controller
         $request->tipoentrega_id = $_GET["tipoentrega_id"];
         $request->comuna_id = $_GET["comuna_id"];
         $request->producto_id = $_GET["producto_id"];
-        $datas = consulta($request);
+        $datas = consulta($request,1,'');
 
         $aux_fdesde= $request->fechad;
         if(empty($request->fechad)){
@@ -174,7 +182,7 @@ class ReportProdPendSolDespController extends Controller
     
 }
 
-function consulta($request){
+function consulta($request,$aux_cons,$auxproducto_id){
     //dd($request);
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
@@ -259,38 +267,67 @@ function consulta($request){
         $aux_condproducto_id = "vista_soldespconsudespacho.producto_id in ($aux_codprod)";
     }
 
-    $sql = "SELECT producto_id,producto.nombre,
-    producto.diametro,
-    claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
-    sum(cantsoldesp) AS cantsoldesp,
-    sum(kgsoldesp) AS kgsoldesp,
-    sum(cantorddesp) AS cantorddesp,
-    sum(kgorddesp) AS kgorddesp
-    FROM vista_soldespconsudespacho INNER JOIN notaventa
-    ON vista_soldespconsudespacho.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
-    INNER JOIN cliente
-    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
-    INNER JOIN producto
-    ON vista_soldespconsudespacho.producto_id=producto.id and isnull(producto.deleted_at)
-    INNER JOIN categoriaprod
-    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at)
-    INNER JOIN grupoprod
-    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
-    INNER JOIN claseprod
-    ON producto.claseprod_id=claseprod.id
-    WHERE $vendedorcond
-    and $aux_condFecha
-    and $aux_condrut
-    and $aux_condoc_id
-    and $aux_condareaproduccion_id
-    and $aux_condtipoentrega_id
-    and $aux_condnotaventa_id
-    and $aux_condcomuna_id
-    and $aux_condproducto_id
-    AND vista_soldespconsudespacho.kgorddesp < vista_soldespconsudespacho.kgsoldesp
-    GROUP BY producto_id
-    ORDER BY producto_id;";
-
+    if($aux_cons == 1){
+        $sql = "SELECT producto_id,producto.nombre,
+        producto.diametro,
+        claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
+        sum(cantsoldesp) AS cantsoldesp,
+        sum(kgsoldesp) AS kgsoldesp,
+        sum(cantorddesp) AS cantorddesp,
+        sum(kgorddesp) AS kgorddesp
+        FROM vista_soldespconsudespacho INNER JOIN notaventa
+        ON vista_soldespconsudespacho.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+        INNER JOIN cliente
+        ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
+        INNER JOIN producto
+        ON vista_soldespconsudespacho.producto_id=producto.id and isnull(producto.deleted_at)
+        INNER JOIN categoriaprod
+        ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at)
+        INNER JOIN grupoprod
+        ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+        INNER JOIN claseprod
+        ON producto.claseprod_id=claseprod.id
+        WHERE $vendedorcond
+        and $aux_condFecha
+        and $aux_condrut
+        and $aux_condoc_id
+        and $aux_condareaproduccion_id
+        and $aux_condtipoentrega_id
+        and $aux_condnotaventa_id
+        and $aux_condcomuna_id
+        and $aux_condproducto_id
+        AND vista_soldespconsudespacho.kgorddesp < vista_soldespconsudespacho.kgsoldesp
+        GROUP BY producto_id
+        ORDER BY producto_id;";
+    }
+    if($aux_cons == 2){
+        $sql = "SELECT producto_id,notaventa.cliente_id,cliente.razonsocial,
+        (cantsoldesp-cantorddesp) AS cantpend,
+        (kgsoldesp-kgorddesp) AS kgpend
+        FROM vista_soldespconsudespacho INNER JOIN notaventa
+        ON vista_soldespconsudespacho.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+        INNER JOIN cliente
+        ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
+        INNER JOIN producto
+        ON vista_soldespconsudespacho.producto_id=producto.id and isnull(producto.deleted_at)
+        INNER JOIN categoriaprod
+        ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at)
+        INNER JOIN grupoprod
+        ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+        INNER JOIN claseprod
+        ON producto.claseprod_id=claseprod.id
+        WHERE $vendedorcond
+        and $aux_condFecha
+        and $aux_condrut
+        and $aux_condoc_id
+        and $aux_condareaproduccion_id
+        and $aux_condtipoentrega_id
+        and $aux_condnotaventa_id
+        and $aux_condcomuna_id
+        and $aux_condproducto_id
+        and producto.id = '$auxproducto_id'
+        AND vista_soldespconsudespacho.kgorddesp < vista_soldespconsudespacho.kgsoldesp;";
+    }
     $datas = DB::select($sql);
     return $datas;
 }
