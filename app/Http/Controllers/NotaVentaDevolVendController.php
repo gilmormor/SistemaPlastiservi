@@ -127,7 +127,11 @@ class NotaVentaDevolVendController extends Controller
                 if ($notaventa->save()) {
                     $notificaciones = new Notificaciones();
                     $notificaciones->usuarioorigen_id = auth()->id();
-                    $notificaciones->usuariodestino_id = $notaventa->vendedor->persona->usuario->id;
+                    $aux_email = $notaventa->vendedor->persona->email;
+                    if($notaventa->vendedor->persona->usuario){
+                        $notificaciones->usuariodestino_id = $notaventa->vendedor->persona->usuario->id;
+                        $aux_email = $notaventa->vendedor->persona->usuario->email;
+                    }
                     $notificaciones->vendedor_id = $notaventa->vendedor_id;
                     $notificaciones->status = 1;                    
                     $notificaciones->nombretabla = 'notaventa';
@@ -143,7 +147,7 @@ class NotaVentaDevolVendController extends Controller
                     $asunto = 'Nota de Venta Devuelta';
                     $cuerpo = "Nota de Venta Devuelta: Nro. $request->id";
     
-                    Mail::to($notaventa->vendedor->persona->usuario->email)->send(new MailNotaVentaDevuelta($notificaciones,$asunto,$cuerpo));
+                    Mail::to($aux_email)->send(new MailNotaVentaDevuelta($notificaciones,$asunto,$cuerpo));
                     return response()->json(['mensaje' => 'ok']);
                 } else {
                     return response()->json(['mensaje' => 'ng']);

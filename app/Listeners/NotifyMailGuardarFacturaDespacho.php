@@ -34,7 +34,11 @@ class NotifyMailGuardarFacturaDespacho
         $despachoord = $event->despachoord;
         $notificaciones = new Notificaciones();
         $notificaciones->usuarioorigen_id = auth()->id();
-        $notificaciones->usuariodestino_id = $despachoord->notaventa->vendedor->persona->usuario->id;
+        $aux_email = $despachoord->notaventa->vendedor->persona->email;
+        if($despachoord->notaventa->vendedor->persona->usuario){
+            $notificaciones->usuariodestino_id = $despachoord->notaventa->vendedor->persona->usuario->id;
+            $aux_email = $despachoord->notaventa->vendedor->persona->usuario->email;
+        }
         $notificaciones->vendedor_id = $despachoord->notaventa->vendedor_id;
         $notificaciones->status = 1;                    
         $notificaciones->nombretabla = 'despachoord';
@@ -51,7 +55,7 @@ class NotifyMailGuardarFacturaDespacho
         $asunto = $notificaciones->mensaje;
         $cuerpo = $notificaciones->mensaje;
 
-        Mail::to($despachoord->notaventa->vendedor->persona->usuario->email)->send(new MailFacturaDespacho($notificaciones,$asunto,$cuerpo,$despachoord));
+        Mail::to($aux_email)->send(new MailFacturaDespacho($notificaciones,$asunto,$cuerpo,$despachoord));
 
     }
 }

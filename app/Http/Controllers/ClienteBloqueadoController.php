@@ -123,7 +123,11 @@ class ClienteBloqueadoController extends Controller
             foreach ($clientebloqueado->cliente->vendedores as $vendedor) {
                 $notificaciones = new Notificaciones();
                 $notificaciones->usuarioorigen_id = auth()->id();
-                $notificaciones->usuariodestino_id = $vendedor->persona->usuario->id;
+                $aux_email = $vendedor->persona->email;
+                if($vendedor->persona->usuario){
+                    $notificaciones->usuariodestino_id = $vendedor->persona->usuario->id;
+                    $aux_email = $vendedor->persona->usuario->email;
+                }
                 $notificaciones->vendedor_id = $vendedor->id;
                 $notificaciones->status = 1;                    
                 $notificaciones->nombretabla = 'clientebloqueado';
@@ -138,7 +142,7 @@ class ClienteBloqueadoController extends Controller
                 $notificaciones->save();
     
                 $nombrevendedor = $vendedor->persona->nombre . ' ' . $vendedor->persona->apellido;
-                Mail::to($vendedor->persona->usuario->email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
+                Mail::to($aux_email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
             }
 
             
@@ -219,7 +223,11 @@ class ClienteBloqueadoController extends Controller
         foreach ($clientebloqueado->cliente->vendedores as $vendedor) {
             $notificaciones = new Notificaciones();
             $notificaciones->usuarioorigen_id = auth()->id();
-            $notificaciones->usuariodestino_id = $vendedor->persona->usuario->id;
+            $aux_email = $vendedor->persona->email;
+            if($vendedor->persona->usuario){
+                $notificaciones->usuariodestino_id = $vendedor->persona->usuario->id;
+                $aux_email = $vendedor->persona->usuario->email;
+            }
             $notificaciones->vendedor_id = $vendedor->id;
             $notificaciones->status = 1;                    
             $notificaciones->nombretabla = 'clientebloqueado';
@@ -234,7 +242,7 @@ class ClienteBloqueadoController extends Controller
             $notificaciones->save();
 
             $nombrevendedor = $vendedor->persona->nombre . ' ' . $vendedor->persona->apellido;
-            Mail::to($vendedor->persona->usuario->email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
+            Mail::to($aux_email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
         }
         return redirect('clientebloqueado')->with('mensaje','Actualizado con exito');
     }
@@ -259,7 +267,11 @@ class ClienteBloqueadoController extends Controller
                     foreach ($clientebloqueado->cliente->vendedores as $vendedor) {
                         $notificaciones = new Notificaciones();
                         $notificaciones->usuarioorigen_id = auth()->id();
-                        $notificaciones->usuariodestino_id = $vendedor->persona->usuario->id;
+                        $aux_mail = $vendedor->persona->email;
+                        if($vendedor->persona->usuario){
+                            $notificaciones->usuariodestino_id = $vendedor->persona->usuario->id;
+                            $aux_mail = $vendedor->persona->usuario->email;
+                        }
                         $notificaciones->vendedor_id = $vendedor->id;
                         $notificaciones->status = 1;                    
                         $notificaciones->nombretabla = 'clientebloqueado';
@@ -274,7 +286,7 @@ class ClienteBloqueadoController extends Controller
                         $notificaciones->save();
 
                         $nombrevendedor = $vendedor->persona->nombre . ' ' . $vendedor->persona->apellido;
-                        Mail::to($vendedor->persona->usuario->email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
+                        Mail::to($aux_mail)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
                     }
                     return response()->json(['mensaje' => 'ok']);
                 } else {
