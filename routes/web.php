@@ -665,3 +665,12 @@ Route::post('categoriagrupovalmesfilgrupos', 'CategoriaGrupoValMesController@cat
 Route::get('reportprodpendsoldesp', 'ReportProdPendSolDespController@index')->name('reportprodpendsoldesp');
 Route::post('reportprodpendsoldesp/reporte', 'ReportProdPendSolDespController@reporte')->name('reportprodpendsoldesp_reporte');
 Route::get('reportprodpendsoldesp/exportpdf', 'ReportProdPendSolDespController@exportPdf')->name('reportprodpendsoldesp_exportpdf');
+
+
+/*RUTAS GUIA DESPACHO INTERNA*/
+Route::get('guiadespinterna', 'GuiaDespInternaController@index')->name('guiadespinterna');
+Route::get('guiadespinterna/crear', 'GuiaDespInternaController@crear')->name('crear_guiadespinterna');
+Route::post('guiadespinterna', 'GuiaDespInternaController@guardar')->name('guardar_guiadespinterna');
+Route::get('guiadespinterna/{id}/editar', 'GuiaDespInternaController@editar')->name('editar_guiadespinterna');
+Route::put('guiadespinterna/{id}', 'GuiaDespInternaController@actualizar')->name('actualizar_guiadespinterna');
+Route::delete('guiadespinterna/{id}', 'GuiaDespInternaController@eliminar')->name('eliminar_guiadespinterna');
