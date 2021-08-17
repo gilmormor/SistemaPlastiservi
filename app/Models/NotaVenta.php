@@ -48,7 +48,8 @@ class NotaVenta extends Model
         'aprobusu_id',
         'aprobfechahora',
         'visto',
-        'usuariodel_id'
+        'usuariodel_id',
+        'stadestino'
     ];
 
     public static function setFotonotaventa($foto,$notaventa_id,$request, $actual = false){

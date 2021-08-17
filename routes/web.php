@@ -668,9 +668,21 @@ Route::get('reportprodpendsoldesp/exportpdf', 'ReportProdPendSolDespController@e
 
 
 /*RUTAS GUIA DESPACHO INTERNA*/
-Route::get('guiadespinterna', 'GuiaDespInternaController@index')->name('guiadespinterna');
-Route::get('guiadespinterna/crear', 'GuiaDespInternaController@crear')->name('crear_guiadespinterna');
-Route::post('guiadespinterna', 'GuiaDespInternaController@guardar')->name('guardar_guiadespinterna');
-Route::get('guiadespinterna/{id}/editar', 'GuiaDespInternaController@editar')->name('editar_guiadespinterna');
-Route::put('guiadespinterna/{id}', 'GuiaDespInternaController@actualizar')->name('actualizar_guiadespinterna');
-Route::delete('guiadespinterna/{id}', 'GuiaDespInternaController@eliminar')->name('eliminar_guiadespinterna');
+Route::get('guiadespint', 'GuiaDespIntController@index')->name('guiadespint');
+Route::get('guiadespintpage', 'GuiaDespIntController@guiadespintpage')->name('guiadespintpage');
+Route::get('guiadespint/crear', 'GuiaDespIntController@crear')->name('crear_guiadespint');
+Route::post('guiadespint', 'GuiaDespIntController@guardar')->name('guardar_guiadespint');
+Route::get('guiadespint/{id}/editar', 'GuiaDespIntController@editar')->name('editar_guiadespint');
+Route::put('guiadespint/{id}', 'GuiaDespIntController@actualizar')->name('actualizar_guiadespint');
+Route::delete('guiadespint/{id}', 'GuiaDespIntController@eliminar')->name('eliminar_guiadespint');
+
+
+/*RUTAS Clientes Internos*/
+Route::get('clienteinterno', 'ClienteInternoController@index')->name('clienteinterno');
+Route::get('clienteinternopage', 'ClienteInternoController@clienteinternopage')->name('clienteinternopage');
+Route::get('clienteinterno/crear', 'ClienteInternoController@crear')->name('crear_clienteinterno');
+Route::post('clienteinterno', 'ClienteInternoController@guardar')->name('guardar_clienteinterno');
+Route::get('clienteinterno/{id}/editar', 'ClienteInternoController@editar')->name('editar_clienteinterno');
+Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('actualizar_clienteinterno');
+Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
+Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');

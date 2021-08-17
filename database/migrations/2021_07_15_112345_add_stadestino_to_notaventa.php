@@ -14,7 +14,7 @@ class AddStadestinoToNotaventa extends Migration
     public function up()
     {
         Schema::table('notaventa', function (Blueprint $table) {
-            //
+            $table->smallInteger('stadestino')->comment('Destino de la NV: 1=Venta directa despacho, 2=Produccion generar OT.')->nullable()->after('findespacho');
         });
     }
 
@@ -26,7 +26,7 @@ class AddStadestinoToNotaventa extends Migration
     public function down()
     {
         Schema::table('notaventa', function (Blueprint $table) {
-            $table->smallInteger('stadestino')->comment('Destino de la NV: 1=Venta directa despacho, 2=Produccion generar OT.')->nullable()->after('codbarra');
+            $table->dropColumn('stadestino');
         });
     }
 }
