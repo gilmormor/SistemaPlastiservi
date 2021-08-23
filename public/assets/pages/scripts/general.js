@@ -974,6 +974,11 @@ function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
 	$("#myModalpdf").modal('show')
 }
 
+function genpdfGDI(id,stareport){ //GENERAR PDF GUIA DESPACHO INTERNA
+	$('#contpdf').attr('src', '/guiadespint/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+}
+
 $(document).on("click", ".btngenpdfNV1", function(){	
     fila = $(this).closest("tr");
 	form = $(this);

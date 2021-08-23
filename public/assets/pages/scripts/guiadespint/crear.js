@@ -178,11 +178,11 @@ function insertarTabla(){
 		aux_precioxkiloreal = $("#precioM").attr("valor");
 	}
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
-			'<td style="display:none;" name="cotdet_idTD'+ aux_nfila + '" id="cotdet_idTD'+ aux_nfila + '">'+ 
+			'<td style="display:none;" name="det_idTD'+ aux_nfila + '" id="det_idTD'+ aux_nfila + '">'+ 
 				'0'+
 			'</td>'+
 			'<td style="display:none;">'+
-				'<input type="text" name="cotdet_id[]" id="cotdet_id'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
+				'<input type="text" name="det_id[]" id="det_id'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
 			'</td>'+
 			'<td name="producto_idTD'+ aux_nfila + '" id="producto_idTD'+ aux_nfila + '" style="display:none;">'+ 
 				'<input type="text" name="producto_id[]" id="producto_id'+ aux_nfila + '" class="form-control" value="'+ $("#producto_idM").val() +'" style="display:none;"/>'+
@@ -287,11 +287,11 @@ function insertarTabla(){
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
 		'</tr>'+
-		'<tr id="trneto" name="trneto">'+
+		'<tr id="trneto" name="trneto" style="display:none;">'+
 			'<td colspan="12" style="text-align:right"><b>Neto</b></td>'+
 			'<td id="tdneto" name="tdneto" style="text-align:right">0,00</td>'+
 		'</tr>'+
-		'<tr id="triva" name="triva">'+
+		'<tr id="triva" name="triva" style="display:none;">'+
 			'<td colspan="12" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
 			'<td id="tdiva" name="tdiva" style="text-align:right">0,00</td>'+
 		'</tr>'+
@@ -345,7 +345,7 @@ $('.provincia_id').on('change', function () {
 function eliminarRegistro(i){
 	event.preventDefault();
 	var data = {
-		id: $("#cotdet_idTD"+i).html(),
+		id: $("#det_idTD"+i).html(),
 		nfila : i
 	};
 	var ruta = '/cotizacion/eliminarCotizacionDetalle/'+i;
@@ -499,13 +499,15 @@ $("#rut").blur(function(){
 						$("#email").val(respuesta[0]['email']);
 						$("#direccion").val(respuesta[0]['direccion']);
 						$("#direccioncot").val(respuesta[0]['direccion']);
-						$("#cliente_id").val(respuesta[0]['id'])
-						$("#contacto").val(respuesta[0]['contactonombre']);
-						//$("#vendedor_id").val(respuesta[0]['vendedor_id']);
-						//$("#vendedor_idD").val(respuesta[0]['vendedor_id']);
-						$("#region_id").val(respuesta[0]['regionp_id']);
-						//alert($("#region_id").val());
-						$("#provincia_id").val(respuesta[0]['provinciap_id']);
+						$("#clienteinterno_id").val(respuesta[0]['id'])
+
+						$("#cli_rut").val(respuesta[0]['rut']);
+						$("#cli_nom").val(respuesta[0]['razonsocial']);
+						$("#cli_dir").val(respuesta[0]['direccion']);
+						$("#cli_tel").val(respuesta[0]['telefono']);
+						$("#cli_email").val(respuesta[0]['email']);
+
+
 						$("#comuna_id").val(respuesta[0]['comunap_id']);
 						$("#comuna_idD").val(respuesta[0]['comunap_id']);
 						$("#provincia_id").val(respuesta[0]['provinciap_id']);
@@ -732,7 +734,7 @@ function limpiarCampos(){
 	$("#email").val('');
 	$("#direccion").val('');
 	$("#direccioncot").val('');
-	$("#cliente_id").val('')
+	$("#clienteinterno_id").val('')
 	$("#contacto").val('');
 	/*
 	$("#vendedor_id").val('');

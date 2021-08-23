@@ -738,6 +738,8 @@ class DespachoSolController extends Controller
         $request->numrep = $_GET["numrep"];
         $request->aux_sql = $_GET["aux_sql"];
         $request->aux_orden = $_GET["aux_orden"];
+        $request->producto_id = $_GET["producto_id"];
+        
 
 
         $datas = consulta($request,$request->aux_sql,$request->aux_orden);
@@ -907,6 +909,20 @@ function consulta($request,$aux_sql,$orden){
     }
     //dd($aux_condplazoentrega);
 
+    $aux_condproducto_id = " true";
+    if(!empty($request->producto_id)){
+        /*
+        $aux_condproducto_id = str_replace(".","",$request->producto_id);
+        $aux_condproducto_id = str_replace("-","",$aux_condproducto_id);
+        $aux_condproducto_id = "notaventadetalle.producto_id='$aux_condproducto_id'";
+        */
+
+        $aux_codprod = explode(",", $request->producto_id);
+        $aux_codprod = implode ( ',' , $aux_codprod);
+        $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
+    }
+
+
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){
         $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
@@ -960,6 +976,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_aprobstatus
         and $aux_condcomuna_id
         and $aux_condplazoentrega
+        and $aux_condproducto_id
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
@@ -1004,6 +1021,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_aprobstatus
         and $aux_condcomuna_id
         and $aux_condplazoentrega
+        and $aux_condproducto_id
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
@@ -1065,6 +1083,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_aprobstatus
         and $aux_condcomuna_id
         and $aux_condplazoentrega
+        and $aux_condproducto_id
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null

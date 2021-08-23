@@ -1,13 +1,19 @@
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
 <input type="hidden" name="aux_iva" id="aux_iva" value="0">
-<input type="hidden" name="direccioncot" id="direccioncot" value="{{old('direccioncot', $data->direccioncot ?? '')}}">
 <input type="hidden" name="clienteinterno_id" id="clienteinterno_id" value="{{old('clienteinterno_id', $data->clienteinterno_id ?? '')}}">
 <input type="hidden" name="contacto" id="contacto" value="{{old('contacto', $data->contacto ?? '')}}">
 <input type="hidden" name="comuna_id" id="comuna_id" value="{{old('comuna_id', $data->comuna_id ?? '')}}">
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $tablas['sucurArray'][0] ?? '')}}">
+
+<input type="hidden" name="cli_rut" id="cli_rut" value="{{old('cli_rut', $data->cli_rut ?? '')}}">
+<input type="hidden" name="cli_nom" id="cli_nom" value="{{old('cli_nom', $data->cli_nom ?? '')}}">
+<input type="hidden" name="cli_dir" id="cli_dir" value="{{old('cli_dir', $data->cli_dir ?? '')}}">
+<input type="hidden" name="cli_tel" id="cli_tel" value="{{old('cli_tel', $data->cli_tel ?? '')}}">
+<input type="hidden" name="cli_email" id="cli_email" value="{{old('cli_email', $data->cli_email ?? '')}}">
+
 
 @if($aux_sta==1)
     <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $tablas['vendedor_id'] ?? '')}}">
@@ -19,7 +25,7 @@
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
 
 <input type="hidden" name="neto" id="neto" value="{{old('neto', $data->neto ?? '')}}">
-<input type="hidden" name="piva" id="piva" value="{{old('piva', $tablas['empresa']->iva ?? '')}}">
+<input type="hidden" name="piva" id="piva" value="{{0}}">
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
@@ -72,7 +78,7 @@
         </div>
         <div class="form-group col-xs-12 col-sm-2">
             <label for="telefono" class="control-label requerido">Telefono</label>
-            <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', $data->telefono ?? '')}}" required readonly/>
+            <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', $clienteselec[0]->telefono ?? '')}}" required readonly/>
         </div>
 
         <div class="form-group col-xs-12 col-sm-1">
@@ -83,7 +89,7 @@
     <div class="row">
         <div class="form-group col-xs-12 col-sm-2">
             <label for="email" class="control-label requerido">Email</label>
-            <input type="text" name="email" id="email" class="form-control" value="{{old('email', $data->email ?? '')}}" required readonly/>
+            <input type="text" name="email" id="email" class="form-control" value="{{old('email', $clienteselec[0]->email ?? '')}}" required readonly/>
         </div>
         <div class="form-group col-xs-12 col-sm-2">
             <label for="comuna_idD" class="control-label requerido">Comuna</label>
@@ -163,6 +169,23 @@
             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
             <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" {{$disabledReadOnly}}/>
         </div>
+        <div class="form-group col-xs-12 col-sm-3">
+            <label for="comunaentrega_id" class="control-label requerido">Comuna Entrega</label>
+            <select name="comunaentrega_id" id="comunaentrega_id" class="form-control select2  comunaentrega_id" data-live-search='true' value="{{old('comunaentrega_id', $data->comunaentrega_id ?? '')}}" required {{$disabledReadOnly}}>
+                <option value="">Seleccione...</option>
+                @foreach($tablas['comunas'] as $comuna)
+                    <option
+                        value="{{$comuna->id}}"
+                        @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comunaentrega_id)
+                            {{'selected'}}
+                        @endif
+                        >
+                        {{$comuna->nombre}}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+    
         <div class="form-group col-xs-12 col-sm-1">
             <label for="plazoentrega" class="control-label requerido">Plazo Ent.</label>
             <input type="text" name="plazoentrega" id="plazoentrega" class="form-control pull-right datepicker"  value="{{old('plazoentrega', $data->plazoentrega ?? '')}}" readonly required {{$disabledReadOnly}}>
@@ -245,111 +268,111 @@
                     <tbody>
                         @if ($aux_sta==2)
                             <?php $aux_nfila = 0; $i = 0;?>
-                            @foreach($cotizacionDetalles as $CotizacionDetalle)
+                            @foreach($guiadespintdetalles as $guiadespintdetalle)
                                 <?php $aux_nfila++; ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                    <td style="display:none;" name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">
-                                        {{$CotizacionDetalle->id}}
+                                    <td style="display:none;" name="det_idTD{{$aux_nfila}}" id="det_idTD{{$aux_nfila}}">
+                                        {{$guiadespintdetalle->id}}
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="cotdet_id[]" id="cotdet_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->id}}" style="display:none;"/>
+                                        <input type="text" name="det_id[]" id="det_id{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->id}}" style="display:none;"/>
                                     </td>
                                     <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}" style="display:none;">
-                                        <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto_id}}" style="display:none;"/>
+                                        <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->producto_id}}" style="display:none;"/>
                                     </td>
                                     <td style="display:none;" name="codintprodTD{{$aux_nfila}}" id="codintprodTD{{$aux_nfila}}">
-                                        {{$CotizacionDetalle->producto->codintprod}}
+                                        {{$guiadespintdetalle->producto->codintprod}}
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="codintprod[]" id="codintprod{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->codintprod}}" style="display:none;"/>
+                                        <input type="text" name="codintprod[]" id="codintprod{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->producto->codintprod}}" style="display:none;"/>
                                     </td>
                                     <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$CotizacionDetalle->cant}}
+                                        {{$guiadespintdetalle->cant}}
                                     </td>
                                     <td style="text-align:right;display:none;">
-                                        <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->cant}}" style="display:none;"/>
+                                        <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->cant}}" style="display:none;"/>
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                        {{$CotizacionDetalle->producto->nombre}}
+                                        {{$guiadespintdetalle->producto->nombre}}
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->unidadmedida_id}}" style="display:none;"/>
+                                        <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->unidadmedida_id}}" style="display:none;"/>
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
-                                        {{$CotizacionDetalle->producto->claseprod->cla_nombre}}
+                                        {{$guiadespintdetalle->producto->claseprod->cla_nombre}}
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$CotizacionDetalle->producto->diametro}}
+                                        {{$guiadespintdetalle->producto->diametro}}
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diametro}}" style="display:none;"/>
+                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->producto->diametro}}" style="display:none;"/>
                                     </td>
                                     <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$CotizacionDetalle->espesor}}
+                                        {{$guiadespintdetalle->espesor}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->espesor}}" style="display:none;"/>
-                                        <input type="text" name="ancho[]" id="ancho{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->ancho}}" style="display:none;"/>
-                                        <input type="text" name="obs[]" id="obs{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->obs}}" style="display:none;"/>
+                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->espesor}}" style="display:none;"/>
+                                        <input type="text" name="ancho[]" id="ancho{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->ancho}}" style="display:none;"/>
+                                        <input type="text" name="obs[]" id="obs{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->obs}}" style="display:none;"/>
                                     </td>
                                     <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$CotizacionDetalle->largo}}
+                                        {{$guiadespintdetalle->largo}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->largo}}" style="display:none;"/>
+                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->largo}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
-                                        {{$CotizacionDetalle->peso}}
+                                        {{$guiadespintdetalle->peso}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->peso}}" style="display:none;"/>
+                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->peso}}" style="display:none;"/>
                                     </td>
                                     <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
-                                        {{$CotizacionDetalle->producto->tipounion}}
+                                        {{$guiadespintdetalle->producto->tipounion}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->tipounion}}" style="display:none;"/>
+                                        <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->producto->tipounion}}" style="display:none;"/>
                                     </td>
                                     <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right">
-                                        <?php $aux_descPorc = $CotizacionDetalle->descuento * 100; ?>
+                                        <?php $aux_descPorc = $guiadespintdetalle->descuento * 100; ?>
                                         {{$aux_descPorc}}%
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="descuento[]" id="descuento{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->descuento}}" style="display:none;"/>
+                                        <input type="text" name="descuento[]" id="descuento{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->descuento}}" style="display:none;"/>
                                     </td>
                                     <td style="text-align:right;display:none;">
-                                        <?php $aux_descVal = 1 - $CotizacionDetalle->descuento; ?>
+                                        <?php $aux_descVal = 1 - $guiadespintdetalle->descuento; ?>
                                         <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                     </td>
                                     <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
-                                        {{number_format($CotizacionDetalle->preciounit, 0, ',', '.')}}
+                                        {{number_format($guiadespintdetalle->preciounit, 0, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->preciounit}}" style="display:none;"/>
+                                        <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->preciounit}}" style="display:none;"/>
                                     </td>
                                     <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
-                                        {{number_format($CotizacionDetalle->precioxkilo, 0, ',', '.')}}
+                                        {{number_format($guiadespintdetalle->precioxkilo, 0, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->precioxkilo}}" style="display:none;"/>
+                                        <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->precioxkilo}}" style="display:none;"/>
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->precioxkiloreal}}" style="display:none;"/>
+                                        <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->precioxkiloreal}}" style="display:none;"/>
                                     </td>
                                     <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
-                                        {{number_format($CotizacionDetalle->totalkilos, 2, ',', '.')}}
+                                        {{number_format($guiadespintdetalle->totalkilos, 2, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->totalkilos}}" style="display:none;"/>
+                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->totalkilos}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
-                                        {{number_format($CotizacionDetalle->subtotal, 0, ',', '.')}}
+                                        {{number_format($guiadespintdetalle->subtotal, 0, ',', '.')}}
                                     </td>
                                     <td class="subtotalCF" style="text-align:right;display:none;"> 
-                                        <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->subtotal}}" style="display:none;"/>
+                                        <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$guiadespintdetalle->subtotal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalSFTD{{$aux_nfila}}" id="subtotalSFTD{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
-                                        {{$CotizacionDetalle->subtotal}}
+                                        {{$guiadespintdetalle->subtotal}}
                                     </td>
                                     <td>
                                         @if(session('aux_aprocot')=='0')
@@ -363,12 +386,12 @@
                                 </tr>
                                 <?php $i++;?>
                             @endforeach
-                            <tr id="trneto" name="trneto">
+                            <tr id="trneto" name="trneto" style="display:none;">
                                 <td colspan="12" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
-                            <tr id="triva" name="triva">
-                                <td colspan="12" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
+                            <tr id="triva" name="triva" style="display:none;">
+                                <td colspan="12" style="text-align:right"><b>IVA 0,00%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">

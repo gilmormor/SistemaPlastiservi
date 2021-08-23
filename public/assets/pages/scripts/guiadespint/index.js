@@ -15,20 +15,20 @@ $(document).ready(function () {
     'columns'     : [
         {data: 'id'},
         {data: 'fechahora'},
+        {data: 'cli_rut'},
         {data: 'cli_nom'},
-        {data: 'id'},
+        {data: 'pdf'},
         {data: 'aprobstatus',className:"ocultar"},
         {data: 'aprobobs',className:"ocultar"},
-        {data: 'contador',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
-            "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV' title='Enviar para aprobación'>"+
+            "<a href='guiadespint' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV' title='Enviar para aprobación'>"+
                 "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
             "</a>"+
-            "<a href='cotizacion' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
+            "<a href='guiadespint' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
                 "<i class='fa fa-fw fa-pencil'></i>"+
             "</a>"+
-            "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
+            "<a href='guiadespint' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
                 "<i class='fa fa-fw fa-trash text-danger'></i>"+
             "</a>"}
     ],
@@ -39,10 +39,10 @@ $(document).ready(function () {
 
         //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
         aux_text = 
-            "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
+            "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Interna: " + data.id + "' onclick='genpdfGDI(" + data.id + ",1)'>"+
                 "<i class='fa fa-fw fa-file-pdf-o'></i>"+
             "</a>";
-        $('td', row).eq(3).html(aux_text);
+        $('td', row).eq(4).html(aux_text);
         /*
         if ( data.contador * 1 > 0 ) {
             //console.log(row);

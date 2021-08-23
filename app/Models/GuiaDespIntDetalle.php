@@ -65,4 +65,11 @@ class GuiaDespIntDetalle extends Model
     {
         return $this->belongsTo(Color::class);
     }
+
+    //Relacion inversa a UnidadMedida
+    public function unidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class);
+    }
+    
 }

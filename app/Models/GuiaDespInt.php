@@ -15,7 +15,7 @@ class GuiaDespInt extends Model
         'cli_nom',
         'cli_dir',
         'cli_tel',
-        'cli_giro',
+        'cli_email',
         'observacion',
         'plazoentrega',
         'lugarentrega',
@@ -29,7 +29,7 @@ class GuiaDespInt extends Model
         'anulada',
         'usuariodel_id',
         'sucursal_id',
-        'cliente_id',
+        'clienteinterno_id',
         'formapago_id',
         'vendedor_id',
         'plazopago_id',
@@ -44,9 +44,9 @@ class GuiaDespInt extends Model
     }
 
     //RELACION INVERSA Cliente
-    public function cliente()
+    public function clienteinterno()
     {
-        return $this->belongsTo(Cliente::class);
+        return $this->belongsTo(ClienteInterno::class);
     }
     //Relacion inversa a FormaPago
     public function formapago()

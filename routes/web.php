@@ -675,6 +675,7 @@ Route::post('guiadespint', 'GuiaDespIntController@guardar')->name('guardar_guiad
 Route::get('guiadespint/{id}/editar', 'GuiaDespIntController@editar')->name('editar_guiadespint');
 Route::put('guiadespint/{id}', 'GuiaDespIntController@actualizar')->name('actualizar_guiadespint');
 Route::delete('guiadespint/{id}', 'GuiaDespIntController@eliminar')->name('eliminar_guiadespint');
+Route::get('guiadespint/{id}/{stareport}/exportPdf', 'GuiaDespIntController@exportPdf')->name('exportPdf_guiadespint');
 
 
 /*RUTAS Clientes Internos*/
@@ -686,3 +687,4 @@ Route::get('clienteinterno/{id}/editar', 'ClienteInternoController@editar')->nam
 Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('actualizar_clienteinterno');
 Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
 Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');
+

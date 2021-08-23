@@ -23,7 +23,7 @@ class CreateTableGuiadespint extends Migration
             $table->string('cli_nom',80)->comment('Nombre cliente');
             $table->string('cli_dir',150)->comment('Direccion cliente');
             $table->string('cli_tel',20)->comment('Telefono cliente');
-            $table->string('cli_giro',100)->comment('Giro cliente')->nullable();
+            $table->string('cli_email',20)->comment('Correo electronico cliente');
             $table->string('observacion',200)->comment('Observaciones guia despacho interna')->nullable();
             $table->date('plazoentrega')->comment('Plazo de entrega fecha');
             $table->string('lugarentrega',100)->comment('Lugar de entrega');
