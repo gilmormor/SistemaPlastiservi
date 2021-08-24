@@ -15,7 +15,7 @@ Productos Notas de Venta
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Indicadores Factura por Vendedor</h3>
+                <h3 class="box-title">Indicadores Gestión</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
@@ -133,9 +133,9 @@ Productos Notas de Venta
                             </div>
                             <div class="col-xs-12 col-md-8 col-sm-8">
                                 <select name="statusact_id" id="statusact_id" class="selectpicker form-control statusact_id">
-                                    <option value="1" selected>Activas</option>
+                                    <option value="1">Activas</option>
                                     <option value="2">Cerradas</option>
-                                    <option value="3">Todas: Activas + cerradas</option>
+                                    <option value="3" selected>Todas: Activas + cerradas</option>
                                 </select>
                             </div>
                             <div class="col-xs-12 col-md-4 col-sm-4 text-left">
@@ -379,15 +379,31 @@ Productos Notas de Venta
             </div>
             <div class="tab-pane" id="tab_9">
                 <div class="row" id="graficoVentasMesAP" name="graficoVentasMesAP" style="display:none;">
-                    <div class="col-lg-10 col-md-offset-1">
+                    <div class="col-lg-12">
                         <div class="box box-danger">
                             <div class="box-header with-border">
-                                <h3 class="box-title">Ventas Mes Area Prod Kg</h3>
-                        
+                                <h3 class="box-title" id="titulo_TablaVentasMesAP" name="titulo_TablaVentasMesAP">Ventas x area Prod $</h3>
                                 <div class="box-tools pull-right">
                                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                                     </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="table-responsive" id="tablagraficoVentasMesAP">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="col-lg-10 col-md-offset-1">
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title" id="titulo_graficoVentasMesAP" name="titulo_graficoVentasMesAP">Ventas x area Prod $</h3>
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div class="box-body">

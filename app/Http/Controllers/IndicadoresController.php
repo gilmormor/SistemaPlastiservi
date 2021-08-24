@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Cliente;
+use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
@@ -84,6 +85,19 @@ class IndicadoresController extends Controller
         return view('indicadorgestion.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
     }
 
+    public function repkilosxtipoentrega(Request $request){
+        can('listar-reporte-kilos-x-tipo-entrega');
+        $giros = Giro::orderBy('id')->get();
+        $categoriaprods = CategoriaProd::categoriasxUsuario();
+        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+
+        $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
+                    'fechaAct' => date("d/m/Y"),
+                    'anno' => date('Y')
+                    ];
+        return view('repkilosxtipoentrega.index', compact('giros','categoriaprods','areaproduccions','fechaServ','tablashtml'));
+    }
 
     public function reporte(Request $request){
         //dd($request);
@@ -392,7 +406,6 @@ class IndicadoresController extends Controller
                         $aux_kiloshoy = $areaproduccionhoy->totalkilos;
                     }  
                 }
-
                 $respuesta['tablaareaproduccion'] .= "
                     <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
                         <td data-order='$areaproduccion->id' >$areaproduccion->nombre</td>
@@ -404,7 +417,7 @@ class IndicadoresController extends Controller
                         //$aux_totalfacdia += 0;
                 $aux_totalkgfacacum += $areaproduccion->totalkilos;
                 $aux_totalmonto += $areaproduccion->subtotal;
-                $aux_totalkiloshoy += $aux_kiloshoy;
+                $aux_totalkiloshoy += $aux_kiloshoy;    
             }
             $aux_promkilogen = 0;
             if($aux_totalkgfacacum > 0){
@@ -461,7 +474,9 @@ class IndicadoresController extends Controller
             if($aux_idcons == "3"){
                 $datas = $datasFecNV;
             }
-
+            if(count($datas['totales']) <= 0){ //SI LA TABLA TOTALES VIENE VACIA NO ES NECESARIO HACER TODO LO DEMAS, ROMPO AQUI Y ENVIO REPUESTA VACIO
+                return $respuesta;
+            }
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
@@ -730,28 +745,30 @@ class IndicadoresController extends Controller
             $aux_totalkgfacacum = 0;
             $aux_totalmonto = 0;
             foreach($datas['areaproduccion'] as $areaproduccion){
-                $aux_promkilo = 0;
-                if($areaproduccion->totalkilos>0){
-                    $aux_promkilo = $areaproduccion->subtotal/$areaproduccion->totalkilos;
+                if($areaproduccion->totalkilos > 0){
+                    $aux_promkilo = 0;
+                    if($areaproduccion->totalkilos>0){
+                        $aux_promkilo = $areaproduccion->subtotal/$areaproduccion->totalkilos;
+                    }
+                    $aux_kiloshoy = 0;
+                    foreach($datas['areaproduccionhoy'] as $areaproduccionhoy){
+                        if($areaproduccionhoy->id == $areaproduccion->id){
+                            $aux_kiloshoy = $areaproduccionhoy->totalkilos;
+                        }  
+                    }
+    
+                    $respuesta['tablaareaproduccion'] .= "
+                        <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
+                            <td data-order='$areaproduccion->id' >$areaproduccion->nombre</td>
+                            <td style='text-align:right' data-order='$aux_kiloshoy' data-search='$aux_kiloshoy'>" . number_format($aux_kiloshoy, 2, ",", ".") . "</td>
+                            <td style='text-align:right' data-order='$areaproduccion->totalkilos' data-search='$areaproduccion->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
+                            <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>
+                        </tr>";
+                            //$aux_totalfacdia += 0;
+                    $aux_totalkgfacacum += $areaproduccion->totalkilos;
+                    $aux_totalmonto += $areaproduccion->subtotal;
+                    $aux_totalkiloshoy += $aux_kiloshoy;    
                 }
-                $aux_kiloshoy = 0;
-                foreach($datas['areaproduccionhoy'] as $areaproduccionhoy){
-                    if($areaproduccionhoy->id == $areaproduccion->id){
-                        $aux_kiloshoy = $areaproduccionhoy->totalkilos;
-                    }  
-                }
-
-                $respuesta['tablaareaproduccion'] .= "
-                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                        <td data-order='$areaproduccion->id' >$areaproduccion->nombre</td>
-                        <td style='text-align:right' data-order='$aux_kiloshoy' data-search='$aux_kiloshoy'>" . number_format($aux_kiloshoy, 2, ",", ".") . "</td>
-                        <td style='text-align:right' data-order='$areaproduccion->totalkilos' data-search='$areaproduccion->totalkilos'>" . number_format($areaproduccion->totalkilos, 2, ",", ".") . "</td>
-                        <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>
-                    </tr>";
-                        //$aux_totalfacdia += 0;
-                $aux_totalkgfacacum += $areaproduccion->totalkilos;
-                $aux_totalmonto += $areaproduccion->subtotal;
-                $aux_totalkiloshoy += $aux_kiloshoy;
             }
             $aux_promkilogen = 0;
             if($aux_totalkgfacacum > 0){
@@ -962,7 +979,9 @@ class IndicadoresController extends Controller
             if($aux_idcons == "3"){
                 $datas = $datasFecNV;
             }
-
+            if(count($datas['totales']) <= 0){ //SI LA TABLA TOTALES VIENE VACIA NO ES NECESARIO HACER TODO LO DEMAS, ROMPO AQUI Y ENVIO REPUESTA VACIO
+                return $respuesta;
+            }
             $respuesta['tabladinero'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
             <thead>
                 <tr>
@@ -1096,6 +1115,9 @@ class IndicadoresController extends Controller
             $i = 0;
             foreach($respuesta['totalkilos'] as &$kilos){
                 $kilos = round($kilos,2);
+                if($totalgeneralfilakg <= 0){
+                    $totalgeneralfilakg = 1;
+                }
                 $kilos1 = round(($kilos / $totalgeneralfilakg) * 100,2);
                 $respuesta['nombre'][$i] .= " " . number_format($kilos1, 2, ",", ".") . "%";
                 $i++;
@@ -1148,8 +1170,8 @@ class IndicadoresController extends Controller
 					<th>Area Prod</th>
                     <th style='text-align:right'>Kg Facturado<br>al dia $request->fechah</th>
                     <th style='text-align:right'>Kg Facturado<br>Acumulado</th>
-                    <th style='text-align:right'>$</th>
-                    <th style='text-align:right'>Monto mas iva</th>
+                    <th style='text-align:right'>Neto $</th>
+                    <th style='text-align:right'>Monto<br>con IVA</th>
                     <th style='text-align:right'>Precio<br>Promedio Kg</th>
                 </tr>
             </thead>
@@ -1208,6 +1230,43 @@ class IndicadoresController extends Controller
             $respuesta['ventasxmeskilos'] = array_column($datas['ventasxmes'], 'totalkilos');
             $respuesta['ventasxmesdinero'] = array_column($datas['ventasxmes'], 'subtotal');
 
+
+
+
+
+            /******Tabla Ventas Mensual por Unidad de Produccion***** */
+            /******************************************************** */
+            $respuesta['tablaventasmesap'] = "<table id='tablaventasmesareaprod' name='tablaventasmesareaprod' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+            <thead>
+                <tr>
+                    <th>Area Prod</th>";
+            foreach($datas['ventasxmes'] as $ventasxmes){
+                $mes = $ventasxmes->mes;
+                $respuesta['tablaventasmesap'] .= "
+                        <th style='text-align:right' class='tooltipsC' title='" . ucfirst($mes) . "'>" . ucfirst($mes) . "</th>";
+            }
+            $respuesta['tablaventasmesap'] .= "
+                </tr>
+            </thead>
+            <tbody>";
+            foreach($datas['areaproduccion'] as $areaproduccion){
+                $respuesta['tablaventasmesap'] .= "
+                <tr class='btn-accion-tabla tooltipsC'>
+                    <td data-order='$areaproduccion->id'>$areaproduccion->nombre</td>";
+                foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                    if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+                        $respuesta['tablaventasmesap'] .= "
+                            <td style='text-align:right'>" . number_format(round($ventasareaprodxmes->subtotal,0), 0, ",", ".") . "</td>";
+                    }
+                }
+                $respuesta['tablaventasmesap'] .= "
+                </tr>";
+            }
+            $respuesta['tablaventasmesap'] .= "
+            </tbody>
+            </table>";
+            /******************************************************** */
+
             /* GRAFICO VENTAS MENSUAL POR AREA DE PRODUCCION*/
             $array_ventasmesxareaprod = [];
             $array_vectorTemp[] = 'Mes';
@@ -1235,6 +1294,53 @@ class IndicadoresController extends Controller
             $respuesta['ventasmesxareaprod'] = $array_ventasmesxareaprod;
             
 
+            return $respuesta;
+        }
+    }
+
+    public function reportekilostipoentrega(Request $request){
+        //dd($request);
+        $respuesta = array();
+		$respuesta['exito'] = true;
+		$respuesta['mensaje'] = "Código encontrado";
+		$respuesta['tabla'] = "";
+
+        if($request->ajax()){
+            //dd($request->idcons);
+            $datas = consultakilostipoentrega($request); //TODAS LAS NOTAS DE VENTA
+
+            $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+			<thead>
+				<tr>
+                    <th>Tipo entrega</th>
+                    <th>T</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total KG'>TOTAL Kg</th>
+                </tr>
+            </thead>
+            <tbody>";
+            $aux_totalkilos = 0;
+            foreach($datas['kilosxtipoentrega'] as $kilosxtipoentrega){
+                $respuesta['tabla'] .= "
+                <tr>
+                    <td>
+                        $kilosxtipoentrega->nombre
+                    </td>
+                    <td><i class='fa $kilosxtipoentrega->icono'></i>
+                    </td>
+                    <td style='text-align:right' data-order='$kilosxtipoentrega->totalkilos' data-search='$kilosxtipoentrega->totalkilos'>" . number_format($kilosxtipoentrega->totalkilos, 2, ",", ".") . "</td>
+                </tr>";
+                $aux_totalkilos += $kilosxtipoentrega->totalkilos;
+            }
+            $respuesta['tabla'] .= "
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan='2'>TOTAL</th>
+                        <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
+                    </tr>
+                </tfoot>
+            </table>";
+            //dd($respuesta);
             return $respuesta;
         }
     }
@@ -1502,6 +1608,7 @@ class IndicadoresController extends Controller
         $request->idcons = $_GET["idcons"];
         $request->statusact_id = $_GET["statusact_id"];
         $request->aux_titulo = $_GET["aux_titulo"];
+        $request->anno = $_GET["anno"];
         $request->numrep = $_GET["numrep"];
 
         //dd($request);
@@ -1576,7 +1683,84 @@ class IndicadoresController extends Controller
         session(['grafico2' => $request['base64b2']]);
         return "";
     }
+
+    public function reportekilostipoentregapdf()
+    {
+        //dd(session('grafico2'));
+        $request = new Request();
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->giro_id = $_GET["giro_id"];
+        $request->categoriaprod_id = $_GET["categoriaprod_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->idcons = $_GET["idcons"];
+        $request->statusact_id = $_GET["statusact_id"];
+        $request->aux_titulo = $_GET["aux_titulo"];
+
+        //dd($request);
+
+        $datas = consultakilostipoentrega($request);
+
+        //$datas = consulta($request);
+
+        $aux_fdesde= $request->fechad;
+        if(empty($request->fechad)){
+            $aux_fdesde= '  /  /    ';
+        }
+        $aux_fhasta= $request->fechah;
+
+        $aux_plazoentregad= $request->plazoentregad;
+        if(empty($request->plazoentregad)){
+            $aux_plazoentregad= '  /  /    ';
+        }
+        $aux_plazoentregah= $request->plazoentregah;
+
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $aux_areaproduccion = implode ( ',' , json_decode($request->areaproduccion_id));
+        if(empty($aux_areaproduccion )){
+            $areaprodcond = " true ";
+        }else{
+            $areaprodcond = " areaproduccion.id in ($aux_areaproduccion) ";
+        }
+
+        $sql = "SELECT nombre
+        FROM areaproduccion 
+        where $areaprodcond
+        ORDER BY id;";
+        //dd($sql);
+        $datas_areaproduccion = DB::select($sql);
+
+        
+        $nombreAreaproduccion = "";
+        /*
+        dd($request->areaproduccion_id);
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        */
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+        //dd($datas);
+
+        //return armarReportehtml($request);
+        if($datas){
+                //return view('repkilosxtipoentrega.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request'));
+                $pdf = PDF::loadView('repkilosxtipoentrega.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','aux_plazoentregad','request')); //->setPaper('a4', 'landscape');
+                return $pdf->stream("repkilosxtipoentrega.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        } 
+    }
 }
+
+
 
 
 function consulta($request){
@@ -2152,8 +2336,6 @@ function consultaODcerrada($request){
     and isnull(notaventa.anulada)
     and isnull(despachoorddet.deleted_at)
     and $aux_condstatusact_id
-   
-   
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY grupoprod.id,grupoprod.gru_nombre,persona.id,persona.nombre;";
 
@@ -2206,7 +2388,7 @@ function consultaODcerrada($request){
     $datas = DB::select($sql);
     $respuesta['agruxproducto'] = $datas;
 
-    $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
+    $sql = "SELECT areaproduccion.id,areaproduccion.nombre,categoriagrupovalmes.costo,
     sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
     sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
     round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
@@ -2222,6 +2404,10 @@ function consultaODcerrada($request){
     ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    LEFT JOIN categoriagrupovalmes
+    ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -2307,10 +2493,8 @@ function consultaODcerrada($request){
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY date_format(despachoord.fechafactura,'%Y%m');";
 
-    //dd($sql);
     $datas = DB::select($sql);
     $respuesta['ventasxmes'] = $datas;
-    //dd($respuesta['ventasxmes']);
 
     $sql = "SELECT date_format(despachoord.fechafactura,'%Y%m') AS annomes,
     categoriaprod.areaproduccion_id,areaproduccion.nombre,
@@ -2390,13 +2574,13 @@ function tablaAgruxProductoMargen($datas){
         if($producto->cant>0){
             $aux_promunit = $producto->subtotal/$producto->cant;
         }
-        $aux_promkilo = 0;
+        $aux_preciopromkilo = 0;
         if($producto->totalkilos>0){
-            $aux_promkilo = $producto->subtotal/$producto->totalkilos;
+            $aux_preciopromkilo = $producto->subtotal/$producto->totalkilos;
         }
-        $aux_sumpromkilo += $aux_promkilo;
-        $aux_margenAporte = $aux_promkilo - $producto->costo;
-        $aux_margenVenta = $aux_promkilo * $aux_margenAporte;
+        $aux_sumpromkilo += $aux_preciopromkilo;
+        $aux_margenAporte = $aux_preciopromkilo - $producto->costo;
+        $aux_margenVenta = $producto->totalkilos * $aux_margenAporte;
         $sum_grupo += $producto->subtotal;
         $sum_KgGrupo += $producto->totalkilos;
         $tabla .= "
@@ -2412,7 +2596,7 @@ function tablaAgruxProductoMargen($datas){
                 <td style='text-align:right' data-order='$producto->cant' data-search='$producto->cant'>$producto->cant</td>
                 <td style='text-align:right' data-order='$producto->totalkilos' data-search='$producto->totalkilos'>" . number_format($producto->totalkilos, 2, ",", ".") . "</td>
                 <td style='text-align:right' data-order='$aux_promunit' data-search='$aux_promunit'>" . number_format($aux_promunit, 2, ",", ".") . "</td>
-                <td style='text-align:right' data-order='$aux_promkilo' data-search='$aux_promkilo'>" . number_format($aux_promkilo, 2, ",", ".") . "</td>
+                <td style='text-align:right' data-order='$aux_preciopromkilo' data-search='$aux_preciopromkilo'>" . number_format($aux_preciopromkilo, 2, ",", ".") . "</td>
                 <td style='text-align:right' data-order='$producto->subtotal' data-search='$producto->subtotal'>" . number_format($producto->subtotal, 0, ",", ".") . "</td>
                 <td style='text-align:right' data-order='$producto->costo' data-search='$producto->costo'>" . number_format($producto->costo, 0, ",", ".") . "</td>
                 <td style='text-align:right' data-order='$aux_margenAporte' data-search='$aux_margenAporte'>" . number_format($aux_margenAporte, 0, ",", ".") . "</td>
@@ -2449,7 +2633,7 @@ function tablaAgruxProductoMargen($datas){
         <tfoot>
             <tr>
                 <th>TOTAL</th>
-                <th colspan='8' style='text-align:right'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
+                <th colspan='9' style='text-align:right'>". number_format($totalgeneralfilakg, 2, ",", ".") ."</th>
                 <th></th>
                 <th style='text-align:right'>". number_format($aux_prom1, 2, ",", ".") ."</th>
                 <th style='text-align:right'>". number_format($aux_totalsubtotal, 0, ",", ".") ."</th>
@@ -2462,3 +2646,107 @@ function tablaAgruxProductoMargen($datas){
     </table>";
     return $tabla;
 }
+
+function consultakilostipoentrega($request){
+    $aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
+    $aux_areaproduccion = implode ( ',' , json_decode($request->areaproduccion_id));
+    $respuesta = array();
+    $respuesta['exito'] = true;
+    $respuesta['mensaje'] = "Código encontrado";
+    $respuesta['productos'] = "";
+    $respuesta['vendedores'] = "";
+
+    if(empty($aux_vendedor )){
+        $vendedorcond = " true ";
+    }else{
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
+    }
+    //dd($vendedorcond);
+    if(empty($request->fechad) or empty($request->fechah)){
+        $aux_condFecha = " true";
+    }else{
+        if($request->idcons == "2"){
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d'); //." 00:00:00";
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d'); //." 23:59:59";
+            $aux_condFecha = "despachoord.fechafactura>='$fechad' and despachoord.fechafactura<='$fechah'";
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+            $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
+        }
+    }
+
+    if(empty($request->categoriaprod_id)){
+        $aux_condcategoriaprod_id = " true";
+    }else{
+        $aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+    }
+    if(empty($request->giro_id)){
+        $aux_condgiro_id = " true";
+    }else{
+        $aux_condgiro_id = "cliente.giro_id='$request->giro_id'";
+    }
+
+    if(empty($aux_areaproduccion )){
+        $aux_condareaproduccion_id = " true ";
+    }else{
+        $aux_condareaproduccion_id = " categoriaprod.areaproduccion_id in ($aux_areaproduccion) ";
+    }
+
+    switch ($request->statusact_id) {
+        case 1:
+            $aux_condstatusact_id = "notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))";
+            break;
+        case 2:
+            $aux_condstatusact_id = "notaventa.id in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))";
+            break;
+        case 3:
+            $aux_condstatusact_id = " true";
+            break;
+    }
+
+    $sql = "SELECT despachoord.tipoentrega_id,tipoentrega.nombre,tipoentrega.icono,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM despachoorddet INNER JOIN notaventadetalle 
+    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    INNER JOIN despachoord
+    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at)
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at)
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    inner join tipoentrega
+    on despachoord.tipoentrega_id=tipoentrega.id
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condstatusact_id
+    and $aux_condareaproduccion_id
+    and areaproduccion.stapromkg=1
+    and isnull(notaventa.anulada)
+    and isnull(despachoorddet.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    GROUP BY despachoord.tipoentrega_id
+    ORDER BY despachoord.tipoentrega_id;";
+    //dd($sql);
+    $datas = DB::select($sql);
+    $respuesta['kilosxtipoentrega'] = $datas;
+    //dd($respuesta['kilosxtipoentrega']);
+
+    return $respuesta;
+}
+

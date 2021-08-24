@@ -47,8 +47,9 @@ class ReportPendienteXProdController extends Controller
         $fechaAct = date("d/m/Y");
         $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-
-        return view('reportpendientexprod.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos','selecmultprod'));
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('reportpendientexprod.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos','selecmultprod','tablashtml'));
     
     }
 
@@ -387,7 +388,14 @@ function consulta($request,$aux_sql,$orden){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -449,12 +457,25 @@ function consulta($request,$aux_sql,$orden){
         }
         
     }
-
+/*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
+*/
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true ";
+    }else{
+        if(is_array($request->comuna_id)){
+            $aux_comuna = implode ( ',' , $request->comuna_id);
+        }else{
+            $aux_comuna = $request->comuna_id;
+        }
+        $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
+    }
+
+
 /*
     if(empty($request->plazoentrega)){
         $aux_condplazoentrega = " true";

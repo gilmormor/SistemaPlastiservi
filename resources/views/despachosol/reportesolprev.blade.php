@@ -97,6 +97,9 @@
 					@endforeach
 					@foreach($notaventaDetalles as $notaventaDetalle)
 						<?php
+						if($aux_sumtotalkilos<=0){
+							$aux_sumtotalkilos = 1;
+						}
 							$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
 							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
 							//SUMA TOTAL DE SOLICITADO
@@ -156,7 +159,7 @@
 							<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($aux_totalkgItem, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->preciounit, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($subtotalItem, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($subtotalItem, 0, ",", ".")}}</td>
 						</tr>
 						<?php
 							}
@@ -177,15 +180,15 @@
 		<table id="factura_detalle">
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>NETO</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($totalSubtotalItem, 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($totalSubtotalItem, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$notaventa->piva}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * $notaventa->piva/100), 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * $notaventa->piva/100), 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
 				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * (1 + ($notaventa->piva/100))), 2, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * (1 + ($notaventa->piva/100))), 0, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>

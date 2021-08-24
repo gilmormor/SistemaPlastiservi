@@ -32,7 +32,6 @@ class ReportNVPendientesController extends Controller
 
         
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
 
         $giros = Giro::orderBy('id')->get();
@@ -241,7 +240,14 @@ function consultasoldesp($request){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -303,13 +309,23 @@ function consultasoldesp($request){
         }
         
     }
-
+/*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
-
+*/
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true ";
+    }else{
+        if(is_array($request->comuna_id)){
+            $aux_comuna = implode ( ',' , $request->comuna_id);
+        }else{
+            $aux_comuna = $request->comuna_id;
+        }
+        $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
+    }
     if(empty($request->id)){
         $aux_condid = " true";
     }else{

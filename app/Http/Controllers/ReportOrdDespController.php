@@ -32,19 +32,7 @@ class ReportOrdDespController extends Controller
 
         
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
-        /*
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
@@ -54,7 +42,9 @@ class ReportOrdDespController extends Controller
                     'fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y"),
                     ];
-        return view('reportorddesp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaServ'));
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('reportorddesp.index', compact('clientes','giros','areaproduccions','tipoentregas','comunas','fechaServ','tablashtml'));
 
     }
 
@@ -71,7 +61,7 @@ class ReportOrdDespController extends Controller
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>OD</th>
                     <th>Fecha</th>
                     <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
                     <th>Razón Social</th>
@@ -102,8 +92,8 @@ class ReportOrdDespController extends Controller
                     $fechaaprob = date('d-m-Y h:i:s A', strtotime($data->aprguiadespfh));
                     $aprguiadesp = "<i class='glyphicon glyphicon-floppy-save text-primary tooltipsC' title='Fecha: $fechaaprob'></i>";
                     $imprOrdDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD($data->id,1)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>
-                        </a>";
+                                $data->id
+                                    </a>";
                 }
                 $listadosoldesp = "";
                 /*
@@ -118,8 +108,9 @@ class ReportOrdDespController extends Controller
                 /*$despachoord = DespachoOrd::findOrFail($data->id)
                                 ->whereNull();*/
                 $respuesta['tabla'] .= "
-                <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                    <td id='id$i' name='id$i'>$data->id
+                <tr id='fila$i' name='fila$i' class='tooltipsC'>
+                    <td id='id$i' name='id$i'>
+                        $data->id
                     </td>
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
@@ -129,13 +120,13 @@ class ReportOrdDespController extends Controller
                     </td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->despachosol_id,1)'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>$data->despachosol_id
+                            </i>$data->despachosol_id
                         </a>
                     </td>
                     <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>$data->notaventa_id
+                            $data->notaventa_id
                         </a>
                     </td>
                     <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
@@ -251,7 +242,14 @@ function consultaorddesp($request){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -313,12 +311,24 @@ function consultaorddesp($request){
         }
         
     }
-
+/*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
     }
+*/
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true ";
+    }else{
+        if(is_array($request->comuna_id)){
+            $aux_comuna = implode ( ',' , $request->comuna_id);
+        }else{
+            $aux_comuna = $request->comuna_id;
+        }
+        $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
+    }
+
 
     if(empty($request->id)){
         $aux_condid = " true";

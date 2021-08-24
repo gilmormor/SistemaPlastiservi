@@ -41,7 +41,7 @@ $(document).ready(function () {
     validarFechaDesdeHasta('ini','fechad','fechah');
     validarFechaDesdeHasta('fin','fechah','fechad');
 */
-    configurarTabla('.tablas');
+    //configurarTabla('.tablas');
 
     $("#areaproduccion_id").val('1'); 
     $('.date-picker').datepicker({
@@ -189,6 +189,7 @@ function consultar(data){
         type: 'POST',
         data: data,
         success: function (datos) {
+            //console.log(datos['tabla']);
             if(datos['tabla'].length>0){
                 aux_titulo = $("#consulta_id option:selected").html();
                 $("#titulo_grafico").html('Indicadores ' +aux_titulo+ ' por Vendedor');

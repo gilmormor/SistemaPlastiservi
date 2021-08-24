@@ -3,6 +3,10 @@
 Notas de Venta
 @endsection
 
+<?php 
+    $selecmultprod = 1;
+?>
+
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/despachosol/listarnotaventa.js")}}" type="text/javascript"></script>
@@ -14,7 +18,7 @@ Notas de Venta
         @include('includes.mensaje')
         <div class="box box-primary collapsed-box">
             <div class="box-header with-border">
-                <h3 class="box-title">Pendientes Nota de Venta</h3>
+                <h3 class="box-title">Pendientes Solicitud Despacho</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>
@@ -28,7 +32,7 @@ Notas de Venta
                 <div class="row">
                     <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
-                        <div class="col-xs-12 col-md-10 col-sm-12">
+                        <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
@@ -66,16 +70,9 @@ Notas de Venta
                                         <label>Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
-                                            <option value="">Todos</option>
-                                            @foreach($vendedores1 as $vendedor)
-                                                <option
-                                                    value="{{$vendedor->id}}"
-                                                    >
-                                                    {{$vendedor->nombre}} {{$vendedor->apellido}}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <?php
+                                            echo $tablashtml['vendedores'];
+                                        ?>
                                     </div>
                                 </div>
                             </div>
@@ -172,16 +169,9 @@ Notas de Venta
                                         <label>Comuna:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="comuna_id" id="comuna_id" class="selectpicker form-control comuna_id" data-live-search="true">
-                                            <option value="">Todos</option>
-                                            @foreach($comunas as $comuna)
-                                                <option
-                                                    value="{{$comuna->id}}"
-                                                    >
-                                                    {{$comuna->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <?php
+                                            echo $tablashtml['comunas'];
+                                        ?>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Plazo de entrega">
@@ -193,15 +183,27 @@ Notas de Venta
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-xs-12 col-md-2 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-12">
-                                    <div class="col-xs-12 col-md-8 col-sm-8 text-center">
-                                        <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="producto_idPxP" class="control-label">Producto</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <div class="input-group">
+                                            <input type="text" name="producto_idPxP" id="producto_idPxP" class="form-control" tipoval="numericootro"/>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" id="btnbuscarproducto" name="btnbuscarproducto">Buscar</button>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+    
+
+                        </div>
+
+                        <div class="col-xs-12 col-md-3 col-sm-12 text-center">
+                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
                         </div>
                     </form>
                 </div>
@@ -227,13 +229,22 @@ Notas de Venta
                             <div class="tab-pane active" id="tab_1">
                                 <div class="table-responsive" id="tablaconsulta">
                                 </div>
+                                <div class="col-lg-12 text-center">
+                                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(1)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                                </div>
                             </div>
                             <div class="tab-pane" id="tab_2">
                                 <div class="table-responsive" id="tablaconsulta2">
                                 </div>
+                                <div class="col-lg-12 text-center">
+                                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(2)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                                </div>
                             </div>
                             <div class="tab-pane" id="tab_3">
                                 <div class="table-responsive" id="tablaconsulta3">
+                                </div>
+                                <div class="col-lg-12 text-center">
+                                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(3)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
                                 </div>
                             </div>
                         </div>
@@ -256,4 +267,5 @@ Notas de Venta
 @include('generales.buscarcliente')
 @include('generales.modalpdf')
 @include('generales.verpdf')
+@include('generales.buscarproducto')
 @endsection

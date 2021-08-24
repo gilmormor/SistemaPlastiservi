@@ -123,6 +123,7 @@ function datos(){
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
         plazoentrega      : $("#plazoentrega").val(),
+        producto_id       : $("#producto_idPxP").val(),
         filtro            : 0,
         _token            : $('input[name=_token]').val()
     };
@@ -245,3 +246,85 @@ function visto(id,visto){
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
 }
+
+$("#btnpdf21").click(function()
+{
+    aux_titulo = 'Nota de Venta Pendientes';
+    data = datos();
+    cadena = "?fechad="+data.fechad+
+            "&fechah="+data.fechah +
+            "&rut=" + data.rut +
+            "&vendedor_id=" + data.vendedor_id +
+            "&oc_id=" + data.oc_id +
+            "&giro_id=" + data.giro_id + 
+            "&areaproduccion_id=" + data.areaproduccion_id +
+            "&tipoentrega_id=" + data.tipoentrega_id +
+            "&notaventa_id=" + data.notaventa_id +
+            "&aprobstatus=" + data.aprobstatus +
+            "&comuna_id=" + data.comuna_id +
+            "&plazoentrega=" + data.plazoentrega +
+            "&filtro=" + data.filtro +
+            "&aux_titulo=" + aux_titulo;
+    $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/'+cadena);
+    $("#myModalpdf").modal('show');
+});
+
+function btnpdf(numrep){
+    data = datos();
+    cadena = "?fechad="+data.fechad+
+            "&fechah="+data.fechah +
+            "&rut=" + data.rut +
+            "&vendedor_id=" + data.vendedor_id +
+            "&oc_id=" + data.oc_id +
+            "&giro_id=" + data.giro_id + 
+            "&areaproduccion_id=" + data.areaproduccion_id +
+            "&tipoentrega_id=" + data.tipoentrega_id +
+            "&notaventa_id=" + data.notaventa_id +
+            "&aprobstatus=" + data.aprobstatus +
+            "&comuna_id=" + data.comuna_id +
+            "&plazoentrega=" + data.plazoentrega +
+            "&producto_id=" + data.producto_id +
+            "&filtro=" + data.filtro +
+            "&numrep=" + numrep;
+    if(numrep==1){
+        aux_titulo = 'Nota de Venta Pendientes';
+        cadena = cadena +
+            "&aux_titulo=" + aux_titulo +
+            "&aux_sql=1" + 
+            "&aux_orden=1";
+    }
+    if(numrep==2){
+        aux_titulo = 'Pendiente por Cliente y comuna';
+        cadena = cadena +
+            "&aux_titulo=" + aux_titulo +
+            "&aux_sql=1" + 
+            "&aux_orden=2";
+    }
+    if(numrep==3){
+        aux_titulo = 'Pendiente por Producto';
+        cadena = cadena +
+            "&aux_titulo=" + aux_titulo +
+            "&aux_sql=2" + 
+            "&aux_orden=1";
+    }
+    $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/'+cadena);
+    $("#myModalpdf").modal('show');
+}
+
+$("#btnbuscarproducto").click(function(event){
+    //$(this).val("");
+    $(".input-sm").val('');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+    $("#myModalBuscarProd").modal('show');
+});

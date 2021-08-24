@@ -20,6 +20,7 @@ $(document).ready(function () {
         {data: 'aprobstatus',className:"ocultar"},
         {data: 'aprobobs',className:"ocultar"},
         {data: 'contador',className:"ocultar"},
+        {data: 'fechahora_aaaammdd',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
             "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV' title='Enviar a Nota de venta'>"+
@@ -43,6 +44,7 @@ $(document).ready(function () {
                 "<i class='fa fa-fw fa-file-pdf-o'></i>"+
             "</a>";
         $('td', row).eq(3).html(aux_text);
+        $('td', row).eq(1).attr('data-order',data.fechahora_aaaammdd);
 
         if ( data.contador * 1 > 0 ) {
             //console.log(row);

@@ -411,6 +411,9 @@ Route::get('indicadores/comercialPdfkg', 'IndicadoresController@comercialPdfkg')
 Route::get('indicadores/gestionPdfkg', 'IndicadoresController@gestionPdfkg')->name('indicadores_gestionPdfkg');
 Route::get('indicadores/exportPdfdn', 'IndicadoresController@exportPdfdn')->name('indicadores_exportPdfdn');
 Route::post('indicadores/imagengrafico', 'IndicadoresController@imagengrafico')->name('indicadores_imagengrafico');
+Route::get('indicadores/repkilosxtipoentrega', 'IndicadoresController@repkilosxtipoentrega')->name('indicadores_repkilosxtipoentrega');
+Route::post('indicadores/reportekilostipoentrega', 'IndicadoresController@reportekilostipoentrega')->name('indicadores_reportekilostipoentrega');
+Route::get('indicadores/reportekilostipoentregapdf', 'IndicadoresController@reportekilostipoentregapdf')->name('indicadores_reportekilostipoentregapdf');
 
 
 /*RUTAS APROBAR NotaVenta*/
@@ -526,6 +529,7 @@ Route::post('despachosol/cerrarsoldesp', 'DespachoSolController@cerrarsoldesp')-
 Route::get('despachosol/{id}/{stareport}/vistaprevODPdf', 'DespachoSolController@vistaprevODPdf')->name('vistaprevODPdf_despachosol');
 Route::get('despachosol/reporteindex', 'DespachoSolController@reporteindex')->name('reporteindex_despachosol');
 Route::get('despachosol/pdfpendientesoldesp', 'DespachoSolController@pdfpendientesoldesp')->name('despachosol_pdfpendientesoldesp');
+Route::get('despachosol/pdfnotaventapendiente', 'DespachoSolController@pdfnotaventapendiente')->name('despachosol_pdfnotaventapendiente');
 
 /*RUTAS REPORTE SOLICITUD DESPACHO*/
 Route::get('reportsoldesp', 'ReportSolDespController@index')->name('reportsoldesp');
@@ -656,3 +660,31 @@ Route::put('categoriagrupovalmes/{id}', 'CategoriaGrupoValMesController@actualiz
 Route::delete('categoriagrupovalmes/{id}', 'CategoriaGrupoValMesController@eliminar')->name('eliminar_categoriagrupovalmes');
 Route::post('categoriagrupovalmesfilcat', 'CategoriaGrupoValMesController@categoriagrupovalmesfilcat')->name('categoriagrupovalmesfilcat');
 Route::post('categoriagrupovalmesfilgrupos', 'CategoriaGrupoValMesController@categoriagrupovalmesfilgrupos')->name('categoriagrupovalmesfilgrupos');
+
+
+Route::get('reportprodpendsoldesp', 'ReportProdPendSolDespController@index')->name('reportprodpendsoldesp');
+Route::post('reportprodpendsoldesp/reporte', 'ReportProdPendSolDespController@reporte')->name('reportprodpendsoldesp_reporte');
+Route::get('reportprodpendsoldesp/exportpdf', 'ReportProdPendSolDespController@exportPdf')->name('reportprodpendsoldesp_exportpdf');
+
+
+/*RUTAS GUIA DESPACHO INTERNA*/
+Route::get('guiadespint', 'GuiaDespIntController@index')->name('guiadespint');
+Route::get('guiadespintpage', 'GuiaDespIntController@guiadespintpage')->name('guiadespintpage');
+Route::get('guiadespint/crear', 'GuiaDespIntController@crear')->name('crear_guiadespint');
+Route::post('guiadespint', 'GuiaDespIntController@guardar')->name('guardar_guiadespint');
+Route::get('guiadespint/{id}/editar', 'GuiaDespIntController@editar')->name('editar_guiadespint');
+Route::put('guiadespint/{id}', 'GuiaDespIntController@actualizar')->name('actualizar_guiadespint');
+Route::delete('guiadespint/{id}', 'GuiaDespIntController@eliminar')->name('eliminar_guiadespint');
+Route::get('guiadespint/{id}/{stareport}/exportPdf', 'GuiaDespIntController@exportPdf')->name('exportPdf_guiadespint');
+
+
+/*RUTAS Clientes Internos*/
+Route::get('clienteinterno', 'ClienteInternoController@index')->name('clienteinterno');
+Route::get('clienteinternopage', 'ClienteInternoController@clienteinternopage')->name('clienteinternopage');
+Route::get('clienteinterno/crear', 'ClienteInternoController@crear')->name('crear_clienteinterno');
+Route::post('clienteinterno', 'ClienteInternoController@guardar')->name('guardar_clienteinterno');
+Route::get('clienteinterno/{id}/editar', 'ClienteInternoController@editar')->name('editar_clienteinterno');
+Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('actualizar_clienteinterno');
+Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
+Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');
+

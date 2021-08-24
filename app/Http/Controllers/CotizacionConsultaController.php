@@ -27,17 +27,15 @@ class CotizacionConsultaController extends Controller
         can('consulta-cotizacion');
         $user = Usuario::findOrFail(auth()->id());
 
-        $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $vendedores1 = $arrayvend['vendedores'];
-
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
 
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $fechaServ = ['fechaAct' => date("d/m/Y"),
                     'fecha1erDiaMes' => date("01/m/Y")
                     ];
-        return view('cotizacionconsulta.index', compact('datas','clientes','vendedores','vendedores1','fechaServ'));
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+
+        return view('cotizacionconsulta.index', compact('datas','clientes','fechaServ','tablashtml'));
     }
 
     /**
@@ -54,7 +52,7 @@ class CotizacionConsultaController extends Controller
         //$aux_fechad=DateTime::createFromFormat('d/m/Y', $request->fechad)->format('Y-m-d');
         //$aux_fechah=DateTime::createFromFormat('d/m/Y', $request->fechah)->format('Y-m-d');
         if($request->ajax()){
-            $datas = consulta($request->fechad,$request->fechah,$request->rut,$request->vendedor_id);
+            $datas = consulta($request);
             /*
             if(empty($request->fechad) or empty($request->fechah)){
                 $aux_condFecha = " true";
@@ -294,8 +292,8 @@ class CotizacionConsultaController extends Controller
     }
 }
 
-function consulta($fdesde,$fhasta,$rut,$vendedor_id1){
-    if(empty($vendedor_id1)){
+function consulta($request){
+    if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
@@ -314,21 +312,28 @@ function consulta($fdesde,$fhasta,$rut,$vendedor_id1){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "cotizacion.vendedor_id='$vendedor_id1'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " cotizacion.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "cotizacion.vendedor_id='$vendedor_id1'";
     }
-    if(empty($fdesde) or empty($fhasta)){
+    if(empty($request->fdesde) or empty($request->fhasta)){
         $aux_condFecha = " true";
     }else{
-        $fecha = date_create_from_format('d/m/Y', $fdesde);
+        $fecha = date_create_from_format('d/m/Y', $request->fdesde);
         $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
-        $fecha = date_create_from_format('d/m/Y', $fhasta);
+        $fecha = date_create_from_format('d/m/Y', $request->fhasta);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "cotizacion.fechahora>='$fechad' and cotizacion.fechahora<='$fechah'";
     }
-    if(empty($rut)){
+    if(empty($request->rut)){
         $aux_condrut = " true ";
     }else{
-        $aux_condrut = "cliente.rut='$rut'";
+        $aux_condrut = "cliente.rut='$request->rut'";
     }
 
     $sql = "SELECT cotizacion.*,if(isnull(cliente.razonsocial),clientetemp.rut,cliente.rut) as rut,

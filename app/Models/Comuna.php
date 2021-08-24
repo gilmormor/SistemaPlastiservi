@@ -45,8 +45,7 @@ class Comuna extends Model
     public static function selectcomunas(){
         $comunas = Comuna::orderBy('id')->get();
         $respuesta = "
-        <select name='comuna_id' id='comuna_id' class='selectpicker form-control comuna_id' data-live-search='true'>
-            <option value=''>Todos</option>";
+        <select name='comuna_id' id='comuna_id' multiple class='selectpicker form-control comuna_id' data-live-search='true' multiple data-actions-box='true'>";
             foreach($comunas as $comuna){
                 $respuesta .= "
                     <option value='$comuna->id'>$comuna->nombre</option>";

@@ -78,6 +78,10 @@ Pendiente x Producto
                                     <label>Vendedor:</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <?php
+                                        echo $tablashtml['vendedores'];
+                                    ?>
+<!--
                                     <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
                                         <option value="">Todos</option>
                                         @foreach($vendedores1 as $vendedor)
@@ -88,6 +92,7 @@ Pendiente x Producto
                                             </option>
                                         @endforeach
                                     </select>
+-->
                                 </div>
                             </div>
                         </div>
@@ -184,19 +189,12 @@ Pendiente x Producto
                                     <label>Comuna:</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
-                                    <select name="comuna_id" id="comuna_id" class="selectpicker form-control comuna_id" data-live-search="true">
-                                        <option value="">Todos</option>
-                                        @foreach($comunas as $comuna)
-                                            <option
-                                                value="{{$comuna->id}}"
-                                                >
-                                                {{$comuna->nombre}}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <?php
+                                        echo $tablashtml['comunas'];
+                                    ?>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Producto">
+                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                     <label for="producto_idPxP" class="control-label">Producto</label>
                                 </div>

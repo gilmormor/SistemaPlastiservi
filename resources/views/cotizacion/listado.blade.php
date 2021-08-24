@@ -45,28 +45,29 @@
 					<span class="h3">Cliente</span>
 					<table class="datos_cliente">
 						@if (empty($cotizacion->clientetemp_id))
-							<tr class="headt">
+							<!--<tr class="headt">-->
+							<tr>
 								<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 )}}</p></td>
 								<td><label>Teléfono:</label> <p>{{$cotizacion->cliente->telefono}}</p></td>
 							</tr>
-							<tr class="headt">
+							<tr>
 								<td><label>Nombre:</label> <p>{{$cotizacion->cliente->razonsocial}}</p></td>
 								<td><label>Dirección:</label> <p>{{$cotizacion->cliente->direccion}}</p></td>
 							</tr>
-							<tr class="headt">
+							<tr>
 								<td><label>Contacto:</label> <p>{{$cotizacion->cliente->contactonombre}}</p></td>
 								<td><label>Comuna:</label> <p>{{$cotizacion->cliente->comuna->nombre}}</p></td>
 							</tr>
 						@else
-							<tr class="headt">
+							<tr>
 								<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $cotizacion->clientetemp->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->clientetemp->rut, strlen($cotizacion->clientetemp->rut) -1 , 1 )}}</p></td>
 								<td><label>Teléfono:</label> <p>{{$cotizacion->clientetemp->telefono}}</p></td>
 							</tr>
-							<tr class="headt">
+							<tr>
 								<td><label>Nombre:</label> <p>{{$cotizacion->clientetemp->razonsocial}}</p></td>
 								<td><label>Dirección:</label> <p>{{$cotizacion->clientetemp->direccion}}</p></td>
 							</tr>
-							<tr class="headt">
+							<tr>
 								<td><label>Contacto:</label> <p>{{$cotizacion->clientetemp->contactonombre}}</p></td>
 								<td><label>Comuna:</label> <p>{{$cotizacion->clientetemp->comuna->nombre}}</p></td>
 							</tr>
@@ -79,28 +80,30 @@
 		</tr>
 	</table>
 
-	<div class="round">
-	<table id="factura_detalle">
+	<div class="round" style="padding-bottom: 0px;">
+		<table id="factura_detalle">
 			<thead>
 				<tr>
+					<th width="30px">Cod</th>
 					<th width="50px">Cant.</th>
-					<th class="textcenter">Unidad</th>
-					<th class="textleft">Descripción</th>
-					<th class="textleft">Clase</th>
-					<th class="textright">Diametro</th>
+					<th class="textcenter" width="50px">Unidad</th>
+					<th class="textleft" width="190px">Descripción</th>
+					<th class="textleft" width="60px">Clase</th>
+					<th class="textcenter" width="35px">Diamet</th>
 					<th class="textright">Largo</th>
-					<th class="textright" width="150px">Precio Neto</th>
-					<th class="textright" width="150px">Total Neto</th>
+					<th class="textright" width="70px">Precio Neto</th>
+					<th class="textright" width="90px">Total Neto</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
 				@foreach($cotizacionDetalles as $CotizacionDetalle)
 					<tr class="headt" style="height:150%;">
+						<td class="textcenter">{{$CotizacionDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($CotizacionDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$CotizacionDetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->nombre}}</td>
 						<td class="textleft">{{$CotizacionDetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textright">
+						<td class="textcenter">
 							{{$CotizacionDetalle->producto->diametro}}
 						</td>
 						<td class="textright">{{$CotizacionDetalle->producto->long}} mts</td>
@@ -109,43 +112,44 @@
 					</tr>
 				@endforeach
 			</tbody>
-	</table>
+		</table>
 	</div>
 
-	<div class="round">
+	<div class="round" style="padding-bottom: 0px;padding-top: 8px;">
 		<table id="factura_detalle">
-			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>NETO</strong></span></td>
+			<tr>
+				<td colspan="8" class="textright" width="85%"><span><strong>NETO</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->neto, 0, ",", ".")}}</strong></span></td>
 			</tr>
-			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$cotizacion->piva}}%</strong></span></td>
+			<tr>
+				<td colspan="8" class="textright" width="85%"><span><strong>IVA {{$cotizacion->piva}}%</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->iva, 0, ",", ".")}}</strong></span></td>
 			</tr>
-			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
+			<tr>
+				<td colspan="8" class="textright" width="85%"><span><strong>TOTAL</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->total, 0, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>
 	<br>
-	<div class="round1">
+	<div class="round1" style="padding-bottom: 0px;">
 		<span class="h3">Información</span>
 		<table>
-			<tr class="headt">
-				<td colspan="7" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
+			<!--<tr class="headt">-->
+			<tr>
+				<td colspan="8" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($cotizacion->plazoentrega))}}</span></td>
 			</tr>
-			<tr class="headt">
-				<td colspan="7" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
+			<tr>
+				<td colspan="8" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$cotizacion->lugarentrega}}</span></td>
 			</tr>
-			<tr class="headt">
-				<td colspan="7" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
+			<tr>
+				<td colspan="8" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$cotizacion->plazopago->descripcion}}</span></td>
 			</tr>
-			<tr class="headt">
-				<td colspan="7" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
+			<tr>
+				<td colspan="8" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$cotizacion->tipoentrega->nombre}}</span></td>
 			</tr>
 		</table>

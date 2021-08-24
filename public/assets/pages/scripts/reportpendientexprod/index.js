@@ -35,12 +35,12 @@ function configurarTabla(aux_tabla){
         'ordering'    : true,
         'info'        : true,
         'autoWidth'   : false,
-        "order"       : [[ 0, "desc" ]],
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
     });    
 }
+
 function configurarTabla2(aux_tabla){
     $(aux_tabla).DataTable({
         'paging'      : true, 
@@ -55,7 +55,12 @@ function configurarTabla2(aux_tabla){
         }
     });    
 }
-
+/* exportar a excel, pdf etc
+'dom'         : 'Bfrtip',
+'buttons'     : [
+    'copy', 'csv', 'excel', 'pdf', 'print'
+],
+*/
 
 function ajaxRequest(data,url,funcion) {
 	$.ajax({
@@ -130,7 +135,6 @@ function consultar(data){
                 */
                 $("#tablaconsulta3").html(datos['tabla3']);
                 
-                //configurarTabla('.tablascons');
                 configurarTabla2('.tablascons2');
             }
         }

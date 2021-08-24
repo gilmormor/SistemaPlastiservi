@@ -64,7 +64,6 @@ class ReportOrdDespCerradaController extends Controller
 		$respuesta['exito'] = false;
 		$respuesta['mensaje'] = "Código no Existe";
 		$respuesta['tabla'] = "";
-
         if($request->ajax()){
             $datas = consulta($request);
             $aux_colvistoth = "";
@@ -76,17 +75,15 @@ class ReportOrdDespCerradaController extends Controller
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
-					<th>ID</th>
-					<th>Fecha</th>
+                    <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                    <th>Fecha</th>
 					<th>RUT</th>
                     <th>Razón Social</th>
+                    <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th style='text-align:right' class='tooltipsC' title='Total kg'>Total Kg</th>
                     <th style='text-align:right' class='tooltipsC' title='Total Pesos'>Total $</th>
                     <th style='text-align:right' class='tooltipsC' title='Precio Promedio x Kg'>Prom</th>
-                    <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                    <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
-                    $aux_colvistoth
 				</tr>
 			</thead>
             <tbody>";
@@ -169,7 +166,10 @@ class ReportOrdDespCerradaController extends Controller
                 }
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
-                    <td id='id$i' name='id$i'>$data->id
+                    <td id='id$i' name='id$i'>
+                        <a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfNV($data->id,1)' title='Nota de Venta'>
+                            $data->id
+                        </a>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='$aux_obsdespacho' data-toggle='tooltip'>
                             <i class='fa fa-fw $aux_icodespacho'></i>                                    
                         </a>
@@ -177,23 +177,15 @@ class ReportOrdDespCerradaController extends Controller
                     <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
-                    <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</a></td>
-                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
-                    <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
-                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                     <td>
-                        <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1']) . "' class='btn-accion-tabla tooltipsC' title='Nota de Venta' target='_blank'>-->
-                        <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,1)' title='Nota de venta' data-toggle='tooltip'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>                                    
-                        </a>
-                    </td>
-                    <td>
-                        <!--<a href='" . route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2']) . "' class='btn-accion-tabla tooltipsC' title='Precio x Kg' target='_blank'>-->
                         <a class='btn-accion-tabla btn-sm' onclick='genpdfNV($data->id,2)' title='Nota de venta' data-toggle='tooltip'>
                             <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                         </a>
                     </td>
-                    $aux_colvistotd
+                    <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</a></td>
+                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
+                    <td id='totalps$i' name='totalps$i' style='text-align:right'>".number_format($data->subtotal, 2, ",", ".") ."</td>
+                    <td id='prompvc$i' name='prompvc$i' style='text-align:right'>".number_format($aux_prom, 2, ",", ".") ."</td>
                 </tr>";
 
                 if(empty($data->anulada)){
@@ -217,16 +209,13 @@ class ReportOrdDespCerradaController extends Controller
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='5' style='text-align:left'>TOTAL</th>
+                    <th colspan='6' style='text-align:left'>TOTAL</th>
                     <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalps, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>
-                    <th style='text-align:right'></th>
                 </tr>
             </tfoot>
-
             </table>";
-
             return $respuesta;
         }
     }
@@ -320,7 +309,14 @@ function consulta($request){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -363,31 +359,69 @@ function consulta($request){
         $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
     }
 
-    if(empty($request->aprobstatus)){
-        $aux_aprobstatus = " true";
-    }else{
-        switch ($request->aprobstatus) {
-            case 1:
-                $aux_aprobstatus = "notaventa.aprobstatus='0'";
-                break;
-            case 2:
-                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
-                break;    
-            case 3:
-                $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
-                break;
-            case 4:
-                $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
-                break;
-            case 5:
-                $aux_aprobstatus = "notaventa.findespacho IS NULL";
-                break;
-            case 6:
-                $aux_aprobstatus = "notaventa.findespacho IS NOT NULL";
-                break;
+    $aux_aprobstatus = "";
+    //dd($request->aprobstatus);
+    if(is_array($request->aprobstatus)){
+        if(!empty($request->aprobstatus)){
+            if(in_array('1',$request->aprobstatus)){
+                $aux_aprobstatus = " notaventa.aprobstatus='0'";
+            }
+            if(in_array('2',$request->aprobstatus)){
+                
+                $aux_aprobstatus = " notaventa.aprobstatus='2'";
+            }
+            if(in_array('3',$request->aprobstatus)){
+                $aux_aprobstatus = " (notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
+            }
+            if(in_array('4',$request->aprobstatus)){
+                $aux_aprobstatus = " notaventa.aprobstatus='4'";
+            }
+            if(in_array('7',$request->aprobstatus)){
+                $aux_aprobstatus = " notaventa.id in (SELECT notaventa_id
+                                                        FROM notaventacerrada
+                                                        WHERE ISNULL(notaventacerrada.deleted_at))";
+            }
+            if(in_array('8',$request->aprobstatus)){
+                $aux_aprobstatus .= " !isnull(notaventa.anulada)";
+            }
         }
-        
+    }else{
+        if(empty($request->aprobstatus)){
+            $aux_aprobstatus = " true";
+        }else{
+            switch ($request->aprobstatus) {
+                case 1:
+                    $aux_aprobstatus = "notaventa.aprobstatus='0'";
+                    break;
+                case 2:
+                    $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                    break;    
+                case 3:
+                    $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
+                    break;
+                case 4:
+                    $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                    break;
+                case 5:
+                    $aux_aprobstatus = "notaventa.findespacho IS NULL";
+                    break;
+                case 6:
+                    $aux_aprobstatus = "notaventa.findespacho IS NOT NULL";
+                    break;
+            }
+        }
     }
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true ";
+    }else{
+        if(is_array($request->comuna_id)){
+            $aux_comuna = implode ( ',' , $request->comuna_id);
+        }else{
+            $aux_comuna = $request->comuna_id;
+        }
+        $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
+    }
+
 
     $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -418,6 +452,7 @@ function consulta($request){
             and $aux_condtipoentrega_id
             and $aux_condnotaventa_id
             and $aux_aprobstatus
+            and $aux_condcomuna_id
             and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,

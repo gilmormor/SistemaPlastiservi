@@ -590,10 +590,14 @@ class DespachoOrdController extends Controller
             $despachoord->aprguiadespfh = date("Y-m-d H:i:s");;
 
             if ($despachoord->save()) {
+                $aux_usuariodestino_id = NULL;
+                if($despachoord->notaventa->vendedor->persona->usuario){
+                    $aux_usuariodestino_id = $despachoord->notaventa->vendedor->persona->usuario->id;
+                }
                 Event(new Notificacion( //ENVIO ARRAY CON LOS DATOS PARA CREAR LA NOTIFICACION
                     [
                         'usuarioorigen_id' => auth()->id(),
-                        'usuariodestino_id' => $despachoord->notaventa->vendedor->persona->usuario->id,
+                        'usuariodestino_id' => $aux_usuariodestino_id,
                         'vendedor_id' => $despachoord->notaventa->vendedor_id,
                         'status' => 1,
                         'nombretabla' => 'despachoord',

@@ -32,13 +32,9 @@ class ReportOrdDespGuiaFactController extends Controller
         can('reporte-orden-despacho,-guia,-factura,-cerrada');
         $respuesta = cargadatos();
         $clientes = $respuesta['clientes'];
-        $vendedores = $respuesta['vendedores'];
-        $vendedores1 = $respuesta['vendedores1'];
         $giros = $respuesta['giros'];
         $areaproduccions = $respuesta['areaproduccions'];
         $tipoentregas = $respuesta['tipoentregas'];
-        $comunas = $respuesta['comunas'];
-        //$fechaAct = $respuesta['fechaAct'];
         $fechaServ = [
                     'fecha1erDiaMes' => $respuesta['fecha1erDiaMes'],
                     'fechaAct' => $respuesta['fechaAct']
@@ -47,8 +43,9 @@ class ReportOrdDespGuiaFactController extends Controller
         $aux_verestado='1'; //Mostrar todas los opciopnes de estado de OD
 
         $titulo = "Consultar Orden Despacho, Guia, Factura, cerrada";
-
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaServ','aux_verestado','titulo'));
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('reportorddespguiafact.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaServ','aux_verestado','titulo','tablashtml'));
 
     }
 
@@ -67,8 +64,10 @@ class ReportOrdDespGuiaFactController extends Controller
 
         $aux_verestado='2'; //Mostrar solo opcion orddesp cerradas
         $titulo = "Consultar Orden Despacho Cerradas";
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
 
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado','titulo'));
+        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado','titulo','tablashtml'));
 
     }
 
@@ -87,8 +86,10 @@ class ReportOrdDespGuiaFactController extends Controller
 
         $aux_verestado='3'; //3 muestra boton de editar Num Guia y Num Fact 
         $titulo = "Editar Número Guia o Factura";
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
 
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado','titulo'));
+        return view('reportorddespguiafact.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','aux_verestado','titulo','tablashtml'));
 
     }
 
@@ -118,11 +119,10 @@ class ReportOrdDespGuiaFactController extends Controller
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th class='tooltipsC' title='Orden de Despacho'>OD</th>
                     <th>Fecha</th>
                     <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
                     <th>Razón Social</th>
-                    <th class='tooltipsC' title='Orden de Despacho'>OD</th>
                     <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                     <th class='tooltipsC' title='Orden de Compra'>OC</th>
                     <th class='tooltipsC' title='Nota de Venta'>NV</th>
@@ -191,11 +191,10 @@ class ReportOrdDespGuiaFactController extends Controller
 
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                    <td>$data->id</td>
+                    <td>$aux_enlaceOD</td>
                     <td data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td data-order='$data->fechaestdesp'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
                     <td>$data->razonsocial</td>
-                    <td>$aux_enlaceOD</td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->despachosol_id,1)'>
                             $data->despachosol_id
@@ -225,7 +224,7 @@ class ReportOrdDespGuiaFactController extends Controller
             </tbody>
                 <tfoot>
                     <tr>
-                        <th style='text-align:right' colspan='9'>TOTAL</th>
+                        <th style='text-align:right' colspan='8'>TOTAL</th>
                         <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
                         <th style='text-align:right'>". number_format($totalsumsubtotal, 0, ",", ".") ."</th>
                         <th colspan='4'></th>
@@ -411,7 +410,14 @@ function consultaorddesp($request){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -497,11 +503,22 @@ function consultaorddesp($request){
         }
         
     }
-
+/*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
         $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
+    }
+*/
+    if(empty($request->comuna_id)){
+        $aux_condcomuna_id = " true ";
+    }else{
+        if(is_array($request->comuna_id)){
+            $aux_comuna = implode ( ',' , $request->comuna_id);
+        }else{
+            $aux_comuna = $request->comuna_id;
+        }
+        $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
     }
 
     if(empty($request->id)){

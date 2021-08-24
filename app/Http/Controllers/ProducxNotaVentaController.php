@@ -34,18 +34,17 @@ class ProducxNotaVentaController extends Controller
 
         
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
 
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $fechaServ = [
                     'fechaAct' => date("d/m/Y"),
                     'fecha1erDiaMes' => date("01/m/Y")
                     ];
-        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','areaproduccions','fechaServ','tablashtml'));
     }
 
     
@@ -224,7 +223,14 @@ function consulta($request){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
-        $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
