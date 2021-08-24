@@ -67,7 +67,8 @@ class CotizacionController extends Controller
                     (SELECT COUNT(*) 
                     FROM cotizaciondetalle 
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
-                    cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador
+                    cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador,
+                    cotizacion.fechahora as fechahora_aaaammdd
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
@@ -565,6 +566,7 @@ class CotizacionController extends Controller
             return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         }
         */
+        return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         $pdf = PDF::loadView('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         //return $pdf->download('cotizacion.pdf');
         return $pdf->stream(str_pad($cotizacion->id, 5, "0", STR_PAD_LEFT) .' - '. $aux_razonsocial . '.pdf');

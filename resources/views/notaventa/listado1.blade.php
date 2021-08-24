@@ -41,15 +41,16 @@
 				<div>
 					<span class="h3">Cliente</span>
 					<table class="datos_cliente">
-						<tr class="headt">
+						<!--<tr class="headt">-->
+						<tr>
 							<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 )}}</p></td>
 							<td><label>Teléfono:</label> <p>{{$notaventa->cliente->telefono}}</p></td>
 						</tr>
-						<tr class="headt">
+						<tr>
 							<td><label>Nombre:</label> <p>{{$notaventa->cliente->razonsocial}}</p></td>
 							<td><label>Dirección:</label> <p>{{$notaventa->cliente->direccion}}</p></td>
 						</tr>
-						<tr class="headt">
+						<tr>
 							<td><label>Contacto:</label> <p>{{$notaventa->cliente->contactonombre}}</p></td>
 							<td><label>Comuna:</label> <p>{{$notaventa->cliente->comuna->nombre}}</p></td>
 						</tr>
@@ -154,7 +155,7 @@
 	</div>
 -->
 	<br>
-	<div class="round1">
+	<div class="round1" style="padding-bottom: 0px;">
 		<span class="h3">Información</span>
 		<table id="factura_detalle">
 			<tr>
