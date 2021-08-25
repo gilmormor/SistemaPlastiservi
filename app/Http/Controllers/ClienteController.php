@@ -633,4 +633,20 @@ class ClienteController extends Controller
         }
     }
 
+    public function sucursalesXcliente(Request $request){
+        if($request->ajax()){
+            $sucursales = Cliente::where('cliente.rut', $request->rut)
+                    ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
+                    ->join('sucursal', 'cliente_sucursal.sucursal_id', '=', 'sucursal.id')
+                    ->select([
+                            'cliente.id',
+                            'cliente.rut',
+                            'sucursal.id as sucursar_id',
+                            'sucursal.nombre'
+                            ]);
+            //dd($sucursales->get());
+            return response()->json($sucursales->get());
+        }
+    }
+
 }

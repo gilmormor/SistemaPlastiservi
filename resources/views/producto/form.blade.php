@@ -239,3 +239,24 @@
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="form-group col-xs-12 col-sm-6">
+        <label for="tipoprod" class="col-lg-3 control-label requerido" title="Tipo Producto" data-toggle='tooltip'>Tipo Producto</label>
+        <div class="col-lg-9">
+            <select name="tipoprod" id="tipoprod" class="form-control select2 tipoprod" required>
+                <option value="">Seleccione...</option>
+                <option value="0"
+                    @if ($data->tipoprod=='0')
+                        {{'selected'}}
+                    @endif
+                >Producto</option>
+                <option value="1"
+                    @if ($data->tipoprod=='1')
+                        {{'selected'}}
+                    @endif
+                >Transicional (Para Hacer Acuerdo Técnico)</option>
+            </select>
+        </div>
+    </div>
+</div>

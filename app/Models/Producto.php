@@ -28,6 +28,7 @@ class Producto extends Model
         'claseprod_id',
         'grupoprod_id',
         'color_id',
+        'tipoprod',
         'usuariodel_id'
     ];
 

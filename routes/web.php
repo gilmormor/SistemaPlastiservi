@@ -175,6 +175,7 @@ Route::post('cliente/guardarclientetemp', 'ClienteController@guardarclientetemp'
 //Ruta para actualizar el campo giro_id en la tabla clientes
 Route::get('cliente/clientegiro', 'ClienteController@clientegiro')->name('clientegiro');
 Route::post('cliente/buscarmyCli', 'ClienteController@buscarmyCli')->name('buscarmyCli');
+Route::post('cliente/sucursalesXcliente', 'ClienteController@sucursalesXcliente')->name('sucursalesXcliente');
 
 
 /*RUTAS FORMA DE PAGO*/

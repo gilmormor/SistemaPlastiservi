@@ -26,7 +26,7 @@
 				</div>-->
 			</td>
 			<td class="info_factura">
-				<div class="round" style="padding-bottom: 0px;">
+				<div class="round" style="padding-bottom: 3px;">
 					<span class="h3">Nota de Venta</span>
 					<p>Nro: <strong> {{ str_pad($notaventa->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
 					<p>Fecha: {{date('d-m-Y', strtotime($notaventa->fechahora))}}</p>
@@ -99,7 +99,7 @@
 			</tbody>
 		</table>
 	</div>
-	<div class="round" style="padding-bottom: 0px;padding-top: 8px;">
+	<div class="round" style="padding-bottom: 0px;padding-top: 8px;margin-bottom: 3px;">
 		<table id="factura_detalle">
 			<tr>
 				<td colspan="8" class="textright" width="90%"><span><strong>NETO </strong></span></td>
@@ -115,7 +115,9 @@
 			</tr>
 		</table>
 	</div>
-	<br>
+	<div class="round" style="margin-bottom: 3px;">
+		<p class="nota"><strong>Observaciones: {{$notaventa->observacion}}</strong></p>
+	</div>
 	<div class="round1" style="padding-bottom: 0px;">
 		<span class="h3">Información</span>
 		<table id="factura_detalle">
@@ -164,10 +166,6 @@
 				<td class="textleft" width="50%"><span>{{strtoupper($empresa[0]['nombre'])}}</span></td>
 			</tr>
 		</table>
-	</div>
-	<br>
-	<div class="round">
-		<p class="nota"><strong>Observaciones: {{$notaventa->observacion}}</strong></p>
 	</div>
 	<br>
 	<div>

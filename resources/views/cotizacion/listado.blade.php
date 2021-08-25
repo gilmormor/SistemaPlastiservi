@@ -26,7 +26,7 @@
 				</div>-->
 			</td>
 			<td class="info_factura">
-				<div class="round">
+				<div class="round" style="padding-bottom: 3px;">
 					<span class="h3">Cotización</span>
 					<p>No. Cotización: <strong> {{ str_pad($cotizacion->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
 					<p>Fecha: {{date('d-m-Y', strtotime($cotizacion->fechahora))}}</p>
@@ -115,7 +115,7 @@
 		</table>
 	</div>
 
-	<div class="round" style="padding-bottom: 0px;padding-top: 8px;">
+	<div class="round" style="padding-bottom: 0px;padding-top: 8px;margin-bottom: 3px;">
 		<table id="factura_detalle">
 			<tr>
 				<td colspan="8" class="textright" width="85%"><span><strong>NETO</strong></span></td>
@@ -131,7 +131,9 @@
 			</tr>
 		</table>
 	</div>
-	<br>
+	<div class="round" style="margin-bottom: 3px;">
+		<p class="nota"><strong>Observaciones: {{$cotizacion->observacion}}</strong></p>
+	</div>
 	<div class="round1" style="padding-bottom: 0px;">
 		<span class="h3">Información</span>
 		<table>
@@ -153,10 +155,6 @@
 				<td class="textleft" width="50%"><span>{{$cotizacion->tipoentrega->nombre}}</span></td>
 			</tr>
 		</table>
-	</div>
-	<br>
-	<div class="round">
-		<p class="nota"><strong>Observaciones: {{$cotizacion->observacion}}</strong></p>
 	</div>
 	<br>
 	<div>

@@ -519,6 +519,17 @@ $("#rut").blur(function(){
 							});
 						}
 						*/
+						$.ajax({
+							url: '/cliente/sucursalesXcliente',
+							type: 'POST',
+							data: data,
+							success: function (respuesta) {
+								if(respuesta.length>0){
+
+								}
+							}
+						});
+			
 						$("#razonsocial").val(respuesta[0]['razonsocial']);
 						$("#telefono").val(respuesta[0]['telefono']);
 						$("#email").val(respuesta[0]['email']);

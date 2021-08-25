@@ -98,9 +98,11 @@ p, label, span, table{
 	color: #FFF;
 	padding: 5px;
 }
+/*
 #detalle_productos tr:nth-child(even) {
     background: #ededed;
 }
+*/
 #detalle_totales span{
 	font-family: 'BrixSansBlack';
 }
@@ -122,7 +124,7 @@ p, label, span, table{
 }
 
 .headt td {
-	height: 30px;
+	height: 20px;
 }
 
 H1.SaltoDePagina
