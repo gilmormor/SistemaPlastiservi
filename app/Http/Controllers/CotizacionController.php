@@ -245,37 +245,16 @@ class CotizacionController extends Controller
         }else{
             $clienteselec = $data->cliente()->get();
         }
-        //dd($clienteselec);
-
-        //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
-        //******************* */
-        $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
-                    ->join('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
-                    ->select([
-                                'cliente.id' => 'cliente_id',
-                                'cliente.razonsocial',
-                                'cliente.telefono',
-                                'cliente.email',
-                                'cliente.direccion',
-                                'cliente.regionp_id',
-                                'cliente.provinciap_id',
-                                'cliente.comunap_id',
-                                'clientedirec.id',
-                                'clientedirec.direcciondetalle',
-                            ])->get();
-        //dd($clientedirecs);
         //VENDEDORES POR SUCURSAL
         $tablas = array();
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
         
-        $clienteDirec = $data->clientedirec()->get();
         $fecha = date("d/m/Y", strtotime($data->fechahora));
-
-        $clientesArray = Cliente::clientesxUsuario();
+        $user = Usuario::findOrFail(auth()->id());
+        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
         $clientes = $clientesArray['clientes'];
         $tablas['vendedor_id'] = $clientesArray['vendedor_id'];
-        $tablas['sucurArray'] = $clientesArray['sucurArray'];
         $productos = Producto::productosxUsuario();
 
         $tablas['formapagos'] = FormaPago::orderBy('id')->get();
@@ -285,12 +264,12 @@ class CotizacionController extends Controller
         $tablas['regiones'] = Region::orderBy('id')->get();
         $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
         $tablas['giros'] = Giro::orderBy('id')->get();
-        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
+        $tablas['sucursales'] = $clientesArray['sucursales'];
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $aux_sta=2;
 
-        return view('cotizacion.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','cotizacionDetalles','productos','fecha','aux_sta','aux_cont','tablas'));
+        return view('cotizacion.editar', compact('data','clienteselec','clientes','cotizacionDetalles','productos','fecha','aux_sta','aux_cont','tablas'));
     }
 
     /**

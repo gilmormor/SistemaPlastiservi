@@ -8,7 +8,6 @@
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
-<!--<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $tablas['sucurArray'][0] ?? '')}}">-->
 
 @if($aux_sta==1)
     <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $tablas['vendedor_id'] ?? '')}}">
@@ -176,26 +175,20 @@
 
     <div class="row">
         <div class="form-group col-xs-12 col-sm-3">
-            <label id="lblclientedirec_id" name="lblclientedirec_id" for="clientedirec_id" class="control-label requerido">Dirección adicional</label>
-            <select name="clientedirec_id" id="clientedirec_id" class="form-control select2 clientedirec_id" data-live-search='true' {{$disabledReadOnly}}>
-                <option value="">Seleccione...</option>
-                @if ($aux_sta==2)
-                    @foreach($clientedirecs as $clientedirec)
+            <label id="lblsucursal_id" name="lblsucursal_id" for="sucursal_id" class="control-label requerido">Sucursal</label>
+            <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' {{$disabledReadOnly}} required>
+                <option value=''>Seleccione...</option>
+                @if (isset($data))
+                    @foreach($tablas['sucursales'] as $sucursal)
                         <option
-                        value="{{$clientedirec->id}}"
-                        provincia_id="{{$clientedirec->provincia_id}}" 
-                        region_id="{{$clientedirec->region_id}}" 
-                        comuna_id="{{$clientedirec->comuna_id}}"
-                        formapago_id="{{$clientedirec->formapago_id}}"
-                        plazopago_id="{{$clientedirec->plazopago_id}}"
-
-                        @if ($data->clientedirec_id==$clientedirec->id))
-                            {{'selected'}}
-                        @endif
-                        >
-                        {{$clientedirec->direcciondetalle}}
+                            value="{{$sucursal->id}}"
+                            @if (isset($data) and ($data->sucursal_id==$sucursal->id))
+                                {{'selected'}}
+                            @endif
+                            >
+                            {{$sucursal->nombre}}
                         </option>
-                    @endforeach
+                    @endforeach                    
                 @endif
             </select>
         </div>
@@ -230,12 +223,6 @@
         </div>
     </div>
     <div class="row">
-        <div class="form-group col-xs-12 col-sm-3">
-            <label id="lblsucursal_id" name="lblsucursal_id" for="sucursal_id" class="control-label requerido">Sucursal</label>
-            <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' {{$disabledReadOnly}}>
-                <option value="">Seleccione...</option>
-            </select>
-        </div>
     </div>
 </div>
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">

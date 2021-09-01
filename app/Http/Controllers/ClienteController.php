@@ -511,7 +511,6 @@ class ClienteController extends Controller
             $clientedirecs = Cliente::where('cliente.rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
-                    ->join('sucursal', 'cliente_sucursal.sucursal_id', '=', 'sucursal.id')
                     ->leftjoin('clientebloqueado', function ($join) {
                         $join->on('cliente.id', '=', 'clientebloqueado.cliente_id')
                         ->whereNull('clientebloqueado.deleted_at');
@@ -534,11 +533,9 @@ class ClienteController extends Controller
                                 'cliente.comunap_id',
                                 'clientedirec.id as direc_id',
                                 'clientedirec.direcciondetalle',
-                                'clientebloqueado.descripcion',
-                                'cliente_sucursal.sucursal_id',
-                                'sucursal.nombre as sucursalnombre'
+                                'clientebloqueado.descripcion'
                             ]);
-            //dd($clientedirecs->get());
+                
             return response()->json($clientedirecs->get());
         }
     }
@@ -646,6 +643,44 @@ class ClienteController extends Controller
                             ]);
             //dd($sucursales->get());
             return response()->json($sucursales->get());
+        }
+    }
+
+    public function buscarCliRut(Request $request){
+        if($request->ajax()){
+            $respuesta = array();
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            //dd($sucurArray);
+            $sucurcadena = implode(",", $sucurArray);
+
+            $sql= "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.telefono,cliente.email,
+            cliente.direccion,cliente.vendedor_id,cliente.contactonombre,cliente.formapago_id,
+            cliente.plazopago_id,cliente.giro_id,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
+            clientebloqueado.descripcion
+            FROM cliente left JOIN clientebloqueado
+            ON cliente.id=clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
+            WHERE cliente.rut=$request->rut
+            and isnull(cliente.deleted_at)
+            and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))";
+            $cliente = DB::select($sql);
+            //dd($cliente);
+            $respuesta['cliente'] = $cliente;
+
+            $sql= "SELECT sucursal.id,sucursal.nombre
+            FROM cliente left JOIN cliente_sucursal
+            ON cliente.id=cliente_sucursal.cliente_id and cliente_sucursal.sucursal_id in ($sucurcadena) and isnull(cliente_sucursal.deleted_at)
+            INNER JOIN sucursal
+            ON cliente_sucursal.sucursal_id=sucursal.id and isnull(sucursal.deleted_at)
+            WHERE cliente.rut=$request->rut
+            and isnull(cliente.deleted_at)
+            order by cliente_sucursal.sucursal_id";
+            //dd($sql);
+
+            $sucursales = DB::select($sql);
+            $respuesta['sucursales'] = $sucursales;
+            return $respuesta;
+            //dd($respuesta);
         }
     }
 

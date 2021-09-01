@@ -101,7 +101,7 @@ class Cliente extends Model
         return $this->belongsTo(PlazoPago::class);
     }
 
-    public static function clientesxUsuario($vendedor_id = '0'){
+    public static function clientesxUsuario($vendedor_id = '0',$cliente_id = 0){
         $respuesta = array();
         $user = Usuario::findOrFail(auth()->id());
         //$vendedor_id=$user->persona->vendedor->id;
@@ -134,7 +134,21 @@ class Cliente extends Model
 
         $respuesta['vendedor_id'] = $vendedor_id;
         $respuesta['clientes'] = $clientes;
-        $respuesta['sucurArray'] = $sucurArray;
+        $respuesta['sucurArray'] = $sucurArray; //Sucursales del Usuario o vendedor
+
+        if($cliente_id != 0){ //Sucursales que coincidan entre vendedor y cliente
+            $sucurcadena = implode(",", $sucurArray);
+            $sql= "SELECT sucursal.id,sucursal.nombre
+            FROM cliente left JOIN cliente_sucursal
+            ON cliente.id=cliente_sucursal.cliente_id and cliente_sucursal.sucursal_id in ($sucurcadena) and isnull(cliente_sucursal.deleted_at)
+            INNER JOIN sucursal
+            ON cliente_sucursal.sucursal_id=sucursal.id and isnull(sucursal.deleted_at)
+            WHERE cliente.id=$cliente_id
+            and isnull(cliente.deleted_at)
+            order by cliente_sucursal.sucursal_id";
+            $respuesta['sucursales'] = DB::select($sql); //Sucursales que coincidan entre vendedor y cliente
+    
+        }
 
         return $respuesta;
     }

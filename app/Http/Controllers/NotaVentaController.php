@@ -23,6 +23,7 @@ use App\Models\Notificaciones;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\SucursalClienteDirec;
 use App\Models\TipoEntrega;
 use App\Models\UnidadMedida;
@@ -234,6 +235,7 @@ class NotaVentaController extends Controller
             ->get();
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
     
         //dd($vendedor_id);
         return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','productos','clientes','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant','tablas'));
@@ -253,7 +255,7 @@ class NotaVentaController extends Controller
         $clienteselec = $data->cliente()->get();
         //dd($clienteselec);
 
-        $clientesArray = Cliente::clientesxUsuario();
+        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
         $sucurArray = $clientesArray['sucurArray'];
@@ -314,6 +316,7 @@ class NotaVentaController extends Controller
         $aux_statusPant = 0;
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['sucursales'] = $clientesArray['sucursales'];
 
         //dd($aux_aproNV);
         return view('notaventa.crear', compact('data','clienteselec','clientedirecs','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas'));
@@ -328,9 +331,10 @@ class NotaVentaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function guardar(ValidarNotaVenta $request)
+    //public function guardar(Request $request)
     {
-        can('guardar-notaventa');
         //dd($request);
+        can('guardar-notaventa');
         
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
@@ -418,7 +422,7 @@ class NotaVentaController extends Controller
         //session(['aux_aprocot' => '0']);
         //dd($clienteselec[0]->rut);
 
-        $clientesArray = Cliente::clientesxUsuario();
+        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
         $sucurArray = $clientesArray['sucurArray'];
@@ -450,7 +454,7 @@ class NotaVentaController extends Controller
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
+        $productos = Producto::productosxUsuario(); 
 
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
@@ -477,6 +481,8 @@ class NotaVentaController extends Controller
         $aux_statusPant = 0;
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['sucursales'] = $clientesArray['sucursales'];
+        //$tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
 
         return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }

@@ -8,7 +8,6 @@
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
-<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $sucurArray[0] ?? '')}}">
 
 
 @if($aux_sta==1)
@@ -253,6 +252,25 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-3">
+                            <label for="sucursal_id" class="control-label requerido">Sucursal</label>
+                            <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' {{$disabledReadOnly}} required>
+                                <option value=''>Seleccione...</option>
+                                @if (isset($data))
+                                    @foreach($tablas['sucursales'] as $sucursal)
+                                        <option
+                                            value="{{$sucursal->id}}"
+                                            @if (isset($data->sucursal_id) and ($data->sucursal_id==$sucursal->id))
+                                                {{'selected'}}
+                                            @endif
+                                            >
+                                            {{$sucursal->nombre}}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                
+                        <div class="form-group col-xs-12 col-sm-3">
                             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
                             <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" {{$enableCamposCot}}/>
                         </div>
@@ -282,17 +300,17 @@
                             <label for="contacto" class="control-label requerido">Contacto</label>
                             <input type="text" name="contacto" id="contacto" class="form-control" value="{{old('contacto', $data->contacto ?? '')}}" required placeholder="Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="contactotelf" class="control-label requerido">Teléfono</label>
                             <input type="text" name="contactotelf" id="contactotelf" class="form-control" value="{{old('contactotelf', $data->contactotelf ?? '')}}" required placeholder="Teléfono Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xs-12 col-sm-6">
+                        <div class="form-group col-xs-12 col-sm-4">
                             <label for="contactoemail" class="control-label requerido">Email</label>
                             <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-6">
+                        <div class="form-group col-xs-12 col-sm-5">
                             <label for="observacion" class="control-label">Observaciones</label>
                             <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
                         </div>

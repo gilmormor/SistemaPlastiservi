@@ -443,7 +443,7 @@ function copiar_rut(id,rut){
 	$("#razonsocial").focus();
 }
 $("#rut").focus(function(){
-	$("#clientedirec_id").prop("disabled",true);
+	//$("#clientedirec_id").prop("disabled",true);
 	eliminarFormatoRut($(this));
 });
 
@@ -494,11 +494,14 @@ $("#rut").blur(function(){
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
-				url: '/cliente/buscarCliId',
+				//url: '/cliente/buscarCliId',
+				url: '/cliente/buscarCliRut',
 				type: 'POST',
 				data: data,
 				success: function (respuesta) {
-					if(respuesta.length>0){
+					//console.log(respuesta.cliente[0].razonsocial);
+					//console.log(respuesta.sucursales);
+					if(respuesta.cliente.length>0){
 						/*
 						//VALIDACION CLIENTE BLOQUEADO DESABILITADA EL 17-05-2021 POR SOLICITUD DE CRISTIAN GORIGOITIA
 						if(respuesta[0]['descripcion']==null){
@@ -519,43 +522,44 @@ $("#rut").blur(function(){
 							});
 						}
 						*/
-						$.ajax({
-							url: '/cliente/sucursalesXcliente',
-							type: 'POST',
-							data: data,
-							success: function (respuesta) {
-								if(respuesta.length>0){
-
-								}
-							}
-						});
 			
-						$("#razonsocial").val(respuesta[0]['razonsocial']);
-						$("#telefono").val(respuesta[0]['telefono']);
-						$("#email").val(respuesta[0]['email']);
-						$("#direccion").val(respuesta[0]['direccion']);
-						$("#direccioncot").val(respuesta[0]['direccion']);
-						$("#cliente_id").val(respuesta[0]['id'])
-						$("#contacto").val(respuesta[0]['contactonombre']);
+						$("#razonsocial").val(respuesta.cliente[0].razonsocial);
+						$("#telefono").val(respuesta.cliente[0].telefono);
+						$("#email").val(respuesta.cliente[0].email);
+						$("#direccion").val(respuesta.cliente[0].direccion);
+						$("#direccioncot").val(respuesta.cliente[0].direccion);
+						$("#cliente_id").val(respuesta.cliente[0].id)
+						$("#contacto").val(respuesta.cliente[0].contactonombre);
 						//$("#vendedor_id").val(respuesta[0]['vendedor_id']);
 						//$("#vendedor_idD").val(respuesta[0]['vendedor_id']);
-						$("#region_id").val(respuesta[0]['regionp_id']);
+						$("#region_id").val(respuesta.cliente[0].regionp_id);
 						//alert($("#region_id").val());
-						$("#provincia_id").val(respuesta[0]['provinciap_id']);
-						$("#giro_id").val(respuesta[0]['giro_id']);
-						$("#giro_idD").val(respuesta[0]['giro_id']);
-						$("#comuna_id").val(respuesta[0]['comunap_id']);
-						$("#comuna_idD").val(respuesta[0]['comunap_id']);
-						$("#provincia_id").val(respuesta[0]['provinciap_id']);
-						$("#plazopago_id").val(respuesta[0]['plazopago_id']);
-						$("#plazopago_idD").val(respuesta[0]['plazopago_id']);
-						$("#formapago_id").val(respuesta[0]['formapago_id']);
-						$("#formapago_idD").val(respuesta[0]['formapago_id']);
+						$("#provincia_id").val(respuesta.cliente[0].provinciap_id);
+						$("#giro_id").val(respuesta.cliente[0].giro_id);
+						$("#giro_idD").val(respuesta.cliente[0].giro_id);
+						$("#comuna_id").val(respuesta.cliente[0].comunap_id);
+						$("#comuna_idD").val(respuesta.cliente[0].comunap_id);
+						$("#provincia_id").val(respuesta.cliente[0].provinciap_id);
+						$("#plazopago_id").val(respuesta.cliente[0].plazopago_id);
+						$("#plazopago_idD").val(respuesta.cliente[0].plazopago_id);
+						$("#formapago_id").val(respuesta.cliente[0].formapago_id);
+						$("#formapago_idD").val(respuesta.cliente[0].formapago_id);
 
-						$("#comuna_idD option[value='"+ respuesta[0]['comunap_id'] +"']").attr("selected",true);
+						$("#comuna_idD option[value='"+ respuesta.cliente[0].comunap_id +"']").attr("selected",true);
+						$("#sucursal_id option").remove();
+						$("#sucursal_id").prop("disabled",false);
+						$("#sucursal_id").prop("readonly",false);	
+						$('#sucursal_id').attr("required", true);
+						$("#sucursal_id").append("<option value=''>Seleccione...</option>")
+						for(var i=0;i<respuesta.sucursales.length;i++){
+							$("#sucursal_id").append("<option value='" + respuesta.sucursales[i].id + "'>" + respuesta.sucursales[i].nombre + "</option>")
+						}
+						if (respuesta.sucursales.length == 1){
+							$("#sucursal_id").val(respuesta.sucursales[0].id);
+						}
 				
 						//$("#comuna_idD option[value='101']").attr("selected",true);
-
+/*
 						$("#clientedirec_id option").remove();
 						$("#sucursal_id option").remove();
 
@@ -584,6 +588,7 @@ $("#rut").blur(function(){
 							$("#clientedirec_id").prop("disabled",true);
 							$("#clientedirec_id").prop("readonly",true);	
 						}
+						*/
 						activar_controles();
 						formato_rut($("#rut"));
 						$(".selectpicker").selectpicker('refresh');
@@ -596,7 +601,7 @@ $("#rut").blur(function(){
 								if(respuesta.length>0){
 									swal({
 										title: 'Cliente pertenece a otro Vendedor',
-										text: respuesta[0]['razonsocial'],
+										text: respuesta.cliente[0].razonsocial,
 										icon: 'error',
 										buttons: {
 											confirm: "Aceptar"
@@ -619,25 +624,25 @@ $("#rut").blur(function(){
 										data: data,
 										success: function (respuesta) {
 											if(respuesta.length>0){
-												if(respuesta[0]['vendedor_id']==$("#vendedor_id").val()){
-													$("#razonsocialCTM").val(respuesta[0]['razonsocial']);
-													$("#direccionCTM").val(respuesta[0]['direccion']);
-													$("#telefonoCTM").val(respuesta[0]['telefono']);
-													$("#emailCTM").val(respuesta[0]['email']);
-													$("#giro_idCTM").val(respuesta[0]['giro_id']);
-													$("#formapago_idCTM").val(respuesta[0]['formapago_id']);
-													$("#plazopago_idCTM").val(respuesta[0]['plazopago_id']);
-													$("#comunap_idCTM").val(respuesta[0]['comunap_id']);
-													$("#provinciap_idCTM").val(respuesta[0]['provinciap_id']);
-													$("#regionp_idCTM").val(respuesta[0]['regionp_id']);
-													$("#contactonombreCTM").val(respuesta[0]['contactonombre']);
-													$("#contactoemailCTM").val(respuesta[0]['contactoemail']);
-													$("#contactotelefCTM").val(respuesta[0]['contactotelef']);
-													$("#finanzascontactoCTM").val(respuesta[0]['finanzascontacto']);
-													$("#finanzanemailCTM").val(respuesta[0]['finanzanemail']);
-													$("#finanzastelefonoCTM").val(respuesta[0]['finanzastelefono']);
-													$("#sucursal_idCTM").val(respuesta[0]['sucursal_id']);
-													$("#observacionesCTM").val(respuesta[0]['observaciones']);
+												if(respuesta.cliente[0].vendedor_id==$("#vendedor_id").val()){
+													$("#razonsocialCTM").val(respuesta.cliente[0].razonsocial);
+													$("#direccionCTM").val(respuesta.cliente[0].direccion);
+													$("#telefonoCTM").val(respuesta.cliente[0].telefono);
+													$("#emailCTM").val(respuesta.cliente[0].email);
+													$("#giro_idCTM").val(respuesta.cliente[0].giro_id);
+													$("#formapago_idCTM").val(respuesta.cliente[0].formapago_id);
+													$("#plazopago_idCTM").val(respuesta.cliente[0].plazopago_id);
+													$("#comunap_idCTM").val(respuesta.cliente[0].comunap_id);
+													$("#provinciap_idCTM").val(respuesta.cliente[0].provinciap_id);
+													$("#regionp_idCTM").val(respuesta.cliente[0].regionp_id);
+													$("#contactonombreCTM").val(respuesta.cliente[0].contactonombre);
+													$("#contactoemailCTM").val(respuesta.cliente[0].contactoemail);
+													$("#contactotelefCTM").val(respuesta.cliente[0].contactotelef);
+													$("#finanzascontactoCTM").val(respuesta.cliente[0].finanzascontacto);
+													$("#finanzanemailCTM").val(respuesta.cliente[0].finanzanemail);
+													$("#finanzastelefonoCTM").val(respuesta.cliente[0].finanzastelefono);
+													$("#sucursal_idCTM").val(respuesta.cliente[0].sucursal_id);
+													$("#observacionesCTM").val(respuesta.cliente[0].observaciones);
 													$("#regionp_idCTM").val($('#comunap_idCTM option:selected').attr("region_id"));
 													$("#provinciap_idCTM").val($('#comunap_idCTM option:selected').attr("provincia_id"));
 												
@@ -813,7 +818,7 @@ function limpiarCampos(){
 	$("#comuna_id").val('');
 	$("#comuna_idD").val('');
 
-	$("#clientedirec_id option").remove();
+	//$("#clientedirec_id option").remove();
 
 	$("#direccioncot").val('');
 	$("#formapago_id").val('');
@@ -985,7 +990,7 @@ function asignarvalorclientetemp(){
 	//$("#observacion").val($("#observacionesCTM").val())
 
 	//$("#comuna_idD option[value='"+ respuesta[0]['comunap_id'] +"']").attr("selected",true);
-	$("#clientedirec_id option").remove();
+	//$("#clientedirec_id option").remove();
 	activar_controles();
 	$(".selectpicker").selectpicker('refresh');
 }
