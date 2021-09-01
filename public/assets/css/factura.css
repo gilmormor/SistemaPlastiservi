@@ -98,11 +98,9 @@ p, label, span, table{
 	color: #FFF;
 	padding: 5px;
 }
-/*
 #detalle_productos tr:nth-child(even) {
     background: #ededed;
 }
-*/
 #detalle_totales span{
 	font-family: 'BrixSansBlack';
 }
