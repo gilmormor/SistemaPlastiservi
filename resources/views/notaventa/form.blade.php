@@ -253,7 +253,7 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="sucursal_id" class="control-label requerido">Sucursal</label>
-                            <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' {{$disabledReadOnly}} required>
+                            <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' required>
                                 <option value=''>Seleccione...</option>
                                 @if (isset($data))
                                     @foreach($tablas['sucursales'] as $sucursal)
