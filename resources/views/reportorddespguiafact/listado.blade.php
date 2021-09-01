@@ -32,19 +32,19 @@
 		<table id="factura_detalle">
 				<thead>
 					<tr>
-						<th style='text-align:center'>OD</th>
-						<th style='text-align:center'>Fecha</th>
-						<th style='text-align:center'>Razon Social</th>
-						<th style='text-align:center'>SD</th>
-						<th style='text-align:center'>OC</th>
-						<th style='text-align:center'>NV</th>
-						<th style='text-align:right'>Comuna</th>	
-						<th style='text-align:right'>Kg</th>
-						<th style='text-align:right'>Monto<br>Documento</th>
-						<th style='text-align:center'>NumGuia</th>
-						<th style='text-align:center'>F Guia</th>
-						<th style='text-align:center'>NumFact</th>
-						<th style='text-align:center'>F Fact</th>
+						<th width="20px" style='text-align:center'>OD</th>
+						<th width="50px" style='text-align:center'>Fecha</th>
+						<th width="100px" style='text-align:center'>Razon Social</th>
+						<th width="30px" style='text-align:center'>SD</th>
+						<th width="40px" style='text-align:center'>OC</th>
+						<th width="30px" style='text-align:center'>NV</th>
+						<th width="60px" style='text-align:left'>Comuna</th>	
+						<th width="40px" style='text-align:right'>Kg</th>
+						<th width="40px" style='text-align:right'>Monto<br>Documento</th>
+						<th width="40px" style='text-align:center'>NumGuia</th>
+						<th width="50px" style='text-align:center'>F Guia</th>
+						<th width="40px" style='text-align:center'>NumFact</th>
+						<th width="50px" style='text-align:left'>F Fact</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
@@ -61,7 +61,7 @@
 							$totalsumsubtotal += $data->subtotal;
 						?>
 						<tr class='btn-accion-tabla tooltipsC'>
-							<td>
+							<td style='text-align:center'>
 								{{$data->id}}
 								@if ($data->despachoordanul_id != null)
 									A
@@ -78,7 +78,7 @@
 							<td style='text-align:center'>{{$data->guiadespacho}}</td>
 							<td style='text-align:center'>{{date('d-m-Y', strtotime($data->guiadespachofec))}}</td>
 							<td style='text-align:center'>{{$data->numfactura}}</td>
-							<td style='text-align:center'>{{date('d-m-Y', strtotime($data->fechafactura))}}</td>
+							<td style='text-align:left'>{{date('d-m-Y', strtotime($data->fechafactura))}}</td>
 						</tr>
 					@endforeach
 				</tbody>
