@@ -122,7 +122,7 @@ Solicitud de despacho
                         <tfoot>
                             <tr>
                                 <th colspan='6' style='text-align:left'>TOTALES</th>
-                                <th style='text-align:right'>{{number_format($aux_totalgenKG, 2, ",", ".")}}</th>
+                                <th id="totalKg" name="totalKg" style='text-align:right'>{{number_format($aux_totalgenKG, 2, ",", ".")}}</th>
                                 <th colspan='2'></th>
                             </tr>
                         </tfoot>

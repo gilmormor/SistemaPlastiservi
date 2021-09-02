@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableAcuerdotecnicotemp extends Migration
+class CreateTableAcuerdotecnico extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTableAcuerdotecnicotemp extends Migration
      */
     public function up()
     {
-        Schema::create('acuerdotecnicotemp', function (Blueprint $table) {
+        Schema::create('acuerdotecnico', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('desc',100)->comment('Descripcion del producto');
@@ -32,22 +32,22 @@ class CreateTableAcuerdotecnicotemp extends Migration
             $table->string('aditivootroobs',200)->comment('Aditivo otro Observaciones');
             $table->double('ancho',18,2)->comment('Ancho');
             $table->unsignedBigInteger('anchoum_id')->comment('Unidad de Medida Ancho Ejm: Cm.,Mic.');
-            $table->foreign('anchoum_id','fk_acuerdotecnicotemp_anchounidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('anchoum_id','fk_acuerdotecnico_anchounidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
             $table->string('anchodesv',200)->comment('Ancho Desviacion');
             $table->double('largo',18,2)->comment('Largo');
             $table->unsignedBigInteger('largoum_id')->comment('Unidad de medida Largo Ejm: Cm.,Mic.');
-            $table->foreign('largoum_id','fk_acuerdotecnicotemp_largounidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('largoum_id','fk_acuerdotecnico_largounidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
             $table->string('largodesv',200)->comment('Ancho Desviacion');
 
             $table->double('fuelle',18,2)->comment('Fuelle');
             $table->unsignedBigInteger('fuelleum_id')->comment('Unidad de medida Largo Ejm: Cm.,Mic.');
-            $table->foreign('fuelleum_id','fk_acuerdotecnicotemp_fuelleunidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('fuelleum_id','fk_acuerdotecnico_fuelleunidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
             $table->string('fuelledesv',200)->comment('Ancho Desviacion');
 
 
             $table->double('espesor',18,2)->comment('Espesor');
             $table->unsignedBigInteger('espesorum_id')->comment('Unidad de medida Largo Ejm: Cm.,Mic.');
-            $table->foreign('espesorum_id','fk_acuerdotecnicotemp_espesorunidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('espesorum_id','fk_acuerdotecnico_espesorunidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
             $table->string('espesordesv',200)->comment('Ancho Desviacion');
 
             $table->string('npantone')->comment('Codigo de color de la bolsa. Esto viene de un talon de colores');
@@ -81,12 +81,12 @@ class CreateTableAcuerdotecnicotemp extends Migration
             $table->string('otrocertificado',200)->comment('Otros certificados: Especifique.');
 
             $table->unsignedBigInteger('color_id')->comment('Color de producto acuerdo tecnico.')->nullable();
-            $table->foreign('color_id','fk_acuerdotecnicotemp_color')->references('id')->on('color')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('color_id','fk_acuerdotecnico_color')->references('id')->on('color')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('impresocolor_id')->comment('Color de impreso en producto acuerdo tecnico.')->nullable();
-            $table->foreign('impresocolor_id','fk_acuerdotecnicotempimpreso_color')->references('id')->on('color')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('impresocolor_id','fk_acuerdotecnicoimpreso_color')->references('id')->on('color')->onDelete('restrict')->onUpdate('restrict');
 
             $table->unsignedBigInteger('materiaprima_id')->comment('Codigo materia prima.')->nullable();
-            $table->foreign('materiaprima_id','fk_acuerdotecnicotemp_materiaprima')->references('id')->on('materiaprima')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('materiaprima_id','fk_acuerdotecnico_materiaprima')->references('id')->on('materiaprima')->onDelete('restrict')->onUpdate('restrict');
 
             $table->string('materiaprima_desc',100)->comment('Descripcion de materia prima');
             
@@ -105,6 +105,6 @@ class CreateTableAcuerdotecnicotemp extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('acuerdotecnicotemp');
+        Schema::dropIfExists('acuerdotecnico');
     }
 }

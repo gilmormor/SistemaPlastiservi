@@ -2,6 +2,7 @@ $(document).ready(function () {
 	Biblioteca.validacionGeneral('form-general');
 });
 
+
 function anular(i,id){
 	//alert($('input[name=_token]').val());
 	var data = {

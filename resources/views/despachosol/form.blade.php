@@ -315,17 +315,18 @@
                             <th style="display:none;">Peso</th>
                             <th>Kilos</th>
                             <th style="display:none;">Total Kilos</th>
-                            <th>TU</th>
+                            <th style="text-align:center">TU</th>
+                            <th style="text-align:right" class='tooltipsC' title='Precio por Kilo'>PxK</th>
                             <th style="display:none;">TUnion</th>
                             <th style="display:none;">Desc</th>
                             <th style="display:none;">DescPorc</th>
                             <th style="display:none;">DescVal</th>
-                            <th>PUnit</th>
+                            <th style="text-align:right">PUnit</th>
                             <th style="display:none;">Precio Neto Unit</th>
                             <th style="display:none;">V Kilo</th>
                             <th style="display:none;">Precio X Kilo</th>
                             <th style="display:none;">Precio X Kilo Real</th>
-                            <th>Sub Total</th>
+                            <th style="text-align:right">Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
                         </tr>
@@ -451,13 +452,13 @@
                                     <td style="display:none;">
                                         <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->diametro}}" style="display:none;"/>
                                     </td>
-                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:center">
                                         {{$detalle->producto->espesor}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->espesor}}" style="display:none;"/>
                                     </td>
-                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:center">
                                         {{$detalle->producto->long}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
@@ -475,8 +476,11 @@
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$detalle->totalkilos}}" style="display:none;"/>
                                     </td>
-                                    <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
+                                    <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}" style="text-align:center"> 
                                         {{$detalle->producto->tipounion}}
+                                    </td>
+                                    <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
+                                        {{$detalle->precioxkilo}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="tipounion[]" id="tipounion{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->tipounion}}" style="display:none;"/>
@@ -508,13 +512,13 @@
                                         <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$detalle->precioxkiloreal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
-                                        0.00 <!--{{number_format($detalle->subtotal, 2, '.', ',')}}-->
+                                        0 <!--{{number_format($detalle->subtotal, 2, '.', ',')}}-->
                                     </td>
                                     <td class="subtotalCF" style="text-align:right;display:none;"> 
                                         <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$detalle->subtotal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalSFTD{{$aux_nfila}}" id="subtotalSFTD{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
-                                        0.00 <!--{{$detalle->subtotal}}-->
+                                        0 <!--{{$detalle->subtotal}}-->
                                     </td>
                                 </tr>
                                 <?php 
@@ -523,25 +527,25 @@
                                 ?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="5" style="text-align:right">
+                                <td colspan="5" style="text-align:right;padding-bottom: 0px;padding-top: 0px;">
                                     <b>Total Unidades:</b>
                                 </td>
-                                <td style="text-align:right">
-                                    <div class="form-group col-xs-12 col-sm-12">
+                                <td style="text-align:right;padding-bottom: 0px;padding-top: 0px;">
+                                    <div class="form-group col-xs-12 col-sm-12" style="margin-bottom: 0px;">
                                         <input type="text" name="cantsolTotal" id="cantsolTotal" class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>
                                 <td colspan="6" style="text-align:right"><b>Total Kg</b></td>
                                 <td id="totalkg" name="totalkg" style="text-align:right">0,00</td>
-                                <td colspan="2" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="3" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="15" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="16" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="15" style="text-align:right"><b>Total</b></td>
+                                <td colspan="16" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif
