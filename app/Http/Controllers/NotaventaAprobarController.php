@@ -178,7 +178,9 @@ class NotaventaAprobarController extends Controller
         session(['aux_aprocot' => '2']);
         //dd($clienteselec[0]->rut);
 
-        $clientesArray = Cliente::clientesxUsuario();
+        //$clientesArray = Cliente::clientesxUsuario();
+        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
+
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
         $sucurArray = $clientesArray['sucurArray'];
@@ -238,6 +240,7 @@ class NotaventaAprobarController extends Controller
         $aux_statusPant = 0;
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['sucursales'] = $clientesArray['sucursales'];
 
         //dd($clientedirecs);
         return view('notaventaAprobar.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas'));
