@@ -149,6 +149,15 @@ class Cliente extends Model
             $respuesta['sucursales'] = DB::select($sql); //Sucursales que coincidan entre vendedor y cliente
     
         }
+        if(!isset($respuesta['sucursales'])){
+            $sucurcadena = implode(",", $sucurArray);
+            $sql= "SELECT sucursal.id,sucursal.nombre
+            FROM sucursal
+            where sucursal.id in ($sucurcadena) and isnull(sucursal.deleted_at)
+            order by sucursal.id";
+            $respuesta['sucursales'] = DB::select($sql); //Sucursales que coincidan entre vendedor y cliente
+
+        }
 
         return $respuesta;
     }

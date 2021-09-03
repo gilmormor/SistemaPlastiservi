@@ -178,7 +178,6 @@
             <label id="lblsucursal_id" name="lblsucursal_id" for="sucursal_id" class="control-label requerido">Sucursal</label>
             <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' {{$disabledReadOnly}} required>
                 <option value=''>Seleccione...</option>
-                @if (isset($data))
                     @foreach($tablas['sucursales'] as $sucursal)
                         <option
                             value="{{$sucursal->id}}"
@@ -189,7 +188,6 @@
                             {{$sucursal->nombre}}
                         </option>
                     @endforeach                    
-                @endif
             </select>
         </div>
 
