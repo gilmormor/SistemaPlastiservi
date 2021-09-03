@@ -247,12 +247,12 @@
             <select name="tipoprod" id="tipoprod" class="form-control select2 tipoprod" required>
                 <option value="">Seleccione...</option>
                 <option value="0"
-                    @if ($data->tipoprod=='0')
+                    @if (isset($data) and ($data->tipoprod=='0'))
                         {{'selected'}}
                     @endif
                 >Producto</option>
                 <option value="1"
-                    @if ($data->tipoprod=='1')
+                    @if (isset($data) and ($data->tipoprod=='1'))
                         {{'selected'}}
                     @endif
                 >Transicional (Para Hacer Acuerdo Técnico)</option>
