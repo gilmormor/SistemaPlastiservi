@@ -1,7 +1,21 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-
+	let  table = $('#tabla-data').DataTable();
+    table
+        .on('draw', function () {
+            eventFired( 'Page' );
+        });
 });
+
+var eventFired = function ( type ) {
+	total = 0;
+	$("#tabla-data tr .kilos").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		total += valorNum;
+	});
+	$("#totalKg").html(MASKLA(total,2))
+}
 
 function anular(i,id){
 	//alert($('input[name=_token]').val());

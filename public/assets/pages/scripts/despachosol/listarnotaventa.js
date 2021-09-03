@@ -39,8 +39,26 @@ $(document).ready(function () {
     });
 
     configurarTabla('.tablas');
-
+    
 });
+
+var eventFired = function ( type ) {
+	total = 0;
+	$("#tabla-data-listar1 tr .kgpend").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		total += valorNum;
+	});
+    $("#totalkg").html(MASKLA(total,2))
+	total = 0;
+	$("#tabla-data-listar1 tr .dinpend").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		total += valorNum;
+	});
+    $("#totaldinero").html(MASKLA(total,0))
+
+}
 
 function configurarTabla(aux_tabla){
     $(aux_tabla).DataTable({
@@ -140,6 +158,15 @@ function consultar(data){
                 $("#tablaconsulta").html(datos['tabla']);
                 $("#tablaconsulta2").html(datos['tabla2']);
                 $("#tablaconsulta3").html(datos['tabla3']);
+
+                configurarTabla('#tabla-data-listar1');
+                let  table = $('#tabla-data-listar1').DataTable();
+                console.log(table);
+                table
+                    .on('draw', function () {
+                        eventFired( 'Page' );
+                    });
+            
                 
                 configurarTabla('.tablascons');
                 configurarTabla2('.tablascons2');

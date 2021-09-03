@@ -169,7 +169,14 @@ function consultar(data){
         success: function (datos) {
             if(datos['tabla'].length>0){
                 $("#tablaconsulta").html(datos['tabla']);
-                configurarTabla('.tablascons');
+                configurarTabla('#pendientesoldesp');
+
+                let  table = $('#pendientesoldesp').DataTable();
+                table
+                    .on('draw', function () {
+                        eventFired( 'Page' );
+                    });
+            
             }
         }
     });
@@ -428,3 +435,22 @@ $("#btnpdf2").click(function()
     $('#contpdf').attr('src', '/despachosol/pdfpendientesoldesp/'+cadena);
     $("#myModalpdf").modal('show'); 
 });
+
+
+var eventFired = function ( type ) {
+	total = 0;
+	$("#pendientesoldesp tr .kgpend").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		total += valorNum;
+	});
+    $("#totalkg").html(MASKLA(total,2))
+	total = 0;
+	$("#pendientesoldesp tr .dinpend").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		total += valorNum;
+	});
+    $("#totaldinero").html(MASKLA(total,0))
+
+}

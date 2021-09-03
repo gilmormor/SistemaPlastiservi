@@ -36,7 +36,7 @@ Solicitud de despacho
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                                 <th class='tooltipsC' title='Comuna'>Comuna</th>
-                                <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                                <th class='tooltipsC' title='Total Kg' style="text-align:right">Total Kg</th>
                                 <th class='tooltipsC' title='Tipo Entrega'>TE</th>
                                 <th class="width70"></th>
                             </tr>
@@ -78,7 +78,7 @@ Solicitud de despacho
                                         </a>
                                     </td>
                                     <td>{{$data->comunaentrega->nombre}}</td>
-                                    <td style='text-align:right'>
+                                    <td class='kilos' data-order="{{$aux_totalkg}}" data-search="{{$aux_totalkg}}" style="text-align:right">
                                         {{number_format($aux_totalkg, 2, ",", ".")}}
                                     </td>
                                     <td>

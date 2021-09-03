@@ -1114,7 +1114,7 @@ function reporte1($request){
         }
         $aux_colvistoth = "<th class='tooltipsC' title='Leido'>Leido</th>";
 
-        $respuesta['tabla'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+        $respuesta['tabla'] .= "<table id='tabla-data-listar1' name='tabla-data-listar1' class='table display AllDataTables table-hover table-condensed' data-page-length='50'>
         <thead>
             <tr>
                 <th class='tooltipsC' title='Nota de Venta PDF'>NV</th>
@@ -1231,8 +1231,8 @@ function reporte1($request){
                     </a>
                 </td>
                 <td>$data->comunanombre</td>
-                <td data-order='$aux_kgpend' data-search='$aux_kgpend' style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
-                <td data-order='$aux_dinpend' data-search='$aux_dinpend' style='text-align:right'>".number_format($aux_dinpend, 0, ",", ".") ."</td>
+                <td class='kgpend' data-order='$aux_kgpend' data-search='$aux_kgpend' style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
+                <td class='dinpend' data-order='$aux_dinpend' data-search='$aux_dinpend' style='text-align:right'>".number_format($aux_dinpend, 0, ",", ".") ."</td>
                 <td>
                     $nuevoSolDesp
                 </td>
@@ -1259,7 +1259,14 @@ function reporte1($request){
         </tbody>
         <tfoot>
             <tr>
-                <th colspan='6' style='text-align:left'>TOTAL</th>
+                <th colspan='6' style='text-align:right'>Total página</th>
+                <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
+                <th style='text-align:right'></th>
+            </tr>
+
+            <tr>
+                <th colspan='6' style='text-align:right'>TOTAL GENERAL</th>
                 <th style='text-align:right'>". number_format($aux_totalKG, 2, ",", ".") ."</th>
                 <th style='text-align:right'>". number_format($aux_totalps, 0, ",", ".") ."</th>
                 <!--<th style='text-align:right'>". number_format($aux_promGeneral, 2, ",", ".") ."</th>-->
@@ -1395,7 +1402,7 @@ function reportesoldesp1($request){
     if($request->ajax()){
         $datas = consultasoldesp($request);
 
-        $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
+        $respuesta['tabla'] .= "<table id='pendientesoldesp' name='pendientesoldesp' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
         <thead>
             <tr>
                 <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
@@ -1481,10 +1488,10 @@ function reportesoldesp1($request){
                     </a>
                 </td>
                 <td id='comuna$i' name='comuna$i'>$data->comunanombre</td>
-                <td style='text-align:right' data-order='$aux_totalkilos' data-search='$aux_totalkilos'>".
+                <td class='kgpend' style='text-align:right' data-order='$aux_totalkilos' data-search='$aux_totalkilos'>".
                     number_format($aux_totalkilos, 2, ",", ".") .
                 "</td>
-                <td style='text-align:right' data-order='$aux_subtotal' data-search='$aux_subtotal'>".
+                <td class='dinpend' style='text-align:right' data-order='$aux_subtotal' data-search='$aux_subtotal'>".
                     number_format($aux_subtotal, 0, ",", ".") .
                 "</td>
                 <td>
@@ -1504,7 +1511,14 @@ function reportesoldesp1($request){
         </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='7'  style='text-align:right'>TOTAL</th>
+                    <th colspan='7' style='text-align:right'>Total página</th>
+                    <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                    <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan='7'  style='text-align:right'>TOTAL GENERAL</th>
                     <th style='text-align:right'>". number_format($aux_Ttotalkilos, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_Tsubtotal, 0, ",", ".") ."</th>
                     <th></th>
