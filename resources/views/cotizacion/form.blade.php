@@ -461,7 +461,7 @@
                     </div>
                     <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
                         <label for="giro_idCTM" class="control-label" data-toggle='tooltip' title="Giro">Giro</label>
-                        <select name="giro_idCTM" id="giro_idCTM" class="selectpicker form-control requeridos" tipoval="texto" value="{{old('giro_idCTM')}}">
+                        <select name="giro_idCTM" id="giro_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" value="{{old('giro_idCTM')}}">
                             <option value="">Seleccione...</option>
                             @foreach($tablas['giros'] as $giro)
                                 <option
@@ -475,7 +475,7 @@
                     </div>
                     <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
                         <label for="formapago_idCTM" class="control-label">Forma de Pago</label>
-                        <select name="formapago_idCTM" id="formapago_idCTM" class="selectpicker form-control requeridos" tipoval="texto" data-live-search='true' title='Seleccione...' value="{{old('formapago_idCTM')}}">
+                        <select name="formapago_idCTM" id="formapago_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" data-live-search='true' title='Seleccione...' value="{{old('formapago_idCTM')}}">
                             <option value="">Seleccione...</option>
                             @foreach($tablas['formapagos'] as $formapago)
                                 <option
@@ -489,7 +489,7 @@
                     </div>
                     <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
                         <label for="plazopago_idCTM" class="control-label">Plazo de Pago</label>
-                        <select name="plazopago_idCTM" id="plazopago_idCTM" class="selectpicker form-control requeridos" tipoval="texto" data-live-search='true' title='Seleccione...' value="{{old('plazopago_idCTM')}}">
+                        <select name="plazopago_idCTM" id="plazopago_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" data-live-search='true' title='Seleccione...' value="{{old('plazopago_idCTM')}}">
                             <option value="">Seleccione...</option>
                             @foreach($tablas['plazopagos'] as $plazopago)
                                 <option
@@ -505,7 +505,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="comunap_idCTM" class="control-label">Comuna</label>
-                        <select name="comunap_idCTM" id="comunap_idCTM" class="selectpicker form-control requeridos" tipoval="texto" data-live-search='true' title='Seleccione...' value="{{old('comunap_idCTM')}}">
+                        <select name="comunap_idCTM" id="comunap_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" data-live-search='true' title='Seleccione...' value="{{old('comunap_idCTM')}}">
                             <option value="">Seleccione...</option>
                             @foreach($tablas['comunas'] as $comuna)
                                 <option
@@ -521,7 +521,7 @@
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="provinciap_idCTM" class="control-label">Provincia</label>
-                        <select name="provinciap_idCTM" id="provinciap_idCTM" class="selectpicker form-control provinciap_id" tipoval="texto" title='Seleccione...' disabled readonly value="{{old('provinciap_idCTM')}}">
+                        <select name="provinciap_idCTM" id="provinciap_idCTM" class="selectpicker form-control provinciap_id" tipoval="combobox" title='Seleccione...' disabled readonly value="{{old('provinciap_idCTM')}}">
                             @foreach($tablas['provincias'] as $provincia)
                                 <option
                                     value="{{$provincia->id}}"
@@ -534,7 +534,7 @@
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="regionp_idCTM" class="control-label">Región</label>
-                        <select name="regionp_idCTM" id="regionp_idCTM" class="selectpicker form-control regionp_id" tipoval="texto" title='Seleccione...' disabled readonly value="{{old('regionp_idCTM')}}">
+                        <select name="regionp_idCTM" id="regionp_idCTM" class="selectpicker form-control regionp_id" tipoval="combobox" title='Seleccione...' disabled readonly value="{{old('regionp_idCTM')}}">
                             @foreach($tablas['regiones'] as $region)
                                 <option
                                     value="{{$region->id}}"
@@ -583,7 +583,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="sucursal_idCTM" class="control-label">Sucursal</label>
-                        <select name="sucursal_idCTM" id="sucursal_idCTM" class="selectpicker form-control requeridos" tipoval="texto" title='Seleccione...'>
+                        <select name="sucursal_idCTM" id="sucursal_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" title='Seleccione...'>
                             @foreach($tablas['sucursales'] as $sucursal)
                                 <option
                                     value="{{$sucursal->id}}"
