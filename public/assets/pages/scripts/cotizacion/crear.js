@@ -624,25 +624,25 @@ $("#rut").blur(function(){
 										data: data,
 										success: function (respuesta) {
 											if(respuesta.length>0){
-												if(respuesta.cliente[0].vendedor_id==$("#vendedor_id").val()){
-													$("#razonsocialCTM").val(respuesta.cliente[0].razonsocial);
-													$("#direccionCTM").val(respuesta.cliente[0].direccion);
-													$("#telefonoCTM").val(respuesta.cliente[0].telefono);
-													$("#emailCTM").val(respuesta.cliente[0].email);
-													$("#giro_idCTM").val(respuesta.cliente[0].giro_id);
-													$("#formapago_idCTM").val(respuesta.cliente[0].formapago_id);
-													$("#plazopago_idCTM").val(respuesta.cliente[0].plazopago_id);
-													$("#comunap_idCTM").val(respuesta.cliente[0].comunap_id);
-													$("#provinciap_idCTM").val(respuesta.cliente[0].provinciap_id);
-													$("#regionp_idCTM").val(respuesta.cliente[0].regionp_id);
-													$("#contactonombreCTM").val(respuesta.cliente[0].contactonombre);
-													$("#contactoemailCTM").val(respuesta.cliente[0].contactoemail);
-													$("#contactotelefCTM").val(respuesta.cliente[0].contactotelef);
-													$("#finanzascontactoCTM").val(respuesta.cliente[0].finanzascontacto);
-													$("#finanzanemailCTM").val(respuesta.cliente[0].finanzanemail);
-													$("#finanzastelefonoCTM").val(respuesta.cliente[0].finanzastelefono);
-													$("#sucursal_idCTM").val(respuesta.cliente[0].sucursal_id);
-													$("#observacionesCTM").val(respuesta.cliente[0].observaciones);
+												if(respuesta[0]['vendedor_id']==$("#vendedor_id").val()){
+													$("#razonsocialCTM").val(respuesta[0]['razonsocial']);
+													$("#direccionCTM").val(respuesta[0]['direccion']);
+													$("#telefonoCTM").val(respuesta[0]['telefono']);
+													$("#emailCTM").val(respuesta[0]['email']);
+													$("#giro_idCTM").val(respuesta[0]['giro_id']);
+													$("#formapago_idCTM").val(respuesta[0]['formapago_id']);
+													$("#plazopago_idCTM").val(respuesta[0]['plazopago_id']);
+													$("#comunap_idCTM").val(respuesta[0]['comunap_id']);
+													$("#provinciap_idCTM").val(respuesta[0]['provinciap_id']);
+													$("#regionp_idCTM").val(respuesta[0]['regionp_id']);
+													$("#contactonombreCTM").val(respuesta[0]['contactonombre']);
+													$("#contactoemailCTM").val(respuesta[0]['contactoemail']);
+													$("#contactotelefCTM").val(respuesta[0]['contactotelef']);
+													$("#finanzascontactoCTM").val(respuesta[0]['finanzascontacto']);
+													$("#finanzanemailCTM").val(respuesta[0]['finanzanemail']);
+													$("#finanzastelefonoCTM").val(respuesta[0]['finanzastelefono']);
+													$("#sucursal_idCTM").val(respuesta[0]['sucursal_id']);
+													$("#observacionesCTM").val(respuesta[0]['observaciones']);
 													$("#regionp_idCTM").val($('#comunap_idCTM option:selected').attr("region_id"));
 													$("#provinciap_idCTM").val($('#comunap_idCTM option:selected').attr("provincia_id"));
 												
