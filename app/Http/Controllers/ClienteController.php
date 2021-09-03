@@ -660,7 +660,7 @@ class ClienteController extends Controller
             clientebloqueado.descripcion
             FROM cliente left JOIN clientebloqueado
             ON cliente.id=clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-            WHERE cliente.rut=$request->rut
+            WHERE cliente.rut='$request->rut'
             and isnull(cliente.deleted_at)
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))";
             $cliente = DB::select($sql);
@@ -672,7 +672,7 @@ class ClienteController extends Controller
             ON cliente.id=cliente_sucursal.cliente_id and cliente_sucursal.sucursal_id in ($sucurcadena) and isnull(cliente_sucursal.deleted_at)
             INNER JOIN sucursal
             ON cliente_sucursal.sucursal_id=sucursal.id and isnull(sucursal.deleted_at)
-            WHERE cliente.rut=$request->rut
+            WHERE cliente.rut='$request->rut'
             and isnull(cliente.deleted_at)
             order by cliente_sucursal.sucursal_id";
             //dd($sql);
