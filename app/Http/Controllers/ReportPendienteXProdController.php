@@ -296,8 +296,8 @@ function reporte1($request){
                     </a>
                 </td>
                 <td>$aux_enlaceoc</td>
-                <td>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                <td>" . date('d-m-Y', strtotime($data->plazoentrega)) . "</td>
+                <td data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                <td data-order='$data->plazoentrega'>" . date('d-m-Y', strtotime($data->plazoentrega)) . "</td>
                 <td>$data->razonsocial</td>
                 <td>$comuna->nombre</td>
                 <td>$data->producto_id</td>

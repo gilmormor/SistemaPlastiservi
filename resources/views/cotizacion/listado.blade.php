@@ -30,7 +30,6 @@
 					<span class="h3">Cotización</span>
 					<p>No. Cotización: <strong> {{ str_pad($cotizacion->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
 					<p>Fecha: {{date('d-m-Y', strtotime($cotizacion->fechahora))}}</p>
-					<p>Hora: {{date("h:i:s A", strtotime($cotizacion->fechahora))}}</p>
 					<p>Vendedor: {{$cotizacion->vendedor->persona->nombre . " " . $cotizacion->vendedor->persona->apellido}} </p>
 					<p>Teléfono: {{$cotizacion->vendedor->persona->telefono}} </p>
 					<p>email: {{$cotizacion->vendedor->persona->email}} </p>
