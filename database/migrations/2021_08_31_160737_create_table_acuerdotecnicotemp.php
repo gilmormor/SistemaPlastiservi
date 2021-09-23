@@ -83,6 +83,7 @@ class CreateTableAcuerdotecnicotemp extends Migration
             $table->string('at_otrocertificado',200)->comment('Otros certificados: Especifique.')->nullable();
             $table->unsignedBigInteger('at_impresocolor_id')->comment('Color de impreso en producto acuerdo tecnico.')->nullable();
             $table->foreign('at_impresocolor_id','fk_acuerdotecnicotempimpreso_color')->references('id')->on('color')->onDelete('restrict')->onUpdate('restrict');
+            $table->tinyInteger('at_aprobado')->comment('Estatus aprobar Acuerdo tecnico. 1=Aprobado 0=no fue aprobado. Al estar aprobado el siguiente paso es crear el producto y crear el acuerdo tecnico final en la tabla acuerdo tecnico y asociarlo al producto.')->nullable();
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
             $table->timestamps();

@@ -64,7 +64,8 @@ class AcuerdoTecnicoTemp extends Model
         'at_etiqotro',
         'at_etiqotroobs',
         'at_certificados',
-        'at_otrocertificado'
+        'at_otrocertificado',
+        'at_aprobado'
     ];
 
                         

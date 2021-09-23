@@ -66,4 +66,11 @@ class AcuerdoTecnico extends Model
         'at_certificados',
         'at_otrocertificado'
     ];
+
+    //RELACION DE UNO A MUCHOS PRODUCTO
+    public function productos()
+    {
+        return $this->hasMany(Producto::class);
+    }
+    
 }

@@ -29,6 +29,7 @@ class Producto extends Model
         'grupoprod_id',
         'color_id',
         'tipoprod',
+        'acuerdotecnico_id',
         'usuariodel_id'
     ];
 
@@ -95,5 +96,11 @@ class Producto extends Model
                 ->get();
         return $productos;
     }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function acuerdotecnico()
+    {
+        return $this->belongsTo(AcuerdoTecnico::class);
+    }
+    
 
 }
