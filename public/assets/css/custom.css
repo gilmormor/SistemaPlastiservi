@@ -294,3 +294,8 @@ td.highlight {
 .pill-content > .active {
     height: auto;       
 } 
+
+.scrollg{
+    max-height: 500px;
+    overflow-y: scroll; 
+}

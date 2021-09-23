@@ -30,7 +30,9 @@ class CotizacionDetalle extends Model
         'claseprod_id',
         'grupoprod_id',
         'color_id',
-        'observacion'
+        'obs',
+        'acuerdotecnicotemp_id'
+        
     ];
     //RELACION DE UNO A MUCHOS NotaVentaDetalle
     public function notaventadetalles()
@@ -52,4 +54,10 @@ class CotizacionDetalle extends Model
     {
         return $this->belongsTo(Producto::class);
     }
+
+    //Relacion inversa a acuerdotecnicotemp
+    public function acuerdotecnicotemp()
+    {
+        return $this->belongsTo(AcuerdoTecnicoTemp::class);
+    }    
 }

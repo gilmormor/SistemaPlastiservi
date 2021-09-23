@@ -325,7 +325,7 @@ function quitarValidacion(campo,tipo)
 			$("#glypcn"+campo).remove();
 			$('#'+campo).parent().attr("class", columnas);
 			$('#'+campo).parent().children('span').hide();
-			$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
+			//$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
 			return true;
 		break 
 		case "textootro": 
@@ -359,7 +359,9 @@ function quitarValidacion(campo,tipo)
 			$("#glypcn"+campo).remove();
 			$('#'+campo).parent().parent().attr("class", columnas);
 			$('#'+campo).parent().parent().children('span').hide();
+			/*
 			$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
+			*/
 			return true;
 
 		break 
@@ -619,7 +621,20 @@ function insertarModificar(){
 }
 
 function modificarTabla(i){
-	$("#aux_sta").val('0')
+	$("#aux_sta").val('0');
+	//alert($("#tipoprodM").attr('valor'));
+	aux_botonAcuTec = '';
+	if($("#tipoprodM").attr('valor') == 1) {
+		aux_botonAcuTec = ' <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
+		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red"></i> </a>';
+	}else{
+		
+		$("#acuerdotecnico"+i).val("null");
+		$("#tipoprod"+i).val("");
+	}
+
+	$("#producto_idTDT"+i).html($("#producto_idM").val() + aux_botonAcuTec);
+
 	$("#producto_id"+i).val($("#producto_idM").val());
 
 	$("#codintprodTD"+i).html($("#codintprodM").val());
@@ -923,7 +938,6 @@ function editarRegistro(i){
 		}
 	});
 
-
 	$(".selectpicker").selectpicker('refresh');
     $("#myModal").modal('show');
 }
@@ -1150,6 +1164,7 @@ $("#producto_idM").blur(function(){
 					$("#anchoM").val('');
 					$("#anchoM").attr('valor','');
 					$("#obsM").val('');
+					$("#tipoprodM").attr('valor',respuesta[0]['tipoprod']);
 					mostrardatosadUniMed(respuesta);
 
 					$(".selectpicker").selectpicker('refresh');

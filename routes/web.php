@@ -691,3 +691,11 @@ Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('
 Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
 Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');
 
+/*RUTAS MATERIA PRIMA*/
+Route::get('materiaprima', 'MateriaPrimaController@index')->name('materiaprima');
+Route::get('materiaprimapage', 'MateriaPrimaController@materiaprimapage')->name('materiaprimapage');
+Route::get('materiaprima/crear', 'MateriaPrimaController@crear')->name('crear_materiaprima');
+Route::post('materiaprima', 'MateriaPrimaController@guardar')->name('guardar_materiaprima');
+Route::get('materiaprima/{id}/editar', 'MateriaPrimaController@editar')->name('editar_materiaprima');
+Route::put('materiaprima/{id}', 'MateriaPrimaController@actualizar')->name('actualizar_materiaprima');
+Route::delete('materiaprima/{id}', 'MateriaPrimaController@eliminar')->name('eliminar_materiaprima');
