@@ -691,3 +691,8 @@ Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('
 Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
 Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');
 
+
+
+/*RUTAS NOTAS DE VENTA EN TRANSITO*/
+Route::get('notaventatrans', 'NotaVentaTransController@index')->name('notaventatrans');
+Route::get('notaventatranspage', 'NotaVentaTransController@notaventatranspage')->name('NotaVentaTranspage');

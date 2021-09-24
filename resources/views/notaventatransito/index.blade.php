@@ -1,12 +1,12 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Cotización
+Notas Venta en Transito
 @endsection
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/cotizaciontransito/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/notaventatransito/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -15,7 +15,7 @@ Cotización
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Cotización</h3>
+                <h3 class="box-title">Notas Venta en Transito</h3>
             </div>
             <div class="box-body">
                 <div class="table-responsive">
@@ -28,8 +28,6 @@ Cotización
                                 <th>Cliente</th>
                                 <th class="ocultar">aprobstatus</th>
                                 <th class="ocultar">aprobobs</th>
-                                <th class="ocultar">cliente_id</th>
-                                <th class="ocultar">clientetemp_id</th>
                                 <th class="width30">Estado</th>
                                 <th>PDF</th>
                             </tr>
