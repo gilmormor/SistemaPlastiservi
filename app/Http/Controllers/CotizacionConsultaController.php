@@ -151,7 +151,7 @@ class CotizacionConsultaController extends Controller
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i'  style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle'>
                     <td id='id$i' name='id$i'>$data->id</td>
-                    <td id='fechahora$i' name='fechahora$i'>".date('d-m-Y', strtotime($data->fechahora)). " ".date('h:i:s A', strtotime($data->fechahora)) ."</td>
+                    <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>".date('d-m-Y', strtotime($data->fechahora)). " ".date('h:i:s A', strtotime($data->fechahora)) ."</td>
                     <td id='contacto$i' name='contacto$i'>$rut</td>
                     <td id='contacto$i' name='contacto$i'>$data->razonsocial</td>
                     <td>
