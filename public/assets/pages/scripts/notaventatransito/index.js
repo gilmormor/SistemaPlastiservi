@@ -10,7 +10,7 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        'ajax'        : "cotizaciontranspage",
+        'ajax'        : "notaventatranspage",
         "order": [[ 0, "desc" ]],
         'columns'     : [
             {data: 'id'},
@@ -18,10 +18,8 @@ $(document).ready(function () {
             {data: 'razonsocial'},
             {data: 'aprobstatus',className:"ocultar"},
             {data: 'aprobobs',className:"ocultar"},
-            {data: 'cliente_id',className:"ocultar"},
-            {data: 'clientetemp_id',className:"ocultar"},
             {data: 'estado'},
-            {data: 'pdfcot'}
+            {data: 'pdfnv'}
         ],
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -30,6 +28,7 @@ $(document).ready(function () {
             aux_mensaje= "";
             aux_icono = "";
             aux_color = "";
+            console.log(data.aprobstatus);
             if (data.aprobstatus=='1'){
                 aux_mensaje = "Aprobado Vendedor";
                 aux_icono = "glyphicon glyphicon-thumbs-up";
@@ -47,37 +46,17 @@ $(document).ready(function () {
                     }
                 }
             }
-            if (data.aprobstatus != '2'){
-                codigo = data.cliente_id;
-                validacioncliente_id = (codigo == null || codigo.length == 0 || /^\s+$/.test(codigo));
-                if( validacioncliente_id ){
-                    aux_mensaje = aux_mensaje + " - Cliente Nuevo debe ser Validado";
-                    aux_icono = "glyphicon glyphicon-thumbs-down";
-                    aux_color = "btn btn-danger";
-                }else{
-                    codigo = data.clientetemp_id;
-                    aux_validacion = (codigo == null || codigo.length == 0 || /^\s+$/.test(codigo))
-                    if ( aux_validacion != true ){
-                        aux_mensaje= aux_mensaje + " - Cliente Nuevo";
-                        aux_icono = "glyphicon glyphicon-thumbs-up";
-                        aux_color = "btn btn-success";
-                    }
-                }    
-            }
-
             aux_text = 
                 "<a class='btn-xs tooltipsC "+aux_color+"' title='"+ aux_mensaje +"'>"+
                     "<span class='"+aux_icono+"' style='bottom: 0px;top: 2px;'></span>"+
                 "</a>";
-            $('td', row).eq(7).html(aux_text);
+            $('td', row).eq(5).html(aux_text);
+            console.log(aux_text);
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota Venta: " + data.id + "' onclick='genpdfNV(" + data.id + ",1)'>"+
                     "<i class='fa fa-fw fa-file-pdf-o'></i>"+
-                "</a>"+
-                "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
-                    "<i class='fa fa-fw fa-trash text-danger'></i>"+
                 "</a>";
-            $('td', row).eq(8).html(aux_text);
+            $('td', row).eq(6).html(aux_text);
             if ( data.contador * 1 > 0 ) {
                 //console.log(row);
                 ///$('tr').addClass('preciomenor');

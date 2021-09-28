@@ -108,8 +108,8 @@ class ReportSolDespController extends Controller
                             $data->id
                         </a>
                     </td>
-                    <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                    <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
+                    <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                    <td id='fechaestdesp$i' name='fechaestdesp$i' data-order='$data->fechaestdesp'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                     <td>
