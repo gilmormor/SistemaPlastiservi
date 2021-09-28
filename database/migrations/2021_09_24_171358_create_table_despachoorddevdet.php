@@ -21,6 +21,7 @@ class CreateTableDespachoorddevdet extends Migration
             $table->unsignedBigInteger('despachoorddet_id');
             $table->foreign('despachoorddet_id','fk_despachoorddevdet_despachoorddet')->references('id')->on('despachoorddet')->onDelete('restrict')->onUpdate('restrict');
             $table->float('cantdev',10,2)->comment('Cantidad devuelta.')->nullable();
+            $table->string('obsdet',50)->comment('Observaciones Detalle')->nullable();
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
             $table->timestamps();

@@ -1471,3 +1471,15 @@ $(".selectpicker").selectpicker({
 	selectAllText : "Selec todo",
 	deselectAllText : "Borrar todo",
 	});
+
+function fechaddmmaaaa(f){
+	dia = f.getDate();
+	d = dia.toString();
+	d = d.padStart(2, 0);
+	mes = f.getMonth();
+	m = f.toLocaleString('es', { month: '2-digit' }); //mes.toString();
+	m = m.padStart(2, 0);
+	fecha = d + "/" + m + "/" + f.getFullYear();
+	
+	return fecha; 
+}

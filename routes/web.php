@@ -696,3 +696,18 @@ Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->n
 /*RUTAS NOTAS DE VENTA EN TRANSITO*/
 Route::get('notaventatrans', 'NotaVentaTransController@index')->name('notaventatrans');
 Route::get('notaventatranspage', 'NotaVentaTransController@notaventatranspage')->name('NotaVentaTranspage');
+
+
+/*RUTAS DEVOLUCION ORDEN DE DEPACHO*/
+Route::get('despachoorddev', 'DespachoOrdDevController@index')->name('despachoorddev');
+Route::get('despachoorddevpage', 'DespachoOrdDevController@despachoorddevpage')->name('despachoorddevpage');
+Route::get('despachoorddev/crear', 'DespachoOrdDevController@crear')->name('crear_despachoorddev');
+Route::post('despachoorddev', 'DespachoOrdDevController@guardar')->name('guardar_despachoorddev');
+Route::get('despachoorddev/{id}/editar', 'DespachoOrdDevController@editar')->name('editar_despachoorddev');
+Route::put('despachoorddev/{id}', 'DespachoOrdDevController@actualizar')->name('actualizar_despachoorddev');
+Route::delete('despachoorddev/{id}', 'DespachoOrdDevController@eliminar')->name('eliminar_despachoorddev');
+Route::get('despachoorddev/consultadespordfact', 'DespachoOrdDevController@consultadespordfact')->name('consultadespordfact_despachoorddev');
+Route::get('despachoorddev/reporte', 'DespachoOrdDevController@reporte')->name('reporte_despachoorddev');
+Route::get('despachoorddev/creardev/{id}', 'DespachoOrdDevController@creardev')->name('creardev_despachoorddev');
+
+

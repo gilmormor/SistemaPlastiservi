@@ -18,6 +18,8 @@ class CreateTableDespachoorddev extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('despachoord_id');
             $table->foreign('despachoord_id','fk_despachoorddev_despachoord')->references('id')->on('despachoord')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('usuario_id')->comment('Usuario que creo el registro');
+            $table->foreign('usuario_id','fk_despachoorddev_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->dateTime('fechahora')->comment('Fecha y hora.');
             $table->string('obs',200)->comment('Observaciones')->nullable();
             $table->dateTime('anulada')->comment('Fecha cuando fue anulada la devolucion de orden de despacho.')->nullable();;
