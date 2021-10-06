@@ -2,11 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidarDespachoOrdDev;
 use App\Models\AreaProduccion;
 use App\Models\Cliente;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
+use App\Models\DespachoObs;
+use App\Models\DespachoOrd;
+use App\Models\DespachoOrdDev;
+use App\Models\DespachoOrdDevDet;
+use App\Models\DespachoOrdDevMotivo;
+use App\Models\Empresa;
+use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\PlazoPago;
+use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
@@ -26,12 +36,12 @@ class DespachoOrdDevController extends Controller
         return view('despachoorddev.index');
     }
 
-    
     public function despachoorddevpage(){
         $sql = "SELECT despachoorddev.id,DATE_FORMAT(despachoorddev.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                 cliente.razonsocial,despachoord_id,
                 '' as pdfcot,
-                despachoorddev.fechahora as fechahora_aaaammdd
+                despachoorddev.fechahora as fechahora_aaaammdd,
+                despachoord.notaventa_id,despachoord.despachosol_id
             FROM despachoorddev inner join despachoord
             on despachoord.id = despachoorddev.despachoord_id and isnull(despachoord.deleted_at)
             and despachoord.id not in (select despachoordanul.despachoord_id from despachoordanul where isnull(despachoordanul.deleted_at))
@@ -41,13 +51,8 @@ class DespachoOrdDevController extends Controller
             on cliente.id = notaventa.cliente_id and isnull(cliente.deleted_at)
             where isnull(despachoorddev.anulada) and isnull(despachoorddev.deleted_at)
             ORDER BY despachoorddev.id desc;";
-
         $datas = DB::select($sql);
-        //dd($datas);
-
         return datatables($datas)->toJson();
-
-        
     }
 
     /**
@@ -66,9 +71,65 @@ class DespachoOrdDevController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    //public function guardar(ValidarDespachoOrdDev $request)
+    public function guardar(Request $request)
     {
-        //
+        can('guardar-devolucion-orden-despacho');
+        $despachoord = DespachoOrd::find($request->despachoord_id);
+        if($despachoord != null){
+            if(isset($despachoord->despachoordanul) == false){
+                if($request->updated_at == $despachoord->updated_at){
+                    //dd($request);
+                    $despachoord->updated_at = date("Y-m-d H:i:s");
+                    $despachoord->save();
+                    $hoy = date("Y-m-d H:i:s");
+                    $request->request->add(['fechahora' => $hoy]);
+                    $request->request->add(['usuario_id' => auth()->id()]);
+                    $despachoorddev = DespachoOrdDev::create($request->all());
+                    $despachoorddev_id = $despachoorddev->id;
+                    $cont_producto = count($request->producto_id);
+                    if($cont_producto>0){
+                        for ($i=0; $i < $cont_producto ; $i++){
+                            $aux_cantord = $request->cantord[$i];
+                            if(is_null($request->producto_id[$i])==false && is_null($aux_cantord)==false && $aux_cantord > 0){
+                                $despachoorddevdet = new DespachoOrdDevDet();
+                                $despachoorddevdet->despachoorddev_id = $despachoorddev_id;
+                                $despachoorddevdet->despachoorddet_id = $request->despachoorddet_id[$i];
+                                $despachoorddevdet->cantdev = $request->cantord[$i];
+                                if($despachoorddevdet->save()){
+                                    /*
+                                    $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
+                                    $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                                    $notaventadetalle->save();
+                                    */
+                                    //$despacho_id = $despachoord->id;
+                                }
+                            }
+                        }
+                    }
+                    return redirect('despachoorddev')->with([
+                        'mensaje'=>'Registro creado con exito.',
+                        'tipo_alert' => 'alert-success'
+                    ]);
+
+                }else{
+                    return redirect('despachoorddev/reporte')->with([
+                        'mensaje'=>'Registro no fue creado. Registro modificado por otro usuario. Fecha Hora: '.$despachoord->updated_at,
+                        'tipo_alert' => 'alert-error'
+                    ]);
+                }    
+            }else{
+                return redirect('despachoorddev/reporte')->with([
+                    'mensaje'=>'No se puede hacer devolución, Orden de despacho fue anulada.',
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }else{
+            return redirect('despachoorddev/consultadespordfact')->with([
+                'mensaje'=>'No se puede hacer devolución, Registro fue eliminado.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
     }
 
     /**
@@ -88,9 +149,31 @@ class DespachoOrdDevController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editar($id)
     {
-        //
+        can('editar-devolucion-orden-despacho');
+
+        $despachoorddev = DespachoOrdDev::findOrFail($id);
+        $despachoorddet_idArray = DespachoOrdDevDet::where('despachoorddev_id',$id)->pluck('despachoorddet_id')->toArray();
+        $despachoorddevdets = $despachoorddev->despachoorddevdets()->get();
+        $data = DespachoOrd::findOrFail($despachoorddev->despachoord_id);
+        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
+        $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
+        $detalles = $data->despachoorddets()
+                    ->whereIn('despachoorddet.id', $despachoorddet_idArray)
+                    ->get();
+
+                    //->whereIn('despachoorddet.id', $sucurArray)
+        //dd($detalles);
+        $empresa = Empresa::findOrFail(1);
+        $despachoorddevmotivos = DespachoOrdDevMotivo::orderBy('id')->get();
+        $fecha = date("d/m/Y", strtotime($data->fechahora));
+
+        $aux_sta=3;
+        $aux_statusPant = 0;
+
+        return view('despachoorddev.editar', compact('data','detalles','empresa','aux_sta','fecha','aux_statusPant','despachoorddev','despachoorddevdets','despachoorddevmotivos'));
+  
     }
 
     /**
@@ -100,9 +183,66 @@ class DespachoOrdDevController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function actualizar(Request $request, $id)
     {
-        //
+        can('guardar-motivo-devolucion-despacho');
+        $despachoorddev = DespachoOrdDev::find($request->despachoorddev_id);
+        //dd($request);
+        if($despachoorddev != null){
+
+            if($despachoorddev->despachoord->updated_at == $request->updated_at and $despachoorddev->updated_at == $request->devupdated_at ){
+                $despachoorddev->updated_at = date("Y-m-d H:i:s");
+                $despachoorddev->despachoorddevmotivo_id = $request->despachoorddevmotivo_id;
+                $despachoorddev->obs = $request->obs;
+                if($despachoorddev->save()){
+                    $cont_producto = count($request->producto_id);
+                    if($cont_producto>0){
+                        for ($i=0; $i < $cont_producto ; $i++){
+                            if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                                if(is_null($request->despachoorddevdet_id[$i])){
+                                    if($request->cantord[$i] > 0){
+                                        $despachoorddevdet = new DespachoOrdDevDet();
+                                        $despachoorddevdet->despachoorddev_id = $request->despachoorddev_id;
+                                        $despachoorddevdet->despachoorddet_id = $request->despachoorddet_id[$i];
+                                        $despachoorddevdet->cantdev = $request->cantord[$i];
+                                        $despachoorddevdet->save();
+                                    }
+                                }else{
+                                    $despachoorddevdet = DespachoOrdDevDet::findOrFail($request->despachoorddevdet_id[$i]);
+                                    $despachoorddevdet->cantdev = $request->cantord[$i];
+                                    if($despachoorddevdet->save()){
+                                        if($request->cantord[$i]==0){
+                                            $despachoorddevdet->usuariodel_id = auth()->id();
+                                            $despachoorddevdet->save();
+                                            $despachoorddevdet->delete();
+                                        }
+                                    }    
+                                }
+                            }
+                        }
+                    }
+                    return redirect('despachoorddev')->with([
+                        'mensaje'=>'Registro actualizado con exito.',
+                        'tipo_alert' => 'alert-success'
+                    ]);
+                }else{
+                    return redirect('despachoorddev')->with([
+                        'mensaje'=>'Registro no fue modificado. Error al intentar Actualizar.',
+                            'tipo_alert' => 'alert-error'
+                        ]);    
+                }
+            }else{
+                return redirect('despachoorddev')->with([
+                    'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachoorddev->updated_at,
+                        'tipo_alert' => 'alert-error'
+                    ]);
+            }
+        }else{
+            return redirect('despachoorddev')->with([
+                'mensaje'=>'Registro no fue Modificado. La devolucion fue eliminada por otro usuario.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
     }
 
     /**
@@ -111,9 +251,28 @@ class DespachoOrdDevController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function eliminar(Request $request,$id)
     {
-        //
+        can('eliminar-cotizacion');
+        //dd($request);
+        if ($request->ajax()) {
+            //dd($id);
+            if (DespachoOrdDev::destroy($id)) {
+                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                $despachoorddev = DespachoOrdDev::withTrashed()->findOrFail($id);
+                $despachoorddev->usuariodel_id = auth()->id();
+                $despachoorddev->save();
+                //Eliminar detalle de cotizacion
+                DespachoOrdDevDet::where('despachoorddev_id', $id)->update(['usuariodel_id' => auth()->id()]);
+                DespachoOrdDevDet::where('despachoorddev_id', '=', $id)->delete();
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+
     }
 
     public function consultadespordfact(Request $request){
@@ -148,8 +307,24 @@ class DespachoOrdDevController extends Controller
         }
     }
 
-    public function creardev(Request $request){
-        dd(route('creardev_despachoorddev', ['id' => '0']));
+    public function creardev($id){
+        can('crear-orden-despacho');
+        $data = DespachoOrd::findOrFail($id);
+        //dd($data);
+        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
+        $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
+        $detalles = $data->despachoorddets()->get();
+        //dd($detalles);
+        $vendedor_id=$data->notaventa->vendedor_id;
+        $fecha = date("d/m/Y", strtotime($data->fechahora));
+        $empresa = Empresa::findOrFail(1);
+        $despachoorddevmotivos = DespachoOrdDevMotivo::orderBy('id')->get();
+        $aux_sta=2;
+        $aux_statusPant = 0;
+
+        //dd($clientedirecs);
+        return view('despachoorddev.crear', compact('data','detalles','fecha','empresa','aux_sta','aux_cont','aux_statusPant','vendedor_id','despachoorddevmotivos'));
+        
     }
 }
 
@@ -372,6 +547,8 @@ function consultaorddesp($request){
             ON comuna.id=despachoord.comunaentrega_id
             LEFT JOIN despachoordanul
             ON despachoordanul.despachoord_id=despachoord.id
+            LEFT JOIN vista_sumdevorddespdet
+            ON vista_sumdevorddespdet.despachoorddet_id=despachoorddet.id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condFechaFac
@@ -390,7 +567,8 @@ function consultaorddesp($request){
             and $aux_condguiadespacho
             and $aux_condnumfactura
             and isnull(despachoord.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
-            GROUP BY despachoord.id;";
+            AND despachoorddet.cantdesp>if(isnull(vista_sumdevorddespdet.cantdev),0,vista_sumdevorddespdet.cantdev)
+            GROUP BY despachoord.id desc;";
             
             //Linea en comentario para poder mostrar todos los registros incluso las notas de venta que  que fueron cerradas de manera forzada
             //and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))

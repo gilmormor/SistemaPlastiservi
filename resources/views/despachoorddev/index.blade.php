@@ -20,7 +20,7 @@ Devolución Orden de Despacho
                     <a href="{{route('consultadespordfact_despachoorddev')}}" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i> Crear Devolución
                     </a>
-                </div>                        
+                </div>
             </div>
             <div class="box-body">
                 <div class="table-responsive">
@@ -29,7 +29,9 @@ Devolución Orden de Despacho
                         <thead>
                             <tr>
                                 <th class="width70">ID</th>
-                                <th class="width200">Fecha</th>
+                                <th class="width100">Fecha</th>
+                                <th class="width70">Nota Venta</th>
+                                <th class="width70">SolDesp</th>
                                 <th class="width70">OrdDesp</th>
                                 <th>Razon Social</th>
                                 <th class="ocultar">fechaaaaammdd</th>

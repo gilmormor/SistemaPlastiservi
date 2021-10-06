@@ -13,6 +13,7 @@ class DespachoOrdDev extends Model
         'despachoord_id',
         'usuario_id',
         'fechahora',
+        'despachoorddevmotivo_id',
         'obs',
         'anulada',
         'usuariodel_id'
@@ -23,18 +24,25 @@ class DespachoOrdDev extends Model
     {
         return $this->hasMany(DespachoOrdDevDet::class,'despachoorddev_id');
     }
-
-
+    //Relacion inversa a despachoord
+    public function despachoord()
+    {
+        return $this->belongsTo(DespachoOrd::class);
+    }
     //Relacion inversa a Usuario
     public function usuario()
     {
         return $this->belongsTo(Usuario::class);
     }
-
     //Relacion inversa a User
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    //Relacion inversa a DespachoOrdDevMotivo
+    public function despachoorddevmotivo()
+    {
+        return $this->belongsTo(DespachoOrdDevMotivo::class);
     }
 
 }

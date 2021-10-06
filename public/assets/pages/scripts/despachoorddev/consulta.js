@@ -169,6 +169,7 @@ function consultarpage(data){
         'processing'  : true,
         'serverSide'  : true,
         'ajax'        : "/despachoorddev/reporte/" + cadena,
+        'order': [[ 0, "desc" ]],
         'columns'     : [
             {data: 'id'},
             {data: 'fechahora'},
@@ -190,7 +191,6 @@ function consultarpage(data){
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
-
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD(" + data.id + ",1)'>"+
                     data.id +
@@ -249,9 +249,9 @@ function consultarpage(data){
             $('td', row).eq(11).attr('style','text-align:center');
 
             aux_text =
-                "<a href='" + $("#rutacreardev").val() + "' class='btn-accion-tabla tooltipsC' title='Hacer Devolucion'>" +
+                "<a href='" + $("#rutacreardev").val() + data.id + "' class='btn-accion-tabla tooltipsC' title='Hacer Devolucion'>" +
                     "<button type='button' class='btn btn-default btn-xs'>" +
-                        "<i class='fa fa-fw $data->icono'></i>" +
+                        "<i class='fa fa-fw fa-undo'></i>" +
                     "</button>" +
                 "</a>";
 

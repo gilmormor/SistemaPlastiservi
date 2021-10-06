@@ -711,3 +711,11 @@ Route::get('despachoorddev/reporte', 'DespachoOrdDevController@reporte')->name('
 Route::get('despachoorddev/creardev/{id}', 'DespachoOrdDevController@creardev')->name('creardev_despachoorddev');
 
 
+/*RUTAS Motivo devolucion Despacho*/
+Route::get('despachoorddevmotivo', 'DespachoOrdDevMotivoController@index')->name('despachoorddevmotivo');
+Route::get('despachoorddevmotivopage', 'DespachoOrdDevMotivoController@despachoorddevmotivopage')->name('despachoorddevmotivopage');
+Route::get('despachoorddevmotivo/crear', 'DespachoOrdDevMotivoController@crear')->name('crear_despachoorddevmotivo');
+Route::post('despachoorddevmotivo', 'DespachoOrdDevMotivoController@guardar')->name('guardar_despachoorddevmotivo');
+Route::get('despachoorddevmotivo/{id}/editar', 'DespachoOrdDevMotivoController@editar')->name('editar_despachoorddevmotivo');
+Route::put('despachoorddevmotivo/{id}', 'DespachoOrdDevMotivoController@actualizar')->name('actualizar_despachoorddevmotivo');
+Route::delete('despachoorddevmotivo/{id}', 'DespachoOrdDevMotivoController@eliminar')->name('eliminar_despachoorddevmotivo');
