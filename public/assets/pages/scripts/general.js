@@ -1024,6 +1024,15 @@ function pdfSolDespPrev(id,stareport){ //GENERAR PDF Solicitud despacho previo
 	$("#myModalpdf").modal('show')
 }
 
+function genpdfODRec(id,stareport){ //GENERAR PDF Orden de Despacho Rechazo
+	if($("#myModalTablaOD")){
+		$("#myModalTablaOD").modal('hide');
+	}
+	$('#contpdf').attr('src', '/despachoordrec/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+}
+
+
 
 $("#myModalpdf").on("hidden.bs.modal", function () {
 	$('#contpdf').attr('src', 'about:blank');

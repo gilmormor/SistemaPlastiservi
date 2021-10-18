@@ -698,24 +698,31 @@ Route::get('notaventatrans', 'NotaVentaTransController@index')->name('notaventat
 Route::get('notaventatranspage', 'NotaVentaTransController@notaventatranspage')->name('NotaVentaTranspage');
 
 
-/*RUTAS DEVOLUCION ORDEN DE DEPACHO*/
-Route::get('despachoorddev', 'DespachoOrdDevController@index')->name('despachoorddev');
-Route::get('despachoorddevpage', 'DespachoOrdDevController@despachoorddevpage')->name('despachoorddevpage');
-Route::get('despachoorddev/crear', 'DespachoOrdDevController@crear')->name('crear_despachoorddev');
-Route::post('despachoorddev', 'DespachoOrdDevController@guardar')->name('guardar_despachoorddev');
-Route::get('despachoorddev/{id}/editar', 'DespachoOrdDevController@editar')->name('editar_despachoorddev');
-Route::put('despachoorddev/{id}', 'DespachoOrdDevController@actualizar')->name('actualizar_despachoorddev');
-Route::delete('despachoorddev/{id}', 'DespachoOrdDevController@eliminar')->name('eliminar_despachoorddev');
-Route::get('despachoorddev/consultadespordfact', 'DespachoOrdDevController@consultadespordfact')->name('consultadespordfact_despachoorddev');
-Route::get('despachoorddev/reporte', 'DespachoOrdDevController@reporte')->name('reporte_despachoorddev');
-Route::get('despachoorddev/creardev/{id}', 'DespachoOrdDevController@creardev')->name('creardev_despachoorddev');
+/*RUTAS Rechazo ORDEN DE DEPACHO*/
+Route::get('despachoordrec', 'DespachoOrdRecController@index')->name('despachoordrec');
+Route::get('despachoordrecpage', 'DespachoOrdRecController@despachoordrecpage')->name('despachoordrecpage');
+Route::get('despachoordrec/crear', 'DespachoOrdRecController@crear')->name('crear_despachoordrec');
+Route::post('despachoordrec', 'DespachoOrdRecController@guardar')->name('guardar_despachoordrec');
+Route::get('despachoordrec/{id}/editar', 'DespachoOrdRecController@editar')->name('editar_despachoordrec');
+Route::put('despachoordrec/{id}', 'DespachoOrdRecController@actualizar')->name('actualizar_despachoordrec');
+Route::delete('despachoordrec/{id}', 'DespachoOrdRecController@eliminar')->name('eliminar_despachoordrec');
+Route::get('despachoordrec/consultadespordfact', 'DespachoOrdRecController@consultadespordfact')->name('consultadespordfact_despachoordrec');
+Route::get('despachoordrec/reporte', 'DespachoOrdRecController@reporte')->name('reporte_despachoordrec');
+Route::get('despachoordrec/crearrec/{id}', 'DespachoOrdRecController@crearrec')->name('crearrec_despachoordrec');
+Route::post('despachoordrec/{id}/anular', 'DespachoOrdRecController@anular')->name('anular_despachoordrec');
+Route::get('despachoordrec/{id}/{stareport}/exportPdf', 'DespachoOrdRecController@exportPdf')->name('exportPdf_despachoordrec');
 
+/*RUTAS Motivo Rechazo Orden Despacho*/
+Route::get('despachoordrecmotivo', 'DespachoOrdRecMotivoController@index')->name('despachoordrecmotivo');
+Route::get('despachoordrecmotivopage', 'DespachoOrdRecMotivoController@despachoordrecmotivopage')->name('despachoordrecmotivopage');
+Route::get('despachoordrecmotivo/crear', 'DespachoOrdRecMotivoController@crear')->name('crear_despachoordrecmotivo');
+Route::post('despachoordrecmotivo', 'DespachoOrdRecMotivoController@guardar')->name('guardar_despachoordrecmotivo');
+Route::get('despachoordrecmotivo/{id}/editar', 'DespachoOrdRecMotivoController@editar')->name('editar_despachoordrecmotivo');
+Route::put('despachoordrecmotivo/{id}', 'DespachoOrdRecMotivoController@actualizar')->name('actualizar_despachoordrecmotivo');
+Route::delete('despachoordrecmotivo/{id}', 'DespachoOrdRecMotivoController@eliminar')->name('eliminar_despachoordrecmotivo');
 
-/*RUTAS Motivo devolucion Despacho*/
-Route::get('despachoorddevmotivo', 'DespachoOrdDevMotivoController@index')->name('despachoorddevmotivo');
-Route::get('despachoorddevmotivopage', 'DespachoOrdDevMotivoController@despachoorddevmotivopage')->name('despachoorddevmotivopage');
-Route::get('despachoorddevmotivo/crear', 'DespachoOrdDevMotivoController@crear')->name('crear_despachoorddevmotivo');
-Route::post('despachoorddevmotivo', 'DespachoOrdDevMotivoController@guardar')->name('guardar_despachoorddevmotivo');
-Route::get('despachoorddevmotivo/{id}/editar', 'DespachoOrdDevMotivoController@editar')->name('editar_despachoorddevmotivo');
-Route::put('despachoorddevmotivo/{id}', 'DespachoOrdDevMotivoController@actualizar')->name('actualizar_despachoorddevmotivo');
-Route::delete('despachoorddevmotivo/{id}', 'DespachoOrdDevMotivoController@eliminar')->name('eliminar_despachoorddevmotivo');
+/*RUTAS REPORTE RECHAZO ORDEN DESPACHO*/
+Route::get('reportorddesprec', 'ReportOrdDespRecController@index')->name('reportorddesprec');
+Route::get('reportorddesprec/reporte', 'ReportOrdDespRecController@reporte')->name('reportorddesprec_reporte');
+Route::get('reportorddesprec/exportPdf', 'ReportOrdDespRecController@exportPdf')->name('reportorddesprec_exportPdf');
+Route::get('reportorddesprec/totalizarRep', 'ReportOrdDespRecController@totalizarRep')->name('reportorddesprec_totalizarRep');

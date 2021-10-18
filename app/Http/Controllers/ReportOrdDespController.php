@@ -29,7 +29,6 @@ class ReportOrdDespController extends Controller
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
         $sucurArray = $clientesArray['sucurArray'];
-
         
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
@@ -54,7 +53,6 @@ class ReportOrdDespController extends Controller
         $respuesta['exito'] = false;
         $respuesta['mensaje'] = "Código no Existe";
         $respuesta['tabla'] = "";
-    
         if($request->ajax()){
             $datas = consultaorddesp($request);
     
@@ -261,6 +259,10 @@ function consultaorddesp($request){
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "despachoord.fechahora>='$fechad' and despachoord.fechahora<='$fechah'";
     }
+    if(!empty($request->id) or !empty($request->oc_id) or !empty($request->notaventa_id) or !empty($request->despachosol_id)){
+        $aux_condFecha = " true";
+    }
+
     if(empty($request->rut)){
         $aux_condrut = " true";
     }else{
@@ -352,7 +354,6 @@ function consultaorddesp($request){
         $fechad = date_format($fecha, 'Y-m-d');
         $aux_condfechaestdesp = "despachoord.fechaestdesp='$fechad'";
     }
-
 
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
 

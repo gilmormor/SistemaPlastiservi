@@ -17,6 +17,7 @@ use App\Models\DespachoObs;
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnul;
 use App\Models\DespachoOrdDet;
+use App\Models\DespachoOrdRec;
 use App\Models\DespachoSol;
 use App\Models\Empresa;
 use App\Models\FormaPago;
@@ -197,6 +198,7 @@ class DespachoOrdController extends Controller
         $despachoobss = DespachoObs::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
+        session(['aux_fecinicreOD' => date("Y-m-d H:i:s")]); //Fecha inicio de creacion Orden de despacho
 
         //dd($clientedirecs);
         return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
@@ -212,60 +214,75 @@ class DespachoOrdController extends Controller
     public function guardar(ValidarDespachoOrd $request)
     {
         can('guardar-orden-despacho');
-        //dd($request);
+        //dd(session('aux_fecinicreOD'));
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
         //dd($notaventacerrada);
         if(count($notaventacerrada) == 0){
             $despachosol = DespachoSol::findOrFail($request->despachosol_id);
-            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
-            if(count($clibloq) > 0){
+
+            $array_despachoord = DespachoOrd::where("despachosol_id",$request->despachosol_id)->pluck('id')->toArray();
+            $despachoordrec = DespachoOrdRec::whereIn('despachoord_id',$array_despachoord)
+                            ->where("updated_at",">",session('aux_fecinicreOD'))
+                            ->get();
+            if(count($despachoordrec) > 0){
                 return redirect('despachoord/index')->with([
-                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                    'mensaje'=>'Registro no fue creado. Motivo: Fue actualizado un Rechazo.',
                     'tipo_alert' => 'alert-error'
                 ]);
-            }
-            if($despachosol->updated_at == $request->updated_at){
-                $despachosol->updated_at = date("Y-m-d H:i:s");
-                $despachosol->save();
-                $hoy = date("Y-m-d H:i:s");
-                $request->request->add(['fechahora' => $hoy]);
-                $request->request->add(['usuario_id' => auth()->id()]);
-                $dateInput = explode('/',$request->plazoentrega);
-                $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-                $dateInput = explode('/',$request->fechaestdesp);
-                $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-                $despachoord = DespachoOrd::create($request->all());
-                $despachoord_id = $despachoord->id;
-                $cont_producto = count($request->producto_id);
-                if($cont_producto>0){
-                    for ($i=0; $i < $cont_producto ; $i++){
-                        $aux_cantord = $request->cantord[$i];
-                        if(is_null($request->producto_id[$i])==false && is_null($aux_cantord)==false && $aux_cantord > 0){
-                            $despachoorddet = new DespachoOrdDet();
-                            $despachoorddet->despachoord_id = $despachoord_id;
-                            $despachoorddet->despachosoldet_id = $request->despachosoldet_id[$i];
-                            $despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];
-                            $despachoorddet->cantdesp = $request->cantord[$i];
-                            if($despachoorddet->save()){
-                                /*
-                                $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
-                                $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
-                                $notaventadetalle->save();
-                                */
-                                //$despacho_id = $despachoord->id;
+
+            }else{
+                //dd($aux_despachoord);
+
+                $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
+                if(count($clibloq) > 0){
+                    return redirect('despachoord/index')->with([
+                        'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                        'tipo_alert' => 'alert-error'
+                    ]);
+                }
+                if($despachosol->updated_at == $request->updated_at){
+                    $despachosol->updated_at = date("Y-m-d H:i:s");
+                    $despachosol->save();
+                    $hoy = date("Y-m-d H:i:s");
+                    $request->request->add(['fechahora' => $hoy]);
+                    $request->request->add(['usuario_id' => auth()->id()]);
+                    $dateInput = explode('/',$request->plazoentrega);
+                    $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+                    $dateInput = explode('/',$request->fechaestdesp);
+                    $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+                    $despachoord = DespachoOrd::create($request->all());
+                    $despachoord_id = $despachoord->id;
+                    $cont_producto = count($request->producto_id);
+                    if($cont_producto>0){
+                        for ($i=0; $i < $cont_producto ; $i++){
+                            $aux_cantord = $request->cantord[$i];
+                            if(is_null($request->producto_id[$i])==false && is_null($aux_cantord)==false && $aux_cantord > 0){
+                                $despachoorddet = new DespachoOrdDet();
+                                $despachoorddet->despachoord_id = $despachoord_id;
+                                $despachoorddet->despachosoldet_id = $request->despachosoldet_id[$i];
+                                $despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];
+                                $despachoorddet->cantdesp = $request->cantord[$i];
+                                if($despachoorddet->save()){
+                                    /*
+                                    $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
+                                    $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                                    $notaventadetalle->save();
+                                    */
+                                    //$despacho_id = $despachoord->id;
+                                }
                             }
                         }
                     }
+                    return redirect('despachoord/index')->with([
+                        'mensaje'=>'Registro creado con exito.',
+                        'tipo_alert' => 'alert-success'
+                    ]);
+                }else{
+                    return redirect('despachoord/index')->with([
+                        'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                        'tipo_alert' => 'alert-error'
+                    ]);
                 }
-                return redirect('despachoord/index')->with([
-                    'mensaje'=>'Registro creado con exito.',
-                    'tipo_alert' => 'alert-success'
-                ]);
-            }else{
-                return redirect('despachoord/index')->with([
-                    'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
-                    'tipo_alert' => 'alert-error'
-                ]);
             }
         }else{
             return redirect('despachoord/index')->with([
