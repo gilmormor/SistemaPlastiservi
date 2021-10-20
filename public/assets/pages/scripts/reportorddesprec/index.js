@@ -248,7 +248,7 @@ function consultarpage(data){
 
             if(data.oc_file != "" && data.oc_file != null){
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
                         data.oc_id + 
                     "</a>";
                 $('td', row).eq(7).html(aux_text);
