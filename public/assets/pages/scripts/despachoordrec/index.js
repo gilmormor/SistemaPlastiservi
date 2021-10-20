@@ -13,18 +13,17 @@ $(document).ready(function () {
         'order': [[ 0, "desc" ]],
         'columns'     : [
             {data: 'id'},
+            {data: 'documento_id'},
             {data: 'fechahora'},
             {data: 'notaventa_id'},
             {data: 'despachosol_id'},
             {data: 'despachoord_id'},
             {data: 'razonsocial'},
             {data: 'fechahora_aaaammdd',className:"ocultar"},
+            {data: 'documento_file',className:"ocultar"},
             {defaultContent : "<a id='btnEditar' href='despachoordrec' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'> " + 
                     "<i class='fa fa-fw fa-pencil'></i>" + 
                 "</a>" +
-                "<!--<a href='despachoordrec' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>" + 
-                    "<i class='fa fa-fw fa-trash text-danger'></i>" + 
-                "</a> -->" +
                 "<a href='despachoordrec' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular registro'>" +
                     "<span class='glyphicon glyphicon-remove' style='bottom: 0px;top: 2px;'></span>" +
                 "</a>"
@@ -38,22 +37,31 @@ $(document).ready(function () {
                             data.id +
                         "</a>";
             $('td', row).eq(0).html(aux_texto);
-            
-            $('td', row).eq(1).attr('data-order',data.fechahora_aaaammdd);
+
+            codigo = data.documento_file;
+            if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo) ){
+                aux_texto = "";
+            }else{
+                aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Documento de Rechazo' onclick='verdocadj(\"" + data.documento_file + "\",\"despachorechazo\")'>" +
+                                data.documento_id +
+                            "</a>";
+            }
+            $('td', row).eq(1).html(aux_texto);
+            $('td', row).eq(2).attr('data-order',data.fechahora_aaaammdd);
             aux_fecha = new Date(data.fechahora_aaaammdd);
-            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+            $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
             aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
                             data.notaventa_id +
                         "</a>";
-            $('td', row).eq(2).html(aux_texto);
+            $('td', row).eq(3).html(aux_texto);
             aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" +
                             data.despachosol_id +
                         "</a>";
-            $('td', row).eq(3).html(aux_texto);
+            $('td', row).eq(4).html(aux_texto);
             aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Despacho' onclick='genpdfOD(" + data.despachoord_id + ",1)'>" +
                             data.despachoord_id +
                         "</a>";
-            $('td', row).eq(4).html(aux_texto);
+            $('td', row).eq(5).html(aux_texto);
         }
     });
 });

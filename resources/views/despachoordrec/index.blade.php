@@ -29,12 +29,14 @@ Rechazo Orden de Despacho
                         <thead>
                             <tr>
                                 <th class="width70">ID</th>
+                                <th class="width70">Doc</th>
                                 <th class="width100">Fecha</th>
                                 <th class="width70">Nota Venta</th>
                                 <th class="width70">SolDesp</th>
                                 <th class="width70">OrdDesp</th>
                                 <th>Razon Social</th>
                                 <th class="ocultar">fechaaaaammdd</th>
+                                <th class="ocultar">documento_file</th>
                                 <th class="width70">Acción</th>
                             </tr>
                         </thead>

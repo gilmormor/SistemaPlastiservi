@@ -171,7 +171,7 @@ function consultarpage(data){
         'order': [[ 0, "desc" ]],
         'columns'     : [
             {data: 'id'},
-            {data: 'sta_anulada',className:"ocultar"},
+            {data: 'documento_id'},
             {data: 'fechahora'},
             {data: 'razonsocial'},
             {data: 'notaventa_id'},
@@ -187,7 +187,9 @@ function consultarpage(data){
             {data: 'fechafactura'},
             {data: 'recmotivonombre'},
             {data: 'oc_file',className:"ocultar"},
-            {data: 'anulada',className:"ocultar"}
+            {data: 'anulada',className:"ocultar"},
+            {data: 'sta_anulada',className:"ocultar"},
+            {data: 'documento_file',className:"ocultar"}
         ],
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -197,17 +199,17 @@ function consultarpage(data){
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazo Orden Despacho' onclick='genpdfODRec(" + data.id + ",1)'>"+
                     data.id +
                 "</a>";
-            if($('td', row).eq(1).html()=='A'){
+            if(data.sta_anulada == 'A'){
                 aux_fecha = new Date(data.fechahora);
                 aux_text = aux_text +
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Anulada:" + fechaddmmaaaa(aux_fecha) + "'>" +
                     "<span class='glyphicon glyphicon-remove text-danger'></span>" +
                 "</a>";
-                //$('td', row).eq(1).html(aux_text);
             }
-
-
             $('td', row).eq(0).html(aux_text);
+            $('td', row).eq(0).attr('data-order',data.id);
+
+/*
             if($('td', row).eq(1).html()=='A'){
                 aux_fecha = new Date(data.fechahora);
                 aux_text = 
@@ -216,7 +218,18 @@ function consultarpage(data){
                 "</a>";
                 $('td', row).eq(1).html(aux_text);
             }
-            $('td', row).eq(0).attr('data-order',data.id);
+*/
+
+            codigo = data.documento_file;
+            if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo) ){
+                aux_texto = "";
+            }else{
+                aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Documento de Rechazo' onclick='verdocadj(\"" + data.documento_file + "\",\"despachorechazo\")'>" +
+                                data.documento_id +
+                            "</a>";
+            }
+            $('td', row).eq(1).html(aux_texto);
+
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
                     + data.notaventa_id +
@@ -282,7 +295,7 @@ function consultarpage(data){
         });
 
     $.ajax({
-        url: '/reportorddesprec/totalizarRep',
+        url: '/reportorddesprec/totalizarRep' + data.data2,
         type: 'GET',
         data: data,
         success: function (datos) {

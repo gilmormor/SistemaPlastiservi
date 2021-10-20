@@ -52,24 +52,25 @@ class ReportOrdDespRecController extends Controller
         //dd($request);
         if($request->ajax()){
             $datas = consultaorddesprec($request);
+            return datatables($datas)->toJson();
+        }
+    }
+
+    public function totalizarRep(Request $request){
+        //dd($request);
+        $respuesta = array();
+        if($request->ajax()){
+            $datas = consultaorddesprec($request);
             $aux_totalkg = 0;
             $aux_totaldinero = 0;
             foreach ($datas as $data) {
                 $aux_totalkg += $data->totalkilos;
                 $aux_totaldinero += $data->subtotal;
             }
-            session(['aux_totalkg' => $aux_totalkg]);
-            session(['aux_totaldinero' => $aux_totaldinero]);
-            //dd(datatables($datas)->toJson());
-            return datatables($datas)->toJson();
+            $respuesta['aux_totalkg'] = $aux_totalkg;
+            $respuesta['aux_totaldinero'] = $aux_totaldinero;
+            return $respuesta;
         }
-    }
-
-    public function totalizarRep(){
-        $respuesta = array();
-        $respuesta['aux_totalkg'] = session('aux_totalkg');
-        $respuesta['aux_totaldinero'] =  session('aux_totaldinero');
-        return $respuesta;
     }
 
     public function exportPdf()
@@ -111,7 +112,6 @@ class ReportOrdDespRecController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         } 
     }
-    
 }
 
 
@@ -242,7 +242,7 @@ function consultaorddesprec($request){
             despachoordanul.id as despachoordanul_id,
             despachoordrecmotivo.nombre as recmotivonombre,
             if(isnull(despachoordrec.anulada),'','A') as sta_anulada,
-            despachoordrec.anulada
+            despachoordrec.anulada,despachoordrec.documento_id,despachoordrec.documento_file
             FROM despachoordrec inner join despachoordrecdet
             on despachoordrec.id = despachoordrecdet.despachoordrec_id AND isnull(despachoordrec.deleted_at)  AND isnull(despachoordrecdet.deleted_at)
             inner join despachoord 

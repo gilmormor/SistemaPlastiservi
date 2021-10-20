@@ -217,7 +217,7 @@ Rechazo Orden Despacho
                     <thead>
                         <tr>
                             <th class='tooltipsC' title='ID de Rechazo'>ID</th>
-                            <th class='ocultar' title='Anulada'>A</th>
+                            <th class='tooltipsC' title='Documento Adjunto'>Doc</th>
                             <th>Fecha</th>
                             <th>Razón Social</th>
                             <th class='tooltipsC' title='Nota de Venta'>NV</th>
@@ -234,17 +234,19 @@ Rechazo Orden Despacho
                             <th class='tooltipsC' title='Motivo Rechazo'>Motivo</th>
                             <th class='ocultar'>oc_file</th>
                             <th class='ocultar'>anulada</th>
+                            <th class='ocultar'>A</th>
+                            <th class='ocultar'>documento_file</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th colspan='8' style='text-align:right'>Total página</th>
+                            <th colspan='9' style='text-align:right'>Total página</th>
                             <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
                             <th id='subtotaldinero' name='subtotaldinero' style='text-align:right'>0,00</th>
                             <th colspan='4' style='text-align:right'></th>
                         </tr>
                         <tr>
-                            <th colspan='8' style='text-align:right'>TOTAL GENERAL</th>
+                            <th colspan='9' style='text-align:right'>TOTAL GENERAL</th>
                             <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                             <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
                             <th colspan='4' style='text-align:right'></th>

@@ -35,7 +35,7 @@ class DespachoOrdRecController extends Controller
 
     public function despachoordrecpage(){
         $sql = "SELECT despachoordrec.id,DATE_FORMAT(despachoordrec.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
-                cliente.razonsocial,despachoord_id,
+                cliente.razonsocial,despachoord_id,despachoordrec.documento_id,despachoordrec.documento_file,
                 '' as pdfcot,
                 despachoordrec.fechahora as fechahora_aaaammdd,
                 despachoord.notaventa_id,despachoord.despachosol_id
@@ -220,7 +220,6 @@ class DespachoOrdRecController extends Controller
                             $data->documento_file = $foto;
                             $data->save();
                         }
-    
                         $cont_producto = count($request->producto_id);
                         if($cont_producto>0){
                             for ($i=0; $i < $cont_producto ; $i++){
