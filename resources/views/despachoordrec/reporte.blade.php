@@ -61,8 +61,9 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
-					<th width="30px">Solicitado</th>
-					<th width="30px">Despachado</th>
+					<th width="30px">Cod</th>
+					<th width="30px">Sol</th>
+					<th width="30px">Desp</th>
 					<th width="30px">Rechazo</th>
 					<th class="textcenter">Unidad</th>
 					<th class="textleft">Descripción</th>
@@ -100,6 +101,7 @@
 						$neto += $subtotal;
 					?>
 					<tr class="headt" style="height:150%;">
+						<td class="textcenter">{{$despachoordrecdet->despachoorddet->notaventadetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($despachoordrecdet->despachoorddet->despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{number_format($despachoordrecdet->despachoorddet->cantdesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{number_format($despachoordrecdet->cantrec, 0, ",", ".")}}</td>
@@ -121,17 +123,17 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="10" class="textright"><span><strong>Totales</strong></span></td>
+					<td colspan="11" class="textright"><span><strong>Totales</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong>NETO</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($neto, 0, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="12" class="textright"><span><strong>IVA {{$despachoordrec->despachoord->notaventa->piva}}%</strong></span></td>
+					<td colspan="13" class="textright"><span><strong>IVA {{$despachoordrec->despachoord->notaventa->piva}}%</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round(($neto * $despachoordrec->despachoord->notaventa->piva)/100), 0, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="12" class="textright"><span><strong>TOTAL</strong></span></td>
+					<td colspan="13" class="textright"><span><strong>TOTAL</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round($neto * ($despachoordrec->despachoord->notaventa->piva+100)/100), 0, ",", ".")}}</strong></span></td>
 				</tr>
 		
