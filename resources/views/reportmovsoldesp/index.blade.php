@@ -1,24 +1,21 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-{{$titulo}}
+Movimiento Solicitud Despacho
 @endsection
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/reportorddespguiafact/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/despachoord/indexguiafact.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/reportmovsoldesp/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
-<input type="hidden" name="aux_verestado" id="aux_verestado" value="{{old('aux_verestado', $aux_verestado ?? '')}}">
-
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">{{$titulo}}</h3>
+                <h3 class="box-title">Movimiento Solicitud Despacho</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>
@@ -27,40 +24,22 @@
                 <div class="row">
                     <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
-                        <div class="col-xs-12 col-md-10 col-sm-12">
+                        <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial Orden Despacho">
+                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="fecha">Fecha Ini OD:</label>
+                                        <label for="fecha">Fecha Ini:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad"  value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final Orden Despacho">
+                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="dep_fecha">Fecha Fin OD:</label>
+                                        <label for="dep_fecha">Fecha Fin:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah"placeholder="DD/MM/AAAA" required readonly="">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial Factura">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="fechaIniFac">F Ini Fact:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechadfac" value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" id="fechadfac" placeholder="DD/MM/AAAA" required readonly="">
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final Factura">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="fechaFinFac">F Fin Fact:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control datepicker" name="fechahfac" id="fechahfac" value="{{old('fechah', $fechaServ['fechaAct'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" value="{{old('fechah', $fechaServ['fechaAct'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                             </div>
@@ -73,22 +52,17 @@
                                         <input type="text" bsDaterangepicker class="form-control datepicker" name="fechaestdesp" id="fechaestdesp" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Estatus Orden de Compraa">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Nota de Venta">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Estatus:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="statusOD" id="statusOD" class="selectpicker form-control statusOD">
-                                            @if ($aux_verestado =='2' or $aux_verestado =='3')
-                                                <option value="5" selected>Cerrada</option>
-                                            @else
-                                                <option value="" selected>Todos</option>
-                                                <option value="1">Emitidas</option>
-                                                <option value="2">Anuladas</option>
-                                                <option value="3">Por Asignar Guia</option>
-                                                <option value="4">Por Asignar Factura</option>
-                                                <option value="5">Cerrada</option>
-                                            @endif
+                                        <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus">
+                                            <option value="0">Todos</option>
+                                            <option value="1">Emitidas sin aprobar</option>
+                                            <option value="2">Por debajo precio en tabla</option>
+                                            <option value="3" selected>Aprobadas</option>
+                                            <option value="4">Rechazadas</option>
                                         </select>
                                     </div>
                                 </div>
@@ -137,24 +111,6 @@
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Guia Despacho">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="guiadespacho">NumGuia:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="guiadespacho" id="guiadespacho" class="form-control" value="{{old('guiadespacho')}}" maxlength="12"/>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Factura">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="numfactura">NumFac:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="numfactura" id="numfactura" class="form-control" value="{{old('numfactura')}}" maxlength="12"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Nro. Solicitud Despacho">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="despachosol_id">SolDespacho:</label>
@@ -165,14 +121,15 @@
                                 </div>
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Nro Orden Despacho">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="despachoord_id">OrdDespacho:</label>
+                                        <label for="id">OrdDespacho:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="despachoord_id" id="despachoord_id" class="form-control" maxlength="10"/>
+                                        <input type="text" name="id" id="id" class="form-control" maxlength="10"/>
                                     </div>
                                 </div>
 
                             </div>
+
 
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
@@ -211,16 +168,6 @@
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6 col-md-6" data-toggle='tooltip' title="Comuna">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label>Comuna:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <?php
-                                            echo $tablashtml['comunas'];
-                                        ?>
-                                    </div>
-                                </div>
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Giro">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Giro:</label>
@@ -238,11 +185,23 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Comuna">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Comuna:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <?php
+                                            echo $tablashtml['comunas'];
+                                        ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-md-2 col-sm-12 text-center" style="padding-left: 0px;padding-right: 0px;">
-                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                            <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                        <div class="col-xs-12 col-md-3 col-sm-12 text-center">
+                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                                <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                                    <i class='glyphicon glyphicon-print'></i> Reporte
+                                </button>
                         </div>
                     </form>
                 </div>
@@ -261,7 +220,4 @@
 @include('generales.buscarcliente')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.despachoguia')
-@include('generales.despachofactura')
-
 @endsection

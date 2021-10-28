@@ -726,3 +726,8 @@ Route::get('reportorddesprec', 'ReportOrdDespRecController@index')->name('report
 Route::get('reportorddesprec/reporte', 'ReportOrdDespRecController@reporte')->name('reportorddesprec_reporte');
 Route::get('reportorddesprec/exportPdf', 'ReportOrdDespRecController@exportPdf')->name('reportorddesprec_exportPdf');
 Route::get('reportorddesprec/totalizarRep', 'ReportOrdDespRecController@totalizarRep')->name('reportorddesprec_totalizarRep');
+
+/*RUTAS REPORTE MOVIMIENTO SOLICITUD DESPACHO*/
+Route::get('reportmovsoldesp', 'ReportMovSolDespController@index')->name('reportmovsoldesp');
+Route::post('reportmovsoldesp/reporte', 'ReportMovSolDespController@reporte')->name('reportmovsoldesp_reporte');
+Route::get('reportmovsoldesp/exportPdf', 'ReportMovSolDespController@exportPdf')->name('reportmovsoldesp_exportPdf');

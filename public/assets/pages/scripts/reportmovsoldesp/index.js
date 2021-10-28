@@ -37,7 +37,8 @@ $(document).ready(function () {
         eliminarFormatoRut($(this));
     });
 
-	configurarTabla('.tablas');
+    configurarTabla('.tablas');
+
 });
 
 function configurarTabla(aux_tabla){
@@ -48,6 +49,7 @@ function configurarTabla(aux_tabla){
         'ordering'    : true,
         'info'        : true,
         'autoWidth'   : false,
+        "order"       : [[ 0, "asc" ]],
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
@@ -85,7 +87,8 @@ function ajaxRequest(data,url,funcion) {
 						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
 					}
 				}
-            }
+			}
+
 		},
 		error: function () {
 		}
@@ -97,8 +100,6 @@ function datos(){
         id                : $("#id").val(),
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
-        fechadfac         : $("#fechadfac").val(),
-        fechahfac         : $("#fechahfac").val(),
         fechaestdesp      : $("#fechaestdesp").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
         vendedor_id       : $("#vendedor_id").val(),
@@ -107,13 +108,9 @@ function datos(){
         areaproduccion_id : $("#areaproduccion_id").val(),
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
-        statusOD          : $("#statusOD").val(),
+        aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
-        guiadespacho      : $("#guiadespacho").val(),
-        numfactura        : $("#numfactura").val(),
         despachosol_id    : $("#despachosol_id").val(),
-        despachoord_id    : $("#despachoord_id").val(),
-        aux_verestado     : $("#aux_verestado").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -121,7 +118,7 @@ function datos(){
 
 function consultar(data){
     $.ajax({
-        url: '/reportorddespguiafact/reporte',
+        url: '/reportmovsoldesp/reporte',
         type: 'POST',
         data: data,
         success: function (datos) {
@@ -231,39 +228,3 @@ function visto(id,visto){
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
 }
-
-$("#btnpdf").click(function()
-{
-    var data = datos();
-    $.ajax({
-        url: '/indicadores/imagengrafico',
-        type: 'POST',
-        data: data,
-        success: function (respuesta) {
-            aux_titulo = "Orden Despacho";
-            data = datos();
-            cadena = "?id=" +
-                    "&fechad="+data.fechad+"&fechah="+data.fechah +
-                    "&fechadfac="+data.fechadfac+"&fechahfac="+data.fechahfac +
-                    "&fechaestdesp="+data.fechaestdesp +
-                    "&rut="+data.rut +
-                    "&oc_id="+data.oc_id +
-                    "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
-                    "&tipoentrega_id="+data.tipoentrega_id +
-                    "&notaventa_id="+data.notaventa_id +
-                    "&despachosol_id="+data.despachosol_id +
-                    "&despachoord_id="+data.despachoord_id +
-                    "&statusOD=" + data.statusOD +
-                    "&areaproduccion_id="+data.areaproduccion_id +
-                    "&comuna_id="+data.comuna_id +
-                    "&aux_titulo="+aux_titulo +
-                    "&guiadespacho="+data.guiadespacho +
-                    "&aux_verestado="+data.aux_verestado
-            $('#contpdf').attr('src', '/reportorddespguiafact/exportPdf/'+cadena);
-            $("#myModalpdf").modal('show');
-        },
-        error: function () {
-        }
-    });
-    
-});

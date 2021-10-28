@@ -262,7 +262,7 @@
                             <th class='tooltipsC' title='Fecha Guia'>F Guia</th>
                             <th class='tooltipsC' title='Num Factura'>NumFact</th>
                             <th class='tooltipsC' title='Fecha Factura'>F Fact</th>
-                            <th>oc_file</th>
+                            <th class="ocultar">oc_file</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
