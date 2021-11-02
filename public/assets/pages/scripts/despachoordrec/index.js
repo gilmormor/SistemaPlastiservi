@@ -33,7 +33,7 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ){
-            aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfODRec(" + data.id + ",1)'>" +
+            aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Id Rechazo OD' onclick='genpdfODRec(" + data.id + ",1)'>" +
                             data.id +
                         "</a>";
             $('td', row).eq(0).html(aux_texto);

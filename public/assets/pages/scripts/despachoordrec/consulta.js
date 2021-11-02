@@ -249,7 +249,7 @@ function consultarpage(data){
             $('td', row).eq(11).attr('style','text-align:center');
 
             aux_text =
-                "<a href='" + $("#rutacrearrec").val() + data.id + "' class='btn-accion-tabla tooltipsC' title='Hacer Devolucion'>" +
+                "<a id='btndespachoordrec' name='btndespachoordrec' href='" + $("#rutacrearrec").val() + data.id + "' class='btn-accion-tabla tooltipsC' title='Hacer Rechazo'>" +
                     "<button type='button' class='btn btn-default btn-xs'>" +
                         "<i class='fa fa-fw fa-undo'></i>" +
                     "</button>" +
@@ -392,4 +392,13 @@ $("#btnpdf").click(function()
         }
     });
     
+});
+
+
+//$("#btndespachoordrec").click(function(event)
+$(document).on("click", ".btndespachoordrec", function(event)
+{
+    event.preventDefault();
+    event.stopPropagation();
+    alert('entro');
 });

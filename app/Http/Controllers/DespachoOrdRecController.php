@@ -337,21 +337,26 @@ class DespachoOrdRecController extends Controller
     public function crearrec($id){
         can('crear-rechazo-orden-despacho');
         $data = DespachoOrd::findOrFail($id);
-        //dd($data);
-        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
-        $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
-        $detalles = $data->despachoorddets()->get();
-        //dd($detalles);
-        $vendedor_id=$data->notaventa->vendedor_id;
-        $fecha = date("d/m/Y", strtotime($data->fechahora));
-        $empresa = Empresa::findOrFail(1);
-        $despachoordrecmotivos = DespachoOrdRecMotivo::orderBy('id')->get();
-        $aux_sta=2;
-        $aux_statusPant = 0;
-
-        //dd($clientedirecs);
-        return view('despachoordrec.crear', compact('data','detalles','fecha','empresa','aux_sta','aux_cont','aux_statusPant','vendedor_id','despachoordrecmotivos'));
-        
+        if(count($data->notaventa->notaventacerradas) == 0){
+            $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
+            $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
+            $detalles = $data->despachoorddets()->get();
+            //dd($detalles);
+            $vendedor_id=$data->notaventa->vendedor_id;
+            $fecha = date("d/m/Y", strtotime($data->fechahora));
+            $empresa = Empresa::findOrFail(1);
+            $despachoordrecmotivos = DespachoOrdRecMotivo::orderBy('id')->get();
+            $aux_sta=2;
+            $aux_statusPant = 0;
+    
+            //dd($clientedirecs);
+            return view('despachoordrec.crear', compact('data','detalles','fecha','empresa','aux_sta','aux_cont','aux_statusPant','vendedor_id','despachoordrecmotivos'));
+        }else{
+            return redirect('despachoordrec/consultadespordfact')->with([
+                'mensaje'=>'Orden de despacho Nro.' . $id . ' no puede ser rechazada, Nota de venta ' .$data->notaventa_id . '  esta cerrada.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
     }
 
     public function anular(Request $request)
@@ -622,7 +627,8 @@ function consultaorddesp($request){
             round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS subtotal,
             despachoord.aprguiadesp,despachoord.aprguiadespfh,
             despachoord.guiadespacho,despachoord.guiadespachofec,despachoord.numfactura,despachoord.fechafactura,
-            despachoordanul.id as despachoordanul_id
+            despachoordanul.id as despachoordanul_id,
+            notaventacerrada.id as notaventacerrada_id
             FROM despachoord INNER JOIN despachoorddet
             ON despachoord.id=despachoorddet.despachoord_id
             INNER JOIN notaventa
@@ -643,6 +649,8 @@ function consultaorddesp($request){
             ON despachoordanul.despachoord_id=despachoord.id
             LEFT JOIN vista_sumrecorddespdet
             ON vista_sumrecorddespdet.despachoorddet_id=despachoorddet.id
+            left join notaventacerrada
+            on notaventacerrada.notaventa_id=notaventa.id and isnull(notaventacerrada.deleted_at)
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condFechaFac
