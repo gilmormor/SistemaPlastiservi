@@ -1024,6 +1024,15 @@ function pdfSolDespPrev(id,stareport){ //GENERAR PDF Solicitud despacho previo
 	$("#myModalpdf").modal('show')
 }
 
+function genpdfODRec(id,stareport){ //GENERAR PDF Orden de Despacho Rechazo
+	if($("#myModalTablaOD")){
+		$("#myModalTablaOD").modal('hide');
+	}
+	$('#contpdf').attr('src', '/despachoordrec/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+}
+
+
 
 $("#myModalpdf").on("hidden.bs.modal", function () {
 	$('#contpdf').attr('src', 'about:blank');
@@ -1040,8 +1049,8 @@ $("#precionetoM").blur(function(event){
 	totalizarItem(0);
 });
 
-//FUNCIONES NOTA DE VENTA CONSULTA
-function verpdf2(nameFile,stareport){ //GENERAR PDF NOTA DE VENTA
+//FUNCIONES VER DOCUMENTO ADJUNTO ODEN DE COMPRA
+function verpdf2(nameFile,stareport){ 
 	if(nameFile==""){
 		swal({
 			title: 'Archivo Orden de Compra no fue Adjuntado a la Nota de Venta.',
@@ -1062,6 +1071,28 @@ function verpdf2(nameFile,stareport){ //GENERAR PDF NOTA DE VENTA
 
 }
 //
+
+//FUNCIONES VER DOCUMENTO ADJUNTO RECHAZO ORDEN DESPACHO
+function verdocadj(nameFile,carpera){
+	if(nameFile==""){
+		swal({
+			title: 'Archivo no fue Adjuntado.',
+			text: "",
+			icon: 'error',
+			buttons: {
+				confirm: "Cerrar",
+			},
+		}).then((value) => {
+		});
+	}else{
+		$('#contpdf').attr('src', '/storage/imagenes/' + carpera + '/'+nameFile);
+		if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
+			$("#myModalpdf").modal('show');
+		}
+	}
+	
+
+}
 
 function listarorddespxNV(id,producto_id = null){
 	var data = {

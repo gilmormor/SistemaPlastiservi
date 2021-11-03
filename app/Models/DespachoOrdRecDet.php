@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DespachoOrdDevDet extends Model
+class DespachoOrdRecDet extends Model
 {
     use SoftDeletes;
-    protected $table = "despachoorddevdet";
+    protected $table = "despachoordrecdet";
     protected $fillable = [
-        'despachoorddev_id',
+        'despachoordrec_id',
         'despachoorddet_id',
-        'cantdev',
+        'cantrec',
         'obsdet',
         'usuariodel_id'
     ];
@@ -23,10 +23,9 @@ class DespachoOrdDevDet extends Model
         return $this->belongsTo(DespachoOrd::class);
     }
 
-    //RELACION INVERSA DespachoSolDet
-    public function despachosoldet()
+    //RELACION INVERSA DespachoOrdDet
+    public function despachoorddet()
     {
-        return $this->belongsTo(DespachoSolDet::class);
+        return $this->belongsTo(DespachoOrdDet::class);
     }
-  
 }

@@ -198,10 +198,7 @@ Notas de Venta
                                     </div>
                                 </div>
                             </div>
-    
-
                         </div>
-
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
                             <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
                         </div>

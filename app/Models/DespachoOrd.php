@@ -78,4 +78,11 @@ class DespachoOrd extends Model
     {
         return $this->hasOne(DespachoOrdAnul::class,'despachoord_id');
     }
+
+    //RELACION DE UNO A MUCHOS DespachoOrdRec
+    public function despachoordrecs()
+    {
+        return $this->hasOne(DespachoOrdRec::class,'despachoord_id');
+    }
+
 }

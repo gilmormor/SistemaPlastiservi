@@ -39,6 +39,32 @@ $(document).on("click", ".btnEliminar", function(event){
     
 });
 
+$(document).on("click", ".btnAnular", function(event){
+    event.preventDefault();
+    swal({
+        title: '¿ Está seguro que desea anular el registro ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        fila = $(this).closest("tr");
+        form = $(this);
+        id = fila.find('td:eq(0)').text();
+        //alert(id);
+        var data = {
+            _token  : $('input[name=_token]').val(),
+            id      : id
+        };
+        if (value) {
+            ajaxRequest(data,form.attr('href')+'/'+id+'/anular','anular',form);
+        }
+    });
+    
+});
+
 
 function ajaxRequest(data,url,funcion,form = false) {
     $.ajax({
@@ -65,6 +91,15 @@ function ajaxRequest(data,url,funcion,form = false) {
                         }
                     }
                 }
+            }
+            if(funcion=='anular'){
+                if (respuesta.error == "1"){
+                    aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' data-toggle='tooltip' data-original-title='Anulada'>" +
+                                    "<span class='glyphicon glyphicon-remove text-danger'></span>" +
+                                "</a>";
+                    form.parents('td').html(aux_texto);
+                }
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
             }
             if(funcion=='verUsuario'){
                 $('#myModal .modal-body').html(respuesta);

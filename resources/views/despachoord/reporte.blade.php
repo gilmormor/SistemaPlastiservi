@@ -70,8 +70,9 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
-					<th width="30px">Solicitado</th>
-					<th width="30px">Despachado</th>
+					<th width="30px">Cod</th>
+					<th width="30px">Sol</th>
+					<th width="30px">Desp</th>
 					<th class="textcenter">Unidad</th>
 					<th class="textleft">Descripción</th>
 					<th class="textleft">Diam</th>
@@ -108,6 +109,7 @@
 						$neto += $subtotal;
 					?>
 					<tr class="headt" style="height:150%;">
+						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($despachoorddet->despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{number_format($despachoorddet->cantdesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
@@ -128,7 +130,7 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="9" class="textright"><span><strong>Totales</strong></span></td>
+					<td colspan="10" class="textright"><span><strong>Totales</strong></span></td>
 					<!--<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>-->
 					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
 				</tr>

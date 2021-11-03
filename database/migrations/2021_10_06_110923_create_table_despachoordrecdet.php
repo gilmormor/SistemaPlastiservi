@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableDespachoorddevdet extends Migration
+class CreateTableDespachoordrecdet extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateTableDespachoorddevdet extends Migration
      */
     public function up()
     {
-        Schema::create('despachoorddevdet', function (Blueprint $table) {
+        Schema::create('despachoordrecdet', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('despachoorddev_id');
-            $table->foreign('despachoorddev_id','fk_despachoorddevdet_despachoorddev')->references('id')->on('despachoorddev')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('despachoordrec_id');
+            $table->foreign('despachoordrec_id','fk_despachoordrecdet_despachoordrec')->references('id')->on('despachoordrec')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('despachoorddet_id');
-            $table->foreign('despachoorddet_id','fk_despachoorddevdet_despachoorddet')->references('id')->on('despachoorddet')->onDelete('restrict')->onUpdate('restrict');
-            $table->float('cantdev',10,2)->comment('Cantidad devuelta.')->nullable();
+            $table->foreign('despachoorddet_id','fk_despachoordrecdet_despachoorddet')->references('id')->on('despachoorddet')->onDelete('restrict')->onUpdate('restrict');
+            $table->float('cantrec',10,2)->comment('Cantidad recuelta.')->nullable();
             $table->string('obsdet',50)->comment('Observaciones Detalle')->nullable();
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
@@ -37,6 +37,6 @@ class CreateTableDespachoorddevdet extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('despachoorddevdet');
+        Schema::dropIfExists('despachoordrecdet');
     }
 }

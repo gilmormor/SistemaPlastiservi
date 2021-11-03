@@ -765,6 +765,7 @@ class DespachoSolController extends Controller
 
         //return armarReportehtml($request);
         if($datas){
+            //return view('despachosol.reportenotaventapendiente', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request'));
             if($request->numrep == 1){
                 $pdf = PDF::loadView('despachosol.reportenotaventapendiente', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nombreAreaproduccion','nombreGiro','request')); //->setPaper('a4', 'landscape');
                 return $pdf->stream("reportenotaventapendiente.pdf");

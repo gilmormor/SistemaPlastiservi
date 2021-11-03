@@ -6,13 +6,13 @@
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/despachoorddev/consulta.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/despachoorddev/indexguiafact.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/despachoordrec/consulta.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/despachoordrec/indexguiafact.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
 <input type="hidden" name="aux_verestado" id="aux_verestado" value="{{old('aux_verestado', $tablashtml['aux_verestado'] ?? '')}}">
-<input type="hidden" name="rutacreardev" id="rutacreardev" value="{{old('rutacreardev', $tablashtml['rutacreardev'] ?? '')}}">
+<input type="hidden" name="rutacrearrec" id="rutacrearrec" value="{{old('rutacrearrec', $tablashtml['rutacrearrec'] ?? '')}}">
 
 <div class="row">
     <div class="col-lg-12">
@@ -22,6 +22,11 @@
                 <h3 class="box-title">{{$tablashtml['titulo']}}</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                </div>
+                <div class="box-tools pull-right">
+                    <a href="{{route('despachoordrec')}}" class="btn btn-block btn-info btn-sm">
+                        <i class="fa fa-fw fa-reply-all"></i> Volver al listado
+                    </a>
                 </div>
             </div>
             <div class="box-body">
@@ -257,7 +262,7 @@
                             <th class='tooltipsC' title='Fecha Guia'>F Guia</th>
                             <th class='tooltipsC' title='Num Factura'>NumFact</th>
                             <th class='tooltipsC' title='Fecha Factura'>F Fact</th>
-                            <th>oc_file</th>
+                            <th class="ocultar">oc_file</th>
                             <th>Acción</th>
                         </tr>
                     </thead>

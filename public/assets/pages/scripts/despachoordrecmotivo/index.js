@@ -9,17 +9,15 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        'ajax'        : "despachoorddevpage",
+        'ajax'        : "despachoordrecmotivopage",
         'columns'     : [
             {data: 'id'},
-            {data: 'fechahora'},
-            {data: 'despachoord_id'},
-            {data: 'razonsocial'},
-            {data: 'fechahora_aaaammdd',className:"ocultar"},
-            {defaultContent : "<a href='despachoorddev' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'> " + 
+            {data: 'nombre'},
+            //El boton eliminar esta en comentario Gilmer 23/02/2021
+            {defaultContent : 
+                "<a href='despachoordrecmotivo' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>" + 
                     "<i class='fa fa-fw fa-pencil'></i>" + 
-                "</a>" +
-                "<a href='despachoorddev' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>" + 
+                "</a><a href='despachoordrecmotivo' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>" + 
                     "<i class='fa fa-fw fa-trash text-danger'></i>" + 
                 "</a>"}
         ],

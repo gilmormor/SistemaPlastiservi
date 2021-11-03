@@ -166,8 +166,6 @@ function consultar(data){
                     .on('draw', function () {
                         eventFired( 'Page' );
                     });
-            
-                
                 configurarTabla('.tablascons');
                 configurarTabla2('.tablascons2');
             }

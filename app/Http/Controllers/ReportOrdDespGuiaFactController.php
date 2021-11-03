@@ -9,6 +9,7 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
+use App\Models\DespachoOrdRec;
 use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
@@ -187,11 +188,23 @@ class ReportOrdDespGuiaFactController extends Controller
                         </td>
                     ";
                 }
-    
+                $despachoordrecs = DespachoOrdRec::where('despachoord_id',$data->id)
+                                    ->where('anulada',null)->get();
+                $aux_rechazos= "-";
+                $aux_contrec = 0;
+                foreach ($despachoordrecs as $despachoordrec){
+                    $aux_rechazos = $aux_rechazos . "<a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazo OD' onclick='genpdfODRec($despachoordrec->id,1)'>
+                                        $despachoordrec->id
+                                    </a>";
+                    $aux_contrec++;
+                }
+                if($aux_contrec==0){
+                    $aux_rechazos = "";
+                }
 
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
-                    <td>$aux_enlaceOD</td>
+                    <td>$aux_enlaceOD $aux_rechazos</td>
                     <td data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td data-order='$data->fechaestdesp'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
                     <td>$data->razonsocial</td>
@@ -448,7 +461,11 @@ function consultaorddesp($request){
         $aux_condFechaED = "despachoord.fechaestdesp ='$fechaestdesp'";
     }
 
-    
+    if(!empty($request->notaventa_id) or !empty($request->oc_id) or !empty($request->guiadespacho) or !empty($request->numfactura) or !empty($request->despachosol_id) or !empty($request->despachoord_id)){
+        $aux_condFecha = " true";
+        $aux_condFechaFac = " true";
+        $aux_condFechaED = " true";
+    }
 
     if(empty($request->rut)){
         $aux_condrut = " true";
@@ -501,9 +518,21 @@ function consultaorddesp($request){
                 $aux_statusOD = "not isnull(despachoord.numfactura) and isnull(despachoordanul.id)";
                 break;
         }
-        
     }
-/*
+
+    if(empty($request->despachosol_id)){
+        $aux_conddespachosol_id = " true";
+    }else{
+        $aux_conddespachosol_id = "despachoord.despachosol_id='$request->despachosol_id'";
+    }
+    if(empty($request->despachoord_id)){
+        $aux_conddespachoord_id = " true";
+    }else{
+        $aux_conddespachoord_id = "despachoord.id='$request->despachoord_id'";
+    }
+
+
+    /*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
     }else{
@@ -525,13 +554,6 @@ function consultaorddesp($request){
         $aux_condid = " true";
     }else{
         $aux_condid = "despachoord.id='$request->id'";
-    }
-
-       
-    if(empty($request->despachosol_id)){
-        $aux_conddespachosol_id = " true";
-    }else{
-        $aux_conddespachosol_id = "despachoord.despachosol_id='$request->despachosol_id'";
     }
 
     if(empty($request->guiadespacho)){
@@ -577,6 +599,7 @@ function consultaorddesp($request){
             LEFT JOIN despachoordanul
             ON despachoordanul.despachoord_id=despachoord.id
             WHERE $vendedorcond
+            and $aux_conddespachoord_id
             and $aux_condFecha
             and $aux_condFechaFac
             and $aux_condFechaED
