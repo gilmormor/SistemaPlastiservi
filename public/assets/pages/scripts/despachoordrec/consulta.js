@@ -249,7 +249,7 @@ function consultarpage(data){
             $('td', row).eq(11).attr('style','text-align:center');
 
             aux_text =
-                "<a id='btndespachoordrec' name='btndespachoordrec' href='" + $("#rutacrearrec").val() + data.id + "' class='btn-accion-tabla tooltipsC btndespachoordrec' title='Hacer Rechazo' valor='" + data.notaventa_id + "'>" +
+                "<a id='btndespachoordrec' name='btndespachoordrec' href='" + $("#rutacrearrec").val() + data.id + "' class='btn-accion-tabla tooltipsC btndespachoordrec' title='Hacer Rechazo' valor='" + data.id + "'>" +
                     "<button type='button' class='btn btn-default btn-xs'>" +
                         "<i class='fa fa-fw fa-undo'></i>" +
                     "</button>" +

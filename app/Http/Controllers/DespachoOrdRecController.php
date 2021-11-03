@@ -427,7 +427,6 @@ class DespachoOrdRecController extends Controller
     }
 
     public function valNCCerrada(Request $request){
-        $respuesta = array();
         $data = DespachoOrd::findOrFail($request->id);
         if(count($data->notaventa->notaventacerradas) == 0){
             $respuesta = 0;
