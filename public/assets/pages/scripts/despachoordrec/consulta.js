@@ -249,7 +249,7 @@ function consultarpage(data){
             $('td', row).eq(11).attr('style','text-align:center');
 
             aux_text =
-                "<a id='btndespachoordrec' name='btndespachoordrec' href='" + $("#rutacrearrec").val() + data.id + "' class='btn-accion-tabla tooltipsC' title='Hacer Rechazo'>" +
+                "<a id='btndespachoordrec' name='btndespachoordrec' href='" + $("#rutacrearrec").val() + data.id + "' class='btn-accion-tabla tooltipsC btndespachoordrec' title='Hacer Rechazo' valor='" + data.notaventa_id + "'>" +
                     "<button type='button' class='btn btn-default btn-xs'>" +
                         "<i class='fa fa-fw fa-undo'></i>" +
                     "</button>" +
@@ -394,11 +394,34 @@ $("#btnpdf").click(function()
     
 });
 
-
-//$("#btndespachoordrec").click(function(event)
+//$(".btndespachoordrec").click(function(event)
 $(document).on("click", ".btndespachoordrec", function(event)
 {
     event.preventDefault();
-    event.stopPropagation();
-    alert('entro');
+    aux_ruta=$(this).attr('href');
+    var data = {
+        id     : $(this).attr('valor'),
+        _token : $('input[name=_token]').val()
+    };
+    $.ajax({
+        url: '/despachoordrec/valNCCerrada',
+        type: 'POST',
+        data: data,
+        success: function (datos) {
+            if(datos.respuesta==1){
+                swal({
+                    title: datos.mensaje,
+                    text: "",
+                    icon: 'error',
+                    buttons: {
+                        confirm: "Cerrar",
+                    },
+                }).then((value) => {
+                });
+            }else{
+                var loc = window.location;
+                window.location = aux_ruta;
+            }
+        }
+    });
 });

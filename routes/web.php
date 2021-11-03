@@ -711,6 +711,8 @@ Route::get('despachoordrec/reporte', 'DespachoOrdRecController@reporte')->name('
 Route::get('despachoordrec/crearrec/{id}', 'DespachoOrdRecController@crearrec')->name('crearrec_despachoordrec');
 Route::post('despachoordrec/{id}/anular', 'DespachoOrdRecController@anular')->name('anular_despachoordrec');
 Route::get('despachoordrec/{id}/{stareport}/exportPdf', 'DespachoOrdRecController@exportPdf')->name('exportPdf_despachoordrec');
+Route::post('despachoordrec/valNCCerrada', 'DespachoOrdRecController@valNCCerrada')->name('valNCCerrada_despachoordrec');
+
 
 /*RUTAS Motivo Rechazo Orden Despacho*/
 Route::get('despachoordrecmotivo', 'DespachoOrdRecMotivoController@index')->name('despachoordrecmotivo');

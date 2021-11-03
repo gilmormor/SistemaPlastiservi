@@ -353,7 +353,7 @@ class DespachoOrdRecController extends Controller
             return view('despachoordrec.crear', compact('data','detalles','fecha','empresa','aux_sta','aux_cont','aux_statusPant','vendedor_id','despachoordrecmotivos'));
         }else{
             return redirect('despachoordrec/consultadespordfact')->with([
-                'mensaje'=>'Orden de despacho Nro.' . $id . ' no puede ser rechazada, Nota de venta ' .$data->notaventa_id . '  esta cerrada.',
+                'mensaje'=>'Orden de despacho Nro.' . $data->id . ' no puede ser rechazada, Nota de venta ' .$data->notaventa_id . '  esta cerrada.',
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -425,6 +425,26 @@ class DespachoOrdRecController extends Controller
             }
         }
     }
+
+    public function valNCCerrada(Request $request){
+        $respuesta = array();
+        $data = DespachoOrd::findOrFail($request->id);
+        if(count($data->notaventa->notaventacerradas) == 0){
+            $respuesta = 0;
+            return [
+                'respuesta' => 0,
+                'mensaje'=>'',
+                'tipo_alert' => 'alert-error'
+            ];
+        }else{
+            return [
+                'respuesta' => 1,
+                'mensaje'=>'Orden de despacho Nro.' . $data->id . ' no puede ser rechazada, Nota de venta ' .$data->notaventa_id . '  esta cerrada.',
+                'tipo_alert' => 'alert-error'
+            ];
+        }
+    }
+
 }
 
 function cargadatos(){
