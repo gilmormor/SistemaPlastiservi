@@ -15,7 +15,7 @@ class DespachoOrdRecAprController extends Controller
     public function index()
     {
         can('listar-rechazo-orden-despacho');
-        $pantalla = 1;
+        $pantalla = 1; 
         return view('despachoordrec.index',compact('pantalla'));
     }
 
