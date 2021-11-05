@@ -30,10 +30,31 @@ class DespachoOrdRecController extends Controller
     public function index()
     {
         can('listar-rechazo-orden-despacho');
-        return view('despachoordrec.index');
+        $pantalla = 0;
+        return view('despachoordrec.index',compact('pantalla'));
     }
 
     public function despachoordrecpage(){
+        $sql = "SELECT despachoordrec.id,DATE_FORMAT(despachoordrec.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
+                cliente.razonsocial,despachoord_id,despachoordrec.documento_id,despachoordrec.documento_file,
+                '' as pdfcot,
+                despachoordrec.fechahora as fechahora_aaaammdd,
+                despachoord.notaventa_id,despachoord.despachosol_id,despachoordrec.aprobstatus,despachoordrec.aprobobs
+            FROM despachoordrec inner join despachoord
+            on despachoord.id = despachoordrec.despachoord_id and isnull(despachoord.deleted_at)
+            and despachoord.id not in (select despachoordanul.despachoord_id from despachoordanul where isnull(despachoordanul.deleted_at))
+            inner join notaventa
+            on notaventa.id = despachoord.notaventa_id and isnull(notaventa.deleted_at) and isnull(notaventa.anulada)
+            inner join cliente
+            on cliente.id = notaventa.cliente_id and isnull(cliente.deleted_at)
+            where (isnull(despachoordrec.aprobstatus) or despachoordrec.aprobstatus=0 or despachoordrec.aprobstatus=3) 
+            and isnull(despachoordrec.anulada) and isnull(despachoordrec.deleted_at)
+            ORDER BY despachoordrec.id desc;";
+        $datas = DB::select($sql);
+        return datatables($datas)->toJson();
+    }
+
+    public function despachoordrecpageapr(){
         $sql = "SELECT despachoordrec.id,DATE_FORMAT(despachoordrec.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                 cliente.razonsocial,despachoord_id,despachoordrec.documento_id,despachoordrec.documento_file,
                 '' as pdfcot,
@@ -46,7 +67,8 @@ class DespachoOrdRecController extends Controller
             on notaventa.id = despachoord.notaventa_id and isnull(notaventa.deleted_at) and isnull(notaventa.anulada)
             inner join cliente
             on cliente.id = notaventa.cliente_id and isnull(cliente.deleted_at)
-            where isnull(despachoordrec.anulada) and isnull(despachoordrec.deleted_at)
+            where despachoordrec.aprobstatus=1 
+            and isnull(despachoordrec.anulada) and isnull(despachoordrec.deleted_at)
             ORDER BY despachoordrec.id desc;";
         $datas = DB::select($sql);
         return datatables($datas)->toJson();
@@ -441,6 +463,46 @@ class DespachoOrdRecController extends Controller
                 'mensaje'=>'Orden de despacho Nro.' . $data->id . ' no puede ser rechazada, Nota de venta ' .$data->notaventa_id . '  esta cerrada.',
                 'tipo_alert' => 'alert-error'
             ];
+        }
+    }
+
+    public function enviaraprorecod(Request $request) //ENVIAR A APROBACION RECHAZO ORDEN DESPACHO
+    {
+        //dd($request);
+        can('guardar-rechazo-orden-despacho');
+        if ($request->ajax()) {
+            $despachoordrec = DespachoOrdRec::findOrFail($request->id);
+            $despachoordrec->aprobstatus = 1;    
+            $despachoordrec->aprobusu_id = auth()->id();
+            $despachoordrec->aprobfechahora = date("Y-m-d H:i:s");
+            $despachoordrec->aprobobs = 'Enviado para aprobacion';
+            if ($despachoordrec->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+    public function aprorecod(Request $request) //APROBAR RECHAZO ORDEN DESPACHO
+    {
+        //dd($request);
+        can('guardar-rechazo-orden-despacho');
+        if ($request->ajax()) {
+            $despachoordrec = DespachoOrdRec::findOrFail($request->id);
+            $despachoordrec->aprobstatus = $request->valor;
+            $despachoordrec->aprobusu_id = auth()->id();
+            $despachoordrec->aprobfechahora = date("Y-m-d H:i:s");
+            $despachoordrec->aprobobs = $request->obs;
+            if ($despachoordrec->save()) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
         }
     }
 

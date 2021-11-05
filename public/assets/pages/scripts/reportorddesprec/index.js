@@ -189,7 +189,9 @@ function consultarpage(data){
             {data: 'oc_file',className:"ocultar"},
             {data: 'anulada',className:"ocultar"},
             {data: 'sta_anulada',className:"ocultar"},
-            {data: 'documento_file',className:"ocultar"}
+            {data: 'documento_file',className:"ocultar"},
+            {data: 'aprobstatus',className:"ocultar"},
+            {data: 'aprobobs',className:"ocultar"}
         ],
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -206,6 +208,29 @@ function consultarpage(data){
                     "<span class='glyphicon glyphicon-remove text-danger'></span>" +
                 "</a>";
             }
+
+            if(data.aprobstatus == 1){
+                aux_text = aux_text +
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='" + data.aprobobs + "'>" +
+                    "<span class='glyphicon glyphicon-arrow-right'></span>" +
+                "</a>";
+            }
+            if(data.aprobstatus == 2){
+                if(data.aprobobs == null){
+                    data.aprobobs = "";
+                }
+                aux_text = aux_text +
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Aprobado: " + data.aprobobs + "'>" +
+                    "<span class='glyphicon glyphicon-thumbs-up'></span>" +
+                "</a>";
+            }
+            if(data.aprobstatus == 3){
+                aux_text = aux_text +
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazada: " + data.aprobobs + "'>" +
+                    "<span class='glyphicon glyphicon-thumbs-down'></span>" +
+                "</a>";
+            }
+
             $('td', row).eq(0).html(aux_text);
             $('td', row).eq(0).attr('data-order',data.id);
 

@@ -242,7 +242,8 @@ function consultaorddesprec($request){
             despachoordanul.id as despachoordanul_id,
             despachoordrecmotivo.nombre as recmotivonombre,
             if(isnull(despachoordrec.anulada),'','A') as sta_anulada,
-            despachoordrec.anulada,despachoordrec.documento_id,despachoordrec.documento_file
+            despachoordrec.anulada,despachoordrec.documento_id,despachoordrec.documento_file,
+            despachoordrec.aprobstatus,despachoordrec.aprobobs
             FROM despachoordrec inner join despachoordrecdet
             on despachoordrec.id = despachoordrecdet.despachoordrec_id AND isnull(despachoordrec.deleted_at)  AND isnull(despachoordrecdet.deleted_at)
             inner join despachoord 

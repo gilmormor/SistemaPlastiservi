@@ -700,7 +700,9 @@ Route::get('notaventatranspage', 'NotaVentaTransController@notaventatranspage')-
 
 /*RUTAS Rechazo ORDEN DE DEPACHO*/
 Route::get('despachoordrec', 'DespachoOrdRecController@index')->name('despachoordrec');
+Route::get('despachoordrec/indexapr', 'DespachoOrdRecController@indexapr')->name('indexapr_despachoordrec');
 Route::get('despachoordrecpage', 'DespachoOrdRecController@despachoordrecpage')->name('despachoordrecpage');
+Route::get('despachoordrecpageapr', 'DespachoOrdRecController@despachoordrecpageapr')->name('despachoordrecpageapr');
 Route::get('despachoordrec/crear', 'DespachoOrdRecController@crear')->name('crear_despachoordrec');
 Route::post('despachoordrec', 'DespachoOrdRecController@guardar')->name('guardar_despachoordrec');
 Route::get('despachoordrec/{id}/editar', 'DespachoOrdRecController@editar')->name('editar_despachoordrec');
@@ -712,6 +714,12 @@ Route::get('despachoordrec/crearrec/{id}', 'DespachoOrdRecController@crearrec')-
 Route::post('despachoordrec/{id}/anular', 'DespachoOrdRecController@anular')->name('anular_despachoordrec');
 Route::get('despachoordrec/{id}/{stareport}/exportPdf', 'DespachoOrdRecController@exportPdf')->name('exportPdf_despachoordrec');
 Route::post('despachoordrec/valNCCerrada', 'DespachoOrdRecController@valNCCerrada')->name('valNCCerrada_despachoordrec');
+Route::post('despachoordrec/enviaraprorecod', 'DespachoOrdRecController@enviaraprorecod')->name('enviaraprorecod_despachoordrec');
+Route::post('despachoordrec/aprorecod', 'DespachoOrdRecController@aprorecod')->name('aprorecod_despachoordrec');
+
+/*RUTAS Aprobar Rechazo Orden Despacho*/
+Route::get('despachoordrecapr', 'DespachoOrdRecAprController@index')->name('despachoordrecapr');
+Route::get('despachoordrecpageapr', 'DespachoOrdRecAprController@despachoordrecpageapr')->name('despachoordrecpageapr');
 
 
 /*RUTAS Motivo Rechazo Orden Despacho*/

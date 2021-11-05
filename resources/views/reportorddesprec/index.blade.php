@@ -236,6 +236,8 @@ Rechazo Orden Despacho
                             <th class='ocultar'>anulada</th>
                             <th class='ocultar'>A</th>
                             <th class='ocultar'>documento_file</th>
+                            <th class="ocultar">aprobstatus</th>
+                            <th class="ocultar">aprobobs</th>
                         </tr>
                     </thead>
                     <tfoot>

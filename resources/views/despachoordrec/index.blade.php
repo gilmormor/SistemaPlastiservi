@@ -10,17 +10,24 @@ Rechazo Orden de Despacho
 @endsection
 
 @section('contenido')
+<input type="hidden" name="pantalla" id="pantalla" value="{{old('pantalla', $pantalla ?? '')}}">
+
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Rechazo Orden de Despacho</h3>
-                <div class="box-tools pull-right">
-                    <a href="{{route('consultadespordfact_despachoordrec')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Crear Rechazo
-                    </a>
-                </div>
+                @if ( $pantalla==0 )
+                    <h3 class="box-title">Rechazo Orden de Despacho</h3>
+                    <div class="box-tools pull-right">
+                        <a href="{{route('consultadespordfact_despachoordrec')}}" class="btn btn-block btn-success btn-sm">
+                            <i class="fa fa-fw fa-plus-circle"></i> Crear Rechazo
+                        </a>
+                    </div>
+                @endif
+                @if ( $pantalla==1 )
+                    <h3 class="box-title">Aprobar Rechazo Orden de Despacho</h3>
+                @endif
             </div>
             <div class="box-body">
                 <div class="table-responsive">
@@ -37,6 +44,8 @@ Rechazo Orden de Despacho
                                 <th>Razon Social</th>
                                 <th class="ocultar">fechaaaaammdd</th>
                                 <th class="ocultar">documento_file</th>
+                                <th class="ocultar">aprobstatus</th>
+                                <th class="ocultar">aprobobs</th>
                                 <th class="width70">Acción</th>
                             </tr>
                         </thead>
@@ -47,4 +56,10 @@ Rechazo Orden de Despacho
     </div>
 </div>
 @include('generales.modalpdf')
+@if ( $pantalla==1 )
+    <?php
+        $disabledReadOnly="";
+    ?>
+    @include('generales.aprobarcotnv')
+@endif
 @endsection
