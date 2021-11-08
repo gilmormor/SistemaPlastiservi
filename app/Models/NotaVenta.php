@@ -140,6 +140,15 @@ class NotaVenta extends Model
     {
         return $this->hasMany(NotaVentaCerrada::class,'notaventa_id');
     }
-    
+    //Relacion inversa a Giro
+    public function giro()
+    {
+        return $this->belongsTo(Giro::class);
+    }
+    //Relacion inversa a Despachoobs
+    public function despachoobs()
+    {
+        return $this->belongsTo(DespachoObs::class);
+    }
     
 }

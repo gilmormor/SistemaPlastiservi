@@ -8,6 +8,8 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
+use App\Models\DespachoOrdAnul;
+use App\Models\DespachoOrdRec;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
@@ -29,7 +31,6 @@ class ReportOrdDespController extends Controller
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
         $sucurArray = $clientesArray['sucurArray'];
-
         
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
@@ -54,7 +55,6 @@ class ReportOrdDespController extends Controller
         $respuesta['exito'] = false;
         $respuesta['mensaje'] = "Código no Existe";
         $respuesta['tabla'] = "";
-    
         if($request->ajax()){
             $datas = consultaorddesp($request);
     
@@ -107,16 +107,42 @@ class ReportOrdDespController extends Controller
 
                 /*$despachoord = DespachoOrd::findOrFail($data->id)
                                 ->whereNull();*/
+
+                $despachoordrecs = DespachoOrdRec::where('despachoord_id',$data->id)
+                                    ->where('anulada',null)->get();
+//                dd($despachoordrec);
+                $aux_rechazos= "-";
+                $aux_contrec = 0;
+                foreach ($despachoordrecs as $despachoordrec){
+                    $aux_rechazos = $aux_rechazos . "<a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazo OD' onclick='genpdfODRec($despachoordrec->id,1)'>
+                                        $despachoordrec->id
+                                    </a>";
+                    $aux_contrec++;
+                }
+                //$aux_rechazos = $aux_rechazos . ")";
+                if($aux_contrec==0){
+                    $aux_rechazos = "";
+                }
+
+                $aux_anulado= "";
+                $despachoordanuls = DespachoOrdAnul::where("despachoord_id",$data->id)->get();
+                foreach ($despachoordanuls as $despachoordanul){
+                    $aux_anulado = "<a class='btn-accion-tabla tooltipsC' title='Anulada: " . date('d-m-Y h:i:s A', strtotime($despachoordanul->created_at))  ."'>
+                                        <small class='label label-danger'>A</small>
+                                    </a>";
+                }
+
+                //dd($aux_rechazos);
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='tooltipsC'>
                     <td id='id$i' name='id$i'>
-                        $data->id
+                        $data->id $aux_anulado
                     </td>
-                    <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                    <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
+                    <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                    <td id='fechaestdesp$i' name='fechaestdesp$i' data-order='$data->fechaestdesp'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td>
-                        $imprOrdDesp
+                        $imprOrdDesp $aux_rechazos
                     </td>
                     <td>
                         <a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD($data->despachosol_id,1)'>
@@ -261,6 +287,10 @@ function consultaorddesp($request){
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "despachoord.fechahora>='$fechad' and despachoord.fechahora<='$fechah'";
     }
+    if(!empty($request->id) or !empty($request->oc_id) or !empty($request->notaventa_id) or !empty($request->despachosol_id)){
+        $aux_condFecha = " true";
+    }
+
     if(empty($request->rut)){
         $aux_condrut = " true";
     }else{
@@ -352,10 +382,7 @@ function consultaorddesp($request){
         $fechad = date_format($fecha, 'Y-m-d');
         $aux_condfechaestdesp = "despachoord.fechaestdesp='$fechad'";
     }
-
-
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
-
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
             despachoord.notaventa_id,despachoord.fechaestdesp,

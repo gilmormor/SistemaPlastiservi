@@ -695,6 +695,7 @@ class NotaVentaController extends Controller
                         'rutadestino' => 'notaventaaprobar',
                         'tabla_id' => $notaventa->id,
                         'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
+                        'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
                         'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
                     ];
                     event(new Notificacion($notificacion));
@@ -712,6 +713,7 @@ class NotaVentaController extends Controller
                         'rutadestino' => 'notaventaconsulta',
                         'tabla_id' => $notaventa->id,
                         'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
+                        'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
                         'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
                     ];
                     event(new Notificacion($notificacion));

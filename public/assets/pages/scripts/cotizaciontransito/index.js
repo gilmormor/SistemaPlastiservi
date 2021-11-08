@@ -73,6 +73,9 @@ $(document).ready(function () {
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
                     "<i class='fa fa-fw fa-file-pdf-o'></i>"+
+                "</a>"+
+                "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
+                    "<i class='fa fa-fw fa-trash text-danger'></i>"+
                 "</a>";
             $('td', row).eq(8).html(aux_text);
             if ( data.contador * 1 > 0 ) {

@@ -155,6 +155,26 @@
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Nro. Solicitud Despacho">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="despachosol_id">SolDespacho:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <input type="text" name="despachosol_id" id="despachosol_id" class="form-control" value="{{old('despachosol_id')}}" maxlength="12"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Nro Orden Despacho">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="despachoord_id">OrdDespacho:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <input type="text" name="despachoord_id" id="despachoord_id" class="form-control" maxlength="10"/>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label >Area Prod:</label>

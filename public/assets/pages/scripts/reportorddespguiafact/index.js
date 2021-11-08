@@ -111,6 +111,8 @@ function datos(){
         comuna_id         : $("#comuna_id").val(),
         guiadespacho      : $("#guiadespacho").val(),
         numfactura        : $("#numfactura").val(),
+        despachosol_id    : $("#despachosol_id").val(),
+        despachoord_id    : $("#despachoord_id").val(),
         aux_verestado     : $("#aux_verestado").val(),
         _token            : $('input[name=_token]').val()
     };
@@ -249,6 +251,8 @@ $("#btnpdf").click(function()
                     "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
                     "&tipoentrega_id="+data.tipoentrega_id +
                     "&notaventa_id="+data.notaventa_id +
+                    "&despachosol_id="+data.despachosol_id +
+                    "&despachoord_id="+data.despachoord_id +
                     "&statusOD=" + data.statusOD +
                     "&areaproduccion_id="+data.areaproduccion_id +
                     "&comuna_id="+data.comuna_id +

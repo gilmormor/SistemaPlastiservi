@@ -222,7 +222,7 @@ class NotaVentaConsultaController extends Controller
                     <td id='id$i' name='id$i'>$data->id
                         $aux_iconiInf
                     </td>
-                    <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                    <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>
                     <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                     <td id='comuna$i' name='comuna$i'>$comuna->nombre</td>

@@ -691,6 +691,7 @@ Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('
 Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
 Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');
 
+<<<<<<< HEAD
 /*RUTAS MATERIA PRIMA*/
 Route::get('materiaprima', 'MateriaPrimaController@index')->name('materiaprima');
 Route::get('materiaprimapage', 'MateriaPrimaController@materiaprimapage')->name('materiaprimapage');
@@ -699,3 +700,55 @@ Route::post('materiaprima', 'MateriaPrimaController@guardar')->name('guardar_mat
 Route::get('materiaprima/{id}/editar', 'MateriaPrimaController@editar')->name('editar_materiaprima');
 Route::put('materiaprima/{id}', 'MateriaPrimaController@actualizar')->name('actualizar_materiaprima');
 Route::delete('materiaprima/{id}', 'MateriaPrimaController@eliminar')->name('eliminar_materiaprima');
+=======
+
+
+/*RUTAS NOTAS DE VENTA EN TRANSITO*/
+Route::get('notaventatrans', 'NotaVentaTransController@index')->name('notaventatrans');
+Route::get('notaventatranspage', 'NotaVentaTransController@notaventatranspage')->name('NotaVentaTranspage');
+
+
+/*RUTAS Rechazo ORDEN DE DEPACHO*/
+Route::get('despachoordrec', 'DespachoOrdRecController@index')->name('despachoordrec');
+Route::get('despachoordrec/indexapr', 'DespachoOrdRecController@indexapr')->name('indexapr_despachoordrec');
+Route::get('despachoordrecpage', 'DespachoOrdRecController@despachoordrecpage')->name('despachoordrecpage');
+Route::get('despachoordrecpageapr', 'DespachoOrdRecController@despachoordrecpageapr')->name('despachoordrecpageapr');
+Route::get('despachoordrec/crear', 'DespachoOrdRecController@crear')->name('crear_despachoordrec');
+Route::post('despachoordrec', 'DespachoOrdRecController@guardar')->name('guardar_despachoordrec');
+Route::get('despachoordrec/{id}/editar', 'DespachoOrdRecController@editar')->name('editar_despachoordrec');
+Route::put('despachoordrec/{id}', 'DespachoOrdRecController@actualizar')->name('actualizar_despachoordrec');
+Route::delete('despachoordrec/{id}', 'DespachoOrdRecController@eliminar')->name('eliminar_despachoordrec');
+Route::get('despachoordrec/consultadespordfact', 'DespachoOrdRecController@consultadespordfact')->name('consultadespordfact_despachoordrec');
+Route::get('despachoordrec/reporte', 'DespachoOrdRecController@reporte')->name('reporte_despachoordrec');
+Route::get('despachoordrec/crearrec/{id}', 'DespachoOrdRecController@crearrec')->name('crearrec_despachoordrec');
+Route::post('despachoordrec/{id}/anular', 'DespachoOrdRecController@anular')->name('anular_despachoordrec');
+Route::get('despachoordrec/{id}/{stareport}/exportPdf', 'DespachoOrdRecController@exportPdf')->name('exportPdf_despachoordrec');
+Route::post('despachoordrec/valNCCerrada', 'DespachoOrdRecController@valNCCerrada')->name('valNCCerrada_despachoordrec');
+Route::post('despachoordrec/enviaraprorecod', 'DespachoOrdRecController@enviaraprorecod')->name('enviaraprorecod_despachoordrec');
+Route::post('despachoordrec/aprorecod', 'DespachoOrdRecController@aprorecod')->name('aprorecod_despachoordrec');
+
+/*RUTAS Aprobar Rechazo Orden Despacho*/
+Route::get('despachoordrecapr', 'DespachoOrdRecAprController@index')->name('despachoordrecapr');
+Route::get('despachoordrecpageapr', 'DespachoOrdRecAprController@despachoordrecpageapr')->name('despachoordrecpageapr');
+
+
+/*RUTAS Motivo Rechazo Orden Despacho*/
+Route::get('despachoordrecmotivo', 'DespachoOrdRecMotivoController@index')->name('despachoordrecmotivo');
+Route::get('despachoordrecmotivopage', 'DespachoOrdRecMotivoController@despachoordrecmotivopage')->name('despachoordrecmotivopage');
+Route::get('despachoordrecmotivo/crear', 'DespachoOrdRecMotivoController@crear')->name('crear_despachoordrecmotivo');
+Route::post('despachoordrecmotivo', 'DespachoOrdRecMotivoController@guardar')->name('guardar_despachoordrecmotivo');
+Route::get('despachoordrecmotivo/{id}/editar', 'DespachoOrdRecMotivoController@editar')->name('editar_despachoordrecmotivo');
+Route::put('despachoordrecmotivo/{id}', 'DespachoOrdRecMotivoController@actualizar')->name('actualizar_despachoordrecmotivo');
+Route::delete('despachoordrecmotivo/{id}', 'DespachoOrdRecMotivoController@eliminar')->name('eliminar_despachoordrecmotivo');
+
+/*RUTAS REPORTE RECHAZO ORDEN DESPACHO*/
+Route::get('reportorddesprec', 'ReportOrdDespRecController@index')->name('reportorddesprec');
+Route::get('reportorddesprec/reporte', 'ReportOrdDespRecController@reporte')->name('reportorddesprec_reporte');
+Route::get('reportorddesprec/exportPdf', 'ReportOrdDespRecController@exportPdf')->name('reportorddesprec_exportPdf');
+Route::get('reportorddesprec/totalizarRep', 'ReportOrdDespRecController@totalizarRep')->name('reportorddesprec_totalizarRep');
+
+/*RUTAS REPORTE MOVIMIENTO SOLICITUD DESPACHO*/
+Route::get('reportmovsoldesp', 'ReportMovSolDespController@index')->name('reportmovsoldesp');
+Route::post('reportmovsoldesp/reporte', 'ReportMovSolDespController@reporte')->name('reportmovsoldesp_reporte');
+Route::get('reportmovsoldesp/exportPdf', 'ReportMovSolDespController@exportPdf')->name('reportmovsoldesp_exportPdf');
+>>>>>>> master
