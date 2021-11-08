@@ -80,7 +80,6 @@ $(document).ready(function () {
             $('td', row).eq(5).html(aux_texto);
             if($("#pantalla").val()=="0"){
                 if(data.aprobstatus == "3"){
-                    alert('entro:' + data.aprobstatus);
                     aux_texto =
                     "<a href='despachoordrec/enviaraprorecod' class='btn-accion-tabla btn-sm tooltipsC enviarAproRecOD' title='Enviar a Aprobación: " + data.aprobobs + "'>" +
                         "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;color:red;'></span>" + 
