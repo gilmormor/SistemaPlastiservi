@@ -38,6 +38,7 @@ function datos(){
         despachoord_id    : $("#despachoord_id").val(),
         guiadespacho      : $("#guiadespacho").val(),
         numfactura        : $("#numfactura").val(),
+        aprobstatus       : $("#aprobstatus").val(),
         _token            : $('input[name=_token]').val()
     };
     aux_titulo = "";
@@ -56,7 +57,8 @@ function datos(){
             "&comuna_id="+data1.comuna_id +
             "&aux_titulo="+aux_titulo +
             "&guiadespacho="+data1.guiadespacho +
-            "&numfactura="+data1.numfactura
+            "&numfactura="+data1.numfactura +
+            "&aprobstatus="+data1.aprobstatus
     var data = {
         data1 : data1,
         data2 : data2
@@ -227,7 +229,7 @@ function consultarpage(data){
             if(data.aprobstatus == 3){
                 aux_text = aux_text +
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazada: " + data.aprobobs + "'>" +
-                    "<span class='glyphicon glyphicon-thumbs-down'></span>" +
+                    "<span class='glyphicon glyphicon-thumbs-down text-danger'></span>" +
                 "</a>";
             }
 

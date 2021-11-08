@@ -113,31 +113,34 @@ class ReportMovSolDespController extends Controller
                 $respuesta['tabla'] .= "
                     </tr>";
                 if($despachoord->despachoordrecs){
-                    $arreglo = array();
-                    $id = $despachoord->despachoordrecs->id;
-                    $respuesta['tabla'] .= "
-                        <tr>
-                            <td style='text-align:left' data-order='$despachoord->fechahora'>OD-$despachoord->id R-$id</td>";
-                    array_push($arreglo, 'OD-' . $despachoord->id . 'R-' . $id);
-    
-                    foreach($despachosol->despachosoldets as $despachosoldet){
-                        if($despachosoldet->cantsoldesp>0){
-                            $producto_id = $despachosoldet->notaventadetalle->producto_id;
-                            foreach($despachoord->despachoordrecs->despachoordrecdets as $despachoordrecdet){
-                                $aux_cantrec = "0";
-                                if($despachoordrecdet->despachoorddet->notaventadetalle->producto_id == $producto_id){
-                                    $aux_cantrec = $despachoordrecdet->cantrec;
-                                    break;
+                    if($despachoord->despachoordrecs->aprobstatus==2 and is_null($despachoord->despachoordrecs->anulado)){
+                        $arreglo = array();
+                        $id = $despachoord->despachoordrecs->id;
+                        $respuesta['tabla'] .= "
+                            <tr>
+                                <td style='text-align:left' data-order='$despachoord->fechahora'>OD-$despachoord->id R-$id</td>";
+                        array_push($arreglo, 'OD-' . $despachoord->id . 'R-' . $id);
+        
+                        foreach($despachosol->despachosoldets as $despachosoldet){
+                            if($despachosoldet->cantsoldesp>0){
+                                $producto_id = $despachosoldet->notaventadetalle->producto_id;
+                                foreach($despachoord->despachoordrecs->despachoordrecdets as $despachoordrecdet){
+                                    $aux_cantrec = "0";
+                                    if($despachoordrecdet->despachoorddet->notaventadetalle->producto_id == $producto_id){
+                                        $aux_cantrec = $despachoordrecdet->cantrec;
+                                        break;
+                                    }
                                 }
+                                $respuesta['tabla'] .= "
+                                    <td style='text-align:right'>$aux_cantrec</td>";
+                                    array_push($arreglo, $aux_cantrec);
                             }
-                            $respuesta['tabla'] .= "
-                                <td style='text-align:right'>$aux_cantrec</td>";
-                                array_push($arreglo, $aux_cantrec);
                         }
+                        array_push($matriz,$arreglo);
+                        $respuesta['tabla'] .= "
+                            </tr>";
                     }
-                    array_push($matriz,$arreglo);
-                    $respuesta['tabla'] .= "
-                        </tr>";
+
                 }
             }
             $respuesta['tabla'] .= "

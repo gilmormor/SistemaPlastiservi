@@ -92,6 +92,7 @@ class ReportOrdDespRecController extends Controller
         $request->aux_titulo = $_GET["aux_titulo"];
         $request->guiadespacho = $_GET["guiadespacho"];
         $request->numfactura = $_GET["numfactura"];
+        $request->aprobstatus = $_GET["aprobstatus"];
 
         $datas = consultaorddesprec($request);
         //dd($datas);
@@ -228,6 +229,16 @@ function consultaorddesprec($request){
         $aux_condnumfactura = "despachoord.numfactura='$request->numfactura'";
     }
 
+    if(empty($request->aprobstatus)){
+        $aux_condaprobstatus = " true";
+    }else{
+        $aux_condaprobstatus = "despachoordrec.aprobstatus='$request->aprobstatus'";
+        if($request->aprobstatus==4){
+            $aux_condaprobstatus = "isnull(despachoordrec.anulada)";
+        }
+    }
+    
+
     $aux_condaprobord = "true";
 
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
@@ -285,6 +296,7 @@ function consultaorddesprec($request){
             and $aux_conddespachosol_id
             and $aux_condguiadespacho
             and $aux_condnumfactura
+            and $aux_condaprobstatus
             GROUP BY despachoordrec.id
             ORDER BY despachoordrec.id desc;";
             

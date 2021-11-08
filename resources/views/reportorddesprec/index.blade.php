@@ -76,6 +76,21 @@ Rechazo Orden Despacho
                                     <input type="text" name="id" id="id" class="form-control" value="{{old('id')}}" maxlength="12"/>
                                 </div>
                             </div>
+                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Nota de Venta">
+                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                    <label>Estatus:</label>
+                                </div>
+                                <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus">
+                                        <option value="0" selected>Todos</option>
+                                        <option value="1">Enviado para Aprobación</option>
+                                        <option value="2">Aprobado</option>
+                                        <option value="3">Rechazado</option>
+                                        <option value="4">Anulado</option>
+                                    </select>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Nota de Venta">

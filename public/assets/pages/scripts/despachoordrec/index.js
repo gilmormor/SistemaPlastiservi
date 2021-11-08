@@ -4,7 +4,7 @@ $(document).ready(function () {
     if($("#pantalla").val()=="0"){
         aux_ajaxini = "despachoordrecpage";
         aux_accion =
-            "<a href='despachoordrec/enviaraprorecod' class='btn-accion-tabla btn-sm tooltipsC enviarAproRecOD' title='Enviar a Aprobación'>" +
+            "<a href='despachoordrec/enviaraprorecod' class='btn-accion-tabla btn-sm tooltipsC enviarAproRecOD' title='Enviar para Aprobación'>" +
                 "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>" + 
             "</a>" +
             "<a id='btnEditar' href='despachoordrec' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'> " + 
@@ -123,7 +123,7 @@ function enviarAproRecOD(id){ //Eniar a Aprobacion Rechazo de orden de despacho
 $(document).on("click", ".enviarAproRecOD", function(event){
     event.preventDefault();
     swal({
-        title: '¿ Está seguro que desea enviar a aprobacion ?',
+        title: '¿ Está seguro que desea enviar papa aprobacion ?',
         text: "Esta acción no se puede deshacer!",
         icon: 'warning',
         buttons: {
