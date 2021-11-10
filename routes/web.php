@@ -691,7 +691,6 @@ Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('
 Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
 Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');
 
-<<<<<<< HEAD
 /*RUTAS MATERIA PRIMA*/
 Route::get('materiaprima', 'MateriaPrimaController@index')->name('materiaprima');
 Route::get('materiaprimapage', 'MateriaPrimaController@materiaprimapage')->name('materiaprimapage');
@@ -700,7 +699,6 @@ Route::post('materiaprima', 'MateriaPrimaController@guardar')->name('guardar_mat
 Route::get('materiaprima/{id}/editar', 'MateriaPrimaController@editar')->name('editar_materiaprima');
 Route::put('materiaprima/{id}', 'MateriaPrimaController@actualizar')->name('actualizar_materiaprima');
 Route::delete('materiaprima/{id}', 'MateriaPrimaController@eliminar')->name('eliminar_materiaprima');
-=======
 
 
 /*RUTAS NOTAS DE VENTA EN TRANSITO*/
@@ -751,4 +749,3 @@ Route::get('reportorddesprec/totalizarRep', 'ReportOrdDespRecController@totaliza
 Route::get('reportmovsoldesp', 'ReportMovSolDespController@index')->name('reportmovsoldesp');
 Route::post('reportmovsoldesp/reporte', 'ReportMovSolDespController@reporte')->name('reportmovsoldesp_reporte');
 Route::get('reportmovsoldesp/exportPdf', 'ReportMovSolDespController@exportPdf')->name('reportmovsoldesp_exportPdf');
->>>>>>> master
