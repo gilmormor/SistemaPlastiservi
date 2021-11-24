@@ -197,13 +197,16 @@ $("#cotizacion_idM").blur(function(){
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
-				if(respuesta.length>0){
-					if(respuesta[0]['descripbloqueo']==null){
-						$("#razonsocialM").val(respuesta[0]['razonsocial']);
+				//console.log(respuesta);
+				console.log(respuesta.cotizaciones)
+				console.log(respuesta.cotizaciones["length"]);
+				if(respuesta.cotizaciones["length"]>0){
+					if(respuesta.cotizaciones[0]['descripbloqueo']==null){
+						$("#razonsocialM").val(respuesta.cotizaciones[0]['razonsocial']);
 					}else{
 						swal({
 							title: 'Cliente Bloqueado.',
-							text: respuesta[0]['descripbloqueo'],
+							text: respuesta.cotizaciones[0]['descripbloqueo'],
 							icon: 'error',
 							buttons: {
 								confirm: "Aceptar"
@@ -215,14 +218,12 @@ $("#cotizacion_idM").blur(function(){
 								$("#cotizacion_idM").focus();
 							}
 						});
-	
 					}
-					
 				}else{
 					$('#cotizacion_idM').val('');
 					$('#razonsocialM').val('');
 					swal({
-						title: 'Cotización no existe.',
+						title: respuesta.mensaje,
 						text: "Presione F2 para buscar",
 						icon: 'error',
 						buttons: {

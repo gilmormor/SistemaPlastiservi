@@ -369,6 +369,7 @@ function consulta($request,$aux_sql,$orden){
     }else{
         $aux_orden = "notaventa.cliente_id";
     }
+    dd($request->vendedor_id);
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador

@@ -73,6 +73,10 @@ class CotizacionController extends Controller
                     FROM cotizaciondetalle 
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
                     cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador,
+                    (SELECT COUNT(*) 
+                    FROM cotizaciondetalle 
+                    WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
+                    not isnull(acuerdotecnicotemp_id)) AS contacutec,
                     cotizacion.fechahora as fechahora_aaaammdd
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
@@ -591,6 +595,7 @@ class CotizacionController extends Controller
 
     public function buscarCotizacion(Request $request){
         if($request->ajax()){
+            $respuesta = array();
             $user = Usuario::findOrFail(auth()->id());
             $sql= 'SELECT COUNT(*) AS contador
                 FROM vendedor INNER JOIN persona
@@ -605,26 +610,36 @@ class CotizacionController extends Controller
                 $aux_condvend = "cotizacion.vendedor_id= $vendedor_id ";
             }
             //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-            $sql = "SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
-                        clientebloqueado.descripcion as descripbloqueo,
-                        (SELECT COUNT(*) 
-                        FROM cotizaciondetalle 
-                        WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
-                        cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador
-                    FROM cotizacion inner join cliente
-                    on cotizacion.cliente_id = cliente.id
-                    LEFT join clientebloqueado
-                    on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-                    where $aux_condvend and (aprobstatus=1 or aprobstatus=3) 
-                    and cotizacion.id = $request->id 
-                    and cotizacion.deleted_at is null;";
-            //where usuario_id='.auth()->id();
-            //dd($sql);
-            $cotizaciones = DB::select($sql);
-            //dd($cotizaciones);
+            $aux_condaprobstatus = "(aprobstatus=1 or aprobstatus=3)";
+            $cotizaciones = consultabuscarcot($request->id,$aux_condvend,$aux_condaprobstatus);
+            $respuesta["mensaje"] = "";
+            if (count($cotizaciones) == 0){
+                $respuesta["mensaje"] = "Cotización no existe";
+                $aux_condaprobstatus = "true";
+                $cotizaciones01 = consultabuscarcot($request->id,$aux_condvend,$aux_condaprobstatus);
+                if (count($cotizaciones01) > 0){
+                    //dd($cotizaciones01[0]->aprobstatus);
+                    if($cotizaciones01[0]->aprobstatus == null){
+                        $respuesta["mensaje"] = "Cotizacion sin aprobar por Vendedor.";
+                    }
+                    if($cotizaciones01[0]->aprobstatus == 2){
+                        $respuesta["mensaje"] = "Precio menor al valor en tabla. Debe ser aprobada por Supervisor.";  
+                    }
+                    if($cotizaciones01[0]->aprobstatus == 4){
+                        $respuesta["mensaje"] = "Cotizacion rechazada por Supervisor, debe revisar en la bandeja de cotizaciones para modificar precio.";
+                    }
+                    //$respuesta["mensaje"] = $cotizaciones01[0]
+                }
+                //$respuesta["cotizaciones01"] = response()->json($cotizaciones01);
+
+                
+            }
+            //$respuesta["cotizaciones"] = response()->json($cotizaciones);
+            $respuesta["cotizaciones"] = $cotizaciones;
+            
             
             //dd($clientedirecs->get());
-            return response()->json($cotizaciones);
+            return $respuesta;
         }
     }
 
@@ -676,5 +691,26 @@ class CotizacionController extends Controller
         return $pdf->stream(str_pad($cotizacion->id, 5, "0", STR_PAD_LEFT) .' - '. $aux_razonsocial . '.pdf');
         
     }
+
+}
+
+function consultabuscarcot($id,$aux_condvend,$aux_condaprobstatus){
+    $sql = "SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
+        clientebloqueado.descripcion as descripbloqueo,
+        (SELECT COUNT(*) 
+        FROM cotizaciondetalle 
+        WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
+        cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador
+    FROM cotizacion inner join cliente
+    on cotizacion.cliente_id = cliente.id
+    LEFT join clientebloqueado
+    on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
+    where $aux_condvend and $aux_condaprobstatus 
+    and cotizacion.id = $id 
+    and cotizacion.deleted_at is null;";
+
+    $cotizaciones = DB::select($sql);
+    return $cotizaciones;
+
 
 }

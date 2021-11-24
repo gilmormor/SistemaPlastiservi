@@ -749,3 +749,8 @@ Route::get('reportorddesprec/totalizarRep', 'ReportOrdDespRecController@totaliza
 Route::get('reportmovsoldesp', 'ReportMovSolDespController@index')->name('reportmovsoldesp');
 Route::post('reportmovsoldesp/reporte', 'ReportMovSolDespController@reporte')->name('reportmovsoldesp_reporte');
 Route::get('reportmovsoldesp/exportPdf', 'ReportMovSolDespController@exportPdf')->name('reportmovsoldesp_exportPdf');
+
+
+/*RUTAS APROBAR ACUERDO TECNICO COTIZACION */
+Route::get('cotizacionaprobaracutec', 'CotizacionAprobarAcuTecController@index')->name('cotizacionaprobaracutec');
+Route::get('cotizacionaprobaracutecpage', 'CotizacionAprobarAcuTecController@cotizacionaprobaracutecpage')->name('cotizacionaprobaracutecpage');

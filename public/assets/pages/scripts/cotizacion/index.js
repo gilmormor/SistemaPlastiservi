@@ -20,6 +20,7 @@ $(document).ready(function () {
         {data: 'aprobstatus',className:"ocultar"},
         {data: 'aprobobs',className:"ocultar"},
         {data: 'contador',className:"ocultar"},
+        {data: 'contacutec',className:"ocultar"},
         {data: 'fechahora_aaaammdd',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
@@ -77,9 +78,14 @@ $(document).on("click", ".btnEnviarNV", function(event){
     form = $(this);
     id = fila.find('td:eq(0)').text();
     contador = fila.find('td:eq(6)').text();
+    contacutec = fila.find('td:eq(7)').text();
     aprobstatus = 1;
-    if(contador>0){
-        aprobstatus = 2;
+    if(contacutec>0){
+        aprobstatus = 5;
+    }else{
+        if(contador>0){
+            aprobstatus = 2;
+        }    
     }
     var data = {
 		id: id,

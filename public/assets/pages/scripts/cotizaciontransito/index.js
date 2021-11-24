@@ -44,6 +44,12 @@ $(document).ready(function () {
                         aux_mensaje= "Precio menor Aprobado por supervisor";
                         aux_icono = "glyphicon glyphicon-thumbs-up";
                         aux_color = "btn btn-success";
+                    }else{
+                        if (data.aprobstatus=='5'){
+                            aux_mensaje= "Cotizacion contiene acuerdo técnico - Debe ser validado";
+                            aux_icono = "glyphicon glyphicon-thumbs-down";
+                            aux_color = "btn btn-danger";            
+                        }
                     }
                 }
             }
