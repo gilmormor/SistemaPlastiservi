@@ -460,11 +460,22 @@
 						@if ($areaproduccion->id != 3)
 							<tr class='btn-accion-tabla tooltipsC'>
 								<td>{{$areaproduccion->nombre}}</td>
-								@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
-									@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-										<td style='text-align:right'>{{number_format(round($ventasareaprodxmes->totalkilos,0), 0, ",", ".")}}</td>
-									@endif
+								@foreach($datas['ventasxmes'] as $ventasxmes)
+									<?php
+										$aux_valor = "0";
+									?>
+									@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+										@if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+											<?php
+												$aux_valor = number_format(round($ventasareaprodxmes->totalkilos,0), 0, ",", ".");
+												break;
+											?>
+										@endif
+									@endforeach
+									<td style='text-align:right'>{{$aux_valor}}</td>
+
 								@endforeach
+	
 							</tr>
 						@endif
 					@endforeach
@@ -498,18 +509,36 @@
 						@if ($areaproduccion->id == 1)
 							<tr>
 								<td>{{$areaproduccion->nombre}}</td>
-								@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
-									@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-										<td style='text-align:right'>{{number_format(round($ventasareaprodxmes->totalkilos,0), 2, ",", ".")}}</td>
-									@endif
+								@foreach($datas['ventasxmes'] as $ventasxmes)
+									<?php
+										$aux_valor = "0";
+									?>
+									@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+										@if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+											<?php
+												$aux_valor = number_format(round($ventasareaprodxmes->totalkilos,0), 2, ",", ".");
+												break;
+											?>	
+										@endif
+									@endforeach
+									<td style='text-align:right'>{{$aux_valor}}</td>
 								@endforeach
 							</tr>
 							<tr>
 								<td>Precio Kg($)</td>
-								@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
-									@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-										<td style='text-align:right'>{{number_format(round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0), 0, ",", ".")}}</td>
-									@endif
+								@foreach($datas['ventasxmes'] as $ventasxmes)
+									<?php
+										$aux_valor = "0";
+									?>
+									@foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+										@if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+											<?php
+												$aux_valor = number_format(round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0), 0, ",", ".");
+												break;
+											?>	
+										@endif
+									@endforeach
+									<td style='text-align:right'>{{$aux_valor}}</td>
 								@endforeach
 							</tr>
 						@endif
