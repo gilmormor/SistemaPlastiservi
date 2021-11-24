@@ -37,7 +37,8 @@ class IndicadoresController extends Controller
         $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y")
                     ];
-        return view('nvindicadorxvendedor.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('nvindicadorxvendedor.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ','tablashtml'));
     }
 
     public function indexcomercial()
@@ -60,7 +61,8 @@ class IndicadoresController extends Controller
                     'fechaAct' => date("d/m/Y"),
                     'anno' => date('Y')
                     ];
-        return view('indicadorcomercial.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('indicadorcomercial.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ','tablashtml'));
     }
 
     public function indexgestion()
@@ -83,7 +85,8 @@ class IndicadoresController extends Controller
                     'fechaAct' => date("d/m/Y"),
                     'anno' => date('Y')
                     ];
-        return view('indicadorgestion.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('indicadorgestion.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ','tablashtml'));
     }
 
     public function repkilosxtipoentrega(Request $request){

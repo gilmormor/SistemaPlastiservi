@@ -44,6 +44,7 @@ Productos Notas de Venta
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
+                                <!--
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Vendedor">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Vendedor:</label>
@@ -58,6 +59,17 @@ Productos Notas de Venta
                                                 </option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                </div>
+                                -->
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Vendedor">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Vendedor:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <?php
+                                            echo $tablashtml['vendedores'];
+                                        ?>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Giro">
