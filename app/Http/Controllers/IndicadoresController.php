@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Cliente;
+use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
@@ -1767,7 +1768,7 @@ function consulta($request){
     $array = array('apellido', 'email', 'teléfono');
     $separado_por_comas = implode(",", $array);
     //dd(json_decode($request->vendedor_id));
-    $aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
+    //$aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
     //dd($aux_vendedor);
     $respuesta = array();
     $respuesta['exito'] = true;
@@ -1775,11 +1776,40 @@ function consulta($request){
     $respuesta['productos'] = "";
     $respuesta['vendedores'] = "";
     $respuesta['agruxproducto'] = "";
-
+/*
     if(empty($aux_vendedor )){
             $vendedorcond = " true ";
     }else{
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
+    }
+*/
+    if(empty($request->vendedor_id)){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+        }else{
+            $vendedorcond = " true ";
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+    }else{
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
     //dd($vendedorcond);
     if(empty($request->fechad) or empty($request->fechah)){
@@ -2133,19 +2163,49 @@ function consultaODcerrada($request){
     $array = array('apellido', 'email', 'teléfono');
     $separado_por_comas = implode(",", $array);
     //dd(json_decode($request->vendedor_id));
-    $aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
+    //$aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
     //dd($aux_vendedor);
     $respuesta = array();
     $respuesta['exito'] = true;
     $respuesta['mensaje'] = "Código encontrado";
     $respuesta['productos'] = "";
     $respuesta['vendedores'] = "";
-
+/*
     if(empty($aux_vendedor )){
         $vendedorcond = " true ";
     }else{
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
     }
+*/
+    if(empty($request->vendedor_id)){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+        }else{
+            $vendedorcond = " true ";
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+    }else{
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+    }
+
     //dd($vendedorcond);
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -2648,18 +2708,47 @@ function tablaAgruxProductoMargen($datas){
 }
 
 function consultakilostipoentrega($request){
-    $aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
+    //$aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
     $aux_areaproduccion = implode ( ',' , json_decode($request->areaproduccion_id));
     $respuesta = array();
     $respuesta['exito'] = true;
     $respuesta['mensaje'] = "Código encontrado";
     $respuesta['productos'] = "";
     $respuesta['vendedores'] = "";
-
+/*
     if(empty($aux_vendedor )){
         $vendedorcond = " true ";
     }else{
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
+    }
+*/
+    if(empty($request->vendedor_id)){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+        }else{
+            $vendedorcond = " true ";
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+    }else{
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
     //dd($vendedorcond);
     if(empty($request->fechad) or empty($request->fechah)){
