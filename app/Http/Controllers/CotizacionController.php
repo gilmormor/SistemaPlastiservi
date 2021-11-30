@@ -82,7 +82,7 @@ class CotizacionController extends Controller
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
-                where $aux_condvend and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
+                where $aux_condvend and (isnull(aprobstatus) or aprobstatus=0 or aprobstatus=4 or aprobstatus=7) 
                 and cotizacion.deleted_at is null
                 ORDER BY cotizacion.id desc;";
 
@@ -344,43 +344,44 @@ class CotizacionController extends Controller
                 $idcotizaciondet = $request->cotdet_id[$i]; 
                 $producto = Producto::findOrFail($request->producto_id[$i]);
                 //$acuerdotecnico_id = null;
-                if($request->acuerdotecnico[$i] != "null")
-                {
-                    $objetAT = json_decode($request->acuerdotecnico[$i]);
-                    foreach($objetAT as $clave => &$valor) {
-                        if($valor == ""){
-                            $valor = null;
+                if($producto->tipoprod == 1){
+                    if($request->acuerdotecnico[$i] != "null")
+                    {
+                        $objetAT = json_decode($request->acuerdotecnico[$i]);
+                        foreach($objetAT as $clave => &$valor) {
+                            if($valor == ""){
+                                $valor = null;
+                            }
                         }
+                        /*
+                        if(isset($objetAT->id)){
+                            $acuerdotecnico_id = $objetAT->id;
+                        }else{
+                            $acuerdotecnico_id = "";
+                        }*/
+                        unset($objetAT->id);
+                        unset($objetAT->deleted_at);
+                        unset($objetAT->created_at);
+                        unset($objetAT->updated_at);
+                        unset($objetAT->usuariodel_id);
+                        
+                        //dd($objetAT);
+                        $arrayAT = (array) $objetAT;
+                        /*
+                        $acuerdotecnicotemp = AcuerdoTecnicoTemp::updateOrInsert(
+                            ['id' => $acuerdotecnico_id],
+                            $arrayAT
+                        );*/
+                        /*
+                        $acuerdotecnicotemp = AcuerdoTecnicoTemp::where("id","=",$acuerdotecnico_id);
+                        if (is_null($acuerdotecnicotemp)) {
+                            $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                            $acuerdotecnico_id = $acuerdotecnicotemp->id;
+                        } else {
+                            $acuerdotecnicotemp = $acuerdotecnicotemp->update($arrayAT);
+                        }*/
                     }
-                    /*
-                    if(isset($objetAT->id)){
-                        $acuerdotecnico_id = $objetAT->id;
-                    }else{
-                        $acuerdotecnico_id = "";
-                    }*/
-                    unset($objetAT->id);
-                    unset($objetAT->deleted_at);
-                    unset($objetAT->created_at);
-                    unset($objetAT->updated_at);
-                    unset($objetAT->usuariodel_id);
-                    
-                    //dd($objetAT);
-                    $arrayAT = (array) $objetAT;
-                    /*
-                    $acuerdotecnicotemp = AcuerdoTecnicoTemp::updateOrInsert(
-                        ['id' => $acuerdotecnico_id],
-                        $arrayAT
-                    );*/
-                    /*
-                    $acuerdotecnicotemp = AcuerdoTecnicoTemp::where("id","=",$acuerdotecnico_id);
-                    if (is_null($acuerdotecnicotemp)) {
-                        $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
-                        $acuerdotecnico_id = $acuerdotecnicotemp->id;
-                    } else {
-                        $acuerdotecnicotemp = $acuerdotecnicotemp->update($arrayAT);
-                    }*/
                 }
-                
                 //dd($request->precioxkilo);
                 /*
                 $cotizaciondetalle = CotizacionDetalle::updateOrInsert(
@@ -436,9 +437,12 @@ class CotizacionController extends Controller
                     $cotizaciondetalle->save();
                     $idcotizaciondet = $cotizaciondetalle->id;
 
-                    if($request->acuerdotecnico[$i] != "null"){
-                        $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
-                        $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
+                    if($producto->tipoprod == 1){
+                        if($request->acuerdotecnico[$i] != "null"){
+                            $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                            $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
+                        }
+    
                     }
                     //dd($idDireccion);
                 }else{
@@ -468,7 +472,7 @@ class CotizacionController extends Controller
                         ]
                     );
                     $cotizaciondetalle = CotizacionDetalle::findOrFail($request->cotdet_id[$i]);
-                    if($request->acuerdotecnico[$i] != "null"){
+                    if(($producto->tipoprod == 1) and ($request->acuerdotecnico[$i] != "null")){
                         if($cotizaciondetalle->acuerdotecnicotemp_id == null){
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
                             $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
@@ -577,7 +581,17 @@ class CotizacionController extends Controller
         can('guardar-cotizacion');
         if ($request->ajax()) {
             $cotizacion = Cotizacion::findOrFail($request->id);
-            $cotizacion->aprobstatus = $request->valor;
+            if($cotizacion->aprobstatus == "2"){ //Aprobar o rechazar por precio menor al de tabla
+                $cotizacion->aprobstatus = $request->valor;
+            }else{
+                if($cotizacion->aprobstatus == "5"){ //Aprobar o rechazar acuerdo tecnico
+                    if($request->valor == "3"){
+                        $cotizacion->aprobstatus = "6";
+                    }else{
+                        $cotizacion->aprobstatus = "7";
+                    }
+                }
+            }
             $cotizacion->aprobusu_id = auth()->id();
             $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
             $cotizacion->aprobobs = $request->obs;
@@ -610,7 +624,7 @@ class CotizacionController extends Controller
                 $aux_condvend = "cotizacion.vendedor_id= $vendedor_id ";
             }
             //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-            $aux_condaprobstatus = "(aprobstatus=1 or aprobstatus=3)";
+            $aux_condaprobstatus = "(aprobstatus=1 or aprobstatus=3 or aprobstatus=6)";
             $cotizaciones = consultabuscarcot($request->id,$aux_condvend,$aux_condaprobstatus);
             $respuesta["mensaje"] = "";
             if (count($cotizaciones) == 0){
@@ -627,6 +641,12 @@ class CotizacionController extends Controller
                     }
                     if($cotizaciones01[0]->aprobstatus == 4){
                         $respuesta["mensaje"] = "Cotizacion rechazada por Supervisor, debe revisar en la bandeja de cotizaciones para modificar precio.";
+                    }
+                    if($cotizaciones01[0]->aprobstatus == 5){
+                        $respuesta["mensaje"] = "Cotizacion en espera por aprobacion de Acuerdo Tecnico.";
+                    }
+                    if($cotizaciones01[0]->aprobstatus == 7){
+                        $respuesta["mensaje"] = "Cotizacion: Acuerdo tecnico Rechazado.";
                     }
                     //$respuesta["mensaje"] = $cotizaciones01[0]
                 }

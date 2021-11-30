@@ -6,7 +6,7 @@ Cotización
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/cotizacionaprobar/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cotizacionaprobaracutec/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -28,7 +28,6 @@ Cotización
                                 <th>Cliente</th>
                                 <th class="width30">PDF</th>
                                 <th class="ocultar">aprobstatus</th>
-                                <th class="ocultar">contador</th>
                                 <th class="width30">Act</th>
                             </tr>
                         </thead>

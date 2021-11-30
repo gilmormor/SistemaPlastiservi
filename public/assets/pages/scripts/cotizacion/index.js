@@ -47,10 +47,24 @@ $(document).ready(function () {
         $('td', row).eq(3).html(aux_text);
         $('td', row).eq(1).attr('data-order',data.fechahora_aaaammdd);
 
-        if ( data.contador * 1 > 0 ) {
+        if ( (data.contador * 1 > 0) || (data.aprobstatus == "7" )) {
             //console.log(row);
             ///$('tr').addClass('preciomenor');
             //$('td', row).parent().addClass('preciomenor tooltipsC');
+            if((data.contador * 1 > 0)){
+                aux_mensaje = "Precio menor al valor en tabla: " + data.aprobobs;
+            }
+            if((data.aprobstatus == "7")){
+                aux_mensaje = "Acuerdo Tecnico Rechazado: " + data.aprobobs;
+            }
+            for (let i = 0; i < 3; i++) {
+                $('td', row).eq(i).html(
+                    "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='" + aux_mensaje + "'>"+
+                        $('td', row).eq(i).html()+
+                    "</a>"
+                );                    
+            }
+            /*
             $('td', row).eq(0).html(
                 "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='Precio menor al valor en tabla'>"+
                 $('td', row).eq(0).html()+
@@ -66,6 +80,7 @@ $(document).ready(function () {
                 $('td', row).eq(2).html()+
                 "</a>"
             );
+            */
             //$('td', row).parent().prop("title","Precio menor al valor en tabla")
         }
     }

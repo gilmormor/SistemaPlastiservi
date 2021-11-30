@@ -49,6 +49,12 @@ $(document).ready(function () {
                             aux_mensaje= "Cotizacion contiene acuerdo técnico - Debe ser validado";
                             aux_icono = "glyphicon glyphicon-thumbs-down";
                             aux_color = "btn btn-danger";            
+                        }else{
+                            if (data.aprobstatus=='6'){
+                                aux_mensaje= "Cotizacion con acuerdo técnico Aprobado";
+                                aux_icono = "glyphicon glyphicon-thumbs-up";
+                                aux_color = "btn btn-success";            
+                            }
                         }
                     }
                 }

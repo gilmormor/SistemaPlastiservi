@@ -224,7 +224,7 @@ $("#cotizacion_idM").blur(function(){
 					$('#razonsocialM').val('');
 					swal({
 						title: respuesta.mensaje,
-						text: "Presione F2 para buscar",
+						text: "", //"Presione F2 para buscar",
 						icon: 'error',
 						buttons: {
 							confirm: "Aceptar"

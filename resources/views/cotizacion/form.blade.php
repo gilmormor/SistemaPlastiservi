@@ -1,4 +1,5 @@
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
+<input type="hidden" name="aprobstatus" id="aprobstatus" value="{{old('aprobstatus', $data->aprobstatus ?? '')}}">
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
 <input type="hidden" name="aux_iva" id="aux_iva" value="{{$tablas['empresa']->iva}}">
 <input type="hidden" name="direccioncot" id="direccioncot" value="{{old('direccioncot', $data->direccioncot ?? '')}}">
@@ -29,7 +30,7 @@
 <?php
     $disabledReadOnly = "";
     //Si la pantalla es de aprobacion de Cotizacion desactiva todos input
-    if(session('aux_aprocot')=='1'){
+    if(strpos("15", session('aux_aprocot'))){ //(session('aux_aprocot')=='1'){
         $disabledReadOnly = ' disabled ';
     }
 ?>
@@ -441,7 +442,7 @@
 @include('generales.calcprecioprodsn')
 @include('generales.buscarcliente')
 @include('generales.buscarproducto')
-@if (session('aux_aprocot')=='1')
+@if (session('aux_aprocot')=='1' or session('aux_aprocot')=='5') <!--(strpos("15", session('aux_aprocot'))) -->
     @include('generales.aprobarcotnv')
 @endif
 @include('generales.acuerdotecnico')

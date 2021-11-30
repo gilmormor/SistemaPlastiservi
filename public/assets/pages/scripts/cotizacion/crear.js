@@ -455,7 +455,12 @@ function ajaxRequest(data,url,funcion) {
 					Biblioteca.notificaciones('El registro fue actualizado correctamente', 'Plastiservi', 'success');
 					// *** REDIRECCIONA A UNA RUTA*** 
 					var loc = window.location;
-    				window.location = loc.protocol+"//"+loc.hostname+"/cotizacionaprobar";
+					if($("#aprobstatus").val()== "2"){
+						window.location = loc.protocol+"//"+loc.hostname+"/cotizacionaprobar";
+					}
+					if($("#aprobstatus").val()== "5"){
+						window.location = loc.protocol+"//"+loc.hostname+"/cotizacionaprobaracutec";
+					}
 					// ****************************** 
 				} else {
 					if (respuesta.mensaje == "sp"){

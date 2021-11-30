@@ -93,7 +93,7 @@ class NotaVentaController extends Controller
                 on cotizacion.cliente_id = cliente.id
                 LEFT join clientebloqueado
                 on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-                where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3) and 
+                where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3 or aprobstatus=6) and 
                 cotizacion.id not in (SELECT cotizacion_id from notaventa WHERE !(cotizacion_id is NULL) and (anulada is null))
                 and cotizacion.deleted_at is null;';
         //where usuario_id='.auth()->id();

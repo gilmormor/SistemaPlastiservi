@@ -15,30 +15,23 @@ class CotizacionAprobarAcuTecController extends Controller
      */
     public function index()
     {
-        can('listar-aprobar-cotizacion');
-        session(['aux_aprocot' => '1']);
+        can('listar-aprobar-acuerdo-tecnico-cotizacion');
+        session(['aux_aprocot' => '5']);
         return view('cotizacionaprobaracutec.index');
     }
 
-    public function cotizacionaprobarpage(){
-        session(['aux_aprocot' => '1']);
-        $user = Usuario::findOrFail(auth()->id());
-        $aux_statusPant = 1;
-
+    public function cotizacionaprobaracutecpage(){
+        session(['aux_aprocot' => '5']);
         $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
-                    aprobstatus,'1' as pdfcot, 
-                    (SELECT COUNT(*) 
-                    FROM cotizaciondetalle 
-                    WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and cotizaciondetalle.precioxkilo<cotizaciondetalle.precioxkiloreal) AS contador
+                    aprobstatus,'1' as pdfcot
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
-                where aprobstatus=2
+                where aprobstatus=5
                 and cotizacion.deleted_at is null;";
         //where usuario_id='.auth()->id();
-        //dd($sql);
         $datas = DB::select($sql);
         return datatables($datas)->toJson();  
     }
