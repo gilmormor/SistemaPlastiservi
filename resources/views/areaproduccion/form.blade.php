@@ -16,12 +16,12 @@
         <select name="stapromkg" id="stapromkg" class="form-control select2 stapromkg" required>
             <option value="">Seleccione...</option>
             <option value="0"
-                @if ($data->stapromkg=="0")
+                @if (isset($data) and $data->stapromkg=="0")
                     {{'selected'}}
                 @endif
             >No</option>
             <option value="1"
-                @if ($data->stapromkg=="1")
+                @if (isset($data) and $data->stapromkg=="1")
                     {{'selected'}}
                 @endif    
             >Si</option>
