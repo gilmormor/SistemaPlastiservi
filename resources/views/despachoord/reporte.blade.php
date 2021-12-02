@@ -153,6 +153,9 @@
 			</tr>
 		</table>
 	</div>
+	<div>
+		<p class="nota"><strong>Observaciones: {{$despachoord->observacion}}</strong></p>
+	</div>
 	<br>
 	<div class="round1">
 		<span class="h3">Información</span>
@@ -215,9 +218,4 @@
 			</tr>
 		</table>
 	</div>
-	<br>
-	<div>
-		<p class="nota"><strong>Observaciones: {{$despachoord->observacion}}</strong></p>
-	</div>
-	<br>
 </div>
