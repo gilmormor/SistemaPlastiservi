@@ -738,12 +738,62 @@ class DespachoOrdController extends Controller
                     $tipounion = $despachoorddet->notaventadetalle->producto->tipounion;
                     $cantsoldesp = $despachoorddet->despachosoldet->cantsoldesp;
                     $peso = $despachoorddet->notaventadetalle->peso;
+                    $tablaOrdTrab= "";
+                    $aux_botonMostrar = "";
+                    if(count($despachoorddet->despachoordrecdets) > 0){
+                        //dd($despachoorddet->despachoordrecdets);
+                        $tablaOrdTrab .= "
+                            <table class='table display AllDataTables table-hover table-condensed' data-page-length='10'>
+                            <thead>
+                                <tr>
+                                    <th style='text-align:right' class='btn-accion-tabla btn-sm tooltipsC' title='Id Rechazo'>ID</th>
+                                    <th style='text-align:right' class='btn-accion-tabla btn-sm tooltipsC' title='Cant Rechazada'>Cant</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                            $aux_saldoentregado = $despachoorddet->cantdesp;
+                            foreach ($despachoorddet->despachoordrecdets as $despachoordrecdet){
+                                //dd($despachoordrecdet->cantrec);
+                                $tablaOrdTrab .= "
+                                    <tr>
+                                        <td>
+                                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Rechazo OD' onclick='genpdfODRec($despachoordrecdet->id,1)'>
+                                                $despachoordrecdet->id
+                                            </a>
+                                        </td>
+                                        <td style='text-align:right'>$despachoordrecdet->cantrec</td>
+                                    </tr>";
+                                $aux_saldoentregado -= $despachoordrecdet->cantrec;
+                            }
+                            $tablaOrdTrab .= "
+                            </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th style='text-align:right'></th>
+                                        <th style='text-align:right' class='btn-accion-tabla btn-sm tooltipsC' title='Entregado' >". number_format($aux_saldoentregado, 0, ",", ".") ."</th>
+                                    </tr>
+                                </tfoot>        
+                            </table>";
+                            $aux_botonMostrar = "
+                                <a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazo' onclick='mostrarH($i,\"botonD\",\"divTabOT\")'>
+                                    <i name='botonD$i' id='botonD$i' class='fa fa-fw fa-caret-down'></i>
+                                </a>";
+                    }
+//                    $tablaOrdTrab= "";
                     $respuesta['tabla'] .= "
-                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC' onclick='genpdfOD($despachoorddet->despachoord_id,1)'>
-                        <td id='id$i' name='id$i'>$despachoorddet->despachoord_id</td>
+                    <tr id='fila$i' name='fila$i'>
+                        <td id='id$i' name='id$i'>
+                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoorddet->despachoord_id,1)'>
+                                $despachoorddet->despachoord_id
+                            </a>                            
+                        </td>
                         <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($despachoorddet->created_at)) . "</td>
                         <td style='text-align:right'>". number_format($cantsoldesp, 0, ",", ".") ."</td>
-                        <td style='text-align:right'>". number_format($despachoorddet->cantdesp, 0, ",", ".") ."</td>
+                        <td style='text-align:right'>" . $aux_botonMostrar . number_format($despachoorddet->cantdesp, 0, ",", ".") .
+                            "<div id='divTabOT$i' style='display:none;'>
+                                    $tablaOrdTrab
+                            </div>
+                        </td>
                         <td class='textcenter'>$unidades</td>
 						<td class='textleft'>$nombreproduc</td>
                         <td class='textleft'>$diametro</td>
@@ -753,8 +803,9 @@ class DespachoOrdController extends Controller
                         <td class='textcenter'>$peso</td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->guiadespacho ." </td>
                         <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
-                        <td class='textcenter'>" . $despachoorddet->despachoord->numfactura . "</td>
+                        <td class='textcenter'>" . $despachoorddet->despachoord->numfactura . "</td>    
                     </tr>";
+
                     $respuesta['exito'] = true;
                     $aux_totalcantsoldesp += $cantsoldesp;
                     $aux_totalcantdesp += $despachoorddet->cantdesp;

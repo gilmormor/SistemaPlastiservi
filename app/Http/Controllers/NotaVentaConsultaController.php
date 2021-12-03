@@ -401,6 +401,7 @@ class NotaVentaConsultaController extends Controller
             $aux_condoc_id = " true";
         }else{
             $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
+            $aux_condFecha = " true";
         }
         if(empty($request->giro_id)){
             $aux_condgiro_id = " true";
@@ -421,6 +422,7 @@ class NotaVentaConsultaController extends Controller
             $aux_condnotaventa_id = " true";
         }else{
             $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
+            $aux_condFecha = " true";
         }
     
         $aux_aprobstatus = "";

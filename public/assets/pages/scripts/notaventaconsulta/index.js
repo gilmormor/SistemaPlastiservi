@@ -382,3 +382,13 @@ $("#producto_idM").keyup(function(event){
         $("#myModalBuscarProd").modal('show');
     }
 });
+
+
+function mostrarH(i,aux_boton,aux_div){
+	if($('#'+aux_div+i).css('display') == 'none'){
+		$('#'+aux_boton+i).attr("class", "fa fa-fw fa-caret-up");
+	}else{
+		$('#'+aux_boton+i).attr("class", "fa fa-fw fa-caret-down");
+	}
+	$('#'+aux_div+i).slideToggle(500);
+}
