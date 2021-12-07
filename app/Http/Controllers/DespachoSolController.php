@@ -42,16 +42,92 @@ class DespachoSolController extends Controller
     public function index()
     {
         can('listar-solicitud-despacho');
+        /*
         $despachosolanul = DespachoSolAnul::orderBy('id')->pluck('despachosol_id')->toArray();
         $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
+        //dd($notaventacerradaArray);
         //dd($notaventacerrada);
         $datas = DespachoSol::orderBy('id')
                 ->whereNull('aprorddesp')
                 ->whereNotIn('id', $despachosolanul)
                 ->whereNotIn('notaventa_id', $notaventacerradaArray)
                 ->get();
-        return view('despachosol.index', compact('datas'));
+        */
+//        return view('despachosol.index', compact('datas'));
+        return view('despachosol.index');
     }
+
+    public function despachosolpage(){
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
+        $sql = "SELECT despachosol.id,cliente.razonsocial,notaventa.oc_id,despachosol.notaventa_id,
+        '' as notaventaxk,comuna.nombre as comuna_nombre,
+        tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
+        SUM(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg
+        FROM despachosol INNER JOIN notaventa
+        ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
+        INNER JOIN cliente
+        ON cliente.id = notaventa.cliente_id AND isnull(cliente.deleted_at)
+        INNER JOIN comuna
+        ON comuna.id = despachosol.comunaentrega_id AND isnull(comuna.deleted_at)
+        INNER JOIN despachosoldet
+        ON despachosoldet.despachosol_id = despachosol.id AND ISNULL(despachosoldet.deleted_at)
+        INNER JOIN notaventadetalle
+        ON notaventadetalle.id = despachosoldet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
+        INNER JOIN tipoentrega
+        ON tipoentrega.id = despachosol.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
+        LEFT JOIN clientebloqueado
+        ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+        WHERE ISNULL(despachosol.aprorddesp)
+        AND despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE ISNULL(despachosolanul.deleted_at))
+        AND despachosol.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+        AND notaventa.sucursal_id in ($sucurcadena)
+        GROUP BY despachosoldet.despachosol_id;";
+
+        $datas = DB::select($sql);
+        //dd($datas);
+        return datatables($datas)->toJson();
+
+        /*
+        $despachosolanul = DespachoSolAnul::orderBy('id')->pluck('despachosol_id')->toArray();
+        $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+
+        return datatables()
+            ->eloquent(DespachoSol::query()
+            ->orderBy('id')
+            ->whereNull('aprorddesp')
+            ->whereNotIn('id', $despachosolanul)
+            ->whereNotIn('notaventa_id', $notaventacerradaArray)
+            ->join('notaventa','despachosol.notaventa_id', '=', 'notaventa.id')
+            ->whereIn('notaventa.sucursal_id', $sucurArray)
+            ->join('cliente','notaventa.cliente_id','=','cliente.id')
+            ->join('comuna','despachosol.comunaentrega_id','=','comuna.id')
+            ->join('despachosoldet','despachosol.id','=','despachosoldet.despachosol_id')
+            ->join('notaventadetalle','despachosoldet.notaventadetalle_id','=','notaventadetalle.id')
+            ->join('tipoentrega','despachosol.tipoentrega_id','=','tipoentrega.id')
+            ->leftJoin('clientebloqueado', 'notaventa.cliente_id', '=', 'clientebloqueado.cliente_id')
+            ->groupBy('despachosoldet.despachosol_id')
+            ->select([
+                'despachosol.id',
+                'cliente.razonsocial',
+                'notaventa.oc_id',
+                'despachosol.notaventa_id',
+                'comuna.nombre as comuna_nombre',
+                'SUM(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg',
+                'tipoentrega.nombre as tipoentrega_nombre',
+                'tipoentrega.icono',
+                'clientebloqueado.descripcion as clientebloqueado_descripcion'
+                ])
+
+            )
+            ->toJson();
+*/
+        }
+
 
     public function listarnv()
     {

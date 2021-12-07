@@ -39,7 +39,6 @@ Cotización
                                 <th class="width70">Acción</th>
                             </tr>
                         </thead>
-                        <tbody>
                     </table>
                 </div>
             </div>

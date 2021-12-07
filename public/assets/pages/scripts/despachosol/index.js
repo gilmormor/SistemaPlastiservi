@@ -1,108 +1,36 @@
 $(document).ready(function () {
-	Biblioteca.validacionGeneral('form-general');
-	let  table = $('#tabla-data').DataTable();
-    table
-        .on('draw', function () {
-            eventFired( 'Page' );
-        });
+    Biblioteca.validacionGeneral('form-general');
+    $('#tabla-data-cotizacion').DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        'processing'  : true,
+        'serverSide'  : true,
+        'ajax'        : "despachosolpage",
+        'columns'     : [
+            {data: 'id'},
+            {data: 'razonsocial'},
+            {data: 'oc_id'},
+            {data: 'notaventa_id'},
+            {data: 'notaventaxk'},
+            {data: 'comuna_nombre'},
+            {data: 'aux_totalkg'},
+            {data: 'tipoentrega_nombre',className:"ocultar"},
+            {data: 'icono',className:"ocultar"},
+            {data: 'clientebloqueado_descripcion',className:"ocultar"},
+            //El boton eliminar esta en comentario Gilmer 23/02/2021
+            {defaultContent : "<a href='despachosol' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
+				"<i class='fa fa-fw fa-pencil'></i>"+
+			"</a>"+
+			"<a href='despachosol' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
+				"<i class='fa fa-fw fa-trash text-danger'></i>"+
+			"</a>"}
+        ],
+		"language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+    });
 });
-
-var eventFired = function ( type ) {
-	total = 0;
-	$("#tabla-data tr .kilos").each(function() {
-		valor = $(this).attr('data-order') ;
-		valorNum = parseFloat(valor);
-		total += valorNum;
-	});
-	$("#totalKg").html(MASKLA(total,2))
-}
-
-function anular(i,id){
-	//alert($('input[name=_token]').val());
-	var data = {
-		id: id,
-        nfila : i,
-        _token: $('input[name=_token]').val()
-	};
-	var ruta = '/despachosol/anular/'+id;
-	swal({
-		title: '¿ Está seguro que desea anular Solicitud Despacho ?',
-		text: "Esta acción no se puede deshacer!",
-		icon: 'warning',
-		buttons: {
-			cancel: "Cancelar",
-			confirm: "Aceptar"
-		},
-	}).then((value) => {
-		if (value) {
-			ajaxRequest(data,ruta,'anularSD');
-		}
-	});
-}
-
-
-function ajaxRequest(data,url,funcion) {
-	$.ajax({
-		url: url,
-		type: 'POST',
-		data: data,
-		success: function (respuesta) {
-			if(funcion=='anularSD'){
-				if (respuesta.mensaje == "hijo") {
-					Biblioteca.notificaciones('Registro tiene Ordenes de Despacho Asociadas. No se puede anular.', 'Plastiservi', 'error');
-					return 0;
-				}else{
-					if (respuesta.mensaje == "ok") {
-						//$("#fila"+data['nfila']).remove();
-						$("#accion"+data['nfila']).html('<small class="label pull-left bg-red">Anulado</small>')
-						Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-					} else {
-						if (respuesta.mensaje == "sp"){
-							Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-						}else{
-							Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-						}
-					}
-				}
-            }
-			if(funcion=='aproborddesp'){
-				if (respuesta.mensaje == "ok") {
-					$("#fila"+data['nfila']).remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
-				}
-            }
-		},
-		error: function () {
-		}
-	});
-}
-
-
-function aprobarsol(i,id){
-	//alert($('input[name=_token]').val());
-	var data = {
-		id: id,
-        nfila : i,
-        _token: $('input[name=_token]').val()
-	};
-	var ruta = '/despachosol/aproborddesp/'+id;
-	swal({
-		title: '¿ Seguro desea aprobar Solicitud ?',
-		text: "Esta acción no se puede deshacer!",
-		icon: 'warning',
-		buttons: {
-			cancel: "Cancelar",
-			confirm: "Aceptar"
-		},
-	}).then((value) => {
-		if (value) {
-			ajaxRequest(data,ruta,'aproborddesp');
-		}
-	});
-}
