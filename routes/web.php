@@ -521,7 +521,7 @@ Route::get('despachosol/{id}/editar', 'DespachoSolController@editar')->name('edi
 Route::put('despachosol/{id}', 'DespachoSolController@actualizar')->name('actualizar_despachosol');
 Route::delete('despachosol/{id}', 'DespachoSolController@eliminar')->name('eliminar_despachosol');
 Route::post('despachosol/reporte', 'DespachoSolController@reporte')->name('reporte_despachosol');
-Route::post('despachosol/anular/{id}', 'DespachoSolController@anular')->name('anular_despachosol');
+Route::post('despachosol/{id}/anular', 'DespachoSolController@anular')->name('anular_despachosol');
 Route::get('despachosol/{id}/{stareport}/exportPdf', 'DespachoSolController@exportPdf')->name('exportPdf_despachosol');
 Route::post('despachosol/aproborddesp/{id}', 'DespachoSolController@aproborddesp')->name('aproborddesp_despachosol');
 Route::get('despachosol/listarsoldesp', 'DespachoSolController@listarsoldesp')->name('listarsoldesp_despachosol');
@@ -534,6 +534,8 @@ Route::get('despachosol/{id}/{stareport}/vistaprevODPdf', 'DespachoSolController
 Route::get('despachosol/reporteindex', 'DespachoSolController@reporteindex')->name('reporteindex_despachosol');
 Route::get('despachosol/pdfpendientesoldesp', 'DespachoSolController@pdfpendientesoldesp')->name('despachosol_pdfpendientesoldesp');
 Route::get('despachosol/pdfnotaventapendiente', 'DespachoSolController@pdfnotaventapendiente')->name('despachosol_pdfnotaventapendiente');
+Route::get('despachosol/totalizarindex', 'DespachoSolController@totalizarindex')->name('despachosol_totalizarindex');
+
 
 /*RUTAS REPORTE SOLICITUD DESPACHO*/
 Route::get('reportsoldesp', 'ReportSolDespController@index')->name('reportsoldesp');
@@ -570,8 +572,9 @@ Route::post('notaventaconsulta/reporte', 'NotaVentaConsultaController@reporte')-
 */
 
 /*RUTAS Orden de Despacho*/
-Route::get('despachoord/index', 'DespachoOrdController@index')->name('despachoord');
+Route::get('despachoord', 'DespachoOrdController@index')->name('despachoord');
 //Route::get('despachoord', 'DespachoOrdController@listards')->name('listards_despachoord');
+Route::get('despachoordpage', 'DespachoOrdController@despachoordpage')->name('despachoordpage');
 Route::get('despachoord/crear', 'DespachoOrdController@crear')->name('crear_despachoord');
 Route::get('despachoord/{id}/crearord', 'DespachoOrdController@crearord')->name('crearord_despachoord');
 Route::post('despachoord', 'DespachoOrdController@guardar')->name('guardar_despachoord');
@@ -579,7 +582,7 @@ Route::get('despachoord/{id}/editar', 'DespachoOrdController@editar')->name('edi
 Route::put('despachoord/{id}', 'DespachoOrdController@actualizar')->name('actualizar_despachoord');
 Route::delete('despachoord/{id}', 'DespachoOrdController@eliminar')->name('eliminar_despachoord');
 Route::post('despachoord/reporte', 'DespachoOrdController@reporte')->name('reporte_despachoord');
-Route::post('despachoord/anular/{id}', 'DespachoOrdController@anular')->name('anular_despachoord');
+Route::post('despachoord/{id}/anular', 'DespachoOrdController@anular')->name('anular_despachoord');
 Route::get('despachoord/{id}/{stareport}/exportPdf', 'DespachoOrdController@exportPdf')->name('exportPdf_despachoord');
 Route::get('despachoord/indexguia', 'DespachoOrdController@indexguia')->name('indexguia_despachoord');
 Route::get('despachoord/indexfact', 'DespachoOrdController@indexfact')->name('indexfact_despachoord');
@@ -590,6 +593,7 @@ Route::post('despachoord/consultarod', 'DespachoOrdController@consultarod')->nam
 Route::post('despachoord/aproborddesp/{id}', 'DespachoOrdController@aproborddesp')->name('aproborddesp_despachoord');
 Route::post('despachoord/listarorddespxnv', 'DespachoOrdController@listarorddespxnv')->name('listarorddespxnv_despachoord');
 Route::post('despachoord/buscarguiadesp', 'DespachoOrdController@buscarguiadesp')->name('buscarguiadesp_notaventa');
+Route::get('despachoord/totalizarindex', 'DespachoOrdController@totalizarindex')->name('despachoord_totalizarindex');
 
 
 /*RUTAS DESPACHOOBS*/

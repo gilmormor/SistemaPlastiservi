@@ -42,6 +42,7 @@ class DespachoOrdController extends Controller
     public function index()
     {
         can('listar-orden-despacho');
+        /*
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
         $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
         $datas = DespachoOrd::orderBy('id')
@@ -51,9 +52,15 @@ class DespachoOrdController extends Controller
                 ->whereNotIn('notaventa_id', $notaventacerradaArray)
                 ->get();
         return view('despachoord.index', compact('datas'));
+        */
+        return view('despachoord.index');
     }
 
-    
+    public function despachoordpage(){
+        $datas = consultaindex();
+        return datatables($datas)->toJson();
+    }
+
 
     public function indexguia()
     {
@@ -507,12 +514,28 @@ class DespachoOrdController extends Controller
                 $despachoordanul->despachoord_id = $request->id;
                 $despachoordanul->usuario_id = auth()->id();
                 if ($despachoordanul->save()) {
-                    return response()->json(['mensaje' => 'ok']);
+                    //return response()->json(['mensaje' => 'ok']);
+                    return response()->json([
+                        'error'=>'1',
+                        'mensaje'=>'Registro anulado con exito.',
+                        'tipo_alert' => 'success'
+                    ]);
                 } else {
-                    return response()->json(['mensaje' => 'ng']);
+                    //return response()->json(['mensaje' => 'ng']);
+                    return response()->json([
+                        'error'=>'0',
+                        'mensaje'=>'Registro No fue anulado. Error al intentar modificar el registro.',
+                        'tipo_alert' => 'error'
+                    ]);
                 }
             }else{
-                return response()->json(['mensaje' => 'guidesp_factura']);
+                //return response()->json(['mensaje' => 'guidesp_factura']);
+                return response()->json([
+                    'error'=>'0',
+                    'mensaje'=>'Registro no fue anulado. Ya tiene asignado Guia despacho o Factura',
+                    'tipo_alert' => 'error'
+                ]);
+
             }
         } else {
             abort(404);
@@ -841,6 +864,21 @@ class DespachoOrdController extends Controller
             }
         }
     }
+
+    public function totalizarindex(){
+        $respuesta = array();
+        $datas = consultaindex();
+        $aux_totalkg = 0;
+        //$aux_totaldinero = 0;
+        foreach ($datas as $data) {
+            $aux_totalkg += $data->aux_totalkg;
+            //$aux_totaldinero += $data->subtotal;
+        }
+        $respuesta['aux_totalkg'] = $aux_totalkg;
+        //$respuesta['aux_totaldinero'] = $aux_totaldinero;
+        return $respuesta;
+    }
+
 }
 
 
@@ -997,4 +1035,40 @@ function consulta($request){
     $datas = DB::select($sql);
     //dd($datas);
     return $datas;
+}
+
+
+function consultaindex(){
+
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+
+    $sql = "SELECT despachoord.id,despachoord.fechahora,despachoord.fechaestdesp,
+    cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
+    '' as notaventaxk,comuna.nombre as comuna_nombre,
+    tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
+    SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg
+    FROM despachoord INNER JOIN notaventa
+    ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
+    INNER JOIN cliente
+    ON cliente.id = notaventa.cliente_id AND isnull(cliente.deleted_at)
+    INNER JOIN comuna
+    ON comuna.id = despachoord.comunaentrega_id AND isnull(comuna.deleted_at)
+    INNER JOIN despachoorddet
+    ON despachoorddet.despachoord_id = despachoord.id AND ISNULL(despachoorddet.deleted_at)
+    INNER JOIN notaventadetalle
+    ON notaventadetalle.id = despachoorddet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
+    INNER JOIN tipoentrega
+    ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
+    LEFT JOIN clientebloqueado
+    ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+    WHERE ISNULL(despachoord.aprguiadesp)
+    AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+    AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+    AND notaventa.sucursal_id in ($sucurcadena)
+    GROUP BY despachoorddet.despachoord_id;";
+
+    return DB::select($sql);
+
 }

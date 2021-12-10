@@ -23,10 +23,7 @@ Solicitud de despacho
             </div>
             <div class="box-body">
                 <div class="table-responsive">
-                    <!--<table id='tabla-data-cotizacion' name='tabla-data-cotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>-->
-                    <table class="table display AllDataTables table-condensed table-hover" id="tabla-data-cotizacion">
-
-                    <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
+                    <table class="table display AllDataTables table-condensed table-hover" id="tabla-data-despachosol" data-page-length='50'>
                         <thead>
                             <tr>
                                 <th class="width70 tooltipsC" title='Solicitud de Despacho'>SD</th>
@@ -39,10 +36,24 @@ Solicitud de despacho
                                 <th class='tooltipsC' title='Tipo Entrega'>TE</th>
                                 <th class="ocultar">Icono</th>
                                 <th class="ocultar">Obs Bloqueo</th>
-                                <th class="width70"></th>
+                                <th class="ocultar">oc_file</th>
+                                <th class="width70">Acción</th>
                             </tr>
                         </thead>
-
+                        <tfoot>
+                            <tr>
+                            </tr>
+                            <tr>
+                                <th colspan='6' style='text-align:right'>Total página</th>
+                                <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
+                                <th colspan='2' style='text-align:right'></th>
+                            </tr>
+                            <tr>
+                                <th colspan='6' style='text-align:right'>TOTAL GENERAL</th>
+                                <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                                <th colspan='2' style='text-align:right'></th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
