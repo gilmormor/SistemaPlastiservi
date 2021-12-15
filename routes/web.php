@@ -595,6 +595,13 @@ Route::post('despachoord/listarorddespxnv', 'DespachoOrdController@listarorddesp
 Route::post('despachoord/buscarguiadesp', 'DespachoOrdController@buscarguiadesp')->name('buscarguiadesp_notaventa');
 Route::get('despachoord/totalizarindex', 'DespachoOrdController@totalizarindex')->name('despachoord_totalizarindex');
 
+Route::get('despachoordguia', 'DespachoOrdGuiaController@index')->name('despachoordguia');
+Route::get('despachoordguiapage', 'DespachoOrdGuiaController@despachoordguiapage')->name('despachoordguiapage');
+Route::get('despachoordguia/totalizarindex', 'DespachoOrdGuiaController@totalizarindex')->name('despachoordguia_totalizarindex');
+
+Route::get('despachoordfact', 'DespachoOrdFactController@index')->name('despachoordfact');
+Route::get('despachoordfactpage', 'DespachoOrdFactController@despachoordfactpage')->name('despachoordfactpage');
+Route::get('despachoordfact/totalizarindex', 'DespachoOrdFactController@totalizarindex')->name('despachoordfact_totalizarindex');
 
 /*RUTAS DESPACHOOBS*/
 Route::get('despachoobs', 'DespachoObsController@index')->name('despachoobs');

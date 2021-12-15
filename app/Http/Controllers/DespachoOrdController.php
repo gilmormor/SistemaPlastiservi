@@ -1044,7 +1044,7 @@ function consultaindex(){
     $sucurArray = $user->sucursales->pluck('id')->toArray();
     $sucurcadena = implode(",", $sucurArray);
 
-    $sql = "SELECT despachoord.id,despachoord.fechahora,despachoord.fechaestdesp,
+    $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
     cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
     '' as notaventaxk,comuna.nombre as comuna_nombre,
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,

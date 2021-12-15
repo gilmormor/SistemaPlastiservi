@@ -16,9 +16,9 @@ $(document).ready(function () {
             {data: 'fechahora'},
             {data: 'fechaestdesp'},
             {data: 'razonsocial'},
+            {data: 'despachosol_id'},
             {data: 'oc_id'},
             {data: 'notaventa_id'},
-            {data: 'notaventaxk'},
             {data: 'comuna_nombre'},
             {data: 'aux_totalkg'},
             {data: 'tipoentrega_nombre'},
@@ -32,33 +32,42 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
-            i++;
-            $(row).attr('id','fila'+i);
-            $(row).attr('name','fila'+i);
+            $(row).attr('id','fila' + data.id);
+            $(row).attr('name','fila' + data.id);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden despacho: " + data.id + "' onclick='genpdfOD(" + data.id + ",1)'>"+
                     + data.id +
                 "</a>";
             $('td', row).eq(0).html(aux_text);
+
+            $('td', row).eq(1).attr('data-order',data.fechahora);
+            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
+            $('td', row).eq(2).attr('data-order',data.fechaestdesp);
+            aux_fecha = new Date(data.fechaestdesp);
+            $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
+
+            aux_text = 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" + 
+                    data.despachosol_id + 
+                "</a>";
+            $('td', row).eq(4).html(aux_text);
+            
             if(data.oc_file != "" && data.oc_file != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
                         data.oc_id + 
                     "</a>";
-                $('td', row).eq(4).html(aux_text);
+                $('td', row).eq(5).html(aux_text);
             }
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
                     data.notaventa_id +
                 "</a>";
-            $('td', row).eq(5).html(aux_text);
-
-            aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg PDF' onclick='genpdfNV(" + data.notaventa_id + ",2)'>" +
-                    "<i class='fa fa-fw fa-file-pdf-o'></i>" +
-                "</a>";
             $('td', row).eq(6).html(aux_text);
+
 
             $('td', row).eq(8).attr('data-order',data.aux_totalkg);
             $('td', row).eq(8).attr('style','text-align:right');
