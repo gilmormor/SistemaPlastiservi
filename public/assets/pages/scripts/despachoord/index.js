@@ -90,9 +90,13 @@ $(document).ready(function () {
                 "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarsol(" + i + "," + data.id + ")' title='Aprobar Orden Despacho'>" +
                     "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
                 "</a>"+*/
-
-                aux_text = 
+/*
                 "<a href='/despachoord/aproborddesp' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar Orden Despacho'>" +
+                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
+                "</a>"+
+*/
+                aux_text = 
+                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm' onclick='aprobarord(" + data.id + "," + data.id + ")' title='Aprobar Orden Despacho' data-toggle='tooltip'>"+
                     "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
                 "</a>"+
                 "<a href='despachoord' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
@@ -135,4 +139,67 @@ var eventFired = function ( type ) {
 		total += valorNum;
 	});
     $("#subtotalkg").html(MASKLA(total,2))
+}
+
+
+function ajaxRequest(data,url,funcion) {
+	$.ajax({
+		url: url,
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			
+			if(funcion=='aproborddesp'){
+				if (respuesta.mensaje == "ok") {
+					swal({
+						title: '¿ Desea ver PDF Orden Despacho ?',
+						text: "",
+						icon: 'success',
+						buttons: {
+							cancel: "Cancelar",
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							genpdfOD(data.id,1);
+						}
+						$("#fila"+data['nfila']).remove();
+					});
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+					if (respuesta.mensaje == "sp"){
+						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+					}else{
+						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+					}
+				}
+			}
+			
+		},
+		error: function () {
+		}
+	});
+}
+
+
+function aprobarord(i,id){
+	var data = {
+		id: id,
+        nfila : i,
+        _token: $('input[name=_token]').val()
+	};
+	var ruta = '/despachoord/aproborddesp/'+id;
+	swal({
+		title: '¿ Aprobar Orden de Despacho ?',
+		text: "Esta acción no se puede deshacer!",
+		icon: 'warning',
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+			ajaxRequest(data,ruta,'aproborddesp');
+		}
+	});
 }

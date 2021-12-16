@@ -16,6 +16,7 @@ $(document).ready(function () {
             {data: 'fechahora'},
             {data: 'fechaestdesp'},
             {data: 'razonsocial'},
+            {data: 'id'},
             {data: 'despachosol_id'},
             {data: 'oc_id'},
             {data: 'notaventa_id'},
@@ -51,41 +52,48 @@ $(document).ready(function () {
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
 
 			aux_text = 
+				"<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden despacho: " + data.id + "' onclick='genpdfOD(" + data.id + ",1)'>"+
+					+ data.id +
+				"</a>";
+			$('td', row).eq(4).html(aux_text);
+
+
+			aux_text = 
 				"<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" +
 					data.despachosol_id +
 				"</a>";
-			$('td', row).eq(4).html(aux_text);
+			$('td', row).eq(5).html(aux_text);
 
             if(data.oc_file != "" && data.oc_file != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
                         data.oc_id + 
                     "</a>";
-                $('td', row).eq(5).html(aux_text);
+                $('td', row).eq(6).html(aux_text);
             }
 
 			aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
                     data.notaventa_id +
                 "</a>";
-            $('td', row).eq(6).html(aux_text);
+            $('td', row).eq(7).html(aux_text);
 
 
-            $('td', row).eq(8).attr('data-order',data.aux_totalkg);
-            $('td', row).eq(8).attr('style','text-align:right');
-            aux_text = MASKLA(data.aux_totalkg,2);
-            $('td', row).eq(8).html(aux_text);
-            $('td', row).eq(8).addClass('subtotalkg');
-
-            $('td', row).eq(9).attr('data-order',data.subtotal);
+            $('td', row).eq(9).attr('data-order',data.aux_totalkg);
             $('td', row).eq(9).attr('style','text-align:right');
-            aux_text = MASKLA(data.subtotal,0);
+            aux_text = MASKLA(data.aux_totalkg,2);
             $('td', row).eq(9).html(aux_text);
-            $('td', row).eq(9).addClass('subtotal');
+            $('td', row).eq(9).addClass('subtotalkg');
+
+            $('td', row).eq(10).attr('data-order',data.subtotal);
+            $('td', row).eq(10).attr('style','text-align:right');
+            aux_text = MASKLA(data.subtotal,0);
+            $('td', row).eq(10).html(aux_text);
+            $('td', row).eq(10).addClass('subtotal');
 
             aux_text = 
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
-            $('td', row).eq(10).html(aux_text);
+            $('td', row).eq(11).html(aux_text);
 
 			aux_text = 
 			"<a onclick='guiadesp(" + data.id + "," + data.id + ",1)' class='btn btn-primary btn-xs tooltipsC' title='Guia de despacho'>Guia" +
@@ -99,7 +107,7 @@ $(document).ready(function () {
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
             */
-            $('td', row).eq(14).html(aux_text);
+            $('td', row).eq(15).html(aux_text);
         }
     });
 

@@ -27,6 +27,7 @@ Asignar Número de Factura
                                 <th class='tooltipsC' title='Fecha Orden despacho'>Fecha OD</th>
                                 <th class='tooltipsC' title='Fecha estimada de Despacho'>Fecha ED</th>
                                 <th>Razón Social</th>
+                                <th class='tooltipsC' title='Orden despacho'>OD</th>
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
