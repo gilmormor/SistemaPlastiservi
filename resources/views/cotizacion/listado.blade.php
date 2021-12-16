@@ -42,33 +42,33 @@
 			<td class="info_cliente">
 				<div class="round">
 					<span class="h3">Cliente</span>
-					<table class="datos_cliente">
+					<table class="datos_cliente" style="border-collapse: collapse;">
 						@if (empty($cotizacion->clientetemp_id))
 							<!--<tr class="headt">-->
 							<tr>
-								<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 )}}</p></td>
-								<td><label>Teléfono:</label> <p>{{$cotizacion->cliente->telefono}}</p></td>
+								<td style="width:10%">Rut: </td><td style="width:50%">{{number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 )}}</td>
+								<td style="width:10%">Teléfono:</td><td style="width:30%">{{$cotizacion->cliente->telefono}}</td>
 							</tr>
 							<tr>
-								<td><label>Nombre:</label> <p>{{$cotizacion->cliente->razonsocial}}</p></td>
-								<td><label>Dirección:</label> <p>{{$cotizacion->cliente->direccion}}</p></td>
+								<td style="width:10%">Nombre:</td><td style="width:50%">{{$cotizacion->cliente->razonsocial}}</td>
+								<td style="width:10%">Dirección:</td><td style="width:30%">{{$cotizacion->cliente->direccion}}</td>
 							</tr>
 							<tr>
-								<td><label>Contacto:</label> <p>{{$cotizacion->cliente->contactonombre}}</p></td>
-								<td><label>Comuna:</label> <p>{{$cotizacion->cliente->comuna->nombre}}</p></td>
+								<td style="width:10%">Contacto:</td><td style="width:50%">{{$cotizacion->cliente->contactonombre}}</td>
+								<td style="width:10%">Comuna:</td><td style="width:30%">{{$cotizacion->cliente->comuna->nombre}}</td>
 							</tr>
 						@else
 							<tr>
-								<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $cotizacion->clientetemp->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->clientetemp->rut, strlen($cotizacion->clientetemp->rut) -1 , 1 )}}</p></td>
-								<td><label>Teléfono:</label> <p>{{$cotizacion->clientetemp->telefono}}</p></td>
+								<td style="width:10%">Rut: </td><td style="width:50%">{{number_format( substr ( $cotizacion->clientetemp->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->clientetemp->rut, strlen($cotizacion->clientetemp->rut) -1 , 1 )}}</td>
+								<td style="width:10%">Teléfono: </td><td style="width:30%">{{$cotizacion->clientetemp->telefono}}</td>
 							</tr>
 							<tr>
-								<td><label>Nombre:</label> <p>{{$cotizacion->clientetemp->razonsocial}}</p></td>
-								<td><label>Dirección:</label> <p>{{$cotizacion->clientetemp->direccion}}</p></td>
+								<td style="width:10%">Nombre: </td><td style="width:50%">{{$cotizacion->clientetemp->razonsocial}}</td>
+								<td style="width:10%">Dirección: </td><td style="width:30%">{{$cotizacion->clientetemp->direccion}}</td>
 							</tr>
 							<tr>
-								<td><label>Contacto:</label> <p>{{$cotizacion->clientetemp->contactonombre}}</p></td>
-								<td><label>Comuna:</label> <p>{{$cotizacion->clientetemp->comuna->nombre}}</p></td>
+								<td style="width:10%">Contacto: </td><td style="width:50%">{{$cotizacion->clientetemp->contactonombre}}</td>
+								<td style="width:10%">Comuna: </td><td style="width:30%">{{$cotizacion->clientetemp->comuna->nombre}}</td>
 							</tr>
 						
 						@endif
