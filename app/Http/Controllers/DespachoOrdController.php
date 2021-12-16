@@ -232,7 +232,7 @@ class DespachoOrdController extends Controller
                             ->where("updated_at",">",session('aux_fecinicreOD'))
                             ->get();
             if(count($despachoordrec) > 0){
-                return redirect('despachoord/index')->with([
+                return redirect('despachoord')->with([
                     'mensaje'=>'Registro no fue creado. Motivo: Fue actualizado un Rechazo.',
                     'tipo_alert' => 'alert-error'
                 ]);
@@ -242,7 +242,7 @@ class DespachoOrdController extends Controller
 
                 $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
                 if(count($clibloq) > 0){
-                    return redirect('despachoord/index')->with([
+                    return redirect('despachoord')->with([
                         'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
                         'tipo_alert' => 'alert-error'
                     ]);
@@ -280,19 +280,19 @@ class DespachoOrdController extends Controller
                             }
                         }
                     }
-                    return redirect('despachoord/index')->with([
+                    return redirect('despachoord')->with([
                         'mensaje'=>'Registro creado con exito.',
                         'tipo_alert' => 'alert-success'
                     ]);
                 }else{
-                    return redirect('despachoord/index')->with([
+                    return redirect('despachoord')->with([
                         'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
                         'tipo_alert' => 'alert-error'
                     ]);
                 }
             }
         }else{
-            return redirect('despachoord/index')->with([
+            return redirect('despachoord')->with([
                 'mensaje'=>'Registro no fue creado. La nota de venta fue Cerrada. Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at)),
                 'tipo_alert' => 'alert-error'
             ]);
@@ -431,7 +431,7 @@ class DespachoOrdController extends Controller
             $despachoord = DespachoOrd::findOrFail($id);
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachoord->notaventa->cliente_id)->get();
             if(count($clibloq) > 0){
-                return redirect('despachoord/index')->with([
+                return redirect('despachoord')->with([
                     'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
                     'tipo_alert' => 'alert-error'
                 ]);
@@ -474,18 +474,18 @@ class DespachoOrdController extends Controller
                         }
                     }
                 }
-                return redirect('despachoord/index')->with([
+                return redirect('despachoord')->with([
                                                             'mensaje'=>'Registro actualizado con exito.',
                                                             'tipo_alert' => 'alert-success'
                                                         ]);
             }else{
-                return redirect('despachoord/index')->with([
+                return redirect('despachoord')->with([
                     'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachoord->updated_at,
                                                             'tipo_alert' => 'alert-error'
                                                         ]);
             }
         }else{
-            return redirect('despachoord/index')->with([
+            return redirect('despachoord')->with([
                 'mensaje'=>'Registro no fue Modificado. La nota de venta fue Cerrada. Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at)),
                 'tipo_alert' => 'alert-error'
             ]);
