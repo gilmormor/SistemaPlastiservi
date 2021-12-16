@@ -45,15 +45,15 @@ Asignar Número de Factura
                             <tr>
                             </tr>
                             <tr>
-                                <th colspan='8' style='text-align:right'>Total página</th>
+                                <th colspan='9' style='text-align:right'>Total página</th>
                                 <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
-                                <th id='subtotal' name='subtotal' style='text-align:right'>0,00</th>
+                                <th id='subtotal' name='subtotal' style='text-align:right'>0</th>
                                 <th colspan='2' style='text-align:right'></th>
                             </tr>
                             <tr>
-                                <th colspan='8' style='text-align:right'>TOTAL GENERAL</th>
+                                <th colspan='9' style='text-align:right'>TOTAL GENERAL</th>
                                 <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
-                                <th id='total' name='total' style='text-align:right'>0,00</th>
+                                <th id='total' name='total' style='text-align:right'>0</th>
                                 <th colspan='2' style='text-align:right'></th>
                             </tr>
                         </tfoot>
