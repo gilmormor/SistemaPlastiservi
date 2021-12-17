@@ -44,15 +44,15 @@
 					<span class="h3">Cliente</span>
 					<table class="datos_cliente">
 						<!--<tr class="headt">-->
-						<tr>
+						<tr class="headt">
 							<td style="width:10%">Rut: </td><td style="width:50%">{{number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 )}}</td>
 							<td style="width:10%">Teléfono: </td><td style="width:30%">{{$notaventa->cliente->telefono}}</td>
 						</tr>
-						<tr>
+						<tr class="headt">
 							<td style="width:10%">Nombre: </td><td style="width:50%">{{$notaventa->cliente->razonsocial}}</td>
 							<td style="width:10%">Dirección: </td><td style="width:30%">{{$notaventa->cliente->direccion}}</td>
 						</tr>
-						<tr>
+						<tr class="headt">
 							<td style="width:10%">Contacto: </td><td style="width:50%">{{$notaventa->cliente->contactonombre}}</td>
 							<td style="width:10%">Comuna: </td><td style="width:30%">{{$notaventa->cliente->comuna->nombre}}</td>
 						</tr>
