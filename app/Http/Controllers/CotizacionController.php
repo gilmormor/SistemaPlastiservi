@@ -274,6 +274,8 @@ class CotizacionController extends Controller
      */
     public function editar($id)
     {
+        return editar($id);
+        /*
         can('editar-cotizacion');
         $data = Cotizacion::findOrFail($id);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
@@ -314,6 +316,7 @@ class CotizacionController extends Controller
         $aux_sta=2;
 
         return view('cotizacion.editar', compact('data','clienteselec','clientes','cotizacionDetalles','productos','fecha','aux_sta','aux_cont','tablas'));
+        */
     }
 
     /**
@@ -733,4 +736,47 @@ function consultabuscarcot($id,$aux_condvend,$aux_condaprobstatus){
     return $cotizaciones;
 
 
+}
+
+function editar($id){
+    can('editar-cotizacion');
+        $data = Cotizacion::findOrFail($id);
+        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
+        $cotizacionDetalles = $data->cotizaciondetalles()->get();
+
+        $vendedor_id=$data->vendedor_id;
+        if(empty($data->cliente_id)){
+            $clienteselec = $data->clientetemp()->get();
+        }else{
+            $clienteselec = $data->cliente()->get();
+        }
+        //VENDEDORES POR SUCURSAL
+        $tablas = array();
+        $vendedor = Vendedor::vendedores();
+        $tablas['vendedores'] = $vendedor['vendedores'];
+        
+        $fecha = date("d/m/Y", strtotime($data->fechahora));
+        $user = Usuario::findOrFail(auth()->id());
+        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
+        $clientes = $clientesArray['clientes'];
+        $tablas['vendedor_id'] = $clientesArray['vendedor_id'];
+        $productos = Producto::productosxUsuario();
+
+        $tablas['formapagos'] = FormaPago::orderBy('id')->get();
+        $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['provincias'] = Provincia::orderBy('id')->get();
+        $tablas['regiones'] = Region::orderBy('id')->get();
+        $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
+        $tablas['giros'] = Giro::orderBy('id')->get();
+        $tablas['sucursales'] = $clientesArray['sucursales'];
+        $tablas['empresa'] = Empresa::findOrFail(1);
+        $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
+        $tablas['color'] = Color::orderBy('id')->get();
+        $tablas['certificado'] = Certificado::orderBy('id')->get();
+
+        $aux_sta=2;
+
+        return view('cotizacion.editar', compact('data','clienteselec','clientes','cotizacionDetalles','productos','fecha','aux_sta','aux_cont','tablas'));
 }

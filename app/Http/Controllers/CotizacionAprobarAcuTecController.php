@@ -74,9 +74,10 @@ class CotizacionAprobarAcuTecController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editar($id)
     {
-        //
+        $objeto = new CotizacionController();
+        return $objeto->editar($id);
     }
 
     /**

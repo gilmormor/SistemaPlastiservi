@@ -754,3 +754,4 @@ Route::get('reportmovsoldesp/exportPdf', 'ReportMovSolDespController@exportPdf')
 /*RUTAS APROBAR ACUERDO TECNICO COTIZACION */
 Route::get('cotizacionaprobaracutec', 'CotizacionAprobarAcuTecController@index')->name('cotizacionaprobaracutec');
 Route::get('cotizacionaprobaracutecpage', 'CotizacionAprobarAcuTecController@cotizacionaprobaracutecpage')->name('cotizacionaprobaracutecpage');
+Route::get('cotizacionaprobaracutec/{id}/editar', 'CotizacionAprobarAcuTecController@editar')->name('editar_cotizacionaprobaracutec');
