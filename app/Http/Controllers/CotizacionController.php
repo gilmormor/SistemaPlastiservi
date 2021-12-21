@@ -649,7 +649,7 @@ class CotizacionController extends Controller
                         $respuesta["mensaje"] = "Cotizacion en espera por aprobacion de Acuerdo Tecnico.";
                     }
                     if($cotizaciones01[0]->aprobstatus == 7){
-                        $respuesta["mensaje"] = "Cotizacion: Acuerdo tecnico Rechazado.";
+                        $respuesta["mensaje"] = "Acuerdo tecnico Rechazado: " . $cotizaciones01[0]->aprobobs;
                     }
                     //$respuesta["mensaje"] = $cotizaciones01[0]
                 }
