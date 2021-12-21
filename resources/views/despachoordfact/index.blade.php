@@ -35,6 +35,7 @@ Asignar Número de Factura
                                 <th  style='text-align:right' class='tooltipsC' title='Total Kg'>Total Kg</th>
                                 <th  style='text-align:right' class='tooltipsC' title='Total $'>Total $</th>
                                 <th class='tooltipsC' title='Tipo Entrega'>TE</th>
+                                <th class='tooltipsC' title='Guia Despacho'>GuiaDesp</th>
                                 <th class="ocultar">Icono</th>
                                 <th class="ocultar">clientebloqueado_descripcion</th>
                                 <th class="ocultar">oc_file</th>

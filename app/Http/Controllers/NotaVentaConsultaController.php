@@ -95,7 +95,6 @@ class NotaVentaConsultaController extends Controller
             $aux_prom = 0;
             foreach ($datas as $data) {
                 $aux_cantdesp = $this->consultatotcantod($data->id);
-
                 if(in_array('5',$request->aprobstatus)){
                     if($aux_cantdesp >= $data->cant){
                         continue;
@@ -285,7 +284,6 @@ class NotaVentaConsultaController extends Controller
         $rut=str_replace(".","",$rut);
         $notaventas = $this->consulta($request,1);
         $totalareaprods = $this->consulta($request,2); //Totales Area de produccion
-
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -317,12 +315,12 @@ class NotaVentaConsultaController extends Controller
         if($notaventas){
             
             if(env('APP_DEBUG')){
-                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
-            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteNotasVenta.pdf");

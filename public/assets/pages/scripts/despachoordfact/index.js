@@ -24,6 +24,7 @@ $(document).ready(function () {
             {data: 'aux_totalkg'},
             {data: 'subtotal'},
             {data: 'tipoentrega_nombre'},
+            {data: 'guiadespacho'},
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
@@ -101,7 +102,7 @@ $(document).ready(function () {
 			"<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn btn-danger btn-xs' title='Anular Guia o Factura' data-toggle='tooltip'>" +
 				"Anular" +
 			"</a>";
-            $('td', row).eq(15).html(aux_text);
+            $('td', row).eq(16).html(aux_text);
         }
     });
 

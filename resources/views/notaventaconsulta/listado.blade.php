@@ -96,6 +96,18 @@
 							if($datas){
 								$aux_cant = $datas[0]->cantdesp;
 							}
+							/*
+							if(in_array('5',$request->aprobstatus)){
+								if($aux_cant >= $data->cant){
+									continue;
+								}
+							}
+							if(in_array('6',$request->aprobstatus)){
+								if($data->cant != $aux_cant){
+									continue;
+								}
+							}*/
+
 							$ifd = "";
 							if($aux_cant > 0){
 								$ifd = "starb";

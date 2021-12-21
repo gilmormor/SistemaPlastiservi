@@ -50,7 +50,7 @@ function consultaindex(){
 
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
     cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
-    '' as notaventaxk,comuna.nombre as comuna_nombre,
+    '' as notaventaxk,comuna.nombre as comuna_nombre,despachoord.guiadespacho,
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
     SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
     sum(round((despachoorddet.cantdesp * notaventadetalle.preciounit) * ((notaventa.piva+100)/100))) as subtotal
