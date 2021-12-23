@@ -87,7 +87,7 @@ $(document).on("click", ".btnEnviarNV", function(event){
 	};
 	var ruta = '/cotizacion/aprobarcotvend/'+id;
 	swal({
-		title: '¿ Está seguro que desea hacer nota de venta ?',
+		title: '¿ Enviar a nota de venta ?',
 		text: "Esta acción no se puede deshacer!",
 		icon: 'warning',
 		buttons: {
@@ -113,7 +113,7 @@ function aprobarcotvend(i,id,aprobstatus){
 	};
 	var ruta = '/cotizacion/aprobarcotvend/'+i;
 	swal({
-		title: '¿ Está seguro que desea hacer nota de venta ?',
+		title: '¿ Enviar a nota de venta ?',
 		text: "Esta acción no se puede deshacer!",
 		icon: 'warning',
 		buttons: {

@@ -307,6 +307,7 @@ Route::delete('giro/{id}', 'GiroController@eliminar')->name('eliminar_giro');
 
 /*RUTAS NOTA DE VENTA*/
 Route::get('notaventa', 'NotaVentaController@index')->name('notaventa');
+//Route::get('notaventa/paginacion', 'NotaVentaController@paginacion')->name('paginacion_notaventa');
 Route::get('notaventapage', 'NotaVentaController@notaventapage')->name('notaventapage');
 Route::get('notaventa/crear', 'NotaVentaController@crear')->name('crear_notaventa');
 Route::get('notaventa/crearcot/{id}', 'NotaVentaController@crearcot')->name('crearcot_notaventa');

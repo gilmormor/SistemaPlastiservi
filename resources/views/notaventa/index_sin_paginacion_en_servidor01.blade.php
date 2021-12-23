@@ -4,8 +4,7 @@ Nota de Venta
 @endsection
 
 @section("scripts")
-    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/notaventa/index.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -26,27 +25,89 @@ Nota de Venta
                 @endif
             </div>
             <div class="box-body">
-                @csrf @method("delete")
                 <div class="table-responsive">
-                    <table class="table display table-striped AllDataTables table-hover table-condensed " id="tabla-data-notaventas">
+                    <table class="table display table-striped AllDataTables table-hover table-condensed " id="tabla-data">
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>
-                                <th class='width30 tooltipsC' title='Numero de Cotizacion'>Cot</th>
+                                <th class="width30">Nro Cot</th>
                                 <th class="width30">Fecha</th>
-                                <th>Razon Social</th>
-                                <th class="width70">NV</th>
-                                <th class='tooltipsC' title='Orden de Compra'>OC</th>
-                                <th class='width30 tooltipsC' title='Aprobar Nota de Venta'>CNV</th>
-                                <th class="width30">Anular</th>
-                                <th class="ocultar">aprobstatus</th>
-                                <th class="ocultar">aprobobs</th>
-                                <th class="ocultar">contador</th>
-                                <th class="ocultar">oc_file</th>
+                                <th>Cliente</th>
+                                @if (session('aux_aproNV')=='0' and $aux_statusPant==0)
+                                    <th class="width30"><label for="" title='Cerrar Nota de venta' data-toggle='tooltip'>CNV</label></th>
+                                    <th class="width30"><label for="" title='Anular Nota de venta' data-toggle='tooltip'>Anular</label></th>
+                                @endif
+                                <th class="width70"><label for="" title='PDF' data-toggle='tooltip'>PDF</label></th>
                                 <th class="width70">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <?php $aux_nfila = 0; ?>
+                            @foreach ($datas as $data)
+                            <?php 
+                                $aux_nfila++; 
+                                $colorFila = "";
+                                $aprobstatus = 1;
+                                $aux_mensaje = "";
+                                $aux_data_toggle = "";
+                                $aux_title = "";
+                                if($data->contador>0){
+                                    $colorFila = 'background-color: #87CEEB;';
+                                    $aprobstatus = 2;
+                                    $aux_data_toggle = "tooltip";
+                                    $aux_title = "Precio menor al valor en tabla";
+                                }
+                                if($data->aprobstatus==4){
+                                    $colorFila = 'background-color: #FFC6C6;';  //" style=background-color: #FFC6C6;  title=Rechazo por: $data->aprobobs data-toggle=tooltip"; //'background-color: #FFC6C6;'; 
+                                    $aux_data_toggle = "tooltip";
+                                    $aux_title = "Rechazado por: " . $data->aprobobs;
+                                }
+                            ?>
+                            <tr id="fila{{$aux_nfila}}" name="fila{{$aux_nfila}}" style="{{$colorFila}}" title="{{$aux_title}}" data-toggle="{{$aux_data_toggle}}">
+                                <td>{{$data->id}}</td>
+                                <td >{{$data->cotizacion_id}}</td>
+                                <!--<td class="width200">{{$data->fechahora}}</td>-->
+                                <td class="width200">{{date('d-m-Y', strtotime($data->fechahora))}} {{date("h:i:s A", strtotime($data->fechahora))}}</td>
+                                <td >{{$data->razonsocial}}</td>
+                                @if (session('aux_aproNV')=='0' and $aux_statusPant==0)
+                                    @csrf @method("put")
+                                    <td>
+                                        <a id='bntaprobnv$i' name='bntaprobnv$i' class='btn-accion-tabla btn-sm' onclick='aprobarnv({{$aux_nfila}},{{$data->id}},{{$aprobstatus}})' title='Aprobar Nota de venta' data-toggle='tooltip'>
+                                            <span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span></a>
+                                    </td>
+                                    <td>
+                                        <a id='btnanularnv$i' name='btnanularnv$i' class='btn-accion-tabla btn-sm' onclick='anularnv({{$aux_nfila}},{{$data->id}})' title='Anular Nota de venta' data-toggle='tooltip'>
+                                            <span class='glyphicon glyphicon-remove' style='bottom: 0px;top: 2px;'></span></a>
+                                    </td>
+                                @endif
+                                <td>
+                                    <!--<a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '1'])}}" class="btn-accion-tabla tooltipsC" title="Nota de Venta" target="_blank">-->
+                                    <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"1"}})' title='Nota de venta' data-toggle='tooltip'>
+                                        <i class="fa fa-fw fa-file-pdf-o"></i>                                    
+                                    </a>
+                                    <!--<a href="{{route('exportPdf_notaventa', ['id' => $data->id,'stareport' => '2'])}}" class="btn-accion-tabla tooltipsC" title="Precio x Kg" target="_blank">-->
+                                    <a class='btn-accion-tabla btn-sm' onclick='genpdfNV({{$data->id}},{{"2"}})' title='Precio x Kg' data-toggle='tooltip'>
+                                        <i class="fa fa-fw fa-file-pdf-o"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    @if (session('aux_aproNV')=='0' and $aux_statusPant==0)    
+                                        <a href="{{route('editar_notaventa', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
+                                            <i class="fa fa-fw fa-pencil"></i>
+                                        </a>
+                                        @if (session('aux_aproNV')=='0' and auth()->id() == 1)
+                                            <form action="{{route('eliminar_notaventa', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
+                                                @csrf @method("delete")
+                                                <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
+                                                    <i class="fa fa-fw fa-trash text-danger"></i>
+                                                </button>
+                                            </form>
+                                        @endif    
+                                    @endif    
+                                </td>
+                            </tr>
+                            @endforeach
+
                         </tbody>
                     </table>
                 </div>
@@ -108,7 +169,7 @@ Nota de Venta
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="aux_numfila" id="aux_numfila" value="0">
-                    <table class="table display table-striped AllDataTables table-hover table-condensed" id="tabla-data-productos1">
+                    <table class="table display table-striped AllDataTables table-hover table-condensed tablas" id="tabla-data-productos">
                         <!--table display table-striped AllDataTables table-hover table-condensed-->
                         <thead>
                             <tr>

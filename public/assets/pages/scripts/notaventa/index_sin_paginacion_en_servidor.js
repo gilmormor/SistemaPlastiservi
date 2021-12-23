@@ -27,153 +27,7 @@ $(document).ready(function () {
         }
     }
 */
-
-
-	$('#tabla-data-notaventas').DataTable({
-		'paging'      : true, 
-		'lengthChange': true,
-		'searching'   : true,
-		'ordering'    : true,
-		'info'        : true,
-		'autoWidth'   : false,
-		'processing'  : true,
-		'serverSide'  : true,
-		'ajax'        : "notaventapage",
-		"order": [[ 0, "desc" ]],
-		'columns'     : [
-			{data: 'id'},
-			{data: 'cotizacion_id'},
-			{data: 'fechahora'},
-			{data: 'razonsocial'},
-			{data: 'pdfnv'},
-			{data: 'oc_id'},
-			{data: 'btnguardar'},
-			{data: 'btnanular'},
-			{data: 'aprobstatus',className:"ocultar"},
-			{data: 'aprobobs',className:"ocultar"},
-			{data: 'contador',className:"ocultar"},
-			{data: 'oc_file',className:"ocultar"},
-			//El boton eliminar esta en comentario Gilmer 23/02/2021
-			{defaultContent : 
-				"<a href='notaventa' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-					"<i class='fa fa-fw fa-pencil'></i>"+
-				"</a>"}
-		],
-		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-		},
-		"createdRow": function ( row, data, index ) {
-			$(row).attr('id','fila' + data.id);
-            $(row).attr('name','fila' + data.id);
-			colorFila = "";
-			aprobstatus = 1;
-			aux_data_toggle = "";
-			aux_title = "";
-			colorinfo = '';
-			if(data.contador>0){
-				colorFila = 'background-color: #87CEEB;';
-				colorinfo = 'text-aqua';
-				aprobstatus = 2;
-				aux_data_toggle = "tooltip";
-				aux_title = "Precio menor al valor en tabla";
-			}
-			if(data.aprobstatus==4){
-				colorFila = 'background-color: #FFC6C6;';  //" style=background-color: #FFC6C6;  title=Rechazo por: $data->aprobobs data-toggle=tooltip"; //'background-color: #FFC6C6;'; 
-				colorinfo = 'text-red';
-				aux_data_toggle = "tooltip";
-				aux_title = "Rechazado por: " + data.aprobobs;
-			}
-			aux_text = 
-			"<a href='#'  class='tooltipsC' title='Nota de Venta' " +
-				"onclick='genpdfNV(" + data.id + ",1)'>" + data.id + 
-			"</a>";
-
-			$('td', row).eq(0).html(aux_text);
-
-			codigo = data.cotizacion_id;
-			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
-				aux_text = "";
-			}else{
-				aux_text = 
-				"<a href='#'  class='tooltipsC' title='Cotizacion' " +
-				"onclick='genpdfCOT(\"" + data.cotizacion_id + "\",1)'>" + data.cotizacion_id + 
-				"</a>";
-			}
-			$('td', row).eq(1).html(aux_text);
-
-			$('td', row).eq(2).attr('data-order',data.fechahora);
-            aux_fecha = new Date(data.fechahora);
-            $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
-
-			aux_text = 
-				"<a class='btn-accion-tabla btn-sm btngenpdfNV1 tooltipsC' title='Nota de venta: " + data.id + "'>" +
-					"<i class='fa fa-fw fa-file-pdf-o'></i>" +
-				"</a>"+
-				"<a class='btn-accion-tabla btn-sm btngenpdfNV2 tooltipsC' title='Precio x Kg: " + data.id + "'>" +
-					"<i class='fa fa-fw fa-file-pdf-o'></i>" +
-				"</a>";
-			if(colorinfo != ""){
-				aux_text +=
-				"<a class='btn-sm tooltipsC' title='" + aux_title + "'>" +
-					"<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
-				"</a>";
-			}
-	
-			$('td', row).eq(4).html(aux_text);
-
-			codigo = data.oc_file;
-			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
-				aux_text = "";
-			}else{
-				aux_text = 
-				"<a href='#' class='tooltipsC' title='Orden de Compra' " +
-				"onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + 
-				"</a>";
-			}
-			$('td', row).eq(5).html(aux_text);
-
-			aux_text = 
-			"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar Nota de venta'>" +
-				"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>" + 
-			"</a>";
-			$('td', row).eq(6).html(aux_text);
-
-			aux_text = 
-			"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular Nota de venta'>" +
-				"<span class='glyphicon glyphicon-remove' style='bottom: 0px;top: 2px;'></span>" + 
-			"</a>";
-			$('td', row).eq(7).html(aux_text);
-/*
-			aux_text = 
-			"<a class='btn-accion-tabla btn-sm' onclick='genpdfNV(" + data.id + ",1)' title='Nota de venta' data-toggle='tooltip'>" +
-				"<i class='fa fa-fw fa-file-pdf-o'></i>" +
-			"</a>" +
-			"<a class='btn-accion-tabla btn-sm' onclick='genpdfNV(" + data.id + ",2)' title='Precio x Kg' data-toggle='tooltip'>" +
-				"<i class='fa fa-fw fa-file-pdf-o'></i>" +
-			"</a>";
-			$('td', row).eq(7).html(aux_text);
-*/
-			if ( data.contador * 1 > 0 ) {
-				//console.log(row);
-				///$('tr').addClass('preciomenor');
-				//$('td', row).parent().addClass('preciomenor tooltipsC');
-				/*
-				$(row).attr('style',colorFila);
-				$(row).attr('data-toggle',"tooltip");
-				$(row).attr('data-original-title',aux_title);
-				*/
-				//$(row).attr('class',"tooltip");
-			}
-			aux_text = 
-				"<a href='notaventa' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-					"<i class='fa fa-fw fa-pencil'></i>"+
-				"</a>";
-			$('td', row).eq(12).html(aux_text);
-
-		}
-	});
-
-	$('#tabla-data-productos1').DataTable({
+    $('.tablas').DataTable({
 		'paging'      : true, 
 		'lengthChange': true,
 		'searching'   : true,
@@ -181,12 +35,11 @@ $(document).ready(function () {
 		'info'        : true,
 		'autoWidth'   : false,
 		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-		}
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
 	});
 
-
-	$("#btnGuardarM").click(function()
+    $("#btnGuardarM").click(function()
     {
         //generateBarcode();
     });
