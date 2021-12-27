@@ -324,7 +324,7 @@
             <div class="box-header with-border">
                 <div class="box-body">
                     <div class="row">
-                        <div class="form-group col-xs-12 col-sm-12">
+                        <div id="group_oc_id" class="form-group col-xs-12 col-sm-12">
                             <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label">Nro OrdenCompra</label>
                             <div class="input-group">
                                 <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" {{$enableCamposCot}}/>
@@ -333,11 +333,12 @@
                                 </span>-->
                             </div>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-12">
-                            <label id="lboc_id" name="lboc_id" for="oc_file" class="control-label">Adjuntar OC</label>
+                        <div id="group_oc_file" class="form-group col-xs-12 col-sm-12">
+                            <label id="lboc_oc_file" name="lboc_oc_file" for="oc_file" class="control-label">Adjuntar OC</label>
                             <div class="input-group">
                                 <input type="file" name="oc_file" id="oc_file" class="form-control" data-initial-preview='{{isset($data->oc_file) ? Storage::url("imagenes/notaventa/$data->oc_file") : ""}}' accept="image/*"/>
                             </div>
+                            <span id="oc_file-error" style="color:#dd4b39;display: none;">Este campo es obligatorio.</span>
                         </div>
                         <!--
                         @if ($aux_sta==2 or $aux_sta==3)

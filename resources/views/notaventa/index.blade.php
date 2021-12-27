@@ -37,16 +37,16 @@ Nota de Venta
                                 <th>Razon Social</th>
                                 <th class="width70">NV</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
-                                <th class='width30 tooltipsC' title='Aprobar Nota de Venta'>CNV</th>
-                                <th class="width30">Anular</th>
+                                <th class='width30 tooltipsC ocultar' title='Aprobar Nota de Venta'>CNV</th>
+                                <th class="width30 ocultar">Anular</th>
                                 <th class="ocultar">aprobstatus</th>
                                 <th class="ocultar">aprobobs</th>
                                 <th class="ocultar">contador</th>
                                 <th class="ocultar">oc_file</th>
-                                <th class="width70">Acciones</th>
+                                <th class="width150">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="todo-list1">
                         </tbody>
                     </table>
                 </div>

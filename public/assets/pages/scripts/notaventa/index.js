@@ -47,8 +47,8 @@ $(document).ready(function () {
 			{data: 'razonsocial'},
 			{data: 'pdfnv'},
 			{data: 'oc_id'},
-			{data: 'btnguardar'},
-			{data: 'btnanular'},
+			{data: 'btnguardar',className:"ocultar"},
+			{data: 'btnanular',className:"ocultar"},
 			{data: 'aprobstatus',className:"ocultar"},
 			{data: 'aprobobs',className:"ocultar"},
 			{data: 'contador',className:"ocultar"},
@@ -65,6 +65,7 @@ $(document).ready(function () {
 		"createdRow": function ( row, data, index ) {
 			$(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
+			//$(row).addClass('todo-list1');
 			colorFila = "";
 			aprobstatus = 1;
 			aux_data_toggle = "";
@@ -133,15 +134,19 @@ $(document).ready(function () {
 			$('td', row).eq(5).html(aux_text);
 
 			aux_text = 
-			"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar Nota de venta'>" +
-				"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>" + 
-			"</a>";
+			"<div class='tools1'>" +
+				"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar'>" +
+					"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>" + 
+				"</a>"
+			"</div>";
 			$('td', row).eq(6).html(aux_text);
 
 			aux_text = 
-			"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular Nota de venta'>" +
-				"<span class='glyphicon glyphicon-remove' style='bottom: 0px;top: 2px;'></span>" + 
-			"</a>";
+			"<div class='tools1'>" +
+				"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular'>" +
+					"<span class='glyphicon glyphicon-remove' style='bottom: 0px;top: 2px;'></span>" + 
+				"</a>" +
+			"</div>";
 			$('td', row).eq(7).html(aux_text);
 /*
 			aux_text = 
@@ -165,9 +170,20 @@ $(document).ready(function () {
 				//$(row).attr('class',"tooltip");
 			}
 			aux_text = 
-				"<a href='notaventa' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-					"<i class='fa fa-fw fa-pencil'></i>"+
-				"</a>";
+				"<div class='tools1'>" +
+					"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar'>" +
+						"<!--<span class='glyphicon glyphicon-floppy-save sombra' style='bottom: 0px;top: 2px;'></span>-->" + 
+						"<i class='fa fa-fw fa-save sombra fa-lg'></i>" +
+					"</a>  " +
+					"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular'>" +
+						"<!--<span class='glyphicon glyphicon-remove sombra' style='bottom: 0px;top: 2px;'></span>-->" + 
+						"<i class='fa fa-fw fa-close sombra fa-lg'></i>" +
+					"</a>  " +
+					"<a href='notaventa' class='btn-accion-tabla tooltipsC btnEditar' title='Editar'>" +
+						"<i class='fa fa-fw fa-pencil sombra fa-lg'></i>" +
+					"</a>" +
+				"</div>";
+			$('td', row).eq(12).attr('style','padding-top: 0px;padding-bottom: 0px;');
 			$('td', row).eq(12).html(aux_text);
 
 		}

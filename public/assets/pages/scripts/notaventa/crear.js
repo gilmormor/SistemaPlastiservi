@@ -966,8 +966,28 @@ $("#btnverfoto").click(function(){
 });
 
 
-$('#form-general').submit(function() {
+$('#form-general').submit(function(event) {
+	//event.preventDefault();
 	//alert('prueba');
+	//return 0;
+	$('#group_oc_id').removeClass('has-error');
+	$('#group_oc_file').removeClass('has-error');
+	$('#oc_id').prop('required', false);
+	$("#oc_file-error").hide();
+	//$('#oc_file').prop('required', false);
+	if (($('#oc_id').val().length == 0) && ($('#oc_file').val().length != 0)) {
+		alertify.error("El campo Nro OrdenCompra es requerido cuando Adjuntar OC está presente.");
+		//$("#oc_id").addClass('has-error');
+		$('#oc_id').prop('required', true);
+		return false;
+	}
+	if (($('#oc_id').val().length != 0) && ($('#oc_file').val().length == 0)) {
+		alertify.error("El campo Adjuntar OC es requerido cuando Nro OrdenCompra está presente.");
+		$("#oc_file-error").show();
+		$("#group_oc_file").addClass('has-error');
+		//$('#oc_file').prop('required', true);
+		return false;
+	}
 	$("#cotizacion_id").prop('disabled', false);
 	$("#clientedirec_id").prop('disabled', false);
 	$("#plazoentrega").prop('disabled', false);
@@ -975,3 +995,36 @@ $('#form-general').submit(function() {
 	$("#tipoentrega_id").prop('disabled', false);
     //Rest of code
 })
+
+
+$("#botonNewProd").click(function(event)
+{
+	clientedirec_id = $("#clientedirec_id").val();
+	aux_rut = $("#rut").val();
+	if(aux_rut==""){
+		mensaje('Debes Incluir RUT del cliente','','error');
+		return 0;
+	}else{
+		event.preventDefault();
+		limpiarInputOT();
+		quitarverificar();
+		$("#aux_sta").val('1');
+		$("#myModal").modal('show');
+		$("#direccionM").focus();	
+	}
+	/*
+	if(clientedirec_id==""){
+		mensaje('Debes seleccionar una dirección','','error');
+		return 0;
+	}
+	
+	if(clientedirec_id!="" && aux_rut!=""){
+		event.preventDefault();
+		limpiarInputOT();
+		quitarverificar();
+		$("#aux_sta").val('1');
+		$("#myModal").modal('show');
+		$("#direccionM").focus();	
+	}
+	*/
+});
