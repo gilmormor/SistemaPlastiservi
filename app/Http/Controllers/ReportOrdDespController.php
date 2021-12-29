@@ -10,12 +10,14 @@ use App\Models\Comuna;
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnul;
 use App\Models\DespachoOrdRec;
+use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class ReportOrdDespController extends Controller
 {
@@ -179,73 +181,72 @@ class ReportOrdDespController extends Controller
         return $respuesta;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function exportPdf()
     {
-        //
-    }
+        $request = new Request();
+        $request->id = $_GET["id"];
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->fechaestdesp = $_GET["fechaestdesp"];
+        $request->rut = $_GET["rut"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->oc_id = $_GET["oc_id"];
+        $request->giro_id = $_GET["giro_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->tipoentrega_id = $_GET["tipoentrega_id"];
+        $request->notaventa_id = $_GET["notaventa_id"];
+        $request->aprobstatus = explode ( ",", $_GET["aprobstatus"] );
+        $request->comuna_id = $_GET["comuna_id"];
+        $request->despachosol_id = $_GET["despachosol_id"];
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $datas = consultaorddesp($request);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        $totalareaprods = $this->consulta($request,2); //Totales Area de produccion
+        $aux_fdesde= $request->fechad;
+        $aux_fhasta= $request->fechah;
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $nomvendedor = "Todos";
+        if(!empty($request->vendedor_id)){
+            $vendedor = Vendedor::findOrFail($request->vendedor_id);
+            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+        }
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+        $nombreTipoEntrega = "Todos";
+        if($request->tipoentrega_id){
+            $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
+            $nombreTipoEntrega=$tipoentrega->nombre;
+        }
+        
+        //return armarReportehtml($request);
+        if($datas){
+            
+            if(env('APP_DEBUG')){
+                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+            }
+            
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            
+            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+            //return $pdf->download('cotizacion.pdf');
+            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+            return $pdf->stream("ReporteNotasVenta.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        }
+    }    
 }
-
 
 
 function consultaorddesp($request){

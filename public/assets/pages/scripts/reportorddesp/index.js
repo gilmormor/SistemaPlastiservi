@@ -24,6 +24,10 @@ $(document).ready(function () {
     {
         consultarpdf(datos());
     });
+    $("#btnpdf").click(function()
+    {
+        btnpdf(datos());
+    });
 
     //alert(aux_nfila);
     $('.datepicker').datepicker({
@@ -96,7 +100,7 @@ function ajaxRequest(data,url,funcion) {
 }
 
 function datos(){
-    var data = {
+    var data1 = {
         id                : $("#id").val(),
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -113,6 +117,28 @@ function datos(){
         despachosol_id    : $("#despachosol_id").val(),
         _token            : $('input[name=_token]').val()
     };
+
+    var data2 = "?id="+data1.id +
+    "&fechad="+data1.fechad +
+    "&fechah="+data1.fechah +
+    "&fechaestdesp="+data1.fechaestdesp +
+    "&rut="+data1.rut +
+    "&vendedor_id=" + data1.vendedor_id + 
+    "&oc_id="+data1.oc_id +
+    "&giro_id="+data1.giro_id +            
+    "&areaproduccion_id="+data1.areaproduccion_id +
+    "&tipoentrega_id="+data1.tipoentrega_id +
+    "&notaventa_id="+data1.notaventa_id +
+    "&aprobstatus="+data1.aprobstatus +
+    "&comuna_id="+data1.comuna_id +
+    "&despachosol_id="+data1.despachosol_id
+
+    var data = {
+    data1 : data1,
+    data2 : data2
+    };
+    return data;
+
     return data;
 }
 
@@ -120,7 +146,7 @@ function consultar(data){
     $.ajax({
         url: '/reportorddesp/reporte',
         type: 'POST',
-        data: data,
+        data: data.data1,
         success: function (datos) {
             if(datos['tabla'].length>0){
                 $("#tablaconsulta").html(datos['tabla']);
@@ -227,4 +253,11 @@ function visto(id,visto){
     };
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
+}
+
+function btnpdf(data){
+    //console.log(data);
+    //alert('entro');
+    $('#contpdf').attr('src', '/reportorddesp/exportPdf/'+data.data2);
+    $("#myModalpdf").modal('show');
 }
