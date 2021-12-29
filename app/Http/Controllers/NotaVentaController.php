@@ -524,10 +524,11 @@ class NotaVentaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function actualizar(ValidarNotaVenta $request, $id)
+    //public function actualizar(ValidarNotaVenta $request, $id)
+    public function actualizar(Request $request, $id)
     {
         can('guardar-notaventa');
-        //dd($request->oc_file);
+        //dd($request);
         $notaventa = NotaVenta::findOrFail($id);
         if($notaventa->updated_at == $request->updated_at){
             $notaventa->updated_at = date("Y-m-d H:i:s");

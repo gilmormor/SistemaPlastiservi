@@ -336,7 +336,8 @@
                         <div id="group_oc_file" class="form-group col-xs-12 col-sm-12">
                             <label id="lboc_oc_file" name="lboc_oc_file" for="oc_file" class="control-label">Adjuntar OC</label>
                             <div class="input-group">
-                                <input type="file" name="oc_file" id="oc_file" class="form-control" data-initial-preview='{{isset($data->oc_file) ? Storage::url("imagenes/notaventa/$data->oc_file") : ""}}' accept="image/*"/>
+                                <!--<input type="file" name="oc_file" id="oc_file" class="form-control" data-initial-preview='{{isset($data->oc_file) ? Storage::url("imagenes/notaventa/$data->oc_file") : ""}}' accept="image/*"/>-->
+                                <input type="file" name="oc_file" id="oc_file" class="form-control" data-initial-preview='{{isset($data->oc_file) ? Storage::url("imagenes/notaventa/$data->oc_file") : ""}}' accept="*"/>
                             </div>
                             <span id="oc_file-error" style="color:#dd4b39;display: none;">Este campo es obligatorio.</span>
                         </div>

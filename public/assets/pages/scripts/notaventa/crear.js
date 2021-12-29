@@ -169,7 +169,7 @@ $(document).ready(function () {
 	aux_imagen = $("#imagen").val();
 	$('#oc_file').fileinput({
 		language: 'es',
-		allowedFileExtensions: ['jpg', 'jpeg', 'png', "pdf"],
+		allowedFileExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
 		maxFileSize: 4000,
 		initialPreview: [
 			// PDF DATA
@@ -194,8 +194,8 @@ $(document).ready(function () {
 		$("#imagen").val("");
 		//alert('entro');
 	}).on('fileimageloaded', function(e, params) {
-		console.log('File uploaded params', params);
-		console.log($('#oc_file').val());
+		//console.log('File uploaded params', params);
+		//console.log($('#oc_file').val());
 		$("#imagen").val($('#oc_file').val());
 	});
 
@@ -205,6 +205,7 @@ $(document).ready(function () {
 		minFileCount: 2,
 		maxFileCount: 5,
 		overwriteInitial: false,
+		layoutTemplates: {actionDelete: ''}, // disable thumbnail deletion
 		initialPreview: [
 			// PDF DATA
 			'/storage/imagenes/notaventa/238.pdf',
