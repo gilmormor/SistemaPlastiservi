@@ -175,6 +175,7 @@ $(document).ready(function () {
 			// PDF DATA
 			'/storage/imagenes/notaventa/'+$("#imagen").val(),
 		],
+		initialPreviewShowDelete: false,
 		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
 		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
 		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
@@ -187,6 +188,12 @@ $(document).ready(function () {
 		dropZoneEnabled: false,
 		maxFileCount: 5,
         theme: "fa",
+	}).on('fileclear', function(event) {
+		console.log("fileclear");
+		$('#oc_file').attr("data-initial-preview","");
+		//alert('entro');
+	}).on('fileimageloaded', function(event) {
+		//alert('subio');
 	});
 
 	$("#input-pd").fileinput({
@@ -214,6 +221,9 @@ $(document).ready(function () {
 		console.log('File sorted params', params);
 	}).on('fileuploaded', function(e, params) {
 		console.log('File uploaded params', params);
+	}).on('fileclear', function(event) {
+		console.log("fileclear");
+		alert('entro');
 	});
 
 	$('#foto').fileinput({
@@ -255,6 +265,9 @@ $(document).ready(function () {
 		allowedFileExtensions: ["jpg", "png", "gif", "pdf"]
 	});
 */
+
+	$(".kv-file-remove").hide();
+	$(".file-drag-handle").hide();
 });
 /*
 $("#botonNewProd").click(function(event)
@@ -974,14 +987,16 @@ $('#form-general').submit(function(event) {
 	$('#group_oc_file').removeClass('has-error');
 	$('#oc_id').prop('required', false);
 	$("#oc_file-error").hide();
-	//$('#oc_file').prop('required', false);
-	if (($('#oc_id').val().length == 0) && ($('#oc_file').val().length != 0)) {
+	aux_ocarchivo = $.trim($('#oc_file').val()) + $.trim($('#oc_file').attr("data-initial-preview"));
+	//if (($('#oc_id').val().length == 0) && (($('#oc_file').val().length != 0) || ($('#oc_file').attr("data-initial-preview").length != 0))) {
+	if ( (aux_ocarchivo.length != 0) && ($('#oc_id').val().length == 0) ) {
 		alertify.error("El campo Nro OrdenCompra es requerido cuando Adjuntar OC está presente.");
 		//$("#oc_id").addClass('has-error');
 		$('#oc_id').prop('required', true);
 		return false;
 	}
-	if (($('#oc_id').val().length != 0) && ($('#oc_file').val().length == 0)) {
+	//if (($('#oc_id').val().length != 0) && (($('#oc_file').val().length == 0) && ($('#oc_file').attr("data-initial-preview").length == 0))) {
+	if (($('#oc_id').val().length != 0) && (aux_ocarchivo.length == 0)) {
 		alertify.error("El campo Adjuntar OC es requerido cuando Nro OrdenCompra está presente.");
 		$("#oc_file-error").show();
 		$("#group_oc_file").addClass('has-error');
@@ -996,7 +1011,15 @@ $('#form-general').submit(function(event) {
     //Rest of code
 })
 
+/*
+$(document).on('click','.fileinput-remove-button', function(){
 
+    //your code here
+	alert('entro');
+	$('#oc_file').attr("data-initial-preview","");
+
+ });
+*/
 $("#botonNewProd").click(function(event)
 {
 	clientedirec_id = $("#clientedirec_id").val();

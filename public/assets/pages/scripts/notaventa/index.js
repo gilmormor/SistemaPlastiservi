@@ -173,14 +173,14 @@ $(document).ready(function () {
 				"<div class='tools1'>" +
 					"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar'>" +
 						"<!--<span class='glyphicon glyphicon-floppy-save sombra' style='bottom: 0px;top: 2px;'></span>-->" + 
-						"<i class='fa fa-fw fa-save sombra fa-lg'></i>" +
+						"<i class='fa fa-fw fa-save acciones fa-lg'></i>" +
 					"</a>  " +
 					"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular'>" +
 						"<!--<span class='glyphicon glyphicon-remove sombra' style='bottom: 0px;top: 2px;'></span>-->" + 
-						"<i class='fa fa-fw fa-close sombra fa-lg'></i>" +
+						"<i class='fa fa-fw fa-close acciones fa-lg'></i>" +
 					"</a>  " +
 					"<a href='notaventa' class='btn-accion-tabla tooltipsC btnEditar' title='Editar'>" +
-						"<i class='fa fa-fw fa-pencil sombra fa-lg'></i>" +
+						"<i class='fa fa-fw fa-pencil acciones fa-lg'></i>" +
 					"</a>" +
 				"</div>";
 			$('td', row).eq(12).attr('style','padding-top: 0px;padding-bottom: 0px;');

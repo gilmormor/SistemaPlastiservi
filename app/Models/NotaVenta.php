@@ -76,7 +76,12 @@ class NotaVenta extends Model
             //$request->file('')
             return $imageName;
         } else {
-            return false;
+            if ($actual) {
+                Storage::disk('public')->delete("imagenes/notaventa/$actual");
+                return "";
+            }else{
+                return false;
+            }
         }
     }
 

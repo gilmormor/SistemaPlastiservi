@@ -36,9 +36,11 @@ Cotización
                                 <th class="ocultar">aprobobs</th>
                                 <th class="ocultar">contador</th>
                                 <th class="ocultar">fechaaaaammdd</th>
-                                <th class="width70">Acción</th>
+                                <th class="width150">Acción</th>
                             </tr>
                         </thead>
+                        <tbody class="todo-list1">
+                        </tbody>
                     </table>
                 </div>
             </div>

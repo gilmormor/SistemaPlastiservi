@@ -49,6 +49,8 @@ class ValidarCotizacion extends FormRequest
             'neto' => 'required|numeric|min:1',
             'iva' => 'required|numeric|min:1',
             'total' => 'required|numeric|min:1'
+            /*'cliente_id' => 'required_without:clientetemp_id',
+            'clientetemp_id' => 'required_without:cliente_id'*/
         ];
     }
 }

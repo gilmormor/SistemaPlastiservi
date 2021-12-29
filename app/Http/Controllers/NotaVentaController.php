@@ -543,6 +543,13 @@ class NotaVentaController extends Controller
                 $data = NotaVenta::findOrFail($notaventaid);
                 $data->oc_file = $foto;
                 $data->save();
+            }else{
+                if ($foto = NotaVenta::setFotonotaventa($request->oc_file,$notaventaid,$request,true)){
+                    $request->request->add(['oc_file' => $foto]);
+                    $data = NotaVenta::findOrFail($notaventaid);
+                    $data->oc_file = $foto;
+                    $data->save();
+                }
             }
     
             $auxNVDet=NotaVentaDetalle::where('notaventa_id',$id)->whereNotIn('id', $request->NVdet_id)->pluck('id')->toArray(); //->destroy();

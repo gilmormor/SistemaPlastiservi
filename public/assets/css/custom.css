@@ -312,20 +312,8 @@ td.highlight {
     color: #dd4b39;
 }
 
-.sombra:hover {
-    background: #cccccc;
-    border-radius: 0.8em;
-    -moz-border-radius: 0.8em;
-    -webkit-border-radius: 0.8em;
-    color: #3c8dbc;
-    display: inline-block;
-    line-height: 1.6em;
-    /*margin-right: 15px;*/
-    text-align: center;
-    width: 1.6em; 
-  }
-
-  .sombra {
+.acciones {
+    opacity: .5;
     background: rgba(76, 175, 80, 0.0);
     border-radius: 0.8em;
     -moz-border-radius: 0.8em;
@@ -335,4 +323,24 @@ td.highlight {
     /*margin-right: 15px;*/
     text-align: center;
     width: 1.6em; 
-  }
+}
+.acciones:hover {
+    background: #cccccc;
+    border-radius: 0.8em;
+    -moz-border-radius: 0.8em;
+    -webkit-border-radius: 0.8em;
+    -moz-transition: .4s ease;
+    -webkit-transition: .4s ease-out;
+    transition: 0.4s ease;
+    color: #3c8dbc;
+    display: inline-block;
+    line-height: 1.6em;
+    /*margin-right: 15px;*/
+    text-align: center;
+    width: 1.6em; 
+/*  -moz-box-flex: 5;*/       /* Mozilla */
+/*  -webkit-box-flex: 5;*/    /* WebKit */
+    -webkit-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.47);
+    box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.47);
+    opacity: 1;
+}

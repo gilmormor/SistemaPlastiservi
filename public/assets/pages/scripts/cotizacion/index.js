@@ -23,15 +23,18 @@ $(document).ready(function () {
         {data: 'fechahora_aaaammdd',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
-            "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV' title='Enviar a Nota de venta'>"+
-                "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-            "</a>"+
-            "<a href='cotizacion' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-                "<i class='fa fa-fw fa-pencil'></i>"+
-            "</a>"+
-            "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
-                "<i class='fa fa-fw fa-trash text-danger'></i>"+
-            "</a>"}
+            "<div class='tools1'>" +
+                "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV' title='Enviar a Nota de venta'>"+
+                    "<!--<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>-->"+
+                    "<i class='fa fa-fw fa-save acciones fa-lg'></i>" +
+                "</a>"+
+                "<a href='cotizacion' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
+                    "<i class='fa fa-fw fa-pencil acciones fa-lg'></i>"+
+                "</a>"+
+                "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
+                    "<i class='fa fa-fw fa-trash text-danger acciones fa-lg'></i>"+
+                "</a>" +
+            "</div>"}
     ],
     "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -67,6 +70,8 @@ $(document).ready(function () {
             );
             //$('td', row).parent().prop("title","Precio menor al valor en tabla")
         }
+        $('td', row).eq(8).attr('style','padding-top: 0px;padding-bottom: 0px;');
+
     }
     });
 });

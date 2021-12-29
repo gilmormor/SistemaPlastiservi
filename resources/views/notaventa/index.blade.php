@@ -28,7 +28,7 @@ Nota de Venta
             <div class="box-body">
                 @csrf @method("delete")
                 <div class="table-responsive">
-                    <table class="table display table-striped AllDataTables table-hover table-condensed " id="tabla-data-notaventas">
+                    <table class="table display AllDataTables table-hover table-condensed " id="tabla-data-notaventas">
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>
