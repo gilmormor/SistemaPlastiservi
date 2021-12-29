@@ -524,10 +524,10 @@ class NotaVentaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function actualizar(ValidarCotizacion $request, $id)
+    public function actualizar(ValidarNotaVenta $request, $id)
     {
         can('guardar-notaventa');
-        //dd($request);
+        //dd($request->oc_file);
         $notaventa = NotaVenta::findOrFail($id);
         if($notaventa->updated_at == $request->updated_at){
             $notaventa->updated_at = date("Y-m-d H:i:s");
@@ -538,18 +538,16 @@ class NotaVentaController extends Controller
             $notaventaid = $id;
     
             $notaventa->update($request->all());
-            if ($foto = NotaVenta::setFotonotaventa($request->oc_file,$notaventaid,$request)){
+            $aux_imagen = null;
+            if(empty($request->oc_file) and empty($request->imagen)){
+                $aux_imagen = $notaventa->oc_file;
+            }
+            if ($foto = NotaVenta::setFotonotaventa($request->oc_file,$notaventaid,$request,$aux_imagen)){
+                $foto = $foto == "null" ? null : $foto;
                 $request->request->add(['oc_file' => $foto]);
                 $data = NotaVenta::findOrFail($notaventaid);
                 $data->oc_file = $foto;
                 $data->save();
-            }else{
-                if ($foto = NotaVenta::setFotonotaventa($request->oc_file,$notaventaid,$request,true)){
-                    $request->request->add(['oc_file' => $foto]);
-                    $data = NotaVenta::findOrFail($notaventaid);
-                    $data->oc_file = $foto;
-                    $data->save();
-                }
             }
     
             $auxNVDet=NotaVentaDetalle::where('notaventa_id',$id)->whereNotIn('id', $request->NVdet_id)->pluck('id')->toArray(); //->destroy();

@@ -191,9 +191,12 @@ $(document).ready(function () {
 	}).on('fileclear', function(event) {
 		console.log("fileclear");
 		$('#oc_file').attr("data-initial-preview","");
+		$("#imagen").val("");
 		//alert('entro');
-	}).on('fileimageloaded', function(event) {
-		//alert('subio');
+	}).on('fileimageloaded', function(e, params) {
+		console.log('File uploaded params', params);
+		console.log($('#oc_file').val());
+		$("#imagen").val($('#oc_file').val());
 	});
 
 	$("#input-pd").fileinput({
@@ -219,11 +222,13 @@ $(document).ready(function () {
 		}
 	}).on('filesorted', function(e, params) {
 		console.log('File sorted params', params);
+		alert('entro 1');
 	}).on('fileuploaded', function(e, params) {
 		console.log('File uploaded params', params);
+		alert('entro 2');
 	}).on('fileclear', function(event) {
 		console.log("fileclear");
-		alert('entro');
+		//alert('entro');
 	});
 
 	$('#foto').fileinput({

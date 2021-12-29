@@ -78,7 +78,7 @@ class NotaVenta extends Model
         } else {
             if ($actual) {
                 Storage::disk('public')->delete("imagenes/notaventa/$actual");
-                return "";
+                return "null";
             }else{
                 return false;
             }
