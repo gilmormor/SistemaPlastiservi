@@ -546,6 +546,7 @@ Route::get('reportsoldesp/exportPdf', 'ReportSolDespController@exportPdf')->name
 /*RUTAS REPORTE ORDEN DESPACHO*/
 Route::get('reportorddesp', 'ReportOrdDespController@index')->name('reportorddesp');
 Route::get('reportorddesp/reporte', 'ReportOrdDespController@reporte')->name('reportorddesp_reporte');
+Route::get('reportorddesp/reporteanterior', 'ReportOrdDespController@reporteanterior')->name('reportorddesp_reporteanterior');
 Route::get('reportorddesp/exportPdf', 'ReportOrdDespController@exportPdf')->name('reportorddesp_exportPdf');
 Route::get('reportorddesp/totalizarRep', 'ReportOrdDespController@totalizarRep')->name('reportorddesp_totalizarRep');
 
