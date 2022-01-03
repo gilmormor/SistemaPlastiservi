@@ -524,12 +524,13 @@ class NotaVentaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    //public function actualizar(ValidarNotaVenta $request, $id)
-    public function actualizar(Request $request, $id)
+    public function actualizar(ValidarNotaVenta $request, $id)
+    //public function actualizar(Request $request, $id)
     {
         can('guardar-notaventa');
         //dd($request);
         $notaventa = NotaVenta::findOrFail($id);
+        $aux_oc_fileold = $notaventa->oc_file;
         if($notaventa->updated_at == $request->updated_at){
             $notaventa->updated_at = date("Y-m-d H:i:s");
             $request->request->add(['fechahora' => $notaventa->fechahora]);
@@ -542,6 +543,9 @@ class NotaVentaController extends Controller
             $aux_imagen = null;
             if(empty($request->oc_file) and empty($request->imagen)){
                 $aux_imagen = $notaventa->oc_file;
+            }
+            if(!empty($request->oc_file) and !empty($aux_oc_fileold)){
+                $aux_imagen = $aux_oc_fileold; //Si la imagen cambia el nombre del archivo anterior para que sea eliminado
             }
             if ($foto = NotaVenta::setFotonotaventa($request->oc_file,$notaventaid,$request,$aux_imagen)){
                 $foto = $foto == "null" ? null : $foto;

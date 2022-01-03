@@ -198,7 +198,7 @@ Orden Despacho
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
-                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                                <button type="button" id="btnconsultarpage" name="btnconsultarpage" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
                                 <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF">
                                     <i class='glyphicon glyphicon-print'></i> Reporte
                                 </button>
@@ -228,6 +228,54 @@ Orden Despacho
                             <th class='tooltipsC' title='Total Kg'>Total Kg</th>
                             <th class='tooltipsC' title='Tipo de Entrega'>TE</th>
                             <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
+                            <th class='ocultar'>oc_file</th>
+                            <th class='ocultar'>icono</th>
+                            <th class='ocultar'>aprguiadespfh</th>
+                            <th class='ocultar'>despachoordrec_id</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan='9' style='text-align:right'>Total página</th>
+                            <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
+                            <th colspan='2' style='text-align:right'></th>
+                        </tr>
+                        <tr>
+                            <th colspan='9' style='text-align:right'>TOTAL GENERAL</th>
+                            <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                            <th colspan='2' style='text-align:right'></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="table-responsive1" id="print1">
+                <table class="table display AllDataTables table-condensed table-hover" id="tabla-data-consulta1" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>OD</th>
+                            <th>Fecha</th>
+                            <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
+                            <th>Razón Social</th>
+                            <th class='tooltipsC' title='Orden de Despacho'>OD</th>
+                            <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
+                            <th class='tooltipsC' title='Orden de Compra'>OC</th>
+                            <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                            <th>Comuna</th>
+                            <th class='tooltipsC' title='Total Kg'>Total Kg</th>
+                            <th class='tooltipsC' title='Tipo de Entrega'>TE</th>
+                            <th class='tooltipsC' title='Orden Despacho'>Despacho</th>
+
+                            <th class='tooltipsC' title='Fecha Guia'>F Guia</th>
+                            <th class='tooltipsC' title='Num Factura'>NumFact</th>
+                            <th class='tooltipsC' title='Fecha Factura'>F Fact</th>
+                            <th class='tooltipsC' title='Motivo Rechazo'>Motivo</th>
+                            <th class='ocultar'>oc_file</th>
+                            <th class='ocultar'>anulada</th>
+                            <th class='ocultar'>A</th>
+                            <th class='ocultar'>documento_file</th>
+                            <th class="ocultar">aprobstatus</th>
+                            <th class="ocultar">aprobobs</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -246,6 +294,7 @@ Orden Despacho
                     </tfoot>
                 </table>
             </div>
+
         </div>
     </div>
 </div>

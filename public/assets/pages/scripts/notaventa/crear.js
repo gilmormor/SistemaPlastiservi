@@ -194,6 +194,7 @@ $(document).ready(function () {
 		$("#imagen").val("");
 		//alert('entro');
 	}).on('fileimageloaded', function(e, params) {
+		//console.log('Paso');
 		//console.log('File uploaded params', params);
 		//console.log($('#oc_file').val());
 		$("#imagen").val($('#oc_file').val());
@@ -989,6 +990,11 @@ $('#form-general').submit(function(event) {
 	//event.preventDefault();
 	//alert('prueba');
 	//return 0;
+	//console.log($("#oc_file").val());
+	if($("#imagen").val() ==""){
+		$("#imagen").val($('#oc_file').val());
+	}
+	console.log($("#imagen").val());
 	$('#group_oc_id').removeClass('has-error');
 	$('#group_oc_file').removeClass('has-error');
 	$('#oc_id').prop('required', false);

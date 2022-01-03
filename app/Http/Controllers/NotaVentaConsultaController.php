@@ -770,7 +770,7 @@ function armarReportehtml($request){
                     if($aux_totalKG>0){
                         $aux_promGeneral = $aux_totalps / $aux_totalKG;
                     }
-    
+
                     $respuesta['tabla'] .= "
                                     <tfoot id='detalle_totales'>
                                         <tr class='headt'>

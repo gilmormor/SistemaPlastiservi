@@ -52,12 +52,12 @@ class ValidarNotaVenta extends FormRequest
             'giro_id' => 'required',
             'neto' => 'required|numeric|min:1',
             'iva' => 'required|numeric|min:1',
-            'total' => 'required|numeric|min:1'
-/*            'oc_id' => 'required_with:imagen',
-            'imagen' => 'required_with:oc_id'*/
+            'total' => 'required|numeric|min:1',
+            'oc_id' => 'required_with:imagen',
+            'imagen' => 'required_with:oc_id'
         ];
     }
-/*
+
     public function messages()
     {
         return [
@@ -65,5 +65,5 @@ class ValidarNotaVenta extends FormRequest
             'imagen.required_with' => 'El campo Adjuntar OC es requerido cuando Nro OrdenCompra está presente.'
         ];
     }
-    */
+
 }

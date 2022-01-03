@@ -51,8 +51,15 @@ class ReportOrdDespController extends Controller
 
     }
 
-    
     public function reporte(Request $request){
+        //dd($request);
+        if($request->ajax()){
+            $datas = consultaorddesp($request);
+            return datatables($datas)->toJson();
+        }
+    }
+    
+    public function reporteanterior(Request $request){
         $respuesta = array();
         $respuesta['exito'] = false;
         $respuesta['mensaje'] = "Código no Existe";
@@ -195,13 +202,15 @@ class ReportOrdDespController extends Controller
         $request->areaproduccion_id = $_GET["areaproduccion_id"];
         $request->tipoentrega_id = $_GET["tipoentrega_id"];
         $request->notaventa_id = $_GET["notaventa_id"];
-        $request->aprobstatus = explode ( ",", $_GET["aprobstatus"] );
+        $request->aprobstatus = $_GET["aprobstatus"]; //explode ( ",", $_GET["aprobstatus"] );
         $request->comuna_id = $_GET["comuna_id"];
         $request->despachosol_id = $_GET["despachosol_id"];
+        //dd($request);
 
         $datas = consultaorddesp($request);
+        //dd($datas);
 
-        $totalareaprods = $this->consulta($request,2); //Totales Area de produccion
+        //$totalareaprods = $this->consulta($request,2); //Totales Area de produccion
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -228,24 +237,38 @@ class ReportOrdDespController extends Controller
             $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
             $nombreTipoEntrega=$tipoentrega->nombre;
         }
-        
         //return armarReportehtml($request);
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+                return view('reportorddesp.listado', compact('datas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
-            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+            $pdf = PDF::loadView('reportorddesp.listado', compact('datas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("ReporteNotasVenta.pdf");
+            return $pdf->stream("ReporteOrdenDespacho.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         }
-    }    
+    }
+
+    public function totalizarRep(Request $request){
+        //dd($request);
+        $respuesta = array();
+        if($request->ajax()){
+            $datas = consultaorddesp($request);
+            $aux_totalkg = 0;
+            foreach ($datas as $data) {
+                $aux_totalkg += $data->totalkilos;
+            }
+            $respuesta['aux_totalkg'] = $aux_totalkg;
+            return $respuesta;
+        }
+    }
+
 }
 
 
@@ -384,6 +407,7 @@ function consultaorddesp($request){
         $aux_condfechaestdesp = "despachoord.fechaestdesp='$fechad'";
     }
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
+    /*
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
             despachoord.notaventa_id,despachoord.fechaestdesp,
@@ -424,6 +448,55 @@ function consultaorddesp($request){
             and $aux_condfechaestdesp
             and despachoord.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachoord.id desc;";
+*/
+    $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
+            comuna.nombre as comunanombre,
+            despachoord.notaventa_id,despachoord.fechaestdesp,
+            sum(if(isnull(despachoordanul.created_at),despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant),0.00)) AS totalkilos,
+            despachoord.aprguiadesp,despachoord.aprguiadespfh,
+            tipoentrega.nombre as tipentnombre,tipoentrega.icono,
+            despachoordanul.created_at AS despachoordanul_fechahora,
+            GROUP_CONCAT(despachoordrec.id) AS despachoordrec_id,despachoordrec.fechahora AS despachoordrec_fechahora,
+            despachoorddet.despachoord_id
+            FROM despachoord INNER JOIN despachoorddet
+            ON despachoord.id=despachoorddet.despachoord_id AND isnull(despachoord.deleted_at) AND isnull(despachoorddet.deleted_at)
+            INNER JOIN notaventa
+            ON notaventa.id=despachoord.notaventa_id AND isnull(notaventa.deleted_at)
+            INNER JOIN notaventadetalle
+            ON despachoorddet.notaventadetalle_id=notaventadetalle.id AND isnull(notaventadetalle.deleted_at)
+            INNER JOIN producto
+            ON notaventadetalle.producto_id=producto.id AND isnull(producto.deleted_at)
+            INNER JOIN categoriaprod
+            ON categoriaprod.id=producto.categoriaprod_id AND isnull(categoriaprod.deleted_at)
+            INNER JOIN areaproduccion
+            ON areaproduccion.id=categoriaprod.areaproduccion_id AND isnull(areaproduccion.deleted_at)
+            INNER JOIN cliente
+            ON cliente.id=notaventa.cliente_id AND isnull(cliente.deleted_at)
+            INNER JOIN comuna
+            ON comuna.id=despachoord.comunaentrega_id AND isnull(comuna.deleted_at)
+            INNER JOIN tipoentrega
+            ON tipoentrega.id=despachoord.tipoentrega_id AND isnull(tipoentrega.deleted_at)
+            LEFT JOIN despachoordanul
+            ON despachoord.id=despachoordanul.despachoord_id AND isnull(despachoordanul.deleted_at)
+            LEFT JOIN despachoordrec
+            ON despachoord.id=despachoordrec.despachoord_id AND despachoordrec.aprobstatus=2 AND isnull(despachoordrec.anulada) AND isnull(despachoordrec.deleted_at)
+            WHERE $vendedorcond
+            and $aux_condFecha
+            and $aux_condrut
+            and $aux_condoc_id
+            and $aux_condgiro_id
+            and $aux_condareaproduccion_id
+            and $aux_condtipoentrega_id
+            and $aux_condnotaventa_id
+            and $aux_aprobstatus
+            and $aux_condcomuna_id
+            and $aux_condaprobord
+            and $aux_condid
+            and $aux_conddespachosol_id
+            and $aux_condfechaestdesp
+            GROUP BY despachoord.id
+            ORDER BY despachoord.id asc,despachoordrec.id asc;";
+
     //dd($sql);
     $datas = DB::select($sql);
 
