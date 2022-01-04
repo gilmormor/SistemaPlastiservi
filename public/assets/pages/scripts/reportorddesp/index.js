@@ -226,13 +226,16 @@ function consultarpage(data){
             if(data.despachoordrec_id){
                 let str = data.despachoordrec_id;
                 let arr = str.split(',');
-                //console.log(arr); 
+                console.log(arr); 
                 aux_sep = "";
+                if(arr.length>0){
+                    aux_rechazos= "(";
+                }
                 $.each(arr, function (ind, elem) { 
                     if(ind>0){
                         aux_sep = ",";
                     }
-                    aux_rechazos =  "(" + aux_rechazos + aux_sep + "<a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazo OD' onclick='genpdfODRec(" + elem + ",1)'>" +
+                    aux_rechazos =  aux_rechazos + aux_sep + "<a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazo OD' onclick='genpdfODRec(" + elem + ",1)'>" +
                                         elem +
                                     "</a>";
                     aux_contrec++;
