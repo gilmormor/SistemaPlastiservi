@@ -75,8 +75,8 @@
 			</tbody>
 			<tfoot id="detalle_totales">
 				<tr class="headt">
-					<th colspan="9" style='text-align:right'>TOTAL</th>
-					<th class="textright">{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
+					<th colspan="8" style='text-align:right'>TOTAL</th>
+					<th colspan="2" class="textright">{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
 				</tr>
 			</tfoot>
 		</table>
