@@ -226,7 +226,7 @@ function insertarTabla(){
 	aux_botonAcuTec = '';
 	if($("#tipoprodM").attr('valor') == 1) {
 		aux_botonAcuTec = ' <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
-		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red"></i> </a>';
+		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>';
 	}
 	//aux_botonAcuTec = $("#tipoprodM").attr('valor') == '1' ? 'x' : '';
 

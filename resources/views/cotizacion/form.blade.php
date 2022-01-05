@@ -292,9 +292,9 @@
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
                                             <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
                                             @if ($CotizacionDetalle->acuerdotecnicotemp == null)
-                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red"></i>
+                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
                                             @else
-                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua"></i>
+                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
                                             @endif
                                         @endif
                                     </td>

@@ -625,15 +625,16 @@ function modificarTabla(i){
 	//alert($("#tipoprodM").attr('valor'));
 	aux_botonAcuTec = '';
 	if($("#tipoprodM").attr('valor') == 1) {
+		//alert("1: " + $("#producto_idM").val() + ", 2: " + $("#producto_id" + $("#aux_numfila").val()).val());
 		aux_botonAcuTec = ' <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ i +')">'+
-		'<i id="icoat' + i + '" class="fa fa-cog text-red"></i> </a>';
+		'<i id="icoat' + i + '" class="fa fa-cog text-red girarimagen"></i> </a>';
 	}else{
-		
 		$("#acuerdotecnico"+i).val("null");
 		$("#tipoprod"+i).val("");
 	}
-
-	$("#producto_idTDT"+i).html($("#producto_idM").val() + aux_botonAcuTec);
+	if($("#producto_idM").val() != $("#producto_id" + $("#aux_numfila").val()).val()){
+		$("#producto_idTDT"+i).html($("#producto_idM").val() + aux_botonAcuTec);
+	}
 
 	$("#producto_id"+i).val($("#producto_idM").val());
 
