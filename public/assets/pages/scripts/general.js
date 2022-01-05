@@ -625,8 +625,8 @@ function modificarTabla(i){
 	//alert($("#tipoprodM").attr('valor'));
 	aux_botonAcuTec = '';
 	if($("#tipoprodM").attr('valor') == 1) {
-		aux_botonAcuTec = ' <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
-		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red"></i> </a>';
+		aux_botonAcuTec = ' <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ i +')">'+
+		'<i id="icoat' + i + '" class="fa fa-cog text-red"></i> </a>';
 	}else{
 		
 		$("#acuerdotecnico"+i).val("null");
@@ -881,7 +881,7 @@ function quitarverificar(){
 
 function editarRegistro(i){
 	//alert($("#direccion"+i).val());
-	event.preventDefault();
+	//event.preventDefault();
     limpiarInputOT();
 	quitarverificar();
 	$("#aux_sta").val('0');
@@ -922,6 +922,8 @@ function editarRegistro(i){
 	$("#largoM").val($("#long"+i).val());
 	$("#largoM").attr('valor',$("#long"+i).val());
 	$("#obsM").val($("#obs"+i).val());
+	$("#tipoprodM").val($("#tipoprod"+i).val());
+	$("#tipoprodM").attr('valor',$("#tipoprod"+i).val())
 
 	var data = {
 		id: $("#producto_idM").val(),

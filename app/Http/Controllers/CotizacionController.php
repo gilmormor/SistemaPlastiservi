@@ -583,7 +583,9 @@ class CotizacionController extends Controller
         //dd($request);
         can('guardar-cotizacion');
         if ($request->ajax()) {
+            //dd($request->id);
             $cotizacion = Cotizacion::findOrFail($request->id);
+            //dd($cotizacion);
             if($cotizacion->aprobstatus == "2"){ //Aprobar o rechazar por precio menor al de tabla
                 $cotizacion->aprobstatus = $request->valor;
             }else{

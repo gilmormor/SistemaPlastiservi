@@ -1101,13 +1101,16 @@ function crearEditarAcuTec(i){
 		}
 	});
 	var acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
+	//console.log(acuerdotecnico);
 	for (const property in acuerdotecnico) {
-		if( property == 'at_certificados'){
-			let str = acuerdotecnico[property];
-			let arr = str.split(','); 
-			$("#" + property).val(arr);
-		}else{
-			$("#" + property).val(acuerdotecnico[property]);
+		if(property != 'id'){ //Para evitar que cambie el valor del campo id del formulario aprobar cotizacion
+			if( property == 'at_certificados'){
+				let str = acuerdotecnico[property];
+				let arr = str.split(','); 
+				$("#" + property).val(arr);
+			}else{
+				$("#" + property).val(acuerdotecnico[property]);
+			}	
 		}
 	}
 	$(".valorrequerido").each(function(){
