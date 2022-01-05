@@ -61,7 +61,7 @@ class CotizacionController extends Controller
             $aux_condvend = 'true';
         }
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
+        $sql = "SELECT cotizacion.id,fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
                     aprobstatus,aprobobs,'' as pdfcot,
                     (SELECT COUNT(*) 

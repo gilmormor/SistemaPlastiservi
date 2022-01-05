@@ -29,13 +29,12 @@ Cotización
                         <thead>
                             <tr>
                                 <th class="width70">ID</th>
-                                <th class="width200">Fecha</th>
+                                <th>Fecha</th>
                                 <th>Cliente</th>
                                 <th class='tooltipsC' title='Ver PDF Cotizacion'>PDF</th>
                                 <th class="ocultar">aprobstatus</th>
                                 <th class="ocultar">aprobobs</th>
                                 <th class="ocultar">contador</th>
-                                <th class="ocultar">fechaaaaammdd</th>
                                 <th class="width150">Acción</th>
                             </tr>
                         </thead>
