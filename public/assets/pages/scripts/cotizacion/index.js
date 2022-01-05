@@ -53,6 +53,7 @@ $(document).ready(function () {
             //console.log(row);
             ///$('tr').addClass('preciomenor');
             //$('td', row).parent().addClass('preciomenor tooltipsC');
+            /*
             $('td', row).eq(0).html(
                 "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='Precio menor al valor en tabla'>"+
                 $('td', row).eq(0).html()+
@@ -68,7 +69,27 @@ $(document).ready(function () {
                 $('td', row).eq(2).html()+
                 "</a>"
             );
+            */
+            aux_title = 'Precio menor al valor en tabla';
+            colorinfo = 'text-aqua';
+            aux_text =
+				"<a class='btn-sm tooltipsC' title='" + aux_title + "'>" +
+					"<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
+				"</a>";
+            $('td', row).eq(3).html($('td', row).eq(3).html() + aux_text);
             //$('td', row).parent().prop("title","Precio menor al valor en tabla")
+        }
+        //console.log(data.aprobstatus);
+        if(data.aprobstatus != null){
+
+            aux_title = data.aprobobs;
+            colorinfo = 'text-red';
+            aux_text =
+				"<a class='btn-sm tooltipsC' title='" + aux_title + "'>" +
+					"<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
+				"</a>";
+            $('td', row).eq(3).html($('td', row).eq(3).html() + aux_text);
+
         }
         $('td', row).eq(8).attr('style','padding-top: 0px;padding-bottom: 0px;');
 
