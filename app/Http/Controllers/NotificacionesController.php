@@ -94,6 +94,7 @@ class NotificacionesController extends Controller
         $contnotivalai = 0;
         $contnoticumpl = 0;
         $contnoRevSGI = 0;
+        /* EN COMENTARIO YA QUE HACE EL LLENADO DE LAS NOTIFICACIONES MUY LENTA 04/01/2022
         $usuario = Usuario::with('roles')->findOrFail(auth()->id());
         //$fecha = date("d-m-Y H:i:s",strtotime(noconformidad.fecha . "+ 1 days"));
         $fecha = date("d-m-Y H:i:s");
@@ -170,7 +171,7 @@ class NotificacionesController extends Controller
                 }
                 
             }
-        }
+        }*/
         $datas = consulta(auth()->id());
         $contadornot = 0;
         if($datas){
