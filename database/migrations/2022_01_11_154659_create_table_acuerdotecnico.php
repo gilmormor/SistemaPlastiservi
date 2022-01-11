@@ -16,6 +16,8 @@ class CreateTableAcuerdotecnico extends Migration
         Schema::create('acuerdotecnico', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('producto_id')->comment('Codigo Producto.')->unique();
+            $table->foreign('producto_id','fk_acuerdotecnico_producto')->references('id')->on('producto')->onDelete('restrict')->onUpdate('restrict');
             $table->string('at_desc',100)->comment('Descripcion del producto');
             $table->tinyInteger('at_entmuestra')->comment('No=, Si=1')->default(0);
             $table->unsignedBigInteger('at_color_id')->comment('Color de producto acuerdo tecnico.')->nullable();
