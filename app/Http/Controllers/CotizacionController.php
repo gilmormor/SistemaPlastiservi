@@ -274,6 +274,7 @@ class CotizacionController extends Controller
      */
     public function editar($id)
     {
+        session(['editaracutec' => '1']);
         return editar($id);
         /*
         can('editar-cotizacion');
@@ -317,6 +318,13 @@ class CotizacionController extends Controller
 
         return view('cotizacion.editar', compact('data','clienteselec','clientes','cotizacionDetalles','productos','fecha','aux_sta','aux_cont','tablas'));
         */
+    }
+
+    //Editar aprobas Acuerdo Tecnico Cotización
+    public function editaraat($id)
+    {
+        session(['editaracutec' => '0']);
+        return editar($id);
     }
 
     /**
@@ -777,6 +785,7 @@ function editar($id){
         $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
+        $tablas['editaracuerdotecnico'] = 1;
 
         $aux_sta=2;
 

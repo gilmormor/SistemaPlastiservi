@@ -6,22 +6,27 @@ use App\Events\Notificacion;
 use App\Http\Requests\ValidarCotizacion;
 use App\Http\Requests\ValidarNotaVenta;
 use App\Models\CategoriaProd;
+use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\ClienteDirec;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
+use App\Models\Color;
 use App\Models\Comuna;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\MateriaPrima;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\NotaVentaDetalle;
 use App\Models\Notificaciones;
 use App\Models\PlazoPago;
 use App\Models\Producto;
+use App\Models\Provincia;
+use App\Models\Region;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\SucursalClienteDirec;
@@ -314,14 +319,26 @@ class NotaVentaController extends Controller
         session(['aux_aproNV' => '1']);
         
         $aux_statusPant = 0;
+
         $tablas = array();
-        $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['formapagos'] = FormaPago::orderBy('id')->get();
+        $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['provincias'] = Provincia::orderBy('id')->get();
+        $tablas['regiones'] = Region::orderBy('id')->get();
+        $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
+        $tablas['giros'] = Giro::orderBy('id')->get();
         $tablas['sucursales'] = $clientesArray['sucursales'];
+        $tablas['empresa'] = Empresa::findOrFail(1);
+        $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
+        $tablas['color'] = Color::orderBy('id')->get();
+        $tablas['certificado'] = Certificado::orderBy('id')->get();
+        $tablas['editaracuerdotecnico'] = 0;
+        session(['editaracutec' => '0']);
 
         //dd($aux_aproNV);
         return view('notaventa.crear', compact('data','clienteselec','clientedirecs','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas'));
-
-
     }
 
     /**

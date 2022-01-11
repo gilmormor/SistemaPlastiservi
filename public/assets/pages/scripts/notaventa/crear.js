@@ -412,6 +412,13 @@ function insertarTabla(){
 				'<a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
+			'<td style="text-align:right;display:none;">'+ 
+				'<input type="text" name="acuerdotecnico[]" id="acuerdotecnico'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
+			'</td>'+
+			'<td style="text-align:right;display:none;">'+
+				'<input type="text" name="tipoprod[]" id="tipoprod'+ aux_nfila + '" class="form-control" value="' + $("#tipoprodM").attr('valor') + '" style="display:none;"/>'+
+			'</td>'+
+
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+
 			'<td colspan="12" style="text-align:right"><b>Neto</b></td>'+

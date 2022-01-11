@@ -381,7 +381,6 @@
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                     <thead>
                         <tr>
-                            <th style="text-align:center;">Cod</th>
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">NotaVentaDetalle_ID</th>
                             <th style="display:none;">cotizacion_ID</th>
@@ -416,12 +415,9 @@
                             <th>Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
-                            @if(($aux_sta==1 or $aux_sta==2) and $aux_concot == false)
+                            @if($aux_concot==false)
                                 <th class="width70"></th>
                             @endif
-                            <th style="display:none;">Array Acuerdo Tecnico</th>
-                            <th style="display:none;">Tipo Producto</th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -430,17 +426,6 @@
                             @foreach($detalles as $detalle)
                                 <?php $aux_nfila++; ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;">
-                                        {{$detalle->producto_id}}
-                                        @if ($detalle->producto->tipoprod == 1)
-                                            <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
-                                            @if ($detalle->acuerdotecnicotemp == null)
-                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
-                                            @else
-                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
-                                            @endif
-                                        @endif
-                                    </td>
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
                                         @if ($aux_sta==2)
                                             {{$detalle->id}}
@@ -576,25 +561,19 @@
                                             <i class="fa fa-fw fa-trash text-danger"></i></a>
                                         </td>
                                     @endif
-                                    <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="acuerdotecnico[]" id="acuerdotecnico{{$aux_nfila}}" class="form-control" value="{{json_encode($detalle->acuerdotecnicotemp)}}" style="display:none;"/>
-                                    </td>
-                                    <td style="text-align:right;display:none;">
-                                        <input type="text" name="tipoprod[]" id="tipoprod{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->tipoprod}}" style="display:none;"/>
-                                    </td>
                                 </tr>
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="13" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="12" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="13" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="12" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="13" style="text-align:right"><b>Total</b></td>
+                                <td colspan="12" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif

@@ -139,10 +139,19 @@ $("#btnnuevaNV").click(function(event){
 		text: "",
 		icon: 'success',
 		buttons: {
-			confirm: "Si",
-			cancel: "No"
+			si: {
+				text: "Si",
+				value: "Si",
+			},
+
+			no: {
+				text: "No",
+				value: "No",
+			},
+			cancel: "Cancelar"
 		},
 	}).then((value) => {
+		/*
 		if (value) {
 			limpiarCampos();
 			$("#myModalnumcot .modal-body").removeAttr("style");
@@ -154,6 +163,26 @@ $("#btnnuevaNV").click(function(event){
 			window.location = loc.protocol+"//"+loc.hostname+"/notaventa/crear";
 			// ******************************
         }
+		*/
+		switch (value) {
+ 
+			case "Si":
+				limpiarCampos();
+				$("#myModalnumcot .modal-body").removeAttr("style");
+				$("#myModalnumcot").modal('show');
+				break;
+		 
+			case "No":
+				//alert('Sin Cotizacion');
+				// *** REDIRECCIONA A UNA RUTA*** 
+				var loc = window.location;
+				window.location = loc.protocol+"//"+loc.hostname+"/notaventa/crear";
+				// ******************************
+				break;
+			default:
+			  //swal("Got away safely!");
+		}
+
 	});
 	
 });

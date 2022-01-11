@@ -1085,40 +1085,6 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 	
 });
 
-function crearEditarAcuTec(i){
-	$('.scrollg').animate({
-
-		scrollTop: 0
-
-	}, 2000);
-	$(".selectpicker").selectpicker('refresh');
-	$("#aux_numfilaAT").val(i);
-	$(".form_acutec").each(function(){
-		$(this).val("");
-		//alert($(this).attr('name'));
-		if($(this).attr('name') == "at_certificados"){
-			$(this).val([]);
-		}
-	});
-	var acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
-	//console.log(acuerdotecnico);
-	for (const property in acuerdotecnico) {
-		if(property != 'id'){ //Para evitar que cambie el valor del campo id del formulario aprobar cotizacion
-			if( property == 'at_certificados'){
-				let str = acuerdotecnico[property];
-				let arr = str.split(','); 
-				$("#" + property).val(arr);
-			}else{
-				$("#" + property).val(acuerdotecnico[property]);
-			}	
-		}
-	}
-	$(".valorrequerido").each(function(){
-		quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
-	});
-	$(".selectpicker").selectpicker('refresh');
-    $("#myModalAcuerdoTecnico").modal('show');
-}
 
 function verificarDato(aux_nomclass)
 {

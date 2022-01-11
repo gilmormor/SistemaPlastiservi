@@ -76,8 +76,9 @@ class CotizacionAprobarAcuTecController extends Controller
      */
     public function editar($id)
     {
+        session(['editaracutec' => '0']);
         $objeto = new CotizacionController();
-        return $objeto->editar($id);
+        return $objeto->editaraat($id);
     }
 
     /**
