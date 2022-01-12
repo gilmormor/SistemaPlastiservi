@@ -631,4 +631,5 @@ function consulta($request,$aux_sql,$orden){
     }
     $datas = DB::select($sql);
     return $datas;
+    
 }
