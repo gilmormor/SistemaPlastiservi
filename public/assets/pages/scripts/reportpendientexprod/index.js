@@ -116,6 +116,7 @@ function datos(){
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
         producto_id       : $("#producto_idPxP").val(),
+        categoriaprod_id  : $("#categoriaprod_id").val(),
         filtro            : 0,
         _token            : $('input[name=_token]').val()
     };
@@ -272,11 +273,21 @@ function copiar_codprod(id,codintprod){
 
 $("#btnpdf").click(function(event){
     data = datos();
-    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah+"&plazoentregad="+data.plazoentregad+"&plazoentregah="+data.plazoentregah +
-            "&rut=" + data.rut + "&vendedor_id=" + data.vendedor_id +
-            "&oc_id="+data.oc_id + "&giro_id="+data.giro_id + "&areaproduccion_id="+data.areaproduccion_id +
-            "&tipoentrega_id="+data.tipoentrega_id + "&notaventa_id="+data.notaventa_id + "&aprobstatus="+data.aprobstatus +
-            "&comuna_id="+data.comuna_id + "&producto_id="+data.producto_id
+    cadena = "?fechad="+data.fechad+
+            "&fechah="+data.fechah+
+            "&plazoentregad="+data.plazoentregad+
+            "&plazoentregah="+data.plazoentregah +
+            "&rut=" + data.rut + 
+            "&vendedor_id=" + data.vendedor_id +
+            "&oc_id="+data.oc_id + 
+            "&giro_id="+data.giro_id + 
+            "&areaproduccion_id="+data.areaproduccion_id +
+            "&tipoentrega_id="+data.tipoentrega_id + 
+            "&notaventa_id="+data.notaventa_id + 
+            "&aprobstatus="+data.aprobstatus +
+            "&comuna_id="+data.comuna_id + 
+            "&producto_id="+data.producto_id +
+            "&categoriaprod_id="+data.categoriaprod_id
     //alert(cadena);
     $('#contpdf').attr('src', '/reportpendientexprod/exportPdf/'+cadena);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
