@@ -519,7 +519,7 @@ function consulta($request,$aux_sql,$orden){
         if(is_array($request->categoriaprod_id)){
             $aux_categoriaprodid = implode ( ',' , $request->categoriaprod_id);
         }else{
-            $aux_categoriaprodid = $request->aux_condcategoriaprod_id;
+            $aux_categoriaprodid = $request->categoriaprod_id;
         }
         $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprodid) ";
     }
