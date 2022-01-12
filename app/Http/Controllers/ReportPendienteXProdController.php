@@ -142,7 +142,6 @@ class ReportPendienteXProdController extends Controller
         $request->giro_id = $_GET["giro_id"];
         $request->comuna_id = $_GET["comuna_id"];
         $request->producto_id = $_GET["producto_id"];
-        $request->vendedor_id = $_GET["vendedor_id"];
         $request->categoriaprod_id = $_GET["categoriaprod_id"];
         $datas = consulta($request,2,1);
 
@@ -519,7 +518,7 @@ function consulta($request,$aux_sql,$orden){
         if(is_array($request->categoriaprod_id)){
             $aux_categoriaprodid = implode ( ',' , $request->categoriaprod_id);
         }else{
-            $aux_categoriaprodid = $request->aux_condcategoriaprod_id;
+            $aux_categoriaprodid = $request->categoriaprod_id;
         }
         $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprodid) ";
     }
