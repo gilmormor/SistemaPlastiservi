@@ -147,7 +147,7 @@ class NotaVentaController extends Controller
                 on cotizacion.cliente_id = cliente.id
                 LEFT join clientebloqueado
                 on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-                where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3) and 
+                where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3 or aprobstatus=6) and 
                 cotizacion.id not in (SELECT cotizacion_id from notaventa WHERE !(cotizacion_id is NULL) and (anulada is null))
                 and cotizacion.deleted_at is null;';
         //where usuario_id='.auth()->id();
@@ -394,14 +394,6 @@ class NotaVentaController extends Controller
     {
         //dd($request);
         can('guardar-notaventa');
-        if(empty($request->cotizacion_id)){
-            dd('vacio');
-        }else{
-            //dd('Lleno');
-            $cotizaciondetalle = CotizacionDetalle::where("cotizacion_id","=",$request->cotizacion_id);
-            dd($cotizaciondetalle);
-        }
-        
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
         $dateInput = explode('/',$request->plazoentrega);
@@ -418,41 +410,64 @@ class NotaVentaController extends Controller
             $data->oc_file = $foto;
             $data->save();
         }
-        $cont_producto = count($request->producto_id);
-        if($cont_producto>0){
-            
-            for ($i=0; $i < $cont_producto ; $i++){
-                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                    $producto = Producto::findOrFail($request->producto_id[$i]);
-                    $notaventadetalle = new NotaVentaDetalle();
-                    $notaventadetalle->notaventa_id = $notaventaid;
-                    $notaventadetalle->producto_id = $request->producto_id[$i];
-                    $notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];                    
-                    $notaventadetalle->cant = $request->cant[$i];
-                    $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
-                    $notaventadetalle->descuento = $request->descuento[$i];
-                    $notaventadetalle->preciounit = $request->preciounit[$i];
-                    $notaventadetalle->peso = $producto->peso;
-                    $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
-                    $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
-                    $notaventadetalle->totalkilos = $request->totalkilos[$i];
-                    $notaventadetalle->subtotal = $request->subtotal[$i];
-
-                    $notaventadetalle->producto_nombre = $producto->nombre;
-                    $notaventadetalle->ancho = $request->ancho[$i];
-                    $notaventadetalle->largo = $request->long[$i];
-                    $notaventadetalle->espesor = $request->espesor[$i];
-                    $notaventadetalle->diametro = $producto->diametro;
-                    $notaventadetalle->categoriaprod_id = $producto->categoriaprod_id;
-                    $notaventadetalle->claseprod_id = $producto->claseprod_id;
-                    $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
-                    $notaventadetalle->color_id = $producto->color_id;
-                    $notaventadetalle->obs = $request->obs[$i];
-                    $notaventadetalle->save();
-                    $idDireccion = $notaventadetalle->id;
+        //SI ESTA VACIO EL NUMERO DE COTIZACION SE CREA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DEL LADO DEL CLIENTE
+        //SI NO ESTA VACIO EL NUMERO DE COTIZACION LLENO EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DETALLE COTIZACION
+        if(empty($request->cotizacion_id)){
+            $cont_producto = count($request->producto_id);
+            if($cont_producto>0){
+                for ($i=0; $i < $cont_producto ; $i++){
+                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                        $producto = Producto::findOrFail($request->producto_id[$i]);
+                        $notaventadetalle = new NotaVentaDetalle();
+                        $notaventadetalle->notaventa_id = $notaventaid;
+                        $notaventadetalle->producto_id = $request->producto_id[$i];
+                        $notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];                    
+                        $notaventadetalle->cant = $request->cant[$i];
+                        $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
+                        $notaventadetalle->descuento = $request->descuento[$i];
+                        $notaventadetalle->preciounit = $request->preciounit[$i];
+                        $notaventadetalle->peso = $producto->peso;
+                        $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
+                        $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
+                        $notaventadetalle->totalkilos = $request->totalkilos[$i];
+                        $notaventadetalle->subtotal = $request->subtotal[$i];
+    
+                        $notaventadetalle->producto_nombre = $producto->nombre;
+                        $notaventadetalle->ancho = $request->ancho[$i];
+                        $notaventadetalle->largo = $request->long[$i];
+                        $notaventadetalle->espesor = $request->espesor[$i];
+                        $notaventadetalle->diametro = $producto->diametro;
+                        $notaventadetalle->categoriaprod_id = $producto->categoriaprod_id;
+                        $notaventadetalle->claseprod_id = $producto->claseprod_id;
+                        $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
+                        $notaventadetalle->color_id = $producto->color_id;
+                        $notaventadetalle->obs = $request->obs[$i];
+                        $notaventadetalle->save();
+                        $idDireccion = $notaventadetalle->id;
+                    }
                 }
             }
+        }else{
+            //dd('Lleno');
+            $cotizaciondetalle = CotizacionDetalle::where("cotizacion_id","=",$request->cotizacion_id)->get();
+            $cotizacion = Cotizacion::findOrFail($request->cotizacion_id);
+            $cotizaciondetalles = $cotizacion->cotizaciondetalles;
+            //dd($cotizaciondetalles);
+            foreach ($cotizaciondetalles as $cotizaciondetalle) {
+                $array_det = $cotizaciondetalle->attributesToArray();
+                $array_det["notaventa_id"] = $notaventaid;
+                $array_det["cotizaciondetalle_id"] = $array_det["id"];
+                unset($array_det["usuariodel_id"],$array_det["deleted_at"],$array_det["created_at"],$array_det["updated_at"]);
+                if($array_det["acuerdotecnicotemp_id"]){
+                    
+                }
+                
+                dd($array_det);
+
+            }
+            dd($cotizaciondetalle);
         }
+
         return redirect('notaventa')->with([
                                             'mensaje'=>'Nota de Venta creada con exito.',
                                             'tipo_alert' => 'alert-success'

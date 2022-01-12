@@ -132,6 +132,7 @@ class CotizacionController extends Controller
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         //dd($tablas['unidadmedida']);
+        session(['editaracutec' => '1']);
 
         return view('cotizacion.crear',compact('clientes','fecha','productos','aux_sta','tablas'));
     }
