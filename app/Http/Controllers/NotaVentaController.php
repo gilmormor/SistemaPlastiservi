@@ -271,6 +271,19 @@ class NotaVentaController extends Controller
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
+
+        $tablas['formapagos'] = FormaPago::orderBy('id')->get();
+        $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['provincias'] = Provincia::orderBy('id')->get();
+        $tablas['regiones'] = Region::orderBy('id')->get();
+        $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
+        $tablas['giros'] = Giro::orderBy('id')->get();
+        $tablas['empresa'] = Empresa::findOrFail(1);
+        $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
+        $tablas['color'] = Color::orderBy('id')->get();
+        $tablas['certificado'] = Certificado::orderBy('id')->get();
+        session(['editaracutec' => '0']);
     
         //dd($vendedor_id);
         return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','productos','clientes','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant','tablas'));
@@ -364,7 +377,6 @@ class NotaVentaController extends Controller
         $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
-        $tablas['editaracuerdotecnico'] = 0;
         session(['editaracutec' => '0']);
 
         //dd($aux_aproNV);
@@ -382,6 +394,13 @@ class NotaVentaController extends Controller
     {
         //dd($request);
         can('guardar-notaventa');
+        if(empty($request->cotizacion_id)){
+            dd('vacio');
+        }else{
+            //dd('Lleno');
+            $cotizaciondetalle = CotizacionDetalle::where("cotizacion_id","=",$request->cotizacion_id);
+            dd($cotizaciondetalle);
+        }
         
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);

@@ -818,7 +818,6 @@ function editar($id){
         $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
-        $tablas['editaracuerdotecnico'] = 1;
 
         $aux_sta=2;
 
