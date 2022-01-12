@@ -44,17 +44,17 @@
 					<span class="h3">Cliente</span>
 					<table class="datos_cliente">
 						<!--<tr class="headt">-->
-						<tr>
-							<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 )}}</p></td>
-							<td><label>Teléfono:</label> <p>{{$notaventa->cliente->telefono}}</p></td>
+						<tr class="headt">
+							<td style="width:10%">Rut: </td><td style="width:50%">{{number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 )}}</td>
+							<td style="width:10%">Teléfono: </td><td style="width:30%">{{$notaventa->cliente->telefono}}</td>
 						</tr>
-						<tr>
-							<td><label>Nombre:</label> <p>{{$notaventa->cliente->razonsocial}}</p></td>
-							<td><label>Dirección:</label> <p>{{$notaventa->cliente->direccion}}</p></td>
+						<tr class="headt">
+							<td style="width:10%">Nombre: </td><td style="width:50%">{{$notaventa->cliente->razonsocial}}</td>
+							<td style="width:10%">Dirección: </td><td style="width:30%">{{$notaventa->cliente->direccion}}</td>
 						</tr>
-						<tr>
-							<td><label>Contacto:</label> <p>{{$notaventa->cliente->contactonombre}}</p></td>
-							<td><label>Comuna:</label> <p>{{$notaventa->cliente->comuna->nombre}}</p></td>
+						<tr class="headt">
+							<td style="width:10%">Contacto: </td><td style="width:50%">{{$notaventa->cliente->contactonombre}}</td>
+							<td style="width:10%">Comuna: </td><td style="width:30%">{{$notaventa->cliente->comuna->nombre}}</td>
 						</tr>
 					</table>
 				</div>

@@ -49,16 +49,16 @@
 					<span class="h3">Cliente</span>
 					<table class="datos_cliente">
 						<tr class="headt">
-							<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoord->notaventa->cliente->rut, strlen($despachoord->notaventa->cliente->rut) -1 , 1 )}}</p></td>
-							<td><label>Teléfono:</label> <p>{{$despachoord->notaventa->cliente->telefono}}</p></td>
+							<td style="width:10%"><label>Rut:</label></td><td style="width:50%"><p id="rutform" name="rutform">{{number_format( substr ( $despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoord->notaventa->cliente->rut, strlen($despachoord->notaventa->cliente->rut) -1 , 1 )}}</p></td>
+							<td style="width:10%"><label>Teléfono:</label></td><td style="width:30%"><p>{{$despachoord->notaventa->cliente->telefono}}</p></td>
 						</tr>
 						<tr class="headt">
-							<td><label>Nombre:</label> <p>{{$despachoord->notaventa->cliente->razonsocial}}</p></td>
-							<td><label>Dirección:</label> <p>{{$despachoord->notaventa->cliente->direccion}}</p></td>
+							<td style="width:10%"><label>Nombre:</label></td><td style="width:50%"><p>{{$despachoord->notaventa->cliente->razonsocial}}</p></td>
+							<td style="width:10%"><label>Dirección:</label></td><td style="width:30%"><p>{{$despachoord->notaventa->cliente->direccion}}</p></td>
 						</tr>
 						<tr class="headt">
-							<td><label>Contacto:</label> <p>{{$despachoord->notaventa->cliente->contactonombre}}</p></td>
-							<td><label>Comuna:</label> <p>{{$despachoord->notaventa->cliente->comuna->nombre}}</p></td>
+							<td style="width:10%"><label>Contacto:</label></td><td style="width:50%"><p>{{$despachoord->notaventa->cliente->contactonombre}}</p></td>
+							<td style="width:10%"><label>Comuna:</label></td><td style="width:30%"><p>{{$despachoord->notaventa->cliente->comuna->nombre}}</p></td>
 						</tr>
 					</table>
 				</div>
@@ -153,6 +153,9 @@
 			</tr>
 		</table>
 	</div>
+	<div>
+		<p class="nota"><strong>Observaciones: {{$despachoord->observacion}}</strong></p>
+	</div>
 	<br>
 	<div class="round1">
 		<span class="h3">Información</span>
@@ -215,9 +218,4 @@
 			</tr>
 		</table>
 	</div>
-	<br>
-	<div>
-		<p class="nota"><strong>Observaciones: {{$despachoord->observacion}}</strong></p>
-	</div>
-	<br>
 </div>

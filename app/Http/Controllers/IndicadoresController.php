@@ -38,7 +38,6 @@ class IndicadoresController extends Controller
                     'fechaAct' => date("d/m/Y")
                     ];
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-
         return view('nvindicadorxvendedor.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ','tablashtml'));
     }
 
@@ -85,7 +84,8 @@ class IndicadoresController extends Controller
                     'fechaAct' => date("d/m/Y"),
                     'anno' => date('Y')
                     ];
-        return view('indicadorgestion.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ'));
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        return view('indicadorgestion.index', compact('clientes','giros','categoriaprods','vendedores','vendedores1','areaproduccions','fechaServ','tablashtml'));
     }
 
     public function repkilosxtipoentrega(Request $request){
@@ -801,6 +801,7 @@ class IndicadoresController extends Controller
             <thead>
                 <tr>
                     <th>Area Prod</th>";
+            //dd($datas['ventasxmes']);
             foreach($datas['ventasxmes'] as $ventasxmes){
                 $mes = $ventasxmes->mes;
                 $respuesta['tablaventasmesap'] .= "
@@ -815,11 +816,16 @@ class IndicadoresController extends Controller
                     $respuesta['tablaventasmesap'] .= "
                     <tr class='btn-accion-tabla tooltipsC'>
                         <td data-order='$areaproduccion->id'>$areaproduccion->nombre</td>";
-                    foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
-                        if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-                            $respuesta['tablaventasmesap'] .= "
-                                <td style='text-align:right'>" . number_format(round($ventasareaprodxmes->totalkilos,0), 0, ",", ".") . "</td>";
+                    foreach($datas['ventasxmes'] as $ventasxmes){
+                        $aux_valor = "0";
+                        foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                            if( ($ventasxmes->annomes == $ventasareaprodxmes->annomes) and ($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id) ){
+                                $aux_valor = number_format(round($ventasareaprodxmes->totalkilos,0), 0, ",", ".");
+                                break;
+                            }
                         }
+                        $respuesta['tablaventasmesap'] .= "
+                        <td style='text-align:right'>" . $aux_valor . "</td>";
                     }
                     $respuesta['tablaventasmesap'] .= "
                     </tr>";
@@ -829,6 +835,7 @@ class IndicadoresController extends Controller
             </tbody>
             </table>";
             /*************************************** */
+            //dd($respuesta['tablaventasmesap']);
             
             
             /* GRAFICO VENTAS MENSUAL POR AREA DE PRODUCCION*/
@@ -848,12 +855,12 @@ class IndicadoresController extends Controller
                 foreach($datas['areaproduccion'] as $areaproduccion){
                     if($areaproduccion->id != 3){
                         $array_vectorTemp[] = 0.00;
-                            foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
-                                if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-                                    $array_vectorTemp[$i] = round($ventasareaprodxmes->totalkilos,0);
-                                    break;
-                                }
+                        foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                            if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
+                                $array_vectorTemp[$i] = round($ventasareaprodxmes->totalkilos,0);
+                                break;
                             }
+                        }
                         $i++;    
                     }
                 }
@@ -884,22 +891,32 @@ class IndicadoresController extends Controller
                     $respuesta['tablaventaPVC'] .= "
                     <tr class='btn-accion-tabla tooltipsC'>
                         <td data-order='$areaproduccion->id'>$areaproduccion->nombre</td>";
-                    foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
-                        if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-                            $respuesta['tablaventaPVC'] .= "
-                                <td style='text-align:right'>" . number_format(round($ventasareaprodxmes->totalkilos,0), 0, ",", ".") . "</td>";
+                    foreach($datas['ventasxmes'] as $ventasxmes){
+                        $aux_valor = "0";
+                        foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                            if(($ventasxmes->annomes == $ventasareaprodxmes->annomes) and ($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id) ){
+                                $aux_valor = number_format(round($ventasareaprodxmes->totalkilos,0), 0, ",", ".");
+                                break;
+                            }
                         }
+                        $respuesta['tablaventaPVC'] .= "
+                        <td style='text-align:right'>" . $aux_valor . "</td>";
                     }
                     $respuesta['tablaventaPVC'] .= "
                     </tr>";
                     $respuesta['tablaventaPVC'] .= "
                     <tr class='btn-accion-tabla tooltipsC'>
                         <td data-order='Precio Kg($)'>Precio Kg($)</td>";
-                    foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
-                        if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-                            $respuesta['tablaventaPVC'] .= "
-                                <td style='text-align:right'>" . number_format(round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0), 0, ",", ".") . "</td>";
-                        }
+                    foreach($datas['ventasxmes'] as $ventasxmes){
+                        $aux_valor = "0";
+                        foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                            if(($ventasxmes->annomes == $ventasareaprodxmes->annomes) and ($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id) ){
+                                $aux_valor = number_format(round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0), 0, ",", ".");
+                                break;
+                            }
+                        }    
+                        $respuesta['tablaventaPVC'] .= "
+                        <td style='text-align:right'>" . $aux_valor . "</td>";
                     }
                     $respuesta['tablaventaPVC'] .= "
                     </tr>";
@@ -1256,11 +1273,16 @@ class IndicadoresController extends Controller
                 $respuesta['tablaventasmesap'] .= "
                 <tr class='btn-accion-tabla tooltipsC'>
                     <td data-order='$areaproduccion->id'>$areaproduccion->nombre</td>";
-                foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
-                    if($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
-                        $respuesta['tablaventasmesap'] .= "
-                            <td style='text-align:right'>" . number_format(round($ventasareaprodxmes->subtotal,0), 0, ",", ".") . "</td>";
+                foreach($datas['ventasxmes'] as $ventasxmes){
+                    $aux_valor = "0";
+                    foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
+                        if(($ventasxmes->annomes == $ventasareaprodxmes->annomes) and ($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id) ){
+                            $aux_valor = number_format(round($ventasareaprodxmes->subtotal,0), 0, ",", ".");
+                            break;
+                        }
                     }
+                    $respuesta['tablaventasmesap'] .= "
+                    <td style='text-align:right'>" . $aux_valor . "</td>";
                 }
                 $respuesta['tablaventasmesap'] .= "
                 </tr>";
@@ -1785,7 +1807,6 @@ function consulta($request){
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
     }
 */
-    //dd($request->vendedor_id);
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -1814,8 +1835,6 @@ function consulta($request){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
-
-
     //dd($vendedorcond);
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -2210,7 +2229,6 @@ function consultaODcerrada($request){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
-
 
     //dd($vendedorcond);
     if(empty($request->fechad) or empty($request->fechah)){
@@ -2714,18 +2732,47 @@ function tablaAgruxProductoMargen($datas){
 }
 
 function consultakilostipoentrega($request){
-    $aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
+    //$aux_vendedor = implode ( ',' , json_decode($request->vendedor_id));
     $aux_areaproduccion = implode ( ',' , json_decode($request->areaproduccion_id));
     $respuesta = array();
     $respuesta['exito'] = true;
     $respuesta['mensaje'] = "Código encontrado";
     $respuesta['productos'] = "";
     $respuesta['vendedores'] = "";
-
+/*
     if(empty($aux_vendedor )){
         $vendedorcond = " true ";
     }else{
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
+    }
+*/
+    if(empty($request->vendedor_id)){
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+        }else{
+            $vendedorcond = " true ";
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+    }else{
+        if(is_array($request->vendedor_id)){
+            $aux_vendedorid = implode ( ',' , $request->vendedor_id);
+        }else{
+            $aux_vendedorid = $request->vendedor_id;
+        }
+        $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
+
+        //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
     //dd($vendedorcond);
     if(empty($request->fechad) or empty($request->fechah)){

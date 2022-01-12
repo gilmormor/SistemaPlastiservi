@@ -95,7 +95,6 @@ class NotaVentaConsultaController extends Controller
             $aux_prom = 0;
             foreach ($datas as $data) {
                 $aux_cantdesp = $this->consultatotcantod($data->id);
-
                 if(in_array('5',$request->aprobstatus)){
                     if($aux_cantdesp >= $data->cant){
                         continue;
@@ -279,13 +278,12 @@ class NotaVentaConsultaController extends Controller
             return $respuesta;
         }
     }
-    public function exportPdf(Request $request)
+    public function exportPdf1(Request $request)
     {
         $rut=str_replace("-","",$request->rut);
         $rut=str_replace(".","",$rut);
         $notaventas = $this->consulta($request,1);
         $totalareaprods = $this->consulta($request,2); //Totales Area de produccion
-
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -317,12 +315,12 @@ class NotaVentaConsultaController extends Controller
         if($notaventas){
             
             if(env('APP_DEBUG')){
-                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
-            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteNotasVenta.pdf");
@@ -330,6 +328,71 @@ class NotaVentaConsultaController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         }
     }
+
+    public function exportPdf()
+    {
+        $request = new Request();
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->rut = $_GET["rut"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->oc_id = $_GET["oc_id"];
+        $request->giro_id = $_GET["giro_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->tipoentrega_id = $_GET["tipoentrega_id"];
+        $request->notaventa_id = $_GET["notaventa_id"];
+        $request->aprobstatus = explode ( ",", $_GET["aprobstatus"] );
+        $request->producto_idM = $_GET["producto_idM"];
+        $request->comuna_id = $_GET["comuna_id"];
+
+        $notaventas = $this->consulta($request,1);
+        $totalareaprods = $this->consulta($request,2); //Totales Area de produccion
+        $aux_fdesde= $request->fechad;
+        $aux_fhasta= $request->fechah;
+
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $nomvendedor = "Todos";
+        if(!empty($request->vendedor_id)){
+            $vendedor = Vendedor::findOrFail($request->vendedor_id);
+            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+        }
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+        $nombreTipoEntrega = "Todos";
+        if($request->tipoentrega_id){
+            $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
+            $nombreTipoEntrega=$tipoentrega->nombre;
+        }
+        
+        //return armarReportehtml($request);
+        if($notaventas){
+            
+            if(env('APP_DEBUG')){
+                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+            }
+            
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            
+            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+            //return $pdf->download('cotizacion.pdf');
+            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+            return $pdf->stream("ReporteNotasVenta.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        }
+        
+    }
+
 
     public function consultatotcantod($id){
         $sql = "SELECT notaventa_id,sum(cantdesp) AS cantdesp 
@@ -401,6 +464,7 @@ class NotaVentaConsultaController extends Controller
             $aux_condoc_id = " true";
         }else{
             $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
+            $aux_condFecha = " true";
         }
         if(empty($request->giro_id)){
             $aux_condgiro_id = " true";
@@ -421,6 +485,7 @@ class NotaVentaConsultaController extends Controller
             $aux_condnotaventa_id = " true";
         }else{
             $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
+            $aux_condFecha = " true";
         }
     
         $aux_aprobstatus = "";
@@ -705,7 +770,7 @@ function armarReportehtml($request){
                     if($aux_totalKG>0){
                         $aux_promGeneral = $aux_totalps / $aux_totalKG;
                     }
-    
+
                     $respuesta['tabla'] .= "
                                     <tfoot id='detalle_totales'>
                                         <tr class='headt'>

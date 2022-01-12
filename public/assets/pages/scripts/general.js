@@ -110,6 +110,8 @@ $(document).ready(function () {
 	});
 */
 
+	$( ".modal" ).draggable({opacity: 0.80, handle: ".modal-header"});
+
 });
 
 

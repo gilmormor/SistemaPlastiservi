@@ -38,4 +38,5 @@ class ValidarDespachoOrd extends FormRequest
             'fechaestdesp' => 'required',
         ];
     }
+
 }

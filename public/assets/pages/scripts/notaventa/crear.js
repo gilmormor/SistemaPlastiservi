@@ -169,12 +169,13 @@ $(document).ready(function () {
 	aux_imagen = $("#imagen").val();
 	$('#oc_file').fileinput({
 		language: 'es',
-		allowedFileExtensions: ['jpg', 'jpeg', 'png', "pdf"],
+		allowedFileExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
 		maxFileSize: 4000,
 		initialPreview: [
 			// PDF DATA
 			'/storage/imagenes/notaventa/'+$("#imagen").val(),
 		],
+		initialPreviewShowDelete: false,
 		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
 		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
 		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
@@ -187,6 +188,16 @@ $(document).ready(function () {
 		dropZoneEnabled: false,
 		maxFileCount: 5,
         theme: "fa",
+	}).on('fileclear', function(event) {
+		console.log("fileclear");
+		$('#oc_file').attr("data-initial-preview","");
+		$("#imagen").val("");
+		//alert('entro');
+	}).on('fileimageloaded', function(e, params) {
+		//console.log('Paso');
+		//console.log('File uploaded params', params);
+		//console.log($('#oc_file').val());
+		$("#imagen").val($('#oc_file').val());
 	});
 
 	$("#input-pd").fileinput({
@@ -195,6 +206,7 @@ $(document).ready(function () {
 		minFileCount: 2,
 		maxFileCount: 5,
 		overwriteInitial: false,
+		layoutTemplates: {actionDelete: ''}, // disable thumbnail deletion
 		initialPreview: [
 			// PDF DATA
 			'/storage/imagenes/notaventa/238.pdf',
@@ -212,8 +224,13 @@ $(document).ready(function () {
 		}
 	}).on('filesorted', function(e, params) {
 		console.log('File sorted params', params);
+		alert('entro 1');
 	}).on('fileuploaded', function(e, params) {
 		console.log('File uploaded params', params);
+		alert('entro 2');
+	}).on('fileclear', function(event) {
+		console.log("fileclear");
+		//alert('entro');
 	});
 
 	$('#foto').fileinput({
@@ -255,6 +272,9 @@ $(document).ready(function () {
 		allowedFileExtensions: ["jpg", "png", "gif", "pdf"]
 	});
 */
+
+	$(".kv-file-remove").hide();
+	$(".file-drag-handle").hide();
 });
 /*
 $("#botonNewProd").click(function(event)
@@ -973,8 +993,35 @@ $("#btnverfoto").click(function(){
 });
 
 
-$('#form-general').submit(function() {
+$('#form-general').submit(function(event) {
+	//event.preventDefault();
 	//alert('prueba');
+	//return 0;
+	//console.log($("#oc_file").val());
+	if($("#imagen").val() ==""){
+		$("#imagen").val($('#oc_file').val());
+	}
+	console.log($("#imagen").val());
+	$('#group_oc_id').removeClass('has-error');
+	$('#group_oc_file').removeClass('has-error');
+	$('#oc_id').prop('required', false);
+	$("#oc_file-error").hide();
+	aux_ocarchivo = $.trim($('#oc_file').val()) + $.trim($('#oc_file').attr("data-initial-preview"));
+	//if (($('#oc_id').val().length == 0) && (($('#oc_file').val().length != 0) || ($('#oc_file').attr("data-initial-preview").length != 0))) {
+	if ( (aux_ocarchivo.length != 0) && ($('#oc_id').val().length == 0) ) {
+		alertify.error("El campo Nro OrdenCompra es requerido cuando Adjuntar OC está presente.");
+		//$("#oc_id").addClass('has-error');
+		$('#oc_id').prop('required', true);
+		return false;
+	}
+	//if (($('#oc_id').val().length != 0) && (($('#oc_file').val().length == 0) && ($('#oc_file').attr("data-initial-preview").length == 0))) {
+	if (($('#oc_id').val().length != 0) && (aux_ocarchivo.length == 0)) {
+		alertify.error("El campo Adjuntar OC es requerido cuando Nro OrdenCompra está presente.");
+		$("#oc_file-error").show();
+		$("#group_oc_file").addClass('has-error');
+		//$('#oc_file').prop('required', true);
+		return false;
+	}
 	$("#cotizacion_id").prop('disabled', false);
 	$("#clientedirec_id").prop('disabled', false);
 	$("#plazoentrega").prop('disabled', false);
@@ -982,3 +1029,44 @@ $('#form-general').submit(function() {
 	$("#tipoentrega_id").prop('disabled', false);
     //Rest of code
 })
+
+/*
+$(document).on('click','.fileinput-remove-button', function(){
+
+    //your code here
+	alert('entro');
+	$('#oc_file').attr("data-initial-preview","");
+
+ });
+*/
+$("#botonNewProd").click(function(event)
+{
+	clientedirec_id = $("#clientedirec_id").val();
+	aux_rut = $("#rut").val();
+	if(aux_rut==""){
+		mensaje('Debes Incluir RUT del cliente','','error');
+		return 0;
+	}else{
+		event.preventDefault();
+		limpiarInputOT();
+		quitarverificar();
+		$("#aux_sta").val('1');
+		$("#myModal").modal('show');
+		$("#direccionM").focus();	
+	}
+	/*
+	if(clientedirec_id==""){
+		mensaje('Debes seleccionar una dirección','','error');
+		return 0;
+	}
+	
+	if(clientedirec_id!="" && aux_rut!=""){
+		event.preventDefault();
+		limpiarInputOT();
+		quitarverificar();
+		$("#aux_sta").val('1');
+		$("#myModal").modal('show');
+		$("#direccionM").focus();	
+	}
+	*/
+});

@@ -65,6 +65,32 @@ $(document).on("click", ".btnAnular", function(event){
     
 });
 
+$(document).on("click", ".btnaprobar", function(event){
+    event.preventDefault();
+    swal({
+        title: '¿ Está seguro que desea aprobar el registro ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        fila = $(this).closest("tr");
+        form = $(this);
+        id = fila.find('td:eq(0)').text();
+        //alert(id);
+        var data = {
+            _token  : $('input[name=_token]').val(),
+            id      : id
+        };
+        if (value) {
+            ajaxRequest(data,form.attr('href')+'/'+id,'btnaprobar',form);
+        }
+    });
+    
+});
+
 
 function ajaxRequest(data,url,funcion,form = false) {
     $.ajax({
@@ -104,6 +130,18 @@ function ajaxRequest(data,url,funcion,form = false) {
             if(funcion=='verUsuario'){
                 $('#myModal .modal-body').html(respuesta);
                 $("#myModal").modal('show');
+            }
+            if(funcion=='btnaprobar'){
+				if (respuesta.mensaje == "ok") {
+					form.parents('tr').remove();
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+					if (respuesta.mensaje == "sp"){
+						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+					}else{
+						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+					}
+				}
             }
         },
         error: function () {

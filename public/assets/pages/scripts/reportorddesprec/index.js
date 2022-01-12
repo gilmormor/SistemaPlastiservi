@@ -299,7 +299,6 @@ function consultarpage(data){
 
             $('td', row).eq(9).attr('data-order',data.totalkilos);
             $('td', row).eq(9).attr('style','text-align:right');
-            $('td', row).eq(9).attr('style','text-align:right');
             $('td', row).eq(9).addClass('kg');
             $('td', row).eq(10).attr('data-order',data.subtotal);
             $('td', row).eq(10).attr('style','text-align:right');

@@ -20,11 +20,6 @@ $(document).ready(function () {
         consultar(datos());
     });
 
-    $("#btnpdf1").click(function()
-    {
-        consultarpdf(datos());
-    });
-
     //alert(aux_nfila);
     $('.datepicker').datepicker({
 		language: "es",
@@ -60,6 +55,12 @@ $(document).ready(function () {
 		maxFileCount: 5,
         theme: "fa",
 	});
+
+    $("#btnpdf").click(function()
+    {
+        btnpdf(datos());
+    });
+
 
 
 });
@@ -118,7 +119,7 @@ function ajaxRequest(data,url,funcion) {
 }
 
 function datos(){
-    var data = {
+    var data1 = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
@@ -133,6 +134,23 @@ function datos(){
         comuna_id         : $("#comuna_id").val(),
         _token            : $('input[name=_token]').val()
     };
+
+    var data2 = "?fechad="+data1.fechad +
+    "&fechah="+data1.fechah +
+    "&rut="+data1.rut +
+    "&vendedor_id=" + data1.vendedor_id + 
+    "&oc_id="+data1.oc_id +
+    "&giro_id="+data1.giro_id +            
+    "&areaproduccion_id="+data1.areaproduccion_id +
+    "&tipoentrega_id="+data1.tipoentrega_id +
+    "&notaventa_id="+data1.notaventa_id +
+    "&aprobstatus="+data1.aprobstatus +
+    "&producto_idM="+data1.producto_idM +
+    "&comuna_id="+data1.comuna_id
+    var data = {
+    data1 : data1,
+    data2 : data2
+    };
     return data;
 }
 
@@ -140,7 +158,7 @@ function consultar(data){
     $.ajax({
         url: '/notaventaconsulta/reporte',
         type: 'POST',
-        data: data,
+        data: data.data1,
         success: function (datos) {
             if(datos['tabla'].length>0){
                 $("#tablaconsulta").html(datos['tabla']);
@@ -150,22 +168,6 @@ function consultar(data){
     });
 }
 
-function consultarpdf(data){
-    $.ajax({
-        url: '/notaventaconsulta/exportPdf',
-        type: 'GET',
-        data: data,
-        success: function (datos) {
-            $("#midiv").html(datos);
-            /*
-            if(datos['tabla'].length>0){
-                $("#tablaconsulta").html(datos['tabla']);
-                configurarTabla();
-            }
-            */
-        }
-    });
-}
 
 $("#rut").blur(function(){
 	codigo = $("#rut").val();
@@ -382,3 +384,20 @@ $("#producto_idM").keyup(function(event){
         $("#myModalBuscarProd").modal('show');
     }
 });
+
+
+function mostrarH(i,aux_boton,aux_div){
+	if($('#'+aux_div+i).css('display') == 'none'){
+		$('#'+aux_boton+i).attr("class", "fa fa-fw fa-caret-up");
+	}else{
+		$('#'+aux_boton+i).attr("class", "fa fa-fw fa-caret-down");
+	}
+	$('#'+aux_div+i).slideToggle(500);
+}
+
+function btnpdf(data){
+    console.log(data);
+    //alert('entro');
+    $('#contpdf').attr('src', '/notaventaconsulta/exportPdf/'+data.data2);
+    $("#myModalpdf").modal('show');
+}

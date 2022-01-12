@@ -66,7 +66,7 @@ class CotizacionController extends Controller
             $aux_condvend = 'true';
         }
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
+        $sql = "SELECT cotizacion.id,fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
                     aprobstatus,aprobobs,'' as pdfcot,
                     (SELECT COUNT(*) 
@@ -339,6 +339,39 @@ class CotizacionController extends Controller
     {
         //dd($request);
         can('guardar-cotizacion');
+        $aux_rut=str_replace('.','',$request->rut);
+        $request->rut = str_replace('-','',$aux_rut);
+        //dd($request);
+        if(!empty($request->razonsocialCTM)){
+            $array_clientetemp = [
+                'rut' => $request->rut,
+                'razonsocial' => $request->razonsocial,
+                'direccion' => $request->direccion,
+                'telefono' => $request->telefono,
+                'email' => $request->email,
+                'vendedor_id' => $request->vendedor_id,
+                'giro_id' => $request->giro_id,
+                'comunap_id' => $request->comunap_idCTM,
+                'formapago_id' => $request->formapago_id,
+                'plazopago_id' => $request->plazopago_id,
+                'contactonombre'=>  $request->contactonombreCTM,
+                'contactoemail' => $request->contactoemailCTM,
+                'contactotelef' => $request->contactotelefCTM,
+                'finanzascontacto'=>  $request->finanzascontactoCTM,
+                'finanzanemail' => $request->finanzanemailCTM,
+                'finanzastelefono' => $request->finanzastelefonoCTM,
+                'sucursal_id' => $request->sucursal_idCTM,
+                'observaciones' => $request->observacionesCTM
+            ];
+            if(ClienteTemp::where('rut', $request->rut)->count()>0){
+                $clientetemp = ClienteTemp::where('rut', $request->rut)->get();
+                ClienteTemp::where('rut', $request->rut)->update($array_clientetemp);
+                $request->request->add(['clientetemp_id' => $clientetemp[0]->id]);
+            }else{
+                $clientetemp = ClienteTemp::create($array_clientetemp);
+                $request->request->add(['clientetemp_id' => $clientetemp->id]);
+            }
+        }
         $cotizacion = Cotizacion::findOrFail($id);
         $request->request->add(['fechahora' => $cotizacion->fechahora]);
         $aux_plazoentrega= DateTime::createFromFormat('d/m/Y', $request->plazoentrega)->format('Y-m-d');

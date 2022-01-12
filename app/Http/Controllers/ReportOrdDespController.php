@@ -10,12 +10,14 @@ use App\Models\Comuna;
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnul;
 use App\Models\DespachoOrdRec;
+use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class ReportOrdDespController extends Controller
 {
@@ -49,8 +51,15 @@ class ReportOrdDespController extends Controller
 
     }
 
-    
     public function reporte(Request $request){
+        //dd($request);
+        if($request->ajax()){
+            $datas = consultaorddesp($request);
+            return datatables($datas)->toJson();
+        }
+    }
+    
+    public function reporteanterior(Request $request){
         $respuesta = array();
         $respuesta['exito'] = false;
         $respuesta['mensaje'] = "Código no Existe";
@@ -179,73 +188,88 @@ class ReportOrdDespController extends Controller
         return $respuesta;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function exportPdf()
     {
-        //
+        $request = new Request();
+        $request->id = $_GET["id"];
+        $request->fechad = $_GET["fechad"];
+        $request->fechah = $_GET["fechah"];
+        $request->fechaestdesp = $_GET["fechaestdesp"];
+        $request->rut = $_GET["rut"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->oc_id = $_GET["oc_id"];
+        $request->giro_id = $_GET["giro_id"];
+        $request->areaproduccion_id = $_GET["areaproduccion_id"];
+        $request->tipoentrega_id = $_GET["tipoentrega_id"];
+        $request->notaventa_id = $_GET["notaventa_id"];
+        $request->aprobstatus = $_GET["aprobstatus"]; //explode ( ",", $_GET["aprobstatus"] );
+        $request->comuna_id = $_GET["comuna_id"];
+        $request->despachosol_id = $_GET["despachosol_id"];
+        //dd($request);
+
+        $datas = consultaorddesp($request);
+        //dd($datas);
+
+        //$totalareaprods = $this->consulta($request,2); //Totales Area de produccion
+        $aux_fdesde= $request->fechad;
+        $aux_fhasta= $request->fechah;
+
+        //$cotizaciones = consulta('','');
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        $nomvendedor = "Todos";
+        if(!empty($request->vendedor_id)){
+            $vendedor = Vendedor::findOrFail($request->vendedor_id);
+            $nomvendedor=$vendedor->persona->nombre . " " . $vendedor->persona->apellido;
+        }
+        $nombreAreaproduccion = "Todos";
+        if($request->areaproduccion_id){
+            $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
+            $nombreAreaproduccion=$areaProduccion->nombre;
+        }
+        $nombreGiro = "Todos";
+        if($request->giro_id){
+            $giro = Giro::findOrFail($request->giro_id);
+            $nombreGiro=$giro->nombre;
+        }
+        $nombreTipoEntrega = "Todos";
+        if($request->tipoentrega_id){
+            $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
+            $nombreTipoEntrega=$tipoentrega->nombre;
+        }
+        //return armarReportehtml($request);
+        if($datas){
+            
+            if(env('APP_DEBUG')){
+                return view('reportorddesp.listado', compact('datas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+            }
+            
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            
+            $pdf = PDF::loadView('reportorddesp.listado', compact('datas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+            //return $pdf->download('cotizacion.pdf');
+            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+            return $pdf->stream("ReporteOrdenDespacho.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    public function totalizarRep(Request $request){
+        //dd($request);
+        $respuesta = array();
+        if($request->ajax()){
+            $datas = consultaorddesp($request);
+            $aux_totalkg = 0;
+            foreach ($datas as $data) {
+                $aux_totalkg += $data->totalkilos;
+            }
+            $respuesta['aux_totalkg'] = $aux_totalkg;
+            return $respuesta;
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
-
 
 
 function consultaorddesp($request){
@@ -383,6 +407,7 @@ function consultaorddesp($request){
         $aux_condfechaestdesp = "despachoord.fechaestdesp='$fechad'";
     }
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
+    /*
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
             despachoord.notaventa_id,despachoord.fechaestdesp,
@@ -423,6 +448,55 @@ function consultaorddesp($request){
             and $aux_condfechaestdesp
             and despachoord.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachoord.id desc;";
+*/
+    $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
+            comuna.nombre as comunanombre,
+            despachoord.notaventa_id,despachoord.fechaestdesp,
+            sum(if(isnull(despachoordanul.created_at),despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant),0.00)) AS totalkilos,
+            despachoord.aprguiadesp,despachoord.aprguiadespfh,
+            tipoentrega.nombre as tipentnombre,tipoentrega.icono,
+            despachoordanul.created_at AS despachoordanul_fechahora,
+            GROUP_CONCAT(despachoordrec.id) AS despachoordrec_id,despachoordrec.fechahora AS despachoordrec_fechahora,
+            despachoorddet.despachoord_id
+            FROM despachoord INNER JOIN despachoorddet
+            ON despachoord.id=despachoorddet.despachoord_id AND isnull(despachoord.deleted_at) AND isnull(despachoorddet.deleted_at)
+            INNER JOIN notaventa
+            ON notaventa.id=despachoord.notaventa_id AND isnull(notaventa.deleted_at)
+            INNER JOIN notaventadetalle
+            ON despachoorddet.notaventadetalle_id=notaventadetalle.id AND isnull(notaventadetalle.deleted_at)
+            INNER JOIN producto
+            ON notaventadetalle.producto_id=producto.id AND isnull(producto.deleted_at)
+            INNER JOIN categoriaprod
+            ON categoriaprod.id=producto.categoriaprod_id AND isnull(categoriaprod.deleted_at)
+            INNER JOIN areaproduccion
+            ON areaproduccion.id=categoriaprod.areaproduccion_id AND isnull(areaproduccion.deleted_at)
+            INNER JOIN cliente
+            ON cliente.id=notaventa.cliente_id AND isnull(cliente.deleted_at)
+            INNER JOIN comuna
+            ON comuna.id=despachoord.comunaentrega_id AND isnull(comuna.deleted_at)
+            INNER JOIN tipoentrega
+            ON tipoentrega.id=despachoord.tipoentrega_id AND isnull(tipoentrega.deleted_at)
+            LEFT JOIN despachoordanul
+            ON despachoord.id=despachoordanul.despachoord_id AND isnull(despachoordanul.deleted_at)
+            LEFT JOIN despachoordrec
+            ON despachoord.id=despachoordrec.despachoord_id AND despachoordrec.aprobstatus=2 AND isnull(despachoordrec.anulada) AND isnull(despachoordrec.deleted_at)
+            WHERE $vendedorcond
+            and $aux_condFecha
+            and $aux_condrut
+            and $aux_condoc_id
+            and $aux_condgiro_id
+            and $aux_condareaproduccion_id
+            and $aux_condtipoentrega_id
+            and $aux_condnotaventa_id
+            and $aux_aprobstatus
+            and $aux_condcomuna_id
+            and $aux_condaprobord
+            and $aux_condid
+            and $aux_conddespachosol_id
+            and $aux_condfechaestdesp
+            GROUP BY despachoord.id
+            ORDER BY despachoord.id asc,despachoordrec.id asc;";
+
     //dd($sql);
     $datas = DB::select($sql);
 

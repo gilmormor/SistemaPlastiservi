@@ -35,4 +35,10 @@ class DespachoOrdDet extends Model
     {
         return $this->belongsTo(NotaVentaDetalle::class);
     }
+
+    //RELACION DE UNO A MUCHOS DespachoOrdRecDet
+    public function despachoordrecdets()
+    {
+        return $this->hasMany(DespachoOrdRecDet::class,'despachoorddet_id');
+    }    
 }

@@ -62,7 +62,6 @@
 					?>
 					@foreach($notaventas as $notaventa)
 						<?php
-							$i++;
 							if(empty($notaventa->anulada)){
 								$aux_totalKG += $notaventa->totalkilos;
 								$aux_totalps += $notaventa->totalps;
@@ -96,6 +95,19 @@
 							if($datas){
 								$aux_cant = $datas[0]->cantdesp;
 							}
+
+							if(in_array('5',$request->aprobstatus)){
+								if($aux_cant >= $notaventa->cant){
+									continue;
+								}
+							}
+							if(in_array('6',$request->aprobstatus)){
+								if($notaventa->cant != $aux_cant){
+									continue;
+								}
+							}
+							$i++;
+
 							$ifd = "";
 							if($aux_cant > 0){
 								$ifd = "starb";

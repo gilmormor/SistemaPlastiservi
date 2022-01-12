@@ -49,6 +49,7 @@ class ReportPendienteXProdController extends Controller
         $selecmultprod = 1;
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('reportpendientexprod.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos','selecmultprod','tablashtml'));
     
     }
@@ -141,6 +142,8 @@ class ReportPendienteXProdController extends Controller
         $request->giro_id = $_GET["giro_id"];
         $request->comuna_id = $_GET["comuna_id"];
         $request->producto_id = $_GET["producto_id"];
+        $request->vendedor_id = $_GET["vendedor_id"];
+        $request->categoriaprod_id = $_GET["categoriaprod_id"];
         $datas = consulta($request,2,1);
 
         $aux_fdesde= $request->fechad;
@@ -397,7 +400,7 @@ function consulta($request,$aux_sql,$orden){
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
-    }
+    }  
 
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -510,7 +513,18 @@ function consulta($request,$aux_sql,$orden){
         $aux_codprod = implode ( ',' , $aux_codprod);
         $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
     }
+    if(empty($request->categoriaprod_id)){
+        $aux_condcategoriaprod_id = " true";
+    }else{
 
+        if(is_array($request->categoriaprod_id)){
+            $aux_categoriaprodid = implode ( ',' , $request->categoriaprod_id);
+        }else{
+            $aux_categoriaprodid = $request->categoriaprod_id;
+        }
+        $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprodid) ";
+    }
+//dd($aux_condcategoriaprod_id);
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){
@@ -565,6 +579,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_aprobstatus
         and $aux_condcomuna_id
         and $aux_condplazoentrega
+        and $aux_condcategoriaprod_id
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
@@ -608,6 +623,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condcomuna_id
         and $aux_condplazoentrega
         and $aux_condproducto_id
+        and $aux_condcategoriaprod_id
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND notaventadetalle.cant>if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)
@@ -616,4 +632,5 @@ function consulta($request,$aux_sql,$orden){
     }
     $datas = DB::select($sql);
     return $datas;
+    
 }

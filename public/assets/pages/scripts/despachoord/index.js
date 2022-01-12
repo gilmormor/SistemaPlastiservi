@@ -1,43 +1,144 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-	let  table = $('#tabla-data').DataTable();
+    i = 0;
+    $('#tabla-data-despachoord').DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        'processing'  : true,
+        'serverSide'  : true,
+        'ajax'        : "despachoordpage",
+        'columns'     : [
+            {data: 'id'},
+            {data: 'fechahora'},
+            {data: 'fechaestdesp'},
+            {data: 'razonsocial'},
+            {data: 'despachosol_id'},
+            {data: 'oc_id'},
+            {data: 'notaventa_id'},
+            {data: 'comuna_nombre'},
+            {data: 'aux_totalkg'},
+            {data: 'tipoentrega_nombre'},
+            {data: 'icono',className:"ocultar"},
+            {data: 'clientebloqueado_descripcion',className:"ocultar"},
+            {data: 'oc_file',className:"ocultar"},
+            //El boton eliminar esta en comentario Gilmer 23/02/2021
+            {defaultContent : ""}
+        ],
+		"language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            $(row).attr('id','fila' + data.id);
+            $(row).attr('name','fila' + data.id);
+            //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
+            aux_text = 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden despacho: " + data.id + "' onclick='genpdfOD(" + data.id + ",1)'>"+
+                    + data.id +
+                "</a>";
+            $('td', row).eq(0).html(aux_text);
+
+            $('td', row).eq(1).attr('data-order',data.fechahora);
+            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
+            $('td', row).eq(2).attr('data-order',data.fechaestdesp);
+            aux_fecha = new Date(data.fechaestdesp);
+            $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
+
+            aux_text = 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" + 
+                    data.despachosol_id + 
+                "</a>";
+            $('td', row).eq(4).html(aux_text);
+            
+            if(data.oc_file != "" && data.oc_file != null){
+                aux_text = 
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
+                        data.oc_id + 
+                    "</a>";
+                $('td', row).eq(5).html(aux_text);
+            }
+            aux_text = 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
+                    data.notaventa_id +
+                "</a>";
+            $('td', row).eq(6).html(aux_text);
+
+
+            $('td', row).eq(8).attr('data-order',data.aux_totalkg);
+            $('td', row).eq(8).attr('style','text-align:right');
+            aux_text = MASKLA(data.aux_totalkg,2);
+            $('td', row).eq(8).html(aux_text);
+            $('td', row).eq(8).addClass('subtotalkg');
+
+            
+            aux_text = 
+                "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
+            $('td', row).eq(9).html(aux_text);
+
+            if(data.clientebloqueado_descripcion != null){
+                aux_text = 
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
+                        "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
+                    "</a>";
+            }else{
+                /*
+                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarsol(" + i + "," + data.id + ")' title='Aprobar Orden Despacho'>" +
+                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
+                "</a>"+*/
+/*
+                "<a href='/despachoord/aproborddesp' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar Orden Despacho'>" +
+                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
+                "</a>"+
+*/
+                aux_text = 
+                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm' onclick='aprobarord(" + data.id + "," + data.id + ")' title='Aprobar Orden Despacho' data-toggle='tooltip'>"+
+                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
+                "</a>"+
+                "<a href='despachoord' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
+                    "<i class='fa fa-fw fa-pencil'></i>"
+                "</a>";
+            }
+            aux_text = aux_text +
+            "<a href='despachoord' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Orden Despacho' data-toggle='tooltip'>"+
+                "<span class='glyphicon glyphicon-remove text-danger'></span>"
+            "</a>";
+            $('td', row).eq(13).html(aux_text);
+        }
+    });
+
+    let  table = $('#tabla-data-despachoord').DataTable();
+    //console.log(table);
     table
         .on('draw', function () {
             eventFired( 'Page' );
         });
+
+    $.ajax({
+        url: '/despachoord/totalizarindex',
+        type: 'GET',
+        success: function (datos) {
+            //console.log(datos);
+            $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
+            //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
+        }
+    });
+    
+
 });
 
 var eventFired = function ( type ) {
 	total = 0;
-	$("#tabla-data tr .kilos").each(function() {
+	$("#tabla-data-despachoord tr .subtotalkg").each(function() {
 		valor = $(this).attr('data-order') ;
 		valorNum = parseFloat(valor);
 		total += valorNum;
 	});
-	$("#totalKg").html(MASKLA(total,2))
-}
-
-function anular(i,id){
-	//alert($('input[name=_token]').val());
-	var data = {
-		id: id,
-        nfila : i,
-        _token: $('input[name=_token]').val()
-	};
-	var ruta = '/despachoord/anular/'+id;
-	swal({
-		title: '¿ Está seguro que desea anular Solicitud Despacho ?',
-		text: "Esta acción no se puede deshacer!",
-		icon: 'warning',
-		buttons: {
-			cancel: "Cancelar",
-			confirm: "Aceptar"
-		},
-	}).then((value) => {
-		if (value) {
-			ajaxRequest(data,ruta,'anularOD');
-		}
-	});
+    $("#subtotalkg").html(MASKLA(total,2))
 }
 
 
@@ -47,27 +148,7 @@ function ajaxRequest(data,url,funcion) {
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			if(funcion=='anularOD'){
-				if (respuesta.mensaje == "guidesp_factura") {
-					Biblioteca.notificaciones('Registro tiene Guia de despacho y Factura Asociadas. No se puede anular.', 'Plastiservi', 'error');
-					return 0;
-				}else{
-					if (respuesta.mensaje == "ok") {
-						//$("#fila"+data['nfila']).remove();
-						$("#accion"+data['nfila']).html('<small class="label pull-left bg-red">Anulado</small>')
-						Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-					} else {
-						if (respuesta.mensaje == "sp"){
-							Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-						}else{
-							Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-						}
-					}
-				}
-			}
-			if(funcion=='guardarguiadesp'){
-				alert('entro');
-			}
+			
 			if(funcion=='aproborddesp'){
 				if (respuesta.mensaje == "ok") {
 					swal({
@@ -98,60 +179,6 @@ function ajaxRequest(data,url,funcion) {
 		error: function () {
 		}
 	});
-}
-
-
-function guiadesp(nfila,id){
-	$("#id").val(id);
-	$("#myModalguiadesp").modal('show');
-}
-
-$("#btnGuardarG").click(function(event)
-{
-	event.preventDefault();
-	if(verificarGuia())
-	{
-		var data = {
-			id    : $("#id").val(),
-			guiadespacho : $("#guiadespacho").val(),
-			_token: $('input[name=_token]').val()
-		};
-		var ruta = '/despachoord/guardarguiadesp/'+data['id'];
-		swal({
-			title: '¿ Está seguro desea continuar ?',
-			text: "Esta acción no se puede deshacer!",
-				icon: 'warning',
-			buttons: {
-				cancel: "Cancelar",
-				confirm: "Aceptar"
-			},
-		}).then((value) => {
-			if (value) {
-				ajaxRequest(data,ruta,'guardarguiadesp');
-			}
-		});
-
-	}else{
-		alertify.error("Falta incluir informacion");
-	}
-	
-});
-
-$(".requeridos").keyup(function(){
-	//alert($(this).parent().attr('class'));
-	validacion($(this).prop('name'),$(this).attr('tipoval'));
-});
-function verificarGuia()
-{
-	var v1=0;
-	
-	v1=validacion('guiadespacho','texto');
-	if (v1===false)
-	{
-		return false;
-	}else{
-		return true;
-	}
 }
 
 

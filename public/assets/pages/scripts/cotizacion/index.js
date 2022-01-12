@@ -21,18 +21,20 @@ $(document).ready(function () {
         {data: 'aprobobs',className:"ocultar"},
         {data: 'contador',className:"ocultar"},
         {data: 'contacutec',className:"ocultar"},
-        {data: 'fechahora_aaaammdd',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
-            "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV' title='Enviar a Nota de venta'>"+
-                "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-            "</a>"+
-            "<a href='cotizacion' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-                "<i class='fa fa-fw fa-pencil'></i>"+
-            "</a>"+
-            "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
-                "<i class='fa fa-fw fa-trash text-danger'></i>"+
-            "</a>"}
+            "<div class='tools1'>" +
+                "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV' title='Enviar a Nota de venta'>"+
+                    "<!--<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>-->"+
+                    "<i class='fa fa-fw fa-save acciones fa-lg'></i>" +
+                "</a>"+
+                "<a href='cotizacion' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
+                    "<i class='fa fa-fw fa-pencil acciones fa-lg'></i>"+
+                "</a>"+
+                "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
+                    "<i class='fa fa-fw fa-trash text-danger acciones fa-lg'></i>"+
+                "</a>" +
+            "</div>"}
     ],
     "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -45,25 +47,15 @@ $(document).ready(function () {
                 "<i class='fa fa-fw fa-file-pdf-o'></i>"+
             "</a>";
         $('td', row).eq(3).html(aux_text);
-        $('td', row).eq(1).attr('data-order',data.fechahora_aaaammdd);
+
+        $('td', row).eq(1).attr('data-order',data.fechahora);
+        aux_fecha = new Date(data.fechahora);
+        $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 
         if ( (data.contador * 1 > 0) || (data.aprobstatus == "7" )) {
             //console.log(row);
             ///$('tr').addClass('preciomenor');
             //$('td', row).parent().addClass('preciomenor tooltipsC');
-            if((data.contador * 1 > 0)){
-                aux_mensaje = "Precio menor al valor en tabla: " + data.aprobobs;
-            }
-            if((data.aprobstatus == "7")){
-                aux_mensaje = "Acuerdo Tecnico Rechazado: " + data.aprobobs;
-            }
-            for (let i = 0; i < 3; i++) {
-                $('td', row).eq(i).html(
-                    "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='" + aux_mensaje + "'>"+
-                        $('td', row).eq(i).html()+
-                    "</a>"
-                );                    
-            }
             /*
             $('td', row).eq(0).html(
                 "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='Precio menor al valor en tabla'>"+
@@ -81,8 +73,29 @@ $(document).ready(function () {
                 "</a>"
             );
             */
+            aux_title = 'Precio menor al valor en tabla';
+            colorinfo = 'text-aqua';
+            aux_text =
+				"<a class='btn-sm tooltipsC' title='" + aux_title + "'>" +
+					"<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
+				"</a>";
+            $('td', row).eq(3).html($('td', row).eq(3).html() + aux_text);
             //$('td', row).parent().prop("title","Precio menor al valor en tabla")
         }
+        //console.log(data.aprobstatus);
+        if(data.aprobstatus != null){
+
+            aux_title = data.aprobobs;
+            colorinfo = 'text-red';
+            aux_text =
+				"<a class='btn-sm tooltipsC' title='" + aux_title + "'>" +
+					"<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
+				"</a>";
+            $('td', row).eq(3).html($('td', row).eq(3).html() + aux_text);
+
+        }
+        $('td', row).eq(8).attr('style','padding-top: 0px;padding-bottom: 0px;');
+
     }
     });
 });
@@ -109,7 +122,7 @@ $(document).on("click", ".btnEnviarNV", function(event){
 	};
 	var ruta = '/cotizacion/aprobarcotvend/'+id;
 	swal({
-		title: '¿ Está seguro que desea hacer nota de venta ?',
+		title: '¿ Enviar a nota de venta ?',
 		text: "Esta acción no se puede deshacer!",
 		icon: 'warning',
 		buttons: {
@@ -135,7 +148,7 @@ function aprobarcotvend(i,id,aprobstatus){
 	};
 	var ruta = '/cotizacion/aprobarcotvend/'+i;
 	swal({
-		title: '¿ Está seguro que desea hacer nota de venta ?',
+		title: '¿ Enviar a nota de venta ?',
 		text: "Esta acción no se puede deshacer!",
 		icon: 'warning',
 		buttons: {

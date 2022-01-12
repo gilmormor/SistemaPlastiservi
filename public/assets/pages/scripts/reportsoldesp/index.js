@@ -235,7 +235,7 @@ function genlistaOD(id){ //Generar listado Ordenes de Despacho asociados a una s
 
 function consultarOD(data){
     $.ajax({
-        url: '/reportorddesp/reporte',
+        url: '/reportorddesp/reporteanterior',
         type: 'POST',
         data: data,
         success: function (datos) {

@@ -42,6 +42,7 @@ class DespachoOrdController extends Controller
     public function index()
     {
         can('listar-orden-despacho');
+        /*
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
         $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
         $datas = DespachoOrd::orderBy('id')
@@ -51,9 +52,15 @@ class DespachoOrdController extends Controller
                 ->whereNotIn('notaventa_id', $notaventacerradaArray)
                 ->get();
         return view('despachoord.index', compact('datas'));
+        */
+        return view('despachoord.index');
     }
 
-    
+    public function despachoordpage(){
+        $datas = consultaindex();
+        return datatables($datas)->toJson();
+    }
+
 
     public function indexguia()
     {
@@ -225,7 +232,7 @@ class DespachoOrdController extends Controller
                             ->where("updated_at",">",session('aux_fecinicreOD'))
                             ->get();
             if(count($despachoordrec) > 0){
-                return redirect('despachoord/index')->with([
+                return redirect('despachoord')->with([
                     'mensaje'=>'Registro no fue creado. Motivo: Fue actualizado un Rechazo.',
                     'tipo_alert' => 'alert-error'
                 ]);
@@ -235,7 +242,7 @@ class DespachoOrdController extends Controller
 
                 $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
                 if(count($clibloq) > 0){
-                    return redirect('despachoord/index')->with([
+                    return redirect('despachoord')->with([
                         'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
                         'tipo_alert' => 'alert-error'
                     ]);
@@ -273,19 +280,19 @@ class DespachoOrdController extends Controller
                             }
                         }
                     }
-                    return redirect('despachoord/index')->with([
+                    return redirect('despachoord')->with([
                         'mensaje'=>'Registro creado con exito.',
                         'tipo_alert' => 'alert-success'
                     ]);
                 }else{
-                    return redirect('despachoord/index')->with([
+                    return redirect('despachoord')->with([
                         'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
                         'tipo_alert' => 'alert-error'
                     ]);
                 }
             }
         }else{
-            return redirect('despachoord/index')->with([
+            return redirect('despachoord')->with([
                 'mensaje'=>'Registro no fue creado. La nota de venta fue Cerrada. Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at)),
                 'tipo_alert' => 'alert-error'
             ]);
@@ -424,7 +431,7 @@ class DespachoOrdController extends Controller
             $despachoord = DespachoOrd::findOrFail($id);
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachoord->notaventa->cliente_id)->get();
             if(count($clibloq) > 0){
-                return redirect('despachoord/index')->with([
+                return redirect('despachoord')->with([
                     'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
                     'tipo_alert' => 'alert-error'
                 ]);
@@ -467,18 +474,18 @@ class DespachoOrdController extends Controller
                         }
                     }
                 }
-                return redirect('despachoord/index')->with([
+                return redirect('despachoord')->with([
                                                             'mensaje'=>'Registro actualizado con exito.',
                                                             'tipo_alert' => 'alert-success'
                                                         ]);
             }else{
-                return redirect('despachoord/index')->with([
+                return redirect('despachoord')->with([
                     'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachoord->updated_at,
                                                             'tipo_alert' => 'alert-error'
                                                         ]);
             }
         }else{
-            return redirect('despachoord/index')->with([
+            return redirect('despachoord')->with([
                 'mensaje'=>'Registro no fue Modificado. La nota de venta fue Cerrada. Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at)),
                 'tipo_alert' => 'alert-error'
             ]);
@@ -507,12 +514,28 @@ class DespachoOrdController extends Controller
                 $despachoordanul->despachoord_id = $request->id;
                 $despachoordanul->usuario_id = auth()->id();
                 if ($despachoordanul->save()) {
-                    return response()->json(['mensaje' => 'ok']);
+                    //return response()->json(['mensaje' => 'ok']);
+                    return response()->json([
+                        'error'=>'1',
+                        'mensaje'=>'Registro anulado con exito.',
+                        'tipo_alert' => 'success'
+                    ]);
                 } else {
-                    return response()->json(['mensaje' => 'ng']);
+                    //return response()->json(['mensaje' => 'ng']);
+                    return response()->json([
+                        'error'=>'0',
+                        'mensaje'=>'Registro No fue anulado. Error al intentar modificar el registro.',
+                        'tipo_alert' => 'error'
+                    ]);
                 }
             }else{
-                return response()->json(['mensaje' => 'guidesp_factura']);
+                //return response()->json(['mensaje' => 'guidesp_factura']);
+                return response()->json([
+                    'error'=>'0',
+                    'mensaje'=>'Registro no fue anulado. Ya tiene asignado Guia despacho o Factura',
+                    'tipo_alert' => 'error'
+                ]);
+
             }
         } else {
             abort(404);
@@ -738,12 +761,62 @@ class DespachoOrdController extends Controller
                     $tipounion = $despachoorddet->notaventadetalle->producto->tipounion;
                     $cantsoldesp = $despachoorddet->despachosoldet->cantsoldesp;
                     $peso = $despachoorddet->notaventadetalle->peso;
+                    $tablaOrdTrab= "";
+                    $aux_botonMostrar = "";
+                    if(count($despachoorddet->despachoordrecdets) > 0){
+                        //dd($despachoorddet->despachoordrecdets);
+                        $tablaOrdTrab .= "
+                            <table class='table display AllDataTables table-hover table-condensed' data-page-length='10'>
+                            <thead>
+                                <tr>
+                                    <th style='text-align:right' class='btn-accion-tabla btn-sm tooltipsC' title='Id Rechazo'>ID</th>
+                                    <th style='text-align:right' class='btn-accion-tabla btn-sm tooltipsC' title='Cant Rechazada'>Cant</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                            $aux_saldoentregado = $despachoorddet->cantdesp;
+                            foreach ($despachoorddet->despachoordrecdets as $despachoordrecdet){
+                                //dd($despachoordrecdet->cantrec);
+                                $tablaOrdTrab .= "
+                                    <tr>
+                                        <td>
+                                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Rechazo OD' onclick='genpdfODRec($despachoordrecdet->id,1)'>
+                                                $despachoordrecdet->id
+                                            </a>
+                                        </td>
+                                        <td style='text-align:right'>$despachoordrecdet->cantrec</td>
+                                    </tr>";
+                                $aux_saldoentregado -= $despachoordrecdet->cantrec;
+                            }
+                            $tablaOrdTrab .= "
+                            </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th style='text-align:right'></th>
+                                        <th style='text-align:right' class='btn-accion-tabla btn-sm tooltipsC' title='Entregado' >". number_format($aux_saldoentregado, 0, ",", ".") ."</th>
+                                    </tr>
+                                </tfoot>        
+                            </table>";
+                            $aux_botonMostrar = "
+                                <a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazo' onclick='mostrarH($i,\"botonD\",\"divTabOT\")'>
+                                    <i name='botonD$i' id='botonD$i' class='fa fa-fw fa-caret-down'></i>
+                                </a>";
+                    }
+//                    $tablaOrdTrab= "";
                     $respuesta['tabla'] .= "
-                    <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC' onclick='genpdfOD($despachoorddet->despachoord_id,1)'>
-                        <td id='id$i' name='id$i'>$despachoorddet->despachoord_id</td>
+                    <tr id='fila$i' name='fila$i'>
+                        <td id='id$i' name='id$i'>
+                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoorddet->despachoord_id,1)'>
+                                $despachoorddet->despachoord_id
+                            </a>                            
+                        </td>
                         <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($despachoorddet->created_at)) . "</td>
                         <td style='text-align:right'>". number_format($cantsoldesp, 0, ",", ".") ."</td>
-                        <td style='text-align:right'>". number_format($despachoorddet->cantdesp, 0, ",", ".") ."</td>
+                        <td style='text-align:right'>" . $aux_botonMostrar . number_format($despachoorddet->cantdesp, 0, ",", ".") .
+                            "<div id='divTabOT$i' style='display:none;'>
+                                    $tablaOrdTrab
+                            </div>
+                        </td>
                         <td class='textcenter'>$unidades</td>
 						<td class='textleft'>$nombreproduc</td>
                         <td class='textleft'>$diametro</td>
@@ -753,8 +826,9 @@ class DespachoOrdController extends Controller
                         <td class='textcenter'>$peso</td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->guiadespacho ." </td>
                         <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
-                        <td class='textcenter'>" . $despachoorddet->despachoord->numfactura . "</td>
+                        <td class='textcenter'>" . $despachoorddet->despachoord->numfactura . "</td>    
                     </tr>";
+
                     $respuesta['exito'] = true;
                     $aux_totalcantsoldesp += $cantsoldesp;
                     $aux_totalcantdesp += $despachoorddet->cantdesp;
@@ -790,6 +864,21 @@ class DespachoOrdController extends Controller
             }
         }
     }
+
+    public function totalizarindex(){
+        $respuesta = array();
+        $datas = consultaindex();
+        $aux_totalkg = 0;
+        //$aux_totaldinero = 0;
+        foreach ($datas as $data) {
+            $aux_totalkg += $data->aux_totalkg;
+            //$aux_totaldinero += $data->subtotal;
+        }
+        $respuesta['aux_totalkg'] = $aux_totalkg;
+        //$respuesta['aux_totaldinero'] = $aux_totaldinero;
+        return $respuesta;
+    }
+
 }
 
 
@@ -946,4 +1035,40 @@ function consulta($request){
     $datas = DB::select($sql);
     //dd($datas);
     return $datas;
+}
+
+
+function consultaindex(){
+
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+
+    $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
+    cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
+    '' as notaventaxk,comuna.nombre as comuna_nombre,
+    tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
+    SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg
+    FROM despachoord INNER JOIN notaventa
+    ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
+    INNER JOIN cliente
+    ON cliente.id = notaventa.cliente_id AND isnull(cliente.deleted_at)
+    INNER JOIN comuna
+    ON comuna.id = despachoord.comunaentrega_id AND isnull(comuna.deleted_at)
+    INNER JOIN despachoorddet
+    ON despachoorddet.despachoord_id = despachoord.id AND ISNULL(despachoorddet.deleted_at)
+    INNER JOIN notaventadetalle
+    ON notaventadetalle.id = despachoorddet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
+    INNER JOIN tipoentrega
+    ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
+    LEFT JOIN clientebloqueado
+    ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+    WHERE ISNULL(despachoord.aprguiadesp)
+    AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+    AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+    AND notaventa.sucursal_id in ($sucurcadena)
+    GROUP BY despachoorddet.despachoord_id;";
+
+    return DB::select($sql);
+
 }
