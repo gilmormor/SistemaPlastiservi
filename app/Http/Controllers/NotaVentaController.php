@@ -410,8 +410,9 @@ class NotaVentaController extends Controller
             $data->oc_file = $foto;
             $data->save();
         }
+        //$notaventaid = 1;
         //SI ESTA VACIO EL NUMERO DE COTIZACION SE CREA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DEL LADO DEL CLIENTE
-        //SI NO ESTA VACIO EL NUMERO DE COTIZACION LLENO EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DETALLE COTIZACION
+        //SI NO ESTA VACIO EL NUMERO DE COTIZACION SE LLENA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DETALLE COTIZACION
         if(empty($request->cotizacion_id)){
             $cont_producto = count($request->producto_id);
             if($cont_producto>0){
@@ -454,18 +455,18 @@ class NotaVentaController extends Controller
             $cotizaciondetalles = $cotizacion->cotizaciondetalles;
             //dd($cotizaciondetalles);
             foreach ($cotizaciondetalles as $cotizaciondetalle) {
+                //dd($cotizaciondetalle);
                 $array_det = $cotizaciondetalle->attributesToArray();
                 $array_det["notaventa_id"] = $notaventaid;
                 $array_det["cotizaciondetalle_id"] = $array_det["id"];
-                unset($array_det["usuariodel_id"],$array_det["deleted_at"],$array_det["created_at"],$array_det["updated_at"]);
+                unset($array_det["id"],$array_det["usuariodel_id"],$array_det["deleted_at"],$array_det["created_at"],$array_det["updated_at"]);
+                //dd($array_det);
+                $notaventadetalle = NotaVentaDetalle::create($array_det);
                 if($array_det["acuerdotecnicotemp_id"]){
-                    
                 }
-                
-                dd($array_det);
 
             }
-            dd($cotizaciondetalle);
+            //dd($cotizaciondetalle);
         }
 
         return redirect('notaventa')->with([
