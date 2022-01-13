@@ -229,14 +229,7 @@ function reporte1($request){
                 <th>Peso</th>
                 <th>TU</th>
                 <th style='text-align:right'>Cant</th>
-                <!--
-                <th style='text-align:right'>Kilos</th>
-                -->
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
-                <!--
-                <th style='text-align:right' class='tooltipsC' title='Kilos Despachados'>Kilos<br>Desp</th>
-                <th style='text-align:right' class='tooltipsC' title='Cantidad Solicitada'>Solid</th>
-                -->
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>
                 <th style='text-align:right' class='tooltipsC' title='Kilos Pendiente'>Kilos<br>Pend</th>
                 <th style='text-align:right' class='tooltipsC' title='Precio por Kilo'>Precio<br>Kilo</th>
@@ -343,18 +336,18 @@ function reporte1($request){
             <tfoot>
                 <tr>
                     <th colspan='13' style='text-align:right'>TOTALES</th>
-                    <th style='text-align:right'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalcantpend, 0, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalkilospend, 2, ",", ".") ."</th>
+                    <th style='text-align:right' class='tooltipsC' title='Cantidad'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
+                    <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
+                    <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>". number_format($aux_totalcantpend, 0, ",", ".") ."</th>
+                    <th style='text-align:right' class='tooltipsC' title='Kg Pendientes'>". number_format($aux_totalkilospend, 2, ",", ".") ."</th>
                     <th style='text-align:right'></th>
-                    <th style='text-align:right'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total $'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
                 </tr>
                 <tr>
                     <th colspan='13' style='text-align:right'>PROMEDIO</th>
                     <th colspan='4' style='text-align:right'></th>
-                    <th style='text-align:right'>". number_format($aux_promprecioxkilo, 2, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalkilospend * $aux_promprecioxkilo, 2, ",", ".") ."</th>
+                    <th style='text-align:right' class='tooltipsC' title='Precio Kg Promedio'>". number_format($aux_promprecioxkilo, 2, ",", ".") ."</th>
+                    <th style='text-align:right' class='tooltipsC' title='Total $ (Precio promedio)'>". number_format($aux_totalkilospend * $aux_promprecioxkilo, 2, ",", ".") ."</th>
                 </tr>
             </tfoot>
 
