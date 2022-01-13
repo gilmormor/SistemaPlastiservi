@@ -8,6 +8,7 @@ class AcuerdoTecnico extends Model
 {
     protected $table = "acuerdotecnico";
     protected $fillable = [
+        'producto_id',
         'at_desc',
         'at_entmuestra',
         'at_color_id',
@@ -64,7 +65,8 @@ class AcuerdoTecnico extends Model
         'at_etiqotro',
         'at_etiqotroobs',
         'at_certificados',
-        'at_otrocertificado'
+        'at_otrocertificado',
+        'usuariodel_id'
     ];
 
     //RELACION DE UNO A MUCHOS PRODUCTO

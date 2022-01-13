@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\Notificacion;
 use App\Http\Requests\ValidarCotizacion;
 use App\Http\Requests\ValidarNotaVenta;
+use App\Models\AcuerdoTecnico;
 use App\Models\CategoriaProd;
 use App\Models\Certificado;
 use App\Models\Cliente;
@@ -394,6 +395,16 @@ class NotaVentaController extends Controller
     {
         //dd($request);
         can('guardar-notaventa');
+        if(!empty($request->cotizacion_id)){
+            $cotizacion = Cotizacion::findOrFail($request->cotizacion_id);
+            if(empty($cotizacion->aprobstatus) or strpos("136",(string)$cotizacion->aprobstatus) === false){
+                //SI POR ALGUNA RAZON CAMBIAN EL VALOR DE $cotizacion->aprobstatus EN EL MOMENTO QUE SE ESTAR CREANDO LA NOTA DE VENTA
+                return redirect('notaventa')->with([
+                    'mensaje'=>'Nota de venta no fue guardada, ya que cambio el estatus de aprobación de la Cotización',
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
         $dateInput = explode('/',$request->plazoentrega);
@@ -449,24 +460,31 @@ class NotaVentaController extends Controller
                 }
             }
         }else{
-            //dd('Lleno');
-            $cotizaciondetalle = CotizacionDetalle::where("cotizacion_id","=",$request->cotizacion_id)->get();
             $cotizacion = Cotizacion::findOrFail($request->cotizacion_id);
             $cotizaciondetalles = $cotizacion->cotizaciondetalles;
-            //dd($cotizaciondetalles);
             foreach ($cotizaciondetalles as $cotizaciondetalle) {
-                //dd($cotizaciondetalle);
-                $array_det = $cotizaciondetalle->attributesToArray();
-                $array_det["notaventa_id"] = $notaventaid;
-                $array_det["cotizaciondetalle_id"] = $array_det["id"];
-                unset($array_det["id"],$array_det["usuariodel_id"],$array_det["deleted_at"],$array_det["created_at"],$array_det["updated_at"]);
-                //dd($array_det);
-                $notaventadetalle = NotaVentaDetalle::create($array_det);
-                if($array_det["acuerdotecnicotemp_id"]){
+                //dd($cotizaciondetalle->acuerdotecnicotemp);
+                $array_cotizaciondetalle = $cotizaciondetalle->attributesToArray();
+                $array_cotizaciondetalle["notaventa_id"] = $notaventaid;
+                $array_cotizaciondetalle["cotizaciondetalle_id"] = $array_cotizaciondetalle["id"];
+                unset($array_cotizaciondetalle["id"],$array_cotizaciondetalle["usuariodel_id"],$array_cotizaciondetalle["deleted_at"],$array_cotizaciondetalle["created_at"],$array_cotizaciondetalle["updated_at"]);
+                //dd($array_cotizaciondetalle);
+                if($cotizaciondetalle->acuerdotecnicotemp){
+                    //dd($cotizaciondetalle->acuerdotecnicotemp->attributesToArray());
+                    $array_acuerdotecnicotemp = $cotizaciondetalle->acuerdotecnicotemp->attributesToArray();
+                    $producto = Producto::findOrFail($cotizaciondetalle->producto_id);
+                    $array_producto = $producto->attributesToArray();
+                    $array_producto["nombre"] = $array_acuerdotecnicotemp["at_desc"];
+                    $array_producto["descripcion"] = $array_acuerdotecnicotemp["at_desc"];
+                    $array_producto["precioneto"] = $cotizaciondetalle->precioxkilo;
+                    $array_producto["tipoprod"] = 0;
+                    $productonew = Producto::create($array_producto);
+                    $array_acuerdotecnicotemp["producto_id"] = $productonew->id;
+                    $acuerdotecnico = AcuerdoTecnico::create($array_acuerdotecnicotemp);
+                    $array_cotizaciondetalle["producto_id"] = $productonew->id;
                 }
-
-            }
-            //dd($cotizaciondetalle);
+                $notaventadetalle = NotaVentaDetalle::create($array_cotizaciondetalle);
+            }    
         }
 
         return redirect('notaventa')->with([
