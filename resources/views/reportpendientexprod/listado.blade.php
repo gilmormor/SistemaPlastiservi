@@ -63,6 +63,8 @@
 						-->
 						<th style='text-align:right' class='width40'>Cant<br>Pend</th>		
 						<th style='text-align:right' class='width50'>Kilos<br>Pend</th>
+						<th style='text-align:right' class='width50'>Precio<br>Kg</th>
+						<th style='text-align:right' class='width50'>$</th>
 						<th class='width30'></th>
 						<th class='width30'></th>
 						<th class='width30'></th>
@@ -77,6 +79,9 @@
 				        $aux_totalkilosdesp = 0;
 						$aux_totalcantpend = 0;
 						$aux_totalkilospend = 0;
+						$aux_totalplata = 0;
+						$aux_totalprecio = 0;
+						$i = 0;
 					?>
 					@foreach($datas as $data)
 						<?php
@@ -112,7 +117,7 @@
 							$producto = Producto::findOrFail($data->producto_id);
 							$aux_razonsocial = ucwords(strtolower($data->razonsocial));
 							$aux_razonsocial = ucwords($aux_razonsocial,".");
-
+							$aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
 						?>
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td>{{$data->notaventa_id}}</td>
@@ -129,20 +134,11 @@
 							<td>{{$data->peso}}</td>
 							<td>{{$data->tipounion}}</td>
 							<td style='text-align:right'>{{number_format($data->cant, 0, ",", ".")}}</td>
-							<!--
-							<td style='text-align:right'>{{number_format($data->totalkilos, 2, ",", ".")}}</td>
-							-->
 							<td style='text-align:right'>{{number_format($sumacantdesp, 0, ",", ".")}}</td>
-							<!--
-							<td style='text-align:right'>{{number_format($sumacantdesp * $data->peso, 2, ",", ".")}}</td>
-							-->
-							<!--
-							<td style='text-align:right'>{{$sumacantsoldesp}}</td>
-							-->
 							<td style='text-align:right'>{{number_format($aux_cantsaldo, 0, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($aux_cantsaldo * $data->peso, 2, ",", ".")}}</td>
-							<td></td>
-							<td></td>
+							<td style='text-align:right'>{{number_format($data->precioxkilo, 2, ",", ".")}}</td>
+							<td style='text-align:right'>&nbsp;{{number_format($aux_subtotalplata, 2, ",", ".")}}</td>
 							<td></td>
 						</tr>
 						<?php
@@ -153,27 +149,32 @@
 							//$aux_totalcantsol += $sumacantsoldesp;
 							$aux_totalcantpend += $aux_cantsaldo;
 							$aux_totalkilospend += ($aux_cantsaldo * $data->peso);
+							$aux_totalplata += $aux_subtotalplata;
+							$aux_totalprecio += $data->precioxkilo;
+							$i++;
 						?>
 					@endforeach
+					<?php
+						$aux_promprecioxkilo = $aux_totalprecio/$i;
+					?>
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr>
 						<th colspan='13' style='text-align:right'>TOTALES</th>
 						<th style='text-align:right'>{{number_format($aux_totalcant, 0, ",", ".")}}</th>
-						<!--
-						<th style='text-align:right'>{{number_format($aux_totalkilos, 2, ",", ".")}}</th>
-						-->
 						<th style='text-align:right'>{{number_format($aux_totalcantdesp, 0, ",", ".")}}</th>
-						<!--
-						<th style='text-align:right'>{{number_format($aux_totalcantsol, 0, ",", ".")}}</th>
-						<th style='text-align:right'>{{number_format($aux_totalkilosdesp, 2, ",", ".")}}</th>
-						-->
 						<th style='text-align:right'>{{number_format($aux_totalcantpend, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalkilospend, 2, ",", ".")}}</th>
-						<th> </th>
-						<th> </th>
+						<th style='text-align:right'></th>
+						<th style='text-align:right'>&nbsp;{{number_format($aux_totalplata, 2, ",", ".")}}</th>
 						<th> </th>
 					</tr>
+					<tr>
+						<th colspan='13' style='text-align:right'>PROMEDIO</th>
+						<th colspan='4' style='text-align:right'></th>
+						<th style='text-align:right'>{{number_format($aux_promprecioxkilo, 2, ",", ".")}}</th>
+						<th style='text-align:right'>&nbsp;{{number_format($aux_totalkilospend * $aux_promprecioxkilo, 2, ",", ".")}}</th>
+					</tr>	
 				</tfoot>
 					
 		</table>

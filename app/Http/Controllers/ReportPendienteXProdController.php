@@ -239,6 +239,8 @@ function reporte1($request){
                 -->
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>
                 <th style='text-align:right' class='tooltipsC' title='Kilos Pendiente'>Kilos<br>Pend</th>
+                <th style='text-align:right' class='tooltipsC' title='Precio por Kilo'>Precio<br>Kilo</th>
+                <th style='text-align:right' class='tooltipsC' title='Dinero'>$</th>
             </tr>
         </thead>
         <tbody>";
@@ -249,6 +251,9 @@ function reporte1($request){
         $aux_totalkilosdesp = 0;
         $aux_totalcantpend = 0;
         $aux_totalkilospend = 0;
+        $aux_totalplata = 0;
+        $aux_totalprecio = 0;
+        $i = 0;
         foreach ($datas as $data) {
             //SUMA TOTAL DE SOLICITADO
             /*************************/
@@ -290,6 +295,7 @@ function reporte1($request){
             }
             $comuna = Comuna::findOrFail($data->comunaentrega_id);
             $producto = Producto::findOrFail($data->producto_id);
+            $aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
 
             $respuesta['tabla3'] .= "
             <tr>
@@ -310,26 +316,14 @@ function reporte1($request){
                 <td>$data->long</td>
                 <td>$data->peso</td>
                 <td>$data->tipounion</td>
-                <td style='text-align:right'>". number_format($data->cant, 0, ",", ".") ."</td>
-                <!--
-                <td style='text-align:right'>". number_format($data->totalkilos, 2, ",", ".") ."</td>
-                -->
-                <td style='text-align:right'>
+                <td style='text-align:right' data-order='" . $data->cant . "'>". number_format($data->cant, 0, ",", ".") ."</td>
+                <td style='text-align:right' data-order='$sumacantdesp'>
                     $fila_cantdesp
                 </td>
-                <!--
-                <td style='text-align:right'>". number_format($sumacantdesp * $data->peso, 0, ",", ".") ."</td>
-                <td style='text-align:right'>". number_format($sumacantsoldesp, 0, ",", ".") ."</td>
-                -->
-                <td style='text-align:right'>". number_format($aux_cantsaldo, 0, ",", ".") ."</td>
-                <td style='text-align:right'>". number_format($aux_cantsaldo * $data->peso, 2, ",", ".") ."</td>
-                <!--
-                <td>
-                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->notaventa_id,2)'>
-                        <i class='fa fa-fw fa-file-pdf-o'></i>                                    
-                    </a>
-                </td>
-                -->
+                <td style='text-align:right' data-order='" . $aux_cantsaldo . "'>". number_format($aux_cantsaldo, 0, ",", ".") ."</td>
+                <td style='text-align:right' data-order='" . $aux_cantsaldo * $data->peso . "'>". number_format($aux_cantsaldo * $data->peso, 2, ",", ".") ."</td>
+                <td style='text-align:right' data-order='" . $data->precioxkilo . "'>". number_format($data->precioxkilo, 2, ",", ".") ."</td>
+                <td style='text-align:right' data-order='" . $aux_subtotalplata . "'>". number_format($aux_subtotalplata, 2, ",", ".") ."</td>
             </tr>";
             $aux_totalcant += $data->cant;
             $aux_totalcantdesp += $sumacantdesp;
@@ -338,7 +332,11 @@ function reporte1($request){
             $aux_totalkilosdesp += ($sumacantdesp * $data->peso);
             $aux_totalcantpend += $aux_cantsaldo;    
             $aux_totalkilospend += ($aux_cantsaldo * $data->peso);
+            $aux_totalplata += $aux_subtotalplata;
+            $aux_totalprecio += $data->precioxkilo;
+            $i++;
         }
+        $aux_promprecioxkilo = $aux_totalprecio/$i;
 
         $respuesta['tabla3'] .= "
             </tbody>
@@ -346,20 +344,21 @@ function reporte1($request){
                 <tr>
                     <th colspan='13' style='text-align:right'>TOTALES</th>
                     <th style='text-align:right'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
-                    <!--
-                    <th style='text-align:right'>". number_format($aux_totalkilos, 2, ",", ".") ."</th>
-                    -->
                     <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
-                    <!--
-                    <th style='text-align:right'>". number_format($aux_totalkilosdesp, 2, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalcantsol, 0, ",", ".") ."</th>
-                    -->
                     <th style='text-align:right'>". number_format($aux_totalcantpend, 0, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_totalkilospend, 2, ",", ".") ."</th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
+                </tr>
+                <tr>
+                    <th colspan='13' style='text-align:right'>PROMEDIO</th>
+                    <th colspan='4' style='text-align:right'></th>
+                    <th style='text-align:right'>". number_format($aux_promprecioxkilo, 2, ",", ".") ."</th>
+                    <th style='text-align:right'>". number_format($aux_totalkilospend * $aux_promprecioxkilo, 2, ",", ".") ."</th>
                 </tr>
             </tfoot>
 
-            </table>";
+        </table>";
         //dd($respuesta['tabla3']);
         return $respuesta;
     }
@@ -597,7 +596,8 @@ function consulta($request,$aux_sql,$orden){
         producto.diametro,notaventa.oc_id,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
         notaventadetalle.totalkilos,
-        subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega
+        subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
+        notaventadetalle.precioxkilo
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
