@@ -259,7 +259,8 @@ class ProductoController extends Controller
                     'categoriaprod.mostunimed',
                     'unidadmedida.nombre as unidadmedidanombre'
                     ])
-                    ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
+                    ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+                    ->where('producto.deleted_at','=',null);
             //dd($productos);
             //****************** */
             return response()->json($productos->get());

@@ -1203,7 +1203,7 @@ $("#producto_idM").blur(function(){
 					}).then((value) => {
 						if (value) {
 							//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-							$("#rut").focus();
+							$("#producto_idM").focus();
 						}
 					});
 				}
