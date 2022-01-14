@@ -55,7 +55,7 @@ $(document).ready(function () {
 	$("#cantM").numeric();
 	$("#precioM").numeric({decimalPlaces: 2});
 	$(".numerico").numeric();
-	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
+	//$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$(".modal-body label").css("margin-bottom", -2);
@@ -426,10 +426,10 @@ function insertarTabla(){
 				$("#subtotalM").attr("valor")+
 			'</td>'+
 			'<td>' + 
-				'<a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
-				'<a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 

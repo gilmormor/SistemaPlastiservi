@@ -429,18 +429,24 @@
                     <tbody>
                         @if ($aux_sta==2 or $aux_sta==3)
                             <?php $aux_nfila = 0; $i = 0;?>
-                            @foreach($detalles as $detalle)
+                            @foreach($data->notaventadetalles as $detalle)
                                 <?php $aux_nfila++; ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;">
                                         {{$detalle->producto_id}}
                                         @if ($detalle->producto->tipoprod == 1)
-                                            <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
-                                            @if ($detalle->acuerdotecnicotemp == null)
-                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
-                                            @else
+                                            <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
+                                                @if ($detalle->acuerdotecnicotemp == null)
+                                                    <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
+                                                @else
+                                                    <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
+                                                @endif
+                                            </a>
+                                        @endif
+                                        @if ($detalle->producto->acuerdotecnico)
+                                            <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="genpdfAcuTec({{$detalle->producto_id}})">
                                                 <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
-                                            @endif
+                                            </a>
                                         @endif
                                     </td>
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">

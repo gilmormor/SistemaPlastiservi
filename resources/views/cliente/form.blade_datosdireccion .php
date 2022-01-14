@@ -252,10 +252,10 @@
                                     <input type="text" name="observaciones[]" id="observaciones{{$aux_nfila}}" class="form-control" value="{{$clientedirec->observaciones}}" style="display:none;"/>
                                 </td>
                                 <td>
-                                    <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                    <a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
                                         <i class="fa fa-fw fa-pencil"></i>
                                     </a>
-                                    <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
+                                    <a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
                                         <i class="fa fa-fw fa-trash text-danger"></i>
                                     </a>
                                 </td>

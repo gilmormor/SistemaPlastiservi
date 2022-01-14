@@ -96,10 +96,10 @@ class Producto extends Model
                 ->get();
         return $productos;
     }
-    //RELACION INVERSA PARA BUSCAR EL PADRE
+    //RELACION UNO A UNO CON ACUERDOTECNICO
     public function acuerdotecnico()
     {
-        return $this->belongsTo(AcuerdoTecnico::class);
+        return $this->hasOne(AcuerdoTecnico::class);
     }
     
 

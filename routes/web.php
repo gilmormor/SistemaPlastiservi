@@ -157,6 +157,7 @@ Route::post('producto/obtClaseProd', 'ProductoController@obtClaseProd')->name('o
 Route::post('producto/buscarUnProducto', 'ProductoController@buscarUnProducto')->name('buscarUnProducto');
 Route::get('producto/{id}/listar', 'ProductoController@listar')->name('listar_producto');
 Route::post('producto/obtGrupoProd', 'ProductoController@obtGrupoProd')->name('obtGrupoProd');
+Route::get('producto/{id}/acutecexportPdf', 'ProductoController@AcuTecExportPdf')->name('AcuTecExportPdf_producto');
 
 /*RUTAS CLIENTES*/
 Route::get('cliente', 'ClienteController@index')->name('cliente');

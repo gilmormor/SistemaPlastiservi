@@ -515,8 +515,12 @@ class NotaVentaController extends Controller
     {
         can('editar-notaventa');
         $data = NotaVenta::findOrFail($id);
+        /*
+        foreach($data->notaventadetalles as $detalle){
+            dd($detalle->producto->acuerdotecnico);
+        }
+        */
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
-        $detalles = $data->notaventadetalles()->get();
         $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
         //session(['aux_aprocot' => '0']);
@@ -584,7 +588,7 @@ class NotaVentaController extends Controller
         $tablas['sucursales'] = $clientesArray['sucursales'];
         //$tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
 
-        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
+        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }
 
     /**

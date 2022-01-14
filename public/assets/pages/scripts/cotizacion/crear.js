@@ -225,7 +225,7 @@ function insertarTabla(){
 	//alert($("#tipoprodM").attr('valor'));
 	aux_botonAcuTec = '';
 	if($("#tipoprodM").attr('valor') == 1) {
-		aux_botonAcuTec = ' <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
+		aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
 		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>';
 	}
 	//aux_botonAcuTec = $("#tipoprodM").attr('valor') == '1' ? 'x' : '';
@@ -342,10 +342,10 @@ function insertarTabla(){
 				'<input type="text" name="tipoprod[]" id="tipoprod'+ aux_nfila + '" class="form-control" value="' + $("#tipoprodM").attr('valor') + '" style="display:none;"/>'+
 			'</td>'+
 			'<td>' + 
-				'<a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
-				'<a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
 		'</tr>'+

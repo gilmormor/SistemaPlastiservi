@@ -290,7 +290,7 @@
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;">
                                         {{$CotizacionDetalle->producto_id}}
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
-                                            <a href="#" class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
+                                            <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
                                             @if ($CotizacionDetalle->acuerdotecnicotemp == null)
                                                 <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
                                             @else
@@ -409,11 +409,12 @@
                                     </td>
                                     <td>
                                         @if(session('aux_aprocot')=='0')
-                                            <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
-                                            <i class="fa fa-fw fa-pencil"></i>
+                                            <a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                                <i class="fa fa-fw fa-pencil"></i>
                                             </a>
-                                            <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
-                                            <i class="fa fa-fw fa-trash text-danger"></i></a>
+                                            <a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
+                                                <i class="fa fa-fw fa-trash text-danger"></i>
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>
