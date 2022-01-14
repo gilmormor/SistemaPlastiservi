@@ -328,7 +328,8 @@ function reporte1($request){
             $aux_totalprecio += $data->precioxkilo;
             $i++;
         }
-        $aux_promprecioxkilo = $aux_totalprecio/$i;
+        $aux_totalkilospend = round($aux_totalkilospend,2);
+        $aux_promprecioxkilo = round($aux_totalprecio/$i,2);
 
         $respuesta['tabla3'] .= "
             </tbody>
