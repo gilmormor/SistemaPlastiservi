@@ -155,7 +155,8 @@
 						?>
 					@endforeach
 					<?php
-						$aux_promprecioxkilo = $aux_totalprecio/$i;
+						$aux_totalkilospend = round($aux_totalkilospend,2);
+						$aux_promprecioxkilo = round($aux_totalprecio/$i,2);
 					?>
 				</tbody>
 				<tfoot id="detalle_totales">
