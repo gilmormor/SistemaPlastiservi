@@ -121,6 +121,9 @@ class NotaVentaController extends Controller
         //session(['aux_aproNV' => '1']) 1=Pantalla Solo para aprobar Nota de Venta para luego emitir Guia de Despacho
         session(['aux_aproNV' => '0']);
         $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         $sql= 'SELECT COUNT(*) AS contador
         FROM vendedor INNER JOIN persona
         ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
@@ -138,7 +141,7 @@ class NotaVentaController extends Controller
         }
 
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = 'SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
+        $sql = "SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
                     clientebloqueado.descripcion as descripbloqueo,
                     (SELECT COUNT(*) 
                     FROM cotizaciondetalle 
@@ -148,9 +151,10 @@ class NotaVentaController extends Controller
                 on cotizacion.cliente_id = cliente.id
                 LEFT join clientebloqueado
                 on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-                where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3 or aprobstatus=6) and 
+                where $aux_condvendcot and (aprobstatus=1 or aprobstatus=3 or aprobstatus=6) and 
                 cotizacion.id not in (SELECT cotizacion_id from notaventa WHERE !(cotizacion_id is NULL) and (anulada is null))
-                and cotizacion.deleted_at is null;';
+                and cotizacion.deleted_at is null
+                AND cotizacion.sucursal_id in ($sucurcadena);";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $cotizaciones = DB::select($sql);
@@ -166,6 +170,9 @@ class NotaVentaController extends Controller
         //session(['aux_aproNV' => '1']) 1=Pantalla Solo para aprobar Nota de Venta para luego emitir Guia de Despacho
         session(['aux_aproNV' => '0']);
         $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         $sql= 'SELECT COUNT(*) AS contador
         FROM vendedor INNER JOIN persona
         ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
@@ -194,7 +201,8 @@ class NotaVentaController extends Controller
                 and anulada is null
                 and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
                 and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
-                and notaventa.deleted_at is null;";
+                and notaventa.deleted_at is null
+                AND notaventa.sucursal_id in ($sucurcadena);";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);  
@@ -296,7 +304,8 @@ class NotaVentaController extends Controller
         $data = Cotizacion::findOrFail($id);
         //dd($data);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
-        $detalles = $data->cotizaciondetalles()->get();
+        //$detalles = $data->cotizaciondetalles()->get();
+        $detalles = $data->cotizaciondetalles;
         /*$detalles = $data->cotizaciondetalles()
                     ->whereColumn('cotizaciondetalle.cantusada', '<', 'cotizaciondetalle.cant')
                     ->get();*/
@@ -381,7 +390,7 @@ class NotaVentaController extends Controller
         session(['editaracutec' => '0']);
 
         //dd($aux_aproNV);
-        return view('notaventa.crear', compact('data','clienteselec','clientedirecs','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas'));
+        return view('notaventa.crear', compact('data','detalles','clienteselec','clientedirecs','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas'));
     }
 
     /**
@@ -520,6 +529,8 @@ class NotaVentaController extends Controller
             dd($detalle->producto->acuerdotecnico);
         }
         */
+        //$detalles = $data->notaventadetalles()->get();
+        $detalles = $data->notaventadetalles;
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
@@ -587,8 +598,7 @@ class NotaVentaController extends Controller
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $tablas['sucursales'] = $clientesArray['sucursales'];
         //$tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
-
-        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
+        return view('notaventa.editar', compact('data','detalles','clienteselec','clientes','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }
 
     /**

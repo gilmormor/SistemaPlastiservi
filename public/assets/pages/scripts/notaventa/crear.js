@@ -1027,6 +1027,7 @@ $('#form-general').submit(function(event) {
 	$("#plazoentrega").prop('disabled', false);
 	$("#lugarentrega").prop('disabled', false);
 	$("#tipoentrega_id").prop('disabled', false);
+
     //Rest of code
 })
 
@@ -1069,4 +1070,43 @@ $("#botonNewProd").click(function(event)
 		$("#direccionM").focus();	
 	}
 	*/
+});
+
+$(".form-horizontal").on("submit", function(event){
+	var aux_nfila = $("#tabla-data tbody tr").length - 3;
+	//aux_nfila++;
+	aux_banacutec = 0;
+	for (i = 1; i <= aux_nfila; i++) {
+		if($("#tipoprod" + i).val() == 1){
+			aux_banacutec = 1;
+		}
+	}
+	if(aux_banacutec == 1){
+		event.preventDefault();
+		swal({
+			title: 'Se Crearán productos de Acuerdo Tecnico.',
+			text: "Desea Continuar S/N?",
+			icon: 'warning',
+			buttons: {
+				si: {
+					text: "Si",
+					value: "Si",
+				},	
+				no: {
+					text: "No",
+					value: "No",
+				},
+			},
+		}).then((value) => {
+			switch (value) {			 
+				case "Si":
+					//event.preventDefault();
+					event.target.submit();
+					break;
+				default:
+				  //swal("Got away safely!");
+			}
+	
+		});
+	}
 });

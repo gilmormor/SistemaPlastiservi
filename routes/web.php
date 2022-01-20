@@ -766,8 +766,18 @@ Route::get('reportmovsoldesp', 'ReportMovSolDespController@index')->name('report
 Route::post('reportmovsoldesp/reporte', 'ReportMovSolDespController@reporte')->name('reportmovsoldesp_reporte');
 Route::get('reportmovsoldesp/exportPdf', 'ReportMovSolDespController@exportPdf')->name('reportmovsoldesp_exportPdf');
 
-
 /*RUTAS APROBAR ACUERDO TECNICO COTIZACION */
 Route::get('cotizacionaprobaracutec', 'CotizacionAprobarAcuTecController@index')->name('cotizacionaprobaracutec');
 Route::get('cotizacionaprobaracutecpage', 'CotizacionAprobarAcuTecController@cotizacionaprobaracutecpage')->name('cotizacionaprobaracutecpage');
 Route::get('cotizacionaprobaracutec/{id}/editar', 'CotizacionAprobarAcuTecController@editar')->name('editar_cotizacionaprobaracutec');
+
+/*RUTAS GUIA DESPACHO*/
+Route::get('guiadespacho', 'GuiaDespachoController@index')->name('guiadespacho');
+Route::get('guiadespachopage', 'GuiaDespachoController@guiadespachopage')->name('guiadespachopage');
+Route::get('guiadespacho/totalizarindex', 'GuiaDespachoController@totalizarindex')->name('guiadespacho_totalizarindex');
+
+/*RUTAS LISTAR ORDEN DESPACHO*/
+Route::get('listarorddesp', 'ListarorddespController@index')->name('listarorddesp');
+Route::get('listarorddesppage', 'ListarorddespController@listarorddesppage')->name('listarorddesppage');
+Route::get('listarorddesp/totalizarindex', 'ListarorddespController@totalizarindex')->name('listarorddesp_totalizarindex');
+Route::post('listarorddesp/guardarguiadesp', 'ListarorddespController@guardarguiadesp')->name('guardarguiadesp_listarorddesp');

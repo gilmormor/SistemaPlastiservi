@@ -21,6 +21,10 @@ class CotizacionAprobarAcuTecController extends Controller
     }
 
     public function cotizacionaprobaracutecpage(){
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         session(['aux_aprocot' => '5']);
         $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
@@ -30,7 +34,8 @@ class CotizacionAprobarAcuTecController extends Controller
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
                 where aprobstatus=5
-                and cotizacion.deleted_at is null;";
+                and cotizacion.deleted_at is null
+                AND cotizacion.sucursal_id in ($sucurcadena);";
         //where usuario_id='.auth()->id();
         $datas = DB::select($sql);
         return datatables($datas)->toJson();  

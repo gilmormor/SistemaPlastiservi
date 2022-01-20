@@ -429,7 +429,7 @@
                     <tbody>
                         @if ($aux_sta==2 or $aux_sta==3)
                             <?php $aux_nfila = 0; $i = 0;?>
-                            @foreach($data->notaventadetalles as $detalle)
+                            @foreach($detalles as $detalle)
                                 <?php $aux_nfila++; ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;">
