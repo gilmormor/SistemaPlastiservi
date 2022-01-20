@@ -2427,7 +2427,7 @@ function consultaODcerrada($request){
     $datas = DB::select($sql);
     $respuesta['totales'] = $datas;
     //dd($respuesta['totales']);
-
+/*
     $sql = "SELECT producto.id as producto_id,categoriaprod.nombre,claseprod.cla_nombre,
     producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
@@ -2466,6 +2466,47 @@ function consultaODcerrada($request){
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
     and isnull(despachoorddet.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    GROUP BY producto.id;";
+*/
+    $sql = "SELECT producto.id as producto_id,categoriaprod.nombre,claseprod.cla_nombre,
+    producto.long,producto.diametro,
+    producto.tipounion,notaventadetalle.peso,color.nombre as color,
+    categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,
+    grupoprod.id as gru_id,grupoprod.gru_nombre,
+    sum(vista_despachoorddet.cantdesp) AS cant,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * vista_despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM vista_despachoorddet INNER JOIN notaventadetalle 
+    ON vista_despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    INNER JOIN despachoord
+    ON vista_despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at) 
+    INNER JOIN claseprod
+    ON producto.claseprod_id=claseprod.id and isnull(claseprod.deleted_at) 
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
+    LEFT JOIN color
+    ON producto.color_id=color.id and isnull(color.deleted_at)
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    LEFT JOIN categoriagrupovalmes
+    ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condFecha
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condareaproduccion_id
+    and $aux_condstatusact_id
+    and isnull(notaventa.anulada)
+    and isnull(vista_despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY producto.id;";
 
