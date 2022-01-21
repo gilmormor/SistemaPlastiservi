@@ -2509,7 +2509,41 @@ function consultaODcerrada($request){
     and isnull(vista_despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY producto.id;";
-
+/*
+    CONSULTA DE LOS RECHAZOS, LA VOY A DEJAR AQUI PARA INCLUIRLA DESPUES EN LA CONSULTA 20/01/2022
+    $sql = "SELECT producto.id as producto_id,categoriaprod.nombre,claseprod.cla_nombre,
+    producto.long,producto.diametro,
+    producto.tipounion,notaventadetalle.peso,color.nombre as color,
+    categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,
+    grupoprod.id as gru_id,grupoprod.gru_nombre,
+    SUM(despachoordrecdet.cantrec) AS cant,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoordrecdet.cantrec) AS totalkilos,
+    sum((notaventadetalle.preciounit * despachoordrecdet.cantrec)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * despachoordrecdet.cantrec))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM despachoordrec inner join despachoordrecdet
+    ON despachoordrec.id=despachoordrecdet.despachoordrec_id and isnull(despachoordrec.deleted_at)  and isnull(despachoordrecdet.deleted_at) 
+    INNER JOIN despachoorddet
+    ON despachoordrecdet.despachoorddet_id=despachoorddet.id and isnull(despachoorddet.deleted_at) 
+    INNER JOIN notaventadetalle
+    on despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at)
+    INNER JOIN claseprod
+    ON producto.claseprod_id=claseprod.id and isnull(claseprod.deleted_at) 
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
+    LEFT JOIN color
+    ON producto.color_id=color.id and isnull(color.deleted_at)
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    LEFT JOIN categoriagrupovalmes
+    ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
+    group BY notaventadetalle.producto_id;";
+*/
     //dd($sql);
     $datas = DB::select($sql);
     $respuesta['agruxproducto'] = $datas;
