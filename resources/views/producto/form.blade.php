@@ -260,3 +260,45 @@
         </div>
     </div>
 </div>
+
+<div class="col-md-6">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Bodegas</h3>
+        </div>
+        <table class="table table-striped table-bordered table-hover" id="dataTables">
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th>Stock Min</th>
+                    <th>Stock Max</th>
+                    <th>Ubicación</th>
+                    <th>Stock</th>
+                    <th></th>
+                    <th style="display: none">id</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                @if ($aux_sta==2)
+                    <?php $aux_nfila = 0; ?>
+                    @foreach ($invstocks as $invstock)
+                        <?php $aux_nfila++; ?>
+                        <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
+                            <td><input type="text" name="bod_desc[]" id="bod_desc{{$aux_nfila}}" class="form-control" value="{{$invstock->bod_desc}}"/></td>
+                            <td><input type="text" name="stockmin[]" id="stockmin{{$aux_nfila}}" class="form-control camponumerico" value="{{$invstock->stockmin}}"/></td>
+                            <td><input type="text" name="stockmax[]" id="stockmax{{$aux_nfila}}" class="form-control camponumerico" value="{{$invstock->stockmax}}"/></td>
+                            <td><input type="text" name="stockubi[]" id="stockubi{{$aux_nfila}}" class="form-control" value="{{$invstock->stockubi}}"/></td>
+                            <td><input type="text" name="stock[]" id="stock{{$aux_nfila}}" class="form-control camponumerico" value="{{$invstock->stock}}"/></td>
+                            <td> 
+                                <a onclick="agregarEliminar('{{$aux_nfila}}')" class="btn-accion-tabla" title="Eliminar" data-original-title="Eliminar" id="agregar_reg{{$aux_nfila}}" name="agregar_reg{{$aux_nfila}}" valor="fa-plus">
+                                    <i class="fa fa-fw fa-minus"></i>
+                                </a>
+                            </td>
+                            <td style="display: none"><input type="text" name="stock_id[]" id="stock_id{{$aux_nfila}}" class="form-control camponumerico" value="{{$invstock->stock_id}}"/></td>
+                        </tr>
+                    @endforeach            
+                @endif
+            </tbody>
+        </table>
+    </div>
+</div>

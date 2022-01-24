@@ -126,6 +126,8 @@ class ProductoController extends Controller
         $data = Producto::findOrFail($id);
         //$categoriaprods = CategoriaProd::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
+        $invstocks = $data->invstocks()->select(['id as stock_id','stockmin','stockmax','stock','stockubi'])->get();
+
         /*
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
@@ -150,7 +152,7 @@ class ProductoController extends Controller
         //dd($claseprods);
         $colores = Color::orderBy('id')->get();
         $aux_sta=2;
-        return view('producto.editar', compact('data','categoriaprods','claseprods','grupoprods','colores','aux_sta'));
+        return view('producto.editar', compact('data','categoriaprods','claseprods','grupoprods','colores','aux_sta','invstocks'));
     }
 
     /**

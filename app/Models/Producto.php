@@ -64,6 +64,18 @@ class Producto extends Model
         return $this->belongsTo(Color::class);
     }
 
+    //RELACION UNO A MUCHOS InvStocks
+    public function invstocks()
+    {
+        return $this->hasMany(InvStock::class);
+    }
+    
+    //RELACION UNO A MUCHOS InvmovDet
+    public function invmovdets()
+    {
+        return $this->hasMany(InvMovDet::class);
+    }
+
     public static function productosxUsuario(){
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();

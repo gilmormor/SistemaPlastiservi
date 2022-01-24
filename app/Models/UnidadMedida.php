@@ -48,4 +48,10 @@ class UnidadMedida extends Model
         return $this->hasMany(EstadisticaVentaGI::class);
     }
 
+    //RELACION UNO A MUCHOS InvmovDet
+    public function invmovdets()
+    {
+        return $this->hasMany(InvMovDet::class);
+    }
+
 }
