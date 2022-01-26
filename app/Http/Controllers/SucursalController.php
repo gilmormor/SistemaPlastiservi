@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarSucursal;
 use App\Models\Area;
+use App\Models\CategoriaProd;
 use App\Models\Comuna;
 use App\Models\Provincia;
 use App\Models\Region;
+use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
 
@@ -141,4 +143,19 @@ class SucursalController extends Controller
             return response()->json($comunasArray);
         }
     }
+
+    public function obtsucursales(Request $request){
+        $categoriaprod = CategoriaProd::findOrFail($request->categoriaprod_id);
+        dd($categoriaprod->sucursales);
+        $array_excluirid = json_decode($request->array_excluirid);
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $datas = Sucursal::whereIn('sucursal.id', $sucurArray)
+                    ->whereNotIn('sucursal.id', $array_excluirid)
+                    ->get();
+
+        //$datas = CategoriaProd::catxUsuCostoAnnoMes($request);
+        return $datas; //response()->json($data)
+    }
+
 }

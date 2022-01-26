@@ -103,6 +103,8 @@ Route::put('sucursal/{id}', 'SucursalController@actualizar')->name('actualizar_s
 Route::delete('sucursal/{id}', 'SucursalController@eliminar')->name('eliminar_sucursal');
 Route::post('sucursal/obtProvincias', 'SucursalController@obtProvincias')->name('obtProvincias');
 Route::post('sucursal/obtComunas', 'SucursalController@obtComunas')->name('obtComunas');
+Route::post('sucursal/obtsucursales', 'SucursalController@obtsucursales')->name('obtsucursales');
+
 
 /*RUTAS EMPRESA*/
 Route::get('empresa', 'EmpresaController@index')->name('empresa');
@@ -756,3 +758,12 @@ Route::get('reportorddesprec/totalizarRep', 'ReportOrdDespRecController@totaliza
 Route::get('reportmovsoldesp', 'ReportMovSolDespController@index')->name('reportmovsoldesp');
 Route::post('reportmovsoldesp/reporte', 'ReportMovSolDespController@reporte')->name('reportmovsoldesp_reporte');
 Route::get('reportmovsoldesp/exportPdf', 'ReportMovSolDespController@exportPdf')->name('reportmovsoldesp_exportPdf');
+
+/*RUTAS INVBODEGA*/
+Route::get('invbodega', 'InvBodegaController@index')->name('invbodega');
+Route::get('invbodegapage', 'InvBodegaController@invbodegapage')->name('invbodegapage');
+Route::get('invbodega/crear', 'InvBodegaController@crear')->name('crear_invbodega');
+Route::post('invbodega', 'InvBodegaController@guardar')->name('guardar_invbodega');
+Route::get('invbodega/{id}/editar', 'InvBodegaController@editar')->name('editar_invbodega');
+Route::put('invbodega/{id}', 'InvBodegaController@actualizar')->name('actualizar_invbodega');
+Route::delete('invbodega/{id}', 'InvBodegaController@eliminar')->name('eliminar_invbodega');

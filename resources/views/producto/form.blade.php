@@ -289,7 +289,7 @@
                             <td><input type="text" name="stockmax[]" id="stockmax{{$aux_nfila}}" class="form-control camponumerico" value="{{$invstock->stockmax}}"/></td>
                             <td><input type="text" name="stockubi[]" id="stockubi{{$aux_nfila}}" class="form-control" value="{{$invstock->stockubi}}"/></td>
                             <td><input type="text" name="stock[]" id="stock{{$aux_nfila}}" class="form-control camponumerico" value="{{$invstock->stock}}"/></td>
-                            <td> 
+                            <td style="vertical-align:middle;"> 
                                 <a onclick="agregarEliminar('{{$aux_nfila}}')" class="btn-accion-tabla" title="Eliminar" data-original-title="Eliminar" id="agregar_reg{{$aux_nfila}}" name="agregar_reg{{$aux_nfila}}" valor="fa-plus">
                                     <i class="fa fa-fw fa-minus"></i>
                                 </a>

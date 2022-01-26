@@ -130,7 +130,7 @@ function agregarFila(fila) {
         '<td>' + 
             '<input type="text" name="cla_longitud[]" id="cla_longitud'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
         '</td>'+
-        '<td>' + 
+        '<td style="vertical-align:middle;">' + 
             '<a onclick="agregarEliminar('+ aux_nfila +')" class="btn-accion-tabla" title="Agregar" data-original-title="Agregar" id="agregar_reg'+ aux_nfila + '" name="agregar_reg'+ aux_nfila + '" valor="fa-plus">'+
                 '<i class="fa fa-fw fa-plus"></i>'+
             '</a>'+
@@ -158,7 +158,7 @@ function agregarFilaG(fila) {
         '<td>' +
             '<input type="text" name="gru_descripcion[]" id="gru_descripcion'+ aux_nfila + '" class="form-control" value=""/>'+
         '</td>'+
-        '<td>' + 
+        '<td style="vertical-align:middle;">' + 
             '<a onclick="agregarEliminarG('+ aux_nfila +')" class="btn-accion-tabla" title="Agregar" data-original-title="Agregar" id="agregar_regG'+ aux_nfila + '" name="agregar_regG'+ aux_nfila + '" valor="fa-plus">'+
                 '<i class="fa fa-fw fa-plus"></i>'+
             '</a>'+

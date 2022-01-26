@@ -11,6 +11,7 @@ $(document).ready(function () {
     $(".numerico").numeric();
 
     aux_nfilas=parseInt($("#dataTables >tbody >tr").length);
+    //alert(aux_nfilas);
     agregarFila(aux_nfilas);
 
     
@@ -67,40 +68,88 @@ function calcular_precio(){
 }
 
 function agregarFila(fila) {
-    aux_num=parseInt($("#ids").val());
+    aux_num=fila; //parseInt($("#ids").val());
     //alert(aux_num);
     aux_num=aux_num+1;
     aux_nfila=aux_num;
     $("#ids").val(aux_nfila);
 
-    var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
-        '<td>'+ 
-            '<input type="text" name="bod_desc[]" id="bod_desc'+ aux_nfila + '" class="form-control" value=""/>'+
-        '</td>'+
-        '<td>' +
-            '<input type="text" name="stockmin[]" id="stockmin'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
-        '</td>'+
-        '<td>' + 
-            '<input type="text" name="stockmax[]" id="stockmax'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
-        '</td>'+
-        '<td>' + 
-            '<input type="text" name="stockubi[]" id="stockubi'+ aux_nfila + '" class="form-control" value=""/>'+
-        '</td>'+
-        '<td>' + 
-            '<input type="text" name="stock[]" id="stock'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
-        '</td>'+
-        '<td>' + 
-            '<a onclick="agregarEliminar('+ aux_nfila +')" class="btn-accion-tabla" title="Agregar" data-original-title="Agregar" id="agregar_reg'+ aux_nfila + '" name="agregar_reg'+ aux_nfila + '" valor="fa-plus">'+
-                '<i class="fa fa-fw fa-plus"></i>'+
-            '</a>'+
-        '</td>'+
-        '<td style="display: none">' +
-            '<input type="text" name="stock_id[]" id="stock_id'+ aux_nfila + '" class="form-control" value="0"/>'+
-        '</td>'+
-    '</tr>';
-    $('#dataTables tbody').append(htmlTags);
-    $("#bod_desc"+ aux_nfila).focus();
-    $(".camponumerico").numeric();
+//    '<input type="text" name="bod_desc[]" id="bod_desc'+ aux_nfila + '" class="form-control" value=""/>'+
+/*
+    var lsSelects = $('#dataTables').find('select[name="sucursal_id"]');
+    var lsContienenValor = [];
+    
+    $.each(lsSelects, function(index, item){
+        if($(item).val() != "0"){
+            lsContienenValor.push(item);
+        }
+    });
+    console.log(lsContienenValor);
+    */
+    var lsContienenValor = [];
+    $("#dataTables tr .selectsucursal").each(function() {
+        var seleccion= $(this).children("option:selected").val();
+        if(seleccion){
+            lsContienenValor.push(seleccion);
+        }
+	});
+    
+    var data = {
+        array_excluirid: JSON.stringify(lsContienenValor),
+        categoriaprod_id : $("#categoriaprod_id").children("option:selected").val(),
+        _token: $('input[name=_token]').val()
+    };
+    aux_option= "";
+    $.ajax({
+        url: '/sucursal/obtsucursales',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            console.log(respuesta);
+            for (i = 0; i < respuesta.length; i++) {
+                /*
+                $("#sucursal_id" + aux_nfila).append($("<option>", {
+                    value: respuesta[i].id,
+                    text: respuesta[i].nombre
+                }));
+                */
+                aux_option = aux_option + '<option value="' + respuesta[i]['id'] + '">'+ respuesta[i]['nombre'] + '</option>';
+            }
+            console.log(aux_option);
+            
+            var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
+                '<td>'+ 
+                    '<select name="sucursal_id[]" id="sucursal_id'+ aux_nfila + '" class="form-control selectpicker selectsucursal" title="Seleccione.." data-live-search="true" required>'+
+                    aux_option +
+                    '</select>'+
+                '</td>'+
+                '<td>' +
+                    '<input type="text" name="stockmin[]" id="stockmin'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
+                '</td>'+
+                '<td>' + 
+                    '<input type="text" name="stockmax[]" id="stockmax'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
+                '</td>'+
+                '<td>' + 
+                    '<input type="text" name="stockubi[]" id="stockubi'+ aux_nfila + '" class="form-control" value=""/>'+
+                '</td>'+
+                '<td>' + 
+                    '<input type="text" name="stock[]" id="stock'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
+                '</td>'+
+                '<td style="vertical-align:middle;">' + 
+                    '<a onclick="agregarEliminar('+ aux_nfila +')" class="btn-accion-tabla" title="Agregar" data-original-title="Agregar" id="agregar_reg'+ aux_nfila + '" name="agregar_reg'+ aux_nfila + '" valor="fa-plus">'+
+                        '<i class="fa fa-fw fa-plus"></i>'+
+                    '</a>'+
+                '</td>'+
+                '<td style="display: none">' +
+                    '<input type="text" name="stock_id[]" id="stock_id'+ aux_nfila + '" class="form-control" value="0"/>'+
+                '</td>'+
+            '</tr>';
+            $('#dataTables tbody').append(htmlTags);
+            $("#bod_desc"+ aux_nfila).focus();
+            $(".camponumerico").numeric();
+            $(".selectpicker").selectpicker('refresh');
+        }
+    });
 }
 
 function agregarEliminar(fila){
@@ -120,6 +169,31 @@ function agregarEliminar(fila){
         $("#agregar_reg"+fila).children('i').addClass("fa-minus");
         $("#agregar_reg"+fila).attr("data-original-title", "Eliminar");
         $("#agregar_reg"+fila).attr("title", "Eliminar");
+        $("#sucursal_id"+fila).attr('disabled',true);
         agregarFila(fila)
     }
 }
+
+$('#annomes').on('change', function () {
+    var data = {
+        annomes: annomes($('#annomes').val()),
+        categoriaprod_id: $("#categoriaprod_idH").val(),
+        _token: $('input[name=_token]').val()
+    };
+    $("#categoriaprod_id").empty();
+    $("#categoriaprod_id").append("<option value=''>Seleccione...</option>");
+    $.ajax({
+        url: '/categoriagrupovalmesfilcat',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            for (i = 0; i < respuesta.length; i++) {
+                //alert(i);
+                $("#categoriaprod_id").append($("<option>", {
+                    value: respuesta[i].id,
+                    text: respuesta[i].nombre
+                  }));
+            }
+        }
+    });
+});

@@ -163,7 +163,7 @@
                             <td><input type="text" name="cla_nombre[]" id="cla_nombre{{$aux_nfila}}" class="form-control" value="{{$claseprod->cla_nombre}}"/></td>
                             <td><input type="text" name="cla_descripcion[]" id="cla_descripcion{{$aux_nfila}}" class="form-control" value="{{$claseprod->cla_descripcion}}"/></td>
                             <td><input type="text" name="cla_longitud[]" id="cla_longitud{{$aux_nfila}}" class="form-control camponumerico" value="{{$claseprod->cla_longitud}}"/></td>
-                            <td> 
+                            <td style="vertical-align:middle;"> 
                                 <a onclick="agregarEliminar('{{$aux_nfila}}')" class="btn-accion-tabla" title="Eliminar" data-original-title="Eliminar" id="agregar_reg{{$aux_nfila}}" name="agregar_reg{{$aux_nfila}}" valor="fa-plus">
                                     <i class="fa fa-fw fa-minus"></i>
                                 </a>
@@ -199,7 +199,7 @@
                         <tr name="filaG{{$aux_nfila}}" id="filaG{{$aux_nfila}}">
                             <td><input type="text" name="gru_nombre[]" id="cla_nombre{{$aux_nfila}}" class="form-control" value="{{$grupoprod->gru_nombre}}"/></td>
                             <td><input type="text" name="gru_descripcion[]" id="gru_descripcion{{$aux_nfila}}" class="form-control" value="{{$grupoprod->gru_descripcion}}"/></td>
-                            <td> 
+                            <td style="vertical-align:middle;"> 
                                 <a onclick="agregarEliminarG('{{$aux_nfila}}')" class="btn-accion-tabla" title="Eliminar" data-original-title="Eliminar" id="agregar_regG{{$aux_nfila}}" name="agregar_regG{{$aux_nfila}}" valor="fa-plus">
                                     <i class="fa fa-fw fa-minus"></i>
                                 </a>
