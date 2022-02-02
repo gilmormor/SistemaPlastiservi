@@ -180,9 +180,11 @@ function ajaxRequest(data,url,funcion) {
 
 function consultar(data){
     $("#graficos").hide();
+    $("#graficos2").hide();
     $("#grafbarra1").hide();
     $("#graficosMC1").hide();
     $("#graficosAP1").hide();
+    
    
     $.ajax({
         url: '/indicadores/reportecomercial',
@@ -190,6 +192,14 @@ function consultar(data){
         data: data,
         success: function (datos) {
             //console.log(datos['tabla']);
+            $("#titulo_grafico").html('');
+            $("#titulo_grafico2").html('');
+            $("#tablaconsulta").html('');
+            $("#tablaconsultaproducto").html('');
+            $("#tablaAP").html('');
+            $("#tablaMC").html('');
+            $("#tablaventasmesap").html('');
+            $("#tablaventaPVC").html('');
             if(datos['tabla'].length>0){
                 aux_titulo = $("#consulta_id option:selected").html();
                 $("#titulo_grafico").html('Indicadores ' +aux_titulo+ ' por Vendedor');

@@ -295,9 +295,9 @@ Productos Notas de Venta
                         </div>
                         <!-- /.box -->
                     </div>                
-                </div>
-                <div class="col-lg-12 text-center">
-                    <button type='button' id='btnpdf3' name='btnpdf3' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(3)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    <div class="col-lg-12 text-center">
+                        <button type='button' id='btnpdf3' name='btnpdf3' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(3)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                    </div>
                 </div>
             </div>
             <div class="tab-pane" id="tab_4">
