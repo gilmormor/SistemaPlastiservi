@@ -281,7 +281,10 @@ class IndicadoresController extends Controller
             $i = 0;
             foreach($respuesta['totaldinero'] as &$subtotaldinero){
                 $subtotaldinero = round($subtotaldinero,2);
-                $subtotaldinero1 = round(($subtotaldinero / $totalgeneralDinero) * 100,2);
+                $subtotaldinero1 = 0;
+                if($totalgeneralDinero > 0){
+                    $subtotaldinero1 = round(($subtotaldinero / $totalgeneralDinero) * 100,2);
+                }
                 $respuesta['nombredinero'][$i] .= " " . number_format($subtotaldinero1, 2, ",", ".") . "%";
                 $i++;
             }
@@ -620,7 +623,10 @@ class IndicadoresController extends Controller
             $i = 0;
             foreach($respuesta['totalkilos'] as &$kilos){
                 $kilos = round($kilos,2);
-                $kilos1 = round(($kilos / $totalgeneralfilakg) * 100,2);
+                $kilos1 = 0;
+                if($totalgeneralfilakg > 0){
+                    $kilos1 = round(($kilos / $totalgeneralfilakg) * 100,2);
+                }
                 $respuesta['nombre'][$i] .= " " . number_format($kilos1, 2, ",", ".") . "%";
                 $i++;
             }
@@ -629,7 +635,10 @@ class IndicadoresController extends Controller
             $i = 0;
             foreach($respuesta['totaldinero'] as &$subtotaldinero){
                 $subtotaldinero = round($subtotaldinero,2);
-                $subtotaldinero1 = round(($subtotaldinero / $totalgeneralDinero) * 100,2);
+                $subtotaldinero1 = 0;
+                if($totalgeneralDinero > 0){
+                    $subtotaldinero1 = round(($subtotaldinero / $totalgeneralDinero) * 100,2);
+                }
                 $respuesta['nombredinero'][$i] .= " " . number_format($subtotaldinero1, 2, ",", ".") . "%";
                 $i++;
             }
@@ -749,8 +758,8 @@ class IndicadoresController extends Controller
             $aux_totalkgfacacum = 0;
             $aux_totalmonto = 0;
             foreach($datas['areaproduccion'] as $areaproduccion){
+                $aux_promkilo = 0;
                 if($areaproduccion->totalkilos > 0){
-                    $aux_promkilo = 0;
                     if($areaproduccion->totalkilos>0){
                         $aux_promkilo = $areaproduccion->subtotal/$areaproduccion->totalkilos;
                     }
@@ -912,7 +921,10 @@ class IndicadoresController extends Controller
                         $aux_valor = "0";
                         foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
                             if(($ventasxmes->annomes == $ventasareaprodxmes->annomes) and ($areaproduccion->id == $ventasareaprodxmes->areaproduccion_id) ){
-                                $aux_valor = number_format(round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0), 0, ",", ".");
+                                $aux_valor = 0;
+                                if($ventasareaprodxmes->totalkilos > 0){
+                                    $aux_valor = number_format(round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0), 0, ",", ".");
+                                }
                                 break;
                             }
                         }    
@@ -951,7 +963,11 @@ class IndicadoresController extends Controller
                         foreach($datas['ventasareaprodxmes'] as $ventasareaprodxmes){
                             if($ventasxmes->annomes == $ventasareaprodxmes->annomes and $areaproduccion->id == $ventasareaprodxmes->areaproduccion_id ){
                                 $array_vectorTemp[$i] = round($ventasareaprodxmes->totalkilos,0);
-                                $array_vectorTemp[] = round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0);
+                                if($ventasareaprodxmes->totalkilos > 0){
+                                    $array_vectorTemp[] = round($ventasareaprodxmes->subtotal / $ventasareaprodxmes->totalkilos,0);
+                                }else{
+                                    $array_vectorTemp[] = 0;
+                                }
                                 break;
                             }
                         }
@@ -1148,7 +1164,10 @@ class IndicadoresController extends Controller
             $i = 0;
             foreach($respuesta['totaldinero'] as &$subtotaldinero){
                 $subtotaldinero = round($subtotaldinero,2);
-                $subtotaldinero1 = round(($subtotaldinero / $totalgeneralDinero) * 100,2);
+                $subtotaldinero1 = 0;
+                if($totalgeneralDinero > 0){
+                    $subtotaldinero1 = round(($subtotaldinero / $totalgeneralDinero) * 100,2);
+                }
                 $respuesta['nombredinero'][$i] .= " " . number_format($subtotaldinero1, 2, ",", ".") . "%";
                 $i++;
             }

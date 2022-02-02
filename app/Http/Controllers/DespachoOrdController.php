@@ -879,6 +879,25 @@ class DespachoOrdController extends Controller
         return $respuesta;
     }
 
+    public function listarsoldesp() //Listar solicitudes de despacho
+    {
+        can('listar-orden-despacho');
+        $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes'];
+        $vendedor_id = $clientesArray['vendedor_id'];
+        $sucurArray = $clientesArray['sucurArray'];
+
+        $giros = Giro::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $fechaAct = date("d/m/Y");
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+
+        return view('despachoord.listardespachosol', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
+    }
+
+
 }
 
 
