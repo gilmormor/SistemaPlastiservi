@@ -10,12 +10,9 @@ class InvStock extends Model
     use SoftDeletes;
     protected $table = "invstock";
     protected $fillable = [
-        'stockmin',
-        'stockmax',
-        'stock',
-        'stockubi',
         'producto_id',
         'invbodega_id',
+        'stock',
         'usuariodel_id'
     ];
 

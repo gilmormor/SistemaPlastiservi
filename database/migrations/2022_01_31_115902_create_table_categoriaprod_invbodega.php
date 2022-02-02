@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableInvstock extends Migration
+class CreateTableCategoriaprodInvbodega extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,14 @@ class CreateTableInvstock extends Migration
      */
     public function up()
     {
-        Schema::create('invstock', function (Blueprint $table) {
+        Schema::create('categoriaprod_invbodega', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('producto_id');
-            $table->foreign('producto_id','fk_invstock_producto')->references('id')->on('producto')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('categoriaprod_id');
+            $table->foreign('categoriaprod_id','fk_categoriaprod_invbodega_categoriaprod')->references('id')->on('categoriaprod')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('invbodega_id');
-            $table->foreign('invbodega_id','fk_invstock_invbodega')->references('id')->on('invbodega')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('invbodega_id','fk_categoriaprod_invbodega_invbodega')->references('id')->on('invbodega')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
-            $table->float('stock',10,2)->comment('Stock');
             $table->softDeletes();
             $table->timestamps();
             $table->charset = 'utf8mb4';
@@ -36,6 +35,6 @@ class CreateTableInvstock extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('invstock');
+        Schema::dropIfExists('categoriaprod_invbodega');
     }
 }

@@ -126,7 +126,7 @@ class ProductoController extends Controller
         $data = Producto::findOrFail($id);
         //$categoriaprods = CategoriaProd::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
-        $invstocks = $data->invstocks()->select(['id as stock_id','stockmin','stockmax','stock','stockubi'])->get();
+        $invstocks = $data->invstocks()->select(['id as stock_id','stock'])->get();
 
         /*
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
@@ -165,9 +165,35 @@ class ProductoController extends Controller
     public function actualizar(Request $request, $id)
     {
         can('guardar-producto');
-        //dd($request);
+        dd($request);
         $Producto = Producto::findOrFail($id);
         $Producto->update($request->all());
+
+        $auxcla=ClaseProd::where('producto_id',$id)->whereNotIn('id', $request->invstock_id)->pluck('id')->toArray(); //->destroy();
+        for ($i=0; $i < count($auxcla) ; $i++){
+            ClaseProd::destroy($auxcla[$i]);
+        }
+        for ($i=0; $i < count($request->cla_nombre) ; $i++){
+            if(is_null($request->cla_nombre[$i])==false && is_null($request->cla_descripcion[$i])==false && is_null($request->cla_longitud[$i])==false)
+            {
+                $array_claseprod[$i] = array(
+                    'id' => $request->cla_id[$i],
+                    'categoriaprod_id' => $id,
+                    'cla_nombre' => $request->cla_nombre[$i],
+                    'cla_descripcion' => $request->cla_descripcion[$i],
+                    'cla_longitud' => $request->cla_longitud[$i]
+                );
+                DB::table('claseprod')->updateOrInsert(
+                    ['id' => $request->cla_id[$i], 'categoriaprod_id' => $id],
+                    [
+                        'cla_nombre' => $request->cla_nombre[$i],
+                        'cla_descripcion' => $request->cla_descripcion[$i],
+                        'cla_longitud' => $request->cla_longitud[$i]
+                    ]
+                );    
+            }
+        }
+
         return redirect('producto')->with('mensaje','Producto actualizado con exito');
     }
 

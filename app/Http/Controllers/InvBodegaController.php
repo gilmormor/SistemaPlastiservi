@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarInvBodega;
+use App\Models\CategoriaProd;
+use App\Models\CategoriaProdSuc;
 use App\Models\InvBodega;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
@@ -53,7 +55,10 @@ class InvBodegaController extends Controller
         $sucursales = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
-        return view('invbodega.crear',compact('sucursales'));
+        $categoriaprodsucs = CategoriaProdSuc::where('sucursal_id','=','1')
+                            ->get();
+        $categoriaprodsucs = CategoriaProd::categoriasxUsuario("-1");
+        return view('invbodega.crear',compact('sucursales','categoriaprodsucs'));
     }
 
     /**
@@ -65,8 +70,8 @@ class InvBodegaController extends Controller
     public function guardar(ValidarInvBodega $request)
     {
         can('guardar-invbodega');
-        //dd($request);
-        InvBodega::create($request->all());
+        $invbodega = InvBodega::create($request->all());
+        $invbodega->categoriaprods()->sync($request->categoriaprod_id);
         return redirect('invbodega')->with('mensaje','Bodega creado con exito.');
     }
 
@@ -96,7 +101,13 @@ class InvBodegaController extends Controller
         $sucursales = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
-        return view('invbodega.editar', compact('data','sucursales'));
+        $categoriaprodsucs = CategoriaProdSuc::where('sucursal_id','=',$data->sucursal_id)
+                        ->get();
+        $categoriaprodsucs = CategoriaProd::categoriasxUsuario($data->sucursal_id);
+        //dd($categoriaprods[0]->categoriaprod->nombre);
+        //dd($data->categoriaprods);
+        //dd($data->categoriaprods->firstWhere('id', $categoriaprodsucs[0]->categoriaprod->id));
+        return view('invbodega.editar', compact('data','sucursales','categoriaprodsucs'));
     }
 
     /**
@@ -108,7 +119,9 @@ class InvBodegaController extends Controller
      */
     public function actualizar(ValidarInvBodega $request, $id)
     {
-        InvBodega::findOrFail($id)->update($request->all());
+        $invbodega = InvBodega::findOrFail($id);
+        $invbodega->update($request->all());
+        $invbodega->categoriaprods()->sync($request->categoriaprod_id);
         return redirect('invbodega')->with('mensaje','Bodega actualizada con exito');
 
     }
@@ -122,5 +135,28 @@ class InvBodegaController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function obtbodegasxsucursal(Request $request){
+        $categoriaprod = CategoriaProd::findOrFail($request->categoriaprod_id);
+        $categoriaprodsucurArray=$categoriaprod->sucursales->pluck('id')->toArray();
+
+        $array_excluirid = json_decode($request->array_excluirid);
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $datas = InvBodega::join('sucursal', 'invbodega.sucursal_id', '=', 'sucursal.id')
+                            ->whereIn('invbodega.sucursal_id', $sucurArray)
+                            ->whereIn('invbodega.sucursal_id', $categoriaprodsucurArray)
+                            ->whereNotIn('invbodega.id', $array_excluirid)
+                            ->select([
+                                'invbodega.id',
+                                'invbodega.bod_desc',
+                                'invbodega.sucursal_id',
+                                'sucursal.nombre'
+                            ])
+                            ->get();
+        //dd($datas);
+        //$datas = CategoriaProd::catxUsuCostoAnnoMes($request);
+        return $datas; //response()->json($data)
     }
 }

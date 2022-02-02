@@ -19,6 +19,8 @@ class CreateTableInvbodega extends Migration
             $table->string('bod_desc',100)->comment('Descripcion');
             $table->unsignedBigInteger('sucursal_id');
             $table->foreign('sucursal_id','fk_invbodega_sucursal')->references('id')->on('sucursal')->onDelete('restrict')->onUpdate('restrict');
+            $table->tinyInteger('activo')->default(1)->comment('Estatus para saber si la bodega esta activa. Esto es para en algun momento inactivar y no mostrarla al momento de hacer movimientos.');
+            $table->tinyInteger('tipo')->comment('Tipo de bodega. 1=Bodega antes de la orden despacho es decir solo para movimiento interno antes del despacho (Ingresos y egresos del inventario), 2=Bodega de despacho es decir solo es tocado por la guia de despacho');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
             $table->timestamps();

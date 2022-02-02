@@ -144,14 +144,16 @@ class SucursalController extends Controller
         }
     }
 
-    public function obtsucursales(Request $request){
+    public function obtsucursalescategoriaprod(Request $request){
         $categoriaprod = CategoriaProd::findOrFail($request->categoriaprod_id);
-        dd($categoriaprod->sucursales);
+        $sucurcatprodarray=$categoriaprod->sucursales->pluck('id')->toArray();
+        /*
         $array_excluirid = json_decode($request->array_excluirid);
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
-        $datas = Sucursal::whereIn('sucursal.id', $sucurArray)
-                    ->whereNotIn('sucursal.id', $array_excluirid)
+        */
+        $datas = Sucursal::whereIn('sucursal.id', $sucurcatprodarray)
+                    //->whereNotIn('sucursal.id', $array_excluirid)
                     ->get();
 
         //$datas = CategoriaProd::catxUsuCostoAnnoMes($request);

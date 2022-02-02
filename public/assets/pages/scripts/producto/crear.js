@@ -12,7 +12,9 @@ $(document).ready(function () {
 
     aux_nfilas=parseInt($("#dataTables >tbody >tr").length);
     //alert(aux_nfilas);
-    agregarFila(aux_nfilas);
+    if($("#aux_sta").val() == 2){
+        agregarFila(aux_nfilas);
+    }
 
     
 });
@@ -55,7 +57,12 @@ $('.categoriaprod_id').on('change', function () {
             }
         }
     });
-
+    if($("#aux_sta").val() == 1){
+        $("#dataTables > tbody").empty();
+    }else{
+        $("#dataTables").find("tr").last().remove();
+    }
+    agregarFila(aux_nfilas);
 });
 $("#peso").blur(function(){
     calcular_precio();
@@ -76,7 +83,7 @@ function agregarFila(fila) {
 
 //    '<input type="text" name="bod_desc[]" id="bod_desc'+ aux_nfila + '" class="form-control" value=""/>'+
 /*
-    var lsSelects = $('#dataTables').find('select[name="sucursal_id"]');
+    var lsSelects = $('#dataTables').find('select[name="invbodega_id"]');
     var lsContienenValor = [];
     
     $.each(lsSelects, function(index, item){
@@ -87,7 +94,7 @@ function agregarFila(fila) {
     console.log(lsContienenValor);
     */
     var lsContienenValor = [];
-    $("#dataTables tr .selectsucursal").each(function() {
+    $("#dataTables tr .selectbodega_id").each(function() {
         var seleccion= $(this).children("option:selected").val();
         if(seleccion){
             lsContienenValor.push(seleccion);
@@ -101,39 +108,32 @@ function agregarFila(fila) {
     };
     aux_option= "";
     $.ajax({
-        url: '/sucursal/obtsucursales',
+        url: '/invbodega/obtbodegasxsucursal',
         type: 'POST',
         data: data,
         success: function (respuesta) {
             console.log(respuesta);
             for (i = 0; i < respuesta.length; i++) {
                 /*
-                $("#sucursal_id" + aux_nfila).append($("<option>", {
+                $("#invbodega_id" + aux_nfila).append($("<option>", {
                     value: respuesta[i].id,
                     text: respuesta[i].nombre
                 }));
                 */
-                aux_option = aux_option + '<option value="' + respuesta[i]['id'] + '">'+ respuesta[i]['nombre'] + '</option>';
+                aux_option = aux_option + '<option value="' + respuesta[i]['id'] + '">'+ respuesta[i]['nombre'] + "/" + respuesta[i]['bod_desc'] + '</option>';
             }
             console.log(aux_option);
             
             var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
                 '<td>'+ 
-                    '<select name="sucursal_id[]" id="sucursal_id'+ aux_nfila + '" class="form-control selectpicker selectsucursal" title="Seleccione.." data-live-search="true" required>'+
-                    aux_option +
+                    '<input type="text" name="invstock_id[]" id="invstock_id'+ aux_nfila + '" class="form-control" value="" style="display:none"/>' +
+                    '<input type="text" name="invbodega_id[]" id="invbodega_id'+ aux_nfila + '" class="form-control" value="" style="display:none"/>'+
+                    '<select name="invbodega_idtmp[]" id="invbodega_idtmp'+ aux_nfila + '" class="form-control selectpicker selectbodega_id" title="Seleccione..." data-live-search="true" onchange="myFunction('+ aux_nfila +')" required>'+
+                        aux_option +
                     '</select>'+
                 '</td>'+
-                '<td>' +
-                    '<input type="text" name="stockmin[]" id="stockmin'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
-                '</td>'+
                 '<td>' + 
-                    '<input type="text" name="stockmax[]" id="stockmax'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
-                '</td>'+
-                '<td>' + 
-                    '<input type="text" name="stockubi[]" id="stockubi'+ aux_nfila + '" class="form-control" value=""/>'+
-                '</td>'+
-                '<td>' + 
-                    '<input type="text" name="stock[]" id="stock'+ aux_nfila + '" class="form-control camponumerico" value=""/>'+
+                    '<input type="text" name="stock[]" id="stock'+ aux_nfila + '" class="form-control camponumerico" value="0.00" disabled style="text-align:right"/>'+
                 '</td>'+
                 '<td style="vertical-align:middle;">' + 
                     '<a onclick="agregarEliminar('+ aux_nfila +')" class="btn-accion-tabla" title="Agregar" data-original-title="Agregar" id="agregar_reg'+ aux_nfila + '" name="agregar_reg'+ aux_nfila + '" valor="fa-plus">'+
@@ -169,7 +169,7 @@ function agregarEliminar(fila){
         $("#agregar_reg"+fila).children('i').addClass("fa-minus");
         $("#agregar_reg"+fila).attr("data-original-title", "Eliminar");
         $("#agregar_reg"+fila).attr("title", "Eliminar");
-        $("#sucursal_id"+fila).attr('disabled',true);
+        $("#invbodega_idtmp"+fila).attr('disabled',true);
         agregarFila(fila)
     }
 }
@@ -197,3 +197,17 @@ $('#annomes').on('change', function () {
         }
     });
 });
+
+$('.selectbodega_id1').change(function() {
+    alert( "Handler for .change() called." );
+    //alert($(this).val());
+    /*
+	$("#regionp_idCTM").val($('#comunap_idCTM option:selected').attr("region_id"));
+	$("#provinciap_idCTM").val($('#comunap_idCTM option:selected').attr("provincia_id"));
+	$(".selectpicker").selectpicker('refresh');
+    */
+});
+
+function myFunction(i){
+    $("#invbodega_id" + i).val($("#invbodega_idtmp" + i + " option:selected").attr('value'));
+}

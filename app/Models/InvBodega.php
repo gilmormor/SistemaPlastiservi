@@ -11,6 +11,8 @@ class InvBodega extends Model
     protected $table = "invbodega";
     protected $fillable = [
         'bod_desc',
+        'activo',
+        'tipo',
         'sucursal_id',
         'usuariodel_id'
     ];
@@ -27,6 +29,9 @@ class InvBodega extends Model
         return $this->belongsTo(Sucursal::class);
     }
     
-
+    public function categoriaprods()
+    {
+        return $this->belongsToMany(CategoriaProd::class, 'categoriaprod_invbodega','invbodega_id','categoriaprod_id');
+    }
 
 }

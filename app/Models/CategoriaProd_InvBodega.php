@@ -5,11 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CategoriaProdSuc extends Model
+class CategoriaProd_InvBodega extends Model
 {
     use SoftDeletes;
-    protected $table = "categoriaprodsuc";
-    protected $fillable = ['sucursal_id','categoriaprod_id','usuariodel_id'];
+    protected $table = "categoriaprod_invbodega";
+    protected $fillable = [
+        'categoriaprod_id',
+        'invbodega_id',
+        'usuariodel_id'
+    ];
 
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function categoriaprod()
@@ -17,9 +21,8 @@ class CategoriaProdSuc extends Model
         return $this->belongsTo(CategoriaProd::class,'categoriaprod_id');
     }
     //RELACION INVERSA PARA BUSCAR EL PADRE
-    public function sucursal()
+    public function invbodega()
     {
-        return $this->belongsTo(Sucursal::class,'sucursal_id');
+        return $this->belongsTo(InvBodega::class,'invbodega_id');
     }
-
 }

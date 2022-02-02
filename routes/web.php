@@ -103,7 +103,7 @@ Route::put('sucursal/{id}', 'SucursalController@actualizar')->name('actualizar_s
 Route::delete('sucursal/{id}', 'SucursalController@eliminar')->name('eliminar_sucursal');
 Route::post('sucursal/obtProvincias', 'SucursalController@obtProvincias')->name('obtProvincias');
 Route::post('sucursal/obtComunas', 'SucursalController@obtComunas')->name('obtComunas');
-Route::post('sucursal/obtsucursales', 'SucursalController@obtsucursales')->name('obtsucursales');
+Route::post('sucursal/obtsucursalescategoriaprod', 'SucursalController@obtsucursalescategoriaprod')->name('obtsucursalescategoriaprod');
 
 
 /*RUTAS EMPRESA*/
@@ -146,6 +146,9 @@ Route::post('categoriaprod', 'CategoriaProdController@guardar')->name('guardar_c
 Route::get('categoriaprod/{id}/editar', 'CategoriaProdController@editar')->name('editar_categoriaprod');
 Route::put('categoriaprod/{id}', 'CategoriaProdController@actualizar')->name('actualizar_categoriaprod');
 Route::delete('categoriaprod/{id}', 'CategoriaProdController@eliminar')->name('eliminar_categoriaprod');
+Route::post('categoriaprod/categoriaprodArray', 'CategoriaProdController@categoriaprodArray')->name('categoriaprodArray');
+
+
 
 /*RUTAS PRODUCTOS*/
 Route::get('producto', 'ProductoController@index')->name('producto');
@@ -767,3 +770,4 @@ Route::post('invbodega', 'InvBodegaController@guardar')->name('guardar_invbodega
 Route::get('invbodega/{id}/editar', 'InvBodegaController@editar')->name('editar_invbodega');
 Route::put('invbodega/{id}', 'InvBodegaController@actualizar')->name('actualizar_invbodega');
 Route::delete('invbodega/{id}', 'InvBodegaController@eliminar')->name('eliminar_invbodega');
+Route::post('invbodega/obtbodegasxsucursal', 'InvBodegaController@obtbodegasxsucursal')->name('obtbodegasxsucursal');
