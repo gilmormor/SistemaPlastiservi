@@ -157,7 +157,7 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
-                            <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required readonly disabled>
+                            <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required {{(isset($data) ? ($data->vendedor_id == $vendedor_id ? "readonly disabled" : "") : "readonly disabled")  }}>
                                 <option value="">Seleccione...</option>
                                 @foreach($vendedores1 as $vendedor)
                                     <option
