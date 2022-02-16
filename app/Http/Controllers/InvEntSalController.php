@@ -80,12 +80,12 @@ class InvEntSalController extends Controller
         if($cont_producto>0){
             for ($i=0; $i < $cont_producto ; $i++){
                 if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                    $producto = Producto::findOrFail($request->producto_id[$i]);
+                    $invmovtipo = InvMovTipo::findOrFail($request->invmovtipo_idTD[$i]);
                     $inventsaldet = new InvEntSalDet();
                     $inventsaldet->inventsal_id = $inventsal_id;
                     $inventsaldet->producto_id = $request->producto_id[$i];
-                    $inventsaldet->cant = $request->cant[$i];
-                    $inventsaldet->cantkg = $request->totalkilos[$i];
+                    $inventsaldet->cant = $request->cant[$i] * $invmovtipo->tipomov;
+                    $inventsaldet->cantkg = $request->totalkilos[$i] * $invmovtipo->tipomov;
                     $inventsaldet->unidadmedida_id = $request->unidadmedida_id[$i];
                     $inventsaldet->invbodega_id = $request->invbodega_idTD[$i];
                     $inventsaldet->invmovtipo_id = $request->invmovtipo_idTD[$i];
@@ -206,8 +206,12 @@ class InvEntSalController extends Controller
                     if(actualizarStockInv($inventsal,1)){
                         actualizarStockInv($inventsal,2);
                         $inventsal->staaprob = 1;
-                        $inventsal->fechahoraaprob = date("Y-m-d H:i:s");;
+                        $inventsal->fechahoraaprob = date("Y-m-d H:i:s");
                         if ($inventsal->save()) {
+                            $array_inventsal = $inventsal->attributesToArray();
+                            $invmov = InvMov::create($array_inventsal);
+                            $inventsal->invmov_id = $invmov->id;
+                            $inventsal->save();
                             return response()->json(['mensaje' => 'ok']);
                         } else {
                             return response()->json(['mensaje' => 'ng']);
@@ -240,8 +244,8 @@ function actualizarStockInv($inventsal,$status){
         $request["invbodega_id"] = $inventsaldet->invbodega_id;
         $invstock = $invstockcontroller->consexistencia($request);
         $invstock_id = 0;
-        $aux_saldocant = ($inventsaldet->cant * $inventsaldet->invmovtipo->tipomov);
-        $aux_saldocantkg = ($inventsaldet->cantkg * $inventsaldet->invmovtipo->tipomov);
+        $aux_saldocant = $inventsaldet->cant; //($inventsaldet->cant * $inventsaldet->invmovtipo->tipomov);
+        $aux_saldocantkg = $inventsaldet->cantkg; //($inventsaldet->cantkg * $inventsaldet->invmovtipo->tipomov);
         if($invstock['cont']>0){
             $invstock_id = $invstock['invstock']['id'];
             $invstock = InvStock::findOrFail($invstock_id);
@@ -249,7 +253,7 @@ function actualizarStockInv($inventsal,$status){
             $aux_saldocantkg = $invstock->stockkg + $aux_saldocantkg;
         }
         if(($status == 2) and $aux_saldocant>=0){
-            $aux_valor = InvStock::updateOrCreate(
+            $invstockUC = InvStock::updateOrCreate(
                 ['id' => $invstock_id],
                 [
                     'producto_id' => $inventsaldet->producto_id,
@@ -259,9 +263,29 @@ function actualizarStockInv($inventsal,$status){
                 ]
             );
             $annomes = date("Ym");
-            $invstockmes = InvStockMes::where('id','=',$aux_valor->id)
+            //dd("Año: " . $annomes . " ID: " . $invstockUC->id);
+            $invstockmes = InvStockMes::where('invstock_id','=',$invstockUC->id)
                             ->where('annomes','=',$annomes)->get();
-            dd($invstockmes);
+            //dd($invstockmes[0]->stockini);
+            $stockini = $aux_saldocant;
+            $stockkgini = $aux_saldocantkg;
+            $invstockmes_id = 0;
+            if(count($invstockmes) > 0){
+                $invstockmes_id = $invstockmes[0]->id;
+                $stockini = $invstockmes[0]->stockini;
+                $stockkgini = $invstockmes[0]->stockkgini;
+            }
+            $invstockUC = InvStockMes::updateOrCreate(
+                ['id' => $invstockmes_id],
+                [
+                    'invstock_id' => $invstockUC->id,
+                    'annomes' => $annomes,
+                    'stockini' => $stockini,
+                    'stockfin' => $aux_saldocant,
+                    'stockkgini' => $stockkgini,
+                    'stockkgfin' => $aux_saldocantkg
+                ]
+            );
         }
         if($aux_saldocant < 0){
             $aux_ban = false;

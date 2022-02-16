@@ -21,8 +21,8 @@ class CreateTableInvstockmes extends Migration
             $table->char('annomes',6)->comment('Año y mes en formato AAAAMM');
             $table->float('stockini',18,2)->comment('Stock inicial mes. Que debe ser igual al stockfin del mes anterior.');
             $table->float('stockfin',18,2)->comment('Stock final mes, pero tambien seria el stock a la fecha ya que se va ir actualizando con cada movimiento de inv.');
-            $table->float('stockinikg',18,2)->comment('Stock inicial Kg mes. Que debe ser igual al stockfin del mes anterior.');
-            $table->float('stockfinkg',18,2)->comment('Stock final Kg mes, pero tambien seria el stock a la fecha ya que se va ir actualizando con cada movimiento de inv.');
+            $table->float('stockkgini',18,2)->comment('Stock inicial Kg mes. Que debe ser igual al stockfin del mes anterior.');
+            $table->float('stockkgfin',18,2)->comment('Stock final Kg mes, pero tambien seria el stock a la fecha ya que se va ir actualizando con cada movimiento de inv.');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
             $table->timestamps();
