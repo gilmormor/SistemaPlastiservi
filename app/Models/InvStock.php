@@ -13,26 +13,18 @@ class InvStock extends Model
         'producto_id',
         'invbodega_id',
         'stock',
+        'stockkg',
         'usuariodel_id'
     ];
-
-    //RELACION DE UNO A VARIOS InvMovDet
-    public function invmovdets()
-    {
-        return $this->hasMany(InvMovDet::class);
-    }
-
-    //RELACION DE UNO A VARIOS despachoorddetbodega
-    public function despachoorddetbodegas()
-    {
-        return $this->hasMany(DespachoOrdDetBodega::class);
-    }
 
     //RELACION INVERSA Producto
     public function producto()
     {
         return $this->belongsTo(Producto::class);
     }
-    
-    
+    //RELACION INVERSA InvBodega
+    public function invbodega()
+    {
+        return $this->belongsTo(InvBodega::class);
+    }    
 }

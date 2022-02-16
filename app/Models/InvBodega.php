@@ -10,10 +10,12 @@ class InvBodega extends Model
     use SoftDeletes;
     protected $table = "invbodega";
     protected $fillable = [
-        'bod_desc',
+        'nombre',
+        'desc',
         'activo',
         'tipo',
         'sucursal_id',
+        'usuario_id',
         'usuariodel_id'
     ];
 

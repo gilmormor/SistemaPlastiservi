@@ -20,8 +20,9 @@ class CreateTableInvstock extends Migration
             $table->foreign('producto_id','fk_invstock_producto')->references('id')->on('producto')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('invbodega_id');
             $table->foreign('invbodega_id','fk_invstock_invbodega')->references('id')->on('invbodega')->onDelete('restrict')->onUpdate('restrict');
+            $table->float('stock',18,2)->comment('Stock');
+            $table->float('stockkg',18,2)->comment('Stock en kilos');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
-            $table->float('stock',10,2)->comment('Stock');
             $table->softDeletes();
             $table->timestamps();
             $table->charset = 'utf8mb4';

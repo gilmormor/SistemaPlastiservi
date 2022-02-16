@@ -12,7 +12,7 @@ $(document).ready(function () {
         'ajax'        : "invbodegapage",
         'columns'     : [
             {data: 'id'},
-            {data: 'bod_desc'},
+            {data: 'nombre'},
             {data: 'nombre_suc'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : 

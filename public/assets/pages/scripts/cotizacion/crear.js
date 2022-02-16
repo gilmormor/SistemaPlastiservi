@@ -696,75 +696,7 @@ $("#rut").blur(function(){
 		}
 	}
 });
-/*
-$("#producto_idM").blur(function(){
-	codigo = $("#producto_idM").val();
-	//limpiarCampos();
-	aux_sta = $("#aux_sta").val();
-	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
-	{
-		//totalizar();
-		var data = {
-			id: $("#producto_idM").val(),
-			_token: $('input[name=_token]').val()
-		};
-		$.ajax({
-			url: '/producto/buscarUnProducto',
-			type: 'POST',
-			data: data,
-			success: function (respuesta) {
-				if(respuesta.length>0){
 
-					$("#nombreprodM").val(respuesta[0]['nombre']);
-					$("#codintprodM").val(respuesta[0]['codintprod']);
-					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
-					$("#diamextmmM").val(respuesta[0]['diametro']);
-					$("#espesorM").val(respuesta[0]['espesor']);
-					$("#longM").val(respuesta[0]['long']);
-					$("#pesoM").val(respuesta[0]['peso']);
-					$("#tipounionM").val(respuesta[0]['tipounion']);
-
-					$("#precioM").val(respuesta[0]['precio']);
-					$("#precioM").attr('valor',respuesta[0]['precio']);
-					$("#precioxkilorealM").val(respuesta[0]['precio']);
-					//alert('entro');
-					//$("#precioxkilorealM").attr('valor',respuesta[0]['precio']);
-
-					$("#precionetoM").val(respuesta[0]['precioneto']);
-					//$("#precionetoM").attr(respuesta[0]['precioneto']);
-					//alert(respuesta[0]['precio']);
-
-					$("#unidadmedida_idM").val(respuesta[0]['unidadmedidafact_id']);
-					$(".selectpicker").selectpicker('refresh');
-					
-					
-					//$("#cantM").change();
-					$("#cantM").focus();
-
-					validardatoscant();
-			
-					totalizarItem(1);
-				}else{
-					swal({
-						title: 'Producto no existe.',
-						text: "Presione F2 para buscar",
-						icon: 'error',
-						buttons: {
-							confirm: "Aceptar"
-						},
-					}).then((value) => {
-						if (value) {
-							//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-							limpiarInputOT();
-							$("#limpiarInputOT").focus();
-						}
-					});
-				}
-			}
-		});
-	}
-});
-*/
 
 function mensaje(titulo,texto,icono){
 	swal({

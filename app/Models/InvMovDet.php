@@ -8,15 +8,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class InvMovDet extends Model
 {
     use SoftDeletes;
-    protected $table = "invbodega";
+    protected $table = "invmovdet";
     protected $fillable = [
         'invmov_id',
-        'Cantidad',
+        'invstock_id',
+        'Cant',
+        'cantkg',
         'unidadmedida_id',
         'producto_id',
         'invbodega_id',
         'invmovtipo_id',
-        'invstock_id',
         'usuariodel_id'
     ];
 

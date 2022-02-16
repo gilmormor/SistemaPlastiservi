@@ -34,7 +34,8 @@ class InvBodegaController extends Controller
             ->join('sucursal', 'invbodega.sucursal_id', '=', 'sucursal.id')
             ->whereIn('invbodega.sucursal_id', $sucurArray)
             ->select(['invbodega.id',
-                'invbodega.bod_desc',
+                'invbodega.nombre',
+                'invbodega.desc',
                 'invbodega.sucursal_id',
                 'sucursal.nombre as nombre_suc'
                 ])
@@ -70,6 +71,7 @@ class InvBodegaController extends Controller
     public function guardar(ValidarInvBodega $request)
     {
         can('guardar-invbodega');
+        $request->request->add(['usuario_id' => auth()->id()]);
         $invbodega = InvBodega::create($request->all());
         $invbodega->categoriaprods()->sync($request->categoriaprod_id);
         return redirect('invbodega')->with('mensaje','Bodega creado con exito.');
@@ -150,7 +152,8 @@ class InvBodegaController extends Controller
                             ->whereNotIn('invbodega.id', $array_excluirid)
                             ->select([
                                 'invbodega.id',
-                                'invbodega.bod_desc',
+                                'invbodega.nombre',
+                                'invbodega.desc',
                                 'invbodega.sucursal_id',
                                 'sucursal.nombre'
                             ])

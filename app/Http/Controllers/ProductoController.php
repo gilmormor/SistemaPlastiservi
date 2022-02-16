@@ -165,10 +165,10 @@ class ProductoController extends Controller
     public function actualizar(Request $request, $id)
     {
         can('guardar-producto');
-        dd($request);
+        //dd($request);
         $Producto = Producto::findOrFail($id);
         $Producto->update($request->all());
-
+/*
         $auxcla=ClaseProd::where('producto_id',$id)->whereNotIn('id', $request->invstock_id)->pluck('id')->toArray(); //->destroy();
         for ($i=0; $i < count($auxcla) ; $i++){
             ClaseProd::destroy($auxcla[$i]);
@@ -193,7 +193,7 @@ class ProductoController extends Controller
                 );    
             }
         }
-
+*/
         return redirect('producto')->with('mensaje','Producto actualizado con exito');
     }
 
@@ -288,10 +288,25 @@ class ProductoController extends Controller
                     'unidadmedida.nombre as unidadmedidanombre'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                    ->where('producto.deleted_at','=',null);
+                    ->where('producto.deleted_at','=',null)
+                    ->groupBy('producto.id');
             //dd($productos);
             //****************** */
-            return response()->json($productos->get());
+            $array_productos = $productos->get()->toArray();
+            $respuesta = array();
+            if(count($array_productos) > 0){
+                $respuesta = $array_productos[0];
+                $producto = Producto::findOrFail($request->id);
+                $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',1)->toArray();
+            }
+            $respuesta['cont'] = count($array_productos);
+            //$array_productos['array'] = count($array_productos);
+            //dd($respuesta);
+
+            //dd(response()->json($productos->get()));
+
+            return $respuesta;
+            //return response()->json($productos->get());
         }
     }
 

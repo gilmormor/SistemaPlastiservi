@@ -13,7 +13,7 @@ $(document).ready(function () {
     aux_nfilas=parseInt($("#dataTables >tbody >tr").length);
     //alert(aux_nfilas);
     if($("#aux_sta").val() == 2){
-        agregarFila(aux_nfilas);
+        //agregarFila(aux_nfilas);
     }
 
     
@@ -198,15 +198,6 @@ $('#annomes').on('change', function () {
     });
 });
 
-$('.selectbodega_id1').change(function() {
-    alert( "Handler for .change() called." );
-    //alert($(this).val());
-    /*
-	$("#regionp_idCTM").val($('#comunap_idCTM option:selected').attr("region_id"));
-	$("#provinciap_idCTM").val($('#comunap_idCTM option:selected').attr("provincia_id"));
-	$(".selectpicker").selectpicker('refresh');
-    */
-});
 
 function myFunction(i){
     $("#invbodega_id" + i).val($("#invbodega_idtmp" + i + " option:selected").attr('value'));

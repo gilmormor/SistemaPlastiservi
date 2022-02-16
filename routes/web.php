@@ -771,3 +771,25 @@ Route::get('invbodega/{id}/editar', 'InvBodegaController@editar')->name('editar_
 Route::put('invbodega/{id}', 'InvBodegaController@actualizar')->name('actualizar_invbodega');
 Route::delete('invbodega/{id}', 'InvBodegaController@eliminar')->name('eliminar_invbodega');
 Route::post('invbodega/obtbodegasxsucursal', 'InvBodegaController@obtbodegasxsucursal')->name('obtbodegasxsucursal');
+
+/*RUTAS INVENTARIO TIPO MOVIMIENTO*/
+Route::get('invmovtipo', 'InvMovTipoController@index')->name('invmovtipo');
+Route::get('invmovtipopage', 'InvMovTipoController@invmovtipopage')->name('invmovtipopage');
+Route::get('invmovtipo/crear', 'InvMovTipoController@crear')->name('crear_invmovtipo');
+Route::post('invmovtipo', 'InvMovTipoController@guardar')->name('guardar_invmovtipo');
+Route::get('invmovtipo/{id}/editar', 'InvMovTipoController@editar')->name('editar_invmovtipo');
+Route::put('invmovtipo/{id}', 'InvMovTipoController@actualizar')->name('actualizar_invmovtipo');
+Route::delete('invmovtipo/{id}', 'InvMovTipoController@eliminar')->name('eliminar_invmovtipo');
+
+/*RUTAS Entradas y Salidas de Inventario*/
+Route::get('inventsal', 'InvEntSalController@index')->name('inventsal');
+Route::get('inventsalpage', 'InvEntSalController@inventsalpage')->name('inventsalpage');
+Route::get('inventsal/crear', 'InvEntSalController@crear')->name('crear_inventsal');
+Route::post('inventsal', 'InvEntSalController@guardar')->name('guardar_inventsal');
+Route::get('inventsal/{id}/editar', 'InvEntSalController@editar')->name('editar_inventsal');
+Route::put('inventsal/{id}', 'InvEntSalController@actualizar')->name('actualizar_inventsal');
+Route::delete('inventsal/{id}', 'InvEntSalController@eliminar')->name('eliminar_inventsal');
+Route::post('inventsal/aprobinventsal/{id}', 'InvEntSalController@aprobinventsal')->name('aprobinventsal_inventsal');
+
+/*RUTAS InvStock*/
+Route::post('invstock/consexistencia', 'InvStockController@consexistencia')->name('consexistencia_invstock');

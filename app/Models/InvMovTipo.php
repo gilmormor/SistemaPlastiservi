@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class InvMovTipo extends Model
 {
     use SoftDeletes;
-    protected $table = "invbodega";
+    protected $table = "invmovtipo";
     protected $fillable = [
+        'nombre',
         'desc',
         'tipomov',
+        'usuario_id',
         'usuariodel_id'
     ];
 

@@ -10,7 +10,9 @@ class InvMovModulo extends Model
     use SoftDeletes;
     protected $table = "invmovmodulo";
     protected $fillable = [
+        'nombre',
         'desc',
+        'usuario_id',
         'usuariodel_id'
     ];
 

@@ -1,7 +1,14 @@
 <div class="form-group">
-    <label for="bod_desc" class="col-lg-3 control-label requerido">Descripción</label>
+    <label for="nombre" class="col-lg-3 control-label requerido">Nombre</label>
     <div class="col-lg-8">
-    <input type="text" name="bod_desc" id="bod_desc" class="form-control" value="{{old('bod_desc', $data->bod_desc ?? '')}}" required/>
+        <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre', $data->nombre ?? '')}}" required maxlength="100"/>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="desc" class="col-lg-3 control-label requerido">Descripción</label>
+    <div class="col-lg-8">
+        <input type="text" name="desc" id="desc" class="form-control" value="{{old('desc', $data->desc ?? '')}}" required maxlength="300"/>
     </div>
 </div>
 <div class="form-group">

@@ -21,6 +21,7 @@ class CreateTableDespachoorddetInvstock extends Migration
             $table->unsignedBigInteger('invstock_id');
             $table->foreign('invstock_id','fk_despachoorddet_invstock_invstock')->references('id')->on('invstock')->onDelete('restrict')->onUpdate('restrict');
             $table->float('cant',10,2)->comment('Cantidad');
+            $table->float('cantkg',10,2)->comment('Cantidad Kilos');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
             $table->timestamps();

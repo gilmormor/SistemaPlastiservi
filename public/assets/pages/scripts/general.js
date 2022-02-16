@@ -211,6 +211,13 @@ function validacion(campo,tipo)
 			}
 			else
 			{
+				$("#glypcn"+campo).remove();
+				$('#'+campo).parent().parent().attr("class", columnas+" has-success has-feedback");
+				$('#'+campo).parent().parent().children('span').hide();
+				$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
+				return true;
+
+				/*
 				if(caract.test(cajatexto) == false)
 				{
 					$("#glypcn"+campo).remove();
@@ -227,6 +234,7 @@ function validacion(campo,tipo)
 					$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
 					return true;				
 				}
+				*/
 			}
 
 		break 
@@ -623,7 +631,8 @@ function insertarModificar(){
 function modificarTabla(i){
 	$("#aux_sta").val('0')
 	$("#producto_id"+i).val($("#producto_idM").val());
-
+	$("#producto_idValor"+i).html($("#producto_idM").val());
+	
 	$("#codintprodTD"+i).html($("#codintprodM").val());
 	$("#codintprod"+i).val($("#codintprodM").val());
 	$("#cantTD"+i).html($("#cantM").val());
@@ -669,8 +678,16 @@ function modificarTabla(i){
 	$("#subtotalSFTD"+i).html($("#subtotalM").attr('valor'));
 
 	$("#unidadmedida_id"+i).val($("#unidadmedida_idM option:selected").attr('value'));
-	totalizar();
 
+	if($("#invmovtipo_idM")){
+		$("#invbodega_idTXT"+i).html($("#invbodega_idM option:selected").html());
+		$("#invbodega_idTD"+i).val($("#invbodega_idM").val());	
+		$("#invmovtipo_idTXT"+i).html($("#invmovtipo_idM option:selected").html());
+		$("#invmovtipo_idTD"+i).val($("#invmovtipo_idM").val());
+		$("#cant"+i).attr('valor',$("#cantM").val());
+		totalizarcantkg();
+	}
+	totalizar();
 }
 
 $("#btnGuardarM").click(function(event)
@@ -828,6 +845,13 @@ function limpiarInputOT(){
 	$("#espesor1M").val('');
 	$("#espesor1M").attr('valor','');
 	$("#obsM").val('');
+	if($("#invbodega_idM")){
+		$("#invbodega_idM").empty();
+	}
+	if($("#invmovtipo_idM")){
+		$("#invmovtipo_idM").val("");
+	}
+
     $(".selectpicker").selectpicker('refresh');
 }
 
@@ -857,6 +881,11 @@ function verificar()
 function quitarverificar(){
 	
 	//quitarValidacion('producto_idM','texto');
+	/*
+	$(".requeridos").each(function() {
+		quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
+	});
+*/
 	quitarValidacion('descuentoM','combobox');
 	quitarValidacion('cantM','texto');
 	quitarValidacion('precioM','texto');
@@ -864,23 +893,30 @@ function quitarverificar(){
 	quitarValidacion('producto_idM','textootro');
 	quitarValidacion('unidadmedida_idM','combobox');
 
+	if($("#invbodega_idM")){
+		quitarValidacion('invbodega_idM','combobox');
+	}
+	if($("#invmovtipo_idM")){
+		quitarValidacion('invmovtipo_idM','combobox');
+	}
 }
 
 function editarRegistro(i){
 	//alert($("#direccion"+i).val());
-	event.preventDefault();
+	//event.preventDefault();
     limpiarInputOT();
 	quitarverificar();
 	$("#aux_sta").val('0');
 
 	$("#aux_numfila").val(i);
 
+	$("#producto_idM").val($("#producto_id"+i).val());
+	//$("#producto_idM").blur();
+
 	$("#precioxkilorealM").attr('valor',$("#precioxkiloreal"+i).val());
 	$("#precioxkilorealM").val(MASK(0, $("#precioxkiloreal"+i).val(), '-##,###,##0.00',1));
 	$("#codintprodM").val($.trim($("#codintprodTD"+i).html()));
 	$("#nombreprodM").val($.trim($("#nombreProdTD"+i).html()));
-	$("#producto_idM").val($("#producto_id"+i).val());
-
 
 	$("#cantM").val($("#cant"+i).val());
 	$("#descuentoM").val($.trim($("#descuentoval"+i).val()));
@@ -910,6 +946,8 @@ function editarRegistro(i){
 	$("#largoM").attr('valor',$("#long"+i).val());
 	$("#obsM").val($("#obs"+i).val());
 
+	$("#invmovtipo_idM").val($("#invmovtipo_idTD"+i).val());
+
 	var data = {
 		id: $("#producto_idM").val(),
 		_token: $('input[name=_token]').val()
@@ -919,13 +957,17 @@ function editarRegistro(i){
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			if(respuesta.length>0){
+			if(respuesta['cont']>0){
 				mostrardatosadUniMed(respuesta);
+				if($("#invbodega_idM")){
+					llenarselectbodega(respuesta);
+					$("#invbodega_idM").val($("#invbodega_idTD"+i).val());
+					$("#invbodega_idM").selectpicker('refresh');
+
+				}
 			}
 		}
 	});
-
-
 	$(".selectpicker").selectpicker('refresh');
     $("#myModal").modal('show');
 }
@@ -1146,49 +1188,54 @@ $("#producto_idM").blur(function(){
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
+				/*
+				console.log(respuesta['cont']);
+				*/
 				console.log(respuesta);
-				if(respuesta.length>0){
-					$("#nombreprodM").val(respuesta[0]['nombre']);
-					$("#codintprodM").val(respuesta[0]['codintprod']);
-					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
-					$("#diamextmmM").val(respuesta[0]['diametro']);
-					if(respuesta[0]['espesor'] == 0){
+				//return 0;
+				if(respuesta['cont']>0){
+					//console.log(respuesta['nombre']);
+					$("#nombreprodM").val(respuesta['nombre']);
+					$("#codintprodM").val(respuesta['codintprod']);
+					$("#cla_nombreM").val(respuesta['cla_nombre']);
+					$("#diamextmmM").val(respuesta['diametro']);
+					if(respuesta['espesor'] == 0){
 						$("#espesorM").val('');
 						$("#espesor1M").val('');
 						$("#espesor1M").attr('valor','');
 					}else{
-						$("#espesorM").val(respuesta[0]['espesor']);
-						$("#espesor1M").val(respuesta[0]['espesor']);
-						$("#espesor1M").attr('valor',respuesta[0]['espesor']);
+						$("#espesorM").val(respuesta['espesor']);
+						$("#espesor1M").val(respuesta['espesor']);
+						$("#espesor1M").attr('valor',respuesta['espesor']);
 					}
-					$("#longM").val(respuesta[0]['long']);
-					if(respuesta[0]['long'] == 0){
+					$("#longM").val(respuesta['long']);
+					if(respuesta['long'] == 0){
 						$("#largoM").val('');
 						$("#largoM").attr('valor','');
 					}else{
-						$("#largoM").val(respuesta[0]['long']);
-						$("#largoM").attr('valor',respuesta[0]['long']);	
+						$("#largoM").val(respuesta['long']);
+						$("#largoM").attr('valor',respuesta['long']);	
 					}
-					$("#pesoM").val(respuesta[0]['peso']);
-					$("#tipounionM").val(respuesta[0]['tipounion']);
-					$("#precioM").val(respuesta[0]['precio']);
-					$("#precioM").attr('valor',respuesta[0]['precio']);
-					$("#precioxkilorealM").val(respuesta[0]['precio']);
-					$("#precioxkilorealM").attr('valor',respuesta[0]['precio']);
-					$("#precionetoM").val(respuesta[0]['precioneto']);
-					$("#precionetoM").attr('valor',respuesta[0]['precioneto']);
-					//alert(respuesta[0]['precio']);
+					$("#pesoM").val(respuesta['peso']);
+					$("#tipounionM").val(respuesta['tipounion']);
+					$("#precioM").val(respuesta['precio']);
+					$("#precioM").attr('valor',respuesta['precio']);
+					$("#precioxkilorealM").val(respuesta['precio']);
+					$("#precioxkilorealM").attr('valor',respuesta['precio']);
+					$("#precionetoM").val(respuesta['precioneto']);
+					$("#precionetoM").attr('valor',respuesta['precioneto']);
+					//alert(respuesta['precio']);
 
-					$("#unidadmedida_idM").val(respuesta[0]['unidadmedidafact_id']);
+					$("#unidadmedida_idM").val(respuesta['unidadmedidafact_id']);
 					$("#anchoM").val('');
 					$("#anchoM").attr('valor','');
 					$("#obsM").val('');
 					mostrardatosadUniMed(respuesta);
-
-					$(".selectpicker").selectpicker('refresh');
-					
+					llenarselectbodega(respuesta);
+					$(".selectpicker").selectpicker('refresh');					
 					//$("#cantM").change();
 					quitarverificar();
+					$("#producto_idM").keyup();
 					$("#cantM").focus();
 					totalizarItem(1);
 					
@@ -1239,7 +1286,7 @@ $("#botonNewProd").click(function(event)
 });
 
 function mostrardatosadUniMed(respuesta){
-	if(respuesta[0]['mostdatosad'] == 0){
+	if(respuesta['mostdatosad'] == 0){
 		$(".mostdatosad1").css({'display':'none'});
 		$(".mostdatosad0").css({'display':'block'});
 	}else{
@@ -1247,14 +1294,14 @@ function mostrardatosadUniMed(respuesta){
 		$(".mostdatosad1").css({'display':'block'});
 	}
 	
-	if(respuesta[0]['mostunimed'] == 0){
+	if(respuesta['mostunimed'] == 0){
 		$("#mostunimed1").css({'display':'none'});
 		$("#mostunimed0").css({'display':'block'});
 	}else{
 		$("#mostunimed0").css({'display':'none'});
 		$("#mostunimed1").css({'display':'block'});
 	}
-	$("#unidadmedida_textoM").val(respuesta[0]['unidadmedidanombre']);	
+	$("#unidadmedida_textoM").val(respuesta['unidadmedidanombre']);	
 }
 
 $("#selectmultprod").click(function(event){
@@ -1515,4 +1562,107 @@ function fechaddmmaaaa(f){
 	fecha = d + "/" + m + "/" + f.getFullYear();
 	
 	return fecha; 
+}
+
+function totalizarcantkg(){
+	total_cant = 0;
+	total_kg = 0;
+	$("#tabla-data tr .subtotalcant").each(function() {
+		valor = $(this).attr("valor"); //$(this).html() ;
+		valorNum = parseFloat(valor);
+		total_cant += valorNum;
+	});
+	$("#tabla-data tr .subtotalkg").each(function() {
+		valor = $(this).attr("valor");
+		valorNum = parseFloat(valor);
+		total_kg += valorNum;
+	});
+	aux_totalkgform = MASKLA(total_kg,2); //MASK(0, total_kg, '-##,###,##0.00',1)
+	aux_total_cant = MASKLA(total_cant,2); //MASK(0, total_neto, '-#,###,###,##0.00',1)
+	aux_total = total_cant;
+	//$("#tdneto").html(total_neto.toFixed(2));
+	$("#tdtotalkg").html("<b>" + aux_totalkgform + "</b>");
+	$("#tdtotalcant").html("<b>" + aux_total_cant + "</b>");
+
+	if(aux_total == 0){
+		$("#total").val("");
+	}else{
+		$("#total").val(aux_total_cant);
+	}
+}
+
+$("#btnGuardarInvM").click(function(event)
+{
+	event.preventDefault();
+
+	if(verificarlote())
+	{
+		//$("#invmovtipo_idM").val()
+		aux_tipomov = $("#invmovtipo_idM option:selected").attr('tipomov');
+		if(aux_tipomov < 0){
+			var data = {
+				producto_id : $("#producto_idM").val(),
+				invbodega_id : $("#invbodega_idM").val(),
+				_token: $('input[name=_token]').val()
+			};
+			$.ajax({
+				url: '/invstock/consexistencia',
+				type: 'POST',
+				data: data,
+				success: function (respuesta) {
+					aux_stock = 0
+					if(respuesta.cont>0){
+						aux_stock = respuesta.invstock.stock;
+					}
+					aux_cantM = $("#cantM").val();
+					if(aux_stock >= aux_cantM){
+						insertarModificar();
+					}else{
+						swal({
+							title: 'Producto no tiene Stock suficiente.',
+							text: "Bodega: " + $("#invbodega_idM option:selected").html() + "\nStock: " + aux_stock,
+							icon: 'info',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								$("#cantM").focus();
+							}
+						});
+	
+					}
+				}
+			});
+		}else{
+			insertarModificar();
+		}
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+});
+
+function verificarlote(){
+	aux_valido = true;
+	$(".requeridos").each(function() {
+		if($(this).prop('name')){
+			//alert($(this).prop('name'));
+			if(validacion($(this).prop('name'),$(this).attr('tipoval')) == false){
+				aux_valido = false;
+			}
+		}
+	});
+	return aux_valido;
+
+}
+
+function llenarselectbodega(respuesta){
+	if($("#invbodega_idM")){
+		$("#invbodega_idM").empty();
+		$.each(respuesta['bodegas'], function(id,value){
+			//console.log(data[id].nombre);
+			$("#invbodega_idM").append('<option value="'+respuesta['bodegas'][id].id+'">'+respuesta['bodegas'][id].nombre+'</option>');
+		});
+		$("#invbodega_idM").selectpicker('refresh');
+	}	
 }

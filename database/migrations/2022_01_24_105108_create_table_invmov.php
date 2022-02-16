@@ -17,10 +17,15 @@ class CreateTableInvmov extends Migration
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->dateTime('fechahora')->comment('Fecha y hora.');
-            $table->string('obs',100)->comment('Observación');
-            $table->dateTime('staanul')->comment('Fecha de anulación');
+            $table->string('desc',300)->comment('Descripción');
+            $table->string('obs',300)->comment('Observación');
+            $table->dateTime('staanul')->comment('Fecha de anulación')->nullable();
             $table->unsignedBigInteger('invmovmodulo_id');
             $table->foreign('invmovmodulo_id','fk_invmov_invmovmodulo')->references('id')->on('invmovmodulo')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('invmovtipo_id');
+            $table->foreign('invmovtipo_id','fk_invmov_invmovtipo')->references('id')->on('invmovtipo')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('usuario_id')->comment('Usuario quien creo el registro');
+            $table->foreign('usuario_id','fk_invmov_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
             $table->timestamps();

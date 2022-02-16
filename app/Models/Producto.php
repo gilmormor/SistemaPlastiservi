@@ -29,6 +29,8 @@ class Producto extends Model
         'grupoprod_id',
         'color_id',
         'tipoprod',
+        'stockmin',
+        'stockmax',
         'usuariodel_id'
     ];
 
@@ -105,6 +107,7 @@ class Producto extends Model
                 ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                 ->where('producto.deleted_at','=',null)
                 ->orderBy('producto.id', 'asc')
+                ->groupBy('producto.id')
                 ->get();
         return $productos;
     }

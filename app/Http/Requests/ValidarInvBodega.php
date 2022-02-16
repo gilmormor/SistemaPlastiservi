@@ -24,7 +24,8 @@ class ValidarInvBodega extends FormRequest
     public function rules()
     {
         return [
-            'bod_desc' => 'required|max:100',
+            'nombre' => 'required|max:100',
+            'desc' => 'required|max:300',
             'sucursal_id' => 'required',
         ];
     }
