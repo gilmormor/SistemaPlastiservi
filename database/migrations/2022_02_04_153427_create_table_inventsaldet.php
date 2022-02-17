@@ -16,10 +16,9 @@ class CreateTableInventsaldet extends Migration
         Schema::create('inventsaldet', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
+            $table->char('annomes',6)->comment('Año y mes en formato AAAAMM');
             $table->unsignedBigInteger('inventsal_id');
             $table->foreign('inventsal_id','fk_inventsaldet_inventsal')->references('id')->on('inventsal')->onDelete('restrict')->onUpdate('restrict');
-            $table->unsignedBigInteger('invmov_id')->nullable();
-            $table->foreign('invmov_id','fk_inventsaldet_invmov')->references('id')->on('invmov')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('invstock_id')->nullable();
             $table->foreign('invstock_id','fk_inventsaldet_invstock')->references('id')->on('invstock')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('producto_id');

@@ -17,6 +17,7 @@ class CreateTableInvmov extends Migration
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->dateTime('fechahora')->comment('Fecha y hora.');
+            $table->char('annomes',6)->comment('Año y mes en formato AAAAMM');
             $table->string('desc',300)->comment('Descripción');
             $table->string('obs',300)->comment('Observación');
             $table->dateTime('staanul')->comment('Fecha de anulación')->nullable();

@@ -11,6 +11,7 @@ class InvEntSal extends Model
     protected $table = "inventsal";
     protected $fillable = [
         'fechahora',
+        'annomes',
         'desc',
         'obs',
         'staanul',

@@ -8,6 +8,7 @@ use App\Models\InvBodega;
 use App\Models\InvEntSal;
 use App\Models\InvEntSalDet;
 use App\Models\InvMov;
+use App\Models\InvMovDet;
 use App\Models\InvMovTipo;
 use App\Models\InvStock;
 use App\Models\InvStockMes;
@@ -208,10 +209,19 @@ class InvEntSalController extends Controller
                         $inventsal->staaprob = 1;
                         $inventsal->fechahoraaprob = date("Y-m-d H:i:s");
                         if ($inventsal->save()) {
+                            $annomes = date("Ym");
+                            $inventsal->annomes = $annomes;
                             $array_inventsal = $inventsal->attributesToArray();
                             $invmov = InvMov::create($array_inventsal);
                             $inventsal->invmov_id = $invmov->id;
                             $inventsal->save();
+                            foreach ($inventsal->inventsaldets as $inventsaldet) {
+                                $inventsaldet->annomes = $annomes;
+                                $inventsaldet->save();
+                                $array_inventsaldet = $inventsaldet->attributesToArray();
+                                $array_inventsaldet["invmov_id"] = $invmov->id;
+                                $invmovdet = InvMovDet::create($array_inventsaldet);                                
+                            }
                             return response()->json(['mensaje' => 'ok']);
                         } else {
                             return response()->json(['mensaje' => 'ng']);
@@ -246,9 +256,14 @@ function actualizarStockInv($inventsal,$status){
         $invstock_id = 0;
         $aux_saldocant = $inventsaldet->cant; //($inventsaldet->cant * $inventsaldet->invmovtipo->tipomov);
         $aux_saldocantkg = $inventsaldet->cantkg; //($inventsaldet->cantkg * $inventsaldet->invmovtipo->tipomov);
+        $aux_saldocant_mesant = $inventsaldet->cant; //Saldo Mes anterior
+        $aux_saldocantkg_mesant = $inventsaldet->cantkg; //Saldo Mes anterior
+
         if($invstock['cont']>0){
             $invstock_id = $invstock['invstock']['id'];
             $invstock = InvStock::findOrFail($invstock_id);
+            $aux_saldocant_mesant = $invstock->stock;
+            $aux_saldocantkg_mesant = $invstock->stockkg;
             $aux_saldocant = $invstock->stock + $aux_saldocant;
             $aux_saldocantkg = $invstock->stockkg + $aux_saldocantkg;
         }
@@ -274,8 +289,11 @@ function actualizarStockInv($inventsal,$status){
                 $invstockmes_id = $invstockmes[0]->id;
                 $stockini = $invstockmes[0]->stockini;
                 $stockkgini = $invstockmes[0]->stockkgini;
+            }else{
+                $stockini = $aux_saldocant_mesant;
+                $stockkgini = $aux_saldocantkg_mesant;
             }
-            $invstockUC = InvStockMes::updateOrCreate(
+            $invstockmesUC = InvStockMes::updateOrCreate(
                 ['id' => $invstockmes_id],
                 [
                     'invstock_id' => $invstockUC->id,
@@ -286,6 +304,8 @@ function actualizarStockInv($inventsal,$status){
                     'stockkgfin' => $aux_saldocantkg
                 ]
             );
+            $inventsaldet->invstock_id = $invstockUC->id;
+            $inventsaldet->save();
         }
         if($aux_saldocant < 0){
             $aux_ban = false;

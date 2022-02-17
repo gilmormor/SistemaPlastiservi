@@ -10,9 +10,10 @@ class InvMovDet extends Model
     use SoftDeletes;
     protected $table = "invmovdet";
     protected $fillable = [
+        'annomes',
         'invmov_id',
         'invstock_id',
-        'Cant',
+        'cant',
         'cantkg',
         'unidadmedida_id',
         'producto_id',

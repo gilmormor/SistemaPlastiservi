@@ -16,6 +16,7 @@ class CreateTableInvmovdet extends Migration
         Schema::create('invmovdet', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
+            $table->char('annomes',6)->comment('Año y mes en formato AAAAMM');
             $table->unsignedBigInteger('invmov_id');
             $table->foreign('invmov_id','fk_invmovdet_invmov')->references('id')->on('invmov')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('invstock_id');

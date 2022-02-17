@@ -11,6 +11,7 @@ class InvMov extends Model
     protected $table = "invmov";
     protected $fillable = [
         'fechahora',
+        'annomes',
         'desc',
         'obs',
         'staanul',
