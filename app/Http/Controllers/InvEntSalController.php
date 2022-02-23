@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarInvEntSal;
 use App\Models\Cliente;
 use App\Models\InvBodega;
+use App\Models\InvBodegaProducto;
 use App\Models\InvEntSal;
 use App\Models\InvEntSalDet;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovTipo;
 use App\Models\InvStock;
-use App\Models\InvStockMes;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
@@ -90,6 +90,14 @@ class InvEntSalController extends Controller
                     $inventsaldet->unidadmedida_id = $request->unidadmedida_id[$i];
                     $inventsaldet->invbodega_id = $request->invbodega_idTD[$i];
                     $inventsaldet->invmovtipo_id = $request->invmovtipo_idTD[$i];
+                    $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                        ['producto_id' => $inventsaldet->producto_id,'invbodega_id' => $inventsaldet->invbodega_id],
+                        [
+                            'producto_id' => $inventsaldet->producto_id,
+                            'invbodega_id' => $inventsaldet->invbodega_id
+                        ]
+                    );
+                    $inventsaldet->invbodegaproducto_id = $invbodegaproducto->id;
                     $inventsaldet->save();
                 }
             }
@@ -151,17 +159,27 @@ class InvEntSalController extends Controller
             $cont_cotdet = count($request->NVdet_id);
             if($cont_cotdet>0){
                 for ($i=0; $i < count($request->NVdet_id) ; $i++){
-                    $idcotizaciondet = $request->NVdet_id[$i]; 
-                    $producto = Producto::findOrFail($request->producto_id[$i]);
+                    $invmovtipo = InvMovTipo::findOrFail($request->invmovtipo_idTD[$i]);
+                    $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                        ['producto_id' => $request->producto_id[$i],'invbodega_id' => $request->invbodega_idTD[$i]],
+                        [
+                            'producto_id' => $request->producto_id[$i],
+                            'invbodega_id' => $request->invbodega_idTD[$i]
+                        ]
+                    );
+                    //$inventsaldet->invbodegaproducto_id = $invbodegaproducto->id;
+
+
                     DB::table('inventsaldet')->updateOrInsert(
                         ['id' => $request->NVdet_id[$i], 'inventsal_id' => $id],
                         [
                             'producto_id' => $request->producto_id[$i],
-                            'cant' => $request->cant[$i],
                             'unidadmedida_id' => $request->unidadmedida_id[$i],
-                            'cantkg' => $request->totalkilos[$i],
                             'invbodega_id' => $request->invbodega_idTD[$i],
+                            'cant' => $request->cant[$i] * $invmovtipo->tipomov,
+                            'cantkg' => $request->totalkilos[$i] * $invmovtipo->tipomov,
                             'invmovtipo_id' => $request->invmovtipo_idTD[$i],
+                            'invbodegaproducto_id' => $invbodegaproducto->id
                         ]
                     );
                 }
@@ -204,37 +222,43 @@ class InvEntSalController extends Controller
                 $cont = DB::select($sql);
                 //if($inventsal->despachoords->count() == 0){
                 if($cont[0]->cont == 1){
-                    if(actualizarStockInv($inventsal,1)){
-                        actualizarStockInv($inventsal,2);
+                    $aux_respuesta = InvBodegaProducto::validarExistenciaStock($inventsal->inventsaldets);
+                    if($aux_respuesta["bandera"]){
+                        $annomes = date("Ym");
+                        $inventsal->annomes = $annomes;
+                        $array_inventsal = $inventsal->attributesToArray();
+                        $invmov = InvMov::create($array_inventsal);
                         $inventsal->staaprob = 1;
                         $inventsal->fechahoraaprob = date("Y-m-d H:i:s");
-                        if ($inventsal->save()) {
-                            $annomes = date("Ym");
-                            $inventsal->annomes = $annomes;
-                            $array_inventsal = $inventsal->attributesToArray();
-                            $invmov = InvMov::create($array_inventsal);
-                            $inventsal->invmov_id = $invmov->id;
-                            $inventsal->save();
+                        $inventsal->invmov_id = $invmov->id;
+                        if($inventsal->save()){
                             foreach ($inventsal->inventsaldets as $inventsaldet) {
-                                $inventsaldet->annomes = $annomes;
-                                $inventsaldet->save();
+                                //$inventsaldet->save();
                                 $array_inventsaldet = $inventsaldet->attributesToArray();
                                 $array_inventsaldet["invmov_id"] = $invmov->id;
                                 $invmovdet = InvMovDet::create($array_inventsaldet);                                
                             }
-                            return response()->json(['mensaje' => 'ok']);
+                            return response()->json(['mensaje' => 'ok']);    
                         } else {
                             return response()->json(['mensaje' => 'ng']);
-                        }    
-
+                        }
                     }else{
-                        return response()->json(['mensaje' => 'ng']);
+                        return response()->json([
+                            'mensaje' => 'MensajePersonalizado',
+                            'menper' => "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"]
+                        ]);
                     }
                 }else{
-                    return response()->json(['mensaje' => 'hijo']);
+                    return response()->json([
+                        'mensaje' => 'MensajePersonalizado',
+                        'menper' => "Registro no fue procesado por alguna de las siguientes razones: Aprobado, Anulado o Eliminado previamente."
+                    ]);
                 }
             }else{
-                return response()->json(['mensaje' => 'ng']);
+                return response()->json([
+                    'mensaje' => 'MensajePersonalizado',
+                    'menper' => "Registro no fue procesado por alguna de las siguientes razones: Aprobado o Anulado previamente."
+                ]);
             }
         } else {
             abort(404);
@@ -242,74 +266,4 @@ class InvEntSalController extends Controller
     }
 
 
-}
-
-function actualizarStockInv($inventsal,$status){
-    $aux_ban = true;
-    foreach ($inventsal->inventsaldets as $inventsaldet) {
-        //Se crea variable de request
-        $invstockcontroller = new InvStockController();
-        $request = new Request();
-        $request["producto_id"] = $inventsaldet->producto_id;
-        $request["invbodega_id"] = $inventsaldet->invbodega_id;
-        $invstock = $invstockcontroller->consexistencia($request);
-        $invstock_id = 0;
-        $aux_saldocant = $inventsaldet->cant; //($inventsaldet->cant * $inventsaldet->invmovtipo->tipomov);
-        $aux_saldocantkg = $inventsaldet->cantkg; //($inventsaldet->cantkg * $inventsaldet->invmovtipo->tipomov);
-        $aux_saldocant_mesant = $inventsaldet->cant; //Saldo Mes anterior
-        $aux_saldocantkg_mesant = $inventsaldet->cantkg; //Saldo Mes anterior
-
-        if($invstock['cont']>0){
-            $invstock_id = $invstock['invstock']['id'];
-            $invstock = InvStock::findOrFail($invstock_id);
-            $aux_saldocant_mesant = $invstock->stock;
-            $aux_saldocantkg_mesant = $invstock->stockkg;
-            $aux_saldocant = $invstock->stock + $aux_saldocant;
-            $aux_saldocantkg = $invstock->stockkg + $aux_saldocantkg;
-        }
-        if(($status == 2) and $aux_saldocant>=0){
-            $invstockUC = InvStock::updateOrCreate(
-                ['id' => $invstock_id],
-                [
-                    'producto_id' => $inventsaldet->producto_id,
-                    'invbodega_id' => $inventsaldet->invbodega_id,
-                    'stock' => $aux_saldocant,
-                    'stockkg' => $aux_saldocantkg
-                ]
-            );
-            $annomes = date("Ym");
-            //dd("Año: " . $annomes . " ID: " . $invstockUC->id);
-            $invstockmes = InvStockMes::where('invstock_id','=',$invstockUC->id)
-                            ->where('annomes','=',$annomes)->get();
-            //dd($invstockmes[0]->stockini);
-            $stockini = $aux_saldocant;
-            $stockkgini = $aux_saldocantkg;
-            $invstockmes_id = 0;
-            if(count($invstockmes) > 0){
-                $invstockmes_id = $invstockmes[0]->id;
-                $stockini = $invstockmes[0]->stockini;
-                $stockkgini = $invstockmes[0]->stockkgini;
-            }else{
-                $stockini = $aux_saldocant_mesant;
-                $stockkgini = $aux_saldocantkg_mesant;
-            }
-            $invstockmesUC = InvStockMes::updateOrCreate(
-                ['id' => $invstockmes_id],
-                [
-                    'invstock_id' => $invstockUC->id,
-                    'annomes' => $annomes,
-                    'stockini' => $stockini,
-                    'stockfin' => $aux_saldocant,
-                    'stockkgini' => $stockkgini,
-                    'stockkgfin' => $aux_saldocantkg
-                ]
-            );
-            $inventsaldet->invstock_id = $invstockUC->id;
-            $inventsaldet->save();
-        }
-        if($aux_saldocant < 0){
-            $aux_ban = false;
-        }
-    }
-    return $aux_ban;
 }

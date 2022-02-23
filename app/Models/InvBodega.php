@@ -11,6 +11,7 @@ class InvBodega extends Model
     protected $table = "invbodega";
     protected $fillable = [
         'nombre',
+        'nomabre',
         'desc',
         'activo',
         'tipo',
@@ -19,10 +20,10 @@ class InvBodega extends Model
         'usuariodel_id'
     ];
 
-    //RELACION DE UNO A VARIOS
-    public function invstocks()
+    //RELACION DE UNO A VARIOS invbodegaproducto
+    public function invbodegaproductos()
     {
-        return $this->hasMany(InvStock::class);
+        return $this->hasMany(InvBodegaProducto::class);
     }
 
     //RELACION INVERSA Sucursal

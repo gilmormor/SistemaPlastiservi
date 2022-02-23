@@ -16,11 +16,10 @@ class CreateTableInvmovdet extends Migration
         Schema::create('invmovdet', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
-            $table->char('annomes',6)->comment('Año y mes en formato AAAAMM');
             $table->unsignedBigInteger('invmov_id');
             $table->foreign('invmov_id','fk_invmovdet_invmov')->references('id')->on('invmov')->onDelete('restrict')->onUpdate('restrict');
-            $table->unsignedBigInteger('invstock_id');
-            $table->foreign('invstock_id','fk_invmovdet_invstock')->references('id')->on('invstock')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('invbodegaproducto_id');
+            $table->foreign('invbodegaproducto_id','fk_invmovdet_invbodegaproducto')->references('id')->on('invbodegaproducto')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('producto_id');
             $table->foreign('producto_id','fk_invmovdet_producto')->references('id')->on('producto')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('invbodega_id');

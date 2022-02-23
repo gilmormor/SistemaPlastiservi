@@ -82,7 +82,11 @@
                         @if (isset($data))
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($data->inventsaldets as $detalle)
-                                <?php $aux_nfila++; ?>
+                                <?php 
+                                    $aux_nfila++;
+                                    $aux_cant = $detalle->cant * $detalle->invmovtipo->tipomov;
+                                    $aux_cantkg = $detalle->cantkg * $detalle->invmovtipo->tipomov;
+                                ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
                                         {{$detalle->id}}
@@ -143,18 +147,18 @@
                                         {{$detalle->invmovtipo->nombre}}
                                     </td>
                                     <td name="totalkilosTD{{$aux_nfila}}" id="totalkilosTD{{$aux_nfila}}" style="text-align:right">
-                                        {{number_format($detalle->cantkg, 2, ',', '.')}}
+                                        {{number_format($aux_cantkg, 2, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control subtotalkg" value="{{$detalle->cantkg}}" valor="{{$detalle->cantkg}}" style="display:none;"/>
+                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control subtotalkg" value="{{$aux_cantkg}}" valor="{{$aux_cantkg}}" style="display:none;"/>
                                         <input type="text" name="invbodega_idTD[]" id="invbodega_idTD{{$aux_nfila}}" class="form-control" value="{{$detalle->invbodega_id}}" style="display:none;"/>
                                         <input type="text" name="invmovtipo_idTD[]" id="invmovtipo_idTD{{$aux_nfila}}" class="form-control" value="{{$detalle->invmovtipo_id}}" style="display:none;"/>
                                     </td>
                                     <td style="text-align:right;display:none;">
-                                        <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control subtotalcant" value="{{$detalle->cant}}" valor="{{$detalle->cant}}" style="display:none;"/>
+                                        <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control subtotalcant" value="{{$aux_cant}}" valor="{{$aux_cant}}" style="display:none;"/>
                                     </td>
                                     <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
-                                        {{number_format($detalle->cant, 2, ',', '.')}}
+                                        {{number_format($aux_cant, 2, ',', '.')}}
                                     </td>
                                     <td>
                                         <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">

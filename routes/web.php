@@ -771,6 +771,8 @@ Route::get('invbodega/{id}/editar', 'InvBodegaController@editar')->name('editar_
 Route::put('invbodega/{id}', 'InvBodegaController@actualizar')->name('actualizar_invbodega');
 Route::delete('invbodega/{id}', 'InvBodegaController@eliminar')->name('eliminar_invbodega');
 Route::post('invbodega/obtbodegasxsucursal', 'InvBodegaController@obtbodegasxsucursal')->name('obtbodegasxsucursal');
+Route::post('invbodega/buscarTipoBodegaOrdDesp', 'InvBodegaController@buscarTipoBodegaOrdDesp')->name('buscarTipoBodegaOrdDesp');
+
 
 /*RUTAS INVENTARIO TIPO MOVIMIENTO*/
 Route::get('invmovtipo', 'InvMovTipoController@index')->name('invmovtipo');
@@ -791,5 +793,5 @@ Route::put('inventsal/{id}', 'InvEntSalController@actualizar')->name('actualizar
 Route::delete('inventsal/{id}', 'InvEntSalController@eliminar')->name('eliminar_inventsal');
 Route::post('inventsal/aprobinventsal/{id}', 'InvEntSalController@aprobinventsal')->name('aprobinventsal_inventsal');
 
-/*RUTAS InvStock*/
-Route::post('invstock/consexistencia', 'InvStockController@consexistencia')->name('consexistencia_invstock');
+/*RUTAS InvBodegaProductoController*/
+Route::post('invbodegaproducto/consexistencia', 'InvBodegaProductoController@consexistencia')->name('consexistencia_invbodegaproducto');

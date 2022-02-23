@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableDespachoorddetInvstock extends Migration
+class CreateTableDespachoorddetInvbodegaproducto extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateTableDespachoorddetInvstock extends Migration
      */
     public function up()
     {
-        Schema::create('despachoorddet_invstock', function (Blueprint $table) {
+        Schema::create('despachoorddet_invbodegaproducto', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('despachoorddet_id');
-            $table->foreign('despachoorddet_id','fk_despachoorddet_invstock_despachoorddet')->references('id')->on('despachoorddet')->onDelete('restrict')->onUpdate('restrict');
-            $table->unsignedBigInteger('invstock_id');
-            $table->foreign('invstock_id','fk_despachoorddet_invstock_invstock')->references('id')->on('invstock')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('despachoorddet_id','fk_despachoorddet_invbodegaproducto_despachoorddet')->references('id')->on('despachoorddet')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('invbodegaproducto_id');
+            $table->foreign('invbodegaproducto_id','fk_despachoorddet_invbodegaproducto_invbodegaproducto')->references('id')->on('invbodegaproducto')->onDelete('restrict')->onUpdate('restrict');
             $table->float('cant',10,2)->comment('Cantidad');
             $table->float('cantkg',10,2)->comment('Cantidad Kilos');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
@@ -37,6 +37,6 @@ class CreateTableDespachoorddetInvstock extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('despachoorddet_invstock');
+        Schema::dropIfExists('despachoorddet_invbodegaproducto');
     }
 }

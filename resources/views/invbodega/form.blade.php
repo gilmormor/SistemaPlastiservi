@@ -4,6 +4,12 @@
         <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre', $data->nombre ?? '')}}" required maxlength="100"/>
     </div>
 </div>
+<div class="form-group">
+    <label for="nomabre" class="col-lg-3 control-label requerido">Nombre abreviado</label>
+    <div class="col-lg-8">
+        <input type="text" name="nomabre" id="nomabre" class="form-control" value="{{old('nomabre', $data->nomabre ?? '')}}" required maxlength="5"/>
+    </div>
+</div>
 
 <div class="form-group">
     <label for="desc" class="col-lg-3 control-label requerido">Descripción</label>

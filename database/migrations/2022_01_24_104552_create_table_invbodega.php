@@ -16,7 +16,8 @@ class CreateTableInvbodega extends Migration
         Schema::create('invbodega', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
-            $table->string('nombre',100)->comment('Descripcion');
+            $table->string('nombre',100)->comment('Nombre');
+            $table->string('nomabre',5)->comment('Nombre Abreviado');
             $table->string('desc',300)->comment('Descripcion');
             $table->unsignedBigInteger('sucursal_id');
             $table->foreign('sucursal_id','fk_invbodega_sucursal')->references('id')->on('sucursal')->onDelete('restrict')->onUpdate('restrict');

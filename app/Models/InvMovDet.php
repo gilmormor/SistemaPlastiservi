@@ -10,9 +10,8 @@ class InvMovDet extends Model
     use SoftDeletes;
     protected $table = "invmovdet";
     protected $fillable = [
-        'annomes',
         'invmov_id',
-        'invstock_id',
+        'invbodegaproducto_id',
         'cant',
         'cantkg',
         'unidadmedida_id',
@@ -33,10 +32,10 @@ class InvMovDet extends Model
     {
         return $this->belongsTo(InvMovTipo::class);
     }
-    //RELACION INVERSA InvMovStock
-    public function invmovStock()
+    //RELACION INVERSA invbodegaproducto
+    public function invbodegaproducto()
     {
-        return $this->belongsTo(invmovStock::class);
+        return $this->belongsTo(InvBodegaProducto::class);
     }
     
     

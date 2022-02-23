@@ -150,6 +150,34 @@ function ajaxRequest(data,url,funcion) {
 		success: function (respuesta) {
 			
 			if(funcion=='aproborddesp'){
+                switch (respuesta.mensaje) {
+                    case 'ok':
+                        swal({
+                            title: '¿ Desea ver PDF Orden Despacho ?',
+                            text: "",
+                            icon: 'success',
+                            buttons: {
+                                cancel: "Cancelar",
+                                confirm: "Aceptar"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                                genpdfOD(data.id,1);
+                            }
+                            $("#fila"+data['nfila']).remove();
+                        });
+                        Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                        break;
+                    case 'sp':
+                        Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                        break;
+                    case 'MensajePersonalizado':
+                        Biblioteca.notificaciones(respuesta.menper, 'Plastiservi', 'error');
+                        break;
+                    default:
+                        Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                }
+/*
 				if (respuesta.mensaje == "ok") {
 					swal({
 						title: '¿ Desea ver PDF Orden Despacho ?',
@@ -173,8 +201,62 @@ function ajaxRequest(data,url,funcion) {
 						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
 					}
 				}
-			}
-			
+*/
+            }
+            if(funcion=='buscarTipoBodegaOrdDesp'){
+                console.log(respuesta);
+                if(respuesta.datas.length > 0){
+                    if(respuesta.datas.length == 1){
+                        var data = {
+                            id: respuesta.id,
+                            nfila : respuesta.nfila,
+                            invbodega_id : respuesta.datas[0].id,
+                            _token: $('input[name=_token]').val()
+                        };
+                        var ruta = '/despachoord/aproborddesp/'+respuesta.id;
+                        swal({
+                            title: '¿ Aprobar Orden de Despacho ?',
+                            text: "Esta acción no se puede deshacer!",
+                            icon: 'warning',
+                            buttons: {
+                                cancel: "Cancelar",
+                                confirm: "Aceptar"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                                ajaxRequest(data,ruta,'aproborddesp');
+                            }
+                        });
+                    }else{
+                        swal({
+                            title: 'Existe mas de una Bodega de Despacho',
+                            text: "Debe seleccionar una",
+                            icon: 'warning',
+                            buttons: {
+                                confirm: "Aceptar"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                            }
+                        });
+    
+                    }
+                }else{
+                    swal({
+                        title: 'No existe Bodega de Despacho',
+                        text: "Debe ser creada la bodega de Despacho",
+                        icon: 'warning',
+                        buttons: {
+                            confirm: "Aceptar"
+                        },
+                    }).then((value) => {
+                        if (value) {
+                        }
+                    });
+
+                }
+                return respuesta;
+            }            
 		},
 		error: function () {
 		}
@@ -183,7 +265,17 @@ function ajaxRequest(data,url,funcion) {
 
 
 function aprobarord(i,id){
-	var data = {
+    var data = {
+		id         : id,
+        nfila      : i,
+        tipobodega : 2, //Codigo de bodega de despacho = 2
+        _token: $('input[name=_token]').val()
+	};
+	var ruta = '/invbodega/buscarTipoBodegaOrdDesp';
+	respuesta = ajaxRequest(data,ruta,'buscarTipoBodegaOrdDesp');
+    return 0;
+
+    var data = {
 		id: id,
         nfila : i,
         _token: $('input[name=_token]').val()

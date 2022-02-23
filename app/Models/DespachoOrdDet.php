@@ -40,5 +40,12 @@ class DespachoOrdDet extends Model
     public function despachoordrecdets()
     {
         return $this->hasMany(DespachoOrdRecDet::class,'despachoorddet_id');
-    }    
+    }
+
+    //RELACION DE UNO A MUCHOS despachoorddet_invbodegaproducto
+    public function despachoorddet_invbodegaproductos()
+    {
+        return $this->hasMany(DespachoOrdDet_InvBodegaProducto::class,'despachoorddet_id');
+    }
+    
 }

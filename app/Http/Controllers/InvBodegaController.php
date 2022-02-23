@@ -162,4 +162,29 @@ class InvBodegaController extends Controller
         //$datas = CategoriaProd::catxUsuCostoAnnoMes($request);
         return $datas; //response()->json($data)
     }
+
+    public function buscarTipoBodegaOrdDesp(Request $request){
+        $respuesta = array();
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $respuesta["datas"] = InvBodega::join('sucursal', 'invbodega.sucursal_id', '=', 'sucursal.id')
+                            ->where('invbodega.tipo','=',$request->tipobodega)
+                            ->whereIn('invbodega.sucursal_id', $sucurArray)
+                            ->select([
+                                'invbodega.id',
+                                'invbodega.nombre',
+                                'invbodega.desc',
+                                'invbodega.sucursal_id',
+                                'sucursal.nombre as sucursal_nombre'
+                            ])
+                            ->get();
+        $respuesta["id"] = $request->id;
+        $respuesta["nfila"] = $request->nfila;
+        $respuesta["tipobodega"] = $request->tipobodega;
+        //dd($datas);
+        //$datas = CategoriaProd::catxUsuCostoAnnoMes($request);
+        return $respuesta; //response()->json($data)
+
+    }
+    
 }

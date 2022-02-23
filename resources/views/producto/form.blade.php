@@ -294,24 +294,24 @@
                 @if ($aux_sta==2)
                     <?php 
                         $aux_nfila = 0; 
-                        $totalStock = 0;
+                        $totalStockinvbodega = 0;
                     ?>
-                    @foreach ($invstocks as $invstock)
+                    @foreach ($invbodegaproductos as $invbodegaproducto)
                         <?php 
                             $aux_nfila++; 
-                            $totalStock += $invstock->stock_id;
+                            $totalStockinvbodega += $invbodegaproducto->invbodegaproducto_id;
                         ?>
                         <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                             <td>
-                                <input type="text" name="invstock_id[]" id="invstock_id{{$aux_nfila}}" class="form-control" value="{{$invstock->id}}" style="display:none"/>
-                                <input type="text" name="sucursal_nombre[]" id="sucursal_nombre{{$aux_nfila}}" class="form-control" value="{{$invstock->invbodega->sucursal->nombre}}"/>
+                                <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$aux_nfila}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none"/>
+                                <input type="text" name="sucursal_nombre[]" id="sucursal_nombre{{$aux_nfila}}" class="form-control" value="{{$invbodegaproducto->invbodega->sucursal->nombre}}"/>
                             </td>
                             <td>
-                                <input type="text" name="invbodega_id[]" id="invbodega_id{{$aux_nfila}}" class="form-control" value="{{$invstock->invbodega_id}}" style="display:none"/>
-                                <input type="text" name="invbodega_nombre[]" id="invbodega_nombre{{$aux_nfila}}" class="form-control" value="{{$invstock->invbodega->nombre}}" disabled/>
+                                <input type="text" name="invbodega_id[]" id="invbodega_id{{$aux_nfila}}" class="form-control" value="{{$invbodegaproducto->invbodega_id}}" style="display:none"/>
+                                <input type="text" name="invbodega_nombre[]" id="invbodega_nombre{{$aux_nfila}}" class="form-control" value="{{$invbodegaproducto->invbodega->nombre}}" disabled/>
                             </td>
-                            <td><input type="text" name="stock[]" id="stock{{$aux_nfila}}" class="form-control camponumerico" value="{{$invstock->stock}}" disabled/></td>
-                            <td style="display: none"><input type="text" name="stock_id[]" id="stock_id{{$aux_nfila}}" class="form-control camponumerico" value="{{$invstock->stock_id}}"/></td>
+                            <td><input type="text" name="invbodegaproducto[]" id="invbodegaproducto{{$aux_nfila}}" class="form-control camponumerico" value="{{$invbodegaproducto->invbodegaproducto}}" disabled/></td>
+                            <td style="display: none"><input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$aux_nfila}}" class="form-control camponumerico" value="{{$invbodegaproducto->invbodegaproducto_id}}"/></td>
                         </tr>
                     @endforeach            
                 @endif
@@ -321,7 +321,7 @@
                 </tr>
                 <tr>
                     <th colspan='2' style='text-align:right'>Total Stock</th>
-                    <th id='totalstock' name='totalstock' style='text-align:right'>{{number_format($totalStock, 2, ",", ".")}}</th>
+                    <th id='totalstockinvbodega' name='totalstockinvbodega' style='text-align:right'>{{number_format($totalStockinvbodega, 2, ",", ".")}}</th>
                 </tr>
             </tfoot>
 

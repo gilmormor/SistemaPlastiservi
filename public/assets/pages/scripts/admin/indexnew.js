@@ -132,16 +132,22 @@ function ajaxRequest(data,url,funcion,form = false) {
                 $("#myModal").modal('show');
             }
             if(funcion=='btnaprobar'){
-				if (respuesta.mensaje == "ok") {
-					form.parents('tr').remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-				} else {
-					if (respuesta.mensaje == "sp"){
+                switch (respuesta.mensaje) {
+                    case 'ok':
+                        form.parents('tr').remove();
+                        Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');    
+                        break;
+                    case 'sp':
+                        form.parents('tr').remove();
 						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
-				}
+                        break;
+                    case 'MensajePersonalizado':
+                        Biblioteca.notificaciones(respuesta.menper, 'Plastiservi', 'error');
+                        break;
+                    default:
+                        Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                }
+    
             }
         },
         error: function () {

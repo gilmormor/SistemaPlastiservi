@@ -961,6 +961,7 @@ function editarRegistro(i){
 				mostrardatosadUniMed(respuesta);
 				if($("#invbodega_idM")){
 					llenarselectbodega(respuesta);
+					//console.log(respuesta);
 					$("#invbodega_idM").val($("#invbodega_idTD"+i).val());
 					$("#invbodega_idM").selectpicker('refresh');
 
@@ -1603,16 +1604,17 @@ $("#btnGuardarInvM").click(function(event)
 			var data = {
 				producto_id : $("#producto_idM").val(),
 				invbodega_id : $("#invbodega_idM").val(),
+				tipo : 1,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
-				url: '/invstock/consexistencia',
+				url: '/invbodegaproducto/consexistencia',
 				type: 'POST',
 				data: data,
 				success: function (respuesta) {
 					aux_stock = 0
 					if(respuesta.cont>0){
-						aux_stock = respuesta.invstock.stock;
+						aux_stock = respuesta.stock.cant;
 					}
 					aux_cantM = $("#cantM").val();
 					if(aux_stock >= aux_cantM){
@@ -1660,9 +1662,53 @@ function llenarselectbodega(respuesta){
 	if($("#invbodega_idM")){
 		$("#invbodega_idM").empty();
 		$.each(respuesta['bodegas'], function(id,value){
-			//console.log(data[id].nombre);
-			$("#invbodega_idM").append('<option value="'+respuesta['bodegas'][id].id+'">'+respuesta['bodegas'][id].nombre+'</option>');
+			//console.log(respuesta['bodegas'][id]);
+			$("#invbodega_idM").append('<option value="'+respuesta['bodegas'][id].id+'">'+respuesta['bodegas'][id].nombre+' / Stock: ' + respuesta['bodegas'][id].stock + '</option>');
 		});
 		$("#invbodega_idM").selectpicker('refresh');
 	}	
+}
+
+function sumbod(i,y){
+	aux_stockcant = parseFloat($("#stockcantTD" + y).html());
+
+	if($("#invcant" + y).val() > aux_stockcant){
+		$("#invcant" + y).val(aux_stockcant);
+	}
+	total = 0;
+	$("#tabla-bod tr .bod" + i).each(function() {
+		if($(this).val() == ""){
+			valor = "0";
+		}else{
+			valor = $(this).val() ;
+		}
+		valorNum = parseFloat(valor);
+		total += valorNum;
+		/*
+		aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
+		if(total > aux_saldo){
+			dif = aux_saldo - (total - valor);
+			$(this).val(dif);			
+			total = aux_saldo;
+		}
+		*/
+	});
+	aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
+	//console.log(aux_saldo);
+
+	if(total > aux_saldo){
+		console.log("entro");
+		if($("#invcant" + y).val() == ""){
+			valor = "0";
+		}else{
+			valor = $("#invcant" + y).val() ;
+		}
+		dif = aux_saldo - (total - valor);
+		$("#invcant" + y).val(dif);
+		//console.log(dif);
+		total = aux_saldo;
+	}
+
+	$("#cantord" + i).val(total);
+	actSaldo(i);
 }

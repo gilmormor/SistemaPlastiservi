@@ -66,10 +66,10 @@ class Producto extends Model
         return $this->belongsTo(Color::class);
     }
 
-    //RELACION UNO A MUCHOS InvStocks
-    public function invstocks()
+    //RELACION UNO A MUCHOS invbodegaproducto
+    public function invbodegaproductos()
     {
-        return $this->hasMany(InvStock::class);
+        return $this->hasMany(InvBodegaProducto::class);
     }
     
     //RELACION UNO A MUCHOS InvmovDet

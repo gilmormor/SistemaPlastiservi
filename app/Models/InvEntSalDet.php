@@ -10,9 +10,8 @@ class InvEntSalDet extends Model
     use SoftDeletes;
     protected $table = "inventsaldet";
     protected $fillable = [
-        'annomes',
         'inventsal_id',
-        'invstock_id',
+        'invbodegaproducto_id',
         'invbodega_id',
         'producto_id',
         'invmovtipo_id',
