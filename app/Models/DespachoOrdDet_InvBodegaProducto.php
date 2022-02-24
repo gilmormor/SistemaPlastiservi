@@ -16,8 +16,8 @@ class DespachoOrdDet_InvBodegaProducto extends Model
         'cantkg'
     ];
 
-    //RELACION INVERSA Producto
-    public function deapachoorddet()
+    //RELACION INVERSA DespachoOrdDet
+    public function despachoorddet()
     {
         return $this->belongsTo(DespachoOrdDet::class);
     }

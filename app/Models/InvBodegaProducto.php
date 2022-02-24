@@ -29,16 +29,12 @@ class InvBodegaProducto extends Model
     public static function existencia($request){
         //$request["tipo"] es el valor que define que tipo de bodega se consulta, 1=Bodega normal de almacenaje. 2=Bodega de despago, de esta bodega sale el producto para la calle a traves de la Guia de despacho
         $annomes = date("Ym");
-        //dd($request["invbodegaproducto_id"]);
         if($request["invbodegaproducto_id"]){
             $existencia = InvMov::selectRaw('SUM(cant) as cant')
                             ->join("invmovdet","invmov.id","=","invmovdet.invmov_id")
                             ->where("annomes","=",$annomes)
                             ->where("invmovdet.invbodegaproducto_id","=",$request["invbodegaproducto_id"])
-                            ->join('invbodega', function ($join)  use ($request){
-                                $join->on('invmovdet.invbodega_id', '=', 'invbodega.id')
-                                ->where("invbodega.tipo","=",$request["tipo"]);
-                            })
+                            ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
                             ->groupBy("invmovdet.producto_id")
                             ->get();
         }else{
@@ -47,10 +43,7 @@ class InvBodegaProducto extends Model
                             ->where("annomes","=",$annomes)
                             ->where("invmovdet.producto_id","=",$request["producto_id"])
                             ->where("invmovdet.invbodega_id","=",$request["invbodega_id"])
-                            ->join('invbodega', function ($join)  use ($request){
-                                $join->on('invmovdet.invbodega_id', '=', 'invbodega.id')
-                                ->where("invbodega.tipo","=",$request["tipo"]);
-                            })
+                            ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
                             ->groupBy("invmovdet.producto_id")
                             ->get();
         }
@@ -65,7 +58,7 @@ class InvBodegaProducto extends Model
         return $respuesta;
     }
 
-    public static function validarExistenciaStock($inventsaldets){
+    public static function validarExistenciaStock($inventsaldets,$codBodegaDespacho = false){
         $respuesta = array();
         $respuesta["bandera"] = true;
         $aux_ban = true;
@@ -76,7 +69,15 @@ class InvBodegaProducto extends Model
             $respuesta["annomes"] = $annomes;
             $request = new Request();
             if(isset($inventsaldet->invbodegaproducto_id)){
-                $request["invbodegaproducto_id"] = $inventsaldet->invbodegaproducto_id;
+                if($codBodegaDespacho == false){
+                    $request["invbodegaproducto_id"] = $inventsaldet->invbodegaproducto_id;
+                }else{
+                    $invbodegaproducto = InvBodegaProducto::findOrFail($inventsaldet->invbodegaproducto_id);
+                    $invbodegaproducto = InvBodegaProducto::where("producto_id","=",$invbodegaproducto->producto_id)
+                                        ->where("invbodega_id","=",$codBodegaDespacho)
+                                        ->get();
+                    $request["invbodegaproducto_id"] = $invbodegaproducto[0]->id;
+                }
             }else{
                 $request["producto_id"] = $inventsaldet->producto_id;
                 $request["invbodega_id"] = $inventsaldet->invbodega_id;    

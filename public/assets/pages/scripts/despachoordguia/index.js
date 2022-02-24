@@ -154,20 +154,21 @@ var eventFired = function ( type ) {
 
 }
 
-function ajaxRequest(data,url,funcion) {
+function ajaxRequest(datas,url,funcion) {
 	$.ajax({
 		url: url,
 		type: 'POST',
-		data: data,
+		data: datas,
 		success: function (respuesta) {
+			console.log(datas);
 			if(funcion=='guardarguiadesp'){
 				if (respuesta.mensaje == "ok") {
 					//alert(data['nfila']);
-					if(data['status']=='1'){
-						$("#fila" + data['nfila']).remove();
+					if(datas['status']=='1'){
+						$("#fila" + datas['nfila']).remove();
 					}else{
-						$("#guiadespacho" + data['nfila']).html(respuesta.despachoord.guiadespacho);
-						$("#fechaguia" + data['nfila']).html(respuesta.guiadespachofec);	
+						$("#guiadespacho" + datas['nfila']).html(respuesta.despachoord.guiadespacho);
+						$("#fechaguia" + datas['nfila']).html(respuesta.guiadespachofec);	
 					}
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
@@ -180,11 +181,11 @@ function ajaxRequest(data,url,funcion) {
 			}
 			if(funcion=='guardarfactdesp'){
 				if (respuesta.mensaje == "ok") {
-					if(data['status'] == 1){
-						$("#fila" + data['nfila']).remove();
+					if(datas['status'] == 1){
+						$("#fila" + datas['nfila']).remove();
 					}else{
-						$("#numfactura" + data['nfila']).html(data['numfactura']);
-						$("#fechafactura" + data['nfila']).html(respuesta.despachoord.fechafactura);	
+						$("#numfactura" + datas['nfila']).html(datas['numfactura']);
+						$("#fechafactura" + datas['nfila']).html(respuesta.despachoord.fechafactura);	
 					}
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
@@ -197,7 +198,7 @@ function ajaxRequest(data,url,funcion) {
 			}
 			if(funcion=='consultarguiadespachood'){
 				if (respuesta.mensaje == "ok") {
-					if(data['status']=='1'){
+					if(datas['status']=='1'){
 						$("#guiadespachom").val(respuesta.despachoord.guiadespacho);
 						quitarvalidacioneach();
 					}else{
@@ -212,7 +213,7 @@ function ajaxRequest(data,url,funcion) {
 			if(funcion=='consultarnumfacturaod'){
 				if (respuesta.mensaje == "ok") {
 					//alert(respuesta.despachoord.numfactura);
-					if(data['status']=='1'){
+					if(datas['status']=='1'){
 						quitarvalidacioneach();	
 					}else{
 						quitarvalidacioneach();	
@@ -241,12 +242,129 @@ function ajaxRequest(data,url,funcion) {
 			
 			if(funcion=='guardaranularguia'){
 				if (respuesta.mensaje == "ok") {
-					$("#fila" + data['nfila']).remove();
+					$("#fila" + respuesta.nfila).remove();
 					$("#myModalanularguiafact").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
 				}
+			}
+
+			if(funcion=='buscarTipoBodegaOrdDesp'){
+                if(respuesta.datas.length > 0){
+                    if(respuesta.datas.length == 1){	
+						var data = {
+							id    : $("#idanul").val(),
+							nfila : $("#nfilaanul").val(),
+							observacion : $("#observacionanul").val(),
+							statusM : $("#statusM").val(),
+							invbodega_id : respuesta.datas[0].id,
+							pantalla_origen  : 1, //Para saber de donde viene la anulacion en este caso de la pantalla Asignar Guia
+							_token: $('input[name=_token]').val()
+						};
+						var ruta = '/guardaranularguia';
+						swal({
+							title: '¿ Seguro desea continuar ?',
+							text: "Esta acción no se puede deshacer!",
+								icon: 'warning',
+							buttons: {
+								cancel: "Cancelar",
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								ajaxRequest(data,ruta,'guardaranularguia');
+							}
+						});
+
+                    }else{
+                        swal({
+                            title: 'Existe mas de una Bodega de Despacho',
+                            text: "Debe seleccionar una",
+                            icon: 'warning',
+                            buttons: {
+                                confirm: "Aceptar"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                            }
+                        });
+    
+                    }
+                }else{
+                    swal({
+                        title: 'No existe Bodega de Despacho',
+                        text: "Debe ser creada la bodega de Despacho",
+                        icon: 'warning',
+                        buttons: {
+                            confirm: "Aceptar"
+                        },
+                    }).then((value) => {
+                        if (value) {
+                        }
+                    });
+
+                }
+                return respuesta;
+            }
+
+			if(funcion=='buscarBodegaDespachoAsignarGuia'){
+                if(respuesta.datas.length > 0){
+                    if(respuesta.datas.length == 1){
+
+						var data = {
+							id    : $("#idg").val(),
+							guiadespacho : $("#guiadespachom").val(),
+							nfila : $("#nfila").val(),
+							status : $("#status").val(),
+							invbodega_id : respuesta.datas[0].id,
+							_token: $('input[name=_token]').val()
+						};
+						var ruta = '/despachoord/guardarguiadesp';
+						swal({
+							title: '¿ Seguro desea continuar ?',
+							text: "Esta acción no se puede deshacer!",
+								icon: 'warning',
+							buttons: {
+								cancel: "Cancelar",
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								ajaxRequest(data,ruta,'guardarguiadesp');
+							}
+						});			
+						
+
+                    }else{
+                        swal({
+                            title: 'Existe mas de una Bodega de Despacho',
+                            text: "Debe seleccionar una",
+                            icon: 'warning',
+                            buttons: {
+                                confirm: "Aceptar"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                            }
+                        });
+    
+                    }
+                }else{
+                    swal({
+                        title: 'No existe Bodega de Despacho',
+                        text: "Debe ser creada la bodega de Despacho",
+                        icon: 'warning',
+                        buttons: {
+                            confirm: "Aceptar"
+                        },
+                    }).then((value) => {
+                        if (value) {
+                        }
+                    });
+
+                }
+                return respuesta;
 			}
 
 		},
@@ -300,6 +418,16 @@ $("#btnGuardarG").click(function(event)
 				
 				}else{
 					var data = {
+						id         : $("#idg").val(),
+						nfila      : $("#nfila").val(),
+						tipobodega : 2, //Codigo de tipo de bodega = 2 (Bodegas de despacho)
+						_token: $('input[name=_token]').val()
+					};
+					var ruta = '/invbodega/buscarTipoBodegaOrdDesp';
+					respuesta = ajaxRequest(data,ruta,'buscarBodegaDespachoAsignarGuia');
+					return 0;
+
+					var data = {
 						id    : $("#idg").val(),
 						guiadespacho : $("#guiadespachom").val(),
 						nfila : $("#nfila").val(),
@@ -335,6 +463,17 @@ $("#btnGuardarGanul").click(function(event)
 	event.preventDefault();
 	if(verificarAnulGuia())
 	{
+
+		var data = {
+			id         : $("#idanul").val(),
+			nfila      : $("#nfilaanul").val(),
+			tipobodega : 2, //Codigo de tipo de bodega = 2 (Bodegas de despacho)
+			_token: $('input[name=_token]').val()
+		};
+		var ruta = '/invbodega/buscarTipoBodegaOrdDesp';
+		respuesta = ajaxRequest(data,ruta,'buscarTipoBodegaOrdDesp');
+		return 0;
+
 		var data = {
 			id    : $("#idanul").val(),
 			nfila : $("#nfilaanul").val(),

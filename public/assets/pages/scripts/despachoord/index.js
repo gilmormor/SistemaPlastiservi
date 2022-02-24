@@ -162,9 +162,11 @@ function ajaxRequest(data,url,funcion) {
                             },
                         }).then((value) => {
                             if (value) {
-                                genpdfOD(data.id,1);
+                                genpdfOD(respuesta.id,1);
                             }
-                            $("#fila"+data['nfila']).remove();
+                            //$("#fila"+data['nfila']).remove();
+                            $("#fila"+respuesta.nfila).remove();
+                            
                         });
                         Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                         break;
@@ -204,7 +206,7 @@ function ajaxRequest(data,url,funcion) {
 */
             }
             if(funcion=='buscarTipoBodegaOrdDesp'){
-                console.log(respuesta);
+                //console.log(respuesta);
                 if(respuesta.datas.length > 0){
                     if(respuesta.datas.length == 1){
                         var data = {
@@ -268,7 +270,7 @@ function aprobarord(i,id){
     var data = {
 		id         : id,
         nfila      : i,
-        tipobodega : 2, //Codigo de bodega de despacho = 2
+        tipobodega : 2, //Codigo de tipo de bodega = 2 (Bodegas de despacho)
         _token: $('input[name=_token]').val()
 	};
 	var ruta = '/invbodega/buscarTipoBodegaOrdDesp';
