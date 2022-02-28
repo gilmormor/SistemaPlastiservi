@@ -41,7 +41,7 @@ function ajaxRequest(data,url,funcion) {
 						$("#fila" + data['nfila']).remove();
 					}else{
 						$("#numfactura" + data['nfila']).html(data['numfactura']);
-						$("#fechafactura" + data['nfila']).html(respuesta.despachoord.fechafactura);	
+						$("#fechafactura" + data['nfila']).html(respuesta.despachoord.fechafactura);
 					}
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
@@ -161,6 +161,7 @@ $("#btnGuardarG").click(function(event)
 						guiadespacho : $("#guiadespachom").val(),
 						nfila : $("#nfila").val(),
 						status : $("#status").val(),
+						updatesolonumguia : true,
 						_token: $('input[name=_token]').val()
 					};
 					var ruta = '/despachoord/guardarguiadesp';

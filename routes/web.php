@@ -795,3 +795,6 @@ Route::post('inventsal/aprobinventsal/{id}', 'InvEntSalController@aprobinventsal
 
 /*RUTAS InvBodegaProductoController*/
 Route::post('invbodegaproducto/consexistencia', 'InvBodegaProductoController@consexistencia')->name('consexistencia_invbodegaproducto');
+
+/*RUTAS APERTURA MES INVENTARIO */
+Route::get('invaperturames', 'InvAperturaMesController@index')->name('invaperturames');

@@ -181,7 +181,7 @@ function ajaxRequest(datas,url,funcion) {
 						$("#fila" + datas['nfila']).remove();
 					}else{
 						$("#numfactura" + datas['nfila']).html(datas['numfactura']);
-						$("#fechafactura" + datas['nfila']).html(respuesta.despachoord.fechafactura);	
+						$("#fechafactura" + datas['nfila']).html(respuesta.despachoord.fechafactura);
 					}
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {

@@ -20,6 +20,8 @@ class CreateTableInvmov extends Migration
             $table->char('annomes',6)->comment('Año y mes en formato AAAAMM');
             $table->string('desc',300)->comment('Descripción');
             $table->string('obs',300)->comment('Observación');
+            $table->unsignedBigInteger('sucursal_id');
+            $table->foreign('sucursal_id','fk_invmovsucursal')->references('id')->on('sucursal')->onDelete('restrict')->onUpdate('restrict');
             $table->dateTime('staanul')->comment('Fecha de anulación')->nullable();
             $table->unsignedBigInteger('invmovmodulo_id');
             $table->foreign('invmovmodulo_id','fk_invmov_invmovmodulo')->references('id')->on('invmovmodulo')->onDelete('restrict')->onUpdate('restrict');
