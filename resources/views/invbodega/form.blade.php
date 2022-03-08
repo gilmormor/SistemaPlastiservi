@@ -100,4 +100,9 @@
         </select>
     </div>
 </div>
-
+<div class="form-group">
+    <label for="orden" class="col-lg-3 control-label requerido">Orden</label>
+    <div class="col-lg-8">
+        <input type="text" name="orden" id="orden" class="form-control numerico" value="{{old('orden', $data->orden ?? '')}}" required maxlength="1"/>
+    </div>
+</div>

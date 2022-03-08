@@ -15,6 +15,24 @@
         <input type="text" name="obs" id="obs" class="form-control" value="{{old('obs', $data->obs ?? '')}}" required maxlength="100"/>
     </div>
 </div>
+<div class="form-group">
+    <label id="lblsucursal_id" name="lblsucursal_id" for="sucursal_id" class="col-lg-3 control-label requerido">Sucursal</label>
+    <div class="col-lg-8">
+        <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' required>
+            <option value=''>Seleccione...</option>
+                @foreach($tablas['sucursales'] as $sucursal)
+                    <option
+                        value="{{$sucursal->id}}"
+                        @if (isset($data) and ($data->sucursal_id==$sucursal->id))
+                            {{'selected'}}
+                        @endif
+                        >
+                        {{$sucursal->nombre}}
+                    </option>
+                @endforeach                    
+        </select>
+    </div>
+</div>
 
 <div class="form-group">
     <label for="invmovtipo_id" class="col-lg-3 control-label requerido">Tipo Mov</label>
@@ -34,6 +52,7 @@
         </select>
     </div>
 </div>
+
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
     <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>

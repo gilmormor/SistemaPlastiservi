@@ -603,6 +603,7 @@ Route::post('despachoord/listarorddespxnv', 'DespachoOrdController@listarorddesp
 Route::post('despachoord/buscarguiadesp', 'DespachoOrdController@buscarguiadesp')->name('buscarguiadesp_notaventa');
 Route::get('despachoord/totalizarindex', 'DespachoOrdController@totalizarindex')->name('despachoord_totalizarindex');
 
+
 Route::get('despachoordguia', 'DespachoOrdGuiaController@index')->name('despachoordguia');
 Route::get('despachoordguiapage', 'DespachoOrdGuiaController@despachoordguiapage')->name('despachoordguiapage');
 Route::get('despachoordguia/totalizarindex', 'DespachoOrdGuiaController@totalizarindex')->name('despachoordguia_totalizarindex');
@@ -796,5 +797,18 @@ Route::post('inventsal/aprobinventsal/{id}', 'InvEntSalController@aprobinventsal
 /*RUTAS InvBodegaProductoController*/
 Route::post('invbodegaproducto/consexistencia', 'InvBodegaProductoController@consexistencia')->name('consexistencia_invbodegaproducto');
 
-/*RUTAS APERTURA MES INVENTARIO */
-Route::get('invaperturames', 'InvAperturaMesController@index')->name('invaperturames');
+/*RUTAS INVCONTROL*/
+Route::get('invcontrol', 'InvControlController@index')->name('invcontrol');
+Route::get('invcontrolpage', 'InvControlController@invcontrolpage')->name('invcontrolpage');
+Route::post('invcontrol/procesarcierreini', 'InvControlController@procesarcierreini')->name('procesarcierreini_invcontrol');
+
+/*RUTAS REPORTE MOVIMIENTO DE INVENTARIO*/
+Route::get('reportinvmov', 'ReportInvMovController@index')->name('reportinvmov');
+Route::get('reportinvmov/reporte', 'ReportInvMovController@reporte')->name('reportinvmov_reporte');
+Route::get('reportinvmov/exportPdf', 'ReportInvMovController@exportPdf')->name('reportinvmov_exportPdf');
+Route::get('reportinvmov/totalizarRep', 'ReportInvMovController@totalizarRep')->name('reportinvmov_totalizarRep');
+
+/*RUTAS INVCONTROL*/
+Route::get('reportinvstock', 'ReportInvStockController@index')->name('reportinvstock');
+Route::get('reportinvstock/reporte', 'ReportInvStockController@reporte')->name('reportinvstock_reporte');
+Route::get('reportinvstock/exportPdf', 'ReportInvStockController@exportPdf')->name('reportinvstock_exportPdf');

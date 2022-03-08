@@ -111,6 +111,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     $invmov_array["obs"] = "Salida de Bodega de Despacho por anular aprobación de Orden de despacho Nro: " . $request->id;
                     $invmov_array["invmovmodulo_id"] = 2;
                     $invmov_array["invmovtipo_id"] = 2;
+                    $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                     $invmov_array["usuario_id"] = auth()->id();
                     $arrayinvmov_id = array();
                     
@@ -130,6 +131,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $request->invbodega_id;
+                            $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 2;
                             $array_invmovdet["invmov_id"] = $invmov->id;
@@ -143,6 +145,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     $invmov_array["obs"] = "Entrada a Bodega por anular aprobacion de Orden de despacho Nro: " . $request->id;
                     $invmov_array["invmovmodulo_id"] = 2;
                     $invmov_array["invmovtipo_id"] = 1;
+                    $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                     $invmov_array["usuario_id"] = auth()->id();
                     
                     $invmov = InvMov::create($invmov_array);
@@ -152,6 +155,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
+                            $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 1;
                             $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
@@ -175,6 +179,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     $invmov_array["obs"] = "Entrada a Bodega Despacho por anulacion desde asignar Factura / Orden de despacho Nro: " . $request->id;
                     $invmov_array["invmovmodulo_id"] = 3;
                     $invmov_array["invmovtipo_id"] = 1;
+                    $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                     $invmov_array["usuario_id"] = auth()->id();
                     
                     $invmov = InvMov::create($invmov_array);
@@ -191,6 +196,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
+                            $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 1;
                             $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
@@ -206,14 +212,15 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     $invmov_array["obs"] = "Entrada a Bodega por anulacion desde asignar Factura / Orden de despacho Nro: " . $request->id;
                     $invmov_array["invmovmodulo_id"] = 3;
                     $invmov_array["invmovtipo_id"] = 1;
+                    $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                     $invmov_array["usuario_id"] = auth()->id();
-                    
                     $invmov = InvMov::create($invmov_array);
                     foreach ($despachoord->despachoorddets as $despachoorddet) {
                         foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
+                            $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 1;
                             $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;

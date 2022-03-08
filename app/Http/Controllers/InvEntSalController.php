@@ -6,6 +6,7 @@ use App\Http\Requests\ValidarInvEntSal;
 use App\Models\Cliente;
 use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
+use App\Models\InvControl;
 use App\Models\InvEntSal;
 use App\Models\InvEntSalDet;
 use App\Models\InvMov;
@@ -98,6 +99,7 @@ class InvEntSalController extends Controller
                         ]
                     );
                     $inventsaldet->invbodegaproducto_id = $invbodegaproducto->id;
+                    $inventsaldet->sucursal_id = $invbodegaproducto->invbodega->sucursal_id;
                     $inventsaldet->save();
                 }
             }
@@ -179,7 +181,9 @@ class InvEntSalController extends Controller
                             'cant' => $request->cant[$i] * $invmovtipo->tipomov,
                             'cantkg' => $request->totalkilos[$i] * $invmovtipo->tipomov,
                             'invmovtipo_id' => $request->invmovtipo_idTD[$i],
-                            'invbodegaproducto_id' => $invbodegaproducto->id
+                            'invbodegaproducto_id' => $invbodegaproducto->id,
+                            'sucursal_id' =>  $invbodegaproducto->invbodega->sucursal_id
+
                         ]
                     );
                 }
@@ -237,6 +241,17 @@ class InvEntSalController extends Controller
                                 $array_inventsaldet = $inventsaldet->attributesToArray();
                                 $array_inventsaldet["invmov_id"] = $invmov->id;
                                 $invmovdet = InvMovDet::create($array_inventsaldet);                                
+                            }
+                            if($inventsal->invmovtipo->stacieinimes == 1){
+                                $invcontrol = InvControl::where('annomes','=',date('Ym', strtotime($inventsal->fechahora)))
+                                                        ->where('sucursal_id','=',$inventsal->sucursal_id);
+                                if($invcontrol->count() == 0){
+                                    InvControl::create([
+                                        'annomes' => date('Ym', strtotime($inventsal->fechahora)),
+                                        'sucursal_id' => $inventsal->sucursal_id,
+                                        'usuario_id' => auth()->id()
+                                    ]);
+                                }
                             }
                             return response()->json(['mensaje' => 'ok']);    
                         } else {

@@ -78,9 +78,13 @@ class Producto extends Model
         return $this->hasMany(InvMovDet::class);
     }
 
-    public static function productosxUsuario(){
+    public static function productosxUsuario($sucursal_id = false){
         $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        if($sucursal_id){
+            $sucurArray = [$sucursal_id];
+        }else{
+            $sucurArray = $users->sucursales->pluck('id')->toArray();
+        }
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')

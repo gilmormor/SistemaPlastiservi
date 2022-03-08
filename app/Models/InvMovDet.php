@@ -17,6 +17,7 @@ class InvMovDet extends Model
         'unidadmedida_id',
         'producto_id',
         'invbodega_id',
+        'sucursal_id',
         'invmovtipo_id',
         'usuariodel_id'
     ];

@@ -35,6 +35,7 @@ class InvBodegaProducto extends Model
                             ->where("annomes","=",$annomes)
                             ->where("invmovdet.invbodegaproducto_id","=",$request["invbodegaproducto_id"])
                             ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
+                            ->whereNull('staanul')
                             ->groupBy("invmovdet.producto_id")
                             ->get();
         }else{
@@ -44,6 +45,7 @@ class InvBodegaProducto extends Model
                             ->where("invmovdet.producto_id","=",$request["producto_id"])
                             ->where("invmovdet.invbodega_id","=",$request["invbodega_id"])
                             ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
+                            ->whereNull('staanul')
                             ->groupBy("invmovdet.producto_id")
                             ->get();
         }

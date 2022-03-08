@@ -15,6 +15,7 @@ class InvBodega extends Model
         'desc',
         'activo',
         'tipo',
+        'orden',
         'sucursal_id',
         'usuario_id',
         'usuariodel_id'

@@ -279,7 +279,7 @@ class DespachoOrdController extends Controller
                                     $cont_bodegas = count($request->invcant);
                                     if($cont_bodegas>0){
                                         for ($b=0; $b < $cont_bodegas ; $b++){
-                                            if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i]){
+                                            if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and ($request->invcant[$b] != 0)){
                                                 $despachoorddet_invbodegaproducto = new DespachoOrdDet_InvBodegaProducto();
                                                 $despachoorddet_invbodegaproducto->despachoorddet_id = $despachoorddet->id;
                                                 $despachoorddet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
@@ -495,7 +495,6 @@ class DespachoOrdController extends Controller
                                                 }
                                             }
                                         }
-    
                                     }
 
                                     /*
@@ -593,7 +592,8 @@ class DespachoOrdController extends Controller
                     }else{
                         $aux_bandera = true;
                         foreach ($despachoord->despachoorddets as $despachoorddet) {
-                            $aux_respuesta = InvBodegaProducto::validarExistenciaStock($despachoorddet->despachoorddet_invbodegaproductos);
+                            //dd($despachoorddet->despachoorddet_invbodegaproductos);
+                            $aux_respuesta = InvBodegaProducto::validarExistenciaStock($despachoorddet->despachoorddet_invbodegaproductos,$request->invbodega_id);
                             if($aux_respuesta["bandera"] == false){
                                 $aux_bandera = $aux_respuesta["bandera"];
                                 break;
@@ -605,8 +605,9 @@ class DespachoOrdController extends Controller
                             $invmov_array["annomes"] = $aux_respuesta["annomes"];
                             $invmov_array["desc"] = "Salida de Bodega de Despacho en poder del cliente / Orden Despacho Nro: " . $request->id;
                             $invmov_array["obs"] = "Salida de Bodega de Despacho en poder del cliente / Orden Despacho Nro: " . $request->id;
-                            $invmov_array["invmovmodulo_id"] = 3; //Guia de >Despacho
+                            $invmov_array["invmovmodulo_id"] = 3; //Guia de Despacho
                             $invmov_array["invmovtipo_id"] = 2;
+                            $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                             $invmov_array["usuario_id"] = auth()->id();
                             $arrayinvmov_id = array();
                             
@@ -626,6 +627,7 @@ class DespachoOrdController extends Controller
                                     $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                                     $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                                     $array_invmovdet["invbodega_id"] = $request->invbodega_id;
+                                    $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
                                     $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                                     $array_invmovdet["invmovtipo_id"] = 2;
                                     $array_invmovdet["invmov_id"] = $invmov->id;
@@ -652,7 +654,7 @@ class DespachoOrdController extends Controller
                             */
                         }else{
                             return response()->json([
-                                'mensaje' => 'MensajePersonalizado',
+                                'mensaje' => "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"],
                                 'menper' => "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"]
                             ]);
                         }
@@ -750,6 +752,7 @@ class DespachoOrdController extends Controller
                 $invmov_array["obs"] = "Traslado a Bodega despacho por aprobacion de Orden de despacho Nro: " . $request->id;
                 $invmov_array["invmovmodulo_id"] = 2; //Modulo Orden Despacho
                 $invmov_array["invmovtipo_id"] = 2;
+                $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                 $invmov_array["usuario_id"] = auth()->id();
                 $arrayinvmov_id = array();
                 
@@ -760,6 +763,7 @@ class DespachoOrdController extends Controller
                         $array_invmovdet = $oddetbodprod->attributesToArray();
                         $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                         $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
+                        $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                         $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                         $array_invmovdet["invmovtipo_id"] = 2;
                         $array_invmovdet["invmov_id"] = $invmov->id;
@@ -773,6 +777,7 @@ class DespachoOrdController extends Controller
                 $invmov_array["obs"] = "Entrada a Bodega despacho por aprobacion de Orden de despacho Nro: " . $request->id;
                 $invmov_array["invmovmodulo_id"] = 2; //Modulo Orden Despacho
                 $invmov_array["invmovtipo_id"] = 1;
+                $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                 $invmov_array["usuario_id"] = auth()->id();
                 
                 $invmov = InvMov::create($invmov_array);
@@ -790,6 +795,7 @@ class DespachoOrdController extends Controller
                         $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                         $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                         $array_invmovdet["invbodega_id"] = $request->invbodega_id;
+                        $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
                         $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                         $array_invmovdet["invmovtipo_id"] = 1;
                         $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;

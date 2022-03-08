@@ -14,6 +14,7 @@ class InvEntSalDet extends Model
         'invbodegaproducto_id',
         'invbodega_id',
         'producto_id',
+        'sucursal_id',
         'invmovtipo_id',
         'Cant',
         'Cantkg',

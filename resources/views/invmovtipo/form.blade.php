@@ -34,3 +34,14 @@
         </select>
     </div>
 </div>
+
+<div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_stacieinimes" name="aux_stacieinimes">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Cierre e inicio de Inventario Mensual
+        </label>
+    </div>
+</div>
+<input type="hidden" name="stacieinimes" id="stacieinimes" value="{{old('stacieinimes', $data->stacieinimes ?? '0')}}">

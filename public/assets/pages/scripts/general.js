@@ -1712,3 +1712,44 @@ function sumbod(i,y){
 	$("#cantord" + i).val(total);
 	actSaldo(i);
 }
+
+function sumbodrec(i,y){
+	total = 0;
+	$("#tabla-bodrec tr .bodrec" + i).each(function() {
+		if($(this).val() == ""){
+			valor = "0";
+		}else{
+			valor = $(this).val() ;
+		}
+		valorNum = parseFloat(valor);
+		total += valorNum;
+		/*
+		aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
+		if(total > aux_saldo){
+			dif = aux_saldo - (total - valor);
+			$(this).val(dif);			
+			total = aux_saldo;
+		}
+		*/
+	});
+	console.log(total);
+	//aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
+	aux_saldo = parseFloat($("#cantTD" + i).html()) - parseFloat($("#cantorddespF" + i).html());
+	//console.log(aux_saldo);
+	console.log(aux_saldo);
+	if(total > aux_saldo){
+		console.log("entro");
+		if($("#invcant" + y).val() == ""){
+			valor = "0";
+		}else{
+			valor = $("#invcant" + y).val() ;
+		}
+		dif = aux_saldo - (total - valor);
+		$("#invcant" + y).val(dif);
+		//console.log(dif);
+		total = aux_saldo;
+	}
+
+	$("#cantord" + i).val(total);
+	actSaldo(i);
+}

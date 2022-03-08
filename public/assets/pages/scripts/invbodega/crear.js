@@ -1,6 +1,7 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
     $("#nombre").focus();
+    $('.numerico').numeric('.');
 
     $("#sucursal_id").change(function() {
         if($(this).val() != ''){

@@ -1,5 +1,4 @@
 <?php
-    use App\Models\InvBodegaProducto;
     use Illuminate\Http\Request;
 ?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
@@ -219,10 +218,10 @@
                                                         $request["producto_id"] = $invbodegaproducto->producto_id;
                                                         $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
                                                         $request["tipo"] = 1;
-                                                        $existencia = InvBodegaProducto::existencia($request);
+                                                        $existencia = $invbodegaproducto::existencia($request);
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                     ?>
-                                                    @if ($invbodegaproducto->invbodega->tipo == 1) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->
+                                                    @if (($invbodegaproducto->invbodega->tipo == 1) and ($existencia["stock"]["cant"] > 0)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
                                                             <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                 <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>

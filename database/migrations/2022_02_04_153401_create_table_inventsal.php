@@ -22,13 +22,13 @@ class CreateTableInventsal extends Migration
             $table->char('annomes',6)->comment('Año y mes en formato AAAAMM');
             $table->string('desc',300)->comment('Descripción');
             $table->string('obs',300)->comment('Observación');
-            $table->unsignedBigInteger('sucursal_id');
-            $table->foreign('sucursal_id','fk_inventsalsucursal')->references('id')->on('sucursal')->onDelete('restrict')->onUpdate('restrict');
             $table->dateTime('staanul')->comment('Fecha de anulación')->nullable();
             $table->unsignedBigInteger('invmovmodulo_id');
             $table->foreign('invmovmodulo_id','fk_inventsal_invmovmodulo')->references('id')->on('invmovmodulo')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('invmovtipo_id');
-            $table->foreign('invmovtipo_id','fk__inventsal_invmovtipo')->references('id')->on('invmovtipo')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('invmovtipo_id','fk_inventsal_invmovtipo')->references('id')->on('invmovtipo')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('sucursal_id');
+            $table->foreign('sucursal_id','fk_inventsal_sucursal')->references('id')->on('sucursal')->onDelete('restrict')->onUpdate('restrict');
             $table->tinyInteger('staaprob')->comment('Status aprobacion. null o 0 = Sin aprobar, 1 = Aprobado Los registros pasaron a tabla invmov invmovdet.')->nullable();
             $table->dateTime('fechahoraaprob')->comment('Fecha y hora de aprobacion.')->nullable();
             $table->unsignedBigInteger('usuario_id')->comment('Usuario quien creo el registro');

@@ -24,6 +24,8 @@ class CreateTableInvmovdet extends Migration
             $table->foreign('producto_id','fk_invmovdet_producto')->references('id')->on('producto')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('invbodega_id');
             $table->foreign('invbodega_id','fk_invmovdet_invbodega')->references('id')->on('invbodega')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('sucursal_id');
+            $table->foreign('sucursal_id','fk_invmovdet_sucursal')->references('id')->on('sucursal')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('unidadmedida_id');
             $table->foreign('unidadmedida_id','fk_invmovdet_unidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('invmovtipo_id');

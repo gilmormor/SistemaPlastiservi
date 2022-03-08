@@ -13,6 +13,7 @@ class InvMovTipo extends Model
         'nombre',
         'desc',
         'tipomov',
+        'stacieinimes',
         'usuario_id',
         'usuariodel_id'
     ];

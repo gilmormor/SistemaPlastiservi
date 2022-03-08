@@ -18,6 +18,7 @@ class InvEntSal extends Model
         'invmov_id',
         'invmovmodulo_id',
         'invmovtipo_id',
+        'sucursal_id',
         'usuario_id',
         'usuariodel_id'
     ];

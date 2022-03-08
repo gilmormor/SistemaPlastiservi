@@ -1,3 +1,7 @@
+<?php
+    use Illuminate\Http\Request;
+    use App\Models\DespachoOrdRecDet;
+?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
 <input type="hidden" name="despachoord_id" id="despachoord_id" value="{{$data->id}}">
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
@@ -33,7 +37,7 @@
                             <!--<th>Desp</th>-->
                             <th>CantRec</th>
                             <th>Saldo</th>
-                            <th class='tooltipsC' title='Marcar todo' style="text-align:center">
+                            <th class='tooltipsC' title='Marcar todo' style="text-align:center;display:none;">
                                 <div class='checkbox'>
                                     <label style='font-size: 1.2em'>
                                         <input type='checkbox' id='marcarTodo' name='marcarTodo'>
@@ -42,6 +46,7 @@
                                 </div>
                             </th>
                             <th class="width90">OrdDesp</th>
+                            <th>Bodegas</th>
                             <th style="display:none;">UnidadMedida</th>
                             <th>Nombre</th>
                             <th>Diam</th>
@@ -97,6 +102,7 @@
                                     $aux_checked = "";
                                     $aux_despachoordrecdet_id = "";
                                     if($aux_sta==3){
+                                    //if(isset($despachoordrecdets)){
                                         foreach($despachoordrecdets as $despachoordrecdet){
                                             if($detalle->id == $despachoordrecdet->despachoorddet_id){
                                                 //dd($sumacantorddesprec);
@@ -109,11 +115,17 @@
                                                 $aux_checked = "checked";
                                                 $aux_despachoordrecdet_id = $despachoordrecdet->id;
                                             }
-                                        }                                        
+                                        }
                                     }
-                                    if($detalle->cantdesp > $sumacantorddesprec){
+                                    $sumacantorddesprec = DespachoOrdRecDet::join('despachoordrec','despachoordrecdet.despachoordrec_id','despachoordrec.id')
+                                                            ->where('despachoorddet_id','=',$detalle->id)
+                                                            ->whereNull('despachoordrec.anulada')
+                                                            ->sum('cantrec') - $aux_cantrec;
+                                    if($detalle->cantdesp >= $sumacantorddesprec){
                                         $aux_nfila++;
                                         $aux_saldo = $detalle->cantdesp - $sumacantorddesprec - $aux_cantrec;
+                                        $invbodegaproductos = $detalle->notaventadetalle->producto->invbodegaproductos;
+                                        //dd($invbodegaproductos);
                                 ?>
                                         <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                             <td style="display:none;" name="despachosoldet_id{{$aux_nfila}}" id="despachosoldet_id{{$aux_nfila}}">
@@ -148,7 +160,7 @@
                                             <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
                                                 {{$aux_saldo}}
                                             </td>
-                                            <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
+                                            <td class='tooltipsC' style='text-align:center;display:none;' class='tooltipsC' title='Marcar'>
                                                 <div class='checkbox'>
                                                     <label style='font-size: 1.2em'>
                                                         <input type="checkbox" class="checkllenarCantOrd" id="llenarCantOrd{{$aux_nfila}}" name="llenarCantOrd{{$aux_nfila}}" onclick="llenarCantOrd({{$aux_nfila}})" {{$aux_checked}}>
@@ -157,7 +169,58 @@
                                                 </div>
                                             </td>
                                             <td name="cantordF{{$aux_nfila}}" id="cantordF{{$aux_nfila}}" style="text-align:right">
-                                                <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" value="{{$aux_cantrec}}" style="text-align:right;"/>
+                                                <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" value="{{$aux_cantrec}}" style="text-align:right;" readonly/>
+                                            </td>
+                                            <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:right;">
+                                                <table class="table" id="tabla-bodrec" style="font-size:14px">
+                                                    <tbody>
+                                                        @foreach($invbodegaproductos as $invbodegaproducto)
+                                                            <?php
+                                                                $request = new Request();
+                                                                $request["producto_id"] = $invbodegaproducto->producto_id;
+                                                                $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
+                                                                $request["tipo"] = 1;
+                                                                $existencia = $invbodegaproducto::existencia($request);
+                                                                //$existencia = $invbodegaproductoobj->consexistencia($request);
+                                                            ?>
+                                                            @if (($invbodegaproducto->invbodega->tipo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                                <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
+                                                                    <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
+                                                                        <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
+                                                                        <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
+                                                                        {{$invbodegaproducto->id}}
+                                                                    </td>
+                                                                    <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}}'>
+                                                                        {{$invbodegaproducto->invbodega->nomabre}}
+                                                                    </td>
+                                                                    <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
+                                                                        {{$existencia["stock"]["cant"]}}
+                                                                    </td>
+                                                                    <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right" title='Digite valor a despachar'>
+                                                                        <?php $bandera = false; ?>
+                                                                        @if(isset($despachoordrecdets))
+                                                                            @foreach($despachoordrecdets as $despachoordrecdet)
+                                                                                @if($detalle->id == $despachoordrecdet->despachoorddet_id)
+                                                                                    @foreach($despachoordrecdet->despachoordrecdet_invbodegaproductos as $despachoordrecdet_invbodegaproducto)
+                                                                                        @if ($despachoordrecdet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)
+                                                                                            <?php $bandera = true; ?>
+                                                                                            <input type="text" name="despachoordrecdet_invbodegaproducto_id[]" id="despachoordrecdet_invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control numerico" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;display:none;" value="{{($despachoordrecdet_invbodegaproducto->id)}}"/>
+                                                                                            <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bodrec{{$aux_nfila}}" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;" value="{{($despachoordrecdet_invbodegaproducto->cant)}}"/>
+                                                                                        @endif
+                                                                                    @endforeach
+                                                                                @endif
+                                                                            @endforeach
+                                                                        @endif
+                                                                        @if($bandera == false)
+                                                                            <input type="text" name="despachoordrecdet_invbodegaproducto_id[]" id="despachoordrecdet_invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control numerico" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;display:none;" value=""/>
+                                                                            <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bodrec{{$aux_nfila}}" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;"/>
+                                                                        @endif
+                                                                    </td>
+                                                                </tr>                                                        
+                                                            @endif
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
                                             </td>
                                             <td name="cantorddespinputF{{$aux_nfila}}" id="cantorddespinputF{{$aux_nfila}}" style="text-align:right;display:none;">
                                                 <input type="text" name="cantorddesp[]" id="cantorddesp{{$aux_nfila}}" class="form-control" value="{{$aux_cantrec}}" style="text-align:right;"/>
@@ -248,7 +311,7 @@
                                 ?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="4" style="text-align:right">
+                                <td colspan="3" style="text-align:right">
                                     <b>Total Unidades:</b>
                                 </td>
                                 <td style="text-align:right">
@@ -256,7 +319,7 @@
                                         <input type="text" name="cantordTotal" id="cantordTotal" class="form-control" style="text-align:right;" value="{{$aux_cantrecTotal}}" readonly required/>
                                     </div>
                                 </td>
-                                <td colspan="6" style="text-align:right"><b>Total Kg</b></td>
+                                <td colspan="7" style="text-align:right"><b>Total Kg</b></td>
                                 <td id="totalkg" name="totalkg" style="text-align:right">0,00</td>
                                 <td colspan="2" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
