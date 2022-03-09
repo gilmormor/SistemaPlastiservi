@@ -312,7 +312,8 @@
                             $aux_request->invbodega_id = $invbodegaproducto->invbodega_id;
                             $aux_stock = InvMov::stock($aux_request);
                             $aux_stock = $aux_stock->get();
-                            $totalStockinvbodega += $aux_stock[0]->stock;
+                            $aux_stockValor = sizeof($aux_stock) > 0 ? $aux_stock[0]->stock : 0;
+                            $totalStockinvbodega += $aux_stockValor;
                         ?>
                         <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                             <td>
@@ -322,7 +323,7 @@
                                 {{$invbodegaproducto->invbodega->nombre}}
                             </td>
                             <td style='text-align:center'>
-                                {{$aux_stock[0]->stock}}
+                                {{$aux_stockValor}}
                             </td>
                         </tr>
                     @endforeach            
