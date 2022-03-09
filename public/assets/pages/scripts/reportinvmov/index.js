@@ -76,7 +76,7 @@ function ajaxRequest(data,url,funcion) {
 }
 
 function datos(){
-    var data = {
+    var data1 = {
         annomes           : $("#annomes").val(),
         sucursal_id       : $("#sucursal_id").val(),
         fechad            : $("#fechad").val(),
@@ -86,23 +86,26 @@ function datos(){
         invbodega_id      : $("#invbodega_id").val(),
         _token            : $('input[name=_token]').val()
     };
+
+    var data2 = "?annomes="+data1.annomes +
+    "&sucursal_id="+data1.sucursal_id +
+    "&fechad="+data1.fechad +
+    "&fechah="+data1.fechah +
+    "&areaproduccion_id="+data1.areaproduccion_id +
+    "&producto_idPxP="+data1.producto_idPxP +
+    "&invbodega_id="+data1.invbodega_id
+
+    var data = {
+        data1 : data1,
+        data2 : data2
+    };
+
     return data;
 }
 
 function consultarpage(data){
-
-
-    aux_titulo = "";
-    cadena = "?annomes="+data.annomes +
-            "&sucursal_id="+data.sucursal_id +
-            "&fechad="+data.fechad +
-            "&fechah="+data.fechah +
-            "&areaproduccion_id="+data.areaproduccion_id +
-            "&producto_idPxP="+data.producto_idPxP +
-            "&invbodega_id="+data.invbodega_id
-
     $.ajax({
-        url: '/reportinvmov/totalizarRep/' + cadena,
+        url: '/reportinvmov/totalizarRep/' + data.data2,
         type: 'GET',
         success: function (datos) {
             console.log(datos);
@@ -123,7 +126,7 @@ function consultarpage(data){
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        'ajax'        : "/reportinvmov/reporte/" + cadena,
+        'ajax'        : "/reportinvmov/reporte/" + data.data2,
         'order': [[ 0, "asc" ]],
         'columns'     : [
             {data: 'id'},
@@ -177,43 +180,6 @@ function consultarpdf(data){
     });
 }
 
-$("#btnpdf").click(function()
-{
-    var data = datos();
-    $.ajax({
-        url: '/indicadores/imagengrafico',
-        type: 'POST',
-        data: data,
-        success: function (respuesta) {
-            aux_titulo = "Orden Despacho";
-            data = datos();
-            cadena = "?id=" +
-                    "&fechad="+data.fechad+"&fechah="+data.fechah +
-                    "&fechadfac="+data.fechadfac+"&fechahfac="+data.fechahfac +
-                    "&fechaestdesp="+data.fechaestdesp +
-                    "&rut="+data.rut +
-                    "&oc_id="+data.oc_id +
-                    "&vendedor_id=" + data.vendedor_id+"&giro_id="+data.giro_id + 
-                    "&tipoentrega_id="+data.tipoentrega_id +
-                    "&notaventa_id="+data.notaventa_id +
-                    "&statusOD=" + data.statusOD +
-                    "&areaproduccion_id="+data.areaproduccion_id +
-                    "&comuna_id="+data.comuna_id +
-                    "&aux_titulo="+aux_titulo +
-                    "&guiadespacho="+data.guiadespacho +
-                    "&numfactura="+data.numfactura +
-                    "&despachosol_id="+data.despachosol_id +
-                    "&despachoord_id="+data.despachoord_id +
-                    "&aux_verestado="+data.aux_verestado
-            $('#contpdf').attr('src', '/reportorddespguiafact/exportPdf/'+cadena);
-            $("#myModalpdf").modal('show');
-        },
-        error: function () {
-        }
-    });
-    
-});
-
 $("#btnbuscarproducto").click(function(event){
     //$(this).val("");
     $(".input-sm").val('');
@@ -243,3 +209,11 @@ function copiar_codprod(id,codintprod){
 	//$("#producto_idM").blur();
 	$("#producto_idPxP").focus();
 }
+
+$("#btnpdf").click(function(event){
+    data = datos();
+    //alert(cadena);
+    $('#contpdf').attr('src', '/reportinvmov/exportPdf/'+data.data2);
+    //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+});

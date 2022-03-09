@@ -138,7 +138,7 @@ Movimiento de Inventario
                         <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>
                         -->
                         <button type="button" id="btnconsultarpage" name="btnconsultarpage" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                        <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                        <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF">
                             <i class='glyphicon glyphicon-print'></i> Reporte
                         </button>
 
@@ -158,7 +158,7 @@ Movimiento de Inventario
                 <table class="table display AllDataTables table-condensed table-hover" id="tabla-data-consulta">
                     <thead>
                         <tr>
-                            <th class='tooltipsC' title='Orden de Despacho'>ID</th>
+                            <th class='tooltipsC' title='Id MovInv'>ID</th>
                             <th>Fecha</th>
                             <th>Descripción</th>
                             <th>ProdID</th>

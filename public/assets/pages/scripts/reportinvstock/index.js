@@ -22,12 +22,17 @@ $(document).ready(function () {
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
-            'ajax'        : "invcontrolpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+            'ajax'        : "reportinvstockpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             "order": [[ 1, "asc" ]],
             'columns'     : [
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
                 {data: 'categoria_nombre'},
+                {data: 'diametro'},
+                {data: 'cla_nombre'},
+                {data: 'long'},
+                {data: 'peso'},
+                {data: 'tipounion'},
                 {data: 'invbodega_nombre'},
                 {data: 'stock'}
             ],
@@ -35,7 +40,7 @@ $(document).ready(function () {
                 "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             },
             "createdRow": function ( row, data, index ) {
-                $('td', row).eq(4).attr('style','text-align:center');
+                $('td', row).eq(9).attr('style','text-align:center');
 
                 /*
                 aux_mesanno = mesanno(data.annomes);
@@ -68,13 +73,17 @@ function datos(){
         sucursal_id       : $("#sucursal_id").val(),
         invbodega_id      : $("#invbodega_id").val(),
         producto_id       : $("#producto_idPxP").val(),
+        categoriaprod_id  : $("#categoriaprod_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
     var data2 = "?mesanno="+data1.mesanno +
     "&sucursal_id="+data1.sucursal_id +
     "&invbodega_id="+data1.invbodega_id +
-    "&producto_id="+data1.producto_id
+    "&producto_id="+data1.producto_id +
+    "&categoriaprod_id="+data1.categoriaprod_id +
+    "&areaproduccion_id="+data1.areaproduccion_id
 
 
     var data = {
@@ -113,3 +122,11 @@ function copiar_codprod(id,codintprod){
 	//$("#producto_idM").blur();
 	$("#producto_idPxP").focus();
 }
+
+$("#btnpdf").click(function(event){
+    data = datos();
+    //alert(cadena);
+    $('#contpdf').attr('src', '/reportinvstock/exportPdf/'+data.data2);
+    //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+});

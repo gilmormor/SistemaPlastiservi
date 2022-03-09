@@ -808,7 +808,8 @@ Route::get('reportinvmov/reporte', 'ReportInvMovController@reporte')->name('repo
 Route::get('reportinvmov/exportPdf', 'ReportInvMovController@exportPdf')->name('reportinvmov_exportPdf');
 Route::get('reportinvmov/totalizarRep', 'ReportInvMovController@totalizarRep')->name('reportinvmov_totalizarRep');
 
-/*RUTAS INVCONTROL*/
+/*RUTAS INV STOCK*/
 Route::get('reportinvstock', 'ReportInvStockController@index')->name('reportinvstock');
+Route::get('reportinvstockpage', 'ReportInvStockController@reportinvstockpage')->name('reportinvstockpage');
 Route::get('reportinvstock/reporte', 'ReportInvStockController@reporte')->name('reportinvstock_reporte');
 Route::get('reportinvstock/exportPdf', 'ReportInvStockController@exportPdf')->name('reportinvstock_exportPdf');

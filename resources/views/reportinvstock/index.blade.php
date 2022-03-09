@@ -1,11 +1,12 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Inventario Stock
+Stock Inventario
 @endsection
 
 @section("scripts")
+    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
+
     <script src="{{autoVer("assets/pages/scripts/reportinvstock/index.js")}}" type="text/javascript"></script>
 @endsection
 <?php
@@ -18,7 +19,7 @@ Inventario Stock
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Consultar Orden Despacho</h3>
+                <h3 class="box-title">Stock Inventario</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>
@@ -33,7 +34,7 @@ Inventario Stock
                                         <label for="annomes">Fecha:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="annomes" id="annomes" class="form-control date-pickermes" value="{{old('annomes', $aux_mesanno ?? '')}}" readonly required>
+                                        <input type="text" name="annomes" id="annomes" class="form-control date-picker" value="{{old('annomes', $aux_mesanno ?? '')}}" readonly required>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Sucursal">
@@ -89,13 +90,46 @@ Inventario Stock
                                     </div>
                                 </div>
 
-                            </div>    
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Categoria">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="categoriaprod_id" class="control-label">Categoria:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name='categoriaprod_id' id='categoriaprod_id' class='selectpicker form-control categoriaprod_id'  data-live-search='true' multiple data-actions-box='true'>"
+                                            @foreach($tablashtml['categoriaprod'] as $categoriaprod)
+                                                <option value="{{$categoriaprod->id}}">
+                                                    {{$categoriaprod->nombre}}
+                                                </option>";
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label >Area Prod:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="areaproduccion_id" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id">
+                                            <option value="">Todos</option>
+                                            @foreach($tablashtml['areaproduccions'] as $areaproduccion)
+                                                <option
+                                                    value="{{$areaproduccion->id}}"
+                                                    >
+                                                    {{$areaproduccion->nombre}}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-3 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12 text-center">
                             <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                            <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                            <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF">
                                 <i class='glyphicon glyphicon-print'></i> Reporte
                             </button>
                         </div>
@@ -113,6 +147,11 @@ Inventario Stock
                         <th class="width70">CodProd</th>
                         <th>Producto</th>
                         <th>Categoria</th>
+                        <th>Diametro</th>
+                        <th>Clase</th>
+                        <th>Largo</th>
+                        <th>Peso</th>
+                        <th class="tooltipsC" title="Tipo de Union">TU</th>
                         <th>Bodega</th>
                         <th style='text-align:center'>Stock</th>
                     </tr>

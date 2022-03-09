@@ -127,8 +127,12 @@ class ProductoController extends Controller
         $data = Producto::findOrFail($id);
         //$categoriaprods = CategoriaProd::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
-        $invbodegaproductos = $data->invbodegaproductos()->select(['id as invbodegaproducto_id'])->get();
-
+        $invbodegaproductos = $data->invbodegaproductos();//->select(['id as invbodegaproducto_id'])->get();
+        /*
+        foreach ($invbodegaproductos->get() as $invbodegaproducto) {
+            dd($invbodegaproducto);
+        }
+*/
         /*
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
             $user = Usuario::findOrFail(auth()->id());

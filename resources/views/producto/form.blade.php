@@ -1,3 +1,9 @@
+<?php
+    use App\Models\CategoriaGrupoValMes;
+    use App\Models\InvMov;
+    $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Y") . date("m"));
+?>
+
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
@@ -243,13 +249,13 @@
 
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
-        <label for="stockmin" class="col-lg-3 control-label requerido" title="stockmin Kgs" data-toggle='tooltip'>Stock Min</label>
+        <label for="stockmin" class="col-lg-3 control-label requerido" title="Stock Mínimo Kgs" data-toggle='tooltip'>Stock Min</label>
         <div class="col-lg-9">
         <input type="text" name="stockmin" id="stockmin" class="form-control numerico" value="{{old('stockmin', $data->stockmin ?? '')}}" required/>
         </div>
     </div>
     <div class="form-group col-xs-12 col-sm-6">
-        <label for="stockmax" class="col-lg-3 control-label requerido" title="stockmax Kgs" data-toggle='tooltip'>Stock Max</label>
+        <label for="stockmax" class="col-lg-3 control-label requerido" title="Stock Máximo Kgs" data-toggle='tooltip'>Stock Max</label>
         <div class="col-lg-9">
         <input type="text" name="stockmax" id="stockmax" class="form-control numerico" value="{{old('stockmax', $data->stockmax ?? '')}}" required/>
         </div>
@@ -286,7 +292,7 @@
                 <tr>
                     <th>Sucursal</th>
                     <th>Bodega</th>
-                    <th style='text-align:right'>Stock</th>
+                    <th style='text-align:center'>Stock</th>
                     <th style="display: none">id</th>
                 </tr>
             </thead>
@@ -296,22 +302,28 @@
                         $aux_nfila = 0; 
                         $totalStockinvbodega = 0;
                     ?>
-                    @foreach ($invbodegaproductos as $invbodegaproducto)
+                    @foreach ($invbodegaproductos->get() as $invbodegaproducto)
                         <?php 
                             $aux_nfila++; 
-                            $totalStockinvbodega += $invbodegaproducto->invbodegaproducto_id;
+                            $aux_request = new Request();
+                            $aux_request->mesanno = $aux_mesanno;
+                            $aux_request->sucursal_id = $invbodegaproducto->invbodega->sucursal_id;
+                            $aux_request->producto_id = $invbodegaproducto->producto_id;
+                            $aux_request->invbodega_id = $invbodegaproducto->invbodega_id;
+                            $aux_stock = InvMov::stock($aux_request);
+                            $aux_stock = $aux_stock->get();
+                            $totalStockinvbodega += $aux_stock[0]->stock;
                         ?>
                         <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                             <td>
-                                <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$aux_nfila}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none"/>
-                                <input type="text" name="sucursal_nombre[]" id="sucursal_nombre{{$aux_nfila}}" class="form-control" value="{{$invbodegaproducto->invbodega->sucursal->nombre}}"/>
+                                {{$invbodegaproducto->invbodega->sucursal->nombre}}
                             </td>
                             <td>
-                                <input type="text" name="invbodega_id[]" id="invbodega_id{{$aux_nfila}}" class="form-control" value="{{$invbodegaproducto->invbodega_id}}" style="display:none"/>
-                                <input type="text" name="invbodega_nombre[]" id="invbodega_nombre{{$aux_nfila}}" class="form-control" value="{{$invbodegaproducto->invbodega->nombre}}" disabled/>
+                                {{$invbodegaproducto->invbodega->nombre}}
                             </td>
-                            <td><input type="text" name="invbodegaproducto[]" id="invbodegaproducto{{$aux_nfila}}" class="form-control camponumerico" value="{{$invbodegaproducto->invbodegaproducto}}" disabled/></td>
-                            <td style="display: none"><input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$aux_nfila}}" class="form-control camponumerico" value="{{$invbodegaproducto->invbodegaproducto_id}}"/></td>
+                            <td style='text-align:center'>
+                                {{$aux_stock[0]->stock}}
+                            </td>
                         </tr>
                     @endforeach            
                 @endif
@@ -321,7 +333,7 @@
                 </tr>
                 <tr>
                     <th colspan='2' style='text-align:right'>Total Stock</th>
-                    <th id='totalstockinvbodega' name='totalstockinvbodega' style='text-align:right'>{{number_format($totalStockinvbodega, 2, ",", ".")}}</th>
+                    <th id='totalstockinvbodega' name='totalstockinvbodega' style='text-align:center'>{{number_format($totalStockinvbodega, 0, ",", ".")}}</th>
                 </tr>
             </tfoot>
 
