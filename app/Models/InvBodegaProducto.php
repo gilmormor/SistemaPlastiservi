@@ -36,7 +36,7 @@ class InvBodegaProducto extends Model
                             ->where("invmovdet.invbodegaproducto_id","=",$request["invbodegaproducto_id"])
                             ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
                             ->whereNull('staanul')
-                            ->groupBy("invmovdet.producto_id")
+                            ->groupBy("invmovdet.invbodegaproducto_id")
                             ->get();
         }else{
             $existencia = InvMov::selectRaw('SUM(cant) as cant')
@@ -46,7 +46,7 @@ class InvBodegaProducto extends Model
                             ->where("invmovdet.invbodega_id","=",$request["invbodega_id"])
                             ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
                             ->whereNull('staanul')
-                            ->groupBy("invmovdet.producto_id")
+                            ->groupBy("invmovdet.invbodegaproducto_id")
                             ->get();
         }
         $array_stock = $existencia->toArray();
