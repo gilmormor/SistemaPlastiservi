@@ -209,11 +209,13 @@
                                     <td name="cantordF{{$aux_nfila}}" id="cantordF{{$aux_nfila}}" style="text-align:right">
                                         <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" style="text-align:right;" readonly/>
                                     </td>
-                                    <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:right;">
+                                    <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:center;">
                                         <table class="table" id="tabla-bod" style="font-size:14px">
                                             <tbody>
+                                                <?php $i=0 ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
                                                     <?php
+                                                        $i++;
                                                         $request = new Request();
                                                         $request["producto_id"] = $invbodegaproducto->producto_id;
                                                         $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
@@ -237,9 +239,18 @@
                                                             <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right" title='Valor a despachar'>
                                                                 <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;"/>
                                                             </td>
-                                                        </tr>                                                        
+                                                        </tr>
+                                                    @else
+                                                        <a class='btn-sm tooltipsC' title='Producto sin Stock'>
+                                                            <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                                                        </a>
                                                     @endif
                                                 @endforeach
+                                                @if ($i == 0)
+                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock'>
+                                                        <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                                                    </a>
+                                                @endif
                                             </tbody>
                                         </table>
                                     </td>
