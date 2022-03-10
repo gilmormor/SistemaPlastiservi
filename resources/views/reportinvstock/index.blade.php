@@ -141,25 +141,26 @@ Stock Inventario
                     <legend></legend>
                 </div>
             </div>
-            <table class="table table-striped table-bordered table-hover" id="tabla-data-consulta" data-page-length="25">
-                <thead>
-                    <tr>
-                        <th class="width70">CodProd</th>
-                        <th>Producto</th>
-                        <th>Categoria</th>
-                        <th>Diametro</th>
-                        <th>Clase</th>
-                        <th>Largo</th>
-                        <th>Peso</th>
-                        <th class="tooltipsC" title="Tipo de Union">TU</th>
-                        <th>Bodega</th>
-                        <th style='text-align:center'>Stock</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" id="tabla-data-consulta" data-page-length="25">
+                    <thead>
+                        <tr>
+                            <th class="width70">CodProd</th>
+                            <th>Producto</th>
+                            <th>Categoria</th>
+                            <th>Diametro</th>
+                            <th>Clase</th>
+                            <th>Largo</th>
+                            <th>Peso</th>
+                            <th class="tooltipsC" title="Tipo de Union">TU</th>
+                            <th>Bodega</th>
+                            <th style='text-align:center'>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
