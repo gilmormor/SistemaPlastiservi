@@ -196,7 +196,7 @@
                                                                     <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
                                                                         {{$existencia["stock"]["cant"]}}
                                                                     </td>
-                                                                    <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right" title='Digite valor a despachar'>
+                                                                    <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right" title='Valor a despachar'>
                                                                         <?php $bandera = false; ?>
                                                                         @if(isset($despachoordrecdets))
                                                                             @foreach($despachoordrecdets as $despachoordrecdet)
