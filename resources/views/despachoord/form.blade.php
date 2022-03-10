@@ -241,9 +241,11 @@
                                                             </td>
                                                         </tr>
                                                     @else
-                                                        <a class='btn-sm tooltipsC' title='Producto sin Stock'>
-                                                            <i class='fa fa-fw fa-question-circle text-aqua'></i>
-                                                        </a>
+                                                        @if ($invbodegaproducto->invbodega->tipo == 2)
+                                                            <a class='btn-sm tooltipsC' title='Producto sin Stock'>
+                                                                <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                                                            </a>                                                        
+                                                        @endif
                                                     @endif
                                                 @endforeach
                                                 @if ($i == 0)
