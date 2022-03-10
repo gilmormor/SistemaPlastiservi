@@ -241,7 +241,7 @@
                                                             </td>
                                                         </tr>
                                                     @else
-                                                        @if ($invbodegaproducto->invbodega->tipo == 2)
+                                                        @if ($invbodegaproducto->invbodega->tipo == 1)
                                                             <a class='btn-sm tooltipsC' title='Producto sin Stock'>
                                                                 <i class='fa fa-fw fa-question-circle text-aqua'></i>
                                                             </a>                                                        

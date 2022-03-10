@@ -258,8 +258,20 @@
                                                                 @endforeach
                                                             </td>
                                                         </tr>
+                                                    @else
+                                                        @if ($invbodegaproducto->invbodega->tipo == 1)
+                                                            <a class='btn-sm tooltipsC' title='Producto sin Stock'>
+                                                                <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                                                            </a>                                                        
+                                                        @endif
                                                     @endif
                                                 @endforeach
+                                                @if ($i == 0)
+                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock'>
+                                                        <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                                                    </a>
+                                                @endif
+
                                             </tbody>
                                         </table>
                                     </td>
