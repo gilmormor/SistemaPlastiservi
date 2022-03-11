@@ -1024,7 +1024,7 @@ function genpdfGDI(id,stareport){ //GENERAR PDF GUIA DESPACHO INTERNA
 	$("#myModalpdf").modal('show')
 }
 
-$(document).on("click", ".btngenpdfNV1", function(){	
+$(document).on("click", ".btngenpdfNV1", function(){
     fila = $(this).closest("tr");
 	form = $(this);
 	if(form.attr('col')){
@@ -1043,6 +1043,17 @@ $(document).on("click", ".btngenpdfNV2", function(){
 		id = fila.find('td:eq(0)').text();
 	}
 	genpdfNV(id,2);
+});
+
+$(document).on("click", ".btngenpdfINVMOV", function(){
+    fila = $(this).closest("tr");
+	form = $(this);
+	if(form.attr('col')){
+		id = fila.find('td:eq('+form.attr('col')+')').text();
+	}else{
+		id = fila.find('td:eq(0)').text();
+	}
+	genpdfINVMOV(id,1);
 });
 
 
@@ -1077,6 +1088,12 @@ function genpdfODRec(id,stareport){ //GENERAR PDF Orden de Despacho Rechazo
 	$("#myModalpdf").modal('show')
 }
 
+function genpdfINVMOV(id,stareport){ //GENERAR PDF MOVIMIENTO DE INVENTARIO INVMOV
+	var data = "?id=" + id +
+    "&stareport="+stareport
+	$('#contpdf').attr('src', '/invmov/exportPdf/' + data);
+	$("#myModalpdf").modal('show')
+}
 
 
 $("#myModalpdf").on("hidden.bs.modal", function () {

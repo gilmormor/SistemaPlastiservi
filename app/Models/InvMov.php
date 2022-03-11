@@ -25,7 +25,7 @@ class InvMov extends Model
     //RELACION DE UNO A VARIOS InvMovDet
     public function invmovdets()
     {
-        return $this->hasMany(InvMovDet::class);
+        return $this->hasMany(InvMovDet::class,'invmov_id');
     }
 
     //RELACION INVERSA InvMovModulo
@@ -33,6 +33,12 @@ class InvMov extends Model
     {
         return $this->belongsTo(InvMovModulo::class);
     }
+    //Relacion inversa a Sucursal
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class);
+    }
+    
 
     public static function stock($request){
         $aux_annomes = CategoriaGrupoValMes::annomes($request->mesanno);

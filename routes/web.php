@@ -813,3 +813,8 @@ Route::get('reportinvstock', 'ReportInvStockController@index')->name('reportinvs
 Route::get('reportinvstockpage', 'ReportInvStockController@reportinvstockpage')->name('reportinvstockpage');
 Route::get('reportinvstock/reporte', 'ReportInvStockController@reporte')->name('reportinvstock_reporte');
 Route::get('reportinvstock/exportPdf', 'ReportInvStockController@exportPdf')->name('reportinvstock_exportPdf');
+
+/*RUTAS Movimiento Inventario INVMOV*/
+Route::get('invmov', 'InvMovController@index')->name('invmov');
+Route::get('invmovpage', 'InvMovController@invmovpage')->name('invmovpage');
+Route::get('invmov/exportPdf', 'InvMovController@exportPdf')->name('exportPdf_invmov');

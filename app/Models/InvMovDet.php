@@ -39,5 +39,15 @@ class InvMovDet extends Model
         return $this->belongsTo(InvBodegaProducto::class);
     }
     
+    //RELACION INVERSA InvModulo
+    public function invmovmodulo()
+    {
+        return $this->belongsTo(InvMovModulo::class);
+    }
+    //Relacion inversa a UnidadMedida
+    public function unidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class);
+    }
     
 }

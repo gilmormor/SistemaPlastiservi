@@ -34,8 +34,13 @@ class InvEntSalController extends Controller
     }
 
     public function inventsalpage(){
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
         return datatables()
-            ->eloquent(InvEntSal::query()->whereNull('staaprob'))
+            ->eloquent(InvEntSal::query()
+                        ->whereNull('staaprob')
+                        ->whereIn('inventsal.sucursal_id', $sucurArray)                        
+                    )
             ->toJson();
     }
 

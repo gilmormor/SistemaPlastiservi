@@ -748,8 +748,8 @@ class DespachoOrdController extends Controller
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                 $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                $invmov_array["desc"] = "Traslado a Bodega despacho Nro: " . $request->id;
-                $invmov_array["obs"] = "Traslado a Bodega despacho por aprobacion de Orden de despacho Nro: " . $request->id;
+                $invmov_array["desc"] = "Salida de Bodega Nro OD: " . $request->id;
+                $invmov_array["obs"] = "Salida de Bodega por aprobacion de Orden de despacho Nro OD: " . $request->id;
                 $invmov_array["invmovmodulo_id"] = 2; //Modulo Orden Despacho
                 $invmov_array["invmovtipo_id"] = 2;
                 $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
