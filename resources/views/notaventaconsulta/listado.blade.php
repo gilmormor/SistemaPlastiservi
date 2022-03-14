@@ -99,7 +99,7 @@
 									ON despachoordrecdet.despachoordrec_id=despachoordrec.id AND ISNULL(despachoordrec.anulada) AND ISNULL(despachoordrec.deleted_at) AND ISNULL(despachoordrecdet.deleted_at)
 									INNER JOIN despachoord
 									ON despachoord.id = despachoordrec.despachoord_id AND ISNULL(despachoord.deleted_at)
-									WHERE despachoord.notaventa_id=$id
+									WHERE despachoord.notaventa_id=$notaventa->id
 									AND despachoordrec.aprobstatus=2
 									and NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at)));";
 								$datas = DB::select($sql);
