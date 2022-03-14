@@ -297,11 +297,11 @@
                 </tr>
             </thead>
             <tbody id="tbody">
+                <?php 
+                    $aux_nfila = 0; 
+                    $totalStockinvbodega = 0;
+                ?>
                 @if ($aux_sta==2)
-                    <?php 
-                        $aux_nfila = 0; 
-                        $totalStockinvbodega = 0;
-                    ?>
                     @foreach ($invbodegaproductos->get() as $invbodegaproducto)
                         <?php 
                             $aux_nfila++; 
