@@ -129,7 +129,7 @@ class InvControlController extends Controller
                         $invcontrol = InvControl::where('annomes','=',$annomesini)
                                                 ->where('sucursal_id','=',$request->sucursal_id);
                         if($invcontrol->count() == 0){
-                            InvControl::create([
+                            $invcontrol = InvControl::create([
                                 'annomes' => $annomesini,
                                 'sucursal_id' => $request->sucursal_id,
                                 'usuario_id' => auth()->id()
@@ -154,6 +154,7 @@ class InvControlController extends Controller
                             $invmov_array["desc"] = "Movimiento inicio mes: " . $annomesini;
                             $invmov_array["obs"] = "Movimiento inicio mes: " . $annomesini;
                             $invmov_array["invmovmodulo_id"] = 4; //Cierre inicio Mes Inv
+                            $invmov_array["idmovmod"] = $invcontrol->id;
                             $invmov_array["invmovtipo_id"] = 6;
                             $invmov_array["sucursal_id"] = $request->sucursal_id;
                             $invmov_array["usuario_id"] = auth()->id();

@@ -17,6 +17,7 @@ class InvMov extends Model
         'staanul',
         'invmovtipo_id',
         'invmovmodulo_id',
+        'idmovmod',
         'sucursal_id',
         'usuario_id',
         'usuariodel_id'

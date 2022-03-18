@@ -23,6 +23,7 @@ class CreateTableInvmov extends Migration
             $table->dateTime('staanul')->comment('Fecha de anulación')->nullable();
             $table->unsignedBigInteger('invmovmodulo_id');
             $table->foreign('invmovmodulo_id','fk_invmov_invmovmodulo')->references('id')->on('invmovmodulo')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('idmovmod')->comment('Id origen de Movimiento. Ej: Id de tabla despachoord o moventsal.')->nullable();
             $table->unsignedBigInteger('invmovtipo_id');
             $table->foreign('invmovtipo_id','fk_invmov_invmovtipo')->references('id')->on('invmovtipo')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('sucursal_id');

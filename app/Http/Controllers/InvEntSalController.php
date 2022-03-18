@@ -236,6 +236,7 @@ class InvEntSalController extends Controller
                         $annomes = date("Ym");
                         $inventsal->annomes = $annomes;
                         $array_inventsal = $inventsal->attributesToArray();
+                        $array_inventsal['idmovmod'] = $array_inventsal['id'];
                         $invmov = InvMov::create($array_inventsal);
                         $inventsal->staaprob = 1;
                         $inventsal->fechahoraaprob = date("Y-m-d H:i:s");

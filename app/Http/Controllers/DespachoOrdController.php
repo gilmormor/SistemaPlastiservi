@@ -606,6 +606,7 @@ class DespachoOrdController extends Controller
                             $invmov_array["desc"] = "Salida de Bodega de Despacho en poder del cliente / Orden Despacho Nro: " . $request->id;
                             $invmov_array["obs"] = "Salida de Bodega de Despacho en poder del cliente / Orden Despacho Nro: " . $request->id;
                             $invmov_array["invmovmodulo_id"] = 3; //Guia de Despacho
+                            $invmov_array["idmovmod"] = $request->guiadespacho;
                             $invmov_array["invmovtipo_id"] = 2;
                             $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                             $invmov_array["usuario_id"] = auth()->id();
@@ -751,6 +752,7 @@ class DespachoOrdController extends Controller
                 $invmov_array["desc"] = "Salida de Bodega Nro OD: " . $request->id;
                 $invmov_array["obs"] = "Salida de Bodega por aprobacion de Orden de despacho Nro OD: " . $request->id;
                 $invmov_array["invmovmodulo_id"] = 2; //Modulo Orden Despacho
+                $invmov_array["idmovmod"] = $request->id;
                 $invmov_array["invmovtipo_id"] = 2;
                 $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                 $invmov_array["usuario_id"] = auth()->id();
@@ -776,6 +778,7 @@ class DespachoOrdController extends Controller
                 $invmov_array["desc"] = "Entrada a Bodega despacho Nro: " . $request->id;
                 $invmov_array["obs"] = "Entrada a Bodega despacho por aprobacion de Orden de despacho Nro: " . $request->id;
                 $invmov_array["invmovmodulo_id"] = 2; //Modulo Orden Despacho
+                $invmov_array["idmovmod"] = $request->id;
                 $invmov_array["invmovtipo_id"] = 1;
                 $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                 $invmov_array["usuario_id"] = auth()->id();

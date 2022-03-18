@@ -555,6 +555,7 @@ class DespachoOrdRecController extends Controller
                     $invmov_array["desc"] = "Entrada a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
                     $invmov_array["obs"] = "Entrada a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
                     $invmov_array["invmovmodulo_id"] = 5; //Rechazo Orden de Despacho
+                    $invmov_array["idmovmod"] = $request->id;
                     $invmov_array["invmovtipo_id"] = 1;
                     $invmov_array["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_id;
                     $invmov_array["usuario_id"] = auth()->id();
@@ -583,6 +584,7 @@ class DespachoOrdRecController extends Controller
                     $invmov_array["desc"] = "Salida a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
                     $invmov_array["obs"] = "Salida a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
                     $invmov_array["invmovmodulo_id"] = 5; //Rechazo Orden de Despacho
+                    $invmov_array["idmovmod"] = $request->id;
                     $invmov_array["invmovtipo_id"] = 2;
                     $invmov_array["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_id;
                     $invmov_array["usuario_id"] = auth()->id();

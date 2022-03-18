@@ -117,7 +117,8 @@ function consultainvmov($request){
     if(!empty($request->invbodega_id)){
         $aux_condinvbodega_id = "invmovdet.invbodega_id='$request->invbodega_id'";
     }
-    $sql = "SELECT invmov.id,invmov.fechahora,invmov.annomes,invmov.desc,invbodegaproducto.producto_id,invmovmodulo.nombre as invmovmodulo_nombre,
+    $sql = "SELECT invmov.id,invmov.fechahora,invmov.annomes,invmov.desc,invbodegaproducto.producto_id,invmov.idmovmod,
+            invmovmodulo.nombre as invmovmodulo_nombre,
             invbodega.nombre as invbodega_nombre,sucursal.nombre as sucursal_nombre,producto.nombre as producto_nombre,categoriaprod.nombre as categoriaprod_nombre,invmovdet.cant
             FROM invmov INNER JOIN invmovdet
             ON invmov.id = invmovdet.invmov_id and isnull(invmov.deleted_at) and isnull(invmov.staanul) and isnull(invmovdet.deleted_at)
