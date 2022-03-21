@@ -17,6 +17,7 @@ class ClienteTemp extends Model
         'email',
         'vendedor_id',
         'giro_id',
+        'giro',
         'comunap_id',
         'formapago_id',
         'plazopago_id',

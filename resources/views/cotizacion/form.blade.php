@@ -8,6 +8,7 @@
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
+<input type="hidden" name="giro" id="giro" value="{{old('giro', $data->giro ?? '')}}">
 
 @if($aux_sta==1)
     <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $tablas['vendedor_id'] ?? '')}}">
@@ -438,12 +439,12 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="razonsocialCTM" class="control-label" data-toggle='tooltip'>Razón Social</label>
+                        <label for="razonsocialCTM" class="control-label" data-toggle='tooltip' title="Razón Social">Razón Social</label>
                         <input type="text" name="razonsocialCTM" id="razonsocialCTM" class="form-control requeridos" tipoval="texto" value="{{old('razonsocialCTM')}}" placeholder="Razón Social"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="direccionCTM" class="control-label" data-toggle='tooltip' title="direccion">Dirección</label>
+                        <label for="direccionCTM" class="control-label" data-toggle='tooltip' title="Dirección">Dirección</label>
                         <input type="text" name="direccionCTM" id="direccionCTM" class="form-control requeridos" tipoval="texto"  maxlength="200" value="{{old('direccionCTM')}}" placeholder="Dirección"/>
                         <span class="help-block"></span>
                     </div>
@@ -454,12 +455,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
-                        <label for="emailCTM" class="control-label" data-toggle='tooltip' title="email">Email</label>
-                        <input type="text" name="emailCTM" id="emailCTM" class="form-control requeridos" tipoval="email" maxlength="50" value="{{old('emailCTM')}}" placeholder="Email"/>
-                        <span class="help-block"></span>
-                    </div>
-                    <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="giro_idCTM" class="control-label" data-toggle='tooltip' title="Giro">Giro</label>
                         <select name="giro_idCTM" id="giro_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" value="{{old('giro_idCTM')}}">
                             <option value="">Seleccione...</option>
@@ -473,7 +469,20 @@
                         </select>
                         <span class="help-block"></span>
                     </div>
-                    <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
+                    <div class="col-xs-12 col-sm-8" classorig="col-xs-12 col-sm-8">
+                        <label for="giroCTM" class="control-label" data-toggle='tooltip' title="Descripción Giro">Descripción Giro</label>
+                        <input type="text" name="giroCTM" id="giroCTM" class="form-control requeridos" tipoval="texto" value="{{old('giroCTM')}}" placeholder="Descripción Giro"/>
+                        <span class="help-block"></span>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="emailCTM" class="control-label" data-toggle='tooltip' title="email">Email</label>
+                        <input type="text" name="emailCTM" id="emailCTM" class="form-control requeridos" tipoval="email" maxlength="50" value="{{old('emailCTM')}}" placeholder="Email"/>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="formapago_idCTM" class="control-label">Forma de Pago</label>
                         <select name="formapago_idCTM" id="formapago_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" data-live-search='true' title='Seleccione...' value="{{old('formapago_idCTM')}}">
                             <option value="">Seleccione...</option>
@@ -487,7 +496,7 @@
                         </select>
                         <span class="help-block"></span>
                     </div>
-                    <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                         <label for="plazopago_idCTM" class="control-label">Plazo de Pago</label>
                         <select name="plazopago_idCTM" id="plazopago_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" data-live-search='true' title='Seleccione...' value="{{old('plazopago_idCTM')}}">
                             <option value="">Seleccione...</option>

@@ -64,7 +64,11 @@ class InvMov extends Model
                 if(!isset($request->invbodega_id) or empty($request->invbodega_id)){
                     true;
                 }else{
-                    $query->where("invmovdet.invbodega_id","=",$request->invbodega_id);
+                    if(!is_array($request->invbodega_id)){
+                        $aux_invbodegaid = explode(",", $request->invbodega_id);
+                    }
+                    $query->whereIn("invmovdet.invbodega_id",$aux_invbodegaid);
+                    //$query->where("invmovdet.invbodega_id","=",$request->invbodega_id);
                 }
             })
             ->where(function($query) use ($request)  {
@@ -89,7 +93,11 @@ class InvMov extends Model
                 if(!isset($request->areaproduccion_id) or empty($request->areaproduccion_id)){
                     true;
                 }else{
-                    $query->where("categoriaprod.areaproduccion_id","=",$request->areaproduccion_id);
+                    if(!is_array($request->areaproduccion_id)){
+                        $aux_areaproduccionid = explode(",", $request->areaproduccion_id);
+                    }
+                    $query->whereIn("categoriaprod.areaproduccion_id",$aux_areaproduccionid);
+                    //$query->where("categoriaprod.areaproduccion_id","=",$request->areaproduccion_id);
                 }
             })
             ->whereNull("invmov.staanul")

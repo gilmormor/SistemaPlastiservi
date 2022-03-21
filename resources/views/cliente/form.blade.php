@@ -37,11 +37,11 @@
         <label for="email" class="control-label requerido" data-toggle='tooltip' title="email">Email</label>
         <input type="text" name="email" id="email" class="form-control" value="{{old('email', $data->email ?? '')}}" required  maxlength="50" placeholder="Ingrese Email"/>
     </div>
-    <div class="form-group col-xs-12 col-sm-2">
+    <div class="form-group col-xs-12 col-sm-4">
         <label for="nombrefantasia" class="control-label" data-toggle='tooltip' title="Nombre de Fantasia">Fantasia</label>
         <input type="text" name="nombrefantasia" id="nombrefantasia" class="form-control" value="{{old('nombrefantasia', $data->nombrefantasia ?? '')}}" maxlength="50" placeholder="Nombre de Fantasia"/>
     </div>
-    <div class="form-group col-xs-12 col-sm-4">
+    <div class="form-group col-xs-12 col-sm-5">
         <label for="vendedor_id" class="control-label requerido" data-toggle='tooltip' title="Vendedores">Vendedores</label>
         <select name="vendedor_id[]" id="vendedor_id" class="form-control select2" multiple required>
             @foreach($vendedores as $vendedor)
@@ -54,8 +54,10 @@
             @endforeach
         </select>
     </div>
+</div>
+<div class="row">
     <div class="form-group col-xs-12 col-sm-3">
-        <label for="giro_id" class="control-label requerido" data-toggle='tooltip' title="Giro">Giro</label>
+        <label for="giro_id" class="control-label requerido" data-toggle='tooltip' title="Clasificación Giro">Clasificación Giro</label>
         <select name="giro_id" id="giro_id" class="form-control select2 giro_id" required>
             <option value="">Seleccione...</option>
             @foreach($giros as $giro)
@@ -70,7 +72,13 @@
             @endforeach
         </select>
     </div>
+    <div class="form-group col-xs-12 col-sm-9">
+        <label for="giro" class="control-label requerido" data-toggle='tooltip' title="Descripción Giro">Descripción Giro</label>
+        <input type="text" name="giro" id="giro" class="form-control" value="{{old('giro', $data->giro ?? '')}}" maxlength="100" required/>
+    </div>
+
 </div>
+
 <div class="row">
     <div class="form-group col-xs-12 col-sm-3">
         <label for="sucursalp_id" class="control-label requerido" data-toggle='tooltip' title="Sucursal">Sucursal</label>

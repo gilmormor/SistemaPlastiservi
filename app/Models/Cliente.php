@@ -20,6 +20,7 @@ class Cliente extends Model
         'nombrefantasia',
         'sta_temp',
         'giro_id',
+        'giro',
         'regionp_id',
         'provinciap_id',
         'comunap_id',
