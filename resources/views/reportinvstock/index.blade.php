@@ -6,7 +6,6 @@ Stock Inventario
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-
     <script src="{{autoVer("assets/pages/scripts/reportinvstock/index.js")}}" type="text/javascript"></script>
 @endsection
 <?php
@@ -154,7 +153,11 @@ Stock Inventario
                             <th>Peso</th>
                             <th class="tooltipsC" title="Tipo de Union">TU</th>
                             <th>Bodega</th>
-                            <th style='text-align:center'>Stock</th>
+                            <th style='text-align:center'>Ini</th>
+                            <th style='text-align:center'>Ent</th>
+                            <th style='text-align:center'>Sal</th>
+                            <th style='text-align:center'>Stock Uni</th>
+                            <th style='text-align:center'>Stock Kg</th>
                         </tr>
                     </thead>
                     <tbody>

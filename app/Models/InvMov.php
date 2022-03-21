@@ -51,6 +51,7 @@ class InvMov extends Model
             ->join("categoriaprod","producto.categoriaprod_id","=","categoriaprod.id")
             ->join("invbodega","invbodegaproducto.invbodega_id","=","invbodega.id")
             ->join("claseprod","producto.claseprod_id","=","claseprod.id")
+            ->join("invmovtipo","invmovdet.invmovtipo_id","=","invmovtipo.id")
             ->where("invmov.annomes","=",$aux_annomes)
             ->where(function($query) use ($request)  {
                 if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
@@ -105,7 +106,11 @@ class InvMov extends Model
                 'invbodegaproducto_id',
                 'invbodega.nombre as invbodega_nombre'
             ])
+            ->selectRaw("SUM(if(invmovtipo.stacieinimes=1,cant,0)) as stockini")
+            ->selectRaw("SUM(if(invmovtipo.stacieinimes=0 AND invmovdet.cant>0,cant,0)) AS mov_in")
+            ->selectRaw("SUM(if(invmovtipo.stacieinimes=0 AND invmovdet.cant < -1,cant,0)) AS mov_out")
             ->selectRaw("SUM(cant) as stock")
+            ->selectRaw("SUM(cantkg) as stockkg")
             ->groupBy('invbodegaproducto_id')
             ->orderBy('invbodegaproducto.producto_id')
             ->orderBy('invbodega.orden');

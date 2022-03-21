@@ -34,14 +34,22 @@ $(document).ready(function () {
                 {data: 'peso'},
                 {data: 'tipounion'},
                 {data: 'invbodega_nombre'},
-                {data: 'stock'}
+                {data: 'stockini'},
+                {data: 'mov_in'},
+                {data: 'mov_out'},
+                {data: 'stock'},
+                {data: 'stockkg'}
             ],
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             },
             "createdRow": function ( row, data, index ) {
                 $('td', row).eq(9).attr('style','text-align:center');
-
+                $('td', row).eq(10).attr('style','text-align:center');
+                $('td', row).eq(11).attr('style','text-align:center');
+                $('td', row).eq(12).attr('style','text-align:center');
+                $('td', row).eq(13).attr('style','text-align:center');
+                $('td', row).eq(13).html(MASK(0, data.stockkg, '-###,###,###,##0.00',1));
                 /*
                 aux_mesanno = mesanno(data.annomes);
                 $('td', row).eq(1).html(aux_mesanno);

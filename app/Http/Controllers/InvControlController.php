@@ -144,7 +144,8 @@ class InvControlController extends Controller
                                                 'invmovdet.sucursal_id',
                                                 'unidadmedida_id',
                                                 'invmovdet.invmovtipo_id',
-                                                DB::raw('sum(cant) as cant')
+                                                DB::raw('sum(cant) as cant'),
+                                                DB::raw('sum(cantkg) as cantkg')
                                             ])
                                     ->groupBy("invmovdet.invbodegaproducto_id")
                                     ->get();

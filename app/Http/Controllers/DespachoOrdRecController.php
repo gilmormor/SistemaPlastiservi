@@ -572,6 +572,7 @@ class DespachoOrdRecController extends Controller
                             $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 1;
                             $array_invmovdet["cant"] = $array_invmovdet["cant"];
+                            $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);                                
                         }
@@ -601,6 +602,7 @@ class DespachoOrdRecController extends Controller
                             $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 2;
                             $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
+                            $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);                                
                         }
