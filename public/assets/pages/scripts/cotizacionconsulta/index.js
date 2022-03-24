@@ -7,11 +7,11 @@ $(document).ready(function () {
         consultar($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val());
     });
 
-    $("#btnpdf1").click(function()
+    $("#btnpdf").click(function()
     {
-        consultarpdf($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val());
+        btnpdf();
     });
-
+    
      //alert(aux_nfila);
     $('.datepicker').datepicker({
 		language: "es",
@@ -182,3 +182,13 @@ $("#rut").blur(function(){
 		}
 	}
 });
+
+
+function btnpdf(){
+    cadena = "?fechad=" + $("#fechad").val() +
+            "&fechah="+$("#fechah").val() +
+            "&rut="+$("#rut").val() +
+            "&vendedor_id=" + $("#vendedor_id").val()
+    $('#contpdf').attr('src', '/cotizacionconsulta/exportPdf/'+cadena);
+    $("#myModalpdf").modal('show');
+}

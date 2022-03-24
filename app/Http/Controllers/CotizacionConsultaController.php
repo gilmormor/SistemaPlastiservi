@@ -151,7 +151,7 @@ class CotizacionConsultaController extends Controller
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i'  style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle'>
                     <td id='id$i' name='id$i'>$data->id</td>
-                    <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>".date('d-m-Y', strtotime($data->fechahora)). " ".date('h:i:s A', strtotime($data->fechahora)) ."</td>
+                    <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>".date('d-m-Y', strtotime($data->fechahora)). "</td>
                     <td id='contacto$i' name='contacto$i'>$rut</td>
                     <td id='contacto$i' name='contacto$i'>$data->razonsocial</td>
                     <td>
@@ -256,14 +256,12 @@ class CotizacionConsultaController extends Controller
 
     public function exportPdf(Request $request)
     {
+        //dd($request);
         //$cotizaciones = Cotizacion::orderBy('id')->get();
         $rut=str_replace("-","",$request->rut);
         $rut=str_replace(".","",$rut);
+        $cotizaciones = consulta($request);
 
-        if($request->ajax()){
-            $cotizaciones = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id);
-        }
-        $cotizaciones = consulta($request->fechad,$request->fechah,$rut,$request->vendedor_id);
         $aux_fdesde= $request->fechad;
         $aux_fhasta= $request->fechah;
 
@@ -321,12 +319,12 @@ function consulta($request){
 
         //$vendedorcond = "cotizacion.vendedor_id='$vendedor_id1'";
     }
-    if(empty($request->fdesde) or empty($request->fhasta)){
+    if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
     }else{
-        $fecha = date_create_from_format('d/m/Y', $request->fdesde);
+        $fecha = date_create_from_format('d/m/Y', $request->fechad);
         $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
-        $fecha = date_create_from_format('d/m/Y', $request->fhasta);
+        $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "cotizacion.fechahora>='$fechad' and cotizacion.fechahora<='$fechah'";
     }
@@ -347,11 +345,11 @@ function consulta($request){
         on cotizacion.cliente_id=cliente.id
         left join clientetemp
         on cotizacion.clientetemp_id=clientetemp.id
-        where " . $aux_condFecha . 
-        " and " . $vendedorcond .
-        " and " . $aux_condrut .
-        " and cotizacion.deleted_at is null;";
-    //dd("$sql");
+        where $aux_condFecha
+        and $vendedorcond
+        and $aux_condrut
+        and cotizacion.deleted_at is null;";
     $datas = DB::select($sql);
+    //dd($datas);
     return $datas;
 }

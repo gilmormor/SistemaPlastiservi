@@ -68,8 +68,8 @@
 						}
 					?>
 						<tr class="headt" style="height:150%;">
-							<td class="textcenter">{{number_format($cotizacion->id,0)}}</td>
-							<td class="textcenter">{{date('d-m-Y', strtotime($cotizacion->fechahora))}} {{date("h:i:s A", strtotime($cotizacion->fechahora))}}</td>
+							<td class="textcenter">{{$cotizacion->id,0}}</td>
+							<td class="textcenter">{{date('d-m-Y', strtotime($cotizacion->fechahora))}}</td>
 							<td class="textleft">{{$rut}}</td>
 							<td class="textleft">{{$cotizacion->razonsocial}}</td>
 							<td class="textleft">{{$aux_mensaje}}</td>
