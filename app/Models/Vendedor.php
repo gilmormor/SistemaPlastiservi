@@ -120,4 +120,11 @@ class Vendedor extends Model
         return $respuesta;
     }
 
+    //RELACION MUCHO A MUCHOS producto TRAVES DE producto_vendedor
+    public function productos()
+    {
+        return $this->belongsToMany(Cliente::class, 'producto_vendedor');
+    }
+
+
 }

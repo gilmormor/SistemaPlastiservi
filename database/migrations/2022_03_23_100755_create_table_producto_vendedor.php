@@ -21,7 +21,6 @@ class CreateTableProductoVendedor extends Migration
             $table->unsignedBigInteger('vendedor_id');
             $table->foreign('vendedor_id','fk_productovendedor_vendedor')->references('id')->on('vendedor')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
-            $table->softDeletes();
             $table->timestamps();
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_spanish_ci';

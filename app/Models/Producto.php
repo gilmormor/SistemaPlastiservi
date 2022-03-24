@@ -101,6 +101,12 @@ class Producto extends Model
     {
         return $this->hasOne(AcuerdoTecnico::class);
     }
+
+    //RELACION MUCHO A MUCHOS vendedor A TRAVES DE producto_vendedor
+    public function vendedores()
+    {
+        return $this->belongsToMany(Vendedor::class, 'producto_vendedor');
+    }
     
 
 }
