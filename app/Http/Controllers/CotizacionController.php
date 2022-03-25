@@ -120,6 +120,7 @@ class CotizacionController extends Controller
         $tablas['vendedores'] = $vendedor['vendedores'];
         $productos = Producto::productosxUsuario();
         //dd($tablas['unidadmedida']);
+        session(['aux_aprocot' => '0']);
 
         return view('cotizacion.crear',compact('clientes','fecha','productos','aux_sta','tablas'));
     }
