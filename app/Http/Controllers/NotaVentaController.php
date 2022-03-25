@@ -479,6 +479,7 @@ class NotaVentaController extends Controller
                 unset($array_cotizaciondetalle["id"],$array_cotizaciondetalle["usuariodel_id"],$array_cotizaciondetalle["deleted_at"],$array_cotizaciondetalle["created_at"],$array_cotizaciondetalle["updated_at"]);
                 //dd($array_cotizaciondetalle);
                 if($cotizaciondetalle->acuerdotecnicotemp){
+                    //SI EXISTE ACUERDO TECNICO SE CREA EL PRODUCTO
                     //dd($cotizaciondetalle->acuerdotecnicotemp->attributesToArray());
                     $array_acuerdotecnicotemp = $cotizaciondetalle->acuerdotecnicotemp->attributesToArray();
                     $producto = Producto::findOrFail($cotizaciondetalle->producto_id);
@@ -488,6 +489,8 @@ class NotaVentaController extends Controller
                     $array_producto["precioneto"] = $cotizaciondetalle->precioxkilo;
                     $array_producto["tipoprod"] = 0;
                     $productonew = Producto::create($array_producto);
+                    //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
+                    $productonew->vendedores()->sync($request->vendedor_id);
                     $array_acuerdotecnicotemp["producto_id"] = $productonew->id;
                     $acuerdotecnico = AcuerdoTecnico::create($array_acuerdotecnicotemp);
                     $array_cotizaciondetalle["producto_id"] = $productonew->id;
