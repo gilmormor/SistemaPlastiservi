@@ -26,6 +26,7 @@ use App\Models\NotaVentaDetalle;
 use App\Models\Notificaciones;
 use App\Models\PlazoPago;
 use App\Models\Producto;
+use App\Models\ProductoVendedor;
 use App\Models\Provincia;
 use App\Models\Region;
 use App\Models\Seguridad\Usuario;
@@ -490,7 +491,11 @@ class NotaVentaController extends Controller
                     $array_producto["tipoprod"] = 0;
                     $productonew = Producto::create($array_producto);
                     //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
-                    $productonew->vendedores()->sync($request->vendedor_id);
+                    //$productonew->vendedores()->sync($request->vendedor_id);
+                    ProductoVendedor::create([
+                        'producto_id' => $array_producto['id'],
+                        'vendedor_id' => $request->vendedor_id
+                    ]);
                     $array_acuerdotecnicotemp["producto_id"] = $productonew->id;
                     $acuerdotecnico = AcuerdoTecnico::create($array_acuerdotecnicotemp);
                     $array_cotizaciondetalle["producto_id"] = $productonew->id;
