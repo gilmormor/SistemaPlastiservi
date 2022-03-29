@@ -277,7 +277,7 @@ class ProductoController extends Controller
             if(count($array_productos) > 0){
                 $respuesta = $array_productos[0];
                 $producto = Producto::findOrFail($request->id);
-                $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',1)->toArray();
+                $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->toArray();
                 //dd($respuesta['bodegas']);
                 foreach ($respuesta['bodegas'] as &$bodega) {
                     $request1 = new Request();
