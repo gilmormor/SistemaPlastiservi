@@ -26,6 +26,7 @@ class ValidarMateriaPrima extends FormRequest
         return [
             'nombre' => 'required|max:60|unique:materiaprima,nombre,' . $this->route('id'),
             'desc' => 'required|max:100',
+            'pe' => 'required',
         ];
     }
 }
