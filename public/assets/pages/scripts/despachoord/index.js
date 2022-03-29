@@ -270,7 +270,7 @@ function aprobarord(i,id){
     var data = {
 		id         : id,
         nfila      : i,
-        tipobodega : 2, //Codigo de tipo de bodega = 2 (Bodegas de despacho)
+        tipobodega : 3, //Codigo de tipo de bodega = 3 (Bodegas de despacho)
         _token: $('input[name=_token]').val()
 	};
 	var ruta = '/invbodega/buscarTipoBodegaOrdDesp';

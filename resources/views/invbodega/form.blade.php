@@ -71,11 +71,19 @@
                     {{'selected'}}
                 @endif
             >
-                Bodega
+                Producción
             </option>
             <option
                 value="2"
                 @if (isset($data->tipo) and ($data->tipo==2))
+                    {{'selected'}}
+                @endif
+            >
+                Bodega
+            </option>
+            <option
+                value="3"
+                @if (isset($data->tipo) and ($data->tipo==3))
                     {{'selected'}}
                 @endif
             >

@@ -237,7 +237,7 @@
                                                         $existencia = InvBodegaProducto::existencia($request);
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                     ?>
-                                                    @if ($invbodegaproducto->invbodega->tipo == 1) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->
+                                                    @if ($invbodegaproducto->invbodega->tipo == 2) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
                                                             <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                 <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
@@ -259,7 +259,7 @@
                                                             </td>
                                                         </tr>
                                                     @else
-                                                        @if ($invbodegaproducto->invbodega->tipo == 1)
+                                                        @if ($invbodegaproducto->invbodega->tipo == 2)
                                                             <a class='btn-sm tooltipsC' title='{{$invbodegaproducto->invbodega->nombre}}: Producto sin Stock'>
                                                                 <i class='fa fa-fw fa-question-circle text-aqua'></i>
                                                             </a>                                                        

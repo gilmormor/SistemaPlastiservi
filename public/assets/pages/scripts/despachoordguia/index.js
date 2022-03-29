@@ -420,7 +420,7 @@ $("#btnGuardarG").click(function(event)
 					var data = {
 						id         : $("#idg").val(),
 						nfila      : $("#nfila").val(),
-						tipobodega : 2, //Codigo de tipo de bodega = 2 (Bodegas de despacho)
+						tipobodega : 3, //Codigo de tipo de bodega = 3 (Bodegas de despacho)
 						_token: $('input[name=_token]').val()
 					};
 					var ruta = '/invbodega/buscarTipoBodegaOrdDesp';
@@ -467,7 +467,7 @@ $("#btnGuardarGanul").click(function(event)
 		var data = {
 			id         : $("#idanul").val(),
 			nfila      : $("#nfilaanul").val(),
-			tipobodega : 2, //Codigo de tipo de bodega = 2 (Bodegas de despacho)
+			tipobodega : 3, //Codigo de tipo de bodega = 3 (Bodegas de despacho)
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/invbodega/buscarTipoBodegaOrdDesp';
