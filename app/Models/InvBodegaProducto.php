@@ -85,7 +85,7 @@ class InvBodegaProducto extends Model
                 $request["invbodega_id"] = $inventsaldet->invbodega_id;    
             }
             $request["cant"] = $inventsaldet->cant;
-            $request["tipo"] = 1;
+            $request["tipo"] = 2;
             $request["annomes"] = $annomes;
             //$invbodegaproductoexistencia = $invbodegaproducto->consexistencia($request);
             $invbodegaproductoexistencia = InvBodegaProducto::existencia($request);

@@ -179,7 +179,7 @@
                                                                 $request = new Request();
                                                                 $request["producto_id"] = $invbodegaproducto->producto_id;
                                                                 $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
-                                                                $request["tipo"] = 1;
+                                                                $request["tipo"] = 2;
                                                                 $existencia = $invbodegaproducto::existencia($request);
                                                                 //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                             ?>
