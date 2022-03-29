@@ -16,8 +16,11 @@ class InvEntSalDet extends Model
         'producto_id',
         'sucursal_id',
         'invmovtipo_id',
-        'Cant',
-        'Cantkg',
+        'cant',
+        'cantgrupo',
+        'cantxgrupo',
+        'peso',
+        'cantkg',
         'unidadmedida_id',
         'usuariodel_id'
     ];

@@ -188,6 +188,8 @@ class CotizacionController extends Controller
                     $cotizaciondetalle->cotizacion_id = $cotizacionid;
                     $cotizaciondetalle->producto_id = $request->producto_id[$i];
                     $cotizaciondetalle->cant = $request->cant[$i];
+                    $cotizaciondetalle->cantgrupo = $request->cant[$i];
+                    $cotizaciondetalle->cantxgrupo = 1;
                     $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $cotizaciondetalle->descuento = $request->descuento[$i];
                     $cotizaciondetalle->preciounit = $request->preciounit[$i];
@@ -339,6 +341,8 @@ class CotizacionController extends Controller
                     $cotizaciondetalle->cotizacion_id = $id;
                     $cotizaciondetalle->producto_id = $request->producto_id[$i];
                     $cotizaciondetalle->cant = $request->cant[$i];
+                    $cotizaciondetalle->cantgrupo = $request->cant[$i];
+                    $cotizaciondetalle->cantxgrupo = 1;
                     $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $cotizaciondetalle->descuento = $request->descuento[$i];
                     $cotizaciondetalle->preciounit = $request->preciounit[$i];
@@ -367,6 +371,8 @@ class CotizacionController extends Controller
                         [
                             'producto_id' => $request->producto_id[$i],
                             'cant' => $request->cant[$i],
+                            'cantgrupo' => $request->cant[$i],
+                            'cantxgrupo' => 1,
                             'unidadmedida_id' => $request->unidadmedida_id[$i],
                             'descuento' => $request->descuento[$i],
                             'preciounit' => $request->preciounit[$i],

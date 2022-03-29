@@ -10,13 +10,13 @@ $(document).ready(function () {
     }).datepicker("setDate");
 
     configurarTabla('#tabla-data-consulta');
-    
+
     function configurarTabla(aux_tabla){
         data = datos();
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
-            'searching'   : true,
+            'searching'   : false,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
@@ -49,7 +49,11 @@ $(document).ready(function () {
                 $('td', row).eq(11).attr('style','text-align:center');
                 $('td', row).eq(12).attr('style','text-align:center');
                 $('td', row).eq(13).attr('style','text-align:center');
-                $('td', row).eq(13).html(MASK(0, data.stockkg, '-###,###,###,##0.00',1));
+                //$('td', row).eq(13).html(MASK(0, data.stockkg, '-###,###,###,##0.00',1));
+                $('td', row).eq(13).attr('data-order',data.stockkg);
+                $('td', row).eq(13).attr('data-search',data.stockkg);
+                $('td', row).eq(13).html(MASKLA(data.stockkg,2));
+                //MASKLA(data.aux_totalkg,2);
                 /*
                 aux_mesanno = mesanno(data.annomes);
                 $('td', row).eq(1).html(aux_mesanno);

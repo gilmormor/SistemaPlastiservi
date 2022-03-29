@@ -87,11 +87,15 @@ class InvEntSalController extends Controller
         if($cont_producto>0){
             for ($i=0; $i < $cont_producto ; $i++){
                 if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                    $producto = Producto::findOrFail($request->producto_id[$i]);
                     $invmovtipo = InvMovTipo::findOrFail($request->invmovtipo_idTD[$i]);
                     $inventsaldet = new InvEntSalDet();
                     $inventsaldet->inventsal_id = $inventsal_id;
                     $inventsaldet->producto_id = $request->producto_id[$i];
                     $inventsaldet->cant = $request->cant[$i] * $invmovtipo->tipomov;
+                    $inventsaldet->cantgrupo = $request->cant[$i] * $invmovtipo->tipomov;
+                    $inventsaldet->cantxgrupo = 1;
+                    $inventsaldet->peso = $producto->peso;
                     $inventsaldet->cantkg = $request->totalkilos[$i] * $invmovtipo->tipomov;
                     $inventsaldet->unidadmedida_id = $request->unidadmedida_id[$i];
                     $inventsaldet->invbodega_id = $request->invbodega_idTD[$i];
@@ -175,7 +179,7 @@ class InvEntSalController extends Controller
                         ]
                     );
                     //$inventsaldet->invbodegaproducto_id = $invbodegaproducto->id;
-
+                    $producto = Producto::findOrFail($request->producto_id[$i]);
 
                     DB::table('inventsaldet')->updateOrInsert(
                         ['id' => $request->NVdet_id[$i], 'inventsal_id' => $id],
@@ -184,11 +188,13 @@ class InvEntSalController extends Controller
                             'unidadmedida_id' => $request->unidadmedida_id[$i],
                             'invbodega_id' => $request->invbodega_idTD[$i],
                             'cant' => $request->cant[$i] * $invmovtipo->tipomov,
+                            'cantgrupo' => $request->cant[$i] * $invmovtipo->tipomov,
+                            'cantxgrupo' => 1,
+                            'peso' => $producto->peso,
                             'cantkg' => $request->totalkilos[$i] * $invmovtipo->tipomov,
                             'invmovtipo_id' => $request->invmovtipo_idTD[$i],
                             'invbodegaproducto_id' => $invbodegaproducto->id,
                             'sucursal_id' =>  $invbodegaproducto->invbodega->sucursal_id
-
                         ]
                     );
                 }

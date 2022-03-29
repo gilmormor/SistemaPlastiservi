@@ -12,7 +12,8 @@ class UnidadMedida extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
-        'mostrarfact'
+        'mostrarfact',
+        'agrupado'
     ];
 
     public function acuerdotectempanchos()

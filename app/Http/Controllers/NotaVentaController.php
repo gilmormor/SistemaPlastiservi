@@ -393,6 +393,8 @@ class NotaVentaController extends Controller
                     $notaventadetalle->producto_id = $request->producto_id[$i];
                     $notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];                    
                     $notaventadetalle->cant = $request->cant[$i];
+                    $notaventadetalle->cantgrupo = $request->cant[$i];
+                    $notaventadetalle->cantxgrupo = 1;
                     $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $notaventadetalle->descuento = $request->descuento[$i];
                     $notaventadetalle->preciounit = $request->preciounit[$i];
@@ -570,6 +572,8 @@ class NotaVentaController extends Controller
                         $notaventadetalle->producto_id = $request->producto_id[$i];
                         //$notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];
                         $notaventadetalle->cant = $request->cant[$i];
+                        $notaventadetalle->cantgrupo = $request->cant[$i];
+                        $notaventadetalle->cantxgrupo = 1;
                         $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                         $notaventadetalle->descuento = $request->descuento[$i];
                         $notaventadetalle->preciounit = $request->preciounit[$i];
@@ -600,6 +604,8 @@ class NotaVentaController extends Controller
                                 'producto_id' => $request->producto_id[$i],
                                 'cotizaciondetalle_id' => $request->cotizaciondetalle_id[$i],
                                 'cant' => $request->cant[$i],
+                                'cantgrupo' => $request->cant[$i],
+                                'cantxgrupo' => 1,
                                 'unidadmedida_id' => $request->unidadmedida_id[$i],
                                 'descuento' => $request->descuento[$i],
                                 'preciounit' => $request->preciounit[$i],

@@ -31,6 +31,9 @@ class CreateTableInventsaldet extends Migration
             $table->unsignedBigInteger('invmovtipo_id');
             $table->foreign('invmovtipo_id','fk_inventsaldet_invmovtipo')->references('id')->on('invmovtipo')->onDelete('restrict')->onUpdate('restrict');
             $table->float('cant',18,2)->comment('Cantidad');
+            $table->float('cantgrupo',10,2)->comment('Cantidad agrupada ejemplo: 1 paquete, 1 rollo, 1 caja');
+            $table->float('cantxgrupo',10,2)->comment('Cantidad por Grupo');
+            $table->float('peso',10,4)->comment('Peso unitario Producto')->nullable();
             $table->float('cantkg',18,2)->comment('Cantidad en kg');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
