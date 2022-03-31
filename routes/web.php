@@ -792,7 +792,10 @@ Route::post('inventsal', 'InvEntSalController@guardar')->name('guardar_inventsal
 Route::get('inventsal/{id}/editar', 'InvEntSalController@editar')->name('editar_inventsal');
 Route::put('inventsal/{id}', 'InvEntSalController@actualizar')->name('actualizar_inventsal');
 Route::delete('inventsal/{id}', 'InvEntSalController@eliminar')->name('eliminar_inventsal');
+Route::post('inventsal/enviaraprobarinventsal/{id}', 'InvEntSalController@enviaraprobarinventsal')->name('enviaraprobarinventsal_inventsal');
 Route::post('inventsal/aprobinventsal/{id}', 'InvEntSalController@aprobinventsal')->name('aprobinventsal_inventsal');
+Route::get('inventsal/exportPdf', 'InvEntSalController@exportPdf')->name('exportPdf_inventsal');
+
 
 /*RUTAS InvBodegaProductoController*/
 Route::post('invbodegaproducto/consexistencia', 'InvBodegaProductoController@consexistencia')->name('consexistencia_invbodegaproducto');
@@ -818,3 +821,13 @@ Route::get('reportinvstock/exportPdf', 'ReportInvStockController@exportPdf')->na
 Route::get('invmov', 'InvMovController@index')->name('invmov');
 Route::get('invmovpage', 'InvMovController@invmovpage')->name('invmovpage');
 Route::get('invmov/exportPdf', 'InvMovController@exportPdf')->name('exportPdf_invmov');
+
+
+/*RUTAS Entradas y Salidas de Inventario Aprobar y pasar al inventario InvMov*/
+Route::get('inventsalaprobar', 'InvEntSalAprobarController@index')->name('inventsalaprobar');
+Route::get('inventsalaprobarpage', 'InvEntSalAprobarController@inventsalaprobarpage')->name('inventsalaprobarpage');
+Route::post('inventsalaprobar', 'InvEntSalAprobarController@guardar')->name('guardar_inventsalaprobar');
+Route::post('inventsalaprobar/aprobar/{id}', 'InvEntSalAprobarController@aprobar')->name('inventsalaprobar_aprobar');
+
+/*RUTAS Generales*/
+Route::post('generales_valpremiso', 'GeneralesController@generales_valpremiso')->name('generales_valpremiso');

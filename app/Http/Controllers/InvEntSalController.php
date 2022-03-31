@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarInvEntSal;
 use App\Models\Cliente;
+use App\Models\Empresa;
 use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
 use App\Models\InvControl;
@@ -19,6 +20,8 @@ use App\Models\Sucursal;
 use App\Models\UnidadMedida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
+
 
 class InvEntSalController extends Controller
 {
@@ -222,7 +225,8 @@ class InvEntSalController extends Controller
         //
     }
 
-    public function aprobinventsal(Request $request)
+
+    public function enviaraprobarinventsal(Request $request)
     {
         if ($request->ajax()) {
             $inventsal = InvEntSal::findOrFail($request->id);
@@ -239,12 +243,59 @@ class InvEntSalController extends Controller
                 if($cont[0]->cont == 1){
                     $aux_respuesta = InvBodegaProducto::validarExistenciaStock($inventsal->inventsaldets);
                     if($aux_respuesta["bandera"]){
+                        $inventsal->staaprob = 1;
+                        $inventsal->fechahoraaprob = date("Y-m-d H:i:s");
+                        if($inventsal->save()){
+                            return response()->json(['mensaje' => 'ok']);    
+                        } else {
+                            return response()->json(['mensaje' => 'ng']);
+                        }
+                    }else{
+                        return response()->json([
+                            'mensaje' => 'MensajePersonalizado',
+                            'menper' => "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"]
+                        ]);
+                    }
+                }else{
+                    return response()->json([
+                        'mensaje' => 'MensajePersonalizado',
+                        'menper' => "Registro no fue procesado por alguna de las siguientes razones: Aprobado, Anulado o Eliminado previamente."
+                    ]);
+                }
+            }else{
+                return response()->json([
+                    'mensaje' => 'MensajePersonalizado',
+                    'menper' => "Registro no fue procesado por alguna de las siguientes razones: Aprobado o Anulado previamente."
+                ]);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+    public function aprobinventsal(Request $request)
+    {
+        if ($request->ajax()) {
+            $inventsal = InvEntSal::findOrFail($request->id);
+            if(($inventsal->staaprob == 1) and ($inventsal->staanul == null)){
+                //VALIDAR SI EL REGISTRO YA FUE APROBADA O QUE FUE ELIMINADA O ANULADA
+                $sql = "SELECT COUNT(*) AS cont
+                    FROM inventsal
+                    WHERE inventsal.id = $request->id
+                    AND inventsal.staaprob = 1
+                    AND isnull(inventsal.staanul)
+                    AND isnull(inventsal.deleted_at)";
+                $cont = DB::select($sql);
+                //if($inventsal->despachoords->count() == 0){
+                if($cont[0]->cont == 1){
+                    $aux_respuesta = InvBodegaProducto::validarExistenciaStock($inventsal->inventsaldets);
+                    if($aux_respuesta["bandera"]){
                         $annomes = date("Ym");
                         $inventsal->annomes = $annomes;
                         $array_inventsal = $inventsal->attributesToArray();
                         $array_inventsal['idmovmod'] = $array_inventsal['id'];
                         $invmov = InvMov::create($array_inventsal);
-                        $inventsal->staaprob = 1;
+                        $inventsal->staaprob = 2;
                         $inventsal->fechahoraaprob = date("Y-m-d H:i:s");
                         $inventsal->invmov_id = $invmov->id;
                         if($inventsal->save()){
@@ -292,5 +343,34 @@ class InvEntSalController extends Controller
         }
     }
 
+    public function exportPdf(Request $request)
+    {
+        if(can('ver-pdf-entrada-salida-inventario',false)){
+            $datas = InvEntSal::findOrFail($request->id);
+
+            $empresa = Empresa::orderBy('id')->get();
+            $usuario = Usuario::findOrFail(auth()->id());
+           
+            if($datas){
+                if(env('APP_DEBUG')){
+                    return view('inventsal.listado', compact('datas','empresa','usuario','request'));
+                }
+                
+                //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+                
+                //$pdf = PDF::loadView('reportinvstock.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
+                $pdf = PDF::loadView('inventsal.listado', compact('datas','empresa','usuario','request'));
+                //return $pdf->download('cotizacion.pdf');
+                //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+                return $pdf->stream("ReporteInvEntSal.pdf");
+            }else{
+                dd('Ningún dato disponible en esta consulta.');
+            }
+        }else{
+            //return false;            
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
+        }
+    }
 
 }

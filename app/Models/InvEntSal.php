@@ -39,6 +39,13 @@ class InvEntSal extends Model
     {
         return $this->belongsTo(InvMovTipo::class);
     }
+
+    //Relacion inversa a Sucursal
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class);
+    }
+    
     //RELACION INVERSA User
     public function user()
     {

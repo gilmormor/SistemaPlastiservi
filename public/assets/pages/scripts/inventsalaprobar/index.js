@@ -9,22 +9,19 @@ $(document).ready(function () {
 		'autoWidth'   : false,
 		'processing'  : true,
 		'serverSide'  : true,
-		'ajax'        : "inventsalpage",
+		'ajax'        : "inventsalaprobarpage",
 		"order": [[ 0, "id" ]],
 		'columns'     : [
 			{data: 'id'},
 			{data: 'fechahora'},
 			{data: 'desc'},
             {defaultContent : 
-				"<a href='/inventsal/enviaraprobarinventsal' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar'>" +
+				"<a href='/inventsal/aprobinventsal' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar'>" +
 					"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
 				"</a>"+
-                "<a href='inventsal' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>" + 
-                    "<i class='fa fa-fw fa-pencil'></i>" + 
-                "</a>"+
-                "<a href='inventsal' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
-                    "<i class='fa fa-fw fa-trash text-danger'></i>"+
-                "</a>"
+				"<a class='btn-accion-tabla btn-sm btngenpdfINVENTSAL tooltipsC' title='PDF Entrada Salida Inv'>" +
+					"<i class='fa fa-fw fa-file-pdf-o'></i>" +
+				"</a>"
             }
         	],
 		"language": {
@@ -33,6 +30,13 @@ $(document).ready(function () {
 		"createdRow": function ( row, data, index ) {
 			$(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
+			aux_text = 
+			"<a class='btn-accion-tabla btn-sm tooltipsC' title='Entrasa Salida de Inv' onclick='genpdfINVENTSAL(" + data.id + ",1)'>"+
+				data.id +
+			"</a>";
+			$('td', row).eq(0).html(aux_text);
+			$('td', row).eq(0).attr('data-search',data.id);
+
 			$('td', row).eq(1).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));

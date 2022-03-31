@@ -56,5 +56,10 @@ class InvEntSalDet extends Model
     {
         return $this->belongsTo(Producto::class);
     }
+    //RELACION INVERSA invbodegaproducto
+    public function invbodegaproducto()
+    {
+        return $this->belongsTo(InvBodegaProducto::class);
+    }
     
 }

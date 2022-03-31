@@ -1056,6 +1056,16 @@ $(document).on("click", ".btngenpdfINVMOV", function(){
 	genpdfINVMOV(id,1);
 });
 
+$(document).on("click", ".btngenpdfINVENTSAL", function(){
+    fila = $(this).closest("tr");
+	form = $(this);
+	if(form.attr('col')){
+		id = fila.find('td:eq('+form.attr('col')+')').text();
+	}else{
+		id = fila.find('td:eq(0)').text();
+	}
+	genpdfINVENTSAL(id,1);
+});
 
 function genpdfSD(id,stareport){ //GENERAR PDF Solicitud de Despacho
 	$('#contpdf').attr('src', '/despachosol/'+id+'/'+stareport+'/exportPdf');
@@ -1095,6 +1105,14 @@ function genpdfINVMOV(id,stareport){ //GENERAR PDF MOVIMIENTO DE INVENTARIO INVM
 	$("#myModalpdf").modal('show')
 }
 
+function genpdfINVENTSAL(id,stareport){ //GENERAR PDF INVENTARIO ENTRADA SALIDA
+	var data = "?id=" + id +
+    "&stareport="+stareport
+	$('#contpdf').attr('src', '/inventsal/exportPdf/' + data);
+	console.log($('#contpdf'));
+	$("#myModalpdf").modal('show')
+}
+
 
 $("#myModalpdf").on("hidden.bs.modal", function () {
 	$('#contpdf').attr('src', 'about:blank');
@@ -1115,7 +1133,7 @@ $("#precionetoM").blur(function(event){
 function verpdf2(nameFile,stareport){ 
 	if(nameFile==""){
 		swal({
-			title: 'Archivo Orden de Compra no fue Adjuntado a la Nota de Venta.',
+			title: 'Archivo Orden de Compra no se Adjuntó a la Nota de Venta.',
 			text: "",
 			icon: 'error',
 			buttons: {
@@ -1124,10 +1142,34 @@ function verpdf2(nameFile,stareport){
 		}).then((value) => {
 		});
 	}else{
-		$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile);
-		if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
-			$("#myModalpdf").modal('show');
-		}
+		var data = {
+			slug: 'ver-pdf-orden-de-compra',
+			_token: $('input[name=_token]').val()
+		};
+		$.ajax({
+			url: '/generales_valpremiso',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				//console.log(respuesta);
+				if(respuesta.resp){
+					$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile);
+					if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
+						$("#myModalpdf").modal('show');
+					}	
+				}else{
+					swal({
+						title: respuesta.mensaje,
+						text:  respuesta.mensaje2,
+						icon: 'error',
+						buttons: {
+							confirm: "Cerrar",
+						},
+					}).then((value) => {
+					});
+				}
+			}
+		});
 	}
 	
 

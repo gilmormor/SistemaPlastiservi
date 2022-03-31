@@ -625,55 +625,65 @@ class DespachoSolController extends Controller
 
     public function exportPdf($id,$stareport = '1')
     {
-        $despachosol = DespachoSol::findOrFail($id);
-        $despachosoldets = $despachosol->despachosoldets()->get();
-        //dd($despachosol);
-        $empresa = Empresa::orderBy('id')->get();
-        $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
-        //dd($empresa[0]['iva']);
-        if($stareport == '1'){
-            if(env('APP_DEBUG')){
-                return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
-            }
-        
-            $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
-            //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
-        }else{
-            if($stareport == '2'){
-                return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));        
-                $pdf = PDF::loadView('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
+        if(can('ver-pdf-solicitud-despacho',false)){
+            $despachosol = DespachoSol::findOrFail($id);
+            $despachosoldets = $despachosol->despachosoldets()->get();
+            //dd($despachosol);
+            $empresa = Empresa::orderBy('id')->get();
+            $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
+            //dd($empresa[0]['iva']);
+            if($stareport == '1'){
+                if(env('APP_DEBUG')){
+                    return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+                }
+            
+                $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
-    
+            }else{
+                if($stareport == '2'){
+                    return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));        
+                    $pdf = PDF::loadView('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
+                    //return $pdf->download('cotizacion.pdf');
+                    return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
+        
+                }
             }
+        }else{
+            //return false;            
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
         }
     }
 
     public function vistaprevODPdf($id,$stareport = '1')
     {
-        $despachosol = DespachoSol::findOrFail($id);
-        $despachosoldets = $despachosol->despachosoldets()->get();
-        //dd($despachosol);
-        $empresa = Empresa::orderBy('id')->get();
-        $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
-        //dd($empresa[0]['iva']);
-        if($stareport == '1'){
-            if(env('APP_DEBUG')){
-                return view('despachosol.vistaprevod', compact('despachosol','despachosoldets','empresa'));
-            }
-        
-            $pdf = PDF::loadView('despachosol.vistaprevod', compact('despachosol','despachosoldets','empresa'));
-            //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
-        }else{
-            if($stareport == '2'){
-                return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));        
-                $pdf = PDF::loadView('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
+        if(can('ver-pdf-vista-previa-orden-despacho',false)){
+            $despachosol = DespachoSol::findOrFail($id);
+            $despachosoldets = $despachosol->despachosoldets()->get();
+            //dd($despachosol);
+            $empresa = Empresa::orderBy('id')->get();
+            $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
+            //dd($empresa[0]['iva']);
+            if($stareport == '1'){
+                if(env('APP_DEBUG')){
+                    return view('despachosol.vistaprevod', compact('despachosol','despachosoldets','empresa'));
+                }
+                $pdf = PDF::loadView('despachosol.vistaprevod', compact('despachosol','despachosoldets','empresa'));
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
-    
-            }
+            }else{
+                if($stareport == '2'){
+                    return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));        
+                    $pdf = PDF::loadView('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
+                    //return $pdf->download('cotizacion.pdf');
+                    return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
+                }
+            }    
+        }else{
+            //return false;            
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
         }
     }
 
@@ -681,17 +691,24 @@ class DespachoSolController extends Controller
     //Reporte previo a la solicitud de Despacho, para saber como esta la nota de venta
     public function pdfSolDespPrev($id,$stareport = '1')
     {
-        $notaventa = NotaVenta::findOrFail($id);
-        $notaventaDetalles = $notaventa->notaventadetalles()->get();
-        $empresa = Empresa::orderBy('id')->get();
-        $rut = number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
-        //dd($empresa[0]['iva']);
-        if(env('APP_DEBUG')){
-            return view('despachosol.reportesolprev', compact('notaventa','notaventaDetalles','empresa'));
+        if(can('ver-pdf-vista-previa-solicitud-despacho',false)){
+            $notaventa = NotaVenta::findOrFail($id);
+            $notaventaDetalles = $notaventa->notaventadetalles()->get();
+            $empresa = Empresa::orderBy('id')->get();
+            $rut = number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
+            //dd($empresa[0]['iva']);
+            if(env('APP_DEBUG')){
+                return view('despachosol.reportesolprev', compact('notaventa','notaventaDetalles','empresa'));
+            }
+            $pdf = PDF::loadView('despachosol.reportesolprev', compact('notaventa','notaventaDetalles','empresa'));
+            //return $pdf->download('cotizacion.pdf');
+            return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+        }else{
+            //return false;            
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
         }
-        $pdf = PDF::loadView('despachosol.reportesolprev', compact('notaventa','notaventaDetalles','empresa'));
-        //return $pdf->download('cotizacion.pdf');
-        return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');        
+
     }
 
     public function pdfpendientesoldesp()
