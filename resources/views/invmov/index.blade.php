@@ -27,7 +27,7 @@ Movimientos de Inventario
                                 <th class="width30">Fecha</th>
                                 <th title='Descripción'>Descripción</th>
                                 <th title='Módulo'>Módulo</th>
-                                <th class="width150">Acciones</th>
+                                <th class="width150">PDF</th>
                             </tr>
                         </thead>
                         <tbody class="todo-list1">

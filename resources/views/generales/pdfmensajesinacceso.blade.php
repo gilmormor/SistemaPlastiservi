@@ -4,4 +4,4 @@
 <br>
 <br>
 
-<span class="h3">Usuario no tiene permiso para ver el Reporte</span>
+<span class="h3">Usuario no tiene permiso.</span>

@@ -128,6 +128,7 @@ class InvControlController extends Controller
                         $annomesini = date("Ym",strtotime($aux_annomes.'01'."+ 1 month"));
                         $invcontrol = InvControl::where('annomes','=',$annomesini)
                                                 ->where('sucursal_id','=',$request->sucursal_id);
+                        //dd($annomesini);
                         if($invcontrol->count() == 0){
                             $invcontrol = InvControl::create([
                                 'annomes' => $annomesini,

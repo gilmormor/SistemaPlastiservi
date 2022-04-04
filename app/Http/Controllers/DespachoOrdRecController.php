@@ -473,28 +473,29 @@ class DespachoOrdRecController extends Controller
 
     public function exportPdf($id,$stareport = '1')
     {
-        $despachoordrec = DespachoOrdRec::findOrFail($id);
-        //dd($despachoord);
-        $despachoordrecdets = $despachoordrec->despachoordrecdets()->get();
-        //dd($despachoorddets);
-        $empresa = Empresa::orderBy('id')->get();
-        $rut = number_format( substr ( $despachoordrec->despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoordrec->despachoord->notaventa->cliente->rut, strlen($despachoordrec->despachoord->notaventa->cliente->rut) -1 , 1 );
-        //dd($empresa[0]['iva']);
-        if($stareport == '1'){
-            if(env('APP_DEBUG')){
-                return view('despachoordrec.reporte', compact('despachoordrec','despachoordrecdets','empresa'));
-            }
-            $pdf = PDF::loadView('despachoordrec.reporte', compact('despachoordrec','despachoordrecdets','empresa'));
-            //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream(str_pad($despachoordrec->id, 5, "0", STR_PAD_LEFT) .' - '. $despachoordrec->despachoord->notaventa->cliente->razonsocial . '.pdf');
-        }else{
-            if($stareport == '2'){
-                return view('despachoordrec.listado1', compact('despachoordrec','despachoordrecdets','empresa'));        
-                $pdf = PDF::loadView('despachoordrec.listado1', compact('despachoordrec','despachoordrecdets','empresa'));
+        if(can('ver-pdf-rechazo-orden-de-despacho',false)){
+            $despachoordrec = DespachoOrdRec::findOrFail($id);
+            $despachoordrecdets = $despachoordrec->despachoordrecdets()->get();
+            $empresa = Empresa::orderBy('id')->get();
+            $rut = number_format( substr ( $despachoordrec->despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoordrec->despachoord->notaventa->cliente->rut, strlen($despachoordrec->despachoord->notaventa->cliente->rut) -1 , 1 );
+            if($stareport == '1'){
+                if(env('APP_DEBUG')){
+                    return view('despachoordrec.reporte', compact('despachoordrec','despachoordrecdets','empresa'));
+                }
+                $pdf = PDF::loadView('despachoordrec.reporte', compact('despachoordrec','despachoordrecdets','empresa'));
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($despachoordrec->id, 5, "0", STR_PAD_LEFT) .' - '. $despachoordrec->despachoord->notaventa->cliente->razonsocial . '.pdf');
-    
-            }
+            }else{
+                if($stareport == '2'){
+                    return view('despachoordrec.listado1', compact('despachoordrec','despachoordrecdets','empresa'));        
+                    $pdf = PDF::loadView('despachoordrec.listado1', compact('despachoordrec','despachoordrecdets','empresa'));
+                    //return $pdf->download('cotizacion.pdf');
+                    return $pdf->stream(str_pad($despachoordrec->id, 5, "0", STR_PAD_LEFT) .' - '. $despachoordrec->despachoord->notaventa->cliente->razonsocial . '.pdf');
+                }
+            }    
+        }else{
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
         }
     }
 

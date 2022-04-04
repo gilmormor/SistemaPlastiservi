@@ -42,6 +42,7 @@ class InvEntSalController extends Controller
         return datatables()
             ->eloquent(InvEntSal::query()
                         ->whereNull('staaprob')
+                        ->orWhere('staaprob', 3)
                         ->whereIn('inventsal.sucursal_id', $sucurArray)                        
                     )
             ->toJson();
@@ -230,12 +231,12 @@ class InvEntSalController extends Controller
     {
         if ($request->ajax()) {
             $inventsal = InvEntSal::findOrFail($request->id);
-            if(($inventsal->staaprob == null) and ($inventsal->staanul == null)){
+            if((($inventsal->staaprob == null) or ($inventsal->staaprob == 3)) and ($inventsal->staanul == null)){
                 //VALIDAR SI EL REGISTRO YA FUE APROBADA O QUE FUE ELIMINADA O ANULADA
                 $sql = "SELECT COUNT(*) AS cont
                     FROM inventsal
                     WHERE inventsal.id = $request->id
-                    AND isnull(inventsal.staaprob)
+                    AND (isnull(inventsal.staaprob) or inventsal.staaprob = 3)
                     AND isnull(inventsal.staanul)
                     AND isnull(inventsal.deleted_at)";
                 $cont = DB::select($sql);
@@ -290,52 +291,81 @@ class InvEntSalController extends Controller
                 if($cont[0]->cont == 1){
                     $aux_respuesta = InvBodegaProducto::validarExistenciaStock($inventsal->inventsaldets);
                     if($aux_respuesta["bandera"]){
-                        $annomes = date("Ym");
-                        $inventsal->annomes = $annomes;
-                        $array_inventsal = $inventsal->attributesToArray();
-                        $array_inventsal['idmovmod'] = $array_inventsal['id'];
-                        $invmov = InvMov::create($array_inventsal);
-                        $inventsal->staaprob = 2;
-                        $inventsal->fechahoraaprob = date("Y-m-d H:i:s");
-                        $inventsal->invmov_id = $invmov->id;
-                        if($inventsal->save()){
-                            foreach ($inventsal->inventsaldets as $inventsaldet) {
-                                //$inventsaldet->save();
-                                $array_inventsaldet = $inventsaldet->attributesToArray();
-                                $array_inventsaldet["invmov_id"] = $invmov->id;
-                                $invmovdet = InvMovDet::create($array_inventsaldet);                                
+                        if($inventsal->invmovtipo->stacieinimes == 1 and $request->staaprob == 2){
+                            $mesAnterior = date("Ym",strtotime($inventsal->fechahora . "- 1 month"));
+                            $invcontrolMesAnterior = InvControl::where('annomes','<=',$mesAnterior)
+                                                    ->where('sucursal_id','=',$inventsal->sucursal_id);
+                            if($invcontrolMesAnterior->count() > 0){
+                                return response()->json([
+                                    'resp' => 0,
+                                    'tipmen' => 'error',
+                                    'mensaje' => 'No puede hacer carga inicial. Debe cerrar mes anterior.'
+                                ]);                
                             }
-                            if($inventsal->invmovtipo->stacieinimes == 1){
-                                $invcontrol = InvControl::where('annomes','=',date('Ym', strtotime($inventsal->fechahora)))
-                                                        ->where('sucursal_id','=',$inventsal->sucursal_id);
-                                if($invcontrol->count() == 0){
-                                    InvControl::create([
-                                        'annomes' => date('Ym', strtotime($inventsal->fechahora)),
-                                        'sucursal_id' => $inventsal->sucursal_id,
-                                        'usuario_id' => auth()->id()
-                                    ]);
+                        }
+                        if($request->staaprob == 2){
+                            $annomes = date("Ym");
+                            $inventsal->annomes = $annomes;
+                            $array_inventsal = $inventsal->attributesToArray();
+                            $array_inventsal['idmovmod'] = $array_inventsal['id'];
+                            $invmov = InvMov::create($array_inventsal);
+                            $inventsal->invmov_id = $invmov->id;
+                        }
+                        //$inventsal->staaprob = 2;
+                        $inventsal->staaprob = $request->staaprob;
+                        $inventsal->obsaprob = $request->obsaprob;
+                        $inventsal->fechahoraaprob = date("Y-m-d H:i:s");
+                        if($inventsal->save()){
+                            if($request->staaprob == 2){
+                                foreach ($inventsal->inventsaldets as $inventsaldet) {
+                                    //$inventsaldet->save();
+                                    $array_inventsaldet = $inventsaldet->attributesToArray();
+                                    $array_inventsaldet["invmov_id"] = $invmov->id;
+                                    $invmovdet = InvMovDet::create($array_inventsaldet);                                
+                                }
+                                if($inventsal->invmovtipo->stacieinimes == 1){
+                                    $invcontrol = InvControl::where('annomes','=',date('Ym', strtotime($inventsal->fechahora)))
+                                                            ->where('sucursal_id','=',$inventsal->sucursal_id);
+                                    if($invcontrol->count() == 0){
+                                        InvControl::create([
+                                            'annomes' => date('Ym', strtotime($inventsal->fechahora)),
+                                            'sucursal_id' => $inventsal->sucursal_id,
+                                            'usuario_id' => auth()->id()
+                                        ]);
+                                    }
                                 }
                             }
-                            return response()->json(['mensaje' => 'ok']);    
+                            return response()->json([
+                                'resp' => 1,
+                                'tipmen' => 'success',
+                                'mensaje' => 'Actualizado con exito.'
+                            ]);
                         } else {
-                            return response()->json(['mensaje' => 'ng']);
+                            return response()->json([
+                                'resp' => 0,
+                                'tipmen' => 'error',
+                                'mensaje' => 'Registro no fue actualizado.'
+                            ]);
                         }
                     }else{
                         return response()->json([
-                            'mensaje' => 'MensajePersonalizado',
-                            'menper' => "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"]
+                            'resp' => 0,
+                            'tipmen' => 'error',
+                            'mensaje' => "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"]
                         ]);
                     }
                 }else{
                     return response()->json([
-                        'mensaje' => 'MensajePersonalizado',
-                        'menper' => "Registro no fue procesado por alguna de las siguientes razones: Aprobado, Anulado o Eliminado previamente."
+                        'resp' => 0,
+                        'tipmen' => 'error',
+                        'mensaje' => "Registro no fue procesado por alguna de las siguientes razones: Aprobado, Anulado o Eliminado previamente."
                     ]);
                 }
             }else{
                 return response()->json([
-                    'mensaje' => 'MensajePersonalizado',
-                    'menper' => "Registro no fue procesado por alguna de las siguientes razones: Aprobado o Anulado previamente."
+                    'resp' => 0,
+                    'tipmen' => 'error',
+                    'mensaje' => "Registro no fue procesado por alguna de las siguientes razones: Aprobado o Anulado previamente."
                 ]);
             }
         } else {
@@ -367,7 +397,6 @@ class InvEntSalController extends Controller
                 dd('Ningún dato disponible en esta consulta.');
             }
         }else{
-            //return false;            
             $pdf = PDF::loadView('generales.pdfmensajesinacceso');
             return $pdf->stream("mensajesinacceso.pdf");
         }
