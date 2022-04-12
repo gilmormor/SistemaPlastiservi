@@ -1728,10 +1728,9 @@ function llenarselectbodega(respuesta){
 	}	
 }
 
-function sumbod(i,y){
+function sumbod(i,y,aux_orig){
 	aux_stockcant = parseFloat($("#stockcantTD" + y).html());
-
-	if($("#invcant" + y).val() > aux_stockcant){
+	if((aux_orig == "OD") && ($("#invcant" + y).val() > aux_stockcant)){
 		$("#invcant" + y).val(aux_stockcant);
 	}
 	total = 0;
@@ -1753,10 +1752,7 @@ function sumbod(i,y){
 		*/
 	});
 	aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
-	//console.log(aux_saldo);
-
 	if(total > aux_saldo){
-		console.log("entro");
 		if($("#invcant" + y).val() == ""){
 			valor = "0";
 		}else{
@@ -1767,8 +1763,8 @@ function sumbod(i,y){
 		//console.log(dif);
 		total = aux_saldo;
 	}
-
 	$("#cantord" + i).val(total);
+	$("#cantsol" + i).val(total);
 	actSaldo(i);
 }
 

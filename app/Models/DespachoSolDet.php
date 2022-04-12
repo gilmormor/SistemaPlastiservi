@@ -22,7 +22,6 @@ class DespachoSolDet extends Model
     {
         return $this->hasMany(DespachoOrdDet::class);
     }
-
     //RELACION INVERSA DespachoSol
     public function despachosol()
     {
@@ -32,5 +31,10 @@ class DespachoSolDet extends Model
     public function notaventadetalle()
     {
         return $this->belongsTo(NotaVentaDetalle::class);
+    }
+    //RELACION DE UNO A MUCHOS despachosoldet_invbodegaproducto
+    public function despachosoldet_invbodegaproductos()
+    {
+        return $this->hasMany(DespachoSolDet_InvBodegaProducto::class,'despachosoldet_id');
     }
 }

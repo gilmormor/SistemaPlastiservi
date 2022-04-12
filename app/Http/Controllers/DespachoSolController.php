@@ -17,9 +17,12 @@ use App\Models\DespachoOrdAnul;
 use App\Models\DespachoSol;
 use App\Models\DespachoSolAnul;
 use App\Models\DespachoSolDet;
+use App\Models\DespachoSolDet_InvBodegaProducto;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\InvBodegaProducto;
+use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\NotaVentaDetalle;
@@ -161,9 +164,9 @@ class DespachoSolController extends Controller
         $giros = Giro::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
-
-        return view('despachosol.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
-        
+        $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
+        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
+        return view('despachosol.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo'));
     }
 
     /**
@@ -175,6 +178,14 @@ class DespachoSolController extends Controller
     public function guardar(ValidarDespachoSol $request)
     {
         can('guardar-solicitud-despacho');
+        //dd($request);
+        $cont_producto = count($request->producto_id);
+        if($cont_producto<=0){
+            return redirect('despachosol')->with([
+                'mensaje'=>'Registro no fue creado. No hay registros en el detalle.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
         //dd($notaventacerrada);
         if(count($notaventacerrada) == 0){
@@ -203,7 +214,7 @@ class DespachoSolController extends Controller
                 $request->request->add(['region_id' => $comuna->provincia->region_id]);
                 $despachosol = DespachoSol::create($request->all());
                 $despachosolid = $despachosol->id;
-                $cont_producto = count($request->producto_id);
+                //$cont_producto = count($request->producto_id);
                 if($cont_producto>0){
                     for ($i=0; $i < $cont_producto ; $i++){
                         $aux_cantsol = $request->cantsol[$i];
@@ -213,6 +224,27 @@ class DespachoSolController extends Controller
                             $despachosoldet->notaventadetalle_id = $request->NVdet_id[$i];
                             $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
                             if($despachosoldet->save()){
+                                $cont_bodegas = count($request->invcant);
+                                if($cont_bodegas>0){
+                                    for ($b=0; $b < $cont_bodegas ; $b++){
+                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and ($request->invcant[$b] != 0)){
+                                            $despachosoldet_invbodegaproducto = new DespachoSolDet_InvBodegaProducto();
+                                            $despachosoldet_invbodegaproducto->despachosoldet_id = $despachosoldet->id;
+                                            $despachosoldet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
+                                            $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
+                                            $existencia = InvBodegaProducto::existencia($array_request);
+                                            if($request->invcant[$b] > $existencia["stock"]["cant"]){
+                                                $despachosoldet_invbodegaproducto->cant = $existencia["stock"]["cant"] * -1;
+                                                $despachosoldet_invbodegaproducto->cantex = ($request->invcant[$b] - $existencia["stock"]["cant"]) * -1;
+                                            }else{
+                                                $despachosoldet_invbodegaproducto->cant = $request->invcant[$b] * -1;
+                                                $despachosoldet_invbodegaproducto->cantex = 0;
+                                            }
+                                            $despachosoldet_invbodegaproducto->save();
+                                        }
+                                    }
+                                }
+
                                 /*
                                 $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
                                 $notaventadetalle->cantsoldes   p = $request->cantsoldesp[$i];
@@ -346,9 +378,10 @@ class DespachoSolController extends Controller
         $giros = Giro::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
+        $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP");
 
         //dd($clientedirecs);
-        return view('despachosol.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id'));
+        return view('despachosol.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','invmovmodulo'));
   
     }
 
@@ -362,6 +395,7 @@ class DespachoSolController extends Controller
     public function actualizar(ValidarDespachoSol $request, $id)
     {
         can('guardar-solicitud-despacho');
+        //dd($request);
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
         //dd($notaventacerrada);
         if(count($notaventacerrada) == 0){
@@ -400,8 +434,39 @@ class DespachoSolController extends Controller
                                     if($request->cantsoldesp[$i]==0){
                                         $despachosoldet->usuariodel_id = auth()->id();
                                         $despachosoldet->save();
+                                        DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
                                         $despachosoldet->delete();
+                                    }else{
+                                        $cont_bodegas = count($request->invcant);
+                                        if($cont_bodegas>0){
+                                            for ($b=0; $b < $cont_bodegas ; $b++){
+                                                if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i]){
+                                                    if($request->invcant[$b] > 0){
+                                                        $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
+                                                        $existencia = InvBodegaProducto::existencia($array_request);
+            
+                                                        if($request->invcant[$b] > $existencia["stock"]["cant"]){
+                                                            $aux_cant = $existencia["stock"]["cant"] * -1;
+                                                            $aux_cantex = ($request->invcant[$b] - $existencia["stock"]["cant"]) * -1;
+                                                        }else{
+                                                            $aux_cant = $request->invcant[$b] * -1;
+                                                            $aux_cantex = 0;
+                                                        }
+                                                        DB::table('despachosoldet_invbodegaproducto')->updateOrInsert(
+                                                            ['despachosoldet_id' => $request->NVdet_id[$i], 'invbodegaproducto_id' => $request->invbodegaproducto_id[$b]],
+                                                            [
+                                                                'cant' => $aux_cant,
+                                                                'cantex' => $aux_cantex
+                                                            ]
+                                                        );    
+                                                    }else{
+                                                        
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
+
                                     /*
                                     $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
                                     $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];

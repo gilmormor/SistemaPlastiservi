@@ -35,7 +35,7 @@ class InvBodega extends Model
     
     public function categoriaprods()
     {
-        return $this->belongsToMany(CategoriaProd::class, 'categoriaprod_invbodega','invbodega_id','categoriaprod_id');
+        return $this->belongsToMany(CategoriaProd::class, 'categoriaprod_invbodega','invbodega_id','categoriaprod_id')->withTimestamps();
     }
 
 }

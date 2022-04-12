@@ -13,7 +13,7 @@ use App\Models\Sucursal;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 
-class ReportInvStockController extends Controller
+class ReportInvStockVendController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -28,15 +28,17 @@ class ReportInvStockController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
-        $tablashtml['invbodegas'] = InvBodega::orderBy('id')->get();
+        $tablashtml['invbodegas'] = InvBodega::orderBy('id')
+                                    ->where("tipo","=",2)
+                                    ->get();
         $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-        return view('reportinvstock.index', compact('tablashtml','productos','selecmultprod'));
-    }
+        return view('reportinvstockvend.index', compact('tablashtml','productos','selecmultprod'));
 
-    public function reportinvstockpage(Request $request){
+    }
+    public function reportinvstockvendpage(Request $request){
         return datatables()
         ->eloquent(InvMov::stock($request))
         ->toJson();
@@ -55,17 +57,17 @@ class ReportInvStockController extends Controller
             $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
             $nombreAreaproduccion=$areaProduccion->nombre;
         }
-        
+
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportinvstock.listado', compact('datas','empresa','usuario','request'));
+                return view('reportinvstockvend.listado', compact('datas','empresa','usuario','request'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
-            //$pdf = PDF::loadView('reportinvstock.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-            $pdf = PDF::loadView('reportinvstock.listado', compact('datas','empresa','usuario','request'));
+            //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
+            $pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteStockInv.pdf");
@@ -73,15 +75,5 @@ class ReportInvStockController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         } 
     }
-
-    public function totalizarindex(Request $request){
-        $respuesta = array();
-        $datas = InvMov::stock($request)->get();
-        $aux_totalkg = 0;
-        foreach ($datas as $data) {
-            $aux_totalkg += $data->stockkg;
-        }
-        $respuesta['aux_totalkg'] = $aux_totalkg;
-        return $respuesta;
-    }
+    
 }

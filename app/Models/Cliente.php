@@ -64,7 +64,7 @@ class Cliente extends Model
     //RELACION MUCHO A MUCHOS CON USUARIO A TRAVES DE cliente_vendedor
     public function vendedores()
     {
-        return $this->belongsToMany(Vendedor::class, 'cliente_vendedor');
+        return $this->belongsToMany(Vendedor::class, 'cliente_vendedor')->withTimestamps();
     }
     //Relacion inversa a Giros
     public function giro()
@@ -74,7 +74,7 @@ class Cliente extends Model
     //RELACION MUCHO A MUCHOS CON USUARIO A TRAVES DE cliente_sucursal
     public function sucursales()
     {
-        return $this->belongsToMany(Sucursal::class, 'cliente_sucursal');
+        return $this->belongsToMany(Sucursal::class, 'cliente_sucursal')->withTimestamps();
     }
     //Relacion inversa a Region
     public function region()

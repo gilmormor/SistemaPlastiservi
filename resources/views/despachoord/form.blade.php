@@ -237,7 +237,7 @@
                                                                 {{$existencia["stock"]["cant"]}}
                                                             </td>
                                                             <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right" title='Valor a despachar'>
-                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;"/>
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;"/>
                                                             </td>
                                                         </tr>
                                                     @else

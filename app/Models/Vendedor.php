@@ -100,7 +100,7 @@ class Vendedor extends Model
     //RELACION MUCHO A MUCHOS CON USUARIO A TRAVES DE cliente_vendedor
     public function clientes()
     {
-        return $this->belongsToMany(Cliente::class, 'cliente_vendedor');
+        return $this->belongsToMany(Cliente::class, 'cliente_vendedor')->withTimestamps();
     }
 
     public function clientetemps()

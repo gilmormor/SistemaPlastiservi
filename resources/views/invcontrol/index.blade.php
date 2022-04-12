@@ -33,12 +33,18 @@ Inventario Control
                             <div class="form-group">
                                 <label for="sucursal_id" class="col-lg-3 control-label requerido">Sucursal</label>
                                 <div class="col-lg-8">
+                                    <?php
+                                        $sucursal_id = 0;
+                                        if(count($sucursales) == 1){
+                                            $sucursal_id = $sucursales[0]->id;
+                                        }
+                                    ?>
                                     <select name="sucursal_id" id="sucursal_id" class="form-control selectpicker" required>
                                         <option value="x">Seleccione...</option>
                                         @foreach($sucursales as $sucursal)
                                             <option
                                                 value="{{$sucursal->id}}"
-                                                @if (isset($data->sucursal_id) and ($data->sucursal_id==$sucursal->id))
+                                                @if ($sucursal->id == $sucursal_id))
                                                     {{'selected'}}
                                                 @endif
                                             >

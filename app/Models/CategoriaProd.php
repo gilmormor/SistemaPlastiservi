@@ -30,7 +30,7 @@ class CategoriaProd extends Model
     }
     public function sucursales()
     {
-        return $this->belongsToMany(Sucursal::class, 'categoriaprodsuc','categoriaprod_id');
+        return $this->belongsToMany(Sucursal::class, 'categoriaprodsuc','categoriaprod_id')->withTimestamps();
     }
     public function claseprods()
     {
@@ -60,7 +60,7 @@ class CategoriaProd extends Model
 
     public function invbodegas()
     {
-        return $this->belongsToMany(InvBodega::class, 'categoriaprod_invbodega','categoriaprod_id','invbodega_id');
+        return $this->belongsToMany(InvBodega::class, 'categoriaprod_invbodega','categoriaprod_id','invbodega_id')->withTimestamps();
     }
 
 

@@ -87,7 +87,7 @@ class DespachoOrd extends Model
     //RELACION DE MUCHOS A MUCHOS CON TABLA INVMOV
     public function invmovs()
     {
-        return $this->belongsToMany(InvMov::class, 'despachoord_invmov','despachoord_id','invmov_id');
+        return $this->belongsToMany(InvMov::class, 'despachoord_invmov','despachoord_id','invmov_id')->withTimestamps();
     }
 
 

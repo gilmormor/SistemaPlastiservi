@@ -816,6 +816,8 @@ Route::get('reportinvstock', 'ReportInvStockController@index')->name('reportinvs
 Route::get('reportinvstockpage', 'ReportInvStockController@reportinvstockpage')->name('reportinvstockpage');
 Route::get('reportinvstock/reporte', 'ReportInvStockController@reporte')->name('reportinvstock_reporte');
 Route::get('reportinvstock/exportPdf', 'ReportInvStockController@exportPdf')->name('reportinvstock_exportPdf');
+Route::get('reportinvstock/totalizarindex', 'ReportInvStockController@totalizarindex')->name('reportinvstock_totalizarindex');
+
 
 /*RUTAS Movimiento Inventario INVMOV*/
 Route::get('invmov', 'InvMovController@index')->name('invmov');
@@ -831,3 +833,19 @@ Route::post('inventsalaprobar/aprobar/{id}', 'InvEntSalAprobarController@aprobar
 
 /*RUTAS Generales*/
 Route::post('generales_valpremiso', 'GeneralesController@generales_valpremiso')->name('generales_valpremiso');
+
+/*RUTAS INV STOCK VENDEDORES*/
+Route::get('reportinvstockvend', 'ReportInvStockVendController@index')->name('reportinvstockvend');
+Route::get('reportinvstockvendpage', 'ReportInvStockVendController@reportinvstockvendpage')->name('reportinvstockvendpage');
+Route::get('reportinvstockvend/reporte', 'ReportInvStockVendController@reporte')->name('reportinvstockvend_reporte');
+Route::get('reportinvstockvend/exportPdf', 'ReportInvStockVendController@exportPdf')->name('reportinvstockvend_exportPdf');
+
+
+/*RUTAS INVMOVMODULO*/
+Route::get('invmovmodulo', 'InvMovModuloController@index')->name('invmovmodulo');
+Route::get('invmovmodulopage', 'InvMovModuloController@invmovmodulopage')->name('invmovmodulopage');
+Route::get('invmovmodulo/crear', 'InvMovModuloController@crear')->name('crear_invmovmodulo');
+Route::post('invmovmodulo', 'InvMovModuloController@guardar')->name('guardar_invmovmodulo');
+Route::get('invmovmodulo/{id}/editar', 'InvMovModuloController@editar')->name('editar_invmovmodulo');
+Route::put('invmovmodulo/{id}', 'InvMovModuloController@actualizar')->name('actualizar_invmovmodulo');
+Route::delete('invmovmodulo/{id}', 'InvMovModuloController@eliminar')->name('eliminar_invmovmodulo');

@@ -298,7 +298,7 @@
                             <th>Solid</th>
                             <!--<th>SolDesp</th>-->
                             <th>Saldo</th>
-                            <th class='tooltipsC' title='Marcar todo' style="text-align:center">
+                            <th class='tooltipsC' title='Marcar todo' style="text-align:center;display:none">
                                 <div class='checkbox'>
                                     <label style='font-size: 1.2em'>
                                         <input type='checkbox' id='marcarTodo' name='marcarTodo' checked>
@@ -306,7 +306,7 @@
                                     </label>
                                 </div>
                             </th>
-                            <th class="width70">SolicitudDesp</th>
+                            <th class="width70">SolDesp</th>
                             <th>Bodegas/Stock</th>
                             <th style="display:none;">UnidadMedida</th>
                             <th>Nombre</th>
@@ -425,12 +425,12 @@
                                         {{$sumacantsoldesp}}
                                     </td>
                                     <td name="saldocantOrigF{{$aux_nfila}}" id="saldocantOrigF{{$aux_nfila}}" style="text-align:right;display:none;">
-                                        {{$aux_saldo}}
+                                        {{$aux_saldo + $detalle->cantsoldesp}}
                                     </td>
                                     <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
                                         {{$aux_saldo}}
                                     </td>
-                                    <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
+                                    <td class='tooltipsC' style='text-align:center;display:none' class='tooltipsC' title='Marcar'>
                                         <div class='checkbox'>
                                             <label style='font-size: 1.2em'>
                                                 <input type="checkbox" class="checkllenarCantSol" id="llenarCantSol{{$aux_nfila}}" name="llenarCantSol{{$aux_nfila}}" onclick="llenarCantSol({{$aux_nfila}})" checked>
@@ -439,7 +439,7 @@
                                         </div>
                                     </td>
                                     <td name="cantsolF{{$aux_nfila}}" id="cantsolF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control numerico cantsolsum" onkeyup="actSaldo({{$detalle->notaventadetalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})" value="{{$detalle->cantsoldesp}}" style="text-align:right;"/>
+                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control numerico cantsolsum" onkeyup="actSaldo({{$detalle->notaventadetalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})" value="{{$detalle->cantsoldesp}}" style="text-align:right;" readonly/>
                                     </td>
                                     <td name="cantsoldespinputF{{$aux_nfila}}" id="cantsoldespinputF{{$aux_nfila}}" style="text-align:right;display:none;">
                                         <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantsoldesp}}" style="text-align:right;"/>
@@ -470,6 +470,17 @@
                                                             </td>
                                                             <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
                                                                 {{$existencia["stock"]["cant"]}}
+                                                            </td>
+                                                            <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;"  title="Valor a despachar">
+                                                                <?php 
+                                                                    $aux_invcant = 0;
+                                                                    foreach($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                                                        if ($despachosoldet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id){
+                                                                            $aux_invcant = (($despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex) * -1);
+                                                                        }
+                                                                    }
+                                                                ?>
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'SD')" style="text-align:right;" value="{{$aux_invcant}}"/>
                                                             </td>
                                                         </tr>
                                                     @else
@@ -574,10 +585,10 @@
                                 ?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="6" style="text-align:right">
+                                <td colspan="5" style="text-align:right">
                                     <b>Total Unidades:</b>
                                 </td>
-                                <td style="text-align:right">
+                                <td style="text-align:right;padding-right: 1px;padding-left: 1px;">
                                     <div class="form-group col-xs-12 col-sm-12">
                                         <input type="text" name="cantsolTotal" id="cantsolTotal" value={{$cantsolTotal}} class="form-control" style="text-align:right;" readonly required/>
                                     </div>
@@ -588,11 +599,11 @@
                                 <td id="tdneto" name="tdneto" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="17" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="16" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0.00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="17" style="text-align:right"><b>Total</b></td>
+                                <td colspan="16" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>
                             </tr>
                         @endif

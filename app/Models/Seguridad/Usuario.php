@@ -43,7 +43,7 @@ class Usuario extends Authenticatable
 
     public function roles()
     {
-        return $this->belongsToMany(Rol::class, 'usuario_rol');
+        return $this->belongsToMany(Rol::class, 'usuario_rol')->withTimestamps();
     }
 
     public function setSession($roles)
@@ -74,7 +74,7 @@ class Usuario extends Authenticatable
     //RELACION MUCHO A MUCHOS CUN SUCURSAL A TRAVES DE SUCURSAL_USUARIO
     public function sucursales()
     {
-        return $this->belongsToMany(Sucursal::class, 'sucursal_usuario');
+        return $this->belongsToMany(Sucursal::class, 'sucursal_usuario')->withTimestamps();
     }
 
     //Relacion uno a uno con persona

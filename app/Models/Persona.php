@@ -26,7 +26,7 @@ class Persona extends Model
     //RELACION DE MUCHOS A MUCHOS TABLA INTERMEDIA jefatura_sucursal_area_persona ENTRE JefaturaSucursalArea Y persona
     public function jefaturasucursalareas()
     {
-        return $this->belongsToMany(JefaturaSucursalArea::class, 'jefatura_sucursal_area_persona','persona_id');
+        return $this->belongsToMany(JefaturaSucursalArea::class, 'jefatura_sucursal_area_persona','persona_id')->withTimestamps();
     }
     //RELACION INVERSA CARGO
     public function cargo()

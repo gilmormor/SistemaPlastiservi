@@ -19,7 +19,7 @@ class ClienteDirec extends Model
 
     public function sucursals()
     {
-        return $this->belongsToMany(Sucursal::class, 'sucursalclientedirec','clientedirec_id');
+        return $this->belongsToMany(Sucursal::class, 'sucursalclientedirec','clientedirec_id')->withTimestamps();
     }
 
     //RELACION INVERSA CLIENTE

@@ -44,12 +44,18 @@ Movimiento de Inventario
                                     <label for="sucursal_id" >Sucursal</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <?php
+                                        $sucursal_id = 0;
+                                        if(count($tablashtml['sucursales']) == 1){
+                                            $sucursal_id = $tablashtml['sucursales'][0]->id;
+                                        }
+                                    ?>
                                     <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
                                         <option value="0">Seleccione...</option>
                                         @foreach($tablashtml['sucursales'] as $sucursal)
                                             <option
                                                 value="{{$sucursal->id}}"
-                                                @if (isset($data->sucursal_id) and ($data->sucursal_id==$sucursal->id))
+                                                @if ($sucursal->id == $sucursal_id))
                                                     {{'selected'}}
                                                 @endif
                                             >

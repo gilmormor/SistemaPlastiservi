@@ -18,6 +18,7 @@ class CreateTableInvmovmodulo extends Migration
             $table->bigIncrements('id');
             $table->string('nombre',100)->comment('Nombre');
             $table->string('desc',300)->comment('Descripcion');
+            $table->string('cod',10)->comment('Codigo alfabetico para identificar el Módulo');
             $table->unsignedBigInteger('usuario_id')->comment('Usuario quien creo el registro');
             $table->foreign('usuario_id','fk_invmovmodulo_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();

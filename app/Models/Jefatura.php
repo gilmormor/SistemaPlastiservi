@@ -18,6 +18,6 @@ class Jefatura extends Model
     //RELACION MUCHOS A MUCHOS A TRAVES DE jefatura_sucursal_area
     public function sucursalAreas()
     {
-        return $this->belongsToMany(SucursalArea::class, 'jefatura_sucursal_area');
+        return $this->belongsToMany(SucursalArea::class, 'jefatura_sucursal_area')->withTimestamps();
     }
 }

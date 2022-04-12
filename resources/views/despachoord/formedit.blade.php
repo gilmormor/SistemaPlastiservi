@@ -253,7 +253,7 @@
                                                             <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;"  title="Valor a despachar">
                                                                 @foreach($detalle->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto)
                                                                     @if ($despachoorddet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)
-                                                                        <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;" value="{{($despachoorddet_invbodegaproducto->cant * -1)}}"/>
+                                                                        <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{($despachoorddet_invbodegaproducto->cant * -1)}}"/>
                                                                     @endif
                                                                 @endforeach
                                                             </td>

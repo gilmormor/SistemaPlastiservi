@@ -18,6 +18,12 @@
 <div class="form-group">
     <label id="lblsucursal_id" name="lblsucursal_id" for="sucursal_id" class="col-lg-3 control-label requerido">Sucursal</label>
     <div class="col-lg-8">
+        <?php
+            $sucursal_id = 0;
+            if(count($tablas['sucursales']) == 1){
+                $sucursal_id = $tablas['sucursales'][0]->id;
+            }
+        ?>
         <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' required>
             <option value=''>Seleccione...</option>
                 @foreach($tablas['sucursales'] as $sucursal)
@@ -25,6 +31,10 @@
                         value="{{$sucursal->id}}"
                         @if (isset($data) and ($data->sucursal_id==$sucursal->id))
                             {{'selected'}}
+                        @else 
+                            @if(!isset($data) and $sucursal->id==$sucursal_id)
+                                {{'selected'}}
+                            @endif
                         @endif
                         >
                         {{$sucursal->nombre}}

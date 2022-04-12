@@ -109,6 +109,7 @@ class InvControlController extends Controller
     }
 
     public function procesarcierreini(Request $request){
+        can('guardar-inventario-control');
         if ($request->ajax()) {
             $aux_annomes = CategoriaGrupoValMes::annomes($request->annomes);
             $tipomensaje = 'error';
@@ -164,20 +165,20 @@ class InvControlController extends Controller
                             
                             $invmov = InvMov::create($invmov_array);
                             foreach ($invmovdets as $invmovdet) {            
-                                    $array_invmovdet = $invmovdet->attributesToArray();
-                                    //dd($array_invmovdet);
-                                    /*
-                                    $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
-                                    $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                                    $array_invmovdet["invbodega_id"] = $request->invbodega_id;
-                                    $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
-                                    */
-                                    $array_invmovdet["invmovtipo_id"] = 4;
-                                    $array_invmovdet["sucursal_id"] = $request->sucursal_id;
-                                    $array_invmovdet["usuario_id"] = auth()->id();
+                                $array_invmovdet = $invmovdet->attributesToArray();
+                                //dd($array_invmovdet);
+                                /*
+                                $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
+                                $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
+                                $array_invmovdet["invbodega_id"] = $request->invbodega_id;
+                                $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
+                                */
+                                $array_invmovdet["invmovtipo_id"] = 6;
+                                $array_invmovdet["sucursal_id"] = $request->sucursal_id;
+                                $array_invmovdet["usuario_id"] = auth()->id();
 
-                                    $array_invmovdet["invmov_id"] = $invmov->id;
-                                    $invmovdet = InvMovDet::create($array_invmovdet);                              
+                                $array_invmovdet["invmov_id"] = $invmov->id;
+                                $invmovdet = InvMovDet::create($array_invmovdet);
                             }
                         }else{
                             $mensaje = 'Mes ya fue cerrado';
@@ -189,15 +190,11 @@ class InvControlController extends Controller
                         $tipomensaje = 'success';
                     }
                 }
-
-
-
             }
             return response()->json([
                 'tipomensaje' => $tipomensaje,
                 'mensaje' => $mensaje
             ]);
-
         }
     }
 }

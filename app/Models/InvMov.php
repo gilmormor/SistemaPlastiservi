@@ -72,6 +72,16 @@ class InvMov extends Model
                 }
             })
             ->where(function($query) use ($request)  {
+                if(!isset($request->tipobodega) or empty($request->tipobodega)){
+                    true;
+                }else{
+                    if(!is_array($request->tipobodega)){
+                        $aux_tipobodega = explode(",", $request->tipobodega);
+                    }
+                    $query->whereIn("invbodega.tipo",$aux_tipobodega);
+                }
+            })
+            ->where(function($query) use ($request)  {
                 if(!isset($request->producto_id) or empty($request->producto_id)){
                     true;
                 }else{

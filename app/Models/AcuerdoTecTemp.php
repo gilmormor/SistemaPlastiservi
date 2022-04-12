@@ -77,7 +77,7 @@ class AcuerdoTecTemp extends Model
 
     public function certificados()
     {
-        return $this->belongsToMany(Certificado::class, 'acuerdotectemp_certificado');
+        return $this->belongsToMany(Certificado::class, 'acuerdotectemp_certificado')->withTimestamps();
     }
 
     //RELACION INVERSA MatFabr

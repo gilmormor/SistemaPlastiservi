@@ -283,7 +283,6 @@ class DespachoOrdController extends Controller
                                                 $despachoorddet_invbodegaproducto = new DespachoOrdDet_InvBodegaProducto();
                                                 $despachoorddet_invbodegaproducto->despachoorddet_id = $despachoorddet->id;
                                                 $despachoorddet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
-                                                $despachoorddet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
                                                 $despachoorddet_invbodegaproducto->cant = $request->invcant[$b] * -1;
                                                 $despachoorddet_invbodegaproducto->save();
                                             }

@@ -543,7 +543,7 @@ $('#form-general').submit(function() {
     //Rest of code
 })
 
-function actSaldo(s,i){
+function actSaldo(i){
 	aux_cantsol = $.trim($("#cantsol" + i).val());
 	$("#cantsol" + i).val(aux_cantsol);
 	aux_cantTD = $.trim($("#cantTD" + i).html());
@@ -596,12 +596,12 @@ function llenarCantSol(i){
 		$("#cantsol" + i).val($.trim(saldo));
 		$("#cantsoldesp" + i).val($.trim(saldo));
 		$("#saldocantF" + i).html('0');
-		actSaldo($("#cantsol" + i).val(),i);
+		actSaldo(i);
 	}else{
 		$("#cantsol" + i).val('');
 		$("#cantsoldesp" + i).val('');
 		$("#saldocantF" + i).html($("#saldocantOrigF" + i).html());
-		actSaldo($("#saldocantOrigF" + i).html(),i);
+		actSaldo(i);
 	}
 	sumcant();
 }
@@ -624,12 +624,12 @@ function sumarcant(){
 			$("#llenarCantSol" + i).prop("checked", true);
 			$("#cantsol" + i).val($.trim(aux_saldo));
 			$("#saldocantF" + i).html("0")
-			actSaldo($("#cantsol" + i).val(),i);
+			actSaldo(i);
 		}else{
 			$("#llenarCantSol" + i).prop("checked", false);
 			$("#cantsol" + i).val('');
 			$("#saldocantF" + i).html($("#saldocantOrigF" + i).html())
-			actSaldo($("#saldocantOrigF" + i).html(),i);
+			actSaldo(i);
 		}
 		$("#cantsoldesp" + i).val($("#cantsol" + i).val());
 	}

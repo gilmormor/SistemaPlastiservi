@@ -12,6 +12,7 @@ class InvMovModulo extends Model
     protected $fillable = [
         'nombre',
         'desc',
+        'cod',
         'usuario_id',
         'usuariodel_id'
     ];
@@ -21,5 +22,16 @@ class InvMovModulo extends Model
     {
         return $this->hasMany(InvMovDet::class);
     }
+
+    public function invmovmodulobodsals()
+    {
+        return $this->belongsToMany(InvBodega::class, 'invmovmodulobodsal','invmovmodulo_id','invbodega_id')->withTimestamps();
+    }
+
+    public function invmovmodulobodents()
+    {
+        return $this->belongsToMany(InvBodega::class, 'invmovmodulobodent','invmovmodulo_id','invbodega_id')->withTimestamps();
+    }
+
 
 }

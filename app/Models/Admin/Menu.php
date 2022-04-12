@@ -15,7 +15,7 @@ class Menu extends Model
 
     public function roles()
     {
-        return $this->belongsToMany(Rol::class, 'menu_rol');
+        return $this->belongsToMany(Rol::class, 'menu_rol')->withTimestamps();
     }
 
     public function getHijos($padres, $line)

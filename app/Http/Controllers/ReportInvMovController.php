@@ -22,7 +22,7 @@ class ReportInvMovController extends Controller
      */
     public function index()
     {
-        can('listar-inventario-control');
+        can('reporte-movimiento-inventario');
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $sucursales = Sucursal::orderBy('id')
