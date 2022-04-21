@@ -73,5 +73,11 @@ class DespachoSol extends Model
         return $this->belongsTo(TipoEntrega::class);
     }
     
+    //RELACION DE MUCHOS A MUCHOS CON TABLA INVMOV
+    public function invmovs()
+    {
+        return $this->belongsToMany(InvMov::class, 'despachosol_invmov','despachosol_id','invmov_id')->withTimestamps();
+    }
+    
 
 }

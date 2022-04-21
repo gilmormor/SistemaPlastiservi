@@ -1,5 +1,6 @@
 <?php
     use Illuminate\Http\Request;
+    use App\Models\InvBodegaProducto;
 ?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{$data->updated_at}}">
 <input type="hidden" name="id" id="id" value="{{$data->id}}">
@@ -374,6 +375,14 @@
                                     $peso = $detalle->notaventadetalle->totalkilos/$detalle->notaventadetalle->cant;
                                     $totalkilos = $peso * $detalle->cantsoldesp;
                                     $invbodegaproductos = $detalle->notaventadetalle->producto->invbodegaproductos;
+                                    foreach ($detalle->notaventadetalle->producto->categoriaprod->invbodegas as $invbodega) {
+                                        InvBodegaProducto::firstOrCreate(
+                                            ['producto_id' => $detalle->notaventadetalle->producto_id, 'invbodega_id' => $invbodega->id],
+                                            [   'producto_id' => $detalle->producto_id, 
+                                                'invbodega_id' => $invbodega->id
+                                            ]
+                                        );
+                                    }
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -458,7 +467,7 @@
                                                         $existencia = $invbodegaproducto::existencia($request);
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                     ?>
-                                                    @if (($invbodegaproducto->invbodega->tipo == 2) and ($existencia["stock"]["cant"] > 0)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                    @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
                                                             <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                 <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
@@ -483,19 +492,8 @@
                                                                 <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'SD')" style="text-align:right;" value="{{$aux_invcant}}"/>
                                                             </td>
                                                         </tr>
-                                                    @else
-                                                        @if ($invbodegaproducto->invbodega->tipo == 2)
-                                                            <a class='btn-sm tooltipsC' title='{{$invbodegaproducto->invbodega->nombre}}: Producto sin Stock'>
-                                                                <i class='fa fa-fw fa-question-circle text-aqua'></i>
-                                                            </a>                                                        
-                                                        @endif
                                                     @endif
                                                 @endforeach
-                                                @if ($i == 0)
-                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock'>
-                                                        <i class='fa fa-fw fa-question-circle text-aqua'></i>
-                                                    </a>
-                                                @endif
                                             </tbody>
                                         </table>
                                     </td>

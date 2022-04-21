@@ -235,9 +235,10 @@
                                                         $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
                                                         $request["tipo"] = 2;
                                                         $existencia = InvBodegaProducto::existencia($request);
+                                                        $aux_cant = 0;
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                     ?>
-                                                    @if ($invbodegaproducto->invbodega->tipo == 2) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->
+                                                    @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
                                                             <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                 <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
@@ -250,28 +251,25 @@
                                                             <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right;"  class='tooltipsC' title='Stock disponible'>
                                                                 {{$existencia["stock"]["cant"]}}
                                                             </td>
-                                                            <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;"  title="Valor a despachar">
-                                                                @foreach($detalle->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto)
-                                                                    @if ($despachoorddet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)
-                                                                        <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{($despachoorddet_invbodegaproducto->cant * -1)}}"/>
-                                                                    @endif
-                                                                @endforeach
+                                                            <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;">
+                                                                @if ($existencia["stock"]["cant"] > 0)
+                                                                    @foreach($detalle->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto)
+                                                                        @if ($despachoorddet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)
+                                                                            <?php 
+                                                                                $aux_cant = $despachoorddet_invbodegaproducto->cant * -1
+                                                                            ?>
+                                                                        @endif
+                                                                    @endforeach
+                                                                @else
+                                                                    <a class='btn-sm tooltipsC' title='Sin Stock'>
+                                                                        <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                                                                    </a>    
+                                                                @endif
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{($aux_cant)}}" title="Valor a despachar"/>
                                                             </td>
                                                         </tr>
-                                                    @else
-                                                        @if ($invbodegaproducto->invbodega->tipo == 2)
-                                                            <a class='btn-sm tooltipsC' title='{{$invbodegaproducto->invbodega->nombre}}: Producto sin Stock'>
-                                                                <i class='fa fa-fw fa-question-circle text-aqua'></i>
-                                                            </a>                                                        
-                                                        @endif
                                                     @endif
                                                 @endforeach
-                                                @if ($i == 0)
-                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock'>
-                                                        <i class='fa fa-fw fa-question-circle text-aqua'></i>
-                                                    </a>
-                                                @endif
-
                                             </tbody>
                                         </table>
                                     </td>

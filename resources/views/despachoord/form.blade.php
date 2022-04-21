@@ -223,7 +223,7 @@
                                                         $existencia = $invbodegaproducto::existencia($request);
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                     ?>
-                                                    @if (($invbodegaproducto->invbodega->tipo == 2) and ($existencia["stock"]["cant"] > 0)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                    @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
                                                             <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                 <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
@@ -236,16 +236,20 @@
                                                             <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
                                                                 {{$existencia["stock"]["cant"]}}
                                                             </td>
-                                                            <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right" title='Valor a despachar'>
-                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;"/>
+                                                            <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right">
+                                                                <!--
+                                                                @if ($existencia["stock"]["cant"] > 0)
+                                                                    <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;"  title='Valor a despachar'/>
+                                                                @else
+                                                                    <a class='btn-sm tooltipsC' title='Sin Stock'>
+                                                                        <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                                                                        <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" title='Valor a despachar'  style="display:none;"/>
+                                                                    </a>    
+                                                                @endif
+                                                                -->
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;"  title='Valor a despachar'/>
                                                             </td>
                                                         </tr>
-                                                    @else
-                                                        @if ($invbodegaproducto->invbodega->tipo == 2)
-                                                            <a class='btn-sm tooltipsC' title='{{$invbodegaproducto->invbodega->nombre}}: Producto sin Stock'>
-                                                                <i class='fa fa-fw fa-question-circle text-aqua'></i>
-                                                            </a>                                                        
-                                                        @endif
                                                     @endif
                                                 @endforeach
                                                 @if ($i == 0)

@@ -165,9 +165,9 @@ function ajaxRequest(data,url,funcion) {
                                 genpdfOD(respuesta.id,1);
                             }
                             //$("#fila"+data['nfila']).remove();
-                            $("#fila"+respuesta.nfila).remove();
                             
                         });
+                        $("#fila"+respuesta.nfila).remove();
                         Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                         break;
                     case 'sp':

@@ -26,7 +26,7 @@ class ValidarInvMovModulo extends FormRequest
         return [
             'nombre' => 'required|max:100',
             'desc' => 'required|max:300',
-            'cod' => 'required|max:10'
+            'cod' => 'required|max:10|unique:invmovmodulo,cod,' . $this->route('id')
         ];
     }
 }

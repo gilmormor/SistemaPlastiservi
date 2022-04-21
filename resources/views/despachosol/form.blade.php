@@ -1,5 +1,6 @@
 <?php
     use Illuminate\Http\Request;
+    use App\Models\InvBodegaProducto;
 ?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
 <input type="hidden" name="notaventa_id" id="notaventa_id" value="{{$data->id}}">
@@ -370,6 +371,14 @@
                                     if($detalle->cant > $sumacantsoldesp){
                                         $aux_nfila++;
                                         $aux_saldo = $detalle->cant - $sumacantsoldesp;
+                                        foreach ($detalle->producto->categoriaprod->invbodegas as $invbodega) {
+                                            InvBodegaProducto::firstOrCreate(
+                                                ['producto_id' => $detalle->producto_id, 'invbodega_id' => $invbodega->id],
+                                                [   'producto_id' => $detalle->producto_id, 
+                                                    'invbodega_id' => $invbodega->id
+                                                ]
+                                            );
+                                        }
                                         $invbodegaproductos = $detalle->producto->invbodegaproductos;
                                         //dd($aux_saldo);
                                         //Este If cierra abajo
@@ -457,7 +466,7 @@
                                                         $existencia = $invbodegaproducto::existencia($request);
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                     ?>
-                                                    @if ((in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) and ($existencia["stock"]["cant"] > 0)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                    @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
                                                             <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                 <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->producto_id}}" style="display:none;"/>
@@ -474,16 +483,10 @@
                                                                 <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'SD')" style="text-align:right;"/>
                                                             </td>
                                                         </tr>
-                                                    @else
-                                                        @if ($invbodegaproducto->invbodega->tipo == 2)
-                                                            <a class='btn-sm tooltipsC' title='{{$invbodegaproducto->invbodega->nombre}}: Producto sin Stock'>
-                                                                <i class='fa fa-fw fa-question-circle text-aqua'></i>
-                                                            </a>                                                        
-                                                        @endif
                                                     @endif
                                                 @endforeach
                                                 @if ($i == 0)
-                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock'>
+                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock {{$aux_cont}}'>
                                                         <i class='fa fa-fw fa-question-circle text-aqua'></i>
                                                     </a>
                                                 @endif
