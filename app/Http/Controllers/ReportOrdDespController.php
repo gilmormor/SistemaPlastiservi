@@ -12,6 +12,7 @@ use App\Models\DespachoOrdAnul;
 use App\Models\DespachoOrdRec;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
@@ -47,7 +48,10 @@ class ReportOrdDespController extends Controller
                     ];
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        return view('reportorddesp.index', compact('clientes','giros','areaproduccions','tipoentregas','comunas','fechaServ','tablashtml'));
+        $productos = Producto::productosxUsuario();
+        $selecmultprod = 1;
+
+        return view('reportorddesp.index', compact('clientes','giros','areaproduccions','tipoentregas','comunas','fechaServ','tablashtml','productos','selecmultprod'));
 
     }
 
@@ -406,6 +410,14 @@ function consultaorddesp($request){
         $fechad = date_format($fecha, 'Y-m-d');
         $aux_condfechaestdesp = "despachoord.fechaestdesp='$fechad'";
     }
+
+    $aux_condproducto_id = " true";
+    if(!empty($request->producto_id)){
+        $aux_codprod = explode(",", $request->producto_id);
+        $aux_codprod = implode ( ',' , $aux_codprod);
+        $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
+    }
+
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
     /*
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
@@ -494,6 +506,7 @@ function consultaorddesp($request){
             and $aux_condid
             and $aux_conddespachosol_id
             and $aux_condfechaestdesp
+            and $aux_condproducto_id
             GROUP BY despachoord.id
             ORDER BY despachoord.id asc,despachoordrec.id asc;";
 

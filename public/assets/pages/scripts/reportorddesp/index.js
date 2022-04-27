@@ -54,6 +54,7 @@ function datos(){
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
         despachosol_id    : $("#despachosol_id").val(),
+        producto_id       : $("#producto_idPxP").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -70,7 +71,8 @@ function datos(){
     "&notaventa_id="+data1.notaventa_id +
     "&aprobstatus="+data1.aprobstatus +
     "&comuna_id="+data1.comuna_id +
-    "&despachosol_id="+data1.despachosol_id
+    "&despachosol_id="+data1.despachosol_id +
+    "&producto_id="+data1.producto_id
 
     var data = {
         data1 : data1,
@@ -226,7 +228,7 @@ function consultarpage(data){
             if(data.despachoordrec_id){
                 let str = data.despachoordrec_id;
                 let arr = str.split(',');
-                console.log(arr); 
+                //console.log(arr); 
                 aux_sep = "";
                 if(arr.length>0){
                     aux_rechazos= "(";
@@ -313,4 +315,34 @@ var eventFired = function ( type ) {
 		total += valorNum;
 	});
     $("#subtotalkg").html(MASKLA(total,2))
+}
+
+$("#btnbuscarproducto").click(function(event){
+    //$(this).val("");
+    $(".input-sm").val('');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+    $("#myModalBuscarProd").modal('show');
+});
+
+function copiar_codprod(id,codintprod){
+    $("#myModalBuscarProd").modal('hide');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#producto_idPxP").val(id);
+    }else{
+        $("#producto_idPxP").val(aux_id + "," + id);
+    }
+	//$("#producto_idM").blur();
+	$("#producto_idPxP").focus();
 }

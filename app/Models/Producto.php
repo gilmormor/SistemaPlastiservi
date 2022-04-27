@@ -90,10 +90,11 @@ class Producto extends Model
                 'categoriaprodsuc.sucursal_id',
                 'categoriaprod.unidadmedida_id'
                 ])
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                ->where('producto.deleted_at','=',null)
-                ->orderBy('producto.id', 'asc')
-                ->get();
+        ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+        ->where('producto.deleted_at','=',null)
+        ->groupBy('producto.id')
+        ->orderBy('producto.id', 'asc')
+        ->get();
         return $productos;
     }
 

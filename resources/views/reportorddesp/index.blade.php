@@ -196,6 +196,22 @@ Orden Despacho
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="producto_idPxP" class="control-label">Producto:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <div class="input-group">
+                                            <input type="text" name="producto_idPxP" id="producto_idPxP" class="form-control" tipoval="numericootro"/>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" id="btnbuscarproducto" name="btnbuscarproducto">Buscar</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
                                 <button type="button" id="btnconsultarpage" name="btnconsultarpage" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
@@ -301,4 +317,5 @@ Orden Despacho
 @include('generales.buscarcliente')
 @include('generales.modalpdf')
 @include('generales.verpdf')
+@include('generales.buscarproducto')
 @endsection

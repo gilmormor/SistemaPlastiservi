@@ -196,7 +196,7 @@ Pendiente x Producto
                             </div>
                             <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                    <label for="producto_idPxP" class="control-label">Producto</label>
+                                    <label for="producto_idPxP" class="control-label">Producto:</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
                                     <div class="input-group">
