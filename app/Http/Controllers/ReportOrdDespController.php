@@ -209,6 +209,7 @@ class ReportOrdDespController extends Controller
         $request->aprobstatus = $_GET["aprobstatus"]; //explode ( ",", $_GET["aprobstatus"] );
         $request->comuna_id = $_GET["comuna_id"];
         $request->despachosol_id = $_GET["despachosol_id"];
+        $request->producto_id = $_GET["producto_id"];
         //dd($request);
 
         $datas = consultaorddesp($request);

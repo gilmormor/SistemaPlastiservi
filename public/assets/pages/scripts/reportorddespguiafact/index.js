@@ -114,6 +114,7 @@ function datos(){
         despachosol_id    : $("#despachosol_id").val(),
         despachoord_id    : $("#despachoord_id").val(),
         aux_verestado     : $("#aux_verestado").val(),
+        producto_id       : $("#producto_idPxP").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -258,7 +259,8 @@ $("#btnpdf").click(function()
                     "&comuna_id="+data.comuna_id +
                     "&aux_titulo="+aux_titulo +
                     "&guiadespacho="+data.guiadespacho +
-                    "&aux_verestado="+data.aux_verestado
+                    "&aux_verestado="+data.aux_verestado +
+                    "&producto_id="+data.producto_id
             $('#contpdf').attr('src', '/reportorddespguiafact/exportPdf/'+cadena);
             $("#myModalpdf").modal('show');
         },
@@ -267,3 +269,33 @@ $("#btnpdf").click(function()
     });
     
 });
+
+$("#btnbuscarproducto").click(function(event){
+    //$(this).val("");
+    $(".input-sm").val('');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+    $("#myModalBuscarProd").modal('show');
+});
+
+function copiar_codprod(id,codintprod){
+    $("#myModalBuscarProd").modal('hide');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#producto_idPxP").val(id);
+    }else{
+        $("#producto_idPxP").val(aux_id + "," + id);
+    }
+	//$("#producto_idM").blur();
+	$("#producto_idPxP").focus();
+}

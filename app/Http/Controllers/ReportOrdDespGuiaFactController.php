@@ -12,6 +12,7 @@ use App\Models\DespachoOrd;
 use App\Models\DespachoOrdRec;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
@@ -46,7 +47,10 @@ class ReportOrdDespGuiaFactController extends Controller
         $titulo = "Consultar Orden Despacho, Guia, Factura, cerrada";
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        return view('reportorddespguiafact.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaServ','aux_verestado','titulo','tablashtml'));
+        $productos = Producto::productosxUsuario();
+        $selecmultprod = 1;
+
+        return view('reportorddespguiafact.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaServ','aux_verestado','titulo','tablashtml','productos','selecmultprod'));
 
     }
 
@@ -571,6 +575,14 @@ function consultaorddesp($request){
 
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
 
+    $aux_condproducto_id = " true";
+    if(!empty($request->producto_id)){
+        $aux_codprod = explode(",", $request->producto_id);
+        $aux_codprod = implode ( ',' , $aux_codprod);
+        $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
+    }
+
+
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,
             cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
@@ -616,6 +628,7 @@ function consultaorddesp($request){
             and $aux_conddespachosol_id
             and $aux_condguiadespacho
             and $aux_condnumfactura
+            and $aux_condproducto_id
             and isnull(despachoord.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             GROUP BY despachoord.id;";
             
