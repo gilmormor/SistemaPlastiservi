@@ -93,9 +93,10 @@ class ReportOrdDespGuiaFactController extends Controller
         $titulo = "Editar Número Guia o Factura";
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $productos = Producto::productosxUsuario();
+        $selecmultprod = 1;
 
-        return view('reportorddespguiafact.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','aux_verestado','titulo','tablashtml'));
-
+        return view('reportorddespguiafact.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','aux_verestado','titulo','tablashtml','productos','selecmultprod'));
     }
 
     public function reporte(Request $request){
