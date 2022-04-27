@@ -637,7 +637,7 @@ class DespachoOrdController extends Controller
                             $invmov_array["desc"] = "Salida de Bodega de Despacho, ya en poder del cliente / Orden Despacho Nro: " . $request->id;
                             $invmov_array["obs"] = "Salida de Bodega de Despacho, ya en poder del cliente / Orden Despacho Nro: " . $request->id;
                             $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Guia de Despacho
-                            $invmov_array["idmovmod"] = $request->guiadespacho;
+                            $invmov_array["idmovmod"] = $request->id;
                             $invmov_array["invmovtipo_id"] = 2;
                             $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
                             $invmov_array["usuario_id"] = auth()->id();

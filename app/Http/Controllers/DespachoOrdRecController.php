@@ -14,8 +14,10 @@ use App\Models\DespachoOrdRecDet_InvBodegaProducto;
 use App\Models\DespachoOrdRecMotivo;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
+use App\Models\InvMovModulo;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
@@ -42,7 +44,8 @@ class DespachoOrdRecController extends Controller
                 cliente.razonsocial,despachoord_id,despachoordrec.documento_id,despachoordrec.documento_file,
                 '' as pdfcot,
                 despachoordrec.fechahora as fechahora_aaaammdd,
-                despachoord.notaventa_id,despachoord.despachosol_id,despachoordrec.aprobstatus,despachoordrec.aprobobs
+                despachoord.notaventa_id,despachoord.despachosol_id,despachoordrec.aprobstatus,despachoordrec.aprobobs,
+                despachoordrec.updated_at
             FROM despachoordrec inner join despachoord
             on despachoord.id = despachoordrec.despachoord_id and isnull(despachoord.deleted_at)
             and despachoord.id not in (select despachoordanul.despachoord_id from despachoordanul where isnull(despachoordanul.deleted_at))
@@ -62,7 +65,8 @@ class DespachoOrdRecController extends Controller
                 cliente.razonsocial,despachoord_id,despachoordrec.documento_id,despachoordrec.documento_file,
                 '' as pdfcot,
                 despachoordrec.fechahora as fechahora_aaaammdd,
-                despachoord.notaventa_id,despachoord.despachosol_id
+                despachoord.notaventa_id,despachoord.despachosol_id,
+                despachoordrec.updated_at
             FROM despachoordrec inner join despachoord
             on despachoord.id = despachoordrec.despachoord_id and isnull(despachoord.deleted_at)
             and despachoord.id not in (select despachoordanul.despachoord_id from despachoordanul where isnull(despachoordanul.deleted_at))
@@ -543,87 +547,152 @@ class DespachoOrdRecController extends Controller
         can('guardar-rechazo-orden-despacho');
         if ($request->ajax()) {
             $despachoordrec = DespachoOrdRec::findOrFail($request->id);
-            $despachoordrec->aprobstatus = $request->valor;
-            $despachoordrec->aprobusu_id = auth()->id();
-            $despachoordrec->aprobfechahora = date("Y-m-d H:i:s");
-            $despachoordrec->aprobobs = $request->obs;
-            if ($despachoordrec->save()) {
-                $tipomovinv = $despachoordrec->despachoordrecmotivo->tipomovinv;
-                if(($tipomovinv == 1) or ($tipomovinv == 2)){
-                    $invmov_array = array();
-                    $invmov_array["fechahora"] = date("Y-m-d H:i:s");
-                    $invmov_array["annomes"] = date("Ym");
-                    $invmov_array["desc"] = "Entrada a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
-                    $invmov_array["obs"] = "Entrada a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
-                    $invmov_array["invmovmodulo_id"] = 5; //Rechazo Orden de Despacho
-                    $invmov_array["idmovmod"] = $request->id;
-                    $invmov_array["invmovtipo_id"] = 1;
-                    $invmov_array["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_id;
-                    $invmov_array["usuario_id"] = auth()->id();
-                    
-                    $invmov = InvMov::create($invmov_array);
-                    //array_push($arrayinvmov_id, $invmov->id);
-                    //dd($despachoordrec->despachoordrecdets);
-                    foreach ($despachoordrec->despachoordrecdets as $despachoordrecdet) {
-                        foreach ($despachoordrecdet->despachoordrecdet_invbodegaproductos as $oddetbodprod) {
-                            $array_invmovdet = $oddetbodprod->attributesToArray();
-                            $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                            $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                            $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
-                            $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
-                            $array_invmovdet["invmovtipo_id"] = 1;
-                            $array_invmovdet["cant"] = $array_invmovdet["cant"];
-                            $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
-                            $array_invmovdet["cantxgrupo"] = 1;
-                            $array_invmovdet["peso"] = $despachoordrecdet->despachoorddet->notaventadetalle->producto->peso;
-                            $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
-                            $array_invmovdet["invmov_id"] = $invmov->id;
-                            $invmovdet = InvMovDet::create($array_invmovdet);                                
+            if($despachoordrec != null){
+                if(isset($despachoordrec->anulada) == false){
+                    if($request->updated_at == $despachoordrec->updated_at){
+                        $tipomovinv = $despachoordrec->despachoordrecmotivo->tipomovinv;
+                        $invmodulo = InvMovModulo::where("cod","RecOD")->get(); //BUSCAR MODULO RECHAZO ORDEN DESPACHO
+                        if(count($invmodulo) == 0){
+                            return response()->json([
+                                'id' => 0,
+                                'mensaje' => 'No existe en Inventario, Módulo Rechazo Orden Despacho (RecOD)',
+                                'tipo_alert' => 'error'
+                            ]);
                         }
-                    }    
-                }
-                if($tipomovinv == 2){
-                    $invmov_array = array();
-                    $invmov_array["fechahora"] = date("Y-m-d H:i:s");
-                    $invmov_array["annomes"] = date("Ym");
-                    $invmov_array["desc"] = "Salida a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
-                    $invmov_array["obs"] = "Salida a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
-                    $invmov_array["invmovmodulo_id"] = 5; //Rechazo Orden de Despacho
-                    $invmov_array["idmovmod"] = $request->id;
-                    $invmov_array["invmovtipo_id"] = 2;
-                    $invmov_array["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_id;
-                    $invmov_array["usuario_id"] = auth()->id();
-                    
-                    $invmov = InvMov::create($invmov_array);
-                    //array_push($arrayinvmov_id, $invmov->id);
-                    //dd($despachoordrec->despachoordrecdets);
-                    foreach ($despachoordrec->despachoordrecdets as $despachoordrecdet) {
-                        foreach ($despachoordrecdet->despachoordrecdet_invbodegaproductos as $oddetbodprod) {
-                            $array_invmovdet = $oddetbodprod->attributesToArray();
-                            $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                            $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                            $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
-                            $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
-                            $array_invmovdet["invmovtipo_id"] = 2;
-                            $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
-                            $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
-                            $array_invmovdet["cantxgrupo"] = 1;
-                            $array_invmovdet["peso"] = $despachoordrecdet->despachoorddet->notaventadetalle->producto->peso;
-                            $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
-                            $array_invmovdet["invmov_id"] = $invmov->id;
-                            $invmovdet = InvMovDet::create($array_invmovdet);                                
+                        if(count($invmodulo) > 1){
+                            return response()->json([
+                                'id' => 0,
+                                'mensaje' => 'Bodega Scrap debe ser única',
+                                'tipo_alert' => 'error'
+                            ]);
                         }
+                        $despachoordrec->aprobstatus = $request->valor;
+                        $despachoordrec->aprobusu_id = auth()->id();
+                        $despachoordrec->aprobfechahora = date("Y-m-d H:i:s");
+                        $despachoordrec->aprobobs = $request->obs;
+                        if ($despachoordrec->save()) {
+                            $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
+                            $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Scrap (La bodega Scrap debe ser unica)
+            
+                            if(($tipomovinv != 2)){
+                                $invmov_array = array();
+                                $invmov_array["fechahora"] = date("Y-m-d H:i:s");
+                                $invmov_array["annomes"] = date("Ym");
+                                $invmov_array["desc"] = "Entrada a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["obs"] = "Entrada a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Rechazo Orden de Despacho
+                                $invmov_array["idmovmod"] = $request->id;
+                                $invmov_array["invmovtipo_id"] = 1;
+                                $invmov_array["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_id;
+                                $invmov_array["usuario_id"] = auth()->id();
+                                
+                                $invmov = InvMov::create($invmov_array);
+                                //array_push($arrayinvmov_id, $invmov->id);
+                                //dd($despachoordrec->despachoordrecdets);
+                                foreach ($despachoordrec->despachoordrecdets as $despachoordrecdet) {
+                                    foreach ($despachoordrecdet->despachoordrecdet_invbodegaproductos as $oddetbodprod) {
+                                        $array_invmovdet = $oddetbodprod->attributesToArray();
+                                        $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
+                                        $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
+                                        $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
+                                        $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
+                                        $array_invmovdet["invmovtipo_id"] = 1;
+                                        $array_invmovdet["cant"] = $array_invmovdet["cant"];
+                                        $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
+                                        $array_invmovdet["cantxgrupo"] = 1;
+                                        $array_invmovdet["peso"] = $despachoordrecdet->despachoorddet->notaventadetalle->producto->peso;
+                                        $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                                        $array_invmovdet["invmov_id"] = $invmov->id;
+                                        $invmovdet = InvMovDet::create($array_invmovdet);                                
+                                    }
+                                }    
+                            }
+                            if($tipomovinv == 2){
+                                $invmov_array = array();
+                                $invmov_array["fechahora"] = date("Y-m-d H:i:s");
+                                $invmov_array["annomes"] = date("Ym");
+                                $invmov_array["desc"] = "Entrada a Bodega Scrap Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["obs"] = "Entrada a Bodega Scrap Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Rechazo Orden de Despacho
+                                $invmov_array["idmovmod"] = $request->id;
+                                $invmov_array["invmovtipo_id"] = 1;
+                                $invmov_array["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_id;
+                                $invmov_array["usuario_id"] = auth()->id();
+                                
+                                $invmov = InvMov::create($invmov_array);
+                                //array_push($arrayinvmov_id, $invmov->id);
+                                //dd($despachoordrec->despachoordrecdets);
+            
+                                $despachoordrecdet_invbodegaproductos = DespachoOrdRec::join("despachoordrecdet","despachoordrec.id","=","despachoordrecdet.despachoordrec_id")
+                                ->where("despachoordrec.id","=",$request->id)
+                                ->join("despachoordrecdet_invbodegaproducto","despachoordrecdet.id","=","despachoordrecdet_invbodegaproducto.despachoordrecdet_id")
+                                ->join("invbodegaproducto","despachoordrecdet_invbodegaproducto.invbodegaproducto_id","=","invbodegaproducto.id")
+                                ->join("invbodega","invbodegaproducto.invbodega_id","=","invbodega.id")
+                                ->select([
+                                    'despachoordrec.id',
+                                    'despachoordrecdet.despachoorddet_id',
+                                    'despachoordrecdet_invbodegaproducto.despachoordrecdet_id',
+                                    'despachoordrecdet_invbodegaproducto.invbodegaproducto_id',
+                                    'invbodegaproducto.producto_id',
+                                    'invbodega.sucursal_id',
+                                    DB::raw('sum(despachoordrecdet_invbodegaproducto.cant) as cant'),
+                                    DB::raw('sum(despachoordrecdet_invbodegaproducto.cantkg) as cantkg')
+                                    ])
+                                ->get();
+                                foreach ($despachoordrecdet_invbodegaproductos as $despachoordrecdet_invbodegaproducto) {
+                                    $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                                        ['producto_id' => $despachoordrecdet_invbodegaproducto->producto_id,'invbodega_id' => $aux_DespachoBodegaId],
+                                        [
+                                            'producto_id' => $despachoordrecdet_invbodegaproducto->producto_id,
+                                            'invbodega_id' => $aux_DespachoBodegaId
+                                        ]
+                                    );
+                                    $despachoordrecdet = DespachoOrdRecDet::findOrFail($despachoordrecdet_invbodegaproducto->despachoordrecdet_id);
+                                    $array_invmovdet = $despachoordrecdet_invbodegaproducto->attributesToArray();
+                                    $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
+                                    $array_invmovdet["producto_id"] = $despachoordrecdet_invbodegaproducto->producto_id;
+                                    $array_invmovdet["invbodega_id"] = $aux_DespachoBodegaId;
+                                    $array_invmovdet["sucursal_id"] = $despachoordrecdet_invbodegaproducto->sucursal_id;
+                                    $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
+                                    $array_invmovdet["invmovtipo_id"] = 1;
+                                    $array_invmovdet["cant"] = $array_invmovdet["cant"];
+                                    $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
+                                    $array_invmovdet["cantxgrupo"] = 1;
+                                    $array_invmovdet["peso"] = $despachoordrecdet->despachoorddet->notaventadetalle->producto->peso;
+                                    $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                                    $array_invmovdet["invmov_id"] = $invmov->id;
+                                    $invmovdet = InvMovDet::create($array_invmovdet);
+                                }
+                            }
+                            return response()->json(['mensaje' => 'ok']);
+                        } else {
+                            return response()->json(['mensaje' => 'ng']);
+                        }
+                    }else{
+                        return response()->json([
+                            'id' => 0,
+                            'mensaje'=>'Registro fué modificado por otro usuario.',
+                            'tipo_alert' => 'error'
+                        ]);
                     }    
+                }else{
+                    return response()->json([
+                        'id' => 0,
+                        'mensaje' => 'Registro fue anulado previamente.',
+                        'tipo_alert' => 'error'
+                    ]);
                 }
-                return response()->json(['mensaje' => 'ok']);
-            } else {
-                return response()->json(['mensaje' => 'ng']);
+            }else{
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => 'Registro fue eliminado previamente.',
+                    'tipo_alert' => 'error'
+                ]);
             }
         } else {
             abort(404);
         }
     }
-
 }
 
 function cargadatos(){

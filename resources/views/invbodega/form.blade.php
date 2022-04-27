@@ -37,6 +37,23 @@
 </div>
 
 <div class="form-group">
+    <label for="categoriaprod_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Categoria Producto">CategoriaProd</label>
+    <div class="col-lg-8">
+        <select name="categoriaprod_id[]" id="categoriaprod_id" class="selectpicker form-control invmovmodulobodsal_id" data-live-search='true' multiple data-actions-box='true'>
+            @foreach($categoriaprodsucs as $categoriaprodsuc)
+                <option
+                    value="{{$categoriaprodsuc->id}}"
+                    {{is_array(old('categoriaprod_id')) ? (in_array($categoriaprodsuc->id, old('categoriaprod_id')) ? 'selected' : '') : (isset($data) ? ($data->categoriaprods->firstWhere('id', $categoriaprodsuc->id) ? 'selected' : '') : '')}}
+                    >
+                    {{$categoriaprodsuc->nombre}}
+                </option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
+
+<div class="form-group">
     <label for="activo" class="col-lg-3 control-label requerido">Estatus</label>
     <div class="col-lg-8">
         <select name="activo" id="activo" class="form-control select2" required>
@@ -89,25 +106,19 @@
             >
                 Despacho
             </option>
+            <option
+                value="4"
+                @if (isset($data->tipo) and ($data->tipo==4))
+                    {{'selected'}}
+                @endif
+            >
+                Scrap
+            </option>
+
         </select>
     </div>
 </div>
 
-<div class="form-group">
-    <label for="categoriaprod_id" class="col-lg-3 control-label requerido">categoriaprod</label>
-    <div class="col-lg-8">
-        <select name="categoriaprod_id[]" id="categoriaprod_id" class="form-control select2" multiple required>
-            @foreach($categoriaprodsucs as $categoriaprodsuc)
-                <option
-                    value="{{$categoriaprodsuc->id}}"
-                    {{is_array(old('categoriaprod_id')) ? (in_array($categoriaprodsuc->id, old('categoriaprod_id')) ? 'selected' : '') : (isset($data) ? ($data->categoriaprods->firstWhere('id', $categoriaprodsuc->id) ? 'selected' : '') : '')}}
-                    >
-                    {{$categoriaprodsuc->nombre}}
-                </option>
-            @endforeach
-        </select>
-    </div>
-</div>
 <div class="form-group">
     <label for="orden" class="col-lg-3 control-label requerido">Orden</label>
     <div class="col-lg-8">

@@ -111,7 +111,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-xs-12 col-sm-2">
+                    <div class="form-group col-xs-12 col-sm-3">
                         <label for="despachoordrecmotivo_idD" class="control-label requerido">Motivo Rechazo</label>
                         <select name="despachoordrecmotivo_id" id="despachoordrecmotivo_id" class="form-control select2" data-live-search='true' required>
                             <option value="">Seleccione...</option>

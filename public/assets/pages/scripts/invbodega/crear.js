@@ -26,3 +26,10 @@ $(document).ready(function () {
     });
 
 });
+
+$(".selectpicker").selectpicker({
+	noneSelectedText : "Seleccione...", // by this default "Nothing selected" -->will change to Please Select
+	selectAllText : "Selec todo",
+	deselectAllText : "Borrar todo",
+    size: 8
+	});
