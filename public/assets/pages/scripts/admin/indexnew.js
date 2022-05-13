@@ -99,6 +99,7 @@ $(document).on("click", ".btnaprobar", function(event){
 
 
 function ajaxRequest(data,url,funcion,form = false) {
+    console.log('respuesta2');
     $.ajax({
         url: url,
         type: 'POST',

@@ -261,9 +261,11 @@
                                                                         @endif
                                                                     @endforeach
                                                                 @else
+                                                                <!--
                                                                     <a class='btn-sm tooltipsC' title='Sin Stock'>
                                                                         <i class='fa fa-fw fa-question-circle text-aqua'></i>
-                                                                    </a>    
+                                                                    </a>
+                                                                -->
                                                                 @endif
                                                                 <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{($aux_cant)}}" title="Valor a despachar"/>
                                                             </td>

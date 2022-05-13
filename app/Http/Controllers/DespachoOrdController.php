@@ -772,6 +772,21 @@ class DespachoOrdController extends Controller
     {
         if ($request->ajax()) {
             $despachoord = DespachoOrd::findOrFail($request->id);
+            if($despachoord == null){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => 'Registro fue eliminado previamente.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            if($request->updated_at != $despachoord->updated_at){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje'=>'Registro fué modificado por otro usuario.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
+
             $aux_bandera = true;
             foreach ($despachoord->despachoorddets as $despachoorddet) {
                 $aux_respuesta = InvBodegaProducto::validarExistenciaStock($despachoorddet->despachoorddet_invbodegaproductos);
@@ -1303,7 +1318,8 @@ function consultaindex(){
     cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
     '' as notaventaxk,comuna.nombre as comuna_nombre,
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
-    SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg
+    SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
+    despachoord.updated_at
     FROM despachoord INNER JOIN notaventa
     ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente

@@ -25,6 +25,7 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
+            {data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -103,11 +104,14 @@ $(document).ready(function () {
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
             }
+            $('td', row).eq(13).addClass('updated_at');
+            $('td', row).eq(13).attr('id','updated_at' + data.id);
+            $('td', row).eq(13).attr('name','updated_at' + data.id);
             aux_text = aux_text +
             "<a href='despachoord' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Orden Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
-            $('td', row).eq(13).html(aux_text);
+            $('td', row).eq(14).html(aux_text);
         }
     });
 
@@ -142,13 +146,13 @@ var eventFired = function ( type ) {
 }
 
 
-function ajaxRequest(data,url,funcion) {
+function ajaxRequestOD(data,url,funcion) {
+    data1 = data;
 	$.ajax({
 		url: url,
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			
 			if(funcion=='aproborddesp'){
                 switch (respuesta.mensaje) {
                     case 'ok':
@@ -164,8 +168,7 @@ function ajaxRequest(data,url,funcion) {
                             if (value) {
                                 genpdfOD(respuesta.id,1);
                             }
-                            //$("#fila"+data['nfila']).remove();
-                            
+                            //$("#fila"+data['nfila']).remove();                            
                         });
                         $("#fila"+respuesta.nfila).remove();
                         Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
@@ -177,7 +180,17 @@ function ajaxRequest(data,url,funcion) {
                         Biblioteca.notificaciones(respuesta.menper, 'Plastiservi', 'error');
                         break;
                     default:
-                        Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                        switch (respuesta.id) {
+                            case 0:
+                                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                                break;
+                            case 1:
+                                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                                break;
+                            default:
+                                Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo.', 'Plastiservi', 'error');
+                            }
+
                 }
 /*
 				if (respuesta.mensaje == "ok") {
@@ -206,13 +219,13 @@ function ajaxRequest(data,url,funcion) {
 */
             }
             if(funcion=='buscarTipoBodegaOrdDesp'){
-                //console.log(respuesta);
                 if(respuesta.datas.length > 0){
                     if(respuesta.datas.length == 1){
                         var data = {
                             id: respuesta.id,
                             nfila : respuesta.nfila,
                             invbodega_id : respuesta.datas[0].id,
+                            updated_at   : data1.updated_at,
                             _token: $('input[name=_token]').val()
                         };
                         var ruta = '/despachoord/aproborddesp/'+respuesta.id;
@@ -226,7 +239,7 @@ function ajaxRequest(data,url,funcion) {
                             },
                         }).then((value) => {
                             if (value) {
-                                ajaxRequest(data,ruta,'aproborddesp');
+                                ajaxRequestOD(data,ruta,'aproborddesp');
                             }
                         });
                     }else{
@@ -271,10 +284,11 @@ function aprobarord(i,id){
 		id         : id,
         nfila      : i,
         tipobodega : 3, //Codigo de tipo de bodega = 3 (Bodegas de despacho)
+        updated_at : $("#updated_at" + i).html(),
         _token: $('input[name=_token]').val()
 	};
 	var ruta = '/invbodega/buscarTipoBodegaOrdDesp';
-	respuesta = ajaxRequest(data,ruta,'buscarTipoBodegaOrdDesp');
+	respuesta = ajaxRequestOD(data,ruta,'buscarTipoBodegaOrdDesp');
     return 0;
 
     var data = {
@@ -293,7 +307,7 @@ function aprobarord(i,id){
 		},
 	}).then((value) => {
 		if (value) {
-			ajaxRequest(data,ruta,'aproborddesp');
+			ajaxRequestOD(data,ruta,'aproborddesp');
 		}
 	});
 }

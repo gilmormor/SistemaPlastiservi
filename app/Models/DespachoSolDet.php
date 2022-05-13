@@ -20,7 +20,7 @@ class DespachoSolDet extends Model
     //RELACION DE UNO A MUCHOS DespachoOrdDet
     public function despachoorddets()
     {
-        return $this->hasMany(DespachoOrdDet::class);
+        return $this->hasMany(DespachoOrdDet::class,'despachosoldet_id');
     }
     //RELACION INVERSA DespachoSol
     public function despachosol()

@@ -1,5 +1,6 @@
 <?php
     use Illuminate\Http\Request;
+    use App\Models\DespachoSolDet_InvBodegaProducto;
 ?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
 <input type="hidden" name="despachosol_id" id="despachosol_id" value="{{$data->id}}">
@@ -156,11 +157,31 @@
                                         $sumacantorddesp= $datasuma[0]->cantdesp;
                                     }
                                     if($detalle->cantsoldesp > $sumacantorddesp){
+                                        //if($detalle->id == 8846){
+                                        $aux_totalrecABodSolDesp = 0;
+                                        /*
+                                        foreach ($detalle->despachoorddets as $despachoorddet) {
+                                            foreach ($despachoorddet->despachoordrecdets as $despachoordrecdet) {
+                                                if(is_null($despachoordrecdet->despachoordrec->anulada)){
+                                                    foreach ($despachoordrecdet->despachoordrecdet_invbodegaproductos as $despachoordrecdet_invbodegaproducto) {
+                                                        if($despachoordrecdet_invbodegaproducto->invbodegaproducto->invbodega->nomabre == "SolDe"){
+                                                            $aux_totalrecABodSolDesp = $despachoordrecdet_invbodegaproducto->cant;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        */
                                         $aux_nfila++;
                                         $aux_saldo = $detalle->cantsoldesp - $sumacantorddesp;
                                         $invbodegaproductos = $detalle->notaventadetalle->producto->invbodegaproductos;
+                                        $aux_cantBodSD = 0;
+                                        foreach ($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                                            $aux_cantBodSD += $despachosoldet_invbodegaproducto->cant * -1;
+                                        }
+
                                 ?>
-                                <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
+                                <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="proditems">
                                     <td style="display:none;" name="despachosoldet_id{{$aux_nfila}}" id="despachosoldet_id{{$aux_nfila}}">
                                         {{$detalle->id}}
                                     </td>
@@ -212,7 +233,7 @@
                                     <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:center;">
                                         <table class="table" id="tabla-bod" style="font-size:14px">
                                             <tbody>
-                                                <?php $i=0 ?>
+                                                <?php $i=0; //dd($invbodegaproductos) ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
                                                     <?php
                                                         $i++;
@@ -233,21 +254,16 @@
                                                             <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}}'>
                                                                 {{$invbodegaproducto->invbodega->nomabre}}
                                                             </td>
+                                                            <?php 
+                                                                if ($invbodegaproducto->invbodega->nomabre == 'SolDe' and $aux_totalrecABodSolDesp > 0){
+                                                                    $aux_cantBodSD = $aux_totalrecABodSolDesp;
+                                                                }
+                                                            ?>
                                                             <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
-                                                                {{$existencia["stock"]["cant"]}}
+                                                                {{$invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"]}}
                                                             </td>
                                                             <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right">
-                                                                <!--
-                                                                @if ($existencia["stock"]["cant"] > 0)
-                                                                    <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;"  title='Valor a despachar'/>
-                                                                @else
-                                                                    <a class='btn-sm tooltipsC' title='Sin Stock'>
-                                                                        <i class='fa fa-fw fa-question-circle text-aqua'></i>
-                                                                        <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" title='Valor a despachar'  style="display:none;"/>
-                                                                    </a>    
-                                                                @endif
-                                                                -->
-                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;"  title='Valor a despachar'/>
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{$invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : ''}}" title='Valor a despachar' {{$invbodegaproducto->invbodega->nomabre == 'SolDe' ? 'readonly'  : ''}}/>
                                                             </td>
                                                         </tr>
                                                     @endif

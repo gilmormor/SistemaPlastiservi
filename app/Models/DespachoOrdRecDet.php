@@ -17,6 +17,13 @@ class DespachoOrdRecDet extends Model
         'usuariodel_id'
     ];
 
+    //RELACION INVERSA DespachoOrdRec
+    public function despachoordrec()
+    {
+        return $this->belongsTo(DespachoOrdRec::class);
+    }
+
+
     //RELACION INVERSA DespachoOrd
     public function despachoord()
     {

@@ -119,6 +119,30 @@ $(document).ready(function () {
 		$("#vendedor_id").val($("#vendedor_idD").val());
 	});
 
+	i = 1;
+    $(".proditems").each(function()
+    {
+        //console.log($(this).attr('id'));
+		total = 0;
+		$("#tabla-bod tr .bod" + i).each(function() {
+			if($(this).val() == ""){
+				valor = "0";
+			}else{
+				valor = $(this).val() ;
+			}
+			valorNum = parseFloat(valor);
+			total += valorNum;
+			aux_sumabod = $(this).attr("onkeyup");
+			var F=new Function (aux_sumabod);
+			F();
+			return false;
+		});
+		//$("#cantord" + i).val(total);
+		//console.log(total);
+		i++;
+    });
+
+
 });
 
 function insertarTabla(){
