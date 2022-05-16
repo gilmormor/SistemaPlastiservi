@@ -5,6 +5,7 @@
 <br>
 <?php 
 	use App\Models\Comuna;
+	//dd($datas);
 ?>
 <div id="page_pdf">
 	<table id="factura_head">
@@ -50,7 +51,8 @@
 						<td>{{$data->razonsocial}}</td>
 						<td>{{$data->direccion}}</td>
 						<td>{{$data->nombrecomuna}}</td>
-					@endforeach
+					</tr>
+				@endforeach
 			</tbody>				
 		</table>
 	</div>

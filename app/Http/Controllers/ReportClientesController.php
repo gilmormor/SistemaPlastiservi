@@ -59,18 +59,25 @@ class ReportClientesController extends Controller
     
         if($request->ajax()){
             /*****CONSULTA POR PRODUCTO*****/
+            //dd($request->bloqueado);
             $datas = consulta($request);
             $respuesta['tabla'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='10'>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>RUT</th>
-                    <th>Razón Social</th>
-                    <th>Dirección</th>
-                    <th>Comuna</th>
+                    <th>Razón Social</th>";
+            if($request->bloqueado == "1"){
+                $respuesta['tabla'] .= "<th>Descbloq</th>";
+            }else{
+                $respuesta['tabla'] .= "<th>Dirección</th>";
+            }
+            
+            $respuesta['tabla'] .= "<th>Comuna</th>
                 </tr>
             </thead>
             <tbody>";
+
             foreach ($datas as $data) {
                 $clientebloqueadodesc = "";
                 if($data->clientebloqueadodesc){
@@ -80,8 +87,15 @@ class ReportClientesController extends Controller
                 <tr class='tooltipsC' data-toggle='tooltip' title='$clientebloqueadodesc'>
                     <td>$data->id</td>
                     <td>$data->rut</td>
-                    <td>$data->razonsocial</td>
-                    <td>$data->direccion</td>
+                    <td>$data->razonsocial</td>";
+
+                    if($request->bloqueado == "1"){
+                        $respuesta['tabla'] .= "<td>$data->clientebloqueadodesc</td>";
+                    }else{
+                        $respuesta['tabla'] .= "<td>$data->direccion</td>";
+                    }
+        
+                $respuesta['tabla'] .= "
                     <td>$data->nombrecomuna</td>
                 </tr>";
             }
@@ -150,17 +164,18 @@ class ReportClientesController extends Controller
         }
         
         //return armarReportehtml($request);
+        //dd($datosv);
         if($datas){
             
             if(env('APP_DEBUG')){
                 //return view('reportclientes.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'));
-                return view('reportclientes.listado', compact('datas','datosv'));
+                return view('reportclientes.listado', compact('datas','datosv','request'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             //$pdf = PDF::loadView('reportclientes.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'))->setPaper('a4', 'landscape');
-            $pdf = PDF::loadView('reportclientes.listado', compact('datas','datosv'))->setPaper('a4', 'landscape');
+            $pdf = PDF::loadView('reportclientes.listado', compact('datas','datosv','request'))->setPaper('a4', 'landscape');
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteClientes.pdf");
