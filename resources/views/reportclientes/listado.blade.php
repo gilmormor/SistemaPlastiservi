@@ -39,7 +39,11 @@
 					<th class="textleft">ID</th>
 					<th class="textleft">RUT</th>
 					<th class="textleft">Razón Social</th>
-					<th class="textleft">Dirección</th>
+					@if ($request->bloqueado == "1")
+						<th class="textleft">Descbloq</th>
+					@else
+						<th class="textleft">Dirección</th>
+					@endif					
 					<th class="textleft">Comuna</th>
 				</tr>
 			</thead>
@@ -49,7 +53,13 @@
 						<td>{{$data->id}}</td>
 						<td>{{$data->rut}}</td>
 						<td>{{$data->razonsocial}}</td>
-						<td>{{$data->direccion}}</td>
+						@if ($request->bloqueado == "1")
+							<td>{{$data->clientebloqueadodesc}}</td>
+						@else
+							<td>{{$data->direccion}}</td>
+						@endif
+
+						
 						<td>{{$data->nombrecomuna}}</td>
 					</tr>
 				@endforeach
