@@ -27,6 +27,7 @@ use App\Models\Giro;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
+use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovModulo;
 use App\Models\NotaVentaCerrada;
 use App\Models\PlazoPago;
@@ -834,6 +835,10 @@ class DespachoOrdController extends Controller
                         $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                         $array_invmovdet["invmov_id"] = $invmov->id;
                         $invmovdet = InvMovDet::create($array_invmovdet);                                
+                        $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                            'invmovdet_id' => $invmovdet->id,
+                            'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
+                        ]);
                     }
                 }
                 $invmov_array = array();
@@ -871,7 +876,14 @@ class DespachoOrdController extends Controller
                         $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
                         $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                         $array_invmovdet["invmov_id"] = $invmov->id;
-                        $invmovdet = InvMovDet::create($array_invmovdet);                                
+                        $invmovdet = InvMovDet::create($array_invmovdet);
+                        /*
+                        $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                            'invmovdet_id' => $invmovdet->id,
+                            'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
+                        ]);
+                        */
+
                     }
                 }
                 $despachoord->aprguiadesp = 1;

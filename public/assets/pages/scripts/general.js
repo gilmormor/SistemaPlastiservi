@@ -1752,6 +1752,8 @@ function sumbod(i,y,aux_orig){
 		*/
 	});
 	aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
+	console.log(total);
+	console.log(aux_saldo);
 	if(total > aux_saldo){
 		if($("#invcant" + y).val() == ""){
 			valor = "0";
@@ -1759,9 +1761,10 @@ function sumbod(i,y,aux_orig){
 			valor = $("#invcant" + y).val() ;
 		}
 		dif = aux_saldo - (total - valor);
-		$("#invcant" + y).val(dif);
+		//$("#invcant" + y).val(dif);
 		//console.log(dif);
 		total = aux_saldo;
+		
 	}
 	$("#cantord" + i).val(total);
 	$("#cantsol" + i).val(total);

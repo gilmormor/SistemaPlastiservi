@@ -52,5 +52,17 @@ class InvMovDet extends Model
     {
         return $this->belongsTo(UnidadMedida::class);
     }
+
+    //Relacion uno a uno con InvMovDet_BodSolDesp
+    public function invmovdet_bodsoldesp()
+    {
+        return $this->hasOne(InvMovDet_BodSolDesp::class);
+    }
+
+    //Relacion uno a uno con InvMovDet_BodOrdDesp
+    public function invmovdet_bodorddesp()
+    {
+        return $this->hasOne(InvMovDet_BodOrdDesp::class);
+    }
     
 }

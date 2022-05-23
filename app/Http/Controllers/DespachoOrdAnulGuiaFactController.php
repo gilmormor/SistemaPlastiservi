@@ -7,6 +7,7 @@ use App\Models\DespachoOrdAnulGuiaFact;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
+use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovModulo;
 use Illuminate\Http\Request;
 
@@ -183,7 +184,12 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
                             $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                             $array_invmovdet["invmov_id"] = $invmov->id;
-                            $invmovdet = InvMovDet::create($array_invmovdet);                                
+                            $invmovdet = InvMovDet::create($array_invmovdet);
+                            $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                                'invmovdet_id' => $invmovdet->id,
+                                'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
+                            ]);
+    
                         }
                     }
                 }else{
@@ -238,7 +244,11 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
                             $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                             $array_invmovdet["invmov_id"] = $invmov->id;
-                            $invmovdet = InvMovDet::create($array_invmovdet);                                
+                            $invmovdet = InvMovDet::create($array_invmovdet);
+                            $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                                'invmovdet_id' => $invmovdet->id,
+                                'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
+                            ]);
                         }
                     } 
                 }else{
@@ -267,7 +277,11 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
                             $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                             $array_invmovdet["invmov_id"] = $invmov->id;
-                            $invmovdet = InvMovDet::create($array_invmovdet);                                
+                            $invmovdet = InvMovDet::create($array_invmovdet);
+                            $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                                'invmovdet_id' => $invmovdet->id,
+                                'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
+                            ]);
                         }
                     } 
                 }

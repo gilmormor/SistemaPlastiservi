@@ -1,6 +1,7 @@
 <?php
     use App\Models\InvBodegaProducto;
     use Illuminate\Http\Request;
+    use App\Models\DespachoSolDet;
 ?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{$data->updated_at}}">
 <input type="hidden" name="id" id="id" value="{{$data->id}}">
@@ -165,6 +166,36 @@
                                     $aux_saldo = $detalle->despachosoldet->cantsoldesp - $sumacantorddesp;
                                     $subtotalItem = $detalle->cantdesp * $detalle->notaventadetalle->preciounit;
                                     $invbodegaproductos = $detalle->notaventadetalle->producto->invbodegaproductos;
+
+                                    $aux_cantBodSD = 0;
+                                    $despachosoldet = DespachoSolDet::findOrFail($detalle->despachosoldet_id);
+                                    //BUSCO MOVIMIENTO DE INVENTARIO DE ESTA SOLICITUD  PRODUCTO EN BODEGA DE SOLDESP
+                                    //PARA SABER EL SALDO DE CANT DE PRODUCTOS APARTADOS
+                                    foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                                        if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                                            foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
+                                                $aux_cantBodSD += $invmovdet_bodsoldesp->invmovdet->cant;
+                                            }
+                                        }
+                                    }
+                                    //BUSCO LOS MOVIMIENTOS DE INVENTARIO EN FUNCION DEL DESPACHO, ES DECIR LO QUE SALIO DE LA BODEGA DE SOLDESP Y QUE DESCONTO DEL INV DE PRODUCTO APARTADOS EN DICHA SOLICITUD DE DESPACHO
+                                    foreach ($despachosoldet->despachoorddets as $despachoorddet){
+                                        foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                                            foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
+                                                //SUMO SOLO EL MOVIMIENTO DE LA BODEGA DE SOL DESPACHO
+                                                if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->nomabre == "SolDe"){
+                                                    $aux_cantBodSD += $invmovdet_bodorddesp->invmovdet->cant;
+                                                }
+                                            }
+                                            //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
+                                            //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
+                                            if (sizeof($despachoorddet_invbodegaproducto->invmovdet_bodorddesps) == 0){
+                                                if($detalle->id != $despachoorddet_invbodegaproducto->despachoorddet_id){
+                                                    $aux_cantBodSD += $despachoorddet_invbodegaproducto->cant;
+                                                }
+                                            }
+                                        }
+                                    }                                    
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -249,7 +280,7 @@
                                                                 {{$invbodegaproducto->invbodega->nomabre}}
                                                             </td>
                                                             <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right;"  class='tooltipsC' title='Stock disponible'>
-                                                                {{$existencia["stock"]["cant"]}}
+                                                                {{$invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"]}}
                                                             </td>
                                                             <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;">
                                                                 @if ($existencia["stock"]["cant"] > 0)

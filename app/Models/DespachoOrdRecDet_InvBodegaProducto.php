@@ -21,9 +21,4 @@ class DespachoOrdRecDet_InvBodegaProducto extends Model
     {
         return $this->belongsTo(DespachoOrdRecDet::class);
     }
-    //RELACION INVERSA InvBodegaProducto
-    public function invbodegaproducto()
-    {
-        return $this->belongsTo(InvBodegaProducto::class);
-    }
 }

@@ -26,6 +26,7 @@ use App\Models\Giro;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
+use App\Models\InvMovDet_BodSolDesp;
 use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
@@ -758,6 +759,10 @@ class DespachoSolController extends Controller
                             $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
+                            $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
+                                'invmovdet_id' => $invmovdet->id,
+                                'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id
+                            ]);
                         }
                     }
                 }
@@ -959,6 +964,10 @@ class DespachoSolController extends Controller
                                         $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
                                         $array_invmovdet["invmov_id"] = $invmov->id;
                                         $invmovdet = InvMovDet::create($array_invmovdet);
+                                        $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
+                                            'invmovdet_id' => $invmovdet->id,
+                                            'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id
+                                            ]);
                                     }
                                 }
                             }

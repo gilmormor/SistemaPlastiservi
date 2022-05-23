@@ -24,4 +24,11 @@ class DespachoOrdDet_InvBodegaProducto extends Model
     {
         return $this->belongsTo(InvBodegaProducto::class);
     }
+
+    //RELACION DE UNO A MUCHOS invmovdet_bodorddesps
+    public function invmovdet_bodorddesps()
+    {
+        return $this->hasMany(InvMovDet_BodOrdDesp::class,'despachoorddet_invbodegaproducto_id');
+    }
+    
 }
