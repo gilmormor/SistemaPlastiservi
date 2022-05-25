@@ -2,6 +2,7 @@
     use App\Models\InvBodegaProducto;
     use Illuminate\Http\Request;
     use App\Models\DespachoSolDet;
+    use App\Models\DespachoOrd;
 ?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{$data->updated_at}}">
 <input type="hidden" name="id" id="id" value="{{$data->id}}">
@@ -180,22 +181,25 @@
                                     }
                                     //BUSCO LOS MOVIMIENTOS DE INVENTARIO EN FUNCION DEL DESPACHO, ES DECIR LO QUE SALIO DE LA BODEGA DE SOLDESP Y QUE DESCONTO DEL INV DE PRODUCTO APARTADOS EN DICHA SOLICITUD DE DESPACHO
                                     foreach ($despachosoldet->despachoorddets as $despachoorddet){
-                                        foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
-                                            foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
-                                                //SUMO SOLO EL MOVIMIENTO DE LA BODEGA DE SOL DESPACHO
-                                                if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->nomabre == "SolDe"){
-                                                    $aux_cantBodSD += $invmovdet_bodorddesp->invmovdet->cant;
+                                        $DespachoOrd = DespachoOrd::findOrFail($despachoorddet->despachoord_id);
+                                        if(!$DespachoOrd->despachoordanul ){
+                                            foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                                                foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
+                                                    //SUMO SOLO EL MOVIMIENTO DE LA BODEGA DE SOL DESPACHO
+                                                    if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->nomabre == "SolDe"){
+                                                        $aux_cantBodSD += $invmovdet_bodorddesp->invmovdet->cant;
+                                                    }
                                                 }
-                                            }
-                                            //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
-                                            //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
-                                            if (sizeof($despachoorddet_invbodegaproducto->invmovdet_bodorddesps) == 0){
-                                                if($detalle->id != $despachoorddet_invbodegaproducto->despachoorddet_id){
-                                                    $aux_cantBodSD += $despachoorddet_invbodegaproducto->cant;
+                                                //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
+                                                //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
+                                                if (sizeof($despachoorddet_invbodegaproducto->invmovdet_bodorddesps) == 0){
+                                                    if($detalle->id != $despachoorddet_invbodegaproducto->despachoorddet_id){
+                                                        $aux_cantBodSD += $despachoorddet_invbodegaproducto->cant;
+                                                    }
                                                 }
                                             }
                                         }
-                                    }                                    
+                                    }
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -254,7 +258,7 @@
                                         </div>
                                     </td>
                                     <td name="cantordF{{$aux_nfila}}" id="cantordF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" value="{{$detalle->cantdesp}}" style="text-align:right;" readonly/>
+                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" value="{{$detalle->cantdesp}}" fila="{{$aux_nfila}}" style="text-align:right;" readonly/>
                                     </td>
                                     <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:right;">
                                         <table class="table" id="tabla-bod" style="font-size:14px">
@@ -268,6 +272,8 @@
                                                         $existencia = InvBodegaProducto::existencia($request);
                                                         $aux_cant = 0;
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
+                                                        $aux_stock = $invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"];
+
                                                     ?>
                                                     @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
@@ -280,7 +286,7 @@
                                                                 {{$invbodegaproducto->invbodega->nomabre}}
                                                             </td>
                                                             <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right;"  class='tooltipsC' title='Stock disponible'>
-                                                                {{$invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"]}}
+                                                                {{$aux_stock}}
                                                             </td>
                                                             <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;">
                                                                 @if ($existencia["stock"]["cant"] > 0)
@@ -298,7 +304,7 @@
                                                                     </a>
                                                                 -->
                                                                 @endif
-                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{($aux_cant)}}" title="Valor a despachar"/>
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{($aux_cant)}}" title="Valor a despachar" nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
                                                             </td>
                                                         </tr>
                                                     @endif

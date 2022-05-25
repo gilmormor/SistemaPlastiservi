@@ -1733,6 +1733,29 @@ function sumbod(i,y,aux_orig){
 	if((aux_orig == "OD") && ($("#invcant" + y).val() > aux_stockcant)){
 		$("#invcant" + y).val(aux_stockcant);
 	}
+	totalSolDe = 0;
+	totalSolDeStock = 0;
+	$("#tabla-bod tr .bod" + i).each(function() {
+		//SUMAR STOCK DISPONIBLE PARA EL APARTADO EN BODEGA SOLICITUD DE DESPACHO
+		//SUMAR TOTAL UTILIZADO DE APARTADO DE BODEDA SOLICITUD DE DESPACHO
+		if($(this).attr("nomabrbod") == "SolDe"){
+			if($(this).val() == ""){
+				valor = "0";
+			}else{
+				valor = $(this).val();
+			}
+			valorNum = parseFloat(valor);
+			totalSolDe += valorNum;	
+			if($(this).attr("stockvalororig") == ""){
+				valor = "0";
+			}else{
+				valor = $(this).attr("stockvalororig");
+			}
+			valorNum = parseFloat(valor);
+			totalSolDeStock += valorNum;	
+		}
+	});
+	//console.log(totalSolDe);
 	total = 0;
 	$("#tabla-bod tr .bod" + i).each(function() {
 		if($(this).val() == ""){
@@ -1751,9 +1774,12 @@ function sumbod(i,y,aux_orig){
 		}
 		*/
 	});
-	aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
-	console.log(total);
-	console.log(aux_saldo);
+	if($("#invcant" + y).attr("nomabrbod") == "SolDe"){
+		aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
+	}else{
+		aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
+		aux_saldo = aux_saldo - totalSolDeStock + totalSolDe;
+	}
 	if(total > aux_saldo){
 		if($("#invcant" + y).val() == ""){
 			valor = "0";
@@ -1761,10 +1787,9 @@ function sumbod(i,y,aux_orig){
 			valor = $("#invcant" + y).val() ;
 		}
 		dif = aux_saldo - (total - valor);
-		//$("#invcant" + y).val(dif);
+		$("#invcant" + y).val(dif);
 		//console.log(dif);
-		total = aux_saldo;
-		
+		total = aux_saldo;		
 	}
 	$("#cantord" + i).val(total);
 	$("#cantsol" + i).val(total);

@@ -1,6 +1,8 @@
 <?php
     use Illuminate\Http\Request;
     use App\Models\DespachoSolDet_InvBodegaProducto;
+    use App\Models\DespachoOrd;
+    use App\Models\InvBodegaProducto;
 ?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
 <input type="hidden" name="despachosol_id" id="despachosol_id" value="{{$data->id}}">
@@ -175,10 +177,20 @@
                                         $aux_nfila++;
                                         $aux_saldo = $detalle->cantsoldesp - $sumacantorddesp;
                                         $invbodegaproductos = $detalle->notaventadetalle->producto->invbodegaproductos;
-                                        $aux_cantBodSD = 0;
-                                        foreach ($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
-                                            //$aux_cantBodSD += $despachosoldet_invbodegaproducto->cant * -1;
+                                        $categoriaprod = $detalle->notaventadetalle->producto->categoriaprod;
+                                        //CREAR REGISTRO EN TABLA invbodegaproducto (SOLO SI NO EXISTE)
+                                        foreach ($categoriaprod->invbodegas as $invbodega){
+                                            if($invbodega->tipo == 2){
+                                                $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                                                    ['producto_id' => $detalle->notaventadetalle->producto_id,'invbodega_id' => $invbodega->id],
+                                                    [
+                                                        'producto_id' => $detalle->notaventadetalle->producto_id,
+                                                        'invbodega_id' => $invbodega->id
+                                                    ]
+                                                );
+                                            }
                                         }
+                                        $aux_cantBodSD = 0;
                                         foreach ($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
                                             if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
                                                 foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
@@ -187,21 +199,23 @@
                                             }
                                         }
                                         foreach ($detalle->despachoorddets as $despachoorddet){
-                                            foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
-                                                foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
-                                                    //SUMO SOLO EL MOVIMIENTO DE LA BODEGA DE SOL DESPACHO
-                                                    if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->nomabre == "SolDe"){
-                                                        $aux_cantBodSD += $invmovdet_bodorddesp->invmovdet->cant;
+                                            $DespachoOrd = DespachoOrd::findOrFail($despachoorddet->despachoord_id);
+                                            if(!$DespachoOrd->despachoordanul ){
+                                                foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                                                    foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
+                                                        //SUMO SOLO EL MOVIMIENTO DE LA BODEGA DE SOL DESPACHO
+                                                        if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->nomabre == "SolDe"){
+                                                            $aux_cantBodSD += $invmovdet_bodorddesp->invmovdet->cant;
+                                                        }
                                                     }
-                                                }
-                                                //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
-                                                //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
-                                                if (sizeof($despachoorddet_invbodegaproducto->invmovdet_bodorddesps) == 0){
-                                                    $aux_cantBodSD += $despachoorddet_invbodegaproducto->cant;
+                                                    //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
+                                                    //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
+                                                    if (sizeof($despachoorddet_invbodegaproducto->invmovdet_bodorddesps) == 0){
+                                                        $aux_cantBodSD += $despachoorddet_invbodegaproducto->cant;
+                                                    }
                                                 }
                                             }
                                         }
-
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="proditems">
                                     <td style="display:none;" name="despachosoldet_id{{$aux_nfila}}" id="despachosoldet_id{{$aux_nfila}}">
@@ -250,7 +264,7 @@
                                         </div>
                                     </td>
                                     <td name="cantordF{{$aux_nfila}}" id="cantordF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" style="text-align:right;" readonly/>
+                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" fila="{{$aux_nfila}}" style="text-align:right;" readonly/>
                                     </td>
                                     <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:center;">
                                         <table class="table" id="tabla-bod" style="font-size:14px">
@@ -265,6 +279,7 @@
                                                         $request["tipo"] = 2;
                                                         $existencia = $invbodegaproducto::existencia($request);
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
+                                                        $aux_stock = $invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"];
                                                     ?>
                                                     @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
@@ -277,10 +292,10 @@
                                                                 {{$invbodegaproducto->invbodega->nomabre}}
                                                             </td>
                                                             <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
-                                                                {{$invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"]}}
+                                                                {{$aux_stock}}
                                                             </td>
                                                             <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right">
-                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{$invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : ''}}" title='Valor a despachar'/>
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{$invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : ''}}" title='Valor a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
                                                             </td>
                                                         </tr>
                                                     @endif

@@ -15,11 +15,12 @@ $(document).ready(function () {
                 type: 'POST',
                 data: data,
                 success: function (data) {
-                    //console.log(data);
+                    console.log(data);
                     $.each(data, function(id,value){
-                        //console.log(data[id].nombre);
+                        console.log(data[id].id);
                         $("#categoriaprod_id").append('<option value="'+data[id].id+'">'+data[id].nombre+'</option>');
                     });
+                    $("#categoriaprod_id").selectpicker('refresh');
                 }
             });
         }

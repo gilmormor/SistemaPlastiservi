@@ -20,6 +20,7 @@ $(document).ready(function () {
                         //console.log(data[id].nombre);
                         $("#categoriaprod_id").append('<option value="'+data[id].id+'">'+data[id].nombre+'</option>');
                     });
+                    $("#categoriaprod_id").selectpicker('refresh');
                 }
             });
         }
