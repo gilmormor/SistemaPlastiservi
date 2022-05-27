@@ -13,6 +13,8 @@ class CotizacionDetalle extends Model
         'producto_id',
         'cotizacion_id',
         'cant',
+        'cantgrupo',
+        'cantxgrupo',
         'unidadmedida_id',
         'preciounit',
         'peso',

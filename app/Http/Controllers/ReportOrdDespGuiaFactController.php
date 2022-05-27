@@ -171,10 +171,10 @@ class ReportOrdDespGuiaFactController extends Controller
                 $aux_fechaguia = $data->guiadespachofec == null ? "" : date('d-m-Y', strtotime($data->guiadespachofec));
 
                 $detalleGF = "
-                    <td>$data->guiadespacho</td>
+                    <td id='guiadespacho$i' name='guiadespacho$i'>$data->guiadespacho</td>
                     <td data-order='$data->guiadespachofec'>$aux_fechaguia</td>
-                    <td>$data->numfactura</td>
-                    <td data-order='$data->fechafactura'>" . date('d-m-Y', strtotime($data->fechafactura)) . "</td>";
+                    <td id='numfactura$i' name='numfactura$i'>$data->numfactura</td>
+                    <td id='fechafactura$i' name='fechafactura$i' data-order='$data->fechafactura'>" . date('d-m-Y', strtotime($data->fechafactura)) . "</td>";
                     
                 if ($request->statusOD >= 1 and $request->statusOD <=3){
                     $detalleGF = "";

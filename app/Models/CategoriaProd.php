@@ -30,7 +30,7 @@ class CategoriaProd extends Model
     }
     public function sucursales()
     {
-        return $this->belongsToMany(Sucursal::class, 'categoriaprodsuc','categoriaprod_id');
+        return $this->belongsToMany(Sucursal::class, 'categoriaprodsuc','categoriaprod_id')->withTimestamps();
     }
     public function claseprods()
     {
@@ -58,10 +58,20 @@ class CategoriaProd extends Model
         return $this->belongsTo(UnidadMedida::class,'unidadmedidafact_id');
     }
 
-    public static function categoriasxUsuario(){
-        $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
+    public function invbodegas()
+    {
+        return $this->belongsToMany(InvBodega::class, 'categoriaprod_invbodega','categoriaprod_id','invbodega_id')->withTimestamps();
+    }
+
+
+    public static function categoriasxUsuario($sucursal_id = false){
+        $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join)  use ($sucursal_id) {
             $user = Usuario::findOrFail(auth()->id());
-            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            if($sucursal_id){
+                $sucurArray = $user->sucursales->where('id','=',$sucursal_id)->pluck('id')->toArray();
+            }else{
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+            }
             $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
             ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
                     })
@@ -75,6 +85,7 @@ class CategoriaProd extends Model
                 'categoriaprod.unidadmedida_id',
                 'categoriaprod.unidadmedidafact_id'
             ])
+            ->groupBy('categoriaprod.id')
             ->get();
         return $categoriaprods;
     }

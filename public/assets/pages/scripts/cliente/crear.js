@@ -565,7 +565,7 @@ $("#rut").blur(function(){
 									if(respuesta.length>0){
 										swal({
 											title: "Cliente temporal",
-											text: "Para crear cliente, debe ser validado en el Menú: Archivos Maestros->Clientes->Validar Cliente",
+											text: "Para crear cliente, debe ser validado en el Menú: Archivos Maestros->Clientes->Validar Cliente. Tomar en cuenta que para validar un cliente temporal la cotizacion debe estar aprobada.",
 											icon: 'error',
 											buttons: {
 												confirm: "Aceptar"

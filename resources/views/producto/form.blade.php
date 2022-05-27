@@ -1,3 +1,10 @@
+<?php
+    use App\Models\CategoriaGrupoValMes;
+    use App\Models\InvMov;
+    $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Y") . date("m"));
+?>
+
+<input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
         <label for="nombre" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Nombre">Nombre</label>
@@ -242,6 +249,21 @@
 
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
+        <label for="stockmin" class="col-lg-3 control-label requerido" title="Stock Mínimo Kgs" data-toggle='tooltip'>Stock Min</label>
+        <div class="col-lg-9">
+        <input type="text" name="stockmin" id="stockmin" class="form-control numerico" value="{{old('stockmin', $data->stockmin ?? '')}}" required/>
+        </div>
+    </div>
+    <div class="form-group col-xs-12 col-sm-6">
+        <label for="stockmax" class="col-lg-3 control-label requerido" title="Stock Máximo Kgs" data-toggle='tooltip'>Stock Max</label>
+        <div class="col-lg-9">
+        <input type="text" name="stockmax" id="stockmax" class="form-control numerico" value="{{old('stockmax', $data->stockmax ?? '')}}" required/>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="form-group col-xs-12 col-sm-6">
         <label for="tipoprod" class="col-lg-3 control-label requerido" title="Tipo Producto" data-toggle='tooltip'>Tipo Producto</label>
         <div class="col-lg-9">
             <select name="tipoprod" id="tipoprod" class="form-control select2 tipoprod" required>
@@ -258,5 +280,64 @@
                 >Transicional (Para Hacer Acuerdo Técnico)</option>
             </select>
         </div>
+    </div>
+</div>
+<div class="col-md-8 col-md-offset-2">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Bodegas</h3>
+        </div>
+        <table class="table table-striped table-bordered table-hover" id="dataTables">
+            <thead>
+                <tr>
+                    <th>Sucursal</th>
+                    <th>Bodega</th>
+                    <th style='text-align:center'>Stock</th>
+                    <th style="display: none">id</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <?php 
+                    $aux_nfila = 0; 
+                    $totalStockinvbodega = 0;
+                ?>
+                @if ($aux_sta==2)
+                    @foreach ($invbodegaproductos->get() as $invbodegaproducto)
+                        <?php 
+                            $aux_nfila++; 
+                            $aux_request = new Request();
+                            $aux_request->mesanno = $aux_mesanno;
+                            $aux_request->sucursal_id = $invbodegaproducto->invbodega->sucursal_id;
+                            $aux_request->producto_id = $invbodegaproducto->producto_id;
+                            $aux_request->invbodega_id = $invbodegaproducto->invbodega_id;
+                            $aux_stock = InvMov::stock($aux_request);
+                            $aux_stock = $aux_stock->get();
+                            $aux_stockValor = sizeof($aux_stock) > 0 ? $aux_stock[0]->stock : 0;
+                            $totalStockinvbodega += $aux_stockValor;
+                        ?>
+                        <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
+                            <td>
+                                {{$invbodegaproducto->invbodega->sucursal->nombre}}
+                            </td>
+                            <td>
+                                {{$invbodegaproducto->invbodega->nombre}}
+                            </td>
+                            <td style='text-align:center'>
+                                {{$aux_stockValor}}
+                            </td>
+                        </tr>
+                    @endforeach            
+                @endif
+            </tbody>
+            <tfoot>
+                <tr>
+                </tr>
+                <tr>
+                    <th colspan='2' style='text-align:right'>Total Stock</th>
+                    <th id='totalstockinvbodega' name='totalstockinvbodega' style='text-align:center'>{{number_format($totalStockinvbodega, 0, ",", ".")}}</th>
+                </tr>
+            </tfoot>
+
+        </table>
     </div>
 </div>

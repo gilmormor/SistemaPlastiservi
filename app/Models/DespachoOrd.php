@@ -84,5 +84,11 @@ class DespachoOrd extends Model
     {
         return $this->hasOne(DespachoOrdRec::class,'despachoord_id');
     }
+    //RELACION DE MUCHOS A MUCHOS CON TABLA INVMOV
+    public function invmovs()
+    {
+        return $this->belongsToMany(InvMov::class, 'despachoord_invmov','despachoord_id','invmov_id')->withTimestamps();
+    }
+
 
 }

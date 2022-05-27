@@ -1,3 +1,9 @@
+<?php
+    use App\Models\InvBodegaProducto;
+    use Illuminate\Http\Request;
+    use App\Models\DespachoSolDet;
+    use App\Models\DespachoOrd;
+?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{$data->updated_at}}">
 <input type="hidden" name="id" id="id" value="{{$data->id}}">
 <input type="hidden" name="despachosol_id" id="despachosol_id" value="{{$data->despachosol_id}}">
@@ -92,14 +98,14 @@
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">NotaVentaDetalle_ID</th>
                             <th style="display:none;">cotizacion_ID</th>
-                            <th style="display:none;">Codigo Producto</th>
+                            <th class="tooltipsC" title="Código Producto">CodProd</th>
                             <th style="display:none;">CódInterno</th>
                             <th style="display:none;">Cant</th>
                             <th>Cant</th>
                             <th>Desp</th>
                             <!--<th>SolDesp</th>-->
                             <th>Saldo</th>
-                            <th class='tooltipsC' title='Marcar todo' style="text-align:center">
+                            <th class='tooltipsC' title='Marcar todo' style="text-align:center;display:none;">
                                 <div class='checkbox'>
                                     <label style='font-size: 1.2em'>
                                         <input type='checkbox' id='marcarTodo' name='marcarTodo' checked>
@@ -107,7 +113,8 @@
                                     </label>
                                 </div>
                             </th>
-                            <th class="width70">SolicitudDesp</th>
+                            <th class="width70">OrdDesp</th>
+                            <th>Bodegas</th>
                             <th style="display:none;">UnidadMedida</th>
                             <th>Nombre</th>
                             <th>Diam</th>
@@ -159,6 +166,40 @@
                                     }
                                     $aux_saldo = $detalle->despachosoldet->cantsoldesp - $sumacantorddesp;
                                     $subtotalItem = $detalle->cantdesp * $detalle->notaventadetalle->preciounit;
+                                    $invbodegaproductos = $detalle->notaventadetalle->producto->invbodegaproductos;
+
+                                    $aux_cantBodSD = 0;
+                                    $despachosoldet = DespachoSolDet::findOrFail($detalle->despachosoldet_id);
+                                    //BUSCO MOVIMIENTO DE INVENTARIO DE ESTA SOLICITUD  PRODUCTO EN BODEGA DE SOLDESP
+                                    //PARA SABER EL SALDO DE CANT DE PRODUCTOS APARTADOS
+                                    foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                                        if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                                            foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
+                                                $aux_cantBodSD += $invmovdet_bodsoldesp->invmovdet->cant;
+                                            }
+                                        }
+                                    }
+                                    //BUSCO LOS MOVIMIENTOS DE INVENTARIO EN FUNCION DEL DESPACHO, ES DECIR LO QUE SALIO DE LA BODEGA DE SOLDESP Y QUE DESCONTO DEL INV DE PRODUCTO APARTADOS EN DICHA SOLICITUD DE DESPACHO
+                                    foreach ($despachosoldet->despachoorddets as $despachoorddet){
+                                        $DespachoOrd = DespachoOrd::findOrFail($despachoorddet->despachoord_id);
+                                        if(!$DespachoOrd->despachoordanul ){
+                                            foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                                                foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
+                                                    //SUMO SOLO EL MOVIMIENTO DE LA BODEGA DE SOL DESPACHO
+                                                    if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->nomabre == "SolDe"){
+                                                        $aux_cantBodSD += $invmovdet_bodorddesp->invmovdet->cant;
+                                                    }
+                                                }
+                                                //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
+                                                //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
+                                                if (sizeof($despachoorddet_invbodegaproducto->invmovdet_bodorddesps) == 0){
+                                                    if($detalle->id != $despachoorddet_invbodegaproducto->despachoorddet_id){
+                                                        $aux_cantBodSD += $despachoorddet_invbodegaproducto->cant;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -182,7 +223,8 @@
                                             <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
                                         @endif
                                     </td>
-                                    <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}" style="display:none;">
+                                    <td name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}">
+                                        {{$detalle->notaventadetalle->producto_id}}
                                         <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
                                     </td>
                                     <td style="display:none;">
@@ -202,12 +244,12 @@
                                         {{$sumacantorddesp - $detalle->cantdesp}}
                                     </td>
                                     <td name="saldocantOrigF{{$aux_nfila}}" id="saldocantOrigF{{$aux_nfila}}" style="text-align:right;display:none;">
-                                        {{$aux_saldo}}
+                                        {{$aux_saldo + $detalle->cantdesp}}
                                     </td>
                                     <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:right">
                                         {{$aux_saldo}}
                                     </td>
-                                    <td class='tooltipsC' style='text-align:center' class='tooltipsC' title='Marcar'>
+                                    <td class='tooltipsC' style='text-align:center;display:none;' class='tooltipsC' title='Marcar'>
                                         <div class='checkbox'>
                                             <label style='font-size: 1.2em'>
                                                 <input type="checkbox" class="checkllenarCantOrd" id="llenarCantOrd{{$aux_nfila}}" name="llenarCantOrd{{$aux_nfila}}" onclick="llenarCantOrd({{$aux_nfila}})" checked>
@@ -216,8 +258,61 @@
                                         </div>
                                     </td>
                                     <td name="cantordF{{$aux_nfila}}" id="cantordF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" value="{{$detalle->cantdesp}}" style="text-align:right;"/>
+                                        <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" value="{{$detalle->cantdesp}}" fila="{{$aux_nfila}}" style="text-align:right;" readonly/>
                                     </td>
+                                    <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:right;">
+                                        <table class="table" id="tabla-bod" style="font-size:14px">
+                                            <tbody>
+                                                @foreach($invbodegaproductos as $invbodegaproducto)
+                                                    <?php
+                                                        $request = new Request();
+                                                        $request["producto_id"] = $invbodegaproducto->producto_id;
+                                                        $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
+                                                        $request["tipo"] = 2;
+                                                        $existencia = InvBodegaProducto::existencia($request);
+                                                        $aux_cant = 0;
+                                                        //$existencia = $invbodegaproductoobj->consexistencia($request);
+                                                        $aux_stock = $invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"];
+
+                                                    ?>
+                                                    @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->
+                                                        <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
+                                                            <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
+                                                                <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
+                                                                <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
+                                                                {{$invbodegaproducto->id}}
+                                                            </td>
+                                                            <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left;" class="tooltipsC" title='Bodega: {{$invbodegaproducto->invbodega->nombre}}'>
+                                                                {{$invbodegaproducto->invbodega->nomabre}}
+                                                            </td>
+                                                            <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right;"  class='tooltipsC' title='Stock disponible'>
+                                                                {{$aux_stock}}
+                                                            </td>
+                                                            <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;">
+                                                                @if ($existencia["stock"]["cant"] > 0)
+                                                                    @foreach($detalle->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto)
+                                                                        @if ($despachoorddet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)
+                                                                            <?php 
+                                                                                $aux_cant = $despachoorddet_invbodegaproducto->cant * -1
+                                                                            ?>
+                                                                        @endif
+                                                                    @endforeach
+                                                                @else
+                                                                <!--
+                                                                    <a class='btn-sm tooltipsC' title='Sin Stock'>
+                                                                        <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                                                                    </a>
+                                                                -->
+                                                                @endif
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{($aux_cant)}}" title="Valor a despachar" nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </td>
+
                                     <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:right;display:none;">
                                         <input type="text" name="cantdesp[]" id="cantdesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantdesp}}" style="text-align:right;"/>
                                     </td>
@@ -313,17 +408,17 @@
                                         <input type="text" name="cantordTotal" id="cantordTotal" value={{$cantordTotal}} class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>
-                                <td colspan="6" style="text-align:right"><b>Total Kg</b></td>
+                                <td colspan="7" style="text-align:right"><b>Total Kg</b></td>
                                 <td id="totalkg" name="totalkg" style="text-align:right">0,00</td>
                                 <td colspan="2" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="14" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="15" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="14" style="text-align:right"><b>Total</b></td>
+                                <td colspan="15" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif

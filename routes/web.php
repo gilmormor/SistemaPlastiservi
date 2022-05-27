@@ -103,6 +103,8 @@ Route::put('sucursal/{id}', 'SucursalController@actualizar')->name('actualizar_s
 Route::delete('sucursal/{id}', 'SucursalController@eliminar')->name('eliminar_sucursal');
 Route::post('sucursal/obtProvincias', 'SucursalController@obtProvincias')->name('obtProvincias');
 Route::post('sucursal/obtComunas', 'SucursalController@obtComunas')->name('obtComunas');
+Route::post('sucursal/obtsucursalescategoriaprod', 'SucursalController@obtsucursalescategoriaprod')->name('obtsucursalescategoriaprod');
+
 
 /*RUTAS EMPRESA*/
 Route::get('empresa', 'EmpresaController@index')->name('empresa');
@@ -144,6 +146,9 @@ Route::post('categoriaprod', 'CategoriaProdController@guardar')->name('guardar_c
 Route::get('categoriaprod/{id}/editar', 'CategoriaProdController@editar')->name('editar_categoriaprod');
 Route::put('categoriaprod/{id}', 'CategoriaProdController@actualizar')->name('actualizar_categoriaprod');
 Route::delete('categoriaprod/{id}', 'CategoriaProdController@eliminar')->name('eliminar_categoriaprod');
+Route::post('categoriaprod/categoriaprodArray', 'CategoriaProdController@categoriaprodArray')->name('categoriaprodArray');
+
+
 
 /*RUTAS PRODUCTOS*/
 Route::get('producto', 'ProductoController@index')->name('producto');
@@ -756,3 +761,90 @@ Route::get('reportorddesprec/totalizarRep', 'ReportOrdDespRecController@totaliza
 Route::get('reportmovsoldesp', 'ReportMovSolDespController@index')->name('reportmovsoldesp');
 Route::post('reportmovsoldesp/reporte', 'ReportMovSolDespController@reporte')->name('reportmovsoldesp_reporte');
 Route::get('reportmovsoldesp/exportPdf', 'ReportMovSolDespController@exportPdf')->name('reportmovsoldesp_exportPdf');
+
+/*RUTAS INVBODEGA*/
+Route::get('invbodega', 'InvBodegaController@index')->name('invbodega');
+Route::get('invbodegapage', 'InvBodegaController@invbodegapage')->name('invbodegapage');
+Route::get('invbodega/crear', 'InvBodegaController@crear')->name('crear_invbodega');
+Route::post('invbodega', 'InvBodegaController@guardar')->name('guardar_invbodega');
+Route::get('invbodega/{id}/editar', 'InvBodegaController@editar')->name('editar_invbodega');
+Route::put('invbodega/{id}', 'InvBodegaController@actualizar')->name('actualizar_invbodega');
+Route::delete('invbodega/{id}', 'InvBodegaController@eliminar')->name('eliminar_invbodega');
+Route::post('invbodega/obtbodegasxsucursal', 'InvBodegaController@obtbodegasxsucursal')->name('obtbodegasxsucursal');
+Route::post('invbodega/buscarTipoBodegaOrdDesp', 'InvBodegaController@buscarTipoBodegaOrdDesp')->name('buscarTipoBodegaOrdDesp');
+
+
+/*RUTAS INVENTARIO TIPO MOVIMIENTO*/
+Route::get('invmovtipo', 'InvMovTipoController@index')->name('invmovtipo');
+Route::get('invmovtipopage', 'InvMovTipoController@invmovtipopage')->name('invmovtipopage');
+Route::get('invmovtipo/crear', 'InvMovTipoController@crear')->name('crear_invmovtipo');
+Route::post('invmovtipo', 'InvMovTipoController@guardar')->name('guardar_invmovtipo');
+Route::get('invmovtipo/{id}/editar', 'InvMovTipoController@editar')->name('editar_invmovtipo');
+Route::put('invmovtipo/{id}', 'InvMovTipoController@actualizar')->name('actualizar_invmovtipo');
+Route::delete('invmovtipo/{id}', 'InvMovTipoController@eliminar')->name('eliminar_invmovtipo');
+
+/*RUTAS Entradas y Salidas de Inventario*/
+Route::get('inventsal', 'InvEntSalController@index')->name('inventsal');
+Route::get('inventsalpage', 'InvEntSalController@inventsalpage')->name('inventsalpage');
+Route::get('inventsal/crear', 'InvEntSalController@crear')->name('crear_inventsal');
+Route::post('inventsal', 'InvEntSalController@guardar')->name('guardar_inventsal');
+Route::get('inventsal/{id}/editar', 'InvEntSalController@editar')->name('editar_inventsal');
+Route::put('inventsal/{id}', 'InvEntSalController@actualizar')->name('actualizar_inventsal');
+Route::delete('inventsal/{id}', 'InvEntSalController@eliminar')->name('eliminar_inventsal');
+Route::post('inventsal/enviaraprobarinventsal/{id}', 'InvEntSalController@enviaraprobarinventsal')->name('enviaraprobarinventsal_inventsal');
+Route::post('inventsal/aprobinventsal/{id}', 'InvEntSalController@aprobinventsal')->name('aprobinventsal_inventsal');
+Route::get('inventsal/exportPdf', 'InvEntSalController@exportPdf')->name('exportPdf_inventsal');
+
+
+/*RUTAS InvBodegaProductoController*/
+Route::post('invbodegaproducto/consexistencia', 'InvBodegaProductoController@consexistencia')->name('consexistencia_invbodegaproducto');
+
+/*RUTAS INVCONTROL*/
+Route::get('invcontrol', 'InvControlController@index')->name('invcontrol');
+Route::get('invcontrolpage', 'InvControlController@invcontrolpage')->name('invcontrolpage');
+Route::post('invcontrol/procesarcierreini', 'InvControlController@procesarcierreini')->name('procesarcierreini_invcontrol');
+
+/*RUTAS REPORTE MOVIMIENTO DE INVENTARIO*/
+Route::get('reportinvmov', 'ReportInvMovController@index')->name('reportinvmov');
+Route::get('reportinvmov/reporte', 'ReportInvMovController@reporte')->name('reportinvmov_reporte');
+Route::get('reportinvmov/exportPdf', 'ReportInvMovController@exportPdf')->name('reportinvmov_exportPdf');
+Route::get('reportinvmov/totalizarRep', 'ReportInvMovController@totalizarRep')->name('reportinvmov_totalizarRep');
+
+/*RUTAS INV STOCK*/
+Route::get('reportinvstock', 'ReportInvStockController@index')->name('reportinvstock');
+Route::get('reportinvstockpage', 'ReportInvStockController@reportinvstockpage')->name('reportinvstockpage');
+Route::get('reportinvstock/reporte', 'ReportInvStockController@reporte')->name('reportinvstock_reporte');
+Route::get('reportinvstock/exportPdf', 'ReportInvStockController@exportPdf')->name('reportinvstock_exportPdf');
+Route::get('reportinvstock/totalizarindex', 'ReportInvStockController@totalizarindex')->name('reportinvstock_totalizarindex');
+
+
+/*RUTAS Movimiento Inventario INVMOV*/
+Route::get('invmov', 'InvMovController@index')->name('invmov');
+Route::get('invmovpage', 'InvMovController@invmovpage')->name('invmovpage');
+Route::get('invmov/exportPdf', 'InvMovController@exportPdf')->name('exportPdf_invmov');
+
+
+/*RUTAS Entradas y Salidas de Inventario Aprobar y pasar al inventario InvMov*/
+Route::get('inventsalaprobar', 'InvEntSalAprobarController@index')->name('inventsalaprobar');
+Route::get('inventsalaprobarpage', 'InvEntSalAprobarController@inventsalaprobarpage')->name('inventsalaprobarpage');
+Route::post('inventsalaprobar', 'InvEntSalAprobarController@guardar')->name('guardar_inventsalaprobar');
+Route::post('inventsalaprobar/aprobar/{id}', 'InvEntSalAprobarController@aprobar')->name('inventsalaprobar_aprobar');
+
+/*RUTAS Generales*/
+Route::post('generales_valpremiso', 'GeneralesController@generales_valpremiso')->name('generales_valpremiso');
+
+/*RUTAS INV STOCK VENDEDORES*/
+Route::get('reportinvstockvend', 'ReportInvStockVendController@index')->name('reportinvstockvend');
+Route::get('reportinvstockvendpage', 'ReportInvStockVendController@reportinvstockvendpage')->name('reportinvstockvendpage');
+Route::get('reportinvstockvend/reporte', 'ReportInvStockVendController@reporte')->name('reportinvstockvend_reporte');
+Route::get('reportinvstockvend/exportPdf', 'ReportInvStockVendController@exportPdf')->name('reportinvstockvend_exportPdf');
+
+
+/*RUTAS INVMOVMODULO*/
+Route::get('invmovmodulo', 'InvMovModuloController@index')->name('invmovmodulo');
+Route::get('invmovmodulopage', 'InvMovModuloController@invmovmodulopage')->name('invmovmodulopage');
+Route::get('invmovmodulo/crear', 'InvMovModuloController@crear')->name('crear_invmovmodulo');
+Route::post('invmovmodulo', 'InvMovModuloController@guardar')->name('guardar_invmovmodulo');
+Route::get('invmovmodulo/{id}/editar', 'InvMovModuloController@editar')->name('editar_invmovmodulo');
+Route::put('invmovmodulo/{id}', 'InvMovModuloController@actualizar')->name('actualizar_invmovmodulo');
+Route::delete('invmovmodulo/{id}', 'InvMovModuloController@eliminar')->name('eliminar_invmovmodulo');

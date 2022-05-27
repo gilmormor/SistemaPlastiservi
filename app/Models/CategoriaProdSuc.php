@@ -21,4 +21,5 @@ class CategoriaProdSuc extends Model
     {
         return $this->belongsTo(Sucursal::class,'sucursal_id');
     }
+
 }

@@ -13,7 +13,7 @@ class SucursalArea extends Model
 
     public function jefaturas()
     {
-        return $this->belongsToMany(Jefatura::class, 'jefatura_sucursal_area');
+        return $this->belongsToMany(Jefatura::class, 'jefatura_sucursal_area')->withTimestamps();
     }
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function sucursal()

@@ -20,3 +20,14 @@
     </div>
 </div>
 <input type="hidden" name="mostrarfact" id="mostrarfact" value="{{old('mostrarfact', $data->mostrarfact ?? '0')}}">
+
+<div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_agrupado" name="aux_agrupado">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Agrupado?
+        </label>
+    </div>
+</div>
+<input type="hidden" name="agrupado" id="agrupado" value="{{old('agrupado', $data->agrupado ?? '0')}}">

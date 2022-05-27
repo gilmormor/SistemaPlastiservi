@@ -119,6 +119,8 @@ function datos(){
         comuna_id         : $("#comuna_id").val(),
         guiadespacho      : $("#guiadespacho").val(),
         numfactura        : $("#numfactura").val(),
+        despachosol_id    : $("#despachosol_id").val(),
+        despachoord_id    : $("#despachoord_id").val(),
         aux_verestado     : $("#aux_verestado").val(),
         _token            : $('input[name=_token]').val()
     };
@@ -155,6 +157,9 @@ function consultarpage(data){
             "&comuna_id="+data.comuna_id +
             "&aux_titulo="+aux_titulo +
             "&guiadespacho="+data.guiadespacho +
+            "&numfactura="+data.numfactura +
+            "&despachosol_id="+data.despachosol_id +
+            "&despachoord_id="+data.despachoord_id +
             "&aux_verestado="+data.aux_verestado
 
     $("#tabla-data-consulta").dataTable().fnDestroy();
@@ -196,11 +201,13 @@ function consultarpage(data){
                     data.id +
                 "</a>";
             $('td', row).eq(0).html(aux_text);
+            $('td', row).eq(0).attr('data-search',data.id);
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" +
                     data.despachosol_id +
                 "</a>";
             $('td', row).eq(3).html(aux_text);
+            $('td', row).eq(3).attr('data-search',data.despachosol_id);
             if(data.oc_file != "" && data.oc_file != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud de Despacho' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
@@ -384,6 +391,9 @@ $("#btnpdf").click(function()
                     "&comuna_id="+data.comuna_id +
                     "&aux_titulo="+aux_titulo +
                     "&guiadespacho="+data.guiadespacho +
+                    "&numfactura="+data.numfactura +
+                    "&despachosol_id="+data.despachosol_id +
+                    "&despachoord_id="+data.despachoord_id +
                     "&aux_verestado="+data.aux_verestado
             $('#contpdf').attr('src', '/reportorddespguiafact/exportPdf/'+cadena);
             $("#myModalpdf").modal('show');

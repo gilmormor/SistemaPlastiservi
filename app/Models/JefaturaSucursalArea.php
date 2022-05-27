@@ -31,13 +31,13 @@ class JefaturaSucursalArea extends Model
     //RELACION MUCHOS A MUCHOS A TRAVES DE noconformidad_jefsucarea
     public function noconformidades()
     {
-        return $this->belongsToMany(NoConformidad::class, 'noconformidad_jefsucarea');
+        return $this->belongsToMany(NoConformidad::class, 'noconformidad_jefsucarea')->withTimestamps();
     }
 
     //RELACION MUCHOS A MUCHOS A TRAVES DE noconformidad_responsable JEFE DE DPTO
     public function noconformidad_responsables()
     {
-        return $this->belongsToMany(NoConformidad::class, 'noconformidad_responsable');
+        return $this->belongsToMany(NoConformidad::class, 'noconformidad_responsable')->withTimestamps();
     }
     
 }

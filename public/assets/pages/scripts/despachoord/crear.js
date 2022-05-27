@@ -119,6 +119,30 @@ $(document).ready(function () {
 		$("#vendedor_id").val($("#vendedor_idD").val());
 	});
 
+	i = 1;
+    $(".proditems").each(function()
+    {
+        //console.log($(this).attr('id'));
+		total = 0;
+		$("#tabla-bod tr .bod" + i).each(function() {
+			if($(this).val() == ""){
+				valor = "0";
+			}else{
+				valor = $(this).val() ;
+			}
+			valorNum = parseFloat(valor);
+			total += valorNum;
+			aux_sumabod = $(this).attr("onkeyup");
+			var F=new Function (aux_sumabod);
+			F();
+			return false;
+		});
+		//$("#cantord" + i).val(total);
+		//console.log(total);
+		i++;
+    });
+	elibodsob();
+
 });
 
 function insertarTabla(){
@@ -621,7 +645,7 @@ function sumarcant(estaSeleccionado){
 function sumcant(){
 	aux_total = 0;
 	$("#tabla-data tr .cantordsum").each(function() {
-		valor = $(this).val() ;
+		valor = $(this).val();
 		valorNum = parseFloat(valor);
 		if(isNaN( valorNum )){
 			valorNum = 0;
@@ -634,4 +658,39 @@ function sumcant(){
 		$("#cantordTotal").val(aux_total);
 	}
 	
+}
+
+function elibodsob(){ //ELIMINAR BODEGAS SOBRANTES
+	aux_total = 0;
+	$("#tabla-data tr .cantordsum").each(function() {
+		fila = $(this).attr('fila');
+		aux_CsaldocantF = $("#saldocantF" + fila).html();
+		aux_saldocantF = parseFloat(aux_CsaldocantF);
+		cant_id = $(this).attr('id');
+		//console.log(cant_id);
+		valor = $(this).val();
+		aux_valorcant = parseFloat(valor);
+		aux_staelibod = false;
+		$("#tabla-data tr ." + cant_id).each(function() {
+			if($(this).attr('nomabrbod') == "SolDe"){
+				valor = $(this).val();
+				aux_valorbod = parseFloat(valor);
+				if((aux_valorcant <= aux_valorbod) && (aux_valorbod > 0) && (aux_saldocantF == 0)){
+					aux_staelibod = true;
+				}
+				if(aux_valorbod == 0){
+					$("#fila" + $(this).attr('filabod')).remove();
+				}
+			}
+		});
+		if(aux_staelibod){
+			$("#tabla-data tr ." + cant_id).each(function() {
+				if($(this).attr('nomabrbod') != "SolDe"){
+					$("#fila" + $(this).attr('filabod')).remove();
+				}
+			});
+
+		}
+		//console.log(aux_staelibod);
+	});	
 }

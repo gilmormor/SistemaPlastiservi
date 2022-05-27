@@ -79,10 +79,16 @@ $(document).on("click", ".btnaprobar", function(event){
         fila = $(this).closest("tr");
         form = $(this);
         id = fila.find('td:eq(0)').text();
+        aux_updated_at = "";
+        if(fila.find('.updated_at').text()){
+            aux_updated_at = fila.find('.updated_at').text();
+        }
+
         //alert(id);
         var data = {
-            _token  : $('input[name=_token]').val(),
-            id      : id
+            _token     : $('input[name=_token]').val(),
+            id         : id,
+            updated_at : aux_updated_at
         };
         if (value) {
             ajaxRequest(data,form.attr('href')+'/'+id,'btnaprobar',form);
@@ -93,6 +99,7 @@ $(document).on("click", ".btnaprobar", function(event){
 
 
 function ajaxRequest(data,url,funcion,form = false) {
+    console.log('respuesta2');
     $.ajax({
         url: url,
         type: 'POST',
@@ -101,18 +108,28 @@ function ajaxRequest(data,url,funcion,form = false) {
             if(funcion=='eliminar'){
                 if (respuesta.mensaje == "ok") {
                     form.parents('tr').remove();
-                    Biblioteca.notificaciones('El registro fue eliminado correctamente.', 'Plastiservi', 'success');
+                    Biblioteca.notificaciones('El registro fue procesado correctamente.', 'Plastiservi', 'success');
                 } else {
                     if (respuesta.mensaje == "sp"){
                         Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
                     }else{
                         if(respuesta.mensaje == "cr"){
-                            Biblioteca.notificaciones('No puede ser eliminado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
+                            Biblioteca.notificaciones('No puede ser procesado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
                         }else{
                             if(respuesta.mensaje == "ne"){
                                 Biblioteca.notificaciones('No tiene permiso para eliminar.', 'Plastiservi', 'error');
                             }else{
-                                Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
+                                
+                                switch (respuesta.id) {
+                                    case 0:
+                                        Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                                        break;
+                                    case 1:
+                                        Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                                        break;
+                                    default:
+                                        Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo.', 'Plastiservi', 'error');
+                                }
                             }
                         }
                     }
@@ -132,16 +149,32 @@ function ajaxRequest(data,url,funcion,form = false) {
                 $("#myModal").modal('show');
             }
             if(funcion=='btnaprobar'){
-				if (respuesta.mensaje == "ok") {
-					form.parents('tr').remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-				} else {
-					if (respuesta.mensaje == "sp"){
+                switch (respuesta.mensaje) {
+                    case 'ok':
+                        form.parents('tr').remove();
+                        Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');    
+                        break;
+                    case 'sp':
+                        form.parents('tr').remove();
 						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
-				}
+                        break;
+                    case 'MensajePersonalizado':
+                        Biblioteca.notificaciones(respuesta.menper, 'Plastiservi', 'error');
+                        break;
+                    default:
+                        switch (respuesta.id) {
+                            case 0:
+                                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                                break;
+                            case 1:
+                                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                                break;
+                            default:
+                                Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                                break;
+                            }
+                }
+    
             }
         },
         error: function () {

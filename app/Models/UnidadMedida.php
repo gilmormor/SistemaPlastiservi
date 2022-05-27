@@ -12,7 +12,8 @@ class UnidadMedida extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
-        'mostrarfact'
+        'mostrarfact',
+        'agrupado'
     ];
 
     public function acuerdotectempanchos()
@@ -46,6 +47,12 @@ class UnidadMedida extends Model
     public function estadisticaventagis()
     {
         return $this->hasMany(EstadisticaVentaGI::class);
+    }
+
+    //RELACION UNO A MUCHOS InvmovDet
+    public function invmovdets()
+    {
+        return $this->hasMany(InvMovDet::class);
     }
 
 }

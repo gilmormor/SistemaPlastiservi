@@ -31,13 +31,13 @@ class Sucursal extends Model
 
     public function areas()
     {
-        return $this->belongsToMany(Area::class, 'sucursal_area');
+        return $this->belongsToMany(Area::class, 'sucursal_area')->withTimestamps();
     }
 
     //RELACION MUCHO A MUCHOS CON USUARIO A TRAVES DE SUCURSAL_USUARIO
     public function usuarios()
     {
-        return $this->belongsToMany(Usuario::class, 'sucursal_usuario');
+        return $this->belongsToMany(Usuario::class, 'sucursal_usuario')->withTimestamps();
     }
     //RELACION DE UNO A MUCHOS Cotizacion
     public function cotizaciones()
@@ -52,7 +52,7 @@ class Sucursal extends Model
     //RELACION MUCHO A MUCHOS CON USUARIO A TRAVES DE cliente_sucursal
     public function clientes()
     {
-        return $this->belongsToMany(Cliente::class, 'cliente_sucursal');
+        return $this->belongsToMany(Cliente::class, 'cliente_sucursal')->withTimestamps();
     }
     //RELACION DE UNO A MUCHOS ClienteTemp
     public function clientetemps()
@@ -69,6 +69,12 @@ class Sucursal extends Model
     public function estadisticaventagi()
     {
         return $this->hasMany(EstadisticaVentaGI::class);
+    }
+
+    //RELACION DE UNO A MUCHOS InvBodega
+    public function invbodegas()
+    {
+        return $this->hasMany(InvBodega::class);
     }
 
 }

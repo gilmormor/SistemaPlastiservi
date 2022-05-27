@@ -29,6 +29,8 @@ class Producto extends Model
         'grupoprod_id',
         'color_id',
         'tipoprod',
+        'stockmin',
+        'stockmax',
         'usuariodel_id'
     ];
 
@@ -64,9 +66,25 @@ class Producto extends Model
         return $this->belongsTo(Color::class);
     }
 
-    public static function productosxUsuario(){
+    //RELACION UNO A MUCHOS invbodegaproducto
+    public function invbodegaproductos()
+    {
+        return $this->hasMany(InvBodegaProducto::class);
+    }
+    
+    //RELACION UNO A MUCHOS InvmovDet
+    public function invmovdets()
+    {
+        return $this->hasMany(InvMovDet::class);
+    }
+
+    public static function productosxUsuario($sucursal_id = false){
         $users = Usuario::findOrFail(auth()->id());
-        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        if($sucursal_id){
+            $sucurArray = [$sucursal_id];
+        }else{
+            $sucurArray = $users->sucursales->pluck('id')->toArray();
+        }
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
         $productos = CategoriaProd::join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')

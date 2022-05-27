@@ -56,7 +56,7 @@ class User extends Authenticatable
     //RELACION MUCHO A MUCHOS CUN SUCURSAL A TRAVES DE SUCURSAL_USUARIO
     public function sucursales()
     {
-        return $this->belongsToMany(Sucursal::class, 'sucursal_usuario');
+        return $this->belongsToMany(Sucursal::class, 'sucursal_usuario')->withTimestamps();
     }
 
     //RELACION DE UNO A MUCHOS noconformidad

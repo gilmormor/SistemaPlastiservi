@@ -91,19 +91,19 @@ class NoConformidad extends Model
     //RELACION MUCHOS A MUCHOS A TRAVES DE noconformidad_certificado
     public function certificados()
     {
-        return $this->belongsToMany(Certificado::class, 'noconformidad_certificado','noconformidad_id');
+        return $this->belongsToMany(Certificado::class, 'noconformidad_certificado','noconformidad_id')->withTimestamps();
     }
     
     //RELACION MUCHOS A MUCHOS A TRAVES DE noconformidad_jefsucarea
     public function jefaturasucursalareas()
     {
-        return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_jefsucarea','noconformidad_id');
+        return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_jefsucarea','noconformidad_id')->withTimestamps();
     }
 
     //RELACION MUCHOS A MUCHOS A TRAVES DE noconformidad_responsable JEFE DE DPTO
     public function jefaturasucursalarearesponsables()
     {
-        return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_responsable','noconformidad_id');
+        return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_responsable','noconformidad_id')->withTimestamps();
     }
 
     

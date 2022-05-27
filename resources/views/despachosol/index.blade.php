@@ -27,6 +27,7 @@ Solicitud de despacho
                         <thead>
                             <tr>
                                 <th class="width70 tooltipsC" title='Solicitud de Despacho'>SD</th>
+                                <th class='tooltipsC' title='Fecha'>Fecha</th>
                                 <th>Razón Social</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
@@ -37,6 +38,7 @@ Solicitud de despacho
                                 <th class="ocultar">Icono</th>
                                 <th class="ocultar">Obs Bloqueo</th>
                                 <th class="ocultar">oc_file</th>
+                                <th class="ocultar">updated_at</th>
                                 <th class="width70">Acción</th>
                             </tr>
                         </thead>
@@ -44,12 +46,12 @@ Solicitud de despacho
                             <tr>
                             </tr>
                             <tr>
-                                <th colspan='6' style='text-align:right'>Total página</th>
+                                <th colspan='7' style='text-align:right'>Total página</th>
                                 <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
                                 <th colspan='2' style='text-align:right'></th>
                             </tr>
                             <tr>
-                                <th colspan='6' style='text-align:right'>TOTAL GENERAL</th>
+                                <th colspan='7' style='text-align:right'>TOTAL GENERAL</th>
                                 <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                                 <th colspan='2' style='text-align:right'></th>
                             </tr>

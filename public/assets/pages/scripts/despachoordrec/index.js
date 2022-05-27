@@ -43,6 +43,7 @@ $(document).ready(function () {
             {data: 'documento_file',className:"ocultar"},
             {data: 'aprobstatus',className:"ocultar"},
             {data: 'aprobobs',className:"ocultar"},
+            {data: 'updated_at',className:"ocultar"},
             {defaultContent : aux_accion}
         ],
 		"language": {
@@ -90,7 +91,7 @@ $(document).ready(function () {
                     "<a href='despachoordrec' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular registro'>" +
                         "<span class='glyphicon glyphicon-remove' style='bottom: 0px;top: 2px;'></span>" +
                     "</a>"
-                    $('td', row).eq(11).html(aux_texto);
+                    $('td', row).eq(12).html(aux_texto);
                 }
             }
         }
@@ -184,6 +185,7 @@ $("#btnaprobarM").click(function(event)
 		id    : $("#id").val(),
 		valor : 2,
 		obs   : $("#aprobobs").val(),
+        updated_at : fila.find('td:eq(11)').text(),
         _token: $('input[name=_token]').val()
 	};
 	var ruta = "/despachoordrec/aprorecod";

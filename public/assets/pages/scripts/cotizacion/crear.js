@@ -537,6 +537,7 @@ $("#rut").blur(function(){
 						$("#provincia_id").val(respuesta.cliente[0].provinciap_id);
 						$("#giro_id").val(respuesta.cliente[0].giro_id);
 						$("#giro_idD").val(respuesta.cliente[0].giro_id);
+						$("#giro").val(respuesta.cliente[0].giro);
 						$("#comuna_id").val(respuesta.cliente[0].comunap_id);
 						$("#comuna_idD").val(respuesta.cliente[0].comunap_id);
 						$("#provincia_id").val(respuesta.cliente[0].provinciap_id);
@@ -630,6 +631,8 @@ $("#rut").blur(function(){
 													$("#telefonoCTM").val(respuesta[0]['telefono']);
 													$("#emailCTM").val(respuesta[0]['email']);
 													$("#giro_idCTM").val(respuesta[0]['giro_id']);
+													$("#giro").val(respuesta[0]['giro']);
+													$("#giroCTM").val(respuesta[0]['giro']);
 													$("#formapago_idCTM").val(respuesta[0]['formapago_id']);
 													$("#plazopago_idCTM").val(respuesta[0]['plazopago_id']);
 													$("#comunap_idCTM").val(respuesta[0]['comunap_id']);
@@ -696,75 +699,7 @@ $("#rut").blur(function(){
 		}
 	}
 });
-/*
-$("#producto_idM").blur(function(){
-	codigo = $("#producto_idM").val();
-	//limpiarCampos();
-	aux_sta = $("#aux_sta").val();
-	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
-	{
-		//totalizar();
-		var data = {
-			id: $("#producto_idM").val(),
-			_token: $('input[name=_token]').val()
-		};
-		$.ajax({
-			url: '/producto/buscarUnProducto',
-			type: 'POST',
-			data: data,
-			success: function (respuesta) {
-				if(respuesta.length>0){
 
-					$("#nombreprodM").val(respuesta[0]['nombre']);
-					$("#codintprodM").val(respuesta[0]['codintprod']);
-					$("#cla_nombreM").val(respuesta[0]['cla_nombre']);
-					$("#diamextmmM").val(respuesta[0]['diametro']);
-					$("#espesorM").val(respuesta[0]['espesor']);
-					$("#longM").val(respuesta[0]['long']);
-					$("#pesoM").val(respuesta[0]['peso']);
-					$("#tipounionM").val(respuesta[0]['tipounion']);
-
-					$("#precioM").val(respuesta[0]['precio']);
-					$("#precioM").attr('valor',respuesta[0]['precio']);
-					$("#precioxkilorealM").val(respuesta[0]['precio']);
-					//alert('entro');
-					//$("#precioxkilorealM").attr('valor',respuesta[0]['precio']);
-
-					$("#precionetoM").val(respuesta[0]['precioneto']);
-					//$("#precionetoM").attr(respuesta[0]['precioneto']);
-					//alert(respuesta[0]['precio']);
-
-					$("#unidadmedida_idM").val(respuesta[0]['unidadmedidafact_id']);
-					$(".selectpicker").selectpicker('refresh');
-					
-					
-					//$("#cantM").change();
-					$("#cantM").focus();
-
-					validardatoscant();
-			
-					totalizarItem(1);
-				}else{
-					swal({
-						title: 'Producto no existe.',
-						text: "Presione F2 para buscar",
-						icon: 'error',
-						buttons: {
-							confirm: "Aceptar"
-						},
-					}).then((value) => {
-						if (value) {
-							//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-							limpiarInputOT();
-							$("#limpiarInputOT").focus();
-						}
-					});
-				}
-			}
-		});
-	}
-});
-*/
 
 function mensaje(titulo,texto,icono){
 	swal({
@@ -827,6 +762,7 @@ function limpiarCampos(){
 	$("#plazopago_idD").val('');
 	$("#giro_id").val('');
 	$("#giro_idD").val('');
+	$("#giro").val('');
 	
 	$("#contacto").val('');
 	$("#region_id").val('');
@@ -939,23 +875,24 @@ $("#btnGuardarCTM").click(function(event)
 function verificarclientetemp()
 {
 	var v1=true,v2=true,v3=true,v4=true,v5=true,v6=true,v7=true,v8=true,v9=true,v10=true,v11=true,v12=true,v13=true,v14=true,v15=true;
-	v15=validacion('sucursal_idCTM','combobox');
-	v14=validacion('finanzastelefonoCTM','numerico');
-	v13=validacion('finanzanemailCTM','email');
-	v12=validacion('finanzascontactoCTM','texto');
-	v11=validacion('contactotelefCTM','numerico');
-	v10=validacion('contactoemailCTM','email');
-	v9=validacion('contactonombreCTM','texto');
-	v8=validacion('comunap_idCTM','combobox');
-	v7=validacion('plazopago_idCTM','combobox');
-	v6=validacion('formapago_idCTM','combobox');
+	v16=validacion('sucursal_idCTM','combobox');
+	v15=validacion('finanzastelefonoCTM','numerico');
+	v14=validacion('finanzanemailCTM','email');
+	v13=validacion('finanzascontactoCTM','texto');
+	v12=validacion('contactotelefCTM','numerico');
+	v11=validacion('contactoemailCTM','email');
+	v10=validacion('contactonombreCTM','texto');
+	v9=validacion('comunap_idCTM','combobox');
+	v8=validacion('plazopago_idCTM','combobox');
+	v7=validacion('formapago_idCTM','combobox');
+	v6=validacion('giroCTM','texto');
 	v5=validacion('giro_idCTM','combobox');
 	v4=validacion('emailCTM','email');
 	v3=validacion('telefonoCTM','numerico');
 	v2=validacion('direccionCTM','texto');
 	v1=validacion('razonsocialCTM','texto');
 
-	if (v1===false || v2===false || v3===false || v4===false || v5===false || v6===false || v7===false || v8===false || v9===false || v10===false || v11===false || v12===false || v13===false || v14===false || v15===false)
+	if (v1===false || v2===false || v3===false || v4===false || v5===false || v6===false || v7===false || v8===false || v9===false || v10===false || v11===false || v12===false || v13===false || v14===false || v15===false || v16===false)
 	{
 		//$("#exito").hide();
 		//$("#error").show();
@@ -977,6 +914,7 @@ function asignarvalorclientetemp(){
 	//$("#clientetemp_id").val($('#razonsocialCTM').val())
 	$("#giro_id").val($('#giro_idCTM').val());
 	$("#giro_idD").val($('#giro_idCTM').val());
+	$("#giro").val($('#giroCTM').val());
 	$("#formapago_id").val($('#formapago_idCTM').val());
 	$("#formapago_idD").val($('#formapago_idCTM').val());
 	$("#plazopago_id").val($('#plazopago_idCTM').val());

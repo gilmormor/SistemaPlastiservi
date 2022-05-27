@@ -25,6 +25,7 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
+            {data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -103,11 +104,14 @@ $(document).ready(function () {
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
             }
+            $('td', row).eq(13).addClass('updated_at');
+            $('td', row).eq(13).attr('id','updated_at' + data.id);
+            $('td', row).eq(13).attr('name','updated_at' + data.id);
             aux_text = aux_text +
             "<a href='despachoord' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Orden Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
-            $('td', row).eq(13).html(aux_text);
+            $('td', row).eq(14).html(aux_text);
         }
     });
 
@@ -142,14 +146,53 @@ var eventFired = function ( type ) {
 }
 
 
-function ajaxRequest(data,url,funcion) {
+function ajaxRequestOD(data,url,funcion) {
+    data1 = data;
 	$.ajax({
 		url: url,
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			
 			if(funcion=='aproborddesp'){
+                switch (respuesta.mensaje) {
+                    case 'ok':
+                        swal({
+                            title: '¿ Desea ver PDF Orden Despacho ?',
+                            text: "",
+                            icon: 'success',
+                            buttons: {
+                                cancel: "Cancelar",
+                                confirm: "Aceptar"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                                genpdfOD(respuesta.id,1);
+                            }
+                            //$("#fila"+data['nfila']).remove();                            
+                        });
+                        $("#fila"+respuesta.nfila).remove();
+                        Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                        break;
+                    case 'sp':
+                        Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                        break;
+                    case 'MensajePersonalizado':
+                        Biblioteca.notificaciones(respuesta.menper, 'Plastiservi', 'error');
+                        break;
+                    default:
+                        switch (respuesta.id) {
+                            case 0:
+                                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                                break;
+                            case 1:
+                                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                                break;
+                            default:
+                                Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo.', 'Plastiservi', 'error');
+                            }
+
+                }
+/*
 				if (respuesta.mensaje == "ok") {
 					swal({
 						title: '¿ Desea ver PDF Orden Despacho ?',
@@ -173,8 +216,62 @@ function ajaxRequest(data,url,funcion) {
 						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
 					}
 				}
-			}
-			
+*/
+            }
+            if(funcion=='buscarTipoBodegaOrdDesp'){
+                if(respuesta.datas.length > 0){
+                    if(respuesta.datas.length == 1){
+                        var data = {
+                            id: respuesta.id,
+                            nfila : respuesta.nfila,
+                            invbodega_id : respuesta.datas[0].id,
+                            updated_at   : data1.updated_at,
+                            _token: $('input[name=_token]').val()
+                        };
+                        var ruta = '/despachoord/aproborddesp/'+respuesta.id;
+                        swal({
+                            title: '¿ Aprobar Orden de Despacho ?',
+                            text: "Esta acción no se puede deshacer!",
+                            icon: 'warning',
+                            buttons: {
+                                cancel: "Cancelar",
+                                confirm: "Aceptar"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                                ajaxRequestOD(data,ruta,'aproborddesp');
+                            }
+                        });
+                    }else{
+                        swal({
+                            title: 'Existe mas de una Bodega de Despacho',
+                            text: "Debe seleccionar una",
+                            icon: 'warning',
+                            buttons: {
+                                confirm: "Aceptar"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                            }
+                        });
+    
+                    }
+                }else{
+                    swal({
+                        title: 'No existe Bodega de Despacho',
+                        text: "Debe ser creada la bodega de Despacho",
+                        icon: 'warning',
+                        buttons: {
+                            confirm: "Aceptar"
+                        },
+                    }).then((value) => {
+                        if (value) {
+                        }
+                    });
+
+                }
+                return respuesta;
+            }            
 		},
 		error: function () {
 		}
@@ -183,7 +280,18 @@ function ajaxRequest(data,url,funcion) {
 
 
 function aprobarord(i,id){
-	var data = {
+    var data = {
+		id         : id,
+        nfila      : i,
+        tipobodega : 3, //Codigo de tipo de bodega = 3 (Bodegas de despacho)
+        updated_at : $("#updated_at" + i).html(),
+        _token: $('input[name=_token]').val()
+	};
+	var ruta = '/invbodega/buscarTipoBodegaOrdDesp';
+	respuesta = ajaxRequestOD(data,ruta,'buscarTipoBodegaOrdDesp');
+    return 0;
+
+    var data = {
 		id: id,
         nfila : i,
         _token: $('input[name=_token]').val()
@@ -199,7 +307,7 @@ function aprobarord(i,id){
 		},
 	}).then((value) => {
 		if (value) {
-			ajaxRequest(data,ruta,'aproborddesp');
+			ajaxRequestOD(data,ruta,'aproborddesp');
 		}
 	});
 }

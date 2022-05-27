@@ -656,7 +656,7 @@ class ClienteController extends Controller
 
             $sql= "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.telefono,cliente.email,
             cliente.direccion,cliente.vendedor_id,cliente.contactonombre,cliente.formapago_id,
-            cliente.plazopago_id,cliente.giro_id,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
+            cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
             clientebloqueado.descripcion
             FROM cliente left JOIN clientebloqueado
             ON cliente.id=clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)

@@ -393,6 +393,8 @@ class NotaVentaController extends Controller
                     $notaventadetalle->producto_id = $request->producto_id[$i];
                     $notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];                    
                     $notaventadetalle->cant = $request->cant[$i];
+                    $notaventadetalle->cantgrupo = $request->cant[$i];
+                    $notaventadetalle->cantxgrupo = 1;
                     $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $notaventadetalle->descuento = $request->descuento[$i];
                     $notaventadetalle->preciounit = $request->preciounit[$i];
@@ -570,6 +572,8 @@ class NotaVentaController extends Controller
                         $notaventadetalle->producto_id = $request->producto_id[$i];
                         //$notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];
                         $notaventadetalle->cant = $request->cant[$i];
+                        $notaventadetalle->cantgrupo = $request->cant[$i];
+                        $notaventadetalle->cantxgrupo = 1;
                         $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                         $notaventadetalle->descuento = $request->descuento[$i];
                         $notaventadetalle->preciounit = $request->preciounit[$i];
@@ -600,6 +604,8 @@ class NotaVentaController extends Controller
                                 'producto_id' => $request->producto_id[$i],
                                 'cotizaciondetalle_id' => $request->cotizaciondetalle_id[$i],
                                 'cant' => $request->cant[$i],
+                                'cantgrupo' => $request->cant[$i],
+                                'cantxgrupo' => 1,
                                 'unidadmedida_id' => $request->unidadmedida_id[$i],
                                 'descuento' => $request->descuento[$i],
                                 'preciounit' => $request->preciounit[$i],
@@ -792,30 +798,36 @@ class NotaVentaController extends Controller
 
     public function exportPdf($id,$stareport = '1')
     {
-        $notaventa = NotaVenta::findOrFail($id);
-        $notaventaDetalles = $notaventa->notaventadetalles()->get();
-        $empresa = Empresa::orderBy('id')->get();
-        $rut = number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
-        //dd($empresa[0]['iva']);
-        if($stareport == '1'){
-            if(env('APP_DEBUG')){
-                return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
-            }
-            $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
-            //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-    
-        }else{
-            if($stareport == '2'){
+        if(can('ver-pdf-nota-de-venta',false)){
+            $notaventa = NotaVenta::findOrFail($id);
+            $notaventaDetalles = $notaventa->notaventadetalles()->get();
+            $empresa = Empresa::orderBy('id')->get();
+            $rut = number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
+            //dd($empresa[0]['iva']);
+            if($stareport == '1'){
                 if(env('APP_DEBUG')){
-                    return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                    return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
                 }
-        
-                $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-    
-            }
+        
+            }else{
+                if($stareport == '2'){
+                    if(env('APP_DEBUG')){
+                        return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                    }
+            
+                    $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                    //return $pdf->download('cotizacion.pdf');
+                    return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+        
+                }
+            }    
+        }else{
+            //return false;            
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
         }
         
         

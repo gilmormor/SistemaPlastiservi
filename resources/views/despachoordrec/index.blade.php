@@ -46,6 +46,7 @@ Rechazo Orden de Despacho
                                 <th class="ocultar">documento_file</th>
                                 <th class="ocultar">aprobstatus</th>
                                 <th class="ocultar">aprobobs</th>
+                                <th class="ocultar">updated_at</th>
                                 <th class="width70">Acción</th>
                             </tr>
                         </thead>

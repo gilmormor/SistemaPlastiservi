@@ -12,6 +12,7 @@ class DespachoOrdRecMotivo extends Model
     protected $fillable = [
         'nombre',
         'desc',
+        'tipomovinv',
         'usuariodel_id'
     ];
 

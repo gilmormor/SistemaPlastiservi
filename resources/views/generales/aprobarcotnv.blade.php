@@ -12,7 +12,7 @@
                 <div class="row">
                     <div class="form-group col-xs-12 col-sm-2">
                         <label for="id" class="control-label">ID</label>
-                        <input type="text" name="id" id="id" class="form-control" value="{{old('id', $data->id ?? '')}}" required placeholder="Cod Usuario" {{$disabledReadOnly}}/>
+                        <input type="text" name="id" id="id" class="form-control" value="{{old('id', $data->id ?? '')}}" required placeholder="ID" {{$disabledReadOnly}}/>
                     </div>
                     <div class="form-group col-xs-12 col-sm-2">
                         <label for="aprobusu_id" class="control-label">Cod Usu</label>

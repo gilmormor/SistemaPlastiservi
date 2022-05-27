@@ -8,6 +8,7 @@ use App\Models\ClaseProd;
 use App\Models\Color;
 use App\Models\Empresa;
 use App\Models\GrupoProd;
+use App\Models\InvBodegaProducto;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
@@ -126,6 +127,12 @@ class ProductoController extends Controller
         $data = Producto::findOrFail($id);
         //$categoriaprods = CategoriaProd::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
+        $invbodegaproductos = $data->invbodegaproductos();//->select(['id as invbodegaproducto_id'])->get();
+        /*
+        foreach ($invbodegaproductos->get() as $invbodegaproducto) {
+            dd($invbodegaproducto);
+        }
+*/
         /*
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
@@ -150,7 +157,7 @@ class ProductoController extends Controller
         //dd($claseprods);
         $colores = Color::orderBy('id')->get();
         $aux_sta=2;
-        return view('producto.editar', compact('data','categoriaprods','claseprods','grupoprods','colores','aux_sta'));
+        return view('producto.editar', compact('data','categoriaprods','claseprods','grupoprods','colores','aux_sta','invbodegaproductos'));
     }
 
     /**
@@ -166,6 +173,7 @@ class ProductoController extends Controller
         //dd($request);
         $Producto = Producto::findOrFail($id);
         $Producto->update($request->all());
+
         return redirect('producto')->with('mensaje','Producto actualizado con exito');
     }
 
@@ -260,10 +268,35 @@ class ProductoController extends Controller
                     'unidadmedida.nombre as unidadmedidanombre'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                    ->where('producto.deleted_at','=',null);
+                    ->where('producto.deleted_at','=',null)
+                    ->groupBy('producto.id');
             //dd($productos);
             //****************** */
-            return response()->json($productos->get());
+            $array_productos = $productos->get()->toArray();
+            $respuesta = array();
+            if(count($array_productos) > 0){
+                $respuesta = $array_productos[0];
+                $producto = Producto::findOrFail($request->id);
+                $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->toArray();
+                //dd($respuesta['bodegas']);
+                foreach ($respuesta['bodegas'] as &$bodega) {
+                    $request1 = new Request();
+                    $request1["producto_id"] = $request->id;
+                    $request1["invbodega_id"] = $bodega["id"];
+                    $request1["tipo"] = 2;
+                    $aux_stosk = InvBodegaProducto::existencia($request1);
+                    $bodega["stock"] = $aux_stosk["stock"]["cant"];
+                    //dd($bodega);
+                }
+            }
+            $respuesta['cont'] = count($array_productos);
+            //$array_productos['array'] = count($array_productos);
+            //dd($respuesta);
+
+            //dd(response()->json($productos->get()));
+
+            return $respuesta;
+            //return response()->json($productos->get());
         }
     }
 

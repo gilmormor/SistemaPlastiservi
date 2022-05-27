@@ -469,7 +469,7 @@ function consultaorddesp($request){
             despachoord.aprguiadesp,despachoord.aprguiadespfh,
             tipoentrega.nombre as tipentnombre,tipoentrega.icono,
             despachoordanul.created_at AS despachoordanul_fechahora,
-            GROUP_CONCAT(despachoordrec.id) AS despachoordrec_id,despachoordrec.fechahora AS despachoordrec_fechahora,
+            GROUP_CONCAT(DISTINCT despachoordrec.id) AS despachoordrec_id,despachoordrec.fechahora AS despachoordrec_fechahora,
             despachoorddet.despachoord_id
             FROM despachoord INNER JOIN despachoorddet
             ON despachoord.id=despachoorddet.despachoord_id AND isnull(despachoord.deleted_at) AND isnull(despachoorddet.deleted_at)

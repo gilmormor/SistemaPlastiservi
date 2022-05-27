@@ -24,7 +24,8 @@ class DespachoOrdRecAprController extends Controller
                 cliente.razonsocial,despachoord_id,despachoordrec.documento_id,despachoordrec.documento_file,
                 '' as pdfcot,
                 despachoordrec.fechahora as fechahora_aaaammdd,
-                despachoord.notaventa_id,despachoord.despachosol_id,despachoordrec.aprobstatus,despachoordrec.aprobobs
+                despachoord.notaventa_id,despachoord.despachosol_id,despachoordrec.aprobstatus,despachoordrec.aprobobs,
+                despachoordrec.updated_at
             FROM despachoordrec inner join despachoord
             on despachoord.id = despachoordrec.despachoord_id and isnull(despachoord.deleted_at)
             and despachoord.id not in (select despachoordanul.despachoord_id from despachoordanul where isnull(despachoordanul.deleted_at))

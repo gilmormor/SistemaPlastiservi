@@ -66,6 +66,7 @@ class CategoriaProdController extends Controller
                 'categoriaprod.unidadmedida_id',
                 'categoriaprod.unidadmedidafact_id'
             ])
+            ->groupBy('categoriaprod.id')
             )
             ->toJson();
     }
@@ -286,4 +287,13 @@ class CategoriaProdController extends Controller
             return response()->json(['mensaje' => 'ne']);
         }
     }
+
+    public function categoriaprodArray(Request $request)
+    {
+        if($request->ajax()){
+            $categoriasprod = CategoriaProd::categoriasxUsuario($request->sucursal_id);
+            return response()->json($categoriasprod);
+        }
+    }
+
 }

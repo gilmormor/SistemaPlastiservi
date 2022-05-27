@@ -28,12 +28,12 @@ class ClienteInterno extends Model
     //RELACION MUCHO A MUCHOS CON USUARIO A TRAVES DE clienteinterno_vendedor
     public function vendedores()
     {
-        return $this->belongsToMany(Vendedor::class, 'clienteinterno_vendedor','clienteinterno_id');
+        return $this->belongsToMany(Vendedor::class, 'clienteinterno_vendedor','clienteinterno_id')->withTimestamps();
     }
     //RELACION MUCHO A MUCHOS CON USUARIO A TRAVES DE clienteinterno_sucursal
     public function sucursales()
     {
-        return $this->belongsToMany(Sucursal::class, 'clienteinterno_sucursal','clienteinterno_id');
+        return $this->belongsToMany(Sucursal::class, 'clienteinterno_sucursal','clienteinterno_id')->withTimestamps();
     }
     //Relacion inversa a Comuna
     public function comuna()

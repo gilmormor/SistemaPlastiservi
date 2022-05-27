@@ -9,6 +9,13 @@ $(document).ready(function () {
     */
     
     $(".numerico").numeric();
+
+    aux_nfilas=parseInt($("#dataTables >tbody >tr").length);
+    //alert(aux_nfilas);
+    if($("#aux_sta").val() == 2){
+        //agregarFila(aux_nfilas);
+    }
+
     
 });
 
@@ -50,7 +57,11 @@ $('.categoriaprod_id').on('change', function () {
             }
         }
     });
-
+    if($("#aux_sta").val() == 1){
+        $("#dataTables > tbody").empty();
+    }else{
+        $("#dataTables").find("tr").last().remove();
+    }
 });
 $("#peso").blur(function(){
     calcular_precio();
@@ -60,4 +71,33 @@ function calcular_precio(){
     aux_precio = $(".categoriaprod_id option:selected").attr('precio');
     aux_precioneto = aux_precio * $("#peso").val();
     $("#precioneto").val(Math.round(aux_precioneto));
+}
+
+$('#annomes').on('change', function () {
+    var data = {
+        annomes: annomes($('#annomes').val()),
+        categoriaprod_id: $("#categoriaprod_idH").val(),
+        _token: $('input[name=_token]').val()
+    };
+    $("#categoriaprod_id").empty();
+    $("#categoriaprod_id").append("<option value=''>Seleccione...</option>");
+    $.ajax({
+        url: '/categoriagrupovalmesfilcat',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            for (i = 0; i < respuesta.length; i++) {
+                //alert(i);
+                $("#categoriaprod_id").append($("<option>", {
+                    value: respuesta[i].id,
+                    text: respuesta[i].nombre
+                  }));
+            }
+        }
+    });
+});
+
+
+function myFunction(i){
+    $("#invbodega_id" + i).val($("#invbodega_idtmp" + i + " option:selected").attr('value'));
 }

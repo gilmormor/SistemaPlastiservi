@@ -13,6 +13,7 @@ $(document).ready(function () {
         'ajax'        : "despachosolpage",
         'columns'     : [
             {data: 'id'},
+            {data: 'fechahora'},
             {data: 'razonsocial'},
             {data: 'oc_id'},
             {data: 'notaventa_id'},
@@ -23,6 +24,7 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
+            {data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -39,35 +41,41 @@ $(document).ready(function () {
                     + data.id +
                 "</a>";
             $('td', row).eq(0).html(aux_text);
+
+            $('td', row).eq(1).attr('data-order',data.fechahora);
+            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
+
             if(data.oc_file != "" && data.oc_file != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
                         data.oc_id + 
                     "</a>";
-                $('td', row).eq(2).html(aux_text);
+                $('td', row).eq(3).html(aux_text);
             }
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
                     data.notaventa_id +
                 "</a>";
-            $('td', row).eq(3).html(aux_text);
+            $('td', row).eq(4).html(aux_text);
 
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg PDF' onclick='genpdfNV(" + data.notaventa_id + ",2)'>" +
                     "<i class='fa fa-fw fa-file-pdf-o'></i>" +
                 "</a>";
-            $('td', row).eq(4).html(aux_text);
+            $('td', row).eq(5).html(aux_text);
 
-            $('td', row).eq(6).attr('data-order',data.aux_totalkg);
-            $('td', row).eq(6).attr('style','text-align:right');
+            $('td', row).eq(7).attr('data-order',data.aux_totalkg);
+            $('td', row).eq(7).attr('style','text-align:right');
             aux_text = MASKLA(data.aux_totalkg,2);
-            $('td', row).eq(6).html(aux_text);
-            $('td', row).eq(6).addClass('subtotalkg');
+            $('td', row).eq(7).html(aux_text);
+            $('td', row).eq(7).addClass('subtotalkg');
 
             
             aux_text = 
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
-            $('td', row).eq(7).html(aux_text);
+            $('td', row).eq(8).html(aux_text);
 
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
@@ -88,11 +96,13 @@ $(document).ready(function () {
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
             }
+            $('td', row).eq(12).addClass('updated_at');
+
             aux_text = aux_text +
             "<a href='despachosol' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Solicitud Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
-            $('td', row).eq(11).html(aux_text);
+            $('td', row).eq(13).html(aux_text);
         }
     });
 

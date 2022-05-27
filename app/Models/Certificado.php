@@ -39,12 +39,12 @@ class Certificado extends Model
 
     public function acuerdotectemps()
     {
-        return $this->belongsToMany(Acuerdotectemp::class, 'acuerdotectemp_certificado');
+        return $this->belongsToMany(Acuerdotectemp::class, 'acuerdotectemp_certificado')->withTimestamps();
     }
 
     //RELACION MUCHOS A MUCHOS A TRAVES DE noconformidad_certificado
     public function noconformidades()
     {
-        return $this->belongsToMany(NoConformidad::class, 'noconformidad_certificado');
+        return $this->belongsToMany(NoConformidad::class, 'noconformidad_certificado')->withTimestamps();
     }
 }

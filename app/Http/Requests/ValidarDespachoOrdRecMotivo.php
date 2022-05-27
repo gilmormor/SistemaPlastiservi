@@ -26,6 +26,7 @@ class ValidarDespachoOrdRecMotivo extends FormRequest
         return [
             'nombre' => 'required|max:60|unique:despachoordrecmotivo,nombre,' . $this->route('id'),
             'desc' => 'required|max:60',
+            'tipomovinv' => 'required'
         ];
     }
 }

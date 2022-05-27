@@ -17,6 +17,13 @@ class DespachoOrdRecDet extends Model
         'usuariodel_id'
     ];
 
+    //RELACION INVERSA DespachoOrdRec
+    public function despachoordrec()
+    {
+        return $this->belongsTo(DespachoOrdRec::class);
+    }
+
+
     //RELACION INVERSA DespachoOrd
     public function despachoord()
     {
@@ -28,4 +35,11 @@ class DespachoOrdRecDet extends Model
     {
         return $this->belongsTo(DespachoOrdDet::class);
     }
+
+    //RELACION DE UNO A MUCHOS despachoordrecdet_invbodegaproducto
+    public function despachoordrecdet_invbodegaproductos()
+    {
+        return $this->hasMany(DespachoOrdRecDet_InvBodegaProducto::class,'despachoordrecdet_id');
+    }
+    
 }
