@@ -27,7 +27,8 @@ class AddNotaventadetalleCantgrupo extends Migration
     public function down()
     {
         Schema::table('notaventadetalle', function (Blueprint $table) {
-            //
+            $table->dropColumn('cantgrupo');
+            $table->dropColumn('cantxgrupo');
         });
     }
 }

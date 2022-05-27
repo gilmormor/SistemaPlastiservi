@@ -9,5 +9,5 @@ class MenuRol extends Model
 {
     use SoftDeletes;
     protected $table = "menu_rol";
-    public $timestamps = false; 
+    //public $timestamps = false; 
 }
