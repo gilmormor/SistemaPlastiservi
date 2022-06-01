@@ -808,6 +808,64 @@ class DespachoSolController extends Controller
         return $respuesta;
     }
 
+    public function guardarfechaed(Request $request)
+    {
+        can('guardar-solicitud-despacho');
+        //dd($request);
+        $despachosol = DespachoSol::findOrFail($request->id);
+        if(count($despachosol->notaventa->notaventacerradas) == 0){
+            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
+            if(count($clibloq) > 0){
+                return [
+                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                    'tipo_alert' => 'error'
+                ];
+            }
+            if($despachosol->updated_at == $request->updated_at){
+                $dateInput = explode('/',$request->aux_fechaestdesp);
+                $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];  
+                $despachosol->fechaestdesp = $request->fechaestdesp;
+                if($despachosol->save()){
+                    return response()->json([
+                        'error'=>'0',
+                        'mensaje'=>'Registro actualizado con exito.',
+                        'updated_at' => date('Y-m-d H:i:s', strtotime($despachosol->updated_at)),
+                        'tipo_alert' => 'success'
+                    ]);
+                }else{
+                    return response()->json([
+                        'error'=>'1',
+                        'mensaje'=>'Registro no fue actualizado.',
+                        'tipo_alert' => 'error'
+                    ]);
+                }
+            }else{
+                return response()->json([
+                    'error'=>'1',
+                    'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                    'tipo_alert' => 'error'
+                ]);
+/*
+                return redirect('despachosol')->with([
+                                                        'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                                                        'tipo_alert' => 'alert-error'
+                                                    ]);*/
+            }
+        }else{
+            return response()->json([
+                'error'=>'1',
+                'mensaje'=>'Registro no fue Modificado. La nota de venta fue Cerrada. Observ: ' . $despachosol->notaventa->id,
+                'tipo_alert' => 'error'
+            ]);
+/*
+            return redirect('despachosol')->with([
+                'mensaje'=>'Registro no fue Modificado. La nota de venta fue Cerrada. Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at)),
+                'tipo_alert' => 'alert-error'
+            ]);*/
+        }
+
+    }
+
 }
 
 
@@ -1505,7 +1563,19 @@ function reportesoldesp1($request){
                     </a>
                 </td>
                 <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                <td id='fechaestdesp$i' name='fechaestdesp$i'>" . date('d-m-Y', strtotime($data->fechaestdesp)) . "</td>
+                <td>" . 
+                    "<a id='fechaestdesp$i' name='fechaestdesp$i' class='editfed'>" .
+                        date('d/m/Y', strtotime($data->fechaestdesp)) . 
+                    "</a>
+                    <input type='text' class='form-control datepickerfed savefed' name='fechaed$i' id='fechaed$i' value='" . date('d/m/Y', strtotime($data->fechaestdesp)) . "' style='display:none; width: 70px; height: 21.6px;padding-left: 0px;padding-right: 0px;' readonly>" .
+
+                    "<a name='editfed$i' id='editfed$i' class='tooltipsC editfed' title='Editar Fecha ED' onclick='editfeced($data->id,$i)'>
+                        <i class='fa fa-fw fa-pencil-square-o'></i>
+                    </a>" .
+                    "<a name='savefed$i' id='savefed$i' class='tooltipsC savefed' title='Guardar Fecha ED' onclick='savefeced($data->id,$i)' style='display:none' updated_at='$data->updated_at'>
+                        <i class='fa fa-fw fa-save'></i>
+                    </a>" .
+                "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td>
@@ -1825,7 +1895,7 @@ function consultasoldesp($request){
             IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
             IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
             vista_despsoltotales.totalkilos,
-            vista_despsoltotales.subtotalsoldesp
+            vista_despsoltotales.subtotalsoldesp,despachosol.updated_at
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
