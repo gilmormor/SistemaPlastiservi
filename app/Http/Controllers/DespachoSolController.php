@@ -1573,7 +1573,7 @@ function reportesoldesp1($request){
                         <i class='fa fa-fw fa-pencil-square-o'></i>
                     </a>" .
                     "<a name='savefed$i' id='savefed$i' class='tooltipsC savefed' title='Guardar Fecha ED' onclick='savefeced($data->id,$i)' style='display:none' updated_at='$data->updated_at'>
-                        <i class='fa fa-fw fa-save'></i>
+                        <i class='fa fa-fw fa-save text-red'></i>
                     </a>" .
                 "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
