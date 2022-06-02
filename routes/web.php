@@ -541,7 +541,7 @@ Route::get('despachosol/reporteindex', 'DespachoSolController@reporteindex')->na
 Route::get('despachosol/pdfpendientesoldesp', 'DespachoSolController@pdfpendientesoldesp')->name('despachosol_pdfpendientesoldesp');
 Route::get('despachosol/pdfnotaventapendiente', 'DespachoSolController@pdfnotaventapendiente')->name('despachosol_pdfnotaventapendiente');
 Route::get('despachosol/totalizarindex', 'DespachoSolController@totalizarindex')->name('despachosol_totalizarindex');
-
+Route::post('despachosol/guardarfechaed', 'DespachoSolController@guardarfechaed')->name('guardarfechaed_despachosol');
 
 /*RUTAS REPORTE SOLICITUD DESPACHO*/
 Route::get('reportsoldesp', 'ReportSolDespController@index')->name('reportsoldesp');

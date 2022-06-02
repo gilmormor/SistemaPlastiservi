@@ -60,6 +60,7 @@ function configurarTabla(aux_tabla){
 
 
 function ajaxRequest(data,url,funcion) {
+    aux_data = data;
 	$.ajax({
 		url: url,
 		type: 'POST',
@@ -134,6 +135,14 @@ function ajaxRequest(data,url,funcion) {
                 }
                 $("#myModaldevsoldeps").modal('hide');
             }
+            if(funcion=="guardarfechaed"){
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                restbotoneditfeced(aux_data.i)
+                if(respuesta.error == 0){
+                    $("#fechaestdesp" + aux_data.i).html($("#fechaed" + aux_data.i).val());
+                    $("#savefed" + aux_data.i).attr('updated_at',respuesta.updated_at);
+                }
+            }
 		},
 		error: function () {
 		}
@@ -170,7 +179,11 @@ function consultar(data){
             if(datos['tabla'].length>0){
                 $("#tablaconsulta").html(datos['tabla']);
                 configurarTabla('#pendientesoldesp');
-
+                $('.datepickerfed').datepicker({
+                    language: "es",
+                    autoclose: true,
+                    todayHighlight: true
+                }).datepicker("setDate");
                 let  table = $('#pendientesoldesp').DataTable();
                 table
                     .on('draw', function () {
@@ -453,4 +466,59 @@ var eventFired = function ( type ) {
 	});
     $("#totaldinero").html(MASKLA(total,0))
 
+}
+
+function editfeced(id,i){
+    $(".fechaestdesp").show();
+    $(".fechaed").hide();
+    $(".editfed").show();
+    $(".savefed").hide();
+    $("#fechaestdesp" + i).hide();
+    $("#fechaed" + i).val($("#fechaestdesp" + i).html());
+    $("#fechaed" + i).show();
+    $("#editfed" + i).hide();
+    $("#savefed" + i).show();
+    $("#fechaed" + i).datepicker({
+        language: "es",
+        autoclose: true,
+        todayHighlight: true
+    }).datepicker("setDate");
+    $("#fechaed" + i).datepicker("refresh");
+    $("#fechaed" + i).focus();
+    //alert(i);
+}
+
+
+function savefeced(id,aux_i){
+    swal({
+        title: '¿ Seguro desea actualizar el registro ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            var data = {
+                id : id,
+                i  : aux_i,
+                aux_fechaestdesp : $("#fechaed" + aux_i).val(),
+                updated_at : $("#savefed" + aux_i).attr('updated_at'),
+                _token : $('input[name=_token]').val()
+            };
+            var ruta = '/despachosol/guardarfechaed'; //Guardar Fecha estimada de despacho
+            ajaxRequest(data,ruta,'guardarfechaed');
+        }else{
+            restbotoneditfeced(aux_i);
+        }
+    });
+}
+
+function restbotoneditfeced(i){
+    $("#fechaestdesp" + i).show();
+    $("#fechaed" + i).hide();
+    $("#editfed" + i).show();
+    $("#savefed" + i).hide();
+    $(".datepicker").datepicker("refresh");
 }
