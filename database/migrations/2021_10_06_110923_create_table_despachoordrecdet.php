@@ -20,7 +20,7 @@ class CreateTableDespachoordrecdet extends Migration
             $table->foreign('despachoordrec_id','fk_despachoordrecdet_despachoordrec')->references('id')->on('despachoordrec')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('despachoorddet_id');
             $table->foreign('despachoorddet_id','fk_despachoordrecdet_despachoorddet')->references('id')->on('despachoorddet')->onDelete('restrict')->onUpdate('restrict');
-            $table->float('cantrec',10,2)->comment('Cantidad recuelta.')->nullable();
+            $table->float('cantrec',10,2)->comment('Cantidad rechazada.')->nullable();
             $table->string('obsdet',50)->comment('Observaciones Detalle')->nullable();
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->softDeletes();
