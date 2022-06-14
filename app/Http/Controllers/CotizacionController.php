@@ -170,8 +170,24 @@ class CotizacionController extends Controller
         }
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
+        /*
         $dateInput = explode('/',$request->plazoentrega);
         $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        */
+        $i = 1;
+        $fechafin = date("Y-m-d");
+        do {
+            $fechafin = date("Y-m-d",strtotime($fechafin . "+ 1 days"));
+            $diasem = date("w",strtotime($fechafin));
+            if(($diasem != 0) and ($diasem != 6)){
+                $i++;
+            }
+
+        } while ($i <= $request->plaentdias);
+        //dd($fechafin);
+        //$request["plazoentrega"] = date("Y-m-d",strtotime(date("Y-m-d") . "+ " . $request->plaentdias . " days"));
+        $request["plazoentrega"] = $fechafin;
+
         $comuna = Comuna::findOrFail($request->comuna_id);
         $request->request->add(['provincia_id' => $comuna->provincia_id]);
         $request->request->add(['region_id' => $comuna->provincia->region_id]);

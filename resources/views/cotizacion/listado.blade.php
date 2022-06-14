@@ -144,6 +144,10 @@
 			</tr>
 			-->
 			<tr>
+				<td colspan="8" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
+				<td class="textleft" width="50%"><span>{{$cotizacion->plaentdias}} días hábiles</span></td>
+			</tr>
+			<tr>
 				<td colspan="8" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$cotizacion->lugarentrega}}</span></td>
 			</tr>

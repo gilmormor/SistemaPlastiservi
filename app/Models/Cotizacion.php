@@ -23,6 +23,7 @@ class Cotizacion extends Model
         'formapago_id',
         'vendedor_id',
         'plazoentrega',
+        'plaentdias',
         'lugarentrega',
         'plazopago_id',
         'tipoentrega_id',

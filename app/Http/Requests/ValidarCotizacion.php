@@ -33,7 +33,7 @@ class ValidarCotizacion extends FormRequest
             'observacion' => 'max:200',
             'formapago_id' => 'required',
             'vendedor_id' => 'required',
-            'plazoentrega' => 'required',
+            'plaentgadias' => 'min:1|max:45',
             'lugarentrega' => 'required|max:100',
             'plazopago_id' => 'required',
             'tipoentrega_id' => 'required',

@@ -195,9 +195,15 @@
             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
             <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" {{$disabledReadOnly}}/>
         </div>
+        <!--
         <div class="form-group col-xs-12 col-sm-1">
             <label for="plazoentrega" class="control-label requerido">Plazo Ent.</label>
             <input type="text" name="plazoentrega" id="plazoentrega" class="form-control pull-right datepicker"  value="{{old('plazoentrega', $data->plazoentrega ?? '')}}" readonly required {{$disabledReadOnly}}>
+        </div>
+        -->
+        <div class="form-group col-xs-12 col-sm-1">
+            <label for="plaentdias" class="control-label requerido" data-toggle='tooltip' title="Plazo entrega Días">PlaEnt Dias</label>
+            <input type="number" name="plaentdias" id="plaentdias" class="form-control" min="1" max="45" value="{{old('plaentdias', $data->plaentdias ?? '')}}" required {{$disabledReadOnly}}>
         </div>
         <div class="form-group col-xs-12 col-sm-2">
             <label for="tipoentrega_id" class="control-label requerido">Tipo Entrega</label>
