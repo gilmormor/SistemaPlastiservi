@@ -174,6 +174,7 @@ class CotizacionController extends Controller
         $dateInput = explode('/',$request->plazoentrega);
         $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
         */
+        /****Inicio: Calcular fecha de entrega segun los dias ingresados, solo dias habiles */
         $i = 1;
         $fechafin = date("Y-m-d");
         do {
@@ -187,6 +188,7 @@ class CotizacionController extends Controller
         //dd($fechafin);
         //$request["plazoentrega"] = date("Y-m-d",strtotime(date("Y-m-d") . "+ " . $request->plaentdias . " days"));
         $request["plazoentrega"] = $fechafin;
+        /****Fin: Calcular fecha de entrega segun los dias ingresados, solo dias habiles */
 
         $comuna = Comuna::findOrFail($request->comuna_id);
         $request->request->add(['provincia_id' => $comuna->provincia_id]);
