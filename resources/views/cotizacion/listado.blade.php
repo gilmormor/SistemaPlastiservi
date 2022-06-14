@@ -143,10 +143,12 @@
 				<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($cotizacion->plazoentrega))}}</span></td>
 			</tr>
 			-->
-			<tr>
-				<td colspan="8" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$cotizacion->plaentdias}} días hábiles</span></td>
-			</tr>
+			@if ($cotizacion->plaentdias > 0)
+				<tr>
+					<td colspan="8" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
+					<td class="textleft" width="50%"><span>{{$cotizacion->plaentdias}} días hábiles</span></td>
+				</tr>				
+			@endif
 			<tr>
 				<td colspan="8" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$cotizacion->lugarentrega}}</span></td>
