@@ -196,12 +196,10 @@
 	<div class="round1">
 		<span class="h3">Información</span>
 		<table id="factura_detalle">
-			<!--
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($notaventa->plazoentrega))}}</span></td>
 			</tr>
-			-->
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Comuna: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$notaventa->comunaentrega->nombre}}</span></td>
