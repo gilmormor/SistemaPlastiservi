@@ -486,7 +486,7 @@
                                                     @endif
                                                 @endforeach
                                                 @if ($i == 0)
-                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock {{$aux_cont}}'>
+                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock'>
                                                         <i class='fa fa-fw fa-question-circle text-aqua'></i>
                                                     </a>
                                                 @endif
