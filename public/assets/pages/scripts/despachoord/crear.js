@@ -662,6 +662,7 @@ function sumcant(){
 
 function elibodsob(){ //ELIMINAR BODEGAS SOBRANTES
 	aux_total = 0;
+	//return 0;
 	$("#tabla-data tr .cantordsum").each(function() {
 		fila = $(this).attr('fila');
 		aux_CsaldocantF = $("#saldocantF" + fila).html();
@@ -672,6 +673,17 @@ function elibodsob(){ //ELIMINAR BODEGAS SOBRANTES
 		aux_valorcant = parseFloat(valor);
 		aux_staelibod = false;
 		$("#tabla-data tr ." + cant_id).each(function() {
+			aux_numfilabod = $(this).attr('filabod');
+			aux_stockcantTD = $("#stockcantTD" + aux_numfilabod).html();
+			aux_stockcantTD = parseFloat(aux_stockcantTD);
+			if(aux_stockcantTD <= 0){
+				$("#invcant" + aux_numfilabod).val('');
+				$("#invcant" + aux_numfilabod).attr("readonly","readonly");
+				if($(this).attr('nomabrbod') == "SolDe"){
+					$("#fbod" + aux_numfilabod).remove();
+				}
+			}
+			/*
 			if($(this).attr('nomabrbod') == "SolDe"){
 				valor = $(this).val();
 				aux_valorbod = parseFloat(valor);
@@ -682,7 +694,9 @@ function elibodsob(){ //ELIMINAR BODEGAS SOBRANTES
 					$("#fila" + $(this).attr('filabod')).remove();
 				}
 			}
+			*/
 		});
+		/*
 		if(aux_staelibod){
 			$("#tabla-data tr ." + cant_id).each(function() {
 				if($(this).attr('nomabrbod') != "SolDe"){
@@ -691,6 +705,7 @@ function elibodsob(){ //ELIMINAR BODEGAS SOBRANTES
 			});
 
 		}
+		*/
 		//console.log(aux_staelibod);
 	});	
 }

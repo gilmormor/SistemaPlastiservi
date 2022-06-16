@@ -1787,9 +1787,19 @@ function sumbod(i,y,aux_orig){
 			valor = $("#invcant" + y).val() ;
 		}
 		dif = aux_saldo - (total - valor);
-		$("#invcant" + y).val(dif);
+		if(dif <=0 ){
+			$("#invcant" + y).val("");	
+		}else{
+			$("#invcant" + y).val(dif);
+		}
 		//console.log(dif);
 		total = aux_saldo;		
+	}
+
+	aux_invcant = $("#invcant" + y).val();
+	aux_invcant = parseFloat(aux_invcant);
+	if(aux_invcant <= 0){
+		$("#invcant" + y).val("")
 	}
 	$("#cantord" + i).val(total);
 	$("#cantsol" + i).val(total);

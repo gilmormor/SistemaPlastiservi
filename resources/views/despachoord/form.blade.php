@@ -282,7 +282,7 @@
                                                         $aux_stock = $invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"];
                                                     ?>
                                                     @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
-                                                        <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
+                                                        <tr name="fbod{{$invbodegaproducto->id}}" id="fbod{{$invbodegaproducto->id}}">
                                                             <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                 <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
                                                                 <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
