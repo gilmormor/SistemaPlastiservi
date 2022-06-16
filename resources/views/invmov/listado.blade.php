@@ -38,7 +38,8 @@
 							<td style="width:10%">Descripción: </td><td style="width:100%">{{$datas->desc}}</td>
 						</tr>
 						<tr class="headt">
-							<td style="width:10%">Mes: </td><td style="width:50%">{{$datas->annomes}}</td>
+							<!--<td style="width:10%">Mes: </td><td style="width:50%">{{$datas->annomes}}</td>-->
+							<td style="width:10%">Mes: </td><td style="width:50%">{{substr($datas->annomes,4,2) . "-" . substr($datas->annomes,0,4)}}</td>
 						</tr>
 						<tr class="headt">
 							<td style="width:10%">Módulo: </td><td style="width:50%">{{$datas->invmovmodulo->nombre}}</td>

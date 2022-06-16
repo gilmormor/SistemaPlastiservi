@@ -23,6 +23,23 @@
 					<span class="h3">Entrada Salida Inventario</span>
 					<p>Nro: <strong> {{ str_pad($datas->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
 					<p>Fecha: {{date('d-m-Y', strtotime($datas->fechahora))}}</p>
+					<p>Estado: 
+						@switch($datas->staaprob)
+							@case(0)
+								Sin aprobar
+								@break
+							@case(1)
+								Enviado para aprobacion
+								@break
+							@case(2)
+								Aprobado
+								@break
+							@case(3)
+								Rechazado
+								@break
+							@default
+						@endswitch
+					</p>
 				</div>
 			</td>
 		</tr>
@@ -38,7 +55,12 @@
 							<td style="width:10%">Descripción: </td><td style="width:100%">{{$datas->desc}}</td>
 						</tr>
 						<tr class="headt">
-							<td style="width:10%">Mes: </td><td style="width:50%">{{$datas->annomes}}</td>
+							<td style="width:10%">Mes: </td>
+							@if (empty($datas->annomes))
+								<td style="width:50%">Mes-Año sin aprobar</td>
+							@else
+								<td style="width:50%">{{substr($datas->annomes,4,2) . "-" . substr($datas->annomes,0,4)}}</td>
+							@endif
 						</tr>
 						<tr class="headt">
 							<td style="width:10%">Módulo: </td><td style="width:50%">{{$datas->invmovmodulo->nombre}}</td>

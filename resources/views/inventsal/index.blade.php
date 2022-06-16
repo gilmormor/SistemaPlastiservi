@@ -31,6 +31,7 @@ Entradas y Salidas Inventario
                                 <th class="width30">ID</th>
                                 <th class="width30">Fecha</th>
                                 <th title='Descripción'>Descripción</th>
+                                <th class="width150">PDF</th>
                                 <th class="ocultar">obsaprob</th>
                                 <th class="width150">Acciones</th>
                             </tr>
@@ -42,4 +43,6 @@ Entradas y Salidas Inventario
             </div>
         </div>
     </div> 
+    @include('generales.modalpdf')
+    @include('generales.verpdf')
 @endsection

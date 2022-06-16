@@ -22,7 +22,7 @@ class ReportInvStockVendController extends Controller
      */
     public function index()
     {
-        can('reporte-stock-inventario');
+        can('reporte-stock-inventario-vendedores');
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $tablashtml['sucursales'] = Sucursal::orderBy('id')

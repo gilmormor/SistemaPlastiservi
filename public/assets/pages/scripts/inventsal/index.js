@@ -15,6 +15,7 @@ $(document).ready(function () {
 			{data: 'id'},
 			{data: 'fechahora'},
 			{data: 'desc'},
+			{data: 'id'},
 			{data: 'obsaprob',className:"ocultar"},
             {defaultContent : 
 				"<a href='/inventsal/enviaraprobarinventsal' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar'>" +
@@ -45,6 +46,12 @@ $(document).ready(function () {
 				"</a>";
 				$('td', row).eq(2).html(aux_text);
 			}
+			aux_text = 
+			"<a class='btn-accion-tabla btn-sm btngenpdfINVENTSAL tooltipsC' title='PDF Entrada Salida Inv'>" +
+				"<i class='fa fa-fw fa-file-pdf-o'></i>" +
+			"</a>";
+			$('td', row).eq(3).html(aux_text);
+
 
 
 		}

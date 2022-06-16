@@ -1109,7 +1109,7 @@ function genpdfINVENTSAL(id,stareport){ //GENERAR PDF INVENTARIO ENTRADA SALIDA
 	var data = "?id=" + id +
     "&stareport="+stareport
 	$('#contpdf').attr('src', '/inventsal/exportPdf/' + data);
-	console.log($('#contpdf'));
+	//console.log($('#contpdf'));
 	$("#myModalpdf").modal('show')
 }
 
@@ -1251,7 +1251,7 @@ $("#producto_idM").blur(function(){
 				/*
 				console.log(respuesta['cont']);
 				*/
-				console.log(respuesta);
+				//console.log(respuesta);
 				//return 0;
 				if(respuesta['cont']>0){
 					//console.log(respuesta['nombre']);
@@ -1825,13 +1825,13 @@ function sumbodrec(i,y){
 		}
 		*/
 	});
-	console.log(total);
+	//console.log(total);
 	//aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
 	aux_saldo = parseFloat($("#cantTD" + i).html()) - parseFloat($("#cantorddespF" + i).html());
 	//console.log(aux_saldo);
-	console.log(aux_saldo);
+	//console.log(aux_saldo);
 	if(total > aux_saldo){
-		console.log("entro");
+		//console.log("entro");
 		if($("#invcant" + y).val() == ""){
 			valor = "0";
 		}else{
