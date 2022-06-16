@@ -16,6 +16,8 @@ $(document).ready(function () {
 			{data: 'fechahora'},
 			{data: 'desc'},
 			{data: 'invmovmodulo_nombre'},
+			{data: 'idmovmod'},
+			{data: 'invmovmodulo_id',className:"ocultar"},
             {defaultContent : 
 				"<a class='btn-accion-tabla btn-sm btngenpdfINVMOV tooltipsC' title='PDF Movimiento Inv'>" +
 					"<i class='fa fa-fw fa-file-pdf-o'></i>" +
@@ -38,6 +40,46 @@ $(document).ready(function () {
 			$('td', row).eq(1).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+			switch (data.invmovmodulo_id) {
+				case 1:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Entrasa Salida de Inv: " + data.idmovmod + "' onclick='genpdfINVENTSAL(" + data.idmovmod + ",1)'>"+
+						data.idmovmod +
+					"</a>";
+					break;
+				case 2:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
+						+ data.idmovmod +
+					"</a>";
+					break;
+				case 3:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
+						+ data.idmovmod +
+					"</a>";
+					break;
+				case 4:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Inicio o cierre de mes: " + data.id + "' onclick='genpdfINVMOV(" + data.id + ",1)'>"+
+						data.id +
+					"</a>";
+					break;
+				case 5:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Solicitud despacho: " + data.idmovmod + "' onclick='genpdfSD(" + data.idmovmod + ",1)'>"+
+						+ data.idmovmod +
+					"</a>";	
+					break;
+				case 6:
+					aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Rechazo Orden despacho: " + data.idmovmod + "' onclick='genpdfODRec(" + data.idmovmod + ",1)'>" +
+						data.idmovmod +
+					"</a>";
+					break;
+				default:
+					aux_texto = "Falta asignar PDF"
+			}
+			$('td', row).eq(4).html(aux_text);
 		}
 	});
 	

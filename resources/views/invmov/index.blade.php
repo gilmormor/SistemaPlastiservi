@@ -26,7 +26,9 @@ Movimientos de Inventario
                                 <th class="width30">ID</th>
                                 <th class="width30">Fecha</th>
                                 <th title='Descripción'>Descripción</th>
-                                <th title='Módulo'>Módulo</th>
+                                <th title='Módulo'>Módulo Origen</th>
+                                <th title='Id Documento Origen'>Id Documento</th>
+                                <th class="ocultar">Id Modulo</th>
                                 <th class="width150">PDF</th>
                             </tr>
                         </thead>

@@ -32,7 +32,9 @@ class InvMovController extends Controller
                             'invmov.id',
                             'invmov.desc',
                             'invmov.fechahora',
-                            'invmovmodulo.nombre as invmovmodulo_nombre'
+                            'invmovmodulo.nombre as invmovmodulo_nombre',
+                            'idmovmod',
+                            'invmovmodulo_id'
                         ])
             
             )
