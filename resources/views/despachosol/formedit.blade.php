@@ -480,7 +480,7 @@
                                                             <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
                                                                 {{$existencia["stock"]["cant"]}}
                                                             </td>
-                                                            <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;"  title="Valor a despachar">
+                                                            <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;"  title="Cant a despachar">
                                                                 <?php 
                                                                     $aux_invcant = 0;
                                                                     foreach($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
