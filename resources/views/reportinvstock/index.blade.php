@@ -176,7 +176,7 @@ Stock Inventario
                             <th colspan='13' style='text-align:right'>TOTAL GENERAL</th>
                             <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                         </tr>
-                    </tfoot>                  
+                    </tfoot>
                 </table>
             </div>
         </div>

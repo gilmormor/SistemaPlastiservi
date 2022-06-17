@@ -33,7 +33,8 @@ $(document).ready(function () {
                 {data: 'long'},
                 {data: 'peso'},
                 {data: 'tipounion'},
-                {data: 'stock'}
+                {data: 'stock'},
+                {data: 'stockkg'}
             ],
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -54,17 +55,57 @@ $(document).ready(function () {
                 $('td', row).eq(5).attr('style','text-align:right');
                 $('td', row).eq(5).html(MASK(0, data.metacomerkg, '-###,###,###,##0.00',1));
                 */
+                $('td', row).eq(6).html(NUM(data.peso, 2));
+                $('td', row).eq(6).attr('style','text-align:right');
+                $('td', row).eq(9).attr('style','text-align:right');
+                $('td', row).eq(9).attr('data-order',data.stockkg);
+                $('td', row).eq(9).attr('data-search',data.stockkg);
+                $('td', row).eq(9).html(MASKLA(data.stockkg,2));
+                $('td', row).eq(9).addClass('subtotalkg');
+
             }
         });
     }
+
+    totalizar();
 
     $("#btnconsultar").click(function()
     {
         data = datos();
         $('#tabla-data-consulta').DataTable().ajax.url( "invcontrolpage/" + data.data2 ).load();
+        totalizar();
     });
 
 });
+
+function totalizar(){
+    let  table = $('#tabla-data-consulta').DataTable();
+    //console.log(table);
+    table
+        .on('draw', function () {
+            eventFired( 'Page' );
+        });
+    data = datos();
+    $.ajax({
+        url: '/reportinvstock/totalizarindex/' + data.data2,
+        type: 'GET',
+        success: function (datos) {
+            console.log(datos);
+            $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
+            //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
+        }
+    });
+}
+
+var eventFired = function ( type ) {
+	total = 0;
+	$("#tabla-data-consulta tr .subtotalkg").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		total += valorNum;
+	});
+    $("#subtotalkg").html(MASKLA(total,2))
+}
 
 function datos(){
     var data1 = {

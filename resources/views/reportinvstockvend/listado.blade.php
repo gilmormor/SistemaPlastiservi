@@ -27,8 +27,8 @@
 
 	<div class="round">
 		<table id="factura_detalle">
-				<thead>
-					<tr>
+			<thead>
+				<tr>
 					<th style='text-align:left' class='width10'>CodProd</th>
 					<th style='text-align:left' class='width90'>Producto</th>
 					<!--<th style='text-align:left' class='width90'>Categoria</th>-->
@@ -38,23 +38,37 @@
 					<th style='text-align:left' class='width30'>Peso</th>
 					<th style='text-align:left' class='width10'>TU</th>
 					<th style='text-align:center' class='width40'>Stock</th>
+					<th style='text-align:center' class='width50'>Kg</th>
+				</tr>
+			</thead>
+			<tbody id="detalle_productos">
+				<?php 
+					$aux_totalstockkg = 0;
+				?>
+				@foreach($datas as $data)
+					<tr class='btn-accion-tabla tooltipsC'>
+						<td style='text-align:center'>{{$data->producto_id}}</td>
+						<td>{{$data->producto_nombre}}</td>
+						<!--<td>{{$data->categoria_nombre}}</td>-->
+						<td style='text-align:center'>{{$data->diametro}}</td>
+						<td style='text-align:center'>{{$data->cla_nombre}}</td>
+						<td style='text-align:center'>{{$data->long}}</td>
+						<td style='text-align:center'>{{$data->peso}}</td>
+						<td style='text-align:center'>{{$data->tipounion}}</td>
+						<td style='text-align:center'>{{$data->stock}}</td>
+						<td style='text-align:right'>{{number_format($data->stockkg, 2, ",", ".")}}</td>
 					</tr>
-				</thead>
-				<tbody id="detalle_productos">
-					@foreach($datas as $data)
-						<tr class='btn-accion-tabla tooltipsC'>
-							<td style='text-align:center'>{{$data->producto_id}}</td>
-							<td>{{$data->producto_nombre}}</td>
-							<!--<td>{{$data->categoria_nombre}}</td>-->
-							<td style='text-align:center'>{{$data->diametro}}</td>
-							<td style='text-align:center'>{{$data->cla_nombre}}</td>
-							<td style='text-align:center'>{{$data->long}}</td>
-							<td style='text-align:center'>{{$data->peso}}</td>
-							<td style='text-align:center'>{{$data->tipounion}}</td>
-							<td style='text-align:center'>{{$data->stock}}</td>
-						</tr>
-					@endforeach
-				</tbody>
+					<?php 
+						$aux_totalstockkg += $data->stockkg;
+					?>
+				@endforeach
+			</tbody>
+			<tfoot id="detalle_totales">
+				<tr class="headt">
+					<th colspan="8" style='text-align:right'>TOTAL</th>
+					<th class="textright">{{number_format($aux_totalstockkg, 2, ",", ".")}}</th>
+				</tr>
+			</tfoot>
 		</table>
 	</div>
 </div>

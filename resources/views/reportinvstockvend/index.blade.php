@@ -141,10 +141,23 @@ Stock Inventario
                             <th>Peso</th>
                             <th class="tooltipsC" title="Tipo de Union">TU</th>
                             <th style='text-align:center'>Stock</th>
+                            <th style='text-align:right'>Kg</th>
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                        </tr>
+                        <tr>
+                            <th colspan='9' style='text-align:right'>Total página</th>
+                            <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
+                        </tr>
+                        <tr>
+                            <th colspan='9' style='text-align:right'>TOTAL GENERAL</th>
+                            <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
