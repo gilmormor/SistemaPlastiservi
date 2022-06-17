@@ -974,17 +974,18 @@ class DespachoSolController extends Controller
                                     'vendedor_id' => $despachosol->notaventa->vendedor_id,
                                     'status' => 1,
                                     'nombretabla' => 'despachosol',
-                                    'mensaje' => 'Nueva Orden Despacho Nro:'.$despachosol->id,
+                                    'mensaje' => 'Nueva Solicitud Despacho Nro:'.$despachosol->id,
                                     'rutadestino' => 'notaventaconsulta',
                                     'tabla_id' => $despachosol->id,
-                                    'accion' => 'Nueva Orden Despacho',
+                                    'accion' => 'Nueva Solicitud Despacho',
                                     'mensajetitle' => 'OD:'.$despachosol->id.' NV:'.$despachosol->notaventa_id,
                                     'icono' => 'fa fa-fw fa-male text-primary',
                                     'detalle' => "
                                         <p><b>Datos:</b></p>
                                         <ul>
+                                            <li><b>PASO PREVIO A PREPARACION DE DESPACHO</b></li>
                                             <li><b>Nro. Nota Venta: </b> $despachosol->notaventa_id </li>
-                                            <li><b>Nro. Orden Despacho: </b> $despachosol->id </li>
+                                            <li><b>Nro. Solicitud Despacho: </b> $despachosol->id </li>
                                             <li><b>RUT:</b> " . $despachosol->notaventa->cliente->rut . "</li>
                                             <li><b>Razon Social:</b> " . $despachosol->notaventa->cliente->razonsocial . "</li>
                                             <li><b>Vendedor:</b> " . $despachosol->notaventa->vendedor->persona->nombre . " " . $despachosol->notaventa->vendedor->persona->apellido . "</li>

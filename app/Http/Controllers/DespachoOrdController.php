@@ -919,6 +919,7 @@ class DespachoOrdController extends Controller
                             'detalle' => "
                                 <p><b>Datos:</b></p>
                                 <ul>
+                                    <li><b>PEDIDO EN PREPARACION DE DESPACHO</b></li>
                                     <li><b>Nro. Nota Venta: </b> $despachoord->notaventa_id </li>
                                     <li><b>Nro. Orden Despacho: </b> $despachoord->id </li>
                                     <li><b>RUT:</b> " . $despachoord->notaventa->cliente->rut . "</li>
