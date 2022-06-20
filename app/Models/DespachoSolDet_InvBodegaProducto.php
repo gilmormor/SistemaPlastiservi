@@ -14,7 +14,8 @@ class DespachoSolDet_InvBodegaProducto extends Model
         'invbodegaproducto_id',
         'cant',
         'cantkg',
-        'cantex'
+        'cantex',
+        'staex'
     ];
 
     //RELACION INVERSA DespachoSolDet

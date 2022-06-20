@@ -306,7 +306,7 @@
                                 </div>
                             </th>
                             <th class="width90">SolicDesp</th>
-                            <th>Bodegas/Stock</th>
+                            <th class="width200">Bodegas/Stock</th>
                             <th style="display:none;">UnidadMedida</th>
                             <th>Nombre</th>
                             <th>Diam</th>
@@ -452,8 +452,8 @@
                                     <td name="cantsoldespinputF{{$aux_nfila}}" id="cantsoldespinputF{{$aux_nfila}}" style="text-align:right;display:none;">
                                         <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" style="text-align:right;"/>
                                     </td>
-                                    <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:center;">
-                                        <table class="table" id="tabla-bod" style="font-size:14px">
+                                    <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:center;width: 20% !important">
+                                        <table class="table" id="tabla-bod" style="font-size:14px;table-layout: fixed;width: 200px;">
                                             <tbody>
                                                 <?php $i=0 ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
@@ -473,14 +473,18 @@
                                                                 <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
                                                                 {{$invbodegaproducto->id}}
                                                             </td>
-                                                            <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}}'>
-                                                                {{$invbodegaproducto->invbodega->nomabre}}
+                                                            <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left;width: 15% !important" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}}'>
+                                                                <div class="centrarhorizontal">
+                                                                    {{$invbodegaproducto->invbodega->nomabre}}
+                                                                </div>
                                                             </td>
-                                                            <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
-                                                                {{$existencia["stock"]["cant"]}}
+                                                            <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right;width: 30% !important"  class='tooltipsC' title='Stock disponible'>
+                                                                <div class="centrarhorizontal">
+                                                                    {{$existencia["stock"]["cant"]}}
+                                                                </div>
                                                             </td>
-                                                            <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right" title='Cant a despachar'>
-                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'SD')" style="text-align:right;"/>
+                                                            <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 55% !important" title='Cant a despachar'>
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'SD')" style="text-align:right;"/>
                                                             </td>
                                                         </tr>
                                                     @endif
@@ -587,7 +591,7 @@
                                     <b>Total Unidades:</b>
                                 </td>
                                 <td style="text-align:right;padding-bottom: 0px;padding-top: 0px;padding-left: 2px;padding-right: 2px;">
-                                    <div class="form-group col-xs-12 col-sm-12" style="margin-bottom: 0px;">
+                                    <div class="form-group col-xs-12 col-sm-12" style="margin-bottom: 0px;width: 100px !important">
                                         <input type="text" name="cantsolTotal" id="cantsolTotal" class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>

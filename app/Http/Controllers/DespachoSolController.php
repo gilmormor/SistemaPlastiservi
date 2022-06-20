@@ -401,7 +401,7 @@ class DespachoSolController extends Controller
     public function actualizar(ValidarDespachoSol $request, $id)
     {
         can('guardar-solicitud-despacho');
-        //dd($request);
+        dd($request);
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
         //dd($notaventacerrada);
         if(count($notaventacerrada) == 0){

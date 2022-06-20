@@ -84,6 +84,7 @@ class UnidadMedidaController extends Controller
      */
     public function actualizar(ValidarUnidadMedida $request, $id)
     {
+        dd($request);
         UnidadMedida::findOrFail($id)->update($request->all());
         return redirect('unidadmedida')->with('mensaje','Unidad de Medida actualizado con exito');
     }

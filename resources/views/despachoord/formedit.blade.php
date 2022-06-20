@@ -261,7 +261,7 @@
                                         <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" value="{{$detalle->cantdesp}}" fila="{{$aux_nfila}}" style="text-align:right;" readonly/>
                                     </td>
                                     <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:right;">
-                                        <table class="table" id="tabla-bod" style="font-size:14px">
+                                        <table class="table" id="tabla-bod" style="font-size:14px;table-layout: fixed;width: 200px;">
                                             <tbody>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
                                                     <?php
@@ -304,7 +304,7 @@
                                                                     </a>
                                                                 -->
                                                                 @endif
-                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}}" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{($aux_cant)}}" title="Cant a despachar" nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{($aux_cant)}}" title="Cant a despachar" nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
                                                             </td>
                                                         </tr>
                                                     @endif
@@ -403,8 +403,8 @@
                                 <td colspan="4" style="text-align:right">
                                     <b>Total Unidades:</b>
                                 </td>
-                                <td style="text-align:right">
-                                    <div class="form-group col-xs-12 col-sm-12">
+                                <td style="text-align:right;padding-bottom: 0px;padding-top: 0px;padding-left: 2px;padding-right: 2px;">
+                                    <div class="form-group col-xs-12 col-sm-12" style="margin-bottom: 0px;width: 100px !important">
                                         <input type="text" name="cantordTotal" id="cantordTotal" value={{$cantordTotal}} class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>
