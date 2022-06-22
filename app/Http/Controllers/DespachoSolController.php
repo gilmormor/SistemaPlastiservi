@@ -238,12 +238,19 @@ class DespachoSolController extends Controller
                                             $despachosoldet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
                                             $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
                                             $existencia = InvBodegaProducto::existencia($array_request);
-                                            if($request->invcant[$b] > $existencia["stock"]["cant"]){
-                                                $despachosoldet_invbodegaproducto->cant = $existencia["stock"]["cant"] * -1;
-                                                $despachosoldet_invbodegaproducto->cantex = ($request->invcant[$b] - $existencia["stock"]["cant"]) * -1;
-                                            }else{
-                                                $despachosoldet_invbodegaproducto->cant = $request->invcant[$b] * -1;
-                                                $despachosoldet_invbodegaproducto->cantex = 0;
+                                            if($request->staex[$b] == 1){
+                                                $despachosoldet_invbodegaproducto->cant = 0;
+                                                $despachosoldet_invbodegaproducto->cantex = $request->invcant[$b] * -1;
+                                                $despachosoldet_invbodegaproducto->staex = $request->staex[$b];
+                                            }
+                                            else{
+                                                if($request->invcant[$b] > $existencia["stock"]["cant"]){
+                                                    $despachosoldet_invbodegaproducto->cant = $existencia["stock"]["cant"] * -1;
+                                                    $despachosoldet_invbodegaproducto->cantex = ($request->invcant[$b] - $existencia["stock"]["cant"]) * -1;
+                                                }else{
+                                                    $despachosoldet_invbodegaproducto->cant = $request->invcant[$b] * -1;
+                                                    $despachosoldet_invbodegaproducto->cantex = 0;
+                                                }                                                    
                                             }
                                             $despachosoldet_invbodegaproducto->save();
                                         }
@@ -401,7 +408,7 @@ class DespachoSolController extends Controller
     public function actualizar(ValidarDespachoSol $request, $id)
     {
         can('guardar-solicitud-despacho');
-        dd($request);
+        //dd($request);
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
         //dd($notaventacerrada);
         if(count($notaventacerrada) == 0){
@@ -458,6 +465,10 @@ class DespachoSolController extends Controller
                                                             $aux_cant = $request->invcant[$b] * -1;
                                                             $aux_cantex = 0;
                                                         }
+                                                        if($request->staex[$b] == 1){
+                                                            $aux_cant = 0;
+                                                            $aux_cantex = $request->invcant[$b] * -1;
+                                                        }
                                                         /*
                                                         DB::table('despachosoldet_invbodegaproducto')->updateOrInsert(
                                                             ['despachosoldet_id' => $request->NVdet_id[$i], 'invbodegaproducto_id' => $request->invbodegaproducto_id[$b]],
@@ -471,7 +482,8 @@ class DespachoSolController extends Controller
                                                             ['despachosoldet_id' => $request->NVdet_id[$i], 'invbodegaproducto_id' => $request->invbodegaproducto_id[$b]],
                                                             [
                                                                 'cant' => $aux_cant,
-                                                                'cantex' => $aux_cantex
+                                                                'cantex' => $aux_cantex,
+                                                                'staex' => $request->staex[$b]
                                                             ]
                                                         );
                             

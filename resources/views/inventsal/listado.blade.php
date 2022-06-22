@@ -75,9 +75,10 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
-					<th width="30px">CodProd</th>
-					<th width="150px">Nombre Producto</th>
-					<th width="150px">Bodega</th>
+					<th width="30px">Cod</th>
+					<th width="100px">Nombre Producto</th>
+					<th width="100px">Categoria</th>
+					<th width="100px">Bodega</th>
 					<th class="textleft">Diamet</th>
 					<th class="textleft" width="60px">Clase</th>
 					<th class="textcenter">Largo</th>
@@ -92,6 +93,7 @@
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto_id}}</td>
 						<td class="textleft">{{$inventsaldet->invbodegaproducto->producto->nombre}}</td>
+						<td class="textleft">{{$inventsaldet->invbodegaproducto->producto->categoriaprod->nombre}}</td>
 						<td class="textleft">{{$inventsaldet->invbodegaproducto->invbodega->nombre}}</td>
 						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto->diametro}}</td>
 						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto->cla_nombre}}</td>
@@ -108,7 +110,7 @@
 	<div class="round" style="padding-bottom: 0px;padding-top: 8px;margin-bottom: 3px;">
 		<table id="factura_detalle">
 			<tr>
-				<td colspan="8" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
+				<td colspan="9" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
 				<td class="textcenter" width="10%"><span><strong>{{number_format($aux_totalcant, 0, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>

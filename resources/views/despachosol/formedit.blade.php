@@ -291,7 +291,7 @@
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">NotaVentaDetalle_ID</th>
                             <th style="display:none;">cotizacion_ID</th>
-                            <th class="tooltipsC" title="Código Producto">CodProd</th>
+                            <th class="tooltipsC" title="Código Producto">Cod</th>
                             <th style="display:none;">CódInterno</th>
                             <th style="display:none;">Cant</th>
                             <th>Cant</th>
@@ -484,25 +484,26 @@
                                                                     {{$existencia["stock"]["cant"]}}
                                                                 </div>
                                                             </td>
-                                                            <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 70% !importan"  title="Cant a despachar">
-                                                                <?php 
-                                                                    $aux_invcant = 0;
-                                                                    $aux_staexchecked = "";
-                                                                    foreach($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
-                                                                        if ($despachosoldet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id){
-                                                                            $aux_invcant = (($despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex) * -1);
-                                                                            if($despachosoldet_invbodegaproducto->staex == 1){
-                                                                                $aux_staexchecked = "checked";
-                                                                            }
+                                                            <?php 
+                                                                $aux_invcant = 0;
+                                                                $aux_staexchecked = "";
+                                                                foreach($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                                                    if ($despachosoldet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id){
+                                                                        $aux_invcant = (($despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex) * -1);
+                                                                        if($despachosoldet_invbodegaproducto->staex == 1){
+                                                                            $aux_staexchecked = "checked";
                                                                         }
                                                                     }
-                                                                ?>
+                                                                }
+                                                            ?>
+                                                            <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !importan"  title="Cant a despachar">
                                                                 <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'SD')" style="text-align:right;" value="{{$aux_invcant}}"/>
                                                             </td>
-                                                            <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;' class='tooltipsC' title='Marcar'>
+                                                            <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;' class='tooltipsC' title='Marcar para no usar Stock'>
                                                                 <div class='checkbox'>
                                                                     <label style='font-size: 1.2em;padding-left: 0px;'>
-                                                                        <input type="checkbox" class="checkstaex" id="staex{{$invbodegaproducto->id}}" name="staex[]" {{$aux_staexchecked}}>
+                                                                        <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="{{old('staex', $despachosoldet_invbodegaproducto->staex ?? '0')}}">
+                                                                        <input type="checkbox" class="checkstaex" id="aux_staex{{$invbodegaproducto->id}}" name="aux_staex[]" {{$aux_staexchecked}} onchange="clickstaex({{$invbodegaproducto->id}})">
                                                                         <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                                                                     </label>
                                                                 </div>

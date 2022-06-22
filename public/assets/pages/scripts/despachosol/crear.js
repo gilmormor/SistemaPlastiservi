@@ -652,3 +652,12 @@ function sumcant(){
 		$("#cantsolTotal").val(aux_total);	
 	}
 }
+
+function clickstaex(id){
+	console.log(id);
+	estaSeleccionado = $("#aux_staex" + id).is(":checked");
+    $("#staex" + id).val('0');
+    if(estaSeleccionado){
+        $("#staex" + id).val('1');
+    }
+}

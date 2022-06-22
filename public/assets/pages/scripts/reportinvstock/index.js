@@ -55,9 +55,10 @@ $(document).ready(function () {
                 $('td', row).eq(12).attr('style','text-align:center');
                 $('td', row).eq(13).attr('style','text-align:right');
                 //$('td', row).eq(13).html(MASK(0, data.stockkg, '-###,###,###,##0.00',1));
-                $('td', row).eq(13).attr('data-order',data.stockkg);
-                $('td', row).eq(13).attr('data-search',data.stockkg);
-                $('td', row).eq(13).html(MASKLA(data.stockkg,2));
+                stockKg = data.stock * data.peso
+                $('td', row).eq(13).attr('data-order',stockKg);
+                $('td', row).eq(13).attr('data-search',stockKg);
+                $('td', row).eq(13).html(MASKLA(stockKg,2));
                 $('td', row).eq(13).addClass('subtotalkg');
                 //MASKLA(data.aux_totalkg,2);
                 /*

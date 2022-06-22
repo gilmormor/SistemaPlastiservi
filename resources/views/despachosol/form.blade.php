@@ -290,7 +290,7 @@
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">NotaVentaDetalle_ID</th>
                             <th style="display:none;">cotizacion_ID</th>
-                            <th class="tooltipsC" title="Código Producto">CodProd</th>
+                            <th class="tooltipsC" title="Código Producto">Cod</th>
                             <th style="display:none;">CódInterno</th>
                             <th style="display:none;">Cant</th>
                             <th>Cant</th>
@@ -452,13 +452,12 @@
                                     <td name="cantsoldespinputF{{$aux_nfila}}" id="cantsoldespinputF{{$aux_nfila}}" style="text-align:right;display:none;">
                                         <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" style="text-align:right;"/>
                                     </td>
-                                    <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:center;width: 20% !important">
+                                    <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:center;width: 18% !important">
                                         <table class="table" id="tabla-bod" style="font-size:14px;table-layout: fixed;width: 200px;">
                                             <tbody>
                                                 <?php $i=0 ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
                                                     <?php
-                                                        $i++;
                                                         $request = new Request();
                                                         $request["producto_id"] = $invbodegaproducto->producto_id;
                                                         $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
@@ -467,6 +466,7 @@
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                     ?>
                                                     @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                        <?php $i++; ?>
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
                                                             <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                 <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->producto_id}}" style="display:none;"/>
@@ -478,19 +478,36 @@
                                                                     {{$invbodegaproducto->invbodega->nomabre}}
                                                                 </div>
                                                             </td>
-                                                            <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right;width: 30% !important"  class='tooltipsC' title='Stock disponible'>
+                                                            <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right;width: 20% !important"  class='tooltipsC' title='Stock disponible'>
                                                                 <div class="centrarhorizontal">
                                                                     {{$existencia["stock"]["cant"]}}
                                                                 </div>
                                                             </td>
-                                                            <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 55% !important" title='Cant a despachar'>
+                                                            <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !important" title='Cant a despachar'>
                                                                 <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'SD')" style="text-align:right;"/>
+                                                            </td>
+                                                            <?php
+                                                                $aux_staexchecked = "";
+                                                                $staex = 0;
+                                                                if($existencia["stock"]["cant"] <=0){
+                                                                    $aux_staexchecked = "checked";
+                                                                    $staex = 1;
+                                                                }
+                                                            ?>
+                                                            <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;width: 10% !important;' class='tooltipsC' title='Marcar para no usar Stock'>
+                                                                <div class='checkbox'>
+                                                                    <label style='font-size: 1.2em;padding-left: 0px;'>
+                                                                        <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="{{old('staex', $staex ?? '0')}}">
+                                                                        <input type="checkbox" class="checkstaex" id="aux_staex{{$invbodegaproducto->id}}" name="aux_staex[]" {{$aux_staexchecked}} onchange="clickstaex({{$invbodegaproducto->id}})">
+                                                                        <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                                                                    </label>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     @endif
                                                 @endforeach
                                                 @if ($i == 0)
-                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock'>
+                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada'>
                                                         <i class='fa fa-fw fa-question-circle text-aqua'></i>
                                                     </a>
                                                 @endif
