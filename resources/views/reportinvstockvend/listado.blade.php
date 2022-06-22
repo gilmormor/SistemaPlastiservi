@@ -29,14 +29,14 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
-					<th style='text-align:left' class='width10'>CodProd</th>
+					<th style='text-align:center' class='width10'>Cod</th>
 					<th style='text-align:left' class='width90'>Producto</th>
-					<!--<th style='text-align:left' class='width90'>Categoria</th>-->
-					<th style='text-align:left' class='width30'>Diam</th>
-					<th style='text-align:left' class='width40'>Clase</th>
-					<th style='text-align:left' class='width10'>L</th>
-					<th style='text-align:left' class='width30'>Peso</th>
-					<th style='text-align:left' class='width10'>TU</th>
+					<th style='text-align:left' class='width90'>Categoria</th>
+					<th style='text-align:center' class='width30'>Diam</th>
+					<th style='text-align:center' class='width40'>Clase</th>
+					<th style='text-align:center' class='width10'>L</th>
+					<th style='text-align:center' class='width30'>Peso</th>
+					<th style='text-align:center' class='width10'>TU</th>
 					<th style='text-align:center' class='width40'>Stock</th>
 					<th style='text-align:center' class='width50'>Kg</th>
 				</tr>
@@ -49,7 +49,7 @@
 					<tr class='btn-accion-tabla tooltipsC'>
 						<td style='text-align:center'>{{$data->producto_id}}</td>
 						<td>{{$data->producto_nombre}}</td>
-						<!--<td>{{$data->categoria_nombre}}</td>-->
+						<td>{{$data->categoria_nombre}}</td>
 						<td style='text-align:center'>{{$data->diametro}}</td>
 						<td style='text-align:center'>{{$data->cla_nombre}}</td>
 						<td style='text-align:center'>{{$data->long}}</td>
@@ -65,7 +65,7 @@
 			</tbody>
 			<tfoot id="detalle_totales">
 				<tr class="headt">
-					<th colspan="8" style='text-align:right'>TOTAL</th>
+					<th colspan="9" style='text-align:right'>TOTAL</th>
 					<th class="textright">{{number_format($aux_totalstockkg, 2, ",", ".")}}</th>
 				</tr>
 			</tfoot>
