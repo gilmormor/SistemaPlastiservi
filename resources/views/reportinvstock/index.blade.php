@@ -149,7 +149,7 @@ Stock Inventario
                 <table class="table table-striped table-bordered table-hover" id="tabla-data-consulta" data-page-length="25">
                     <thead>
                         <tr>
-                            <th class="width70">CodProd</th>
+                            <th class="width70 tooltipsC" title="Codigo Producto" style='text-align:center'>Cod</th>
                             <th>Producto</th>
                             <th>Categoria</th>
                             <th>Diametro</th>
