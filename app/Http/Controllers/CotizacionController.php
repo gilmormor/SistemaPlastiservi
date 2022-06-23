@@ -135,6 +135,13 @@ class CotizacionController extends Controller
     {
         
         can('guardar-cotizacion');
+        $cont_producto = count($request->producto_id);
+        if($cont_producto <=0 ){
+            return redirect('notaventa')->with([
+                'mensaje'=>'Cotización sin items, no se guardó.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $aux_rut=str_replace('.','',$request->rut);
         $request->rut = str_replace('-','',$aux_rut);
         //dd($request);
@@ -186,7 +193,6 @@ class CotizacionController extends Controller
         $cotizacion = Cotizacion::create($request->all());
         $cotizacionid = $cotizacion->id;
 
-        $cont_producto = count($request->producto_id);
         if($cont_producto>0){
             for ($i=0; $i < $cont_producto ; $i++){
                 if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
@@ -294,6 +300,14 @@ class CotizacionController extends Controller
     {
         //dd($request);
         can('guardar-cotizacion');
+        $cont_cotdet = count($request->cotdet_id);
+        if($cont_cotdet <=0 ){
+            return redirect('notaventa')->with([
+                'mensaje'=>'Cotización sin items, no se actualizó.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
         $aux_rut=str_replace('.','',$request->rut);
         $request->rut = str_replace('-','',$aux_rut);
         //dd($request);
@@ -342,7 +356,6 @@ class CotizacionController extends Controller
         for ($i=0; $i < count($auxCotDet) ; $i++){
             CotizacionDetalle::destroy($auxCotDet[$i]);
         }
-        $cont_cotdet = count($request->cotdet_id);
         if($cont_cotdet>0){
             for ($i=0; $i < count($request->cotdet_id) ; $i++){
                 $idcotizaciondet = $request->cotdet_id[$i]; 

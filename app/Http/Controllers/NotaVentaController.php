@@ -365,7 +365,13 @@ class NotaVentaController extends Controller
     {
         //dd($request);
         can('guardar-notaventa');
-        
+        $cont_producto = count($request->producto_id);
+        if($cont_producto <=0 ){
+            return redirect('notaventa')->with([
+                'mensaje'=>'Nota de Venta sin items, no se guardó.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
         $dateInput = explode('/',$request->plazoentrega);
@@ -382,7 +388,6 @@ class NotaVentaController extends Controller
             $data->oc_file = $foto;
             $data->save();
         }
-        $cont_producto = count($request->producto_id);
         if($cont_producto>0){
             
             for ($i=0; $i < $cont_producto ; $i++){
@@ -531,6 +536,14 @@ class NotaVentaController extends Controller
     {
         can('guardar-notaventa');
         //dd($request);
+        $cont_cotdet = count($request->NVdet_id);
+        if($cont_cotdet <=0 ){
+            return redirect('notaventa')->with([
+                'mensaje'=>'Nota de Venta sin items, no se actualizó.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
         $notaventa = NotaVenta::findOrFail($id);
         $aux_oc_fileold = $notaventa->oc_file;
         if($notaventa->updated_at == $request->updated_at){
@@ -561,7 +574,6 @@ class NotaVentaController extends Controller
             for ($i=0; $i < count($auxNVDet) ; $i++){
                 NotaVentaDetalle::destroy($auxNVDet[$i]);
             }
-            $cont_cotdet = count($request->NVdet_id);
             if($cont_cotdet>0){
                 for ($i=0; $i < count($request->NVdet_id) ; $i++){
                     $idcotizaciondet = $request->NVdet_id[$i]; 
