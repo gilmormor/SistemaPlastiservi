@@ -1,4 +1,5 @@
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
+<input type="hidden" name="aprobstatus" id="aprobstatus" value="{{old('aprobstatus', $data->aprobstatus ?? '')}}">
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
 <input type="hidden" name="aux_iva" id="aux_iva" value="{{$tablas['empresa']->iva}}">
 <input type="hidden" name="direccioncot" id="direccioncot" value="{{old('direccioncot', $data->direccioncot ?? '')}}">
@@ -30,7 +31,7 @@
 <?php
     $disabledReadOnly = "";
     //Si la pantalla es de aprobacion de Cotizacion desactiva todos input
-    if(session('aux_aprocot')=='1'){
+    if(strpos("15", session('aux_aprocot'))){ //(session('aux_aprocot')=='1'){
         $disabledReadOnly = ' disabled ';
     }
 ?>
@@ -245,6 +246,7 @@
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                     <thead>
                         <tr>
+                            <th style="text-align:center;">Cod</th>
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">cotizacionDetalle_ID</th>
                             <th style="display:none;">Codigo Producto</th>
@@ -278,15 +280,31 @@
                             <th>Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
+                            <th style="display:none;">Array Acuerdo Tecnico</th>
+                            <th style="display:none;">Tipo Producto</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
                     <tbody>
                         @if ($aux_sta==2)
-                            <?php $aux_nfila = 0; $i = 0;?>
+                            <?php $aux_nfila = 0; $i = 0;
+                            ?>
                             @foreach($cotizacionDetalles as $CotizacionDetalle)
-                                <?php $aux_nfila++; ?>
+                                <?php 
+                                    $aux_nfila++;
+                                ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
+                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;">
+                                        {{$CotizacionDetalle->producto_id}}
+                                        @if ($CotizacionDetalle->producto->tipoprod == 1)
+                                            <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
+                                            @if ($CotizacionDetalle->acuerdotecnicotemp == null)
+                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
+                                            @else
+                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
+                                            @endif
+                                        @endif
+                                    </td>
                                     <td style="display:none;" name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">
                                         {{$CotizacionDetalle->id}}
                                     </td>
@@ -302,7 +320,7 @@
                                     <td style="display:none;">
                                         <input type="text" name="codintprod[]" id="codintprod{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->codintprod}}" style="display:none;"/>
                                     </td>
-                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:center">
                                         {{$CotizacionDetalle->cant}}
                                     </td>
                                     <td style="text-align:right;display:none;">
@@ -384,34 +402,41 @@
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
                                         {{number_format($CotizacionDetalle->subtotal, 0, ',', '.')}}
                                     </td>
-                                    <td class="subtotalCF" style="text-align:right;display:none;"> 
+                                    <td class="subtotalCF" style="text-align:right;display:none;">
                                         <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->subtotal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalSFTD{{$aux_nfila}}" id="subtotalSFTD{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
                                         {{$CotizacionDetalle->subtotal}}
                                     </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="acuerdotecnico[]" id="acuerdotecnico{{$aux_nfila}}" class="form-control" value="{{json_encode($CotizacionDetalle->acuerdotecnicotemp)}}" style="display:none;"/>
+                                    </td>
+                                    <td style="text-align:right;display:none;">
+                                        <input type="text" name="tipoprod[]" id="tipoprod{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->tipoprod}}" style="display:none;"/>
+                                    </td>
                                     <td>
                                         @if(session('aux_aprocot')=='0')
-                                            <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
-                                            <i class="fa fa-fw fa-pencil"></i>
+                                            <a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                                <i class="fa fa-fw fa-pencil"></i>
                                             </a>
-                                            <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
-                                            <i class="fa fa-fw fa-trash text-danger"></i></a>
+                                            <a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
+                                                <i class="fa fa-fw fa-trash text-danger"></i>
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="12" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="13" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="12" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
+                                <td colspan="13" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="12" style="text-align:right"><b>Total</b></td>
+                                <td colspan="13" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif
@@ -425,9 +450,10 @@
 @include('generales.calcprecioprodsn')
 @include('generales.buscarcliente')
 @include('generales.buscarproducto')
-@if (session('aux_aprocot')=='1')
+@if (session('aux_aprocot')=='1' or session('aux_aprocot')=='5') <!--(strpos("15", session('aux_aprocot'))) -->
     @include('generales.aprobarcotnv')
 @endif
+@include('generales.acuerdotecnico')
 
 
     <!-- Modal -->

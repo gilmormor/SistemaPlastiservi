@@ -128,7 +128,7 @@ function insertarTabla(){
             '<input type="text" name="comuna_id[]" id="comuna_id'+ aux_nfila + '" class="form-control" value="'+ $("#comuna_idM").val() +'" style="display:none;"/>'+
         '</td>'+
 		'<td>' + 
-			'<a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+			'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
 			'<i class="fa fa-fw fa-pencil"></i>'+
 			'</a>'+
 			'<button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">'+

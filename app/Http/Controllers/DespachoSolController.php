@@ -1386,6 +1386,11 @@ function consulta($request,$aux_sql,$orden){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+    //dd($sucurcadena);
+
 
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -1546,6 +1551,7 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
         and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
@@ -1591,6 +1597,7 @@ function consulta($request,$aux_sql,$orden){
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
         and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventadetalle.producto_id
         ORDER BY producto.nombre,producto.peso;";
     }
@@ -1653,11 +1660,11 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
         and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventa.cliente_id
         ORDER BY $aux_orden;";
-        //dd($sql);
 }
-
+    //dd($sql);
     $datas = DB::select($sql);
     //dd($datas);
     return $datas;
@@ -2254,6 +2261,10 @@ function consultasoldesp($request){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+
 
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -2416,6 +2427,7 @@ function consultasoldesp($request){
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             and isnull(despachosoldet.deleted_at)
+            AND notaventa.sucursal_id in ($sucurcadena)
             GROUP BY despachosol.id
             ORDER BY despachosol.id DESC;";
 /*

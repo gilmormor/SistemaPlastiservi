@@ -20,6 +20,7 @@ $(document).ready(function () {
         {data: 'aprobstatus',className:"ocultar"},
         {data: 'aprobobs',className:"ocultar"},
         {data: 'contador',className:"ocultar"},
+        {data: 'contacutec',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
             "<div class='tools1'>" +
@@ -51,7 +52,7 @@ $(document).ready(function () {
         aux_fecha = new Date(data.fechahora);
         $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 
-        if ( data.contador * 1 > 0 ) {
+        if ( (data.contador * 1 > 0) || (data.aprobstatus == "7" )) {
             //console.log(row);
             ///$('tr').addClass('preciomenor');
             //$('td', row).parent().addClass('preciomenor tooltipsC');
@@ -93,7 +94,7 @@ $(document).ready(function () {
             $('td', row).eq(3).html($('td', row).eq(3).html() + aux_text);
 
         }
-        $('td', row).eq(7).attr('style','padding-top: 0px;padding-bottom: 0px;');
+        $('td', row).eq(8).attr('style','padding-top: 0px;padding-bottom: 0px;');
 
     }
     });
@@ -105,9 +106,14 @@ $(document).on("click", ".btnEnviarNV", function(event){
     form = $(this);
     id = fila.find('td:eq(0)').text();
     contador = fila.find('td:eq(6)').text();
+    contacutec = fila.find('td:eq(7)').text();
     aprobstatus = 1;
-    if(contador>0){
-        aprobstatus = 2;
+    if(contacutec>0){
+        aprobstatus = 5;
+    }else{
+        if(contador>0){
+            aprobstatus = 2;
+        }    
     }
     var data = {
 		id: id,

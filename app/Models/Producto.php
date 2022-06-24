@@ -31,6 +31,7 @@ class Producto extends Model
         'tipoprod',
         'stockmin',
         'stockmax',
+        'acuerdotecnico_id',
         'usuariodel_id'
     ];
 
@@ -115,5 +116,17 @@ class Producto extends Model
         ->get();
         return $productos;
     }
+    //RELACION UNO A UNO CON ACUERDOTECNICO
+    public function acuerdotecnico()
+    {
+        return $this->hasOne(AcuerdoTecnico::class);
+    }
+
+    //RELACION MUCHO A MUCHOS vendedor A TRAVES DE producto_vendedor
+    public function vendedores()
+    {
+        return $this->belongsToMany(Vendedor::class, 'producto_vendedor');
+    }
+    
 
 }

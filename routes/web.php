@@ -162,6 +162,7 @@ Route::post('producto/obtClaseProd', 'ProductoController@obtClaseProd')->name('o
 Route::post('producto/buscarUnProducto', 'ProductoController@buscarUnProducto')->name('buscarUnProducto');
 Route::get('producto/{id}/listar', 'ProductoController@listar')->name('listar_producto');
 Route::post('producto/obtGrupoProd', 'ProductoController@obtGrupoProd')->name('obtGrupoProd');
+Route::get('producto/{id}/acutecexportPdf', 'ProductoController@AcuTecExportPdf')->name('AcuTecExportPdf_producto');
 
 /*RUTAS CLIENTES*/
 Route::get('cliente', 'ClienteController@index')->name('cliente');
@@ -711,6 +712,14 @@ Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('
 Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
 Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');
 
+/*RUTAS MATERIA PRIMA*/
+Route::get('materiaprima', 'MateriaPrimaController@index')->name('materiaprima');
+Route::get('materiaprimapage', 'MateriaPrimaController@materiaprimapage')->name('materiaprimapage');
+Route::get('materiaprima/crear', 'MateriaPrimaController@crear')->name('crear_materiaprima');
+Route::post('materiaprima', 'MateriaPrimaController@guardar')->name('guardar_materiaprima');
+Route::get('materiaprima/{id}/editar', 'MateriaPrimaController@editar')->name('editar_materiaprima');
+Route::put('materiaprima/{id}', 'MateriaPrimaController@actualizar')->name('actualizar_materiaprima');
+Route::delete('materiaprima/{id}', 'MateriaPrimaController@eliminar')->name('eliminar_materiaprima');
 
 
 /*RUTAS NOTAS DE VENTA EN TRANSITO*/
@@ -848,3 +857,18 @@ Route::post('invmovmodulo', 'InvMovModuloController@guardar')->name('guardar_inv
 Route::get('invmovmodulo/{id}/editar', 'InvMovModuloController@editar')->name('editar_invmovmodulo');
 Route::put('invmovmodulo/{id}', 'InvMovModuloController@actualizar')->name('actualizar_invmovmodulo');
 Route::delete('invmovmodulo/{id}', 'InvMovModuloController@eliminar')->name('eliminar_invmovmodulo');
+/*RUTAS APROBAR ACUERDO TECNICO COTIZACION */
+Route::get('cotizacionaprobaracutec', 'CotizacionAprobarAcuTecController@index')->name('cotizacionaprobaracutec');
+Route::get('cotizacionaprobaracutecpage', 'CotizacionAprobarAcuTecController@cotizacionaprobaracutecpage')->name('cotizacionaprobaracutecpage');
+Route::get('cotizacionaprobaracutec/{id}/editar', 'CotizacionAprobarAcuTecController@editar')->name('editar_cotizacionaprobaracutec');
+
+/*RUTAS GUIA DESPACHO*/
+Route::get('guiadespacho', 'GuiaDespachoController@index')->name('guiadespacho');
+Route::get('guiadespachopage', 'GuiaDespachoController@guiadespachopage')->name('guiadespachopage');
+Route::get('guiadespacho/totalizarindex', 'GuiaDespachoController@totalizarindex')->name('guiadespacho_totalizarindex');
+
+/*RUTAS LISTAR ORDEN DESPACHO*/
+Route::get('listarorddesp', 'ListarorddespController@index')->name('listarorddesp');
+Route::get('listarorddesppage', 'ListarorddespController@listarorddesppage')->name('listarorddesppage');
+Route::get('listarorddesp/totalizarindex', 'ListarorddespController@totalizarindex')->name('listarorddesp_totalizarindex');
+Route::post('listarorddesp/guardarguiadesp', 'ListarorddespController@guardarguiadesp')->name('guardarguiadesp_listarorddesp');

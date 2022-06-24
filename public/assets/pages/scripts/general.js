@@ -335,7 +335,7 @@ function quitarValidacion(campo,tipo)
 			$("#glypcn"+campo).remove();
 			$('#'+campo).parent().attr("class", columnas);
 			$('#'+campo).parent().children('span').hide();
-			$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
+			//$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
 			return true;
 		break 
 		case "textootro": 
@@ -369,7 +369,9 @@ function quitarValidacion(campo,tipo)
 			$("#glypcn"+campo).remove();
 			$('#'+campo).parent().parent().attr("class", columnas);
 			$('#'+campo).parent().parent().children('span').hide();
+			/*
 			$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
+			*/
 			return true;
 
 		break 
@@ -629,7 +631,21 @@ function insertarModificar(){
 }
 
 function modificarTabla(i){
-	$("#aux_sta").val('0')
+	$("#aux_sta").val('0');
+	//alert($("#tipoprodM").attr('valor'));
+	aux_botonAcuTec = '';
+	if($("#tipoprodM").attr('valor') == 1) {
+		//alert("1: " + $("#producto_idM").val() + ", 2: " + $("#producto_id" + $("#aux_numfila").val()).val());
+		aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ i +')">'+
+		'<i id="icoat' + i + '" class="fa fa-cog text-red girarimagen"></i> </a>';
+	}else{
+		$("#acuerdotecnico"+i).val("null");
+		$("#tipoprod"+i).val("");
+	}
+	if($("#producto_idM").val() != $("#producto_id" + $("#aux_numfila").val()).val()){
+		$("#producto_idTDT"+i).html($("#producto_idM").val() + aux_botonAcuTec);
+	}
+
 	$("#producto_id"+i).val($("#producto_idM").val());
 	$("#producto_idValor"+i).html($("#producto_idM").val());
 	
@@ -945,6 +961,8 @@ function editarRegistro(i){
 	$("#largoM").val($("#long"+i).val());
 	$("#largoM").attr('valor',$("#long"+i).val());
 	$("#obsM").val($("#obs"+i).val());
+	$("#tipoprodM").val($("#tipoprod"+i).val());
+	$("#tipoprodM").attr('valor',$("#tipoprod"+i).val())
 
 	$("#invmovtipo_idM").val($("#invmovtipo_idTD"+i).val());
 
@@ -969,6 +987,7 @@ function editarRegistro(i){
 			}
 		}
 	});
+
 	$(".selectpicker").selectpicker('refresh');
     $("#myModal").modal('show');
 }
@@ -1290,6 +1309,7 @@ $("#producto_idM").blur(function(){
 					$("#anchoM").val('');
 					$("#anchoM").attr('valor','');
 					$("#obsM").val('');
+					$("#tipoprodM").attr('valor',respuesta[0]['tipoprod']);
 					mostrardatosadUniMed(respuesta);
 					llenarselectbodega(respuesta);
 					$(".selectpicker").selectpicker('refresh');					
@@ -1845,4 +1865,51 @@ function sumbodrec(i,y){
 
 	$("#cantord" + i).val(total);
 	actSaldo(i);
+}
+
+function crearEditarAcuTec(i){
+	$('.scrollg').animate({
+
+		scrollTop: 0
+
+	}, 2000);
+	$(".selectpicker").selectpicker('refresh');
+	$("#aux_numfilaAT").val(i);
+	$(".form_acutec").each(function(){
+		$(this).val("");
+		//alert($(this).attr('name'));
+		if($(this).attr('name') == "at_certificados"){
+			$(this).val([]);
+		}
+	});
+	var acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
+	//console.log(acuerdotecnico);
+	for (const property in acuerdotecnico) {
+		if(property != 'id'){ //Para evitar que cambie el valor del campo id del formulario aprobar cotizacion
+			if( property == 'at_certificados'){
+				let str = acuerdotecnico[property];
+				let arr = str.split(','); 
+				$("#" + property).val(arr);
+			}else{
+				$("#" + property).val(acuerdotecnico[property]);
+			}	
+		}
+	}
+	$(".valorrequerido").each(function(){
+		quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
+	});
+	$(".selectpicker").selectpicker('refresh');
+    $("#myModalAcuerdoTecnico").modal('show');
+}
+
+function verAcuerdoTecnico(id){
+	console.log(id);
+}
+
+function genpdfAcuTec(id){ //GENERAR PDF Acuerdo Tecnico
+	if($("#contpdf")){
+		$("#contpdf").modal('hide');
+	}
+	$('#contpdf').attr('src', '/producto/'+id+'/acutecexportPdf');
+	$("#myModalpdf").modal('show')
 }

@@ -44,4 +44,5 @@
         </div>
     </div>
 </div> 
+@include('generales.acuerdotecnico')
 @endsection

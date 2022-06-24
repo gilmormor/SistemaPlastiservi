@@ -63,6 +63,9 @@ class CotizacionTransController extends Controller
     public function cotizaciontranspage(){
         session(['aux_aprocot' => '4']); //En transito
         $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+    
         $aux_statusPant = 0;
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
@@ -89,8 +92,9 @@ class CotizacionTransController extends Controller
                 on T1.cliente_id = cliente.id
                 left join clientetemp
                 on T1.clientetemp_id = clientetemp.id
-                where $aux_condvend and (aprobstatus=1 or aprobstatus=2 or aprobstatus=3) and
+                where $aux_condvend and (aprobstatus=1 or aprobstatus=2 or aprobstatus=3 or aprobstatus=5 or aprobstatus=6) and
                 NOT EXISTS (SELECT * FROM notaventa T2 WHERE T1.id = T2.cotizacion_id and anulada is null)
+                AND T1.sucursal_id in ($sucurcadena)
                 and T1.deleted_at is null;";
 
         $datas = DB::select($sql);

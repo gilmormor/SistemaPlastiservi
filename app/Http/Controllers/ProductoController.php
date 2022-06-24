@@ -259,6 +259,7 @@ class ProductoController extends Controller
                     'producto.peso',
                     'producto.tipounion',
                     'producto.precioneto',
+                    'producto.tipoprod',
                     'categoriaprod.precio',
                     'categoriaprodsuc.sucursal_id',
                     'categoriaprod.unidadmedida_id',
@@ -324,6 +325,19 @@ class ProductoController extends Controller
             //dd($claseprods);
             return response()->json($grupoprods);
         }
+    }
+
+    public function AcuTecExportPdf($id)
+    {
+        $producto = Producto::findOrFail($id);
+        $empresa = Empresa::orderBy('id')->get();
+        //dd($empresa[0]['iva']);
+        if(env('APP_DEBUG')){
+            return view('generales.acuerdotecnicopdf', compact('producto','empresa'));
+        }   
+        $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('producto','empresa'));
+        //return $pdf->download('cotizacion.pdf');
+        return $pdf->stream("AcuTecProd_" . str_pad($producto->id, 5, "0", STR_PAD_LEFT) . '.pdf');
     }
 
 }
