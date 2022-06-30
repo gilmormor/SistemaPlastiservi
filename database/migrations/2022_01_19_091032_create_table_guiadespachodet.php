@@ -27,6 +27,7 @@ class CreateTableGuiadespachodet extends Migration
             $table->string('desc1',100)->comment('Descripcion 1');
             $table->string('desc2',100)->comment('Descripcion 2');
             $table->float('cant',10,2)->comment('Cantidad despacho.')->nullable();
+            $table->float('cantdesp',10,2)->comment('Cantidad despacho.')->nullable();
             $table->string('unimed',10)->comment('Unidad de medida.');
             $table->float('preciounit',18,2)->comment('Precio Unitario sin IVA');
             $table->string('adicional',10)->comment('Adicional.');

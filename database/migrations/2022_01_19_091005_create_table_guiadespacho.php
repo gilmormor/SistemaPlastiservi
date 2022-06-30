@@ -38,7 +38,7 @@ class CreateTableGuiadespacho extends Migration
             $table->unsignedBigInteger('comuna_id');
             $table->foreign('comuna_id','fk_guiadespacho_comuna')->references('id')->on('comuna')->onDelete('restrict')->onUpdate('restrict');
 
-            /*$table->date('plazoentrega')->comment('Plazo de entrega fecha');*/
+            $table->date('plazoentrega')->comment('Plazo de entrega fecha');
             $table->string('lugarentrega',100)->comment('Lugar de entrega');
             $table->string('contacto',50)->comment('Nombre de contacto');
             $table->string('contactoemail',50)->comment('Email de contacto de entrega')->nullable();
@@ -47,13 +47,13 @@ class CreateTableGuiadespacho extends Migration
             $table->string('oc_file',20)->comment('Archivo o imagen de Orden de Compra')->nullable();
             $table->string('obs',200)->comment('Observaciones')->nullable();
             $table->dateTime('anulada')->comment('Fecha de anulación')->nullable();
-            $table->float('piva',5,2)->comment('Porcentaje IVA')->nullable()->after('neto');
+            $table->float('piva',5,2)->comment('Porcentaje IVA')->nullable();
             $table->float('neto',18,2)->comment('Total neto, Valor sin IVA');
             $table->float('iva',18,2)->comment('Total IVA');
             $table->float('total',18,2)->comment('Total incluye IVA');
 
-            /*
             $table->date('fechaestdesp')->comment('Fecha estimada de Despacho.');
+            /*
             $table->string('guiadespacho',50)->comment('Guia despacho')->nullable();
             $table->dateTime('guiadespachofec')->comment('Fecha inclusion guia despacho.')->nullable();
             $table->string('numfactura',50)->comment('Número de Factura')->nullable();
