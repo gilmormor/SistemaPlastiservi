@@ -111,6 +111,7 @@ class InvMov extends Model
                 }
             })
             ->whereNull("invmov.staanul")
+            ->havingRaw("SUM(cant) > 0")
             ->select([
                 'invbodegaproducto.producto_id',
                 'producto.nombre as producto_nombre',

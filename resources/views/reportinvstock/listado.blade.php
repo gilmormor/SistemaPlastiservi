@@ -42,7 +42,7 @@
 					<th style='text-align:center' class='width40'>Ent</th>
 					<th style='text-align:center' class='width40'>Sal</th>
 					<th style='text-align:center' class='width40'>Stock</th>
-					<th style='text-align:center' class='width40'>Kg</th>
+					<th style='text-align:center' class='width50'>Kg</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
