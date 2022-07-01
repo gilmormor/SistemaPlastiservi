@@ -272,7 +272,7 @@
                                                         $existencia = InvBodegaProducto::existencia($request);
                                                         $aux_cant = 0;
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
-                                                        $aux_stock = $invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"];
+                                                        $aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
 
                                                     ?>
                                                     @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->

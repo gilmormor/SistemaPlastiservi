@@ -848,3 +848,10 @@ Route::post('invmovmodulo', 'InvMovModuloController@guardar')->name('guardar_inv
 Route::get('invmovmodulo/{id}/editar', 'InvMovModuloController@editar')->name('editar_invmovmodulo');
 Route::put('invmovmodulo/{id}', 'InvMovModuloController@actualizar')->name('actualizar_invmovmodulo');
 Route::delete('invmovmodulo/{id}', 'InvMovModuloController@eliminar')->name('eliminar_invmovmodulo');
+
+
+/*RUTAS INV STOCK BODEGA DE PRODUCTO TERMINADO MAS PIKING*/
+Route::get('reportinvstockbp', 'ReportInvStockBPController@index')->name('reportinvstockbp');
+Route::get('reportinvstockbppage', 'ReportInvStockBPController@reportinvstockbppage')->name('reportinvstockbppage');
+Route::get('reportinvstockbp/reporte', 'ReportInvStockBPController@reporte')->name('reportinvstockbp_reporte');
+Route::get('reportinvstockbp/exportPdf', 'ReportInvStockBPController@exportPdf')->name('reportinvstockbp_exportPdf');

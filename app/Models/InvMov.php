@@ -41,7 +41,7 @@ class InvMov extends Model
     }
     
 
-    public static function stock($request){
+    public static function stock($request,$agrupar = "invbodegaproducto_id"){
         $aux_annomes = CategoriaGrupoValMes::annomes($request->mesanno);
 
         return InvMovDet::query()
@@ -129,8 +129,10 @@ class InvMov extends Model
             ->selectRaw("SUM(if(invmovtipo.stacieinimes=0 AND invmovdet.cant>0,cant,0)) AS mov_in")
             ->selectRaw("SUM(if(invmovtipo.stacieinimes=0 AND invmovdet.cant < -1,cant,0)) AS mov_out")
             ->selectRaw("SUM(cant) as stock")
+            ->selectRaw("SUM(if(invbodega.tipo=2,cant,0)) as stockBodProdTerm")
+            ->selectRaw("SUM(if(invbodega.tipo=1,cant,0)) as stockPiking")
             ->selectRaw("SUM(cantkg) as stockkg")
-            ->groupBy('invbodegaproducto_id')
+            ->groupBy($agrupar)
             ->orderBy('invbodegaproducto.producto_id')
             ->orderBy('invbodega.orden');
     }

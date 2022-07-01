@@ -22,7 +22,7 @@ $(document).ready(function () {
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
-            'ajax'        : "reportinvstockvendpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+            'ajax'        : "reportinvstockbppage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             "order": [[ 1, "asc" ]],
             'columns'     : [
                 {data: 'producto_id'},
@@ -33,6 +33,8 @@ $(document).ready(function () {
                 {data: 'long'},
                 {data: 'peso'},
                 {data: 'tipounion'},
+                {data: 'stockBodProdTerm'},
+                {data: 'stockPiking'},
                 {data: 'stock'},
                 {data: 'stockkg'}
             ],
@@ -59,11 +61,20 @@ $(document).ready(function () {
                 stockKg = data.stock * data.peso
                 $('td', row).eq(6).html(NUM(data.peso, 2));
                 $('td', row).eq(6).attr('style','text-align:right');
-                $('td', row).eq(9).attr('style','text-align:right');
-                $('td', row).eq(9).attr('data-order',stockKg);
-                $('td', row).eq(9).attr('data-search',stockKg);
-                $('td', row).eq(9).html(MASKLA(stockKg,2));
-                $('td', row).eq(9).addClass('subtotalkg');
+
+                $('td', row).eq(9).attr('style','text-align:center');
+                $('td', row).eq(9).attr('data-order',data.stockBodProdTerm);
+                $('td', row).eq(9).attr('data-search',data.stockBodProdTerm);
+                $('td', row).eq(10).attr('style','text-align:center');
+                $('td', row).eq(10).attr('data-order',data.stockPiking);
+                $('td', row).eq(10).attr('data-search',data.stockPiking);
+
+
+                $('td', row).eq(11).attr('style','text-align:right');
+                $('td', row).eq(11).attr('data-order',stockKg);
+                $('td', row).eq(11).attr('data-search',stockKg);
+                $('td', row).eq(11).html(MASKLA(stockKg,2));
+                $('td', row).eq(11).addClass('subtotalkg');
 
             }
         });
@@ -74,7 +85,7 @@ $(document).ready(function () {
     $("#btnconsultar").click(function()
     {
         data = datos();
-        $('#tabla-data-consulta').DataTable().ajax.url( "reportinvstockvendpage/" + data.data2 ).load();
+        $('#tabla-data-consulta').DataTable().ajax.url( "reportinvstockbppage/" + data.data2 ).load();
         totalizar();
     });
 
@@ -168,7 +179,7 @@ function copiar_codprod(id,codintprod){
 $("#btnpdf").click(function(event){
     data = datos();
     //alert(cadena);
-    $('#contpdf').attr('src', '/reportinvstockvend/exportPdf/'+data.data2);
+    $('#contpdf').attr('src', '/reportinvstockbp/exportPdf/'+data.data2);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 });

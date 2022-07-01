@@ -279,7 +279,7 @@
                                                         $request["tipo"] = 2;
                                                         $existencia = $invbodegaproducto::existencia($request);
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
-                                                        $aux_stock = $invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : $existencia["stock"]["cant"];
+                                                        $aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
                                                     ?>
                                                     @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
                                                         <tr name="fbod{{$invbodegaproducto->id}}" id="fbod{{$invbodegaproducto->id}}">
@@ -295,7 +295,7 @@
                                                                 {{$aux_stock}}
                                                             </td>
                                                             <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right">
-                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{$invbodegaproducto->invbodega->nomabre == 'SolDe' ? $aux_cantBodSD  : ''}}" title='Cant a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
+                                                                <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},{{$invbodegaproducto->id}},'OD')" style="text-align:right;" value="{{$invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : ''}}" title='Cant a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
                                                             </td>
                                                         </tr>
                                                     @endif
