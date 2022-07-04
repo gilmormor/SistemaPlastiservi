@@ -1254,6 +1254,23 @@ $("#producto_idM").blur(function(){
 				//console.log(respuesta);
 				//return 0;
 				if(respuesta['cont']>0){
+					if(respuesta['estado'] == 0){
+						swal({
+							title: 'Producto inactivo.',
+							text: "Producto existe pero está Inactivo.",
+							icon: 'error',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+								$("#producto_idM").focus();
+							}
+						});
+						return 0;	
+					}
+
 					//console.log(respuesta['nombre']);
 					$("#nombreprodM").val(respuesta['nombre']);
 					$("#codintprodM").val(respuesta['codintprod']);
