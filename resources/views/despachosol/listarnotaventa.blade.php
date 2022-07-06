@@ -192,7 +192,7 @@ Notas de Venta
                                         <div class="input-group">
                                             <input type="text" name="producto_idPxP" id="producto_idPxP" class="form-control" tipoval="numericootro"/>
                                             <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" id="btnbuscarproducto" name="btnbuscarproducto">Buscar</button>
+                                                <button class="btn btn-default" type="button" id="btnbuscarproductogen" name="btnbuscarproductogen">Buscar</button>
                                             </span>
                                         </div>
                                     </div>

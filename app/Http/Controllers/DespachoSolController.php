@@ -1173,6 +1173,7 @@ class DespachoSolController extends Controller
         $request->aprobstatus = $_GET["aprobstatus"];
         $request->comuna_id = $_GET["comuna_id"];
         $request->id = $_GET["id"];
+        $request->producto_id = $_GET["producto_id"];
         $request->filtro = $_GET["filtro"];
         $request->aux_titulo = $_GET["aux_titulo"];
 
@@ -2358,6 +2359,14 @@ function consultasoldesp($request){
         $aux_condid = "despachosol.id='$request->id'";
     }
 
+    $aux_condproducto_id = " true";
+    if(!empty($request->producto_id)){
+        $aux_codprod = explode(",", $request->producto_id);
+        $aux_codprod = implode ( ',' , $aux_codprod);
+        $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
+    }
+
+
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
     $aux_notinNullSoldesp = "despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE isnull(despachosolanul.deleted_at))";
@@ -2413,6 +2422,7 @@ function consultasoldesp($request){
             and $aux_condaprobord
             and $aux_condfechaestdesp
             and $aux_condid
+            and $aux_condproducto_id
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             and isnull(despachosoldet.deleted_at)

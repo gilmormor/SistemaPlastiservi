@@ -61,135 +61,131 @@
 	</table>
 	<div>
 		<table id="factura_detalle">
-				<thead>
-					<tr>
-						<th width="30px">Cant.</th>
-						<th>Desp</th>
-						<th>Solid</th>
-						<th>Saldo</th>	
-						<th class="textcenter">Unidad</th>
-						<th class="textleft">Descripción</th>
-						<th class="textleft">Diam</th>
-						<th class="textleft">Clase</th>
-						<th class="textright">Largo</th>
-						<th class="textcenter">TU</th>
-						<th class="textright">Peso</th>
-						<th class="textright">$ x Kg</th>
-						<th class="textright">Total Kg</th>
-						<th class="textright" width="90px">Precio Unit</th>
-						<th class="textright" width="90px">Total Neto</th>
-					</tr>
-				</thead>
-				<tbody id="detalle_productos">
+			<thead>
+				<tr>
+					<th width="30px">Cod</th>
+					<th width="30px">Cant</th>
+					<th>Desp</th>
+					<th>Solid</th>
+					<th>Saldo</th>
+					<th class="textcenter">Unidad</th>
+					<th class="textleft">Descripción</th>
+					<th class="textleft">Diam</th>
+					<th class="textleft">Clase</th>
+					<th class="textright">Largo</th>
+					<th class="textcenter">TU</th>
+					<th class="textright">Peso</th>
+					<th class="textright">$ x Kg</th>
+					<th class="textright">Total Kg</th>
+					<th class="textright" width="90px">Precio Unit</th>
+					<th class="textright" width="90px">Total Neto</th>
+				</tr>
+			</thead>
+			<tbody id="detalle_productos">
+				<?php
+					$aux_sumprecioxkilo = 0;
+					$aux_sumtotalkilos = 0;
+					$aux_promPonderadoPrecioxkilo = 0;
+					$totalSubtotalItem = 0;
+					$aux_totalkgItem = 0;
+					$aux_sumtotalkilos1 = 0;
+				?>
+				@foreach($notaventaDetalles as $notaventaDetalle)
 					<?php
-						$aux_sumprecioxkilo = 0;
-						$aux_sumtotalkilos = 0;
-						$aux_promPonderadoPrecioxkilo = 0;
-						$totalSubtotalItem = 0;
-						$aux_totalkgItem = 0;
-						$aux_sumtotalkilos1 = 0;
+						$aux_sumprecioxkilo += $notaventaDetalle->precioxkilo;
+						$aux_sumtotalkilos += $notaventaDetalle->totalkilos;
 					?>
-					@foreach($notaventaDetalles as $notaventaDetalle)
-						<?php
-							$aux_sumprecioxkilo += $notaventaDetalle->precioxkilo;
-							$aux_sumtotalkilos += $notaventaDetalle->totalkilos;
-						?>
-					@endforeach
-					@foreach($notaventaDetalles as $notaventaDetalle)
-						<?php
-						if($aux_sumtotalkilos<=0){
-							$aux_sumtotalkilos = 1;
+				@endforeach
+				@foreach($notaventaDetalles as $notaventaDetalle)
+					<?php
+					if($aux_sumtotalkilos<=0){
+						$aux_sumtotalkilos = 1;
+					}
+						$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
+						//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
+						//SUMA TOTAL DE SOLICITADO
+						/*************************/
+						$sql = "SELECT cantsoldesp
+							FROM vista_sumsoldespdet
+							WHERE notaventadetalle_id=$notaventaDetalle->id";
+						$datasuma = DB::select($sql);
+						$peso = $notaventaDetalle->totalkilos/$notaventaDetalle->cant;
+						if(empty($datasuma)){
+							$sumacantsoldesp= 0;
+						}else{
+							$sumacantsoldesp= $datasuma[0]->cantsoldesp;
 						}
-							$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
-							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
-							//SUMA TOTAL DE SOLICITADO
-							/*************************/
-							$sql = "SELECT cantsoldesp
-								FROM vista_sumsoldespdet
-								WHERE notaventadetalle_id=$notaventaDetalle->id";
-							$datasuma = DB::select($sql);
-							$peso = $notaventaDetalle->totalkilos/$notaventaDetalle->cant;
-							if(empty($datasuma)){
-								$sumacantsoldesp= 0;
-							}else{
-								$sumacantsoldesp= $datasuma[0]->cantsoldesp;
-							}
-							/*************************/
-							//SUMA TOTAL DESPACHADO
-							/*************************/
-							$sql = "SELECT cantdesp
-								FROM vista_sumorddespxnvdetid
-								WHERE notaventadetalle_id=$notaventaDetalle->id";
-							$datasumadesp = DB::select($sql);
-							if(empty($datasumadesp)){
-								$sumacantdesp= 0;
-							}else{
-								$sumacantdesp= $datasumadesp[0]->cantdesp;
-							}
-							/*************************/
+						/*************************/
+						//SUMA TOTAL DESPACHADO
+						/*************************/
+						$sql = "SELECT cantdesp
+							FROM vista_sumorddespxnvdetid
+							WHERE notaventadetalle_id=$notaventaDetalle->id";
+						$datasumadesp = DB::select($sql);
+						if(empty($datasumadesp)){
+							$sumacantdesp= 0;
+						}else{
+							$sumacantdesp= $datasumadesp[0]->cantdesp;
+						}
+						/*************************/
 
-							if($notaventaDetalle->cant > $sumacantsoldesp){
-								$aux_saldo = $notaventaDetalle->cant - $sumacantsoldesp;
-								$subtotalItem = $aux_saldo * $notaventaDetalle->preciounit;
-								$totalSubtotalItem += $subtotalItem;
-								$aux_totalkgItem = $aux_saldo * ($notaventaDetalle->totalkilos/$notaventaDetalle->cant);
-								$aux_sumtotalkilos1 += $aux_totalkgItem;
+						if($notaventaDetalle->cant > $sumacantsoldesp){
+							$aux_saldo = $notaventaDetalle->cant - $sumacantsoldesp;
+							$subtotalItem = $aux_saldo * $notaventaDetalle->preciounit;
+							$totalSubtotalItem += $subtotalItem;
+							$aux_totalkgItem = $aux_saldo * ($notaventaDetalle->totalkilos/$notaventaDetalle->cant);
+							$aux_sumtotalkilos1 += $aux_totalkgItem;
 
-						?>
-						<tr class="headt" style="height:150%;">
-							<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
-							<td class="textcenter">
-								{{$sumacantdesp}}
-							</td>		
-							<td class="textcenter">
-								{{$sumacantsoldesp}}
-							</td>
-							<td class="textcenter">
-								{{$aux_saldo}}
-							</td>	
-							<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
-							<td class="textleft">{{$notaventaDetalle->producto->nombre}}</td>
-							<td class="textleft">
-								{{$notaventaDetalle->producto->diametro}}
-							</td>
-							<td class="textleft">{{$notaventaDetalle->producto->claseprod->cla_nombre}}</td>
-							<td class="textright">{{$notaventaDetalle->producto->long}} mts</td>
-							<td class="textcenter">{{$notaventaDetalle->producto->tipounion}}</td>
-							<td class="textright">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($aux_totalkgItem, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($notaventaDetalle->preciounit, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($subtotalItem, 0, ",", ".")}}</td>
-						</tr>
-						<?php
-							}
-						?>
-					@endforeach
-				</tbody>
-				<tfoot>
-					<tr>
-						<td colspan="11" class="textright"><span><strong>Totales</strong></span></td>
-						<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>
-						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos1, 2, ",", ".")}}</strong></span></td>
+					?>
+					<tr class="headt" style="height:150%;">
+						<td class="textcenter">{{$notaventaDetalle->producto_id}}</td>
+						<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
+						<td class="textcenter">
+							{{$sumacantdesp}}
+						</td>		
+						<td class="textcenter">
+							{{$sumacantsoldesp}}
+						</td>
+						<td class="textcenter">
+							{{$aux_saldo}}
+						</td>	
+						<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
+						<td class="textleft">{{$notaventaDetalle->producto->nombre}}</td>
+						<td class="textleft">
+							{{$notaventaDetalle->producto->diametro}}
+						</td>
+						<td class="textleft">{{$notaventaDetalle->producto->claseprod->cla_nombre}}</td>
+						<td class="textcenter">{{$notaventaDetalle->producto->long}} mts</td>
+						<td class="textcenter">{{$notaventaDetalle->producto->tipounion}}</td>
+						<td class="textcenter">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($aux_totalkgItem, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($notaventaDetalle->preciounit, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($subtotalItem, 0, ",", ".")}}</td>
 					</tr>
-				</tfoot>
+					<?php
+						}
+					?>
+				@endforeach
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="11" class="textright"><span><strong>Totales</strong></span></td>
+					<td colspan="2" class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>
+					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos1, 2, ",", ".")}}</strong></span></td>
 
-		</table>
-	</div>
-	<div>
-		<table id="factura_detalle">
-			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>NETO</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($totalSubtotalItem, 0, ",", ".")}}</strong></span></td>
-			</tr>
-			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$notaventa->piva}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * $notaventa->piva/100), 0, ",", ".")}}</strong></span></td>
-			</tr>
-			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format(round($totalSubtotalItem * (1 + ($notaventa->piva/100))), 0, ",", ".")}}</strong></span></td>
-			</tr>
+					<td class="textright"><span><strong>NETO</strong></span></td>
+					<td class="textright"><span><strong>{{number_format($totalSubtotalItem, 0, ",", ".")}}</strong></span></td>
+				</tr>
+				<tr>
+					<td colspan="15" class="textright"><span><strong>IVA {{$notaventa->piva}}%</strong></span></td>
+					<td class="textright"><span><strong>{{number_format(round($totalSubtotalItem * $notaventa->piva/100), 0, ",", ".")}}</strong></span></td>
+				</tr>
+				<tr>
+					<td colspan="15" class="textright"><span><strong>TOTAL</strong></span></td>
+					<td class="textright"><span><strong>{{number_format(round($totalSubtotalItem * (1 + ($notaventa->piva/100))), 0, ",", ".")}}</strong></span></td>
+				</tr>
+			</tfoot>
 		</table>
 	</div>
 	<br>

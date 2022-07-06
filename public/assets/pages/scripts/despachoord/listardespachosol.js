@@ -164,6 +164,7 @@ function datos(){
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
         id                : $("#id").val(),
+        producto_id       : $("#producto_idPxP").val(),
         filtro            : 1,
         _token            : $('input[name=_token]').val()
     };
@@ -444,6 +445,7 @@ $("#btnpdf2").click(function()
             "&comuna_id=" + data.comuna_id +
             "&id=" + data.id +
             "&filtro=" + data.filtro +
+            "&producto_id=" + data.producto_id +
             "&aux_titulo=" + aux_titulo;
     $('#contpdf').attr('src', '/despachosol/pdfpendientesoldesp/'+cadena);
     $("#myModalpdf").modal('show'); 

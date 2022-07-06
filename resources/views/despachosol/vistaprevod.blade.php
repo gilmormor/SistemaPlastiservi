@@ -57,6 +57,7 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
+					<th width="30px">Cod</th>
 					<th width="30px">Cant.</th>
 					<th width="30px">OrdDesp</th>
 					<th width="30px">Saldo</th>
@@ -112,6 +113,7 @@
 							$aux_sumtotalkilos += $totalkilos;
 					?>
 					<tr class="headt" style="height:150%;">
+						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">
 							{{number_format($sumacantorddesp, 0, ",", ".")}}
@@ -140,17 +142,17 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="10" class="textright"><span><strong>Totales</strong></span></td>
+					<td colspan="11" class="textright"><span><strong>Totales</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong>NETO</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($neto, 2, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="12" class="textright"><span><strong>IVA {{$despachosol->notaventa->piva}}%</strong></span></td>
+					<td colspan="13" class="textright"><span><strong>IVA {{$despachosol->notaventa->piva}}%</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round(($neto * $despachosol->notaventa->piva)/100), 2, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="12" class="textright"><span><strong>TOTAL</strong></span></td>
+					<td colspan="13" class="textright"><span><strong>TOTAL</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round($neto * ($despachosol->notaventa->piva+100)/100), 2, ",", ".")}}</strong></span></td>
 				</tr>
 			</tfoot>

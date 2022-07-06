@@ -1863,3 +1863,21 @@ function sumbodrec(i,y){
 	$("#cantord" + i).val(total);
 	actSaldo(i);
 }
+
+$("#btnbuscarproductogen").click(function(event){
+    //$(this).val("");
+    $(".input-sm").val('');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+    $("#myModalBuscarProd").modal('show');
+});

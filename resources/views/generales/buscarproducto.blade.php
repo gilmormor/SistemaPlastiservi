@@ -38,7 +38,6 @@
                                                         $aux_onclick = "";
                                                         if (isset($selecmultprod)){ //Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
                                                             $aux_onclick = "onclick=llenarlistaprod(" . $aux_nfila . "," . $producto->id . ")";
-                                                            //<a href="#" class="copiar_id" onclick="llenarlistaprod({{$aux_nfila}},{{$producto->id}})"> {{$producto->nombre}} </a>                                            
                                                         }else{
                                                             $aux_onclick = "onclick=copiar_codprod(" . $producto->id . ",'" . $producto->codintprod . "')";
                                                             //<a href="#" class="copiar_id" onclick="copiar_codprod({{$producto->id}},'{{$producto->codintprod}}')"> {{$producto->nombre}} </a>
@@ -50,13 +49,6 @@
                                                         </td>
                                                         <td name="productonombreBtd{{$aux_nfila}}" id="productonombreBtd{{$aux_nfila}}">
                                                             {{$producto->nombre}}
-                                                            <!--
-                                                            @if (isset($selecmultprod))
-                                                                <a href="#" class="copiar_id" onclick="llenarlistaprod({{$aux_nfila}},{{$producto->id}})"> {{$producto->nombre}} </a>                                            
-                                                            @else
-                                                                <a href="#" class="copiar_id" onclick="copiar_codprod({{$producto->id}},'{{$producto->codintprod}}')"> {{$producto->nombre}} </a>
-                                                            @endif
-                                                            -->
                                                         </td>
                                                         <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
                                                             {{$producto->diametro}}

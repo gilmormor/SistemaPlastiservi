@@ -1176,8 +1176,9 @@ class DespachoOrdController extends Controller
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $productos = Producto::productosxUsuario();
 
-        return view('despachoord.listardespachosol', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
+        return view('despachoord.listardespachosol', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','tablashtml','productos'));
     }
 
 
