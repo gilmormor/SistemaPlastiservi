@@ -68,7 +68,7 @@ class CotizacionController extends Controller
                     FROM cotizaciondetalle 
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
                     cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador,
-                    cotizacion.fechahora as fechahora_aaaammdd
+                    cotizacion.fechahora as fechahora_aaaammdd,cotizacion.updated_at
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
@@ -434,18 +434,29 @@ class CotizacionController extends Controller
         //dd($request);
         if ($request->ajax()) {
             //dd($id);
-            if (Cotizacion::destroy($id)) {
-                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                $cotizacion = Cotizacion::withTrashed()->findOrFail($id);
-                $cotizacion->usuariodel_id = auth()->id();
-                $cotizacion->save();
-                //Eliminar detalle de cotizacion
-                CotizacionDetalle::where('cotizacion_id', $id)->update(['usuariodel_id' => auth()->id()]);
-                CotizacionDetalle::where('cotizacion_id', '=', $id)->delete();
-                return response()->json(['mensaje' => 'ok']);
-            } else {
-                return response()->json(['mensaje' => 'ng']);
+            $inventsal = Cotizacion::findOrFail($id);
+            if($request->updated_at == $inventsal->updated_at){
+                if (Cotizacion::destroy($id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $cotizacion = Cotizacion::withTrashed()->findOrFail($id);
+                    $cotizacion->usuariodel_id = auth()->id();
+                    $cotizacion->save();
+                    //Eliminar detalle de cotizacion
+                    CotizacionDetalle::where('cotizacion_id', $id)->update(['usuariodel_id' => auth()->id()]);
+                    CotizacionDetalle::where('cotizacion_id', '=', $id)->delete();
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }    
+            }else{
+                return response()->json([
+                    'id' => 0,
+                    'mensaje'=>'Registro no puede ser eliminado, fué modificado por otro usuario.',
+                    'tipo_alert' => 'error'
+                ]);
             }
+
+
         } else {
             abort(404);
         }

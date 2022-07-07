@@ -221,9 +221,35 @@ class InvEntSalController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function eliminar(Request $request,$id)
     {
-        //
+        can('eliminar-entrada-salida-inventario');
+        //dd($request);
+        if ($request->ajax()) {
+            $inventsal = InvEntSal::findOrFail($id);
+            if($request->updated_at == $inventsal->updated_at){
+                if (InvEntSal::destroy($id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $inventsal = InvEntSal::withTrashed()->findOrFail($id);
+                    $inventsal->usuariodel_id = auth()->id();
+                    $inventsal->save();
+                    //Eliminar detalle de cotizacion
+                    InvEntSalDet::where('inventsal_id', $id)->update(['usuariodel_id' => auth()->id()]);
+                    InvEntSalDet::where('inventsal_id', '=', $id)->delete();
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }
+            }else{
+                return response()->json([
+                    'id' => 0,
+                    'mensaje'=>'Registro no puede ser eliminado, fué modificado por otro usuario.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
+        } else {
+            abort(404);
+        }
     }
 
 

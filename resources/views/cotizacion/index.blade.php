@@ -35,6 +35,7 @@ Cotización
                                 <th class="ocultar">aprobstatus</th>
                                 <th class="ocultar">aprobobs</th>
                                 <th class="ocultar">contador</th>
+                                <th class="ocultar">updated_at</th>
                                 <th class="width150">Acción</th>
                             </tr>
                         </thead>

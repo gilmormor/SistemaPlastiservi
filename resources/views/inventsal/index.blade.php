@@ -33,6 +33,7 @@ Entradas y Salidas Inventario
                                 <th title='Descripción'>Descripción</th>
                                 <th class="width150">PDF</th>
                                 <th class="ocultar">obsaprob</th>
+                                <th class="ocultar">updated_at</th>
                                 <th class="width150">Acciones</th>
                             </tr>
                         </thead>
