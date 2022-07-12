@@ -463,6 +463,7 @@
                                                         $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
                                                         $request["tipo"] = 2;
                                                         $existencia = $invbodegaproducto::existencia($request);
+                                                        //dd($existencia);
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                     ?>
                                                     @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->

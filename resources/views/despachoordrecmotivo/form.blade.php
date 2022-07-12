@@ -38,7 +38,7 @@
                     {{'selected'}}
                 @endif
             >
-                Entra y sale al Inventario
+                Entra a Bodega de Scrap por material defectuoso
             </option>
         </select>
     </div>

@@ -573,8 +573,10 @@ class DespachoOrdRecController extends Controller
                         if ($despachoordrec->save()) {
                             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
                             $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Scrap (La bodega Scrap debe ser unica)
-            
-                            if(($tipomovinv != 2)){
+                            //$tipomovinv == 0 no toca el inventario
+                            //$tipomovinv == 1 Entra a bodega
+                            //$tipomovinv == 2 Entra a nodega Scrap
+                            if(($tipomovinv == 1)){
                                 $invmov_array = array();
                                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                                 $invmov_array["annomes"] = date("Ym");
