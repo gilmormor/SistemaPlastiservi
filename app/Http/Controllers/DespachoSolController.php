@@ -870,8 +870,8 @@ class DespachoSolController extends Controller
                         $invmov_array["usuario_id"] = auth()->id();
                         $arrayinvmov_id = array();
                         
-                        $invmovOrdDesp = InvMov::create($invmov_array);
-                        array_push($arrayinvmov_id, $invmovOrdDesp->id);
+                        $invmovEntDesp = InvMov::create($invmov_array);
+                        array_push($arrayinvmov_id, $invmovEntDesp->id);
 
                         $invmov_array = array();
                         $invmov_array["fechahora"] = date("Y-m-d H:i:s");
@@ -884,13 +884,23 @@ class DespachoSolController extends Controller
                         $invmov_array["sucursal_id"] = $despachosol->notaventa->sucursal_id;
                         $invmov_array["usuario_id"] = auth()->id();
                         
-                        $invmovSolDesp = InvMov::create($invmov_array);
-                        array_push($arrayinvmov_id, $invmovSolDesp->id);
-
-                        $despachoord_invmov = DespachoOrd_InvMov::create([
-                            'despachoord_id' => $DespachoOrd_id,
+                        $invmovSalDesp = InvMov::create($invmov_array);
+                        array_push($arrayinvmov_id, $invmovSalDesp->id);
+                        /*
+                        if(count($despachosoldet->despachoorddets)>0 and isset($DespachoOrd_id))
+                        {
+                            $despachoord_invmov = DespachoOrd_InvMov::create([
+                                'despachoord_id' => $DespachoOrd_id,
+                                'invmov_id' => $arrayinvmov_id[0]
+                            ]);    
+                        }
+                        */
+                        $despachosol_invmov = DespachoSol_InvMov::create(
+                        [
+                            'despachosol_id' => $despachosol->id,
                             'invmov_id' => $arrayinvmov_id[0]
                         ]);
+    
                         $despachosol_invmov = DespachoSol_InvMov::create(
                         [
                             'despachosol_id' => $despachosol->id,
@@ -911,12 +921,15 @@ class DespachoSolController extends Controller
                     $array_invmovdet["cantxgrupo"] = 1;
                     $array_invmovdet["peso"] = $peso;
                     $array_invmovdet["cantkg"] = $cantkg;
-                    $array_invmovdet["invmov_id"] = $invmovOrdDesp->id;
+                    $array_invmovdet["invmov_id"] = $invmovEntDesp->id;
                     $invmovdet = InvMovDet::create($array_invmovdet);
-                    $invmovdet_bodorddesp = InvMovDet_BodOrdDesp::create([
-                        'invmovdet_id' => $invmovdet->id,
-                        'despachoorddet_invbodegaproducto_id' => $despachoorddet_invbodegaproducto_id
-                    ]);
+                    if(count($despachosoldet->despachoorddets)>0 and isset($despachoorddet_invbodegaproducto_id)){
+                        $invmovdet_bodorddesp = InvMovDet_BodOrdDesp::create([
+                            'invmovdet_id' => $invmovdet->id,
+                            'despachoorddet_invbodegaproducto_id' => $despachoorddet_invbodegaproducto_id
+                        ]);
+    
+                    }
 
                     $array_invmovdet = array();
                     $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto_idSalida;
@@ -924,13 +937,13 @@ class DespachoSolController extends Controller
                     $array_invmovdet["invbodega_id"] = $invbodega_idSalida;
                     $array_invmovdet["sucursal_id"] = $sucursal_id;
                     $array_invmovdet["unidadmedida_id"] = $unidadmedida_id;
-                    $array_invmovdet["invmovtipo_id"] = 1;
+                    $array_invmovdet["invmovtipo_id"] = 2;
                     $array_invmovdet["cant"] = $aux_cantBodSD * -1;
                     $array_invmovdet["cantgrupo"] = $aux_cantBodSD * -1;
                     $array_invmovdet["cantxgrupo"] = 1;
                     $array_invmovdet["peso"] = $peso;
                     $array_invmovdet["cantkg"] = $cantkg;
-                    $array_invmovdet["invmov_id"] = $invmovSolDesp->id;
+                    $array_invmovdet["invmov_id"] = $invmovSalDesp->id;
                     $invmovdet = InvMovDet::create($array_invmovdet);
                     $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
                         'invmovdet_id' => $invmovdet->id,

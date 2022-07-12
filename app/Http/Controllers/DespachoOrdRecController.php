@@ -551,6 +551,27 @@ class DespachoOrdRecController extends Controller
                 if(isset($despachoordrec->anulada) == false){
                     if($request->updated_at == $despachoordrec->updated_at){
                         $tipomovinv = $despachoordrec->despachoordrecmotivo->tipomovinv;
+/*
+                        foreach ($despachoordrec->despachoordrecdets as $despachoordrecdet) {
+                            foreach ($despachoordrecdet->despachoordrecdet_invbodegaproductos as $oddetbodprod) {
+                                $array_invmovdet = $oddetbodprod->attributesToArray();
+                                $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
+                                $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
+                                $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
+                                $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
+                                $array_invmovdet["invmovtipo_id"] = 1;
+                                $array_invmovdet["cant"] = $array_invmovdet["cant"];
+                                $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
+                                $array_invmovdet["cantxgrupo"] = 1;
+                                $array_invmovdet["peso"] = $despachoordrecdet->despachoorddet->notaventadetalle->producto->peso;
+                                $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                                //$array_invmovdet["invmov_id"] = $invmov->id;
+                                //$invmovdet = InvMovDet::create($array_invmovdet);                                
+                            }
+                        }    
+
+                        dd('entro');
+*/
                         $invmodulo = InvMovModulo::where("cod","RecOD")->get(); //BUSCAR MODULO RECHAZO ORDEN DESPACHO
                         if(count($invmodulo) == 0){
                             return response()->json([
