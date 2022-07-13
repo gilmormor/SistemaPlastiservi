@@ -53,6 +53,8 @@ class InvMov extends Model
             ->join("claseprod","producto.claseprod_id","=","claseprod.id")
             ->join("invmovtipo","invmovdet.invmovtipo_id","=","invmovtipo.id")
             ->where("invmov.annomes","=",$aux_annomes)
+            ->whereNull("invmov.deleted_at")
+            ->whereNull("invmovdet.deleted_at")
             ->where(function($query) use ($request)  {
                 if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
                     true;

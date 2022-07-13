@@ -103,10 +103,10 @@ function totalizar(){
         });
     data = datos();
     $.ajax({
-        url: '/reportinvstock/totalizarindex/' + data.data2,
+        url: '/reportinvstockbp/totalizarindex/' + data.data2,
         type: 'GET',
         success: function (datos) {
-            console.log(datos);
+            //console.log(datos);
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }

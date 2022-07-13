@@ -855,3 +855,5 @@ Route::get('reportinvstockbp', 'ReportInvStockBPController@index')->name('report
 Route::get('reportinvstockbppage', 'ReportInvStockBPController@reportinvstockbppage')->name('reportinvstockbppage');
 Route::get('reportinvstockbp/reporte', 'ReportInvStockBPController@reporte')->name('reportinvstockbp_reporte');
 Route::get('reportinvstockbp/exportPdf', 'ReportInvStockBPController@exportPdf')->name('reportinvstockbp_exportPdf');
+Route::get('reportinvstockbp/totalizarindex', 'ReportInvStockBPController@totalizarindex')->name('reportinvstockbp_totalizarindex');
+

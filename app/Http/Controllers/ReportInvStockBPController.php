@@ -77,4 +77,17 @@ class ReportInvStockBPController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         } 
     }
+
+    public function totalizarindex(Request $request){
+        $respuesta = array();
+        $datas = InvMov::stock($request,"producto.id")->get();
+        $aux_totalkg = 0;
+        foreach ($datas as $data) {
+            //$aux_totalkg += $data->stockkg;
+            $aux_totalkg += $data->stock * $data->peso;
+        }
+        $respuesta['aux_totalkg'] = $aux_totalkg;
+        return $respuesta;
+    }
+
 }
