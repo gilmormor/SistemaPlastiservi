@@ -56,10 +56,10 @@
 						<td style='text-align:center'>{{$data->peso}}</td>
 						<td style='text-align:center'>{{$data->tipounion}}</td>
 						<td style='text-align:center'>{{$data->stock}}</td>
-						<td style='text-align:right'>{{number_format($data->stockkg, 2, ",", ".")}}</td>
+						<td style='text-align:right'>{{number_format($data->stock * $data->peso, 2, ",", ".")}}</td>
 					</tr>
 					<?php 
-						$aux_totalstockkg += $data->stockkg;
+						$aux_totalstockkg += $data->stock * $data->peso;
 					?>
 				@endforeach
 			</tbody>
