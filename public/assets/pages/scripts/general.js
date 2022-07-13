@@ -1037,6 +1037,7 @@ $(document).on("click", ".btngenpdfNV1", function(){
 
 $(document).on("click", ".btngenpdfNV2", function(){	
     fila = $(this).closest("tr");	        
+	form = $(this);
 	if(form.attr('col')){
 		id = fila.find('td:eq('+form.attr('col')+')').text();
 	}else{
