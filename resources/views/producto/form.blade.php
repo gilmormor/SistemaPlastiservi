@@ -287,12 +287,12 @@
             <select name="estado" id="estado" class="form-control select2 estado" required>
                 <option value="">Seleccione...</option>
                 <option value="1"
-                    @if ($data->estado=="1")
+                    @if (isset($data) and ($data->estado=="1"))
                         {{'selected'}}
                     @endif
                 >Activo</option>
                 <option value="0"
-                    @if ($data->estado=="0")
+                    @if (isset($data) and ($data->estado=="0"))
                         {{'selected'}}
                     @endif    
                 >Inactivo</option>

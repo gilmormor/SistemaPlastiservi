@@ -658,7 +658,11 @@ class DespachoSolController extends Controller
             $aux_banderacant = true; //VALIDAR QUE EXISTE AL MENOS 1 PRODUCTO CON CANTIDAD
             foreach ($despachosol->despachosoldets as $despachosoldet) {
                 foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
-                    $aux_cant = $despachosoldet_invbodegaproducto->cant * -1;
+                    //$aux_cant = $despachosoldet_invbodegaproducto->cant * -1;
+                    $aux_cant = 0;
+                    foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                        $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
+                    }
                     if($aux_cant > 0){
                         $aux_banderacant = true;
                         $aux_producto =$despachosoldet_invbodegaproducto->invbodegaproducto->producto;
@@ -672,6 +676,8 @@ class DespachoSolController extends Controller
                         ->get();
                         $aux_respuesta = InvBodegaProducto::existencia($invbodegaproducto[0]);
                         if($aux_respuesta["stock"]["cant"] < $aux_cant){ //VALIDAR STOCK DE PRODUCTO EN BODEGA
+                            //dd($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps[1]->invmovdet);
+                            //dd($aux_respuesta["stock"]["cant"]);
                             return response()->json([
                                 'mensaje' => 'MensajePersonalizado',
                                 'menper' => "Producto sin Stock,  ID: " . $aux_producto->id . ", Nombre: " . $aux_producto->nombre . ", Stock: " . $aux_respuesta["stock"]["cant"]

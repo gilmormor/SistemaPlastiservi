@@ -1811,7 +1811,10 @@ function sumbod(i,y,aux_orig){
 			$("#invcant" + y).val(dif);
 		}
 		//console.log(dif);
-		total = aux_saldo;		
+		total = aux_saldo;
+	}
+	if(total < 0){
+		total = 0;
 	}
 
 	aux_invcant = $("#invcant" + y).val();
