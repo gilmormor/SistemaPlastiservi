@@ -706,6 +706,11 @@ class DespachoSolController extends Controller
                 foreach ($despachosol->despachosoldets as $despachosoldet) {
                     foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
                         $aux_cant = $oddetbodprod->cant * -1;
+                        $aux_cant = 0;
+                        foreach ($oddetbodprod->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                            $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
+                        }
+    
                         if($aux_cant > 0){
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
@@ -717,7 +722,7 @@ class DespachoSolController extends Controller
                             $array_invmovdet["cantgrupo"] = $aux_cant;
                             $array_invmovdet["cantxgrupo"] = 1;
                             $array_invmovdet["peso"] = $despachosoldet->notaventadetalle->producto->peso;
-                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $aux_cant;
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
                         }
@@ -739,6 +744,10 @@ class DespachoSolController extends Controller
                 foreach ($despachosol->despachosoldets as $despachosoldet) {
                     foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
                         $aux_cant = $oddetbodprod->cant * -1;
+                        $aux_cant = 0;
+                        foreach ($oddetbodprod->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                            $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
+                        }
                         if($aux_cant > 0){
                             $invbodegaproducto = InvBodegaProducto::updateOrCreate(
                                 ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $invmoduloBod->invmovmodulobodents[0]->id],
@@ -753,12 +762,12 @@ class DespachoSolController extends Controller
                             $array_invmovdet["invbodega_id"] = $invmoduloBod->invmovmodulobodents[0]->id;
                             $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
-                            $array_invmovdet["invmovtipo_id"] = 1;
-                            $array_invmovdet["cant"] = $array_invmovdet["cant"] ;
-                            $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
+                            $array_invmovdet["invmovtipo_id"] = 2;
+                            $array_invmovdet["cant"] = $aux_cant * -1 ;
+                            $array_invmovdet["cantgrupo"] = $aux_cant * -1;
                             $array_invmovdet["cantxgrupo"] = 1;
                             $array_invmovdet["peso"] = $despachosoldet->notaventadetalle->producto->peso;
-                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $aux_cant -1;
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
                             $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
