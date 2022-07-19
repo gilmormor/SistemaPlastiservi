@@ -28,6 +28,7 @@ use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
+use App\Models\InvMovDet_BodSolDesp;
 use App\Models\InvMovModulo;
 use App\Models\NotaVentaCerrada;
 use App\Models\PlazoPago;
@@ -797,6 +798,7 @@ class DespachoOrdController extends Controller
                 }
             }
             if($aux_bandera){
+
                 $invmodulo = InvMovModulo::where("cod","ORDDESP")->get();
                 if(count($invmodulo) == 0){
                     return response()->json([
@@ -806,7 +808,7 @@ class DespachoOrdController extends Controller
                 }
                 $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
                 $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Despacho (La bodega despacho debe ser unica)
-    
+
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                 $invmov_array["annomes"] = $aux_respuesta["annomes"];
@@ -839,6 +841,18 @@ class DespachoOrdController extends Controller
                             'invmovdet_id' => $invmovdet->id,
                             'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
                         ]);
+                        if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
+                            /***BUSCO LA BODEGA QUE TIENE PICKING */
+                            foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                                    $invmovdet_bodorddesp = InvMovDet_BodSolDesp ::create([
+                                        'invmovdet_id' => $invmovdet->id,
+                                        'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
+                                    ]);
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
                 $invmov_array = array();

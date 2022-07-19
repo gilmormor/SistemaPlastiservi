@@ -8,6 +8,7 @@ use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
+use App\Models\InvMovDet_BodSolDesp;
 use App\Models\InvMovModulo;
 use Illuminate\Http\Request;
 
@@ -104,9 +105,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
             }
 
             if($request->pantalla_origen == 1){
-
                 if($aux_bandera){
-
 
                     $invmodulo = InvMovModulo::where("cod","ORDDESP")->get();
                     if(count($invmodulo) == 0){
@@ -189,7 +188,19 @@ class DespachoOrdAnulGuiaFactController extends Controller
                                 'invmovdet_id' => $invmovdet->id,
                                 'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
                             ]);
-    
+                            if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
+                                /***BUSCO LA BODEGA QUE TIENE PICKING */
+                                /***ENTRADA A PICKING POR ANULAR GUIA DESPACHO */
+                                foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                    if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                                        $invmovdet_bodorddesp = InvMovDet_BodSolDesp ::create([
+                                            'invmovdet_id' => $invmovdet->id,
+                                            'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
+                                        ]);
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                 }else{
@@ -282,6 +293,19 @@ class DespachoOrdAnulGuiaFactController extends Controller
                                 'invmovdet_id' => $invmovdet->id,
                                 'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
                             ]);
+                            if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
+                                /***BUSCO LA BODEGA QUE TIENE PICKING */
+                                /***ENTRADA A PICKING POR ANULAR GUIA DESPACHO */
+                                foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                    if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                                        $invmovdet_bodorddesp = InvMovDet_BodSolDesp ::create([
+                                            'invmovdet_id' => $invmovdet->id,
+                                            'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
+                                        ]);
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     } 
                 }
