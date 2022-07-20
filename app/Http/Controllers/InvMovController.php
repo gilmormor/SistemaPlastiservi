@@ -7,6 +7,7 @@ use App\Models\InvMov;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\DB;
 
 class InvMovController extends Controller
 {
@@ -22,6 +23,9 @@ class InvMovController extends Controller
     }
 
     public function invmovpage(){
+        $datas = consultaindex();
+        return datatables($datas)->toJson();
+/*
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         return datatables()
@@ -39,6 +43,7 @@ class InvMovController extends Controller
             
             )
             ->toJson();
+            */
     }
 
     /**
@@ -131,4 +136,41 @@ class InvMovController extends Controller
             return $pdf->stream("mensajesinacceso.pdf");
         }
     }
+}
+
+function consultaindex(){
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+
+    $sql = "SELECT invmov.id,invmov.desc,invmov.fechahora,invmovmodulo.nombre as invmovmodulo_nombre,
+    idmovmod,invmovmodulo_id,invmov.updated_at
+    FROM invmov INNER JOIN invmovmodulo
+    ON invmov.invmovmodulo_id = invmovmodulo.id AND ISNULL(invmov.deleted_at) and isnull(invmovmodulo.deleted_at)
+    WHERE invmov.sucursal_id in ($sucurcadena)
+    AND isnull(invmov.staanul)
+    ORDER BY invmov.ID DESC;";
+
+    /*
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    return datatables()
+        ->eloquent(InvMov::query()
+                    ->join('invmovmodulo','invmov.invmovmodulo_id','=','invmovmodulo.id')
+                    ->whereIn('invmov.sucursal_id', $sucurArray)
+                    ->select([
+                        'invmov.id',
+                        'invmov.desc',
+                        'invmov.fechahora',
+                        'invmovmodulo.nombre as invmovmodulo_nombre',
+                        'idmovmod',
+                        'invmovmodulo_id'
+                    ])
+        
+        )
+        ->toJson();
+    */
+
+    return DB::select($sql);
+
 }
