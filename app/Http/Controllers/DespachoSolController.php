@@ -767,7 +767,7 @@ class DespachoSolController extends Controller
                             $array_invmovdet["cantgrupo"] = $aux_cant * -1;
                             $array_invmovdet["cantxgrupo"] = 1;
                             $array_invmovdet["peso"] = $despachosoldet->notaventadetalle->producto->peso;
-                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $aux_cant -1;
+                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $aux_cant * -1;
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
                             $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
@@ -1075,7 +1075,7 @@ class DespachoSolController extends Controller
                     $array_invmovdet["cantgrupo"] = $aux_cantBodSD * -1;
                     $array_invmovdet["cantxgrupo"] = 1;
                     $array_invmovdet["peso"] = $peso;
-                    $array_invmovdet["cantkg"] = $cantkg;
+                    $array_invmovdet["cantkg"] = $cantkg * -1;
                     $array_invmovdet["invmov_id"] = $invmovSalDesp->id;
                     $invmovdet = InvMovDet::create($array_invmovdet);
                     $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([

@@ -888,7 +888,7 @@ class DespachoOrdController extends Controller
                         $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
                         $array_invmovdet["cantxgrupo"] = 1;
                         $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
-                        $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                        $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"] *-1;
                         $array_invmovdet["invmov_id"] = $invmov->id;
                         $invmovdet = InvMovDet::create($array_invmovdet);
                         /*
