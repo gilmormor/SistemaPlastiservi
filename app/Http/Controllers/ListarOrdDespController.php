@@ -102,7 +102,9 @@ class ListarOrdDespController extends Controller
         $despachoord = DespachoOrd::findOrFail($request->id);
         $array_despachoord = $despachoord->attributesToArray();
         $array_despachoord["despachoord_id"] = $request->id;
+        $array_despachoord["obs"] = $request->observacion;
         $array_despachoord["fechahora"] = date("Y-m-d H:i:s");
+        //dd($array_despachoord);
 
         unset($array_despachoord["id"],$array_despachoord["despachosol_id"],$array_despachoord["created_at"],$array_despachoord["updated_at"],$array_despachoord["deleted_at"]);
         //dd($array_despachoord);

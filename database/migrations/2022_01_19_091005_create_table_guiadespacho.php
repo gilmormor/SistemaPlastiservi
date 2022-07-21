@@ -15,6 +15,32 @@ class CreateTableGuiadespacho extends Migration
     {
         Schema::create('guiadespacho', function (Blueprint $table) {
             $table->engine = 'InnoDB';
+/*
+            'despachoord_id',
+            'notaventa_id',
+            'usuario_id',
+            'fechahora',
+            'comunaentrega_id',
+            'tipoentrega_id',
+            'sucursal_id',
+            'cliente_id',
+            'rut',
+            'razonsocial',
+            'giro',
+            'dircliente',
+            'comuna',
+            'ciudad',
+            'comuna_id',
+            'plazoentrega',
+            'lugarentrega',
+            'contacto',
+            'contactoemail',
+            'contactotelf',
+            'obs',
+            'fechaestdesp',
+            'usuariodel_id'
+*/
+            
             $table->bigIncrements('id');
             $table->unsignedBigInteger('despachoord_id');
             $table->foreign('despachoord_id','fk_guiadespacho_despachoord')->references('id')->on('despachoord')->onDelete('restrict')->onUpdate('restrict');

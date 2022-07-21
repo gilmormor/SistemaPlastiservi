@@ -21,14 +21,8 @@ class GuiaDespacho extends Model
         'contacto',
         'contactoemail',
         'contactotelf',
-        'observacion',
+        'obs',
         'fechaestdesp',
-        'guiadespacho',
-        'guiadespachofec',
-        'numfactura',
-        'fechafactura',
-        'numfacturafec',
-        'despachoobs_id',
         'usuariodel_id'
     ];
 
