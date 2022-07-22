@@ -669,7 +669,12 @@ class DespachoOrdController extends Controller
                                     $array_invmovdet["cantxgrupo"] = 1;
                                     $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
                                     $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
-                                    $invmovdet = InvMovDet::create($array_invmovdet);                              
+                                    $invmovdet = InvMovDet::create($array_invmovdet);
+                                    $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                                        'invmovdet_id' => $invmovdet->id,
+                                        'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
+                                    ]);
+            
                                 }
                             }
     
@@ -837,15 +842,11 @@ class DespachoOrdController extends Controller
                         $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                         $array_invmovdet["invmov_id"] = $invmov->id;
                         $invmovdet = InvMovDet::create($array_invmovdet);                                
-                        $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
-                            'invmovdet_id' => $invmovdet->id,
-                            'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
-                        ]);
                         if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
                             /***BUSCO LA BODEGA QUE TIENE PICKING */
                             foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
                                 if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
-                                    $invmovdet_bodorddesp = InvMovDet_BodSolDesp ::create([
+                                    $invmovdet_bodsoldesp = InvMovDet_BodSolDesp ::create([
                                         'invmovdet_id' => $invmovdet->id,
                                         'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
                                     ]);
@@ -891,13 +892,10 @@ class DespachoOrdController extends Controller
                         $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"] *-1;
                         $array_invmovdet["invmov_id"] = $invmov->id;
                         $invmovdet = InvMovDet::create($array_invmovdet);
-                        /*
                         $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
                             'invmovdet_id' => $invmovdet->id,
                             'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
                         ]);
-                        */
-
                     }
                 }
                 $despachoord->aprguiadesp = 1;

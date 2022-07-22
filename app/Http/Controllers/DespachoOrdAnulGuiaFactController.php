@@ -92,6 +92,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
 
     public function guardaranularguia(Request $request)
     {
+        //dd($request);
         if ($request->ajax()) {
             $despachoord = DespachoOrd::findOrFail($request->id);
 
@@ -153,7 +154,12 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
                             $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                             $array_invmovdet["invmov_id"] = $invmov->id;
-                            $invmovdet = InvMovDet::create($array_invmovdet);                              
+                            $invmovdet = InvMovDet::create($array_invmovdet);
+                            $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                                'invmovdet_id' => $invmovdet->id,
+                                'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
+                            ]);
+
                         }
                     }
                     $invmov_array = array();
@@ -184,10 +190,12 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
+                            /*
                             $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
                                 'invmovdet_id' => $invmovdet->id,
                                 'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
                             ]);
+                            */
                             if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
                                 /***BUSCO LA BODEGA QUE TIENE PICKING */
                                 /***ENTRADA A PICKING POR ANULAR GUIA DESPACHO */
@@ -289,10 +297,12 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
+                            /*
                             $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
                                 'invmovdet_id' => $invmovdet->id,
                                 'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
                             ]);
+                            */
                             if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
                                 /***BUSCO LA BODEGA QUE TIENE PICKING */
                                 /***ENTRADA A PICKING POR ANULAR GUIA DESPACHO */

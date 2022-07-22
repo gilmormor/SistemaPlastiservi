@@ -17,6 +17,7 @@ use App\Models\Giro;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
+use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovModulo;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
@@ -607,7 +608,18 @@ class DespachoOrdRecController extends Controller
                                         $array_invmovdet["peso"] = $despachoordrecdet->despachoorddet->notaventadetalle->producto->peso;
                                         $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                                         $array_invmovdet["invmov_id"] = $invmov->id;
-                                        $invmovdet = InvMovDet::create($array_invmovdet);                                
+                                        $invmovdet = InvMovDet::create($array_invmovdet);
+                                        /*****CON ESTO HAGO EL MOVIMIENTO DE LA ORDEN EN INVMOV PARA HACERLE EL SEGUIMIENTO A LAMORDEN EN INV */
+                                        foreach($oddetbodprod->despachoordrecdet->despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                                            if(($despachoorddet_invbodegaproducto->cant * -1) > 0){
+                                                $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                                                    'invmovdet_id' => $invmovdet->id,
+                                                    'despachoorddet_invbodegaproducto_id' => $despachoorddet_invbodegaproducto->id
+                                                ]);
+                                                break;
+                                            }
+                                        }
+                                        /******* */
                                     }
                                 }    
                             }
@@ -642,6 +654,7 @@ class DespachoOrdRecController extends Controller
                                     DB::raw('sum(despachoordrecdet_invbodegaproducto.cant) as cant'),
                                     DB::raw('sum(despachoordrecdet_invbodegaproducto.cantkg) as cantkg')
                                     ])
+                                ->groupBy('invbodegaproducto.producto_id')
                                 ->get();
                                 foreach ($despachoordrecdet_invbodegaproductos as $despachoordrecdet_invbodegaproducto) {
                                     $invbodegaproducto = InvBodegaProducto::updateOrCreate(
@@ -666,6 +679,17 @@ class DespachoOrdRecController extends Controller
                                     $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                                     $array_invmovdet["invmov_id"] = $invmov->id;
                                     $invmovdet = InvMovDet::create($array_invmovdet);
+                                    /*****CON ESTO HAGO EL MOVIMIENTO DE LA ORDEN EN INVMOV PARA HACERLE EL SEGUIMIENTO A LAMORDEN EN INV */
+                                    foreach($despachoordrecdet->despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                                        if(($despachoorddet_invbodegaproducto->cant * -1) > 0){
+                                            $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                                                'invmovdet_id' => $invmovdet->id,
+                                                'despachoorddet_invbodegaproducto_id' => $despachoorddet_invbodegaproducto->id
+                                            ]);
+                                            break; 
+                                        }
+                                    }
+                                    /******* */                                    
                                 }
                             }
                             return response()->json(['mensaje' => 'ok']);

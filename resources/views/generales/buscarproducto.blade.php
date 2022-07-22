@@ -28,7 +28,7 @@
                                                     <th style="text-align:right">Peso</th>
                                                     <th style="text-align:center">TipU</th>
                                                     <th style="text-align:right">PrecN</th>
-                                                    <th style="text-align:right">Prec</th>
+                                                    <th style="text-align:right">Precio</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -66,10 +66,10 @@
                                                             {{$producto->tipounion}}
                                                         </td>
                                                         <td name="productoprecionetoBtd{{$aux_nfila}}" id="productoprecionetoBtd{{$aux_nfila}}" style="text-align:right">
-                                                            {{number_format($producto->precioneto, 2, ",", ".")}}
+                                                            {{number_format($producto->precioneto, 0, ",", ".")}}
                                                         </td>
                                                         <td name="productoprecioBtd{{$aux_nfila}}" id="productoprecioBtd{{$aux_nfila}}" style="text-align:right">
-                                                            {{number_format($producto->precio, 2, ",", ".")}}
+                                                            {{number_format($producto->precio, 0, ",", ".")}}
                                                         </td>
                                                     </tr>
                                                     <?php $i++;?>
