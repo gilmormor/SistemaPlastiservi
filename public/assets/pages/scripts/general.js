@@ -1309,7 +1309,7 @@ $("#producto_idM").blur(function(){
 					$("#anchoM").val('');
 					$("#anchoM").attr('valor','');
 					$("#obsM").val('');
-					$("#tipoprodM").attr('valor',respuesta[0]['tipoprod']);
+					$("#tipoprodM").attr('valor',respuesta['tipoprod']);
 					mostrardatosadUniMed(respuesta);
 					llenarselectbodega(respuesta);
 					$(".selectpicker").selectpicker('refresh');					
