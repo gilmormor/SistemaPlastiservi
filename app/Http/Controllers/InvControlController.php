@@ -35,11 +35,13 @@ class InvControlController extends Controller
     //public function invcontrolpage($mesanno,$sucursal_id){
     public function invcontrolpage(Request $request){
         //dd($request);
-
+        $datas = InvMov::stocksql($request);
+        return datatables($datas)->toJson();
+        /*
         return datatables()
         ->eloquent(InvMov::stock($request))
         ->toJson();
-
+        */
     }
 
     /**

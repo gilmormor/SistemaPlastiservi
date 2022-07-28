@@ -39,7 +39,7 @@ $(document).ready(function () {
             'processing'  : true,
             'serverSide'  : true,
             'ajax'        : "invcontrolpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
-            "order": [[ 1, "asc" ]],
+            "order": [[ 0, "asc" ]],
             'columns'     : [
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
