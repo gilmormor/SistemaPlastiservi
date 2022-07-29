@@ -37,9 +37,13 @@ class ReportInvStockController extends Controller
     }
 
     public function reportinvstockpage(Request $request){
+        $datas = InvMov::stocksql($request);
+        return datatables($datas)->toJson();
+/*
         return datatables()
         ->eloquent(InvMov::stock($request))
         ->toJson();
+*/
     }
 
     public function exportPdf(Request $request)

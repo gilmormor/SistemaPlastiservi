@@ -40,9 +40,12 @@ class ReportInvStockBPController extends Controller
     }
     public function reportinvstockbppage(Request $request){
         can('reporte-stock-bodegapicking');
+        $datas = InvMov::stocksql($request,"producto.id");
+        return datatables($datas)->toJson();
+/*
         return datatables()
         ->eloquent(InvMov::stock($request,"producto.id"))
-        ->toJson();
+        ->toJson();*/
     }
 
     public function exportPdf(Request $request)

@@ -16,14 +16,13 @@ $(document).ready(function () {
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
-            'searching'   : false,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
             'ajax'        : "reportinvstockbppage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
-            "order": [[ 1, "asc" ]],
+            "order": [[ 0, "asc" ]],
             'columns'     : [
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
@@ -78,6 +77,7 @@ $(document).ready(function () {
                 $('td', row).eq(11).attr('data-search',stockKg);
                 $('td', row).eq(11).html(MASKLA(stockKg,2));
                 $('td', row).eq(11).addClass('subtotalkg');
+                //console.log(stockKg);
 
             }
         });

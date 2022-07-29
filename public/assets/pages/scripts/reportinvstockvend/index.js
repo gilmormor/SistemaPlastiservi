@@ -16,7 +16,6 @@ $(document).ready(function () {
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
-            'searching'   : false,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
