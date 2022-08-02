@@ -51,9 +51,11 @@ $(document).ready(function () {
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$(".modal-body label").css("margin-bottom", -2);
 	$(".help-block").css("margin-top", -2);
+	/*
 	if($("#aux_fechaphp").val()!=''){
 		$("#fechahora").val($("#aux_fechaphp").val());
 	}
+	*/
 	//alert($("#aux_sta").val());
 
 	totalizarcantkg();

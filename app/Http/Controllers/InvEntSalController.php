@@ -76,8 +76,10 @@ class InvEntSalController extends Controller
     public function guardar(ValidarInvEntSal $request)
     {
         can('guardar-entrada-salida-inventario');
-        $hoy = date("Y-m-d H:i:s");
-        $request->request->add(['fechahora' => $hoy]);
+        $dateInput = explode('/',$request->fechahora);
+        $request["fechahora"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0] . ' 06:00:00';
+        //dd($request);
+
         $request->request->add(['invmovmodulo_id' => 1]);
         $request->request->add(['usuario_id' => auth()->id()]);
         /*
@@ -141,6 +143,7 @@ class InvEntSalController extends Controller
     {
         can('editar-entrada-salida-inventario');
         $data = InvEntSal::findOrFail($id);
+        $data->fechahora = $newDate = date("d/m/Y", strtotime($data->fechahora));
         //dd($data->inventsaldets);
         $invmovtipos = InvMovTipo::orderBy('id')->get();
         $productos = Producto::productosxUsuario();
@@ -164,6 +167,8 @@ class InvEntSalController extends Controller
         can('guardar-entrada-salida-inventario');
         //dd($request->all());
         $inventsal = InvEntSal::findOrFail($id);
+        $dateInput = explode('/',$request->fechahora);
+        $request["fechahora"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0] . ' 06:00:00';
         if($inventsal->updated_at == $request->updated_at){
             $inventsal->updated_at = date("Y-m-d H:i:s");
             $inventsal->update($request->all());
@@ -330,7 +335,7 @@ class InvEntSalController extends Controller
                             }
                         }
                         if($request->staaprob == 2){
-                            $annomes = date("Ym");
+                            $annomes = date("Ym", strtotime($inventsal->fechahora)); // date("Ym");
                             $inventsal->annomes = $annomes;
                             $array_inventsal = $inventsal->attributesToArray();
                             $array_inventsal['idmovmod'] = $array_inventsal['id'];
