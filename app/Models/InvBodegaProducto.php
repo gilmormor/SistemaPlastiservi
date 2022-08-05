@@ -97,7 +97,7 @@ class InvBodegaProducto extends Model
             $saldoexistencia =  $invbodegaproductoexistencia["stock"]["cant"] + $inventsaldet->cant; 
             if($saldoexistencia < 0){
                 $respuesta["bandera"] = false;
-                $respuesta["producto_id"] = $inventsaldet->producto_id;
+                $respuesta["producto_id"] = $inventsaldet->invbodegaproducto->producto_id;
                 $respuesta["producto_nombre"] = "";
                 if(isset($inventsaldet->producto->nombre)){
                     $respuesta["producto_nombre"] = $inventsaldet->producto->nombre;

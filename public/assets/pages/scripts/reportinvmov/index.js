@@ -127,9 +127,10 @@ function consultarpage(data){
         'processing'  : true,
         'serverSide'  : true,
         'ajax'        : "/reportinvmov/reporte/" + data.data2,
-        'order': [[ 0, "asc" ]],
+        'order': [[ 1, "asc" ]],
         'columns'     : [
             {data: 'id'},
+            {data: 'invmovdet_id'},
             {data: 'fechahora'},
             {data: 'desc'},
             {data: 'producto_id'},
@@ -150,15 +151,16 @@ function consultarpage(data){
             $('td', row).eq(0).html(aux_text);
             */
             $('td', row).eq(0).attr('data-search',data.id);
+            $('td', row).eq(1).attr('data-search',data.invmovdet_id);
 
-            $('td', row).eq(1).attr('data-order',data.fechahora);
+            $('td', row).eq(2).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
-            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+            $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
 
-            $('td', row).eq(7).attr('data-order',data.cant);
-            $('td', row).eq(7).attr('style','text-align:right');
+            $('td', row).eq(8).attr('data-order',data.cant);
+            $('td', row).eq(8).attr('style','text-align:right');
             aux_text = MASKLA(data.cant,2);
-            $('td', row).eq(7).html(aux_text);
+            $('td', row).eq(8).html(aux_text);
         }
       });
 }
