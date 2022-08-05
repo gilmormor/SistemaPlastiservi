@@ -121,8 +121,8 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     $invmov_array = array();
                     $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                     $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                    $invmov_array["desc"] = "Salida de Bodega de Despacho / Orden Despacho Nro: " . $request->id;
-                    $invmov_array["obs"] = "Salida de Bodega de Despacho por anular aprobación de Orden de despacho Nro: " . $request->id;
+                    $invmov_array["desc"] = "Salida de BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+                    $invmov_array["obs"] = "Salida de BD por anular aprobación de OD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
                     $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Orden de Despacho
                     $invmov_array["idmovmod"] = $request->id;
                     $invmov_array["invmovtipo_id"] = 2;
@@ -165,8 +165,8 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     $invmov_array = array();
                     $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                     $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                    $invmov_array["desc"] = "Entrada a Bodega Nro: " . $request->id;
-                    $invmov_array["obs"] = "Entrada a Bodega por anular aprobacion de Orden de despacho Nro: " . $request->id;
+                    $invmov_array["desc"] = "Entrada a Bodega / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+                    $invmov_array["obs"] = "Entrada a Bodega por anular aprobacion de OD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
                     $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Orden de Despacho
                     $invmov_array["idmovmod"] = $request->id;
                     $invmov_array["invmovtipo_id"] = 1;
@@ -232,8 +232,8 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     $invmov_array = array();
                     $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                     $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                    $invmov_array["desc"] = "Entrada a Bodega Despacho por anulacion desde asignar Factura / Orden de despacho Nro:: " . $request->id;
-                    $invmov_array["obs"] = "Entrada a Bodega Despacho por anulacion desde asignar Factura / Orden de despacho Nro: " . $request->id;
+                    $invmov_array["desc"] = "Entrada a BD por anulacion desde asignar Fac / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+                    $invmov_array["obs"] = "Entrada a BD por anulacion desde asignar Fac / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
                     $invmov_array["invmovmodulo_id"] = $invmoduloBGiaD->id; //Modulo Guia Despacho
                     $invmov_array["idmovmod"] = $request->id;
                     $invmov_array["invmovtipo_id"] = 1;
@@ -274,8 +274,8 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     $invmov_array = array();
                     $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                     $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                    $invmov_array["desc"] = "Entrada a Bodega por anulacion desde asignar Factura / Orden de despacho Nro:: " . $request->id;
-                    $invmov_array["obs"] = "Entrada a Bodega por anulacion desde asignar Factura / Orden de despacho Nro: " . $request->id;
+                    $invmov_array["desc"] = "Entrada a Bodega por anulacion desde asignar Fact / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+                    $invmov_array["obs"] = "Entrada a Bodega por anulacion desde asignar Fact / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
                     $invmov_array["invmovmodulo_id"] = $invmoduloBGiaD->id; //Modulo Guia Despacho
                     $invmov_array["idmovmod"] = $request->id;
                     $invmov_array["invmovtipo_id"] = 1;

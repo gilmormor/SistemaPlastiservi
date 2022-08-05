@@ -234,7 +234,7 @@ class DespachoSolController extends Controller
                                 $cont_bodegas = count($request->invcant);
                                 if($cont_bodegas>0){
                                     for ($b=0; $b < $cont_bodegas ; $b++){
-                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and ($request->invcant[$b] != 0)){
+                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
                                             $despachosoldet_invbodegaproducto = new DespachoSolDet_InvBodegaProducto();
                                             $despachosoldet_invbodegaproducto->despachosoldet_id = $despachosoldet->id;
                                             $despachosoldet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
@@ -455,7 +455,7 @@ class DespachoSolController extends Controller
                                         $cont_bodegas = count($request->invcant);
                                         if($cont_bodegas>0){
                                             for ($b=0; $b < $cont_bodegas ; $b++){
-                                                if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i]){
+                                                if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i]){
                                                     if($request->invcant[$b] > 0){
                                                         $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
                                                         $existencia = InvBodegaProducto::existencia($array_request);
@@ -692,8 +692,8 @@ class DespachoSolController extends Controller
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                 $invmov_array["annomes"] = date("Ym");
-                $invmov_array["desc"] = "Entrada a Bodega por devolucion Nro SD: " . $request->id;
-                $invmov_array["obs"] = "Entrada a Bodega por devolucion Solicitud despacho Nro OD: " . $request->id;
+                $invmov_array["desc"] = "Entrada a Bodega por devolucion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                $invmov_array["obs"] = "Entrada a Bodega por devolucion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                 $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
                 $invmov_array["idmovmod"] = $request->id;
                 $invmov_array["invmovtipo_id"] = 1;
@@ -731,8 +731,8 @@ class DespachoSolController extends Controller
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                 $invmov_array["annomes"] = date("Ym");
-                $invmov_array["desc"] = "Salida por devolución de Bodega Solicitud Despacho Nro: " . $request->id;
-                $invmov_array["obs"] = "Salida por devolución de Bodega Solicitud Nro: " . $request->id;
+                $invmov_array["desc"] = "Salida por devolución de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                $invmov_array["obs"] = "Salida por devolución de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                 $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
                 $invmov_array["idmovmod"] = $request->id;
                 $invmov_array["invmovtipo_id"] = 2;
@@ -867,8 +867,8 @@ class DespachoSolController extends Controller
                         $invmov_array = array();
                         $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                         $invmov_array["annomes"] = date("Ym");
-                        $invmov_array["desc"] = "Entrada a Bodega por devolucion Nro SD: " . $request->id;
-                        $invmov_array["obs"] = "Entrada a Bodega por devolucion Solicitud despacho Nro OD: " . $request->id;
+                        $invmov_array["desc"] = "Entrada a Bodega por devolucion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["obs"] = "Entrada a Bodega por devolucion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                         $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
                         $invmov_array["idmovmod"] = $request->id;
                         $invmov_array["invmovtipo_id"] = 1;
@@ -882,8 +882,8 @@ class DespachoSolController extends Controller
                         $invmov_array = array();
                         $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                         $invmov_array["annomes"] = date("Ym");
-                        $invmov_array["desc"] = "Salida por devolución de Bodega Solicitud Despacho Nro: " . $request->id;
-                        $invmov_array["obs"] = "Salida por devolución de Bodega Solicitud Nro: " . $request->id;
+                        $invmov_array["desc"] = "Salida por devolución de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["obs"] = "Salida por devolución de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                         $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
                         $invmov_array["idmovmod"] = $request->id;
                         $invmov_array["invmovtipo_id"] = 2;
@@ -1002,8 +1002,8 @@ class DespachoSolController extends Controller
                         $invmov_array = array();
                         $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                         $invmov_array["annomes"] = date("Ym");
-                        $invmov_array["desc"] = "Entrada a Bodega por devolucion Nro SD: " . $request->id;
-                        $invmov_array["obs"] = "Entrada a Bodega por devolucion Solicitud despacho Nro OD: " . $request->id;
+                        $invmov_array["desc"] = "Entrada a Bodega por devolucion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["obs"] = "Entrada a Bodega por devolucion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                         $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
                         $invmov_array["idmovmod"] = $request->id;
                         $invmov_array["invmovtipo_id"] = 1;
@@ -1017,8 +1017,8 @@ class DespachoSolController extends Controller
                         $invmov_array = array();
                         $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                         $invmov_array["annomes"] = date("Ym");
-                        $invmov_array["desc"] = "Salida por devolución de Bodega Solicitud Despacho Nro: " . $request->id;
-                        $invmov_array["obs"] = "Salida por devolución de Bodega Solicitud Nro: " . $request->id;
+                        $invmov_array["desc"] = "Salida por devolución de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["obs"] = "Salida por devolución de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                         $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
                         $invmov_array["idmovmod"] = $request->id;
                         $invmov_array["invmovtipo_id"] = 2;
@@ -1186,8 +1186,8 @@ class DespachoSolController extends Controller
                             $invmov_array = array();
                             $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                             $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                            $invmov_array["desc"] = "Salida de Bodega Nro SD: " . $request->id;
-                            $invmov_array["obs"] = "Salida de Bodega por aprobacion de Solicitud despacho Nro OD: " . $request->id;
+                            $invmov_array["desc"] = "Salida de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                            $invmov_array["obs"] = "Salida de Bodega por aprobacion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                             $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Orden Despacho
                             $invmov_array["idmovmod"] = $request->id;
                             $invmov_array["invmovtipo_id"] = 2;
@@ -1220,8 +1220,8 @@ class DespachoSolController extends Controller
                             $invmov_array = array();
                             $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                             $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                            $invmov_array["desc"] = "Entrada a Bodega Solicitud Despacho Nro: " . $request->id;
-                            $invmov_array["obs"] = "Entrada a Bodega Solicitud Despacho por aprobacion de Solicitud despacho Nro: " . $request->id;
+                            $invmov_array["desc"] = "Entrada a Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                            $invmov_array["obs"] = "Entrada a Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                             $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Orden Despacho
                             $invmov_array["idmovmod"] = $request->id;
                             $invmov_array["invmovtipo_id"] = 1;

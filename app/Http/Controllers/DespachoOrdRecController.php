@@ -134,7 +134,7 @@ class DespachoOrdRecController extends Controller
                                     $cont_bodegas = count($request->invcant);
                                     if($cont_bodegas>0){
                                         for ($b=0; $b < $cont_bodegas ; $b++){
-                                            if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and ($request->invcant[$b] != 0)){
+                                            if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
                                                 $despachoordrecdet_invbodegaproducto = new DespachoOrdRecDet_InvBodegaProducto();
                                                 $despachoordrecdet_invbodegaproducto->despachoordrecdet_id = $despachoordrecdet->id;
                                                 $despachoordrecdet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
@@ -302,7 +302,7 @@ class DespachoOrdRecController extends Controller
                                                 //dd($request);
                                                 if($cont_bodegas>0){
                                                     for ($b=0; $b < $cont_bodegas ; $b++){
-                                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i]){
+                                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i]){
                                                             DespachoOrdRecDet_InvBodegaProducto::updateOrCreate(
                                                                 ['id' => $request->despachoordrecdet_invbodegaproducto_id[$b]],
                                                                 [
@@ -583,8 +583,8 @@ class DespachoOrdRecController extends Controller
                                 $invmov_array = array();
                                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                                 $invmov_array["annomes"] = date("Ym");
-                                $invmov_array["desc"] = "Entrada a Bodega Motivo: Rechazo OD " . $despachoordrec->despachoord_id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
-                                $invmov_array["obs"] = "Entrada a Bodega Motivo: Rechazo OD " . $despachoordrec->despachoord_id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["desc"] = "Ent Bod Rechazo OD/ NV:" . $despachoordrec->despachoord->notaventa_id . " SD:" . $despachoordrec->despachoord->despachosol_id . " OD:" . $despachoordrec->despachoord_id . " RecOD: " . $despachoordrec->id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["obs"] = "Ent Bod Rechazo OD/ NV:" . $despachoordrec->despachoord->notaventa_id . " SD:" . $despachoordrec->despachoord->despachosol_id . " OD:" . $despachoordrec->despachoord_id . " RecOD: " . $despachoordrec->id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
                                 $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Rechazo Orden de Despacho
                                 $invmov_array["idmovmod"] = $request->id;
                                 $invmov_array["invmovtipo_id"] = 1;
@@ -627,8 +627,8 @@ class DespachoOrdRecController extends Controller
                                 $invmov_array = array();
                                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                                 $invmov_array["annomes"] = date("Ym");
-                                $invmov_array["desc"] = "Entrada a Bodega Scrap Motivo: Rechazo OD " . $despachoordrec->despachoord_id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
-                                $invmov_array["obs"] = "Entrada a Bodega Scrap Motivo: Rechazo OD " . $despachoordrec->despachoord_id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["desc"] = "Ent Bod Scrap: Rechazo OD/ NV:" . $despachoordrec->despachoord->notaventa_id . " SD:" . $despachoordrec->despachoord->despachosol_id . " OD:" . $despachoordrec->despachoord_id . " RecOD: " . $despachoordrec->id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["obs"] = "Ent Bod Scrap: Rechazo OD/ NV:" . $despachoordrec->despachoord->notaventa_id . " SD:" . $despachoordrec->despachoord->despachosol_id . " OD:" . $despachoordrec->despachoord_id . " RecOD: " . $despachoordrec->id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
                                 $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Rechazo Orden de Despacho
                                 $invmov_array["idmovmod"] = $request->id;
                                 $invmov_array["invmovtipo_id"] = 1;

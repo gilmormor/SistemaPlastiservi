@@ -132,6 +132,7 @@
                                                 {{$detalle->id}}
                                             </td>
                                             <td style="display:none;">
+                                                <input type="text" name="NVdet_id[]" id="NVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
                                                 <input type="text" name="despachoorddet_id[]" id="despachoorddet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
                                                 <input type="text" name="notaventadetalle_id[]" id="notaventadetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle_id}}" style="display:none;"/>
                                                 <input type="text" name="despachoordrecdet_id[]" id="despachoordrecdet_id{{$aux_nfila}}" class="form-control" value="{{$aux_despachoordrecdet_id}}" style="display:none;"/>
@@ -188,12 +189,13 @@
                                                                     <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                         <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
                                                                         <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
+                                                                        <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
                                                                         {{$invbodegaproducto->id}}
                                                                     </td>
                                                                     <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}}'>
                                                                         {{$invbodegaproducto->invbodega->nomabre}}
                                                                     </td>
-                                                                    <td name="stockcantTD{{$invbodegaproducto->id}}" id="stockcantTD{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
+                                                                    <td name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
                                                                         {{$existencia["stock"]["cant"]}}
                                                                     </td>
                                                                     <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right" title='Cant a despachar'>
@@ -205,7 +207,7 @@
                                                                                         @if ($despachoordrecdet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)
                                                                                             <?php $bandera = true; ?>
                                                                                             <input type="text" name="despachoordrecdet_invbodegaproducto_id[]" id="despachoordrecdet_invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control numerico" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;display:none;" value="{{($despachoordrecdet_invbodegaproducto->id)}}"/>
-                                                                                            <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bodrec{{$aux_nfila}}" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;" value="{{($despachoordrecdet_invbodegaproducto->cant)}}"/>
+                                                                                            <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bodrec{{$aux_nfila}}" onkeyup="sumbodrec({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}')" style="text-align:right;" value="{{($despachoordrecdet_invbodegaproducto->cant)}}"/>
                                                                                         @endif
                                                                                     @endforeach
                                                                                 @endif
