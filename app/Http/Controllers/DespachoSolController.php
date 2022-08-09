@@ -980,6 +980,7 @@ class DespachoSolController extends Controller
                     $DespachoOrd = DespachoOrd::findOrFail($despachoorddet->despachoord_id);
                     if(!$DespachoOrd->despachoordanul ){
                         foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                            /* SOLO DEBO BUSCAR EL MOVIMIENTO DE PICKING DEL PRODUCTO ENTRADAS Y SALIDAS
                             $despachoorddet_invbodegaproducto_id = $despachoorddet_invbodegaproducto->id;
                             foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
                                 //SUMO SOLO EL MOVIMIENTO DE LA BODEGA DE SOL DESPACHO
@@ -988,6 +989,7 @@ class DespachoSolController extends Controller
                                     $DespachoOrd_id = $DespachoOrd->id;
                                 }
                             }
+                            */
                             //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
                             //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
                             if(is_null($DespachoOrd->aprguiadesp)){
