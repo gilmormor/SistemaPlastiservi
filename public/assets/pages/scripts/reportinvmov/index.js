@@ -150,6 +150,12 @@ function consultarpage(data){
                 "</a>";
             $('td', row).eq(0).html(aux_text);
             */
+            aux_text = 
+			"<a class='btn-accion-tabla btn-sm tooltipsC' title='Movimiento de Inv' onclick='genpdfINVMOV(" + data.id + ",1)'>"+
+				data.id +
+			"</a>";
+			$('td', row).eq(0).html(aux_text);
+
             $('td', row).eq(0).attr('data-search',data.id);
             $('td', row).eq(1).attr('data-search',data.invmovdet_id);
 
