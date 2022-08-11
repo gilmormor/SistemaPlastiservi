@@ -5,47 +5,53 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class GuiaDespacho extends Model
+class GuiaDesp extends Model
 {
     use SoftDeletes;
-    protected $table = "guiadespacho";
+    protected $table = "guiadesp";
     protected $fillable = [
+        'fechahora',
         'despachoord_id',
         'notaventa_id',
-        'usuario_id',
-        'fechahora',
-        'comunaentrega_id',
-        'tipoentrega_id',
-        'sucursal_id',
-        'cliente_id',
         'rut',
         'razonsocial',
         'giro',
-        'dircliente',
+        'clidir',
         'comuna',
         'ciudad',
-        'comuna_id',
-        'plazoentrega',
-        'lugarentrega',
+        'email',
+        'telefono',
+        'cliente_id',
         'contacto',
         'contactoemail',
         'contactotelf',
-        'oc_id',
-        'oc_file',
         'obs',
-        'anulada',
-        'piva',
+        'formapago_id',
+        'vendedor_id',
+        'plazoentrega',
+        'fechaestdesp',
+        'lugarentrega',
+        'plazopago_id',
+        'tipoentrega_id',
+        'comuna_id',
+        'comunaentrega_id',
         'neto',
+        'piva',
         'iva',
         'total',
-        'fechaestdesp',
+        'traslado',
+        'ot',
+        'aprobstatus',
+        'aprobusu_id',
+        'aprobfechahora',
+        'usuario_id',
         'usuariodel_id'
     ];
 
-        //RELACION DE UNO A MUCHOS DespachoOrdDet
-        public function guiadespachodets()
+        //RELACION DE UNO A MUCHOS GuiaDespDet
+        public function guiadespdets()
         {
-            return $this->hasMany(guiadespachoDet::class,'guiadespacho_id');
+            return $this->hasMany(GuiaDespDet::class,'guiadespacho_id');
         }
     
         //Relacion inversa a DespachoOrd

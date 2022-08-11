@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cliente;
 use App\Models\DespachoOrd;
 use App\Models\GuiaDespacho;
 use App\Models\GuiaDespachoDet;
+use App\Models\NotaVenta;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -104,6 +106,34 @@ class ListarOrdDespController extends Controller
         $array_despachoord["despachoord_id"] = $request->id;
         $array_despachoord["obs"] = $request->observacion;
         $array_despachoord["fechahora"] = date("Y-m-d H:i:s");
+        $notaventa = NotaVenta::findOrFail($despachoord->notaventa_id);
+        $array_despachoord["sucursal_id"] = $notaventa->sucursal_id;
+        $array_despachoord["cliente_id"] = $notaventa->cliente_id;
+        $array_despachoord["comuna_id"] = $notaventa->comuna_id;
+        $array_despachoord["oc_id"] = $notaventa->oc_id;
+        $array_despachoord["oc_file"] = $notaventa->oc_file;
+
+        $array_despachoord["piva"] = $notaventa->piva;
+        $array_despachoord["neto"] = $notaventa->neto;
+        $array_despachoord["iva"] = $notaventa->iva;
+        $array_despachoord["total"] = $notaventa->total;
+
+        $cliente = Cliente::findOrFail($notaventa->cliente_id);
+        $array_despachoord["rut"] = $cliente->rut;
+        $array_despachoord["razonsocial"] = $cliente->razonsocial;
+        $array_despachoord["giro"] = $cliente->giro;
+        $array_despachoord["dircliente"] = $cliente->dircliente;
+        $array_despachoord["comuna"] = $cliente->comuna->nombre;
+        $array_despachoord["ciudad"] = $cliente->comuna->provincia->nombre;
+
+        
+        
+
+        
+        
+        
+        
+        //dd($array_despachoord);
         //dd($array_despachoord);
 
         unset($array_despachoord["id"],$array_despachoord["despachosol_id"],$array_despachoord["created_at"],$array_despachoord["updated_at"],$array_despachoord["deleted_at"]);
