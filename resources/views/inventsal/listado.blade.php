@@ -96,7 +96,7 @@
 						<td class="textleft">{{$inventsaldet->invbodegaproducto->producto->categoriaprod->nombre}}</td>
 						<td class="textleft">{{$inventsaldet->invbodegaproducto->invbodega->nombre}}</td>
 						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto->diametro}}</td>
-						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto->cla_nombre}}</td>
+						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto->claseprod->cla_nombre}}</td> 
 						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto->long}} mts</td>
 						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto->tipounion}}</td>
 						<td class="textcenter">{{$inventsaldet->unidadmedida->nombre}}</td>
