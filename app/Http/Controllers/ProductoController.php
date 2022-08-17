@@ -55,6 +55,12 @@ class ProductoController extends Controller
         */
     }
 
+    public function productobuscarpage(){
+        $datas = Producto::productosxUsuarioSQL();
+        return datatables($datas)->toJson();
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *

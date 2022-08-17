@@ -84,6 +84,17 @@ class CotizacionController extends Controller
 
         
     }
+
+    public function productobuscarpage(){
+        $datas = Producto::productosxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpage(){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
     /*
     public function consulta(){
         $cotizacionDetalle = CotizacionDetalle::where('cotizacion_id','14')->get()->count();
@@ -99,11 +110,16 @@ class CotizacionController extends Controller
     {
         can('crear-cotizacion');
         //CLIENTES POR USUARIO. SOLO MUESTRA LOS CLIENTES QUE PUEDE VER UN USUARIO
+        $user = Usuario::findOrFail(auth()->id());
         $tablas = array();
+        $vendedor = Vendedor::vendedores();
+        $tablas['vendedores'] = $vendedor['vendedores'];
+        $vendedor_id = Vendedor::vendedor_id();
+        $tablas['vendedor_id'] = $vendedor_id["vendedor_id"];
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
-        $tablas['vendedor_id'] = $clientesArray['vendedor_id'];
-        $tablas['sucurArray'] = $clientesArray['sucurArray'];
+        //$tablas['vendedor_id'] = $clientesArray['vendedor_id'];
+        $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray();
         $fecha = date("d/m/Y");
         $tablas['formapagos'] = FormaPago::orderBy('id')->get();
         $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
@@ -116,13 +132,9 @@ class CotizacionController extends Controller
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $aux_sta=1;
-        $vendedor = Vendedor::vendedores();
-        $tablas['vendedores'] = $vendedor['vendedores'];
-        $productos = Producto::productosxUsuario();
-        //dd($tablas['unidadmedida']);
         session(['aux_aprocot' => '0']);
 
-        return view('cotizacion.crear',compact('clientes','fecha','productos','aux_sta','tablas'));
+        return view('cotizacion.crear',compact('clientes','fecha','aux_sta','tablas'));
     }
     /**
      * Store a newly created resource in storage.

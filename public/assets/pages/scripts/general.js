@@ -1294,7 +1294,9 @@ $("#producto_idM").blur(function(){
 						$("#largoM").val(respuesta['long']);
 						$("#largoM").attr('valor',respuesta['long']);	
 					}
-					$("#pesoM").val(respuesta['peso']);
+					aux_peso = respuesta['peso'];
+					aux_peso = aux_peso.toFixed(3);
+					$("#pesoM").val(aux_peso);
 					$("#tipounionM").val(respuesta['tipounion']);
 					$("#precioM").val(respuesta['precio']);
 					$("#precioM").attr('valor',respuesta['precio']);
