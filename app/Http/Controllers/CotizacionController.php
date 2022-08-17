@@ -116,8 +116,10 @@ class CotizacionController extends Controller
         $tablas['vendedores'] = $vendedor['vendedores'];
         $vendedor_id = Vendedor::vendedor_id();
         $tablas['vendedor_id'] = $vendedor_id["vendedor_id"];
+        /*
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
+        */
         //$tablas['vendedor_id'] = $clientesArray['vendedor_id'];
         $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray();
         $fecha = date("d/m/Y");
@@ -134,7 +136,7 @@ class CotizacionController extends Controller
         $aux_sta=1;
         session(['aux_aprocot' => '0']);
 
-        return view('cotizacion.crear',compact('clientes','fecha','aux_sta','tablas'));
+        return view('cotizacion.crear',compact('fecha','aux_sta','tablas'));
     }
     /**
      * Store a newly created resource in storage.
