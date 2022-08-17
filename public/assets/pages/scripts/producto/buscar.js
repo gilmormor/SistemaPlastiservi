@@ -6,8 +6,8 @@ $(document).ready(function () {
 
 function configTablaProd(){
     aux_nfila = 0;
-    $("#tabla-data-productos").attr('style','')
-    $("#tabla-data-productos").dataTable().fnDestroy();
+    //$("#tabla-data-productos").attr('style','')
+    //$("#tabla-data-productos").dataTable().fnDestroy();
 
     $('#tabla-data-productos').DataTable({
         'paging'      : true,
