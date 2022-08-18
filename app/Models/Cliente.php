@@ -202,6 +202,7 @@ class Cliente extends Model
                 on cliente.id = cliente_sucursal.cliente_id and isnull(cliente.deleted_at) and isnull(cliente_sucursal.deleted_at)
                 where cliente.id in ($sqlclienteVendedor)
                 and cliente_sucursal.sucursal_id in ($sucurcadena)
+                GROUP BY cliente.id
                 ORDER BY cliente.id;";
 
         $datas = DB::select($sql);

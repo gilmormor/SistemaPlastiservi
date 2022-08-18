@@ -5,8 +5,8 @@ $(document).ready(function () {
 
 function configTablaCliente(){
     aux_nfila = 0;
-    /*$("#tabla-data-clientes").attr('style','')
-    $("#tabla-data-clientes").dataTable().fnDestroy();*/
+    $("#tabla-data-clientes").attr('style','');
+    //$("#tabla-data-clientes").DataTable().fnDestroy();
     $('#tabla-data-clientes').DataTable({
         'paging'      : true,
         'lengthChange': true,
