@@ -101,6 +101,12 @@ class Cliente extends Model
     {
         return $this->belongsTo(PlazoPago::class);
     }
+    //RELACION MUCHO A MUCHOS CON PRODUCTO A TRAVES DE cliente_producto
+    public function productos()
+    {
+        return $this->belongsToMany(Producto::class, 'cliente_producto')->withTimestamps();
+    }
+    
 
     public static function clientesxUsuario($vendedor_id = '0',$cliente_id = 0){
         $respuesta = array();

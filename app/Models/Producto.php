@@ -79,6 +79,11 @@ class Producto extends Model
     {
         return $this->hasMany(InvMovDet::class);
     }
+    //RELACION MUCHO A MUCHOS CON CLIENTE A TRAVES DE cliente_producto
+    public function clientes()
+    {
+        return $this->belongsToMany(Cliente::class, 'cliente_producto')->withTimestamps();
+    }
 
     public static function productosxUsuario($sucursal_id = false){
         $users = Usuario::findOrFail(auth()->id());
