@@ -291,6 +291,10 @@ Route::post('cotizacion/aprobarcotsup/{id}', 'CotizacionController@aprobarcotsup
 Route::post('cotizacion/buscarCotizacion', 'CotizacionController@buscarCotizacion')->name('buscarCotizacion');
 Route::get('cotizacion/{id}/exportPdf', 'CotizacionController@exportPdf')->name('exportPdf_cotizacion');
 Route::get('cotizacion/{id}/{stareport}/exportPdfM', 'CotizacionController@exportPdfM')->name('exportPdfM_cotizacion');
+Route::get('cotizacion/productobuscarpage', 'CotizacionController@productobuscarpage')->name('productobuscarpage');
+Route::get('cotizacion/clientebuscarpage', 'CotizacionController@clientebuscarpage')->name('clientebuscarpage');
+
+
 
 
 /*RUTAS CONSULTAR COTIZACION*/
@@ -872,3 +876,11 @@ Route::get('listarorddesp', 'ListarorddespController@index')->name('listarorddes
 Route::get('listarorddesppage', 'ListarorddespController@listarorddesppage')->name('listarorddesppage');
 Route::get('listarorddesp/totalizarindex', 'ListarorddespController@totalizarindex')->name('listarorddesp_totalizarindex');
 Route::post('listarorddesp/guardarguiadesp', 'ListarorddespController@guardarguiadesp')->name('guardarguiadesp_listarorddesp');
+
+
+/*RUTAS INV STOCK BODEGA DE PRODUCTO TERMINADO MAS PIKING*/
+Route::get('reportinvstockbp', 'ReportInvStockBPController@index')->name('reportinvstockbp');
+Route::get('reportinvstockbppage', 'ReportInvStockBPController@reportinvstockbppage')->name('reportinvstockbppage');
+Route::get('reportinvstockbp/reporte', 'ReportInvStockBPController@reporte')->name('reportinvstockbp_reporte');
+Route::get('reportinvstockbp/exportPdf', 'ReportInvStockBPController@exportPdf')->name('reportinvstockbp_exportPdf');
+Route::get('reportinvstockbp/totalizarindex', 'ReportInvStockBPController@totalizarindex')->name('reportinvstockbp_totalizarindex');

@@ -40,7 +40,7 @@ Inventario Control
                                         }
                                     ?>
                                     <select name="sucursal_id" id="sucursal_id" class="form-control selectpicker" required>
-                                        <option value="x">Seleccione...</option>
+                                        <option value="">Seleccione...</option>
                                         @foreach($sucursales as $sucursal)
                                             <option
                                                 value="{{$sucursal->id}}"

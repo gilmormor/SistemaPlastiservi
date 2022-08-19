@@ -30,6 +30,7 @@
 			<thead>
 				<tr>
 					<th style='text-align:left' class='width10'>Id</th>
+					<th style='text-align:left' class='width10'>IdDet</th>
 					<th style='text-align:left' class='width90'>Fecha</th>
 					<th style='text-align:left' class='width90'>Descripcion</th>
 					<th style='text-align:left' class='width30'>CodProd</th>
@@ -46,6 +47,7 @@
 				@foreach($datas as $data)
 					<tr class='btn-accion-tabla tooltipsC'>
 						<td style='text-align:center'>{{$data->id}}</td>
+						<td style='text-align:center'>{{$data->invmovdet_id}}</td>
 						<td style='text-align:center'>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
 						<td>{{$data->desc}}</td>
 						<td style='text-align:center'>{{$data->producto_id}}</td>
@@ -62,7 +64,7 @@
 			</tbody>
 			<tfoot id="detalle_totales">
 				<tr>
-					<th colspan='7' style='text-align:right'>TOTAL</th>
+					<th colspan='8' style='text-align:right'>TOTAL</th>
 					<th style='text-align:center'>{{number_format($aux_total, 0, ",", ".")}}</th>
 				</tr>
 			</tfoot>

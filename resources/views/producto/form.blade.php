@@ -281,7 +281,27 @@
             </select>
         </div>
     </div>
+    <div class="form-group col-xs-12 col-sm-6">
+        <label for="estado" class="col-lg-3 control-label requerido" title="Activo o Inactivo.">Estado</label>
+        <div class="col-lg-9">
+            <select name="estado" id="estado" class="form-control select2 estado" required>
+                <option value="">Seleccione...</option>
+                <option value="1"
+                    @if (isset($data) and ($data->estado=="1"))
+                        {{'selected'}}
+                    @endif
+                >Activo</option>
+                <option value="0"
+                    @if (isset($data) and ($data->estado=="0"))
+                        {{'selected'}}
+                    @endif    
+                >Inactivo</option>
+            </select>
+        </div>    
+    </div>
+
 </div>
+
 <div class="col-md-8 col-md-offset-2">
     <div class="box box-primary">
         <div class="box-header with-border">

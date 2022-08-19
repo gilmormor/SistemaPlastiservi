@@ -14,6 +14,7 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
+use App\Models\DespachoOrd_InvMov;
 use App\Models\DespachoOrdAnul;
 use App\Models\DespachoSol;
 use App\Models\DespachoSol_InvMov;
@@ -26,6 +27,7 @@ use App\Models\Giro;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
+use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovDet_BodSolDesp;
 use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
@@ -232,7 +234,7 @@ class DespachoSolController extends Controller
                                 $cont_bodegas = count($request->invcant);
                                 if($cont_bodegas>0){
                                     for ($b=0; $b < $cont_bodegas ; $b++){
-                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and ($request->invcant[$b] != 0)){
+                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
                                             $despachosoldet_invbodegaproducto = new DespachoSolDet_InvBodegaProducto();
                                             $despachosoldet_invbodegaproducto->despachosoldet_id = $despachosoldet->id;
                                             $despachosoldet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
@@ -453,7 +455,7 @@ class DespachoSolController extends Controller
                                         $cont_bodegas = count($request->invcant);
                                         if($cont_bodegas>0){
                                             for ($b=0; $b < $cont_bodegas ; $b++){
-                                                if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i]){
+                                                if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i]){
                                                     if($request->invcant[$b] > 0){
                                                         $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
                                                         $existencia = InvBodegaProducto::existencia($array_request);
@@ -656,7 +658,11 @@ class DespachoSolController extends Controller
             $aux_banderacant = true; //VALIDAR QUE EXISTE AL MENOS 1 PRODUCTO CON CANTIDAD
             foreach ($despachosol->despachosoldets as $despachosoldet) {
                 foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
-                    $aux_cant = $despachosoldet_invbodegaproducto->cant * -1;
+                    //$aux_cant = $despachosoldet_invbodegaproducto->cant * -1;
+                    $aux_cant = 0;
+                    foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                        $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
+                    }
                     if($aux_cant > 0){
                         $aux_banderacant = true;
                         $aux_producto =$despachosoldet_invbodegaproducto->invbodegaproducto->producto;
@@ -670,6 +676,8 @@ class DespachoSolController extends Controller
                         ->get();
                         $aux_respuesta = InvBodegaProducto::existencia($invbodegaproducto[0]);
                         if($aux_respuesta["stock"]["cant"] < $aux_cant){ //VALIDAR STOCK DE PRODUCTO EN BODEGA
+                            //dd($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps[1]->invmovdet);
+                            //dd($aux_respuesta["stock"]["cant"]);
                             return response()->json([
                                 'mensaje' => 'MensajePersonalizado',
                                 'menper' => "Producto sin Stock,  ID: " . $aux_producto->id . ", Nombre: " . $aux_producto->nombre . ", Stock: " . $aux_respuesta["stock"]["cant"]
@@ -684,8 +692,8 @@ class DespachoSolController extends Controller
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                 $invmov_array["annomes"] = date("Ym");
-                $invmov_array["desc"] = "Entrada a Bodega por devolucion Nro SD: " . $request->id;
-                $invmov_array["obs"] = "Entrada a Bodega por devolucion Solicitud despacho Nro OD: " . $request->id;
+                $invmov_array["desc"] = "Entrada por devolucion SD NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                $invmov_array["obs"] = "Entrada por devolucion SD NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                 $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
                 $invmov_array["idmovmod"] = $request->id;
                 $invmov_array["invmovtipo_id"] = 1;
@@ -698,6 +706,11 @@ class DespachoSolController extends Controller
                 foreach ($despachosol->despachosoldets as $despachosoldet) {
                     foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
                         $aux_cant = $oddetbodprod->cant * -1;
+                        $aux_cant = 0;
+                        foreach ($oddetbodprod->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                            $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
+                        }
+    
                         if($aux_cant > 0){
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
@@ -709,7 +722,7 @@ class DespachoSolController extends Controller
                             $array_invmovdet["cantgrupo"] = $aux_cant;
                             $array_invmovdet["cantxgrupo"] = 1;
                             $array_invmovdet["peso"] = $despachosoldet->notaventadetalle->producto->peso;
-                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $aux_cant;
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
                         }
@@ -718,8 +731,8 @@ class DespachoSolController extends Controller
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                 $invmov_array["annomes"] = date("Ym");
-                $invmov_array["desc"] = "Salida por devolución de Bodega Solicitud Despacho Nro: " . $request->id;
-                $invmov_array["obs"] = "Salida por devolución de Bodega Solicitud Nro: " . $request->id;
+                $invmov_array["desc"] = "Salida por devolución SD NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                $invmov_array["obs"] = "Salida por devolución SD NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                 $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
                 $invmov_array["idmovmod"] = $request->id;
                 $invmov_array["invmovtipo_id"] = 2;
@@ -730,7 +743,11 @@ class DespachoSolController extends Controller
                 array_push($arrayinvmov_id, $invmov->id);
                 foreach ($despachosol->despachosoldets as $despachosoldet) {
                     foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
-                        $aux_cant = $oddetbodprod->cant * -1;
+                        //$aux_cant = $oddetbodprod->cant * -1;
+                        $aux_cant = 0;
+                        foreach ($oddetbodprod->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                            $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
+                        }
                         if($aux_cant > 0){
                             $invbodegaproducto = InvBodegaProducto::updateOrCreate(
                                 ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $invmoduloBod->invmovmodulobodents[0]->id],
@@ -745,12 +762,12 @@ class DespachoSolController extends Controller
                             $array_invmovdet["invbodega_id"] = $invmoduloBod->invmovmodulobodents[0]->id;
                             $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
-                            $array_invmovdet["invmovtipo_id"] = 1;
-                            $array_invmovdet["cant"] = $array_invmovdet["cant"] ;
-                            $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
+                            $array_invmovdet["invmovtipo_id"] = 2;
+                            $array_invmovdet["cant"] = $aux_cant * -1 ;
+                            $array_invmovdet["cantgrupo"] = $aux_cant * -1;
                             $array_invmovdet["cantxgrupo"] = 1;
                             $array_invmovdet["peso"] = $despachosoldet->notaventadetalle->producto->peso;
-                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $aux_cant * -1;
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
                             $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
@@ -791,6 +808,293 @@ class DespachoSolController extends Controller
     {
         if ($request->ajax()) {
             $despachosol = DespachoSol::findOrFail($request->id);
+
+            /******************************************************/
+            $despachosol = DespachoSol::findOrFail($request->id);
+            if($despachosol->aprorddesp != 1){
+                return response()->json(['mensaje' => 'Registro fue modificado previamente.']);
+            }
+            $invmodulo = InvMovModulo::where("cod","SOLDESP")->get();
+            $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
+            //dd($invmoduloBod->invmovmodulobodents[0]->id);
+            if(count($invmodulo) == 0){
+                return response()->json([
+                    'mensaje' => 'No existe modulo SOLDESP'
+                ]);
+            }
+
+            //dd($invmoduloBod->invmovmodulobodents[0]->id);
+            if(count($invmodulo) == 0){
+                return response()->json([
+                    'mensaje' => 'No existe modulo SOLDESP'
+                ]);
+            }
+
+            /*****************PRUEBA PARA DEVOLVER SOLICITUD CUANDO HAY YA ORDENES DE UNA SOLICITUD DE DESPACHO */
+            /***** 15/07/2022 */
+            /***** ESTO DEBO ACTIVARLO CUANDO PASE POR LO MENOS 1 SEMANA PARA QUE TODAS SOLDESP Y ORDDESP HAYAN SIDO PROCESADAS */
+            /*
+            $aux_stacrearmovinv = 0;
+            foreach ($despachosol->despachosoldets as $despachosoldet) {
+                $aux_cant = 0;
+                foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                    $aux_cant = 0;
+                    foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                        $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
+                    }
+                    foreach($despachosoldet->despachoorddets as $despachoorddet){
+                        if(!$despachoorddet->despachoord->despachoordanul){ //QUE NO ESTE ANULADO
+                            if(!$despachoorddet->despachoord->aprguiadesp){ //SUMA SI NO ESTA APROBADO PARA GUIA DE DESPACHO ES DECIR ENTRA SI EN = A NULL
+                                foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                                    $aux_cant += $despachoorddet_invbodegaproducto->cant;
+                                }
+                            }
+                        }
+                    }
+                    $invbodegaproducto_idEntrada = $despachosoldet_invbodegaproducto->invbodegaproducto->id;
+                    $invbodegaproducto_idSalida = $invmovdet_bodsoldesp->invmovdet->invbodegaproducto_id;
+                    $producto_id = $despachosoldet_invbodegaproducto->invbodegaproducto->producto_id;
+                    $invbodega_idEntrada = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega_id;
+                    $invbodega_idSalida = $invmovdet_bodsoldesp->invmovdet->invbodega_id;
+                    $sucursal_id = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega->sucursal_id;
+                    $unidadmedida_id = $despachosoldet->notaventadetalle->unidadmedida_id;
+                    $peso = $despachosoldet->notaventadetalle->producto->peso;
+                    $cantkg = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $aux_cant;
+                    $despachosoldet_invbodegaproducto_id = $despachosoldet_invbodegaproducto->id;
+                }
+                if($aux_cant > 0){
+                    if($aux_stacrearmovinv == 0){
+                        $invmov_array = array();
+                        $invmov_array["fechahora"] = date("Y-m-d H:i:s");
+                        $invmov_array["annomes"] = date("Ym");
+                        $invmov_array["desc"] = "Entrada a Bodega por devolucion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["obs"] = "Entrada a Bodega por devolucion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
+                        $invmov_array["idmovmod"] = $request->id;
+                        $invmov_array["invmovtipo_id"] = 1;
+                        $invmov_array["sucursal_id"] = $despachosol->notaventa->sucursal_id;
+                        $invmov_array["usuario_id"] = auth()->id();
+                        $arrayinvmov_id = array();
+                        
+                        $invmovEntDesp = InvMov::create($invmov_array);
+                        array_push($arrayinvmov_id, $invmovEntDesp->id);
+
+                        $invmov_array = array();
+                        $invmov_array["fechahora"] = date("Y-m-d H:i:s");
+                        $invmov_array["annomes"] = date("Ym");
+                        $invmov_array["desc"] = "Salida por devolución de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["obs"] = "Salida por devolución de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
+                        $invmov_array["idmovmod"] = $request->id;
+                        $invmov_array["invmovtipo_id"] = 2;
+                        $invmov_array["sucursal_id"] = $despachosol->notaventa->sucursal_id;
+                        $invmov_array["usuario_id"] = auth()->id();
+                        
+                        $invmovSalDesp = InvMov::create($invmov_array);
+                        array_push($arrayinvmov_id, $invmovSalDesp->id);
+
+                        $despachosol_invmov = DespachoSol_InvMov::create(
+                        [
+                            'despachosol_id' => $despachosol->id,
+                            'invmov_id' => $arrayinvmov_id[0]
+                        ]);
+    
+                        $despachosol_invmov = DespachoSol_InvMov::create(
+                        [
+                            'despachosol_id' => $despachosol->id,
+                            'invmov_id' => $arrayinvmov_id[1]
+                        ]);
+                        $aux_stacrearmovinv = 1;
+                    }
+
+                    $array_invmovdet = array();
+                    $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto_idEntrada;
+                    $array_invmovdet["producto_id"] = $producto_id;
+                    $array_invmovdet["invbodega_id"] = $invbodega_idEntrada;
+                    $array_invmovdet["sucursal_id"] = $sucursal_id;
+                    $array_invmovdet["unidadmedida_id"] = $unidadmedida_id;
+                    $array_invmovdet["invmovtipo_id"] = 1;
+                    $array_invmovdet["cant"] = $aux_cant;
+                    $array_invmovdet["cantgrupo"] = $aux_cant;
+                    $array_invmovdet["cantxgrupo"] = 1;
+                    $array_invmovdet["peso"] = $peso;
+                    $array_invmovdet["cantkg"] = $cantkg;
+                    $array_invmovdet["invmov_id"] = $invmovEntDesp->id;
+                    $invmovdet = InvMovDet::create($array_invmovdet);
+                    if(count($despachosoldet->despachoorddets)>0 and isset($despachoorddet_invbodegaproducto_id)){
+                        $invmovdet_bodorddesp = InvMovDet_BodOrdDesp::create([
+                            'invmovdet_id' => $invmovdet->id,
+                            'despachoorddet_invbodegaproducto_id' => $despachoorddet_invbodegaproducto_id
+                        ]);
+    
+                    }
+
+                    $array_invmovdet = array();
+                    $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto_idSalida;
+                    $array_invmovdet["producto_id"] = $producto_id;
+                    $array_invmovdet["invbodega_id"] = $invbodega_idSalida;
+                    $array_invmovdet["sucursal_id"] = $sucursal_id;
+                    $array_invmovdet["unidadmedida_id"] = $unidadmedida_id;
+                    $array_invmovdet["invmovtipo_id"] = 2;
+                    $array_invmovdet["cant"] = $aux_cant * -1;
+                    $array_invmovdet["cantgrupo"] = $aux_cant * -1;
+                    $array_invmovdet["cantxgrupo"] = 1;
+                    $array_invmovdet["peso"] = $peso;
+                    $array_invmovdet["cantkg"] = $cantkg;
+                    $array_invmovdet["invmov_id"] = $invmovSalDesp->id;
+                    $invmovdet = InvMovDet::create($array_invmovdet);
+                    $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
+                        'invmovdet_id' => $invmovdet->id,
+                        'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto_id
+                    ]);
+                }
+
+            }
+            */
+            /*****************PRUEBA PARA DEVOLVER SOLICITUD CUANDO HAY YA ORDENES DE UNA SOLICITUD DE DESPACHO */
+            /***** 15/07/2022 */
+
+            $aux_stacrearmovinv = 0;
+            $cantkg  = 0;
+            foreach ($despachosol->despachosoldets as $despachosoldet) {
+                $aux_cantBodSD = 0;
+                $invbodegaproducto_id = 0;
+                foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                    if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                        foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
+                            $aux_cantBodSD += $invmovdet_bodsoldesp->invmovdet->cant;
+                            $invbodegaproducto_idEntrada = $despachosoldet_invbodegaproducto->invbodegaproducto->id;
+                            $invbodegaproducto_idSalida = $invmovdet_bodsoldesp->invmovdet->invbodegaproducto_id;
+                            $producto_id = $despachosoldet_invbodegaproducto->invbodegaproducto->producto_id;
+                            $invbodega_idEntrada = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega_id;
+                            $invbodega_idSalida = $invmovdet_bodsoldesp->invmovdet->invbodega_id;
+                            $sucursal_id = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega->sucursal_id;
+                            $unidadmedida_id = $despachosoldet->notaventadetalle->unidadmedida_id;
+                            $peso = $despachosoldet->notaventadetalle->producto->peso;
+                            $cantkg += ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $invmovdet_bodsoldesp->invmovdet->cant;
+                            $despachosoldet_invbodegaproducto_id = $despachosoldet_invbodegaproducto->id;
+                        }
+                    }
+                }
+                foreach ($despachosoldet->despachoorddets as $despachoorddet){
+                    $DespachoOrd = DespachoOrd::findOrFail($despachoorddet->despachoord_id);
+                    if(!$DespachoOrd->despachoordanul ){
+                        foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                            /* SOLO DEBO BUSCAR EL MOVIMIENTO DE PICKING DEL PRODUCTO ENTRADAS Y SALIDAS
+                            $despachoorddet_invbodegaproducto_id = $despachoorddet_invbodegaproducto->id;
+                            foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
+                                //SUMO SOLO EL MOVIMIENTO DE LA BODEGA DE SOL DESPACHO
+                                if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->nomabre == "SolDe"){
+                                    $aux_cantBodSD += $invmovdet_bodorddesp->invmovdet->cant;
+                                    $DespachoOrd_id = $DespachoOrd->id;
+                                }
+                            }
+                            */
+                            //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
+                            //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
+                            if(is_null($DespachoOrd->aprguiadesp)){
+                                //dd($despachoorddet_invbodegaproducto->cant);
+                                $aux_cantBodSD += $despachoorddet_invbodegaproducto->cant;
+                                $cantkg += ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $despachoorddet_invbodegaproducto->cant;
+                                $DespachoOrd_id = $DespachoOrd->id;
+                            }
+                            /*
+                            if (sizeof($despachoorddet_invbodegaproducto->invmovdet_bodorddesps) == 0){
+                            }*/
+                        }
+                    }
+                }
+                if($aux_cantBodSD > 0){
+                    if($aux_stacrearmovinv == 0){
+                        $invmov_array = array();
+                        $invmov_array["fechahora"] = date("Y-m-d H:i:s");
+                        $invmov_array["annomes"] = date("Ym");
+                        $invmov_array["desc"] = "Entrada por cerrar SD NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["obs"] = "Entrada por cerrar SD NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
+                        $invmov_array["idmovmod"] = $request->id;
+                        $invmov_array["invmovtipo_id"] = 1;
+                        $invmov_array["sucursal_id"] = $despachosol->notaventa->sucursal_id;
+                        $invmov_array["usuario_id"] = auth()->id();
+                        $arrayinvmov_id = array();
+                        
+                        $invmovEntDesp = InvMov::create($invmov_array);
+                        array_push($arrayinvmov_id, $invmovEntDesp->id);
+
+                        $invmov_array = array();
+                        $invmov_array["fechahora"] = date("Y-m-d H:i:s");
+                        $invmov_array["annomes"] = date("Ym");
+                        $invmov_array["desc"] = "Salida por cerrar SD NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["obs"] = "Salida por cerrar SD NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                        $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Solicitud Despacho
+                        $invmov_array["idmovmod"] = $request->id;
+                        $invmov_array["invmovtipo_id"] = 2;
+                        $invmov_array["sucursal_id"] = $despachosol->notaventa->sucursal_id;
+                        $invmov_array["usuario_id"] = auth()->id();
+                        
+                        $invmovSalDesp = InvMov::create($invmov_array);
+                        array_push($arrayinvmov_id, $invmovSalDesp->id);
+
+                        $despachosol_invmov = DespachoSol_InvMov::create(
+                        [
+                            'despachosol_id' => $despachosol->id,
+                            'invmov_id' => $arrayinvmov_id[0]
+                        ]);
+    
+                        $despachosol_invmov = DespachoSol_InvMov::create(
+                        [
+                            'despachosol_id' => $despachosol->id,
+                            'invmov_id' => $arrayinvmov_id[1]
+                        ]);
+                        $aux_stacrearmovinv = 1;
+                    }
+
+                    $array_invmovdet = array();
+                    $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto_idEntrada;
+                    $array_invmovdet["producto_id"] = $producto_id;
+                    $array_invmovdet["invbodega_id"] = $invbodega_idEntrada;
+                    $array_invmovdet["sucursal_id"] = $sucursal_id;
+                    $array_invmovdet["unidadmedida_id"] = $unidadmedida_id;
+                    $array_invmovdet["invmovtipo_id"] = 1;
+                    $array_invmovdet["cant"] = $aux_cantBodSD;
+                    $array_invmovdet["cantgrupo"] = $aux_cantBodSD;
+                    $array_invmovdet["cantxgrupo"] = 1;
+                    $array_invmovdet["peso"] = $peso;
+                    $array_invmovdet["cantkg"] = $cantkg;
+                    $array_invmovdet["invmov_id"] = $invmovEntDesp->id;
+                    $invmovdet = InvMovDet::create($array_invmovdet);
+                    /*
+                    if(count($despachosoldet->despachoorddets)>0 and isset($despachoorddet_invbodegaproducto_id)){
+                        $invmovdet_bodorddesp = InvMovDet_BodOrdDesp::create([
+                            'invmovdet_id' => $invmovdet->id,
+                            'despachoorddet_invbodegaproducto_id' => $despachoorddet_invbodegaproducto_id
+                        ]);
+    
+                    }*/
+
+                    $array_invmovdet = array();
+                    $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto_idSalida;
+                    $array_invmovdet["producto_id"] = $producto_id;
+                    $array_invmovdet["invbodega_id"] = $invbodega_idSalida;
+                    $array_invmovdet["sucursal_id"] = $sucursal_id;
+                    $array_invmovdet["unidadmedida_id"] = $unidadmedida_id;
+                    $array_invmovdet["invmovtipo_id"] = 2;
+                    $array_invmovdet["cant"] = $aux_cantBodSD * -1;
+                    $array_invmovdet["cantgrupo"] = $aux_cantBodSD * -1;
+                    $array_invmovdet["cantxgrupo"] = 1;
+                    $array_invmovdet["peso"] = $peso;
+                    $array_invmovdet["cantkg"] = $cantkg * -1;
+                    $array_invmovdet["invmov_id"] = $invmovSalDesp->id;
+                    $invmovdet = InvMovDet::create($array_invmovdet);
+                    $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
+                        'invmovdet_id' => $invmovdet->id,
+                        'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto_id
+                    ]);
+                }
+            }
+
+            
+            /************************************* */
             foreach($despachosol->despachosoldets as $despchosoldet){
                 $sql = "SELECT *
                     FROM vista_sumorddespdet
@@ -804,6 +1108,7 @@ class DespachoSolController extends Controller
                 }else{
                     $cantsoldespdev = $despchosoldet->cantsoldesp;
                 }
+
                 if($cantsoldespdev > 0){
                     $despchosoldet->cantsoldesp = $despchosoldet->cantsoldesp - $cantsoldespdev;
                     $despchosoldet->cantsoldespdev = $cantsoldespdev;
@@ -889,8 +1194,8 @@ class DespachoSolController extends Controller
                             $invmov_array = array();
                             $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                             $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                            $invmov_array["desc"] = "Salida de Bodega Nro SD: " . $request->id;
-                            $invmov_array["obs"] = "Salida de Bodega por aprobacion de Solicitud despacho Nro OD: " . $request->id;
+                            $invmov_array["desc"] = "Salida de Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                            $invmov_array["obs"] = "Salida de Bodega por aprobacion NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                             $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Orden Despacho
                             $invmov_array["idmovmod"] = $request->id;
                             $invmov_array["invmovtipo_id"] = 2;
@@ -923,8 +1228,8 @@ class DespachoSolController extends Controller
                             $invmov_array = array();
                             $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                             $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                            $invmov_array["desc"] = "Entrada a Bodega Solicitud Despacho Nro: " . $request->id;
-                            $invmov_array["obs"] = "Entrada a Bodega Solicitud Despacho por aprobacion de Solicitud despacho Nro: " . $request->id;
+                            $invmov_array["desc"] = "Entrada a Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
+                            $invmov_array["obs"] = "Entrada a Bodega NV:" . $despachosol->notaventa_id . " SD:" . $request->id;
                             $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo Orden Despacho
                             $invmov_array["idmovmod"] = $request->id;
                             $invmov_array["invmovtipo_id"] = 1;
@@ -1173,6 +1478,7 @@ class DespachoSolController extends Controller
         $request->aprobstatus = $_GET["aprobstatus"];
         $request->comuna_id = $_GET["comuna_id"];
         $request->id = $_GET["id"];
+        $request->producto_id = $_GET["producto_id"];
         $request->filtro = $_GET["filtro"];
         $request->aux_titulo = $_GET["aux_titulo"];
 
@@ -2030,14 +2336,34 @@ function reportesoldesp1($request){
 
             $contorddesp = DB::select($sql);
             if($contorddesp[0]->cont == 0){
-                $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' fila='$i' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip'>
-                                    <button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>
-                                </a>";
+                /*****PARA DEVOLVER SOLDESP: EL DETALLE DEBE SER IGUAL A LA SUMA POR ITEM EN LA TABLA $despachosoldet_invbodegaproducto*/
+                $aux_bancDevSolDesp = true;
+                $despachosol = DespachoSol::findOrFail($data->id);
+                foreach ($despachosol->despachosoldets as $despachosoldet) {
+                    $aux_cant = 0;
+                    foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                        $aux_cant += $despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex;
+                    }
+                    if($despachosoldet->cantsoldesp != ($aux_cant * -1)){
+                        $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
+                        <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-archive'></i></button>
+                        </a>";
+                        $aux_bancDevSolDesp = false;
+                        break;
+                    }
+                }
+                if($aux_bancDevSolDesp){
+                    $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' fila='$i' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip'>
+                                        <button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>
+                                    </a>";
+                }
+
             }else{
                 $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
                                     <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-archive'></i></button>
                                 </a>";
             }
+
             $aux_totalkilos = $data->totalkilos - $data->totalkilosdesp;
             $aux_subtotal = $data->subtotalsoldesp - $data->subtotaldesp;
             $aux_Ttotalkilos += $aux_totalkilos;
@@ -2369,6 +2695,14 @@ function consultasoldesp($request){
         $aux_condid = "despachosol.id='$request->id'";
     }
 
+    $aux_condproducto_id = " true";
+    if(!empty($request->producto_id)){
+        $aux_codprod = explode(",", $request->producto_id);
+        $aux_codprod = implode ( ',' , $aux_codprod);
+        $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
+    }
+
+
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
     $aux_notinNullSoldesp = "despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE isnull(despachosolanul.deleted_at))";
@@ -2424,6 +2758,7 @@ function consultasoldesp($request){
             and $aux_condaprobord
             and $aux_condfechaestdesp
             and $aux_condid
+            and $aux_condproducto_id
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             and isnull(despachosoldet.deleted_at)

@@ -38,6 +38,7 @@ class ValidarProducto extends FormRequest
             'precioneto' => 'required|numeric',
             'categoriaprod_id' => 'required|numeric',
             'claseprod_id' => 'required|numeric',
+            'estado' => 'required'
         ];
     }
 }

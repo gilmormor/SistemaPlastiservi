@@ -88,7 +88,7 @@
                     {{'selected'}}
                 @endif
             >
-                Producción
+                Picking
             </option>
             <option
                 value="2"

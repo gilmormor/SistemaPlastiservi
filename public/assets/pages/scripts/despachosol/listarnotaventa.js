@@ -289,6 +289,7 @@ $("#btnpdf21").click(function()
             "&comuna_id=" + data.comuna_id +
             "&plazoentrega=" + data.plazoentrega +
             "&filtro=" + data.filtro +
+            "&producto_id=" + data.producto_id +
             "&aux_titulo=" + aux_titulo;
     $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/'+cadena);
     $("#myModalpdf").modal('show');
@@ -336,20 +337,3 @@ function btnpdf(numrep){
     $("#myModalpdf").modal('show');
 }
 
-$("#btnbuscarproducto").click(function(event){
-    //$(this).val("");
-    $(".input-sm").val('');
-    aux_id = $("#producto_idPxP").val();
-    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
-        $("#divprodselec").hide();
-        $("#productos").html("");
-    }else{
-        arraynew = aux_id.split(',')
-        $("#productos").html("");
-        for(var i = 0; i < arraynew.length; i++){
-            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
-        }
-        $("#divprodselec").show();
-    }
-    $("#myModalBuscarProd").modal('show');
-});

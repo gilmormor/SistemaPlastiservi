@@ -42,7 +42,7 @@
 					<th style='text-align:center' class='width40'>Ent</th>
 					<th style='text-align:center' class='width40'>Sal</th>
 					<th style='text-align:center' class='width40'>Stock</th>
-					<th style='text-align:center' class='width40'>Kg</th>
+					<th style='text-align:center' class='width50'>Kg</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
@@ -64,10 +64,10 @@
 							<td style='text-align:center'>{{$data->mov_in}}</td>
 							<td style='text-align:center'>{{$data->mov_out}}</td>
 							<td style='text-align:center'>{{$data->stock}}</td>
-							<td style='text-align:right'>{{number_format($data->stockkg, 2, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($data->stock * $data->peso, 2, ",", ".")}}</td>
 						</tr>
 						<?php 
-							$aux_totalstockkg += $data->stockkg;
+							$aux_totalstockkg += $data->stock * $data->peso;
 						?>
 					@endforeach
 				</tbody>

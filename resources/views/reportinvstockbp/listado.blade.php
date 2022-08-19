@@ -37,6 +37,8 @@
 					<th style='text-align:center' class='width10'>L</th>
 					<th style='text-align:center' class='width30'>Peso</th>
 					<th style='text-align:center' class='width10'>TU</th>
+					<th style='text-align:center' class='width40'>Bodega</th>
+					<th style='text-align:center' class='width40'>Picking</th>
 					<th style='text-align:center' class='width40'>Stock</th>
 					<th style='text-align:center' class='width50'>Kg</th>
 				</tr>
@@ -55,6 +57,8 @@
 						<td style='text-align:center'>{{$data->long}}</td>
 						<td style='text-align:center'>{{$data->peso}}</td>
 						<td style='text-align:center'>{{$data->tipounion}}</td>
+						<td style='text-align:center'>{{$data->stockBodProdTerm}}</td>
+						<td style='text-align:center'>{{$data->stockPiking}}</td>
 						<td style='text-align:center'>{{$data->stock}}</td>
 						<td style='text-align:right'>{{number_format($data->stock * $data->peso, 2, ",", ".")}}</td>
 					</tr>
@@ -65,7 +69,7 @@
 			</tbody>
 			<tfoot id="detalle_totales">
 				<tr class="headt">
-					<th colspan="9" style='text-align:right'>TOTAL</th>
+					<th colspan="11" style='text-align:right'>TOTAL</th>
 					<th class="textright">{{number_format($aux_totalstockkg, 2, ",", ".")}}</th>
 				</tr>
 			</tfoot>

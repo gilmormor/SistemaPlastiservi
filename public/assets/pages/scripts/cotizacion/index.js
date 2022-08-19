@@ -20,6 +20,7 @@ $(document).ready(function () {
         {data: 'aprobstatus',className:"ocultar"},
         {data: 'aprobobs',className:"ocultar"},
         {data: 'contador',className:"ocultar"},
+        {data: 'updated_at',className:"ocultar"},
         {data: 'contacutec',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
@@ -94,7 +95,11 @@ $(document).ready(function () {
             $('td', row).eq(3).html($('td', row).eq(3).html() + aux_text);
 
         }
-        $('td', row).eq(8).attr('style','padding-top: 0px;padding-bottom: 0px;');
+        $('td', row).eq(7).html(data.updated_at);
+        $('td', row).eq(7).attr("id","updated_at"+data.id);
+        $('td', row).eq(7).attr("name","updated_at"+data.id);
+
+        $('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
 
     }
     });

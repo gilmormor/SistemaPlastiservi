@@ -63,6 +63,14 @@
     </div>
 </div>
 
+<div class="form-group">
+    <label for="fechahora" class="col-lg-3 control-label requerido">Fecha</label>
+    <div class="col-lg-8">
+        <input type="text" name="fechahora" id="fechahora" class="form-control datepicker" value="{{old('fechahora', $data->fechahora ?? '')}}" required readonly/>
+    </div>
+</div>
+
+
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
     <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>

@@ -17,6 +17,7 @@ $(document).ready(function () {
 			{data: 'desc'},
 			{data: 'id'},
 			{data: 'obsaprob',className:"ocultar"},
+			{data: 'updated_at',className:"ocultar"},
             {defaultContent : 
 				"<a href='/inventsal/enviaraprobarinventsal' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar'>" +
 					"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
@@ -51,8 +52,9 @@ $(document).ready(function () {
 				"<i class='fa fa-fw fa-file-pdf-o'></i>" +
 			"</a>";
 			$('td', row).eq(3).html(aux_text);
-
-
+			$('td', row).eq(5).html(data.updated_at);
+			$('td', row).eq(5).attr("id","updated_at"+data.id);
+			$('td', row).eq(5).attr("name","updated_at"+data.id);
 
 		}
 	});

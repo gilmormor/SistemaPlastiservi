@@ -563,9 +563,14 @@ $("#rut").blur(function(){
 								data: data,
 								success: function (respuesta) {
 									if(respuesta.length>0){
+										aux_contiz = "";
+										for (var i = 0; i < (respuesta.length - 1); i++) {
+											aux_contiz = aux_contiz + respuesta[i].cotizacion_id + ",";
+										}
+										aux_contiz = aux_contiz + respuesta[i].cotizacion_id + ".";
 										swal({
 											title: "Cliente temporal",
-											text: "Para crear cliente, debe ser validado en el Menú: Archivos Maestros->Clientes->Validar Cliente. Tomar en cuenta que para validar un cliente temporal la cotizacion debe estar aprobada.",
+											text: "Cliente temporal debe ser validado en el Menú: Archivos Maestros->Clientes->Validar Cliente. Tomar en cuenta que para validar un cliente temporal la cotizacion debe estar aprobada." + "\nCotizacion Nro: " + aux_contiz,
 											icon: 'error',
 											buttons: {
 												confirm: "Aceptar"

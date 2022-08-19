@@ -32,48 +32,6 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php $aux_nfila = 0; $i = 0;?>
-                                                @foreach($productos as $producto)
-                                                    <?php $aux_nfila++; 
-                                                        $aux_onclick = "";
-                                                        if (isset($selecmultprod)){ //Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
-                                                            $aux_onclick = "onclick=llenarlistaprod(" . $aux_nfila . "," . $producto->id . ")";
-                                                        }else{
-                                                            $aux_onclick = "onclick=copiar_codprod(" . $producto->id . ",'" . $producto->codintprod . "')";
-                                                            //<a href="#" class="copiar_id" onclick="copiar_codprod({{$producto->id}},'{{$producto->codintprod}}')"> {{$producto->nombre}} </a>
-                                                        }
-                                                    ?>
-                                                    <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" prodid="{{$producto->id}}" {{$aux_onclick}} class="btn-accion-tabla copiar_id" data-toggle='tooltip' title="Click para seleccionar producto">
-                                                        <td name="producto_idBtd{{$aux_nfila}}" id="producto_idBtd{{$aux_nfila}}">
-                                                            {{$producto->id}}
-                                                        </td>
-                                                        <td name="productonombreBtd{{$aux_nfila}}" id="productonombreBtd{{$aux_nfila}}">
-                                                            {{$producto->nombre}}
-                                                        </td>
-                                                        <td name="productodiamextmmBtd{{$aux_nfila}}" id="productodiamextmmBtd{{$aux_nfila}}">
-                                                            {{$producto->diametro}}
-                                                        </td>
-                                                        <td name="productocla_nombreBtd{{$aux_nfila}}" id="productocla_nombreBtd{{$aux_nfila}}">
-                                                            {{$producto->cla_nombre}}
-                                                        </td>
-                                                        <td name="productolongBtd{{$aux_nfila}}" id="productolongBtd{{$aux_nfila}}" style="text-align:center">
-                                                            {{$producto->long}}
-                                                        </td>
-                                                        <td name="productopesoBtd{{$aux_nfila}}" id="productopesoBtd{{$aux_nfila}}" style="text-align:right">
-                                                            {{number_format($producto->peso, 2, ",", ".")}}
-                                                        </td>
-                                                        <td name="productotipounionBtd{{$aux_nfila}}" id="productotipounionBtd{{$aux_nfila}}" style="text-align:center">
-                                                            {{$producto->tipounion}}
-                                                        </td>
-                                                        <td name="productoprecionetoBtd{{$aux_nfila}}" id="productoprecionetoBtd{{$aux_nfila}}" style="text-align:right">
-                                                            {{number_format($producto->precioneto, 0, ",", ".")}}
-                                                        </td>
-                                                        <td name="productoprecioBtd{{$aux_nfila}}" id="productoprecioBtd{{$aux_nfila}}" style="text-align:right">
-                                                            {{number_format($producto->precio, 0, ",", ".")}}
-                                                        </td>
-                                                    </tr>
-                                                    <?php $i++;?>
-                                                @endforeach
                                             </tbody>
                                             <tfoot>
                                                 <tr>
@@ -113,7 +71,7 @@
                     <button id="aceptarmbp" name="aceptarmbp" type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
                 @endif
             </div>
-            <input type="hidden" name="totalreg" id="totalreg" value="{{$aux_nfila}}">
+            <input type="hidden" name="totalreg" id="totalreg">
         </div>
     </div>
 </div>

@@ -26,11 +26,13 @@ $(document).on("click", ".btnEliminar", function(event){
         fila = $(this).closest("tr");
         form = $(this);
         id = fila.find('td:eq(0)').text();
+        updated_at = $("#updated_at"+id).html();
         //alert(id);
         var data = {
             _token  : $('input[name=_token]').val(),
             _method : 'delete',
-            id      : id
+            id      : id,
+            updated_at: updated_at
         };
         if (value) {
             ajaxRequest(data,form.attr('href')+'/'+id,'eliminar',form);
@@ -99,7 +101,7 @@ $(document).on("click", ".btnaprobar", function(event){
 
 
 function ajaxRequest(data,url,funcion,form = false) {
-    console.log('respuesta2');
+    //console.log('respuesta2');
     $.ajax({
         url: url,
         type: 'POST',

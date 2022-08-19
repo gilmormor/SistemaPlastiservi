@@ -1056,6 +1056,7 @@ $(document).on("click", ".btngenpdfNV1", function(){
 
 $(document).on("click", ".btngenpdfNV2", function(){	
     fila = $(this).closest("tr");	        
+	form = $(this);
 	if(form.attr('col')){
 		id = fila.find('td:eq('+form.attr('col')+')').text();
 	}else{
@@ -1273,6 +1274,23 @@ $("#producto_idM").blur(function(){
 				//console.log(respuesta);
 				//return 0;
 				if(respuesta['cont']>0){
+					if(respuesta['estado'] == 0){
+						swal({
+							title: 'Producto inactivo.',
+							text: "Producto existe pero está Inactivo.",
+							icon: 'error',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+								$("#producto_idM").focus();
+							}
+						});
+						return 0;	
+					}
+
 					//console.log(respuesta['nombre']);
 					$("#nombreprodM").val(respuesta['nombre']);
 					$("#codintprodM").val(respuesta['codintprod']);
@@ -1295,7 +1313,9 @@ $("#producto_idM").blur(function(){
 						$("#largoM").val(respuesta['long']);
 						$("#largoM").attr('valor',respuesta['long']);	
 					}
-					$("#pesoM").val(respuesta['peso']);
+					aux_peso = respuesta['peso'];
+					aux_peso = aux_peso.toFixed(3);
+					$("#pesoM").val(aux_peso);
 					$("#tipounionM").val(respuesta['tipounion']);
 					$("#precioM").val(respuesta['precio']);
 					$("#precioM").attr('valor',respuesta['precio']);
@@ -1813,7 +1833,10 @@ function sumbod(i,y,aux_orig){
 			$("#invcant" + y).val(dif);
 		}
 		//console.log(dif);
-		total = aux_saldo;		
+		total = aux_saldo;
+	}
+	if(total < 0){
+		total = 0;
 	}
 
 	aux_invcant = $("#invcant" + y).val();
@@ -1913,3 +1936,22 @@ function genpdfAcuTec(id){ //GENERAR PDF Acuerdo Tecnico
 	$('#contpdf').attr('src', '/producto/'+id+'/acutecexportPdf');
 	$("#myModalpdf").modal('show')
 }
+
+
+$("#btnbuscarproductogen").click(function(event){
+    //$(this).val("");
+    $(".input-sm").val('');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+    $("#myModalBuscarProd").modal('show');
+});

@@ -37,9 +37,13 @@ class ReportInvStockController extends Controller
     }
 
     public function reportinvstockpage(Request $request){
+        $datas = InvMov::stocksql($request);
+        return datatables($datas)->toJson();
+/*
         return datatables()
         ->eloquent(InvMov::stock($request))
         ->toJson();
+*/
     }
 
     public function exportPdf(Request $request)
@@ -79,7 +83,8 @@ class ReportInvStockController extends Controller
         $datas = InvMov::stock($request)->get();
         $aux_totalkg = 0;
         foreach ($datas as $data) {
-            $aux_totalkg += $data->stockkg;
+            //$aux_totalkg += $data->stockkg;
+            $aux_totalkg += $data->stock * $data->peso;
         }
         $respuesta['aux_totalkg'] = $aux_totalkg;
         return $respuesta;

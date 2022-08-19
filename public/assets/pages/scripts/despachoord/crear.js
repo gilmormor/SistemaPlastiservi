@@ -602,6 +602,7 @@ function actSaldo(i){
 		$("#subtotalCFTD" + i).html(MASKLA(aux_subtotalCFTD,0)); //$("#subtotalCFTD" + i).html(MASK(0, aux_subtotalCFTD, '-#,###,###,##0.00',1));
 		$("#subtotalSFTD" + i).html(aux_subtotalCFTD);
 	}
+	//console.log($("#cantord" + i).val());
 	sumcant();
 	totalizardespacho();
 }

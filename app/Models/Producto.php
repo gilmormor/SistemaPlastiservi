@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Producto extends Model
 {
@@ -13,6 +14,7 @@ class Producto extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
+        'estado',
         'codintprod',
         'codbarra',
         'diametro',
@@ -78,6 +80,11 @@ class Producto extends Model
     {
         return $this->hasMany(InvMovDet::class);
     }
+    //RELACION MUCHO A MUCHOS CON CLIENTE A TRAVES DE cliente_producto
+    public function clientes()
+    {
+        return $this->belongsToMany(Cliente::class, 'cliente_producto')->withTimestamps();
+    }
 
     public static function productosxUsuario($sucursal_id = false){
         $users = Usuario::findOrFail(auth()->id());
@@ -128,5 +135,33 @@ class Producto extends Model
         return $this->belongsToMany(Vendedor::class, 'producto_vendedor');
     }
     
+
+    public static function productosxUsuarioSQL($sucursal_id = false){
+        $users = Usuario::findOrFail(auth()->id());
+        if($sucursal_id){
+            $sucurArray = [$sucursal_id];
+        }else{
+            $sucurArray = $users->sucursales->pluck('id')->toArray();
+        }
+        $sucurcadena = implode(",", $sucurArray);
+
+        $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+                producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id
+                from producto inner join categoriaprod
+                on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
+                INNER JOIN claseprod
+                on producto.claseprod_id = claseprod.id and isnull(claseprod.deleted_at)
+                INNER JOIN categoriaprodsuc
+                on categoriaprod.id = categoriaprodsuc.categoriaprod_id
+                INNER JOIN sucursal
+                ON categoriaprodsuc.sucursal_id = sucursal.id
+                WHERE sucursal.id in ($sucurcadena)
+                GROUP BY producto.id
+                ORDER BY producto.id asc;";
+        //dd($sql);
+        $datas = DB::select($sql);
+        return $datas;
+    }
 
 }

@@ -17,6 +17,7 @@ use App\Models\Giro;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
+use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovModulo;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
@@ -133,7 +134,7 @@ class DespachoOrdRecController extends Controller
                                     $cont_bodegas = count($request->invcant);
                                     if($cont_bodegas>0){
                                         for ($b=0; $b < $cont_bodegas ; $b++){
-                                            if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and ($request->invcant[$b] != 0)){
+                                            if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
                                                 $despachoordrecdet_invbodegaproducto = new DespachoOrdRecDet_InvBodegaProducto();
                                                 $despachoordrecdet_invbodegaproducto->despachoordrecdet_id = $despachoordrecdet->id;
                                                 $despachoordrecdet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
@@ -301,7 +302,7 @@ class DespachoOrdRecController extends Controller
                                                 //dd($request);
                                                 if($cont_bodegas>0){
                                                     for ($b=0; $b < $cont_bodegas ; $b++){
-                                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i]){
+                                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i]){
                                                             DespachoOrdRecDet_InvBodegaProducto::updateOrCreate(
                                                                 ['id' => $request->despachoordrecdet_invbodegaproducto_id[$b]],
                                                                 [
@@ -551,6 +552,8 @@ class DespachoOrdRecController extends Controller
                 if(isset($despachoordrec->anulada) == false){
                     if($request->updated_at == $despachoordrec->updated_at){
                         $tipomovinv = $despachoordrec->despachoordrecmotivo->tipomovinv;
+                        //dd($tipomovinv);
+
                         $invmodulo = InvMovModulo::where("cod","RecOD")->get(); //BUSCAR MODULO RECHAZO ORDEN DESPACHO
                         if(count($invmodulo) == 0){
                             return response()->json([
@@ -573,13 +576,15 @@ class DespachoOrdRecController extends Controller
                         if ($despachoordrec->save()) {
                             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
                             $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Scrap (La bodega Scrap debe ser unica)
-            
-                            if(($tipomovinv != 2)){
+                            //$tipomovinv == 0 no toca el inventario
+                            //$tipomovinv == 1 Entra a bodega
+                            //$tipomovinv == 2 Entra a nodega Scrap
+                            if(($tipomovinv == 1)){
                                 $invmov_array = array();
                                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                                 $invmov_array["annomes"] = date("Ym");
-                                $invmov_array["desc"] = "Entrada a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
-                                $invmov_array["obs"] = "Entrada a Bodega Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["desc"] = "Ent Bod Rechazo OD/ NV:" . $despachoordrec->despachoord->notaventa_id . " SD:" . $despachoordrec->despachoord->despachosol_id . " OD:" . $despachoordrec->despachoord_id . " RecOD: " . $despachoordrec->id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["obs"] = "Ent Bod Rechazo OD/ NV:" . $despachoordrec->despachoord->notaventa_id . " SD:" . $despachoordrec->despachoord->despachosol_id . " OD:" . $despachoordrec->despachoord_id . " RecOD: " . $despachoordrec->id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
                                 $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Rechazo Orden de Despacho
                                 $invmov_array["idmovmod"] = $request->id;
                                 $invmov_array["invmovtipo_id"] = 1;
@@ -603,7 +608,18 @@ class DespachoOrdRecController extends Controller
                                         $array_invmovdet["peso"] = $despachoordrecdet->despachoorddet->notaventadetalle->producto->peso;
                                         $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                                         $array_invmovdet["invmov_id"] = $invmov->id;
-                                        $invmovdet = InvMovDet::create($array_invmovdet);                                
+                                        $invmovdet = InvMovDet::create($array_invmovdet);
+                                        /*****CON ESTO HAGO EL MOVIMIENTO DE LA ORDEN EN INVMOV PARA HACERLE EL SEGUIMIENTO A LAMORDEN EN INV */
+                                        foreach($oddetbodprod->despachoordrecdet->despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                                            if(($despachoorddet_invbodegaproducto->cant * -1) > 0){
+                                                $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                                                    'invmovdet_id' => $invmovdet->id,
+                                                    'despachoorddet_invbodegaproducto_id' => $despachoorddet_invbodegaproducto->id
+                                                ]);
+                                                break;
+                                            }
+                                        }
+                                        /******* */
                                     }
                                 }    
                             }
@@ -611,8 +627,8 @@ class DespachoOrdRecController extends Controller
                                 $invmov_array = array();
                                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                                 $invmov_array["annomes"] = date("Ym");
-                                $invmov_array["desc"] = "Entrada a Bodega Scrap Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
-                                $invmov_array["obs"] = "Entrada a Bodega Scrap Motivo: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["desc"] = "Ent Bod Scrap: Rechazo OD/ NV:" . $despachoordrec->despachoord->notaventa_id . " SD:" . $despachoordrec->despachoord->despachosol_id . " OD:" . $despachoordrec->despachoord_id . " RecOD: " . $despachoordrec->id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
+                                $invmov_array["obs"] = "Ent Bod Scrap: Rechazo OD/ NV:" . $despachoordrec->despachoord->notaventa_id . " SD:" . $despachoordrec->despachoord->despachosol_id . " OD:" . $despachoordrec->despachoord_id . " RecOD: " . $despachoordrec->id . " Razon: " . $despachoordrec->despachoordrecmotivo->nombre;
                                 $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Rechazo Orden de Despacho
                                 $invmov_array["idmovmod"] = $request->id;
                                 $invmov_array["invmovtipo_id"] = 1;
@@ -638,6 +654,7 @@ class DespachoOrdRecController extends Controller
                                     DB::raw('sum(despachoordrecdet_invbodegaproducto.cant) as cant'),
                                     DB::raw('sum(despachoordrecdet_invbodegaproducto.cantkg) as cantkg')
                                     ])
+                                ->groupBy('invbodegaproducto.producto_id')
                                 ->get();
                                 foreach ($despachoordrecdet_invbodegaproductos as $despachoordrecdet_invbodegaproducto) {
                                     $invbodegaproducto = InvBodegaProducto::updateOrCreate(
@@ -662,6 +679,17 @@ class DespachoOrdRecController extends Controller
                                     $array_invmovdet["cantkg"] = ($despachoordrecdet->despachoorddet->notaventadetalle->totalkilos / $despachoordrecdet->despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                                     $array_invmovdet["invmov_id"] = $invmov->id;
                                     $invmovdet = InvMovDet::create($array_invmovdet);
+                                    /*****CON ESTO HAGO EL MOVIMIENTO DE LA ORDEN EN INVMOV PARA HACERLE EL SEGUIMIENTO A LAMORDEN EN INV */
+                                    foreach($despachoordrecdet->despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                                        if(($despachoorddet_invbodegaproducto->cant * -1) > 0){
+                                            $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                                                'invmovdet_id' => $invmovdet->id,
+                                                'despachoorddet_invbodegaproducto_id' => $despachoorddet_invbodegaproducto->id
+                                            ]);
+                                            break; 
+                                        }
+                                    }
+                                    /******* */                                    
                                 }
                             }
                             return response()->json(['mensaje' => 'ok']);

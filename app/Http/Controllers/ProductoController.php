@@ -55,6 +55,12 @@ class ProductoController extends Controller
         */
     }
 
+    public function productobuscarpage(){
+        $datas = Producto::productosxUsuarioSQL();
+        return datatables($datas)->toJson();
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -259,6 +265,7 @@ class ProductoController extends Controller
                     'producto.peso',
                     'producto.tipounion',
                     'producto.precioneto',
+                    'producto.estado',
                     'producto.tipoprod',
                     'categoriaprod.precio',
                     'categoriaprodsuc.sucursal_id',

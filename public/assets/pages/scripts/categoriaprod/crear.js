@@ -37,6 +37,13 @@ $(document).ready(function () {
     }else{
         $("#aux_mostunimed").prop("checked", false);    
     }
+
+    if($("#asoprodcli").val() == '1'){
+        $("#aux_asoprodcli").prop("checked", true);    
+    }else{
+        $("#aux_asoprodcli").prop("checked", false);    
+    }
+
 });
 
 $("#aux_mostdatosad").change(function() {
@@ -51,6 +58,14 @@ $("#aux_mostunimed").change(function() {
     $("#mostunimed").val('0');
     if(estaSeleccionado){
         $("#mostunimed").val('1');
+    }
+});
+
+$("#aux_asoprodcli").change(function() {
+    estaSeleccionado = $("#aux_asoprodcli").is(":checked");
+    $("#asoprodcli").val('0');
+    if(estaSeleccionado){
+        $("#asoprodcli").val('1');
     }
 });
 

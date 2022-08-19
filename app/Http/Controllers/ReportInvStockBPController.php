@@ -13,7 +13,7 @@ use App\Models\Sucursal;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 
-class ReportInvStockVendController extends Controller
+class ReportInvStockBPController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,7 +22,7 @@ class ReportInvStockVendController extends Controller
      */
     public function index()
     {
-        can('reporte-stock-inventario-vendedores');
+        can('reporte-stock-bodegapicking');
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
@@ -35,22 +35,23 @@ class ReportInvStockVendController extends Controller
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-        return view('reportinvstockvend.index', compact('tablashtml','productos','selecmultprod'));
+        return view('reportinvstockbp.index', compact('tablashtml','productos','selecmultprod'));
 
     }
-    public function reportinvstockvendpage(Request $request){
-        $datas = InvMov::stocksql($request);
+    public function reportinvstockbppage(Request $request){
+        can('reporte-stock-bodegapicking');
+        $datas = InvMov::stocksql($request,"producto.id");
         return datatables($datas)->toJson();
 /*
         return datatables()
-        ->eloquent(InvMov::stock($request))
-        ->toJson();
-*/
+        ->eloquent(InvMov::stock($request,"producto.id"))
+        ->toJson();*/
     }
 
     public function exportPdf(Request $request)
     {
-        $datas = InvMov::stock($request);
+        can('reporte-stock-bodegapicking');
+        $datas = InvMov::stock($request,"producto.id");
         $datas = $datas->get();
 
         $empresa = Empresa::orderBy('id')->get();
@@ -65,19 +66,31 @@ class ReportInvStockVendController extends Controller
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportinvstockvend.listado', compact('datas','empresa','usuario','request'));
+                return view('reportinvstockbp.listado', compact('datas','empresa','usuario','request'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-            $pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'));
+            $pdf = PDF::loadView('reportinvstockbp.listado', compact('datas','empresa','usuario','request'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("ReporteStockInv.pdf");
+            return $pdf->stream("ReporteStockBodegaPicking.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 
     }
-    
+
+    public function totalizarindex(Request $request){
+        $respuesta = array();
+        $datas = InvMov::stock($request,"producto.id")->get();
+        $aux_totalkg = 0;
+        foreach ($datas as $data) {
+            //$aux_totalkg += $data->stockkg;
+            $aux_totalkg += $data->stock * $data->peso;
+        }
+        $respuesta['aux_totalkg'] = $aux_totalkg;
+        return $respuesta;
+    }
+
 }

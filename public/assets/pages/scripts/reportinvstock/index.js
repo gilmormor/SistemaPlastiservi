@@ -16,7 +16,6 @@ $(document).ready(function () {
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
-            'searching'   : false,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
@@ -44,6 +43,10 @@ $(document).ready(function () {
                 "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             },
             "createdRow": function ( row, data, index ) {
+                /*
+                if(data.stock <= 0){
+                    $(row).hide();                    
+                }*/
                 $('td', row).eq(0).attr('style','text-align:center');
                 $('td', row).eq(3).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');

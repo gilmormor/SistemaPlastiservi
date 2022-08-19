@@ -290,7 +290,7 @@ function consultasoldesp($request){
     }else{
         $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
     }
-
+    $aux_sqlsumdespfact = 0;
     if(empty($request->status)){
         $aux_status = " true";
     }else{

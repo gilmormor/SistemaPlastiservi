@@ -28,7 +28,8 @@ class ClienteTemp extends Model
         'finanzanemail',
         'finanzastelefono',
         'sucursal_id',
-        'observaciones'
+        'observaciones',
+        'usuariodel_id'
     ];
     //RELACION DE UNO A MUCHOS Cotizacion
     public function cotizacion()
@@ -61,10 +62,11 @@ class ClienteTemp extends Model
     {
         return $this->belongsTo(PlazoPago::class);
     }
+    /*
     //Relacion inversa a ClienteTemp
     public function clientetemp()
     {
         return $this->belongsTo(ClienteTemp::class);
-    }
+    }*/
 
 }

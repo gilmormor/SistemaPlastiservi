@@ -77,7 +77,7 @@ class CotizacionController extends Controller
                     FROM cotizaciondetalle 
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
                     not isnull(acuerdotecnicotemp_id)) AS contacutec,
-                    cotizacion.fechahora as fechahora_aaaammdd
+                    cotizacion.fechahora as fechahora_aaaammdd,cotizacion.updated_at
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
@@ -93,6 +93,17 @@ class CotizacionController extends Controller
 
         
     }
+
+    public function productobuscarpage(){
+        $datas = Producto::productosxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpage(){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
     /*
     public function consulta(){
         $cotizacionDetalle = CotizacionDetalle::where('cotizacion_id','14')->get()->count();
@@ -108,11 +119,18 @@ class CotizacionController extends Controller
     {
         can('crear-cotizacion');
         //CLIENTES POR USUARIO. SOLO MUESTRA LOS CLIENTES QUE PUEDE VER UN USUARIO
+        $user = Usuario::findOrFail(auth()->id());
         $tablas = array();
+        $vendedor = Vendedor::vendedores();
+        $tablas['vendedores'] = $vendedor['vendedores'];
+        $vendedor_id = Vendedor::vendedor_id();
+        $tablas['vendedor_id'] = $vendedor_id["vendedor_id"];
+        /*
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
-        $tablas['vendedor_id'] = $clientesArray['vendedor_id'];
-        $tablas['sucurArray'] = $clientesArray['sucurArray'];
+        */
+        //$tablas['vendedor_id'] = $clientesArray['vendedor_id'];
+        $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray();
         $fecha = date("d/m/Y");
         $tablas['formapagos'] = FormaPago::orderBy('id')->get();
         $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
@@ -135,7 +153,7 @@ class CotizacionController extends Controller
         session(['aux_aprocot' => '0']);
         session(['editaracutec' => '1']);
 
-        return view('cotizacion.crear',compact('clientes','fecha','productos','aux_sta','tablas'));
+        return view('cotizacion.crear',compact('fecha','aux_sta','tablas'));
     }
     /**
      * Store a newly created resource in storage.
@@ -579,18 +597,29 @@ class CotizacionController extends Controller
         //dd($request);
         if ($request->ajax()) {
             //dd($id);
-            if (Cotizacion::destroy($id)) {
-                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                $cotizacion = Cotizacion::withTrashed()->findOrFail($id);
-                $cotizacion->usuariodel_id = auth()->id();
-                $cotizacion->save();
-                //Eliminar detalle de cotizacion
-                CotizacionDetalle::where('cotizacion_id', $id)->update(['usuariodel_id' => auth()->id()]);
-                CotizacionDetalle::where('cotizacion_id', '=', $id)->delete();
-                return response()->json(['mensaje' => 'ok']);
-            } else {
-                return response()->json(['mensaje' => 'ng']);
+            $inventsal = Cotizacion::findOrFail($id);
+            if($request->updated_at == $inventsal->updated_at){
+                if (Cotizacion::destroy($id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $cotizacion = Cotizacion::withTrashed()->findOrFail($id);
+                    $cotizacion->usuariodel_id = auth()->id();
+                    $cotizacion->save();
+                    //Eliminar detalle de cotizacion
+                    CotizacionDetalle::where('cotizacion_id', $id)->update(['usuariodel_id' => auth()->id()]);
+                    CotizacionDetalle::where('cotizacion_id', '=', $id)->delete();
+                    return response()->json(['mensaje' => 'ok']);
+                } else {
+                    return response()->json(['mensaje' => 'ng']);
+                }    
+            }else{
+                return response()->json([
+                    'id' => 0,
+                    'mensaje'=>'Registro no puede ser eliminado, fué modificado por otro usuario.',
+                    'tipo_alert' => 'error'
+                ]);
             }
+
+
         } else {
             abort(404);
         }
