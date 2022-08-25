@@ -164,4 +164,38 @@ class Producto extends Model
         return $datas;
     }
 
+    public static function productosxCliente($request){
+        $cliente_idCond = "true";
+        if($request->cliente_id){
+            $cliente_idCond = "if(categoriaprod.asoprodcli = 1, ((producto.id IN (SELECT producto_id FROM cliente_producto WHERE isnull(cliente_producto.deleted_at)
+                                AND cliente_producto.cliente_id = $request->cliente_id)) OR producto.tipoprod = 1), TRUE )";
+        }
+        $users = Usuario::findOrFail(auth()->id());
+        if($request->sucursal_id){
+            $sucurArray = [$request->sucursal_id];
+        }else{
+            $sucurArray = $users->sucursales->pluck('id')->toArray();
+        }
+        $sucurcadena = implode(",", $sucurArray);
+
+        $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+                producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod
+                from producto inner join categoriaprod
+                on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
+                INNER JOIN claseprod
+                on producto.claseprod_id = claseprod.id and isnull(claseprod.deleted_at)
+                INNER JOIN categoriaprodsuc
+                on categoriaprod.id = categoriaprodsuc.categoriaprod_id
+                INNER JOIN sucursal
+                ON categoriaprodsuc.sucursal_id = sucursal.id
+                WHERE sucursal.id in ($sucurcadena)
+                and $cliente_idCond
+                GROUP BY producto.id
+                ORDER BY producto.id asc;";
+        //dd($sql);
+        $datas = DB::select($sql);
+        return $datas;
+    }
+
 }

@@ -202,101 +202,127 @@
                                     <h3 class="box-title">Dimensiones</h3>
                                 </div>
                                 <div class="box-body">
-                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
-                                        <label for="at_ancho" class="control-label requerido" data-toggle='tooltip' title="Ancho">Ancho</label>
-                                        <input type="text" name="at_ancho" id="at_ancho" class="form-control form_acutec numerico valorrequerido" placeholder="Ancho" tipoval="texto"/>
-                                        <span class="help-block"></span>
+                                    <div class="col-md-6">
+                                        <div class="box box-default">
+                                            <div class="box-body">
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                        <label for="at_ancho" class="control-label requerido" data-toggle='tooltip' title="Ancho">Ancho</label>
+                                                        <input type="text" name="at_ancho" id="at_ancho" class="form-control form_acutec numerico valorrequerido" placeholder="Ancho" tipoval="texto"/>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                        <label for="at_anchoum_id" class="control-label anchoum_id requerido" data-toggle='tooltip' title="Unidad Medida Ancho">Unid Medida</label>
+                                                        <select name="at_anchoum_id" id="at_anchoum_id"  class="selectpicker form-control anchoum_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                                            <option value="">Seleccione...</option>
+                                                            @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
+                                                                <option
+                                                                    value="{{$unidadmedida->id}}"
+                                                                    >
+                                                                    {{$unidadmedida->nombre}}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>                                
+                                                    </div>
+                                                    <!--
+                                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
+                                                        <label for="at_anchodesv" class="control-label requerido" data-toggle='tooltip' title="Desviación Ancho">Desviación</label>
+                                                        <input type="text" name="at_anchodesv" id="at_anchodesv" class="form-control form_acutec valorrequerido" placeholder="Desviación" tipoval="texto"/>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    -->
+                                                </div>
+                                                <div class="row">                    
+                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                        <label for="at_largo" class="control-label" data-toggle='tooltip' title="Largo">Largo</label>
+                                                        <input type="text" name="at_largo" id="at_largo" class="form-control form_acutec numerico" placeholder="Largo"/>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                        <label for="at_largoum_id" class="control-label largoum_id" data-toggle='tooltip' title="Unidad Medida Largo">Unid Medida</label>
+                                                        <select name="at_largoum_id" id="at_largoum_id"  class="selectpicker form-control largoum_id form_acutec" data-live-search='true'>
+                                                            <option value="">Seleccione...</option>
+                                                            @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
+                                                                <option
+                                                                    value="{{$unidadmedida->id}}"
+                                                                    >
+                                                                    {{$unidadmedida->nombre}}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>                                
+                                                    </div>
+                                                    <!--
+                                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
+                                                        <label for="at_largodesv" class="control-label" data-toggle='tooltip' title="Desviación Largo">Desviación</label>
+                                                        <input type="text" name="at_largodesv" id="at_largodesv" class="form-control form_acutec" placeholder="Desviación"/>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    -->
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
-                                        <label for="at_anchoum_id" class="control-label anchoum_id requerido" data-toggle='tooltip' title="Unidad Medida Ancho">Unid Medida</label>
-                                        <select name="at_anchoum_id" id="at_anchoum_id"  class="selectpicker form-control anchoum_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
-                                            <option value="">Seleccione...</option>
-                                            @foreach($tablas['unidadmedida'] as $unidadmedida)
-                                                <option
-                                                    value="{{$unidadmedida->id}}"
-                                                    >
-                                                    {{$unidadmedida->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>                                
-                                    </div>
-                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
-                                        <label for="at_anchodesv" class="control-label requerido" data-toggle='tooltip' title="Desviación Ancho">Desviación</label>
-                                        <input type="text" name="at_anchodesv" id="at_anchodesv" class="form-control form_acutec valorrequerido" placeholder="Desviación" tipoval="texto"/>
-                                        <span class="help-block"></span>
-                                    </div>
-
-
-                                    <div class="col-xs-12 col-sm-5">
-                                        <label for="at_largo" class="control-label" data-toggle='tooltip' title="Largo">Largo</label>
-                                        <input type="text" name="at_largo" id="at_largo" class="form-control form_acutec numerico" placeholder="Largo"/>
-                                        <span class="help-block"></span>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
-                                        <label for="at_largoum_id" class="control-label largoum_id" data-toggle='tooltip' title="Unidad Medida Largo">Unid Medida</label>
-                                        <select name="at_largoum_id" id="at_largoum_id"  class="selectpicker form-control largoum_id form_acutec" data-live-search='true'>
-                                            <option value="">Seleccione...</option>
-                                            @foreach($tablas['unidadmedida'] as $unidadmedida)
-                                                <option
-                                                    value="{{$unidadmedida->id}}"
-                                                    >
-                                                    {{$unidadmedida->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>                                
-                                    </div>
-                                    <div class="col-xs-12 col-sm-5">
-                                        <label for="at_largodesv" class="control-label" data-toggle='tooltip' title="Desviación Largo">Desviación</label>
-                                        <input type="text" name="at_largodesv" id="at_largodesv" class="form-control form_acutec" placeholder="Desviación"/>
-                                        <span class="help-block"></span>
-                                    </div>
-
-                                    <div class="col-xs-12 col-sm-5">
-                                        <label for="at_fuelle" class="control-label" data-toggle='tooltip' title="Fuelle">Fuelle</label>
-                                        <input type="text" name="at_fuelle" id="at_fuelle" class="form-control form_acutec" placeholder="Fuelle"/>
-                                        <span class="help-block"></span>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
-                                        <label for="at_fuelleum_id" class="control-label fuelleum_id" data-toggle='tooltip' title="Unidad Medida Fuelle">Unid Medida</label>
-                                        <select name="at_fuelleum_id" id="at_fuelleum_id"  class="selectpicker form-control fuelleum_id form_acutec" data-live-search='true'>
-                                            <option value="">Seleccione...</option>
-                                            @foreach($tablas['unidadmedida'] as $unidadmedida)
-                                                <option
-                                                    value="{{$unidadmedida->id}}"
-                                                    >
-                                                    {{$unidadmedida->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>                                
-                                    </div>
-                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
-                                        <label for="at_fuelledesv" class="control-label" data-toggle='tooltip' title="Desviación Fuelle">Desviación</label>
-                                        <input type="text" name="at_fuelledesv" id="at_fuelledesv" class="form-control form_acutec" placeholder="Desviación"/>
-                                        <span class="help-block"></span>
-                                    </div>
-
-                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
-                                        <label for="at_espesor" class="control-label requerido" data-toggle='tooltip' title="Espesor">Espesor</label>
-                                        <input type="text" name="at_espesor" id="at_espesor" class="form-control form_acutec numerico4d valorrequerido" placeholder="Espesor" tipoval="texto"/>
-                                        <span class="help-block"></span>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
-                                        <label for="at_espesorum_id" class="control-label espesorum_id requerido" data-toggle='tooltip' title="Unidad Medida Espesor">Unid Medida</label>
-                                        <select name="at_espesorum_id" id="at_espesorum_id"  class="selectpicker form-control espesorum_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
-                                            <option value="">Seleccione...</option>
-                                            @foreach($tablas['unidadmedida'] as $unidadmedida)
-                                                <option
-                                                    value="{{$unidadmedida->id}}"
-                                                    >
-                                                    {{$unidadmedida->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
-                                        <label for="at_espesordesv" class="control-label requerido" data-toggle='tooltip' title="Desviación Espesor">Desviación</label>
-                                        <input type="text" name="at_espesordesv" id="at_espesordesv" class="form-control form_acutec valorrequerido" placeholder="Desviación" tipoval="texto"/>
-                                        <span class="help-block"></span>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="box box-default">
+                                            <div class="box-body">
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                        <label for="at_fuelle" class="control-label" data-toggle='tooltip' title="Fuelle">Fuelle</label>
+                                                        <input type="text" name="at_fuelle" id="at_fuelle" class="form-control form_acutec" placeholder="Fuelle"/>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                        <label for="at_fuelleum_id" class="control-label fuelleum_id" data-toggle='tooltip' title="Unidad Medida Fuelle">Unid Medida</label>
+                                                        <select name="at_fuelleum_id" id="at_fuelleum_id"  class="selectpicker form-control fuelleum_id form_acutec" data-live-search='true'>
+                                                            <option value="">Seleccione...</option>
+                                                            @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
+                                                                <option
+                                                                    value="{{$unidadmedida->id}}"
+                                                                    >
+                                                                    {{$unidadmedida->nombre}}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>                                
+                                                    </div>
+                                                    <!--
+                                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
+                                                        <label for="at_fuelledesv" class="control-label" data-toggle='tooltip' title="Desviación Fuelle">Desviación</label>
+                                                        <input type="text" name="at_fuelledesv" id="at_fuelledesv" class="form-control form_acutec" placeholder="Desviación"/>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    -->
+                                                </div>
+                                                <div class="row">
+                
+                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                        <label for="at_espesor" class="control-label requerido" data-toggle='tooltip' title="Espesor">Espesor</label>
+                                                        <input type="text" name="at_espesor" id="at_espesor" class="form-control form_acutec numerico4d valorrequerido" placeholder="Espesor" tipoval="texto"/>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                        <label for="at_espesorum_id" class="control-label espesorum_id requerido" data-toggle='tooltip' title="Unidad Medida Espesor">Unid Medida</label>
+                                                        <select name="at_espesorum_id" id="at_espesorum_id"  class="selectpicker form-control espesorum_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                                            <option value="">Seleccione...</option>
+                                                            @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
+                                                                <option
+                                                                    value="{{$unidadmedida->id}}"
+                                                                    >
+                                                                    {{$unidadmedida->nombre}}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <!--
+                                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
+                                                        <label for="at_espesordesv" class="control-label requerido" data-toggle='tooltip' title="Desviación Espesor">Desviación</label>
+                                                        <input type="text" name="at_espesordesv" id="at_espesordesv" class="form-control form_acutec valorrequerido" placeholder="Desviación" tipoval="texto"/>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    -->
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

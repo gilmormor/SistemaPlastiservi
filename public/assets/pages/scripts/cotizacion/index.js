@@ -111,7 +111,7 @@ $(document).on("click", ".btnEnviarNV", function(event){
     form = $(this);
     id = fila.find('td:eq(0)').text();
     contador = fila.find('td:eq(6)').text();
-    contacutec = fila.find('td:eq(7)').text();
+    contacutec = fila.find('td:eq(8)').text();
     aprobstatus = 1;
     if(contacutec>0){
         aprobstatus = 5;

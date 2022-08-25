@@ -29,6 +29,7 @@
                                                     <th style="text-align:center">TipU</th>
                                                     <th style="text-align:right">PrecN</th>
                                                     <th style="text-align:right">Precio</th>
+                                                    <th class="ocultar">tipoprod</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -44,6 +45,7 @@
                                                     <th>TipU</th>
                                                     <th>PrecN</th>
                                                     <th>Prec</th>
+                                                    <th class="ocultar">tipoprod</th>
                                                 </tr>
                                             </tfoot>
                                         </table>

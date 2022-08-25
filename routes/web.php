@@ -293,6 +293,8 @@ Route::get('cotizacion/{id}/exportPdf', 'CotizacionController@exportPdf')->name(
 Route::get('cotizacion/{id}/{stareport}/exportPdfM', 'CotizacionController@exportPdfM')->name('exportPdfM_cotizacion');
 Route::get('cotizacion/productobuscarpage', 'CotizacionController@productobuscarpage')->name('productobuscarpage');
 Route::get('cotizacion/clientebuscarpage', 'CotizacionController@clientebuscarpage')->name('clientebuscarpage');
+Route::get('cotizacion/{id}/productobuscarpage', 'CotizacionController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('cotizacion/{id}/clientebuscarpage', 'CotizacionController@clientebuscarpageid')->name('clientebuscarpageid');
 
 
 
@@ -865,6 +867,8 @@ Route::delete('invmovmodulo/{id}', 'InvMovModuloController@eliminar')->name('eli
 Route::get('cotizacionaprobaracutec', 'CotizacionAprobarAcuTecController@index')->name('cotizacionaprobaracutec');
 Route::get('cotizacionaprobaracutecpage', 'CotizacionAprobarAcuTecController@cotizacionaprobaracutecpage')->name('cotizacionaprobaracutecpage');
 Route::get('cotizacionaprobaracutec/{id}/editar', 'CotizacionAprobarAcuTecController@editar')->name('editar_cotizacionaprobaracutec');
+Route::get('cotizacionaprobaracutec/{id}/productobuscarpage', 'CotizacionAprobarAcuTecController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('cotizacionaprobaracutec/{id}/clientebuscarpage', 'CotizacionAprobarAcuTecController@clientebuscarpageid')->name('clientebuscarpageid');
 
 /*RUTAS GUIA DESPACHO*/
 Route::get('guiadespacho', 'GuiaDespachoController@index')->name('guiadespacho');

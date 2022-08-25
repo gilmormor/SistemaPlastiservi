@@ -1385,6 +1385,28 @@ $("#botonNewProd").click(function(event)
 	}
 });
 
+//AL HACER CLIC EN BOTON INCLUIR NUEVO PRODUCTO. COTIZACION NOTA DE VENTA ETC, PRODUCTOS POR CLIENTE
+$("#botonNewProdxCli").click(function(event)
+{
+	/*
+	data = datos();
+	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 ).load();
+*/
+	clientedirec_id = $("#clientedirec_id").val();
+	aux_rut = $("#rut").val();
+	if(aux_rut==""){
+		mensaje('Debes Incluir RUT del cliente','','error');
+		return 0;
+	}else{
+		limpiarInputOT();
+		quitarverificar();
+		$("#aux_sta").val('1');
+		$("#myModal").modal('show');
+		$("#direccionM").focus();	
+	}
+});
+
+
 function mostrardatosadUniMed(respuesta){
 	if(respuesta['mostdatosad'] == 0){
 		$(".mostdatosad1").css({'display':'none'});

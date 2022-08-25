@@ -146,7 +146,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $aux_DespachoBodegaId;
-                            $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
+                            $array_invmovdet["sucursal_id"] = $despachoord->notaventa->sucursal_id; //$invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 2;
                             $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
@@ -180,7 +180,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                            $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
+                            $array_invmovdet["sucursal_id"] = $despachoord->notaventa->sucursal_id; //$oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 1;
                             $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
@@ -254,7 +254,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $request->invbodega_id;
-                            $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
+                            $array_invmovdet["sucursal_id"] = $despachoord->notaventa->sucursal_id;; //$invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 1;
                             $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
@@ -287,7 +287,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                            $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
+                            $array_invmovdet["sucursal_id"] = $despachoord->notaventa->sucursal_id; //$oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 1;
                             $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;

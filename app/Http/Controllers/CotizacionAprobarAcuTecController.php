@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cliente;
+use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -46,6 +48,17 @@ class CotizacionAprobarAcuTecController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpageid($id){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
     public function create()
     {
         //

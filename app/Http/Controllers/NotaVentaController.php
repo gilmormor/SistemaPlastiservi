@@ -10,6 +10,7 @@ use App\Models\CategoriaProd;
 use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\ClienteDirec;
+use App\Models\ClienteProducto;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Color;
@@ -385,6 +386,7 @@ class NotaVentaController extends Controller
         $tablas['sucursales'] = $clientesArray['sucursales'];
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
         $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
@@ -502,10 +504,21 @@ class NotaVentaController extends Controller
                     $productonew = Producto::create($array_producto);
                     //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
                     //$productonew->vendedores()->sync($request->vendedor_id);
-                    ProductoVendedor::create([
-                        'producto_id' => $array_producto['id'],
-                        'vendedor_id' => $request->vendedor_id
-                    ]);
+                    $ProductoVendedor = ProductoVendedor::updateOrCreate(
+                        ['producto_id' => $productonew->id,'vendedor_id' => $request->vendedor_id],
+                        [
+                            'producto_id' => $productonew->id,
+                            'vendedor_id' => $request->vendedor_id
+                        ]
+                    );
+                    $ClienteProducto = ClienteProducto::updateOrCreate(
+                        ['cliente_id' => $notaventa->cliente_id,'producto_id' => $productonew->id],
+                        [
+                            'cliente_id' => $notaventa->cliente_id,
+                            'producto_id' => $productonew->id
+                        ]
+                    );
+
                     $array_acuerdotecnicotemp["producto_id"] = $productonew->id;
                     $acuerdotecnico = AcuerdoTecnico::create($array_acuerdotecnicotemp);
                     $array_cotizaciondetalle["producto_id"] = $productonew->id;
@@ -614,6 +627,7 @@ class NotaVentaController extends Controller
         $aux_statusPant = 0;
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
         $tablas['sucursales'] = $clientesArray['sucursales'];
         //$tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
         return view('notaventa.editar', compact('data','detalles','clienteselec','clientes','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));

@@ -94,8 +94,8 @@ class CotizacionController extends Controller
         
     }
 
-    public function productobuscarpage(){
-        $datas = Producto::productosxUsuarioSQL();
+    public function productobuscarpage(Request $request){
+        $datas = Producto::productosxCliente($request);
         return datatables($datas)->toJson();
     }
 
@@ -103,6 +103,17 @@ class CotizacionController extends Controller
         $datas = Cliente::clientesxUsuarioSQL();
         return datatables($datas)->toJson();
     }
+
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpageid($id){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
 
     /*
     public function consulta(){
@@ -142,10 +153,12 @@ class CotizacionController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
+
         $aux_sta=1;
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
-        $productos = Producto::productosxUsuario();
+        //$productos = Producto::productosxUsuario();
         $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
@@ -664,12 +677,19 @@ class CotizacionController extends Controller
         can('guardar-cotizacion');
         if ($request->ajax()) {
             $cotizacion = Cotizacion::findOrFail($request->id);
-            $cotizacion->aprobstatus = $request->aprobstatus;    
+            $cotizacion->aprobstatus = $request->aprobstatus;
             if($request->aprobstatus=='1'){
-                $cotizacion->aprobusu_id = auth()->id();
-                $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
-                $cotizacion->aprobobs = 'Aprobado por el mismo vendedor';
-            }
+                if($cotizacion->sucursal_id == 1){ //TODAS LAS COTIZACIONES DE SANTA ESTER NECESITAN APROBACION DE LUISA MARTINEZ
+                    $cotizacion->aprobstatus = 2;
+                    $cotizacion->aprobusu_id = auth()->id();
+                    $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
+                    $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion (Santa Ester)';
+                }else{
+                    $cotizacion->aprobusu_id = auth()->id();
+                    $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
+                    $cotizacion->aprobobs = 'Aprobado por el mismo vendedor';    
+                }
+            }    
             if ($cotizacion->save()) {
                 return response()->json(['mensaje' => 'ok']);
             } else {
@@ -689,12 +709,15 @@ class CotizacionController extends Controller
             //dd($request->id);
             $cotizacion = Cotizacion::findOrFail($request->id);
             //dd($cotizacion);
+            $cotizacion->aprobobs = $request->obs;
             if($cotizacion->aprobstatus == "2"){ //Aprobar o rechazar por precio menor al de tabla
                 $cotizacion->aprobstatus = $request->valor;
             }else{
                 if($cotizacion->aprobstatus == "5"){ //Aprobar o rechazar acuerdo tecnico
                     if($request->valor == "3"){
-                        $cotizacion->aprobstatus = "6";
+                        //$cotizacion->aprobstatus = "6"; Este estatus era para acuerdo tecnico aprobado, pero ahora todas las cotizaciones deben pasar por aprobacion de Luisa Martinez
+                        $cotizacion->aprobstatus = "2";
+                        $cotizacion->aprobobs = "Cotizacion requiere Aprobacion (Santa Ester)";
                     }else{
                         $cotizacion->aprobstatus = "7";
                     }
@@ -702,7 +725,6 @@ class CotizacionController extends Controller
             }
             $cotizacion->aprobusu_id = auth()->id();
             $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
-            $cotizacion->aprobobs = $request->obs;
             
             if ($cotizacion->save()) {
                 return response()->json(['mensaje' => 'ok']);
@@ -739,13 +761,18 @@ class CotizacionController extends Controller
                 $respuesta["mensaje"] = "Cotización no existe";
                 $aux_condaprobstatus = "true";
                 $cotizaciones01 = consultabuscarcot($request->id,$aux_condvend,$aux_condaprobstatus);
+                //dd($cotizaciones01);
                 if (count($cotizaciones01) > 0){
                     //dd($cotizaciones01[0]->aprobstatus);
                     if($cotizaciones01[0]->aprobstatus == null){
                         $respuesta["mensaje"] = "Cotizacion sin aprobar por Vendedor.";
                     }
                     if($cotizaciones01[0]->aprobstatus == 2){
-                        $respuesta["mensaje"] = "Precio menor al valor en tabla. Debe ser aprobada por Supervisor.";  
+                        if(is_null($cotizaciones01[0]->aprobobs) or $cotizaciones01[0]->aprobobs == ""){
+                            $respuesta["mensaje"] = "Precio menor al valor en tabla. Debe ser aprobada por Supervisor.";  
+                        }else{
+                            $respuesta["mensaje"] = $cotizaciones01[0]->aprobobs;
+                        }
                     }
                     if($cotizaciones01[0]->aprobstatus == 4){
                         $respuesta["mensaje"] = "Cotizacion rechazada por Supervisor, debe revisar en la bandeja de cotizaciones para modificar precio.";
@@ -869,6 +896,7 @@ function editar($id){
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $cotizacionDetalles = $data->cotizaciondetalles()->get();
 
+
         $vendedor_id=$data->vendedor_id;
         if(empty($data->cliente_id)){
             $clienteselec = $data->clientetemp()->get();
@@ -877,15 +905,16 @@ function editar($id){
         }
         //VENDEDORES POR SUCURSAL
         $tablas = array();
+        $vendedor_id = Vendedor::vendedor_id();
+        $tablas['vendedor_id'] = $vendedor_id["vendedor_id"];
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
         
         $fecha = date("d/m/Y", strtotime($data->fechahora));
         $user = Usuario::findOrFail(auth()->id());
-        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
-        $clientes = $clientesArray['clientes'];
-        $tablas['vendedor_id'] = $clientesArray['vendedor_id'];
-        $productos = Producto::productosxUsuario();
+        //$clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
+        //$clientes = $clientesArray['clientes'];
+        //$tablas['vendedor_id'] = $clientesArray['vendedor_id'];
 
         $tablas['formapagos'] = FormaPago::orderBy('id')->get();
         $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
@@ -894,14 +923,17 @@ function editar($id){
         $tablas['regiones'] = Region::orderBy('id')->get();
         $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
         $tablas['giros'] = Giro::orderBy('id')->get();
-        $tablas['sucursales'] = $clientesArray['sucursales'];
+        $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray();
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
+        //$tablas['sucursales'] = $clientesArray['sucursales'];
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
         $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
 
         $aux_sta=2;
 
-        return view('cotizacion.editar', compact('data','clienteselec','clientes','cotizacionDetalles','productos','fecha','aux_sta','aux_cont','tablas'));
+        return view('cotizacion.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','aux_cont','tablas'));
 }

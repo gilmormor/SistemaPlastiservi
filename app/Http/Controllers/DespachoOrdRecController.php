@@ -599,7 +599,7 @@ class DespachoOrdRecController extends Controller
                                         $array_invmovdet = $oddetbodprod->attributesToArray();
                                         $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                                         $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                                        $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
+                                        $array_invmovdet["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_i;
                                         $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
                                         $array_invmovdet["invmovtipo_id"] = 1;
                                         $array_invmovdet["cant"] = $array_invmovdet["cant"];
@@ -669,7 +669,7 @@ class DespachoOrdRecController extends Controller
                                     $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                                     $array_invmovdet["producto_id"] = $despachoordrecdet_invbodegaproducto->producto_id;
                                     $array_invmovdet["invbodega_id"] = $aux_DespachoBodegaId;
-                                    $array_invmovdet["sucursal_id"] = $despachoordrecdet_invbodegaproducto->sucursal_id;
+                                    $array_invmovdet["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_i;
                                     $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
                                     $array_invmovdet["invmovtipo_id"] = 1;
                                     $array_invmovdet["cant"] = $array_invmovdet["cant"];

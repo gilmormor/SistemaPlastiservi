@@ -3,8 +3,26 @@ $(document).ready(function () {
     configTablaProd();
 });
 
+function datos(){
+    var data1 = {
+        cliente_id  : $("#cliente_id").val(),
+        sucursal_id : $("#sucursal_id").val(),
+        _token      : $('input[name=_token]').val()
+    };
+
+    var data2 = "?cliente_id="+data1.cliente_id +
+    "&sucursal_id="+data1.sucursal_id
+
+    var data = {
+        data1 : data1,
+        data2 : data2
+    };
+    return data;
+}
+
 function configTablaProd(){
     aux_nfila = 0;
+    data = datos();
     $("#tabla-data-productos").attr('style','');
     $("#tabla-data-productos").dataTable().fnDestroy();
     $('#tabla-data-productos').DataTable({
@@ -16,7 +34,7 @@ function configTablaProd(){
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        'ajax'        : "productobuscarpage",
+        'ajax'        : "productobuscarpage/" + data.data2,
         'columns'     : [
             {data: 'id'},
             {data: 'nombre'},
@@ -26,7 +44,8 @@ function configTablaProd(){
             {data: 'peso'},
             {data: 'tipounion'},
             {data: 'precioneto'},
-            {data: 'precio'}
+            {data: 'precio'},
+            {data: 'tipoprod',className:"ocultar"},
         ],
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -47,10 +66,17 @@ function configTablaProd(){
 
             //$(row).attr('id','fila' + data.id);
 
+
+            if(data.tipoprod == 1){
+                aux_text = 
+                    data.nombre +
+                " <i id='icoat1' class='fa fa-cog text-red girarimagen'></i>";
+                $('td', row).eq(1).html(aux_text);
+            }
+
             $('td', row).eq(5).attr('data-order',data.peso);
             $('td', row).eq(5).attr('data-search',data.peso);
             $('td', row).eq(5).html(MASKLA(data.peso,3));
-
 
             $('td', row).eq(7).attr('data-order',data.precioneto);
             $('td', row).eq(7).attr('data-search',data.precioneto);
