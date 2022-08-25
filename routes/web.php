@@ -888,3 +888,9 @@ Route::get('reportinvstockbppage', 'ReportInvStockBPController@reportinvstockbpp
 Route::get('reportinvstockbp/reporte', 'ReportInvStockBPController@reporte')->name('reportinvstockbp_reporte');
 Route::get('reportinvstockbp/exportPdf', 'ReportInvStockBPController@exportPdf')->name('reportinvstockbp_exportPdf');
 Route::get('reportinvstockbp/totalizarindex', 'ReportInvStockBPController@totalizarindex')->name('reportinvstockbp_totalizarindex');
+
+/*RUTAS ASIGNAR PRODUCTO A CLIENTE*/
+Route::get('clienteproducto', 'ClienteProductoController@index')->name('clienteproducto');
+Route::get('clienteproductopage', 'ClienteProductoController@clienteproductopage')->name('clienteproductopage');
+Route::get('clienteproducto/{id}/editar', 'ClienteProductoController@editar')->name('editar_clienteproducto');
+Route::put('clienteproducto/{id}', 'ClienteProductoController@actualizar')->name('actualizar_clienteproducto');
