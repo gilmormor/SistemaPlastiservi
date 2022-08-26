@@ -894,3 +894,6 @@ Route::get('clienteproducto', 'ClienteProductoController@index')->name('clientep
 Route::get('clienteproductopage', 'ClienteProductoController@clienteproductopage')->name('clienteproductopage');
 Route::get('clienteproducto/{id}/editar', 'ClienteProductoController@editar')->name('editar_clienteproducto');
 Route::put('clienteproducto/{id}', 'ClienteProductoController@actualizar')->name('actualizar_clienteproducto');
+Route::get('clienteproducto/productobuscarpage', 'ClienteProductoController@productobuscarpage')->name('productobuscarpage');
+Route::get('clienteproducto/{id}/productobuscarpage', 'ClienteProductoController@productobuscarpageid')->name('productobuscarpageid');
+

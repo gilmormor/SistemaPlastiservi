@@ -1403,6 +1403,7 @@ $("#botonNewProdxCli").click(function(event)
 		$("#aux_sta").val('1');
 		$("#myModal").modal('show');
 		$("#direccionM").focus();	
+		console.log('entro1');
 	}
 });
 

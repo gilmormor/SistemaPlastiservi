@@ -4,6 +4,8 @@
 @endsection
 
 @section('scripts')
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/clienteproducto/crear.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -26,7 +28,7 @@
                 <div class="box-body">
                     @include('clienteproducto.form')
                 </div>
-                @if(can('guardar-clienteproducto',false) == true)
+                @if(can('guardar-cliente-producto',false) == true)
                     <!-- /.box-body -->
                     <div class="box-footer text-center">
                         @include('includes.boton-form-editar')
@@ -37,4 +39,5 @@
         </div>
     </div>
 </div>
+@include('generales.modalpdf')
 @endsection

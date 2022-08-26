@@ -609,3 +609,23 @@ function dgv(T)    //digito verificador
 	  }
 	  return false;
  }
+
+ $("#btnbuscarproducto").click(function(event){
+		
+	$(this).val("");
+	$(".input-sm").val('');
+	data = datos();
+	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 ).load();
+
+	//$("#myModal").modal('hide');
+	//$("#myModalBuscarProd").modal('show');
+
+	$('#myModal')
+		.modal('hide')
+		.on('hidden.bs.modal', function (e) {
+			$('#myModalBuscarProd').modal('show');
+
+			$(this).off('hidden.bs.modal'); // Remove the 'on' event binding
+		});
+
+});

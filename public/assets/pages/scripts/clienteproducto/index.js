@@ -15,7 +15,7 @@ $(document).ready(function () {
             {data: 'rut'},
             {data: 'razonsocial'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
-            {defaultContent : "<a href='cliente' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'><i class='fa fa-fw fa-pencil'></i></a>"}
+            {defaultContent : "<a href='clienteproducto' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'><i class='fa fa-fw fa-pencil'></i></a>"}
         ],
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
