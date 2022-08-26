@@ -55,12 +55,12 @@ class ClienteProductoController extends Controller
     }
 
     public function productobuscarpage(Request $request){
-        $datas = Producto::productosxCliente($request);
+        $datas = Producto::AsignarProductosAClientes($request);
         return datatables($datas)->toJson();
     }
 
     public function productobuscarpageid(Request $request){
-        $datas = Producto::productosxCliente($request);
+        $datas = Producto::AsignarProductosAClientes($request);
         return datatables($datas)->toJson();
     }
 

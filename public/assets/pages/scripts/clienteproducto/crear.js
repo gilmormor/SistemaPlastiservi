@@ -3,28 +3,7 @@ $(document).ready(function () {
     $( "#rut" ).focus();
     //$("#rut").numeric();
 	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
-	/*
-	$(".modal-body label").css("margin-bottom", -2);
-	$(".help-block").css("margin-top", -2);
-	$('.form-group').css({'margin-bottom':'0px','margin-left': '0px','margin-right': '0px'});
-	*/
-	//alert($("#aux_sta").val());
-	if($("#mostrarguiasfacturas").val()=="1"){
-		$("#mostrarguiasfacturasT").prop("checked", true);
-	}else{
-		$("#mostrarguiasfacturasT").prop("checked", false);
-	}
-	aux_obs = $("#aux_observaciones").val();
-	$("#observaciones").val(aux_obs);
-});
-
-$("#mostrarguiasfacturasT").click(function(event)
-{
-    if($("#mostrarguiasfacturasT").prop("checked")){
-		$("#mostrarguiasfacturas").val('1');
-	}else{
-		$("#mostrarguiasfacturas").val('0');
-	}
+	configTablaProd();
 });
 
 function formato_rut(rut)
@@ -146,319 +125,6 @@ function insertarTabla(){
 }
 
 
-
-/*
-$('.region_id').on('change', function () {
-	llenarProvincia(this,0);
-});
-
-function llenarProvincia(obj,i){
-	var data = {
-        region_id: $(obj).val(),
-        _token: $('input[name=_token]').val()
-    };
-    $.ajax({
-        url: '/sucursal/obtProvincias',
-        type: 'POST',
-        data: data,
-        success: function (provincias) {
-            $("#provincia_idM").empty();
-            //$(".provincia_id").append("<option value=''>Seleccione...</option>");
-            $("#comuna_idM").empty();
-            //$(".comuna_id").append("<option value=''>Seleccione...</option>");
-            $.each(provincias, function(index,value){
-                $("#provincia_idM").append("<option value='" + index + "'>" + value + "</option>")
-			});
-			$(".selectpicker").selectpicker('refresh');
-			if(i>0){
-				$("#provincia_idM").val($("#provincia_id"+i).val());
-				llenarComuna("#provincia_id"+i,i);
-			}
-			$(".selectpicker").selectpicker('refresh');
-		}
-    });
-}
-
-$('.provincia_id').on('change', function () {
-    llenarComuna(this,0);
-});
-
-function llenarComuna(obj,i){
-	var data = {
-        provincia_id: $(obj).val(),
-        _token: $('input[name=_token]').val()
-    };
-    $.ajax({
-        url: '/sucursal/obtComunas',
-        type: 'POST',
-        data: data,
-        success: function (comuna) {
-            $("#comuna_idM").empty();
-            //$(".comuna_id").append("<option value=''>Seleccione...</option>");
-            $.each(comuna, function(index,value){
-                $("#comuna_idM").append("<option value='" + index + "'>" + value + "</option>")
-            });
-			$(".selectpicker").selectpicker('refresh');
-			if(i>0){
-				$("#comuna_idM").val($("#comuna_id"+i).val());
-			}
-			$(".selectpicker").selectpicker('refresh');
-        }
-    });
-}
-*/
-$('#comunap_id').on('change', function () {
-	$("#regionp_id").val($('#comunap_id option:selected').attr("region_id"));
-	$("#provinciap_id").val($('#comunap_id option:selected').attr("provincia_id"));
-	$(".selectpicker").selectpicker('refresh');
-});
-
-$('#comuna_idM').on('change', function () {
-	$("#region_idM").val($('#comuna_idM option:selected').attr("region_id"));
-	$("#provincia_idM").val($('#comuna_idM option:selected').attr("provincia_id"));
-	$(".selectpicker").selectpicker('refresh');
-});
-
-
-//VALIDACION DE CAMPOS
-function limpiarInputOT(){
-	$("#direcciondetalleM").val('');
-	$("#region_idM").val('');
-	/*$("#provincia_idM").val('');
-	$("#provincia_idM").empty();
-	$("#comuna_idM").val('')
-	$("#comuna_idM").empty();*/
-    $(".selectpicker").selectpicker('refresh');
-}
-
-function verificar()
-{
-	var v1=0,v2=0,v3=0,v4=0,v5=0,v6=0,v7=0,v8=0,v9=0,v10=0,v11=0,v12=0,v13,v14=0;
-	v5=validacion('comuna_idM','combobox','col-xs-12 col-sm-12');
-	v3=validacion('provincia_idM','combobox','col-xs-12 col-sm-12');
-	v2=validacion('region_idM','comboboxmult','col-xs-12 col-sm-12');
-	v1=validacion('direcciondetalleM','texto','col-xs-12 col-sm-12');
-
-	if (v1===false || v2===false || v3===false || v4===false || v5===false || v6===false || v7===false || v8===false || v9===false || v10===false || v11===false || v12===false || v13===false || v14===false)
-	{
-		//$("#exito").hide();
-		//$("#error").show();
-		return false;
-	}else{
-		//$("#error").hide();
-		//$("#exito").show();
-		return true;
-	}
-}
-
-function quitarverificar(){
-	quitarValidacion('direcciondetalleM','texto','col-xs-12 col-sm-12');
-	quitarValidacion('region_idM','combobox','col-xs-12 col-sm-12');
-	quitarValidacion('provincia_idM','combobox','col-xs-12 col-sm-12');
-	quitarValidacion('comuna_idM','combobox','col-xs-12 col-sm-12');
-}
-
-function validacion(campo,tipo,columnas)
-{
-	var a=0;
-	//columnas = $('#'+campo).parent().parent().attr("class");
-	switch (tipo) 
-	{ 
-		case "texto": 
-			codigo = document.getElementById(campo).value;
-			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo) ) {
-				$("#glypcn"+campo).remove();
-				$('#'+campo).parent().attr("class", columnas+" has-error has-feedback");
-				$('#'+campo).parent().children('span').text("Campo obligatorio").show();
-				$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-remove form-control-feedback check'></span>");
-				$('#'+campo).focus();
-				return false;
-			}
-			else
-			{
-				$("#glypcn"+campo).remove();
-				$('#'+campo).parent().attr("class", columnas+" has-success has-feedback");
-				$('#'+campo).parent().children('span').hide();
-				$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
-				return true;
-			}
-
-		break 
-		case "numerico": 
-			codigo = document.getElementById(campo).value;
-			cajatexto = document.getElementById(campo).value;
-			var caract = new RegExp(/^[0-9]+$/);
-
-			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo) ) {
-				$("#glypcn"+campo).remove();
-				$('#'+campo).parent().parent().attr("class", columnas+" has-error has-feedback");
-				$('#'+campo).parent().children('span').text("Campo obligatorio").show();
-				$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-remove form-control-feedback'></span>");
-				$('#'+campo).focus();
-				return false;
-			}
-			else
-			{
-				if(caract.test(cajatexto) == false)
-				{
-					$("#glypcn"+campo).remove();
-					$('#'+campo).parent().parent().attr("class", columnas+" has-error has-feedback");
-					$('#'+campo).parent().children('span').text("Solo permite valores numericos").show();
-					$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-remove form-control-feedback'></span>");
-					$('#'+campo).focus();
-					return false;
-				}else
-				{
-					$("#glypcn"+campo).remove();
-					$('#'+campo).parent().parent().attr("class", columnas+" has-success has-feedback");
-					$('#'+campo).parent().children('span').hide();
-					$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
-					return true;				
-				}
-			}
-
-		break 
-		case "combobox": 
-			codigo = document.getElementById(campo).value;
-			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo) ) {
-				$("#glypcn"+campo).remove();
-				$('#'+campo).parent().parent().attr("class", columnas+" has-error has-feedback");
-				$('#'+campo).parent().parent().children('span').text("Campo obligatorio").show();
-				$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-remove form-control-feedback check'></span>");
-				$('#'+campo).focus();
-				return false;
-			}
-			else
-			{
-				$("#glypcn"+campo).remove();
-				$('#'+campo).parent().parent().attr("class", columnas+" has-success has-feedback");
-				$('#'+campo).parent().parent().children('span').hide();
-				$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
-				return true;
-			}
-
-		break
-		case "comboboxmult": 
-			codigo = document.getElementById(campo).value;
-			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo) ) {
-				$("#glypcn"+campo).remove();
-				$('#'+campo).parent().parent().attr("class", columnas+" has-error has-feedback");
-				$('#'+campo).parent().parent().children('span').text("Campo obligatorio").show();
-				$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-remove form-control-feedback check'></span>");
-				$('#'+campo).focus();
-				return false;
-			}
-			else
-			{
-				$("#glypcn"+campo).remove();
-				$('#'+campo).parent().parent().attr("class", columnas+" has-success has-feedback");
-				$('#'+campo).parent().parent().children('span').hide();
-				$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
-				return true;
-			}
-
-		break 
-		case "email": 
-			cajatexto = document.getElementById(campo).value;
-			var caract = new RegExp(/^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/);
-			if( cajatexto == null || cajatexto.length == 0 || /^\s+$/.test(cajatexto) )
-			{
-				$("#glypcn"+campo).remove();
-				$('#'+campo).parent().parent().attr("class", columnas+" has-error has-feedback");
-				$('#'+campo).parent().children('span').text("Campo obligatorio").show();
-				$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-remove form-control-feedback'></span>");
-				$('#'+campo).focus();
-				return false;
-			}
-			else
-			{
-				if(caract.test(cajatexto) == false)
-				{
-					$("#glypcn"+campo).remove();
-					$('#'+campo).parent().parent().attr("class", columnas+" has-error has-feedback");
-					$('#'+campo).parent().children('span').text("Correo no valido").show();
-					$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-remove form-control-feedback'></span>");
-					$('#'+campo).focus();
-					return false;
-				}else
-				{
-					$("#glypcn"+campo).remove();
-					$('#'+campo).parent().parent().attr("class", columnas+" has-success has-feedback");
-					$('#'+campo).parent().children('span').hide();
-					$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
-					return true;				
-				}
-			} 
-		break 
-		default: 
-		
-	}
-}
-
-function quitarValidacion(campo,tipo,columnas)
-{
-	var a=0;
-	//columnas = $('#'+campo).parent().parent().attr("class");
-	switch (tipo) 
-	{ 
-		case "texto": 
-			$("#glypcn"+campo).remove();
-			$('#'+campo).parent().attr("class", columnas);
-			$('#'+campo).parent().children('span').hide();
-			$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
-			return true;
-		break 
-		case "numerico": 
-			codigo = document.getElementById(campo).value;
-			$("#glypcn"+campo).remove();
-			$('#'+campo).parent().parent().attr("class", columnas);
-			$('#'+campo).parent().children('span').hide();
-			$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
-			return true;
-
-		break 
-		case "combobox": 
-			$("#glypcn"+campo).remove();
-			$('#'+campo).parent().parent().attr("class", columnas);
-			$('#'+campo).parent().parent().children('span').hide();
-			$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
-			return true;
-
-		break 
-		case "email": 
-			$("#glypcn"+campo).remove();
-			$('#'+campo).parent().parent().attr("class", columnas);
-			$('#'+campo).parent().children('span').hide();
-			$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
-		break 
-		default: 
-		
-	}
-}
-
-function editarRegistro(i){
-	//alert($("#direccion"+i).val());
-	//event.preventDefault();
-    limpiarInputOT();
-	quitarverificar();
-	$("#aux_sta").val('0');
-
-	$("#aux_numfila").val(i);
-	$("#direcciondetalleM").val($("#direcciondetalle"+i).val());
-	/*$("#provincia_idM").empty();
-	$("#comuna_idM").empty();*/
-	
-	$("#comuna_idM").val($("#comuna_id"+i).val());
-	$("#region_idM").val($("#region_id"+i).val());
-	$("#provincia_idM").val($("#provincia_id"+i).val());
-	//llenarProvincia("#region_id"+i,i);
-	
-	//$("#sucursal_idM").val($("#sucursal_id"+i).val());
-	$(".selectpicker").selectpicker('refresh');
-    $("#myModal").modal('show');
-    $("#direcciondetalleM").focus();
-}
-
 function eliminarRegistro(i){
 	//alert($('input[name=_token]').val());
 	var data = {
@@ -508,118 +174,22 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-$("#rut").blur(function(){
-	var str = $(this).val(); 
-	if(str!=$("#aux_rut").val()){
-		//alert(str.charAt(str.length - 1));
-		if(!dgv(str.substr(0, str.length-1))){
-			swal({
-				title: 'Dígito verificador no es Válido.',
-				text: "",
-				icon: 'error',
-				buttons: {
-					confirm: "Aceptar"
-				},
-			}).then((value) => {
-				if (value) {
-					//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-					$("#rut").focus();
-				}
-			});
-			//$(this).val('');
-		}else{
-			codigo = $("#rut").val();
-			//limpiarCampos();
-			if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
-			{
-				//totalizar();
-				var data = {
-					rut: $("#rut").val(),
-					_token: $('input[name=_token]').val()
-				};
-				$.ajax({
-					url: '/cliente/buscarCli',
-					type: 'POST',
-					data: data,
-					success: function (respuesta) {
-						if(respuesta.length>0){
-							swal({
-								title: 'Cliente ya existe.',
-								text: "Razón Social: " + respuesta[0]['razonsocial'],
-								icon: 'error',
-								buttons: {
-									confirm: "Aceptar"
-								},
-							}).then((value) => {
-								if (value) {
-									//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-									$("#rut").focus();
-								}
-							});
-						}else{
-							$.ajax({
-								url: '/clientetemp/buscarCliTemp',
-								type: 'POST',
-								data: data,
-								success: function (respuesta) {
-									if(respuesta.length>0){
-										aux_contiz = "";
-										for (var i = 0; i < (respuesta.length - 1); i++) {
-											aux_contiz = aux_contiz + respuesta[i].cotizacion_id + ",";
-										}
-										aux_contiz = aux_contiz + respuesta[i].cotizacion_id + ".";
-										swal({
-											title: "Cliente temporal",
-											text: "Cliente temporal debe ser validado en el Menú: Archivos Maestros->Clientes->Validar Cliente. Tomar en cuenta que para validar un cliente temporal la cotizacion debe estar aprobada." + "\nCotizacion Nro: " + aux_contiz,
-											icon: 'error',
-											buttons: {
-												confirm: "Aceptar"
-											},
-										}).then((value) => {
-											if (value) {
-												//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-												$("#rut").focus();
-											}
-										});
-									}else{
-										//alert('entro');
-									}
-								}
-							});
-						}
-					}
-				});
-			}
-		}		
-	}
-});
-
-function dgv(T)    //digito verificador
-{  
-      var M=0,S=1;
-	  for(;T;T=Math.floor(T/10))
-      S=(S+T%10*(9-M++%6))%11;
-	  //return S?S-1:'k';
-      
-	  aux_digver=(S?S-1:'K');
-	  var str = $("#rut").val(); 
-	  aux_ultdig=(str.charAt(str.length - 1));
-	  if(aux_digver==aux_ultdig){
-		  return true;
-	  }
-	  return false;
- }
-
- $("#btnbuscarproducto").click(function(event){
-		
+$("#btnbuscarproducto").click(function(event){
 	$(this).val("");
 	$(".input-sm").val('');
 	data = datos();
-	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 ).load();
+	ArrayProdId = [];
+	$("#tabla-data tr .producto_id").each(function() {
+		valor = $(this).attr("valor");
+		ArrayProdId.push(valor);
+	});
+	//console.log(ArrayProdId.toString());
+	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" + ArrayProdId.toString()).load();
 
 	//$("#myModal").modal('hide');
 	//$("#myModalBuscarProd").modal('show');
-
+	$('#myModalBuscarProd').modal('show');
+/*
 	$('#myModal')
 		.modal('hide')
 		.on('hidden.bs.modal', function (e) {
@@ -627,5 +197,116 @@ function dgv(T)    //digito verificador
 
 			$(this).off('hidden.bs.modal'); // Remove the 'on' event binding
 		});
-
+*/
 });
+
+function datos(){
+    var data1 = {
+        cliente_id  : $("#cliente_id").val(),
+        sucursal_id : $("#sucursal_id").val(),
+        _token      : $('input[name=_token]').val()
+    };
+
+    var data2 = "?cliente_id="+data1.cliente_id +
+    "&sucursal_id="+data1.sucursal_id
+
+    var data = {
+        data1 : data1,
+        data2 : data2
+    };
+    return data;
+}
+
+function configTablaProd(){
+    aux_nfila = 0;
+    data = datos();
+    $("#tabla-data-productos").attr('style','');
+    $("#tabla-data-productos").dataTable().fnDestroy();
+    $('#tabla-data-productos').DataTable({
+        'paging'      : true,
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        'processing'  : true,
+        'serverSide'  : true,
+        'ajax'        : "productobuscarpage/" + data.data2,
+        'columns'     : [
+            {data: 'id'},
+            {data: 'nombre'},
+            {data: 'diametro'},
+            {data: 'cla_nombre'},
+            {data: 'long'},
+            {data: 'peso'},
+            {data: 'tipounion'},
+            {data: 'precioneto'},
+            {data: 'precio'},
+            {data: 'tipoprod',className:"ocultar"},
+        ],
+		"language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            aux_nfila++;
+            selecmultprod = true;
+            //aux_onclick = "llenarlistaprod(" + aux_nfila + "," + data.id + ")";
+            aux_onclick = "copiar_codprod(" + data.id + ",'')";
+
+            $(row).attr('name', 'fila' + aux_nfila);
+            $(row).attr('id', 'fila' + aux_nfila);
+            $(row).attr('prodid', 'tooltip');
+            $(row).attr('class', "btn-accion-tabla copiar_id");
+            $(row).attr('data-toggle', data.id);
+            $(row).attr('title', "Click para seleccionar producto");
+            $(row).attr('onClick', aux_onclick + ';');
+
+            //$(row).attr('id','fila' + data.id);
+
+
+            if(data.tipoprod == 1){
+                aux_text = 
+                    data.nombre +
+                " <i id='icoat1' class='fa fa-cog text-red girarimagen'></i>";
+                $('td', row).eq(1).html(aux_text);
+            }
+
+            $('td', row).eq(5).attr('data-order',data.peso);
+            $('td', row).eq(5).attr('data-search',data.peso);
+            $('td', row).eq(5).html(MASKLA(data.peso,3));
+
+            $('td', row).eq(7).attr('data-order',data.precioneto);
+            $('td', row).eq(7).attr('data-search',data.precioneto);
+            $('td', row).eq(7).attr('style','text-align:right');
+            $('td', row).eq(7).html(MASKLA(data.precioneto,0));
+
+            $('td', row).eq(8).attr('data-order',data.precio);
+            $('td', row).eq(8).attr('data-search',data.precio);
+            $('td', row).eq(8).attr('style','text-align:right');
+            $('td', row).eq(8).html(MASKLA(data.precio,0));
+
+            /*
+            $('td', row).eq(8).attr('data-order',data.precioneto);
+            $('td', row).eq(8).attr('data-search',data.precioneto);
+            $('td', row).eq(8).attr('style','text-align:right');
+            $('td', row).eq(8).html(MASKLA(data.precioneto,2));
+            */
+            $("#totalreg").val(aux_nfila);
+
+        },
+        initComplete: function () {
+            // Apply the search
+            this.api()
+                .columns()
+                .every(function () {
+                    var that = this;
+ 
+                    $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value).draw();
+                        }
+                    });
+                });
+        },
+    });
+}

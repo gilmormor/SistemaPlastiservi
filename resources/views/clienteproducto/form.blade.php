@@ -89,7 +89,7 @@
         <h3 class="box-title">Producto</h3>
         @if(can('guardar-cliente',false) == true)
             <div class="box-tools pull-right">
-                <a id="botonNewProdxCli" name="botonNewProdxCli" class="btn btn-block btn-success btn-sm">
+                <a id="btnbuscarproducto" name="btnbuscarproducto" class="btn btn-block btn-success btn-sm">
                     <i class="fa fa-fw fa-plus-circle"></i> Nuevo producto
                 </a>
             </div>
@@ -111,7 +111,7 @@
                         <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                             <td>
                                 {{$producto->id}}
-                                <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$producto->id}}" style="display:none;"/>
+                                <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control producto_id" value="{{$producto->id}}" valor="{{$producto->id}}" style="display:none;"/>
                             </td>
                             <td>
                                 {{$producto->nombre}}
@@ -119,7 +119,9 @@
                             </td>
                             <td>
                                 @if (isset($producto->acuerdotecnico->id))
-                                    {{$producto->acuerdotecnico->id}}
+                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfCOT({{$producto->acuerdotecnico->id}},1)" data-original-title="Cotizacion: {{$producto->acuerdotecnico->id}}">
+                                        <i class="fa fa-fw fa-file-pdf-o"></i>
+                                    </a>
                                     <input type="text" name="acuerdotecnico_id[]" id="acuerdotecnico_id{{$aux_nfila}}" class="form-control" value="{{$producto->acuerdotecnico->id}}" style="display:none;"/>
                                 @endif
                             </td>
