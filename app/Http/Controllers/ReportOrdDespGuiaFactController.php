@@ -438,24 +438,45 @@ function consultaorddesp($request){
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
-    if(empty($request->fechad) or empty($request->fechah)){
+    if(empty($request->fechad) and empty($request->fechah)){
         $aux_condFecha = " true";
     }else{
-        $fecha = date_create_from_format('d/m/Y', $request->fechad);
-        $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
-        $fecha = date_create_from_format('d/m/Y', $request->fechah);
-        $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
-        $aux_condFecha = "despachoord.fechahora>='$fechad' and despachoord.fechahora<='$fechah'";
+        if(empty($request->fechad)){
+            $fechadCond = " true ";
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
+            $fechadCond = "despachoord.fechahora>='$fechad' "; 
+        }
+        if(empty($request->fechah)){
+            $fechahCond = " true ";
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+            $fechahCond = " despachoord.fechahora<='$fechah'";
+        }
+        $aux_condFecha = $fechadCond . " and " . $fechahCond;
     }
+    //dd($aux_condFecha);
 
-    if(empty($request->fechadfac) or empty($request->fechahfac)){
+    if(empty($request->fechadfac) and empty($request->fechahfac)){
         $aux_condFechaFac = " true";
     }else{
-        $fecha = date_create_from_format('d/m/Y', $request->fechadfac);
-        $fechadfac = date_format($fecha, 'Y-m-d');
-        $fecha = date_create_from_format('d/m/Y', $request->fechahfac);
-        $fechahfac = date_format($fecha, 'Y-m-d');
-        $aux_condFechaFac = "despachoord.fechafactura>='$fechadfac' and despachoord.fechafactura<='$fechahfac'";
+        if(empty($request->fechad)){
+            $fechadFacCond = " true ";
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechadfac);
+            $fechadfac = date_format($fecha, 'Y-m-d');
+            $fechadFacCond = "despachoord.fechafactura>='$fechadfac' "; 
+        }
+        if(empty($request->fechad)){
+            $fechahFacCond = " true ";
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechahfac);
+            $fechahfac = date_format($fecha, 'Y-m-d');
+            $fechahFacCond = "despachoord.fechafactura>='$fechahfac' "; 
+        }
+        $aux_condFechaFac = $fechadFacCond . " and " . $fechahFacCond;
     }
 
     if(empty($request->fechaestdesp)){
