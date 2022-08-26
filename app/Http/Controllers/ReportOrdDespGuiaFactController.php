@@ -462,19 +462,19 @@ function consultaorddesp($request){
     if(empty($request->fechadfac) and empty($request->fechahfac)){
         $aux_condFechaFac = " true";
     }else{
-        if(empty($request->fechad)){
+        if(empty($request->fechadfac)){
             $fechadFacCond = " true ";
         }else{
             $fecha = date_create_from_format('d/m/Y', $request->fechadfac);
             $fechadfac = date_format($fecha, 'Y-m-d');
             $fechadFacCond = "despachoord.fechafactura>='$fechadfac' "; 
         }
-        if(empty($request->fechad)){
+        if(empty($request->fechahfac)){
             $fechahFacCond = " true ";
         }else{
             $fecha = date_create_from_format('d/m/Y', $request->fechahfac);
             $fechahfac = date_format($fecha, 'Y-m-d');
-            $fechahFacCond = "despachoord.fechafactura>='$fechahfac' "; 
+            $fechahFacCond = "despachoord.fechafactura<='$fechahfac' "; 
         }
         $aux_condFechaFac = $fechadFacCond . " and " . $fechahFacCond;
     }
