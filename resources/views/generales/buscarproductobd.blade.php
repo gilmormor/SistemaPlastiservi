@@ -30,6 +30,7 @@
                                                     <th style="text-align:right">PrecN</th>
                                                     <th style="text-align:right">Precio</th>
                                                     <th class="ocultar">tipoprod</th>
+                                                    <th class="ocultar">acuerdotecnico_id</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -46,6 +47,7 @@
                                                     <th>PrecN</th>
                                                     <th>Prec</th>
                                                     <th class="ocultar">tipoprod</th>
+                                                    <th class="ocultar">acuerdotecnico_id</th>
                                                 </tr>
                                             </tfoot>
                                         </table>

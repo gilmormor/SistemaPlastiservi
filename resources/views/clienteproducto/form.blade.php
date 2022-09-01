@@ -1,8 +1,7 @@
 <input type="hidden" name="aux_rut" id="aux_rut" value="{{old('aux_rut', $data->rut ?? '')}}"/>
 <input type="hidden" name="cliente_id" id="cliente_id" value="{{old('cliente_id', $data->id ?? '')}}"/>
 <input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', "1" ?? '')}}"/>
-
-
+<input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}"/>
 
 <div class="row">
     <div class="form-group col-xs-12 col-sm-2">
@@ -119,7 +118,7 @@
                             </td>
                             <td>
                                 @if (isset($producto->acuerdotecnico->id))
-                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfCOT({{$producto->acuerdotecnico->id}},1)" data-original-title="Cotizacion: {{$producto->acuerdotecnico->id}}">
+                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfCOT({{$producto->acuerdotecnico->id}},1)" data-original-title="Acuerdo Técnico: {{$producto->acuerdotecnico->id}}">
                                         <i class="fa fa-fw fa-file-pdf-o"></i>
                                     </a>
                                     <input type="text" name="acuerdotecnico_id[]" id="acuerdotecnico_id{{$aux_nfila}}" class="form-control" value="{{$producto->acuerdotecnico->id}}" style="display:none;"/>

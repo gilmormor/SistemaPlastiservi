@@ -14,6 +14,7 @@ $(document).ready(function () {
             {data: 'id'},
             {data: 'rut'},
             {data: 'razonsocial'},
+            {data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : "<a href='clienteproducto' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'><i class='fa fa-fw fa-pencil'></i></a>"}
         ],

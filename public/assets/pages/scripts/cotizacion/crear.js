@@ -159,7 +159,7 @@ $(document).ready(function () {
 		$(this).val("");
 		$(".input-sm").val('');
 		data = datos();
-		$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 ).load();
+		$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
 	
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
@@ -222,6 +222,7 @@ $(document).ready(function () {
 			$("#" + x.name).val("");
 		});
 	});
+	//configTablaProd();
 
 });
 
@@ -662,7 +663,7 @@ $("#rut").blur(function(){
 						activar_controles();
 						formato_rut($("#rut"));
 						data = datos();
-						$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 ).load();
+						$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
 						$(".selectpicker").selectpicker('refresh');
 					}else{
 						$.ajax({
@@ -1097,4 +1098,4 @@ $(".form-horizontal").on("submit", function(event){
 	}
 	//console.log($("#acuerdotecnico").val());
 	//alert('prueba');
-  });
+});

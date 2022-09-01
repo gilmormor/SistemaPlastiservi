@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarInvBodega;
 use App\Models\CategoriaProd;
 use App\Models\CategoriaProdSuc;
+use App\Models\DespachoOrd;
 use App\Models\InvBodega;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvBodegaController extends Controller
 {
@@ -28,19 +30,16 @@ class InvBodegaController extends Controller
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
         //******************* */
+        $sucurcadena = implode(",", $sucurArray);
 
-        return datatables()
-            ->eloquent(InvBodega::query()
-            ->join('sucursal', 'invbodega.sucursal_id', '=', 'sucursal.id')
-            ->whereIn('invbodega.sucursal_id', $sucurArray)
-            ->select(['invbodega.id',
-                'invbodega.nombre',
-                'invbodega.desc',
-                'invbodega.sucursal_id',
-                'sucursal.nombre as nombre_suc'
-                ])
-            )
-            ->toJson();
+        $sql= "SELECT invbodega.id,invbodega.nombre,invbodega.desc,invbodega.sucursal_id,sucursal.nombre as nombre_suc
+        FROM invbodega INNER JOIN sucursal
+        ON invbodega.sucursal_id = sucursal.id and isnull(invbodega.deleted_at) and isnull(sucursal.deleted_at)
+        WHERE invbodega.sucursal_id in ($sucurcadena);";
+
+        $datas = DB::select($sql);  
+        //dd($datas);       
+        return datatables($datas)->toJson();
     }
 
     /**
@@ -164,12 +163,13 @@ class InvBodegaController extends Controller
     }
 
     public function buscarTipoBodegaOrdDesp(Request $request){
+        $despachoord = DespachoOrd::findOrFail($request->id);
         $respuesta = array();
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $respuesta["datas"] = InvBodega::join('sucursal', 'invbodega.sucursal_id', '=', 'sucursal.id')
                             ->where('invbodega.tipo','=',$request->tipobodega)
-                            ->whereIn('invbodega.sucursal_id', $sucurArray)
+                            ->where('invbodega.sucursal_id','=', $despachoord->notaventa->sucursal_id)
                             ->select([
                                 'invbodega.id',
                                 'invbodega.nombre',

@@ -106,7 +106,11 @@ function ajaxRequest(data,url,funcion) {
                             if(respuesta.mensaje == "ne"){
                                 Biblioteca.notificaciones('No tiene permiso para eliminar.', 'Plastiservi', 'error');
                             }else{
-                                Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
+                                if(respuesta.mensaje.length > 10){
+                                    Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
+                                }else{
+                                    Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
+                                }
                             }
                         }
                     }

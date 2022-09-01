@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
+use App\Models\ClienteDirec;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
@@ -45,7 +46,7 @@ class ClienteProductoController extends Controller
 
         return datatables()
             ->eloquent(Cliente::query()
-            ->select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
+            ->select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono','cliente.updated_at'])
             ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
                                     ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
             ->pluck('cliente_sucursal.cliente_id')->toArray())
@@ -154,9 +155,24 @@ class ClienteProductoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function actualizar(Request $request, $id)
     {
-        //
+        if(can('guardar-cliente-producto',false) == true){
+            $cliente = Cliente::findOrFail($id);
+            if($request->updated_at == $cliente->updated_at){
+                $cliente->updated_at = date("Y-m-d H:i:s");
+                $cliente->save();
+                $cliente->productos()->sync($request->producto_id);
+                return redirect('clienteproducto')->with('mensaje','Cliente actualizado con exito!');
+            }else{
+                return redirect('clienteproducto')->with([
+                    'mensaje'=>'No se actualizaron los datos, cliente fue modificado por otro usuario!',
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }else{
+            return redirect('clienteproducto')->with('mensaje','No tiene permiso para editar!');
+        }
     }
 
     /**

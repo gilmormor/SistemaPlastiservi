@@ -555,19 +555,27 @@ class DespachoOrdRecController extends Controller
                         //dd($tipomovinv);
 
                         $invmodulo = InvMovModulo::where("cod","RecOD")->get(); //BUSCAR MODULO RECHAZO ORDEN DESPACHO
-                        if(count($invmodulo) == 0){
+                        if(count($invmodulo)<=0){
                             return response()->json([
                                 'id' => 0,
                                 'mensaje' => 'No existe en Inventario, Módulo Rechazo Orden Despacho (RecOD)',
                                 'tipo_alert' => 'error'
                             ]);
                         }
-                        if(count($invmodulo) > 1){
+                        $invmovmodulobodents = $invmodulo[0]->invmovmodulobodents->where("sucursal_id","=",$despachoordrec->despachoord->notaventa->sucursal_id); //->pluck('id')->toArray();
+                        if(count($invmovmodulobodents) > 1){
                             return response()->json([
                                 'id' => 0,
-                                'mensaje' => 'Bodega Scrap debe ser única',
+                                'mensaje' => "Existen " . count($invmovmodulobodents) . " bodegas de Scrap. Bodega Scrap debe ser única",
                                 'tipo_alert' => 'error'
                             ]);
+                        }
+                        $aux_bodegadespacho = 0;
+                        foreach($invmovmodulobodents as $invmovmodulobodent){
+                            //BUSCAR BODEGA DESPACHO DE SUCURSAL 
+                            if($invmovmodulobodent->sucursal_id == $despachoordrec->despachoord->notaventa->sucursal_id){
+                                $aux_bodegadespacho = $invmovmodulobodent->id;
+                            }
                         }
                         $despachoordrec->aprobstatus = $request->valor;
                         $despachoordrec->aprobusu_id = auth()->id();
@@ -658,18 +666,18 @@ class DespachoOrdRecController extends Controller
                                 ->get();
                                 foreach ($despachoordrecdet_invbodegaproductos as $despachoordrecdet_invbodegaproducto) {
                                     $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                                        ['producto_id' => $despachoordrecdet_invbodegaproducto->producto_id,'invbodega_id' => $aux_DespachoBodegaId],
+                                        ['producto_id' => $despachoordrecdet_invbodegaproducto->producto_id,'invbodega_id' => $aux_bodegadespacho],
                                         [
                                             'producto_id' => $despachoordrecdet_invbodegaproducto->producto_id,
-                                            'invbodega_id' => $aux_DespachoBodegaId
+                                            'invbodega_id' => $aux_bodegadespacho
                                         ]
                                     );
                                     $despachoordrecdet = DespachoOrdRecDet::findOrFail($despachoordrecdet_invbodegaproducto->despachoordrecdet_id);
                                     $array_invmovdet = $despachoordrecdet_invbodegaproducto->attributesToArray();
                                     $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                                     $array_invmovdet["producto_id"] = $despachoordrecdet_invbodegaproducto->producto_id;
-                                    $array_invmovdet["invbodega_id"] = $aux_DespachoBodegaId;
-                                    $array_invmovdet["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_i;
+                                    $array_invmovdet["invbodega_id"] = $aux_bodegadespacho;
+                                    $array_invmovdet["sucursal_id"] = $despachoordrec->despachoord->notaventa->sucursal_id;
                                     $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
                                     $array_invmovdet["invmovtipo_id"] = 1;
                                     $array_invmovdet["cant"] = $array_invmovdet["cant"];

@@ -24,6 +24,7 @@ use App\Models\DespachoSolDet_InvBodegaProducto;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
@@ -624,15 +625,32 @@ class DespachoSolController extends Controller
 
             $contorddesp = DB::select($sql);
             if($contorddesp[0]->cont > 0){
-                return response()->json(['mensaje' => 'Solicitud ya fue procesada en Orden de Despacho']);
+                return response()->json([
+                    'mensaje' => 'Solicitud ya fue procesada en Orden de Despacho'
+                ]);
             }
 
             $despachosol = DespachoSol::findOrFail($request->id);
             if($despachosol->aprorddesp != 1){
-                return response()->json(['mensaje' => 'Registro fue modificado previamente.']);
+                return response()->json([
+                    'mensaje' => 'Registro fue modificado previamente.'
+                ]);
             }
             $invmodulo = InvMovModulo::where("cod","SOLDESP")->get();
             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
+            $aux_bodegapicking = 0;
+            foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
+                //BUSCAR BODEGA PICKING DE SUCURSAL 
+                if($invmovmodulobodent->sucursal_id == $despachosol->notaventa->sucursal_id){
+                    $aux_bodegapicking = $invmovmodulobodent->id;
+                }
+            }
+            if($aux_bodegapicking == 0){
+                return response()->json([
+                    'mensaje' => 'No existe Bodega Picking en Sucursal: ' . $despachosol->notaventa->sucursal->nombre
+                ]);
+            }
+
             //dd($invmoduloBod->invmovmodulobodents[0]->id);
             if(count($invmodulo) == 0){
                 return response()->json([
@@ -667,7 +685,7 @@ class DespachoSolController extends Controller
                         $aux_banderacant = true;
                         $aux_producto =$despachosoldet_invbodegaproducto->invbodegaproducto->producto;
                         $invbodegaproducto = InvBodegaProducto::where("producto_id","=",$aux_producto->id)
-                        ->where("invbodega_id","=",$invmoduloBod->invmovmodulobodents[0]->id)
+                        ->where("invbodega_id","=",$aux_bodegapicking)
                         ->select([
                             'id as invbodegaproducto_id',
                             'producto_id',
@@ -678,9 +696,9 @@ class DespachoSolController extends Controller
                         if($aux_respuesta["stock"]["cant"] < $aux_cant){ //VALIDAR STOCK DE PRODUCTO EN BODEGA
                             //dd($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps[1]->invmovdet);
                             //dd($aux_respuesta["stock"]["cant"]);
+                            $invbodega = InvBodega::findOrFail($invbodegaproducto[0]->invbodega_id);
                             return response()->json([
-                                'mensaje' => 'MensajePersonalizado',
-                                'menper' => "Producto sin Stock,  ID: " . $aux_producto->id . ", Nombre: " . $aux_producto->nombre . ", Stock: " . $aux_respuesta["stock"]["cant"]
+                                'mensaje' => "Producto sin Stock, Bodega: "  . $invbodega->nombre .  "  ID: " . $aux_producto->id . ", Nombre: " . $aux_producto->nombre . ", Stock: " . $aux_respuesta["stock"]["cant"]
                             ]);               
                             break;
                         }
@@ -750,16 +768,16 @@ class DespachoSolController extends Controller
                         }
                         if($aux_cant > 0){
                             $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                                ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $invmoduloBod->invmovmodulobodents[0]->id],
+                                ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_bodegapicking],
                                 [
                                     'producto_id' => $oddetbodprod->invbodegaproducto->producto_id,
-                                    'invbodega_id' => $invmoduloBod->invmovmodulobodents[0]->id
+                                    'invbodega_id' => $aux_bodegapicking
                                 ]
                             );
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                            $array_invmovdet["invbodega_id"] = $invmoduloBod->invmovmodulobodents[0]->id;
+                            $array_invmovdet["invbodega_id"] = $aux_bodegapicking;
                             $array_invmovdet["sucursal_id"] = $despachosol->notaventa->sucursal_id; // $invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 2;
@@ -1154,8 +1172,18 @@ class DespachoSolController extends Controller
                 if($cont[0]->cont == 0){
                     $invmodulo = InvMovModulo::where("cod","SOLDESP")->get();
                     $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
-                    
-                    //dd($invmoduloBod->invmovmodulobodents[0]->id);
+                    $aux_bodegapicking = 0;
+                    foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
+                        //BUSCAR BODEGA PICKING DE SUCURSAL 
+                        if($invmovmodulobodent->sucursal_id == $despachosol->notaventa->sucursal_id){
+                            $aux_bodegapicking = $invmovmodulobodent->id;
+                        }
+                    }
+                    if($aux_bodegapicking == 0){
+                        return response()->json([
+                            'mensaje' => 'No existe Bodega Picking en Sucursal: ' . $despachosol->notaventa->sucursal->nombre
+                        ]);
+                    }
                     if(count($invmodulo) == 0){
                         return response()->json([
                             'mensaje' => 'No existe modulo SOLDESP'
@@ -1243,16 +1271,16 @@ class DespachoSolController extends Controller
                                     $aux_cant = $oddetbodprod->cant * -1;
                                     if($aux_cant > 0){
                                         $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                                            ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $invmoduloBod->invmovmodulobodents[0]->id],
+                                            ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_bodegapicking],
                                             [
                                                 'producto_id' => $oddetbodprod->invbodegaproducto->producto_id,
-                                                'invbodega_id' => $invmoduloBod->invmovmodulobodents[0]->id
+                                                'invbodega_id' => $aux_bodegapicking
                                             ]
                                         );
                                         $array_invmovdet = $oddetbodprod->attributesToArray();
                                         $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                                         $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                                        $array_invmovdet["invbodega_id"] = $invmoduloBod->invmovmodulobodents[0]->id;
+                                        $array_invmovdet["invbodega_id"] = $aux_bodegapicking;
                                         $array_invmovdet["sucursal_id"] = $despachosol->notaventa->sucursal_id; //$invbodegaproducto->invbodega->sucursal_id;
                                         $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
                                         $array_invmovdet["invmovtipo_id"] = 1;
@@ -2789,6 +2817,10 @@ function consultaindex(){
     '' as notaventaxk,comuna.nombre as comuna_nombre,
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
     SUM(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
+    (SELECT obs
+		FROM despachosoldev
+		WHERE despachosol_id = despachosol.id
+		ORDER by id DESC LIMIT 1) AS obsdev,
     despachosol.updated_at
     FROM despachosol INNER JOIN notaventa
     ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)

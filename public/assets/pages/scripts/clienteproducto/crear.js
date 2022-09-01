@@ -83,45 +83,37 @@ function modificarTabla(i){
 	$("#comuna_id"+i).val($("#comuna_idM").val());
 }
 
-function insertarTabla(){
+function insertarTabla(producto_id,producto_nombre,acuerdotecnico_id){
 	//aux_nfila = 1; 
 	var aux_nfila = $("#tabla-data tbody tr").length;
 	aux_nfila++;
 	//alert(aux_nfila);
+	txtacuerdotecnico_id= '';
+	if(acuerdotecnico_id){
+		txtacuerdotecnico_id = '<a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfCOT(' + acuerdotecnico_id + ',1)" data-original-title="Acuerdo Técnico: ' + acuerdotecnico_id + '">' +
+									'<i class="fa fa-fw fa-file-pdf-o"></i>' +
+								'<input type="text" name="acuerdotecnico_id[]" id="acuerdotecnico_id'+ aux_nfila + '" class="form-control" value="'+ acuerdotecnico_id +'" style="display:none;"/>'
+	}
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
 		'<td>'+ 
-			'0'+
-			'<input type="text" name="direccion_id[]" id="direccion_id'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
+			producto_id +
+			'<input type="text" name="producto_id[]" id="producto_id'+ aux_nfila + '" class="form-control producto_id" value="' + producto_id + '" style="display:none;" valor="' + producto_id +  '"/>'+
 		'</td>'+
 		'<td>'+ 
-			$("#direcciondetalleM").val()+
-            '<input type="text" name="direcciondetalle[]" id="direcciondetalle'+ aux_nfila + '" class="form-control" value="'+ $("#direcciondetalleM").val() +'" style="display:none;"/>'+
-        '</td>'+
-        '<td style="display:none;">' +
-            '<input type="text" name="region_id[]" id="region_id'+ aux_nfila + '" class="form-control" value="'+ $("#region_idM").val() +'"/>'+
-        '</td>'+
-        '<td style="display:none;">' + 
-            '<input type="text" name="provincia_id[]" id="provincia_id'+ aux_nfila + '" class="form-control" value="'+ $("#provincia_idM").val() +'" style="display:none;"/>'+
-        '</td>'+
-        '<td style="display:none;">' + 
-            '<input type="text" name="comuna_id[]" id="comuna_id'+ aux_nfila + '" class="form-control" value="'+ $("#comuna_idM").val() +'" style="display:none;"/>'+
+			producto_nombre+
+            '<input type="text" name="producto_nombre[]" id="producto_nombre'+ aux_nfila + '" class="form-control" value="'+ producto_nombre +'" style="display:none;"/>'+
         '</td>'+
 		'<td>' + 
-			'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
-			'<i class="fa fa-fw fa-pencil"></i>'+
-			'</a>'+
-			'<button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">'+
-				'<i class="fa fa-fw fa-trash text-danger"></i>'+
-			'</button>'+
+			txtacuerdotecnico_id +
+		'</td>'+
+		'<td>' +
+			'<a class="btn-accion-tabla eliminar tooltipsC" title="" onclick="eliminarRegistro(' + aux_nfila + ')" data-original-title="Eliminar este registro">' +
+                '<i class="fa fa-fw fa-trash text-danger"></i>' +
+            '</a>' +
         '</td>'+
     '</tr>';
     $('#tabla-data tbody').append(htmlTags);
-	/*
-	'<a onclick="agregarFila('+ aux_nfila +')" class="btn-accion-tabla" title="Eliminar" data-original-title="Eliminar" id="agregar_reg'+ aux_nfila + '" name="agregar_reg'+ aux_nfila + '" valor="fa-minus">'+
-	'<i class="fa fa-fw fa-minus"></i>'+
-	'</a>'+
-	*/
-
+	$('#myModalBuscarProd').modal('hide');
 }
 
 
@@ -142,7 +134,8 @@ function eliminarRegistro(i){
 		},
 	}).then((value) => {
 		if (value) {
-			ajaxRequest(data,ruta,'eliminar');
+			$("#fila"+data['nfila']).remove();
+			//ajaxRequest(data,ruta,'eliminar');
 		}
 	});
 }
@@ -183,9 +176,14 @@ $("#btnbuscarproducto").click(function(event){
 		valor = $(this).attr("valor");
 		ArrayProdId.push(valor);
 	});
-	//console.log(ArrayProdId.toString());
-	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" + ArrayProdId.toString()).load();
-
+	console.log(ArrayProdId.toString());
+	txtProdId = ArrayProdId.toString();
+	if(txtProdId === ""){
+		txtProdId = "0";
+	}
+	//$("#tabla-data-productos").DataTable().fnDestroy();
+	$("#tabla-data-productos > tbody").empty();
+	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" + txtProdId).load();
 	//$("#myModal").modal('hide');
 	//$("#myModalBuscarProd").modal('show');
 	$('#myModalBuscarProd').modal('show');
@@ -231,7 +229,7 @@ function configTablaProd(){
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        'ajax'        : "productobuscarpage/" + data.data2,
+        'ajax'        : "productobuscarpage/" + data.data2 + "&producto_id=",
         'columns'     : [
             {data: 'id'},
             {data: 'nombre'},
@@ -243,6 +241,7 @@ function configTablaProd(){
             {data: 'precioneto'},
             {data: 'precio'},
             {data: 'tipoprod',className:"ocultar"},
+			{data: 'acuerdotecnico_id',className:"ocultar"}
         ],
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -251,7 +250,7 @@ function configTablaProd(){
             aux_nfila++;
             selecmultprod = true;
             //aux_onclick = "llenarlistaprod(" + aux_nfila + "," + data.id + ")";
-            aux_onclick = "copiar_codprod(" + data.id + ",'')";
+            aux_onclick = "insertarTabla(" + data.id + ",'" + data.nombre + "'," + data.acuerdotecnico_id + ")";
 
             $(row).attr('name', 'fila' + aux_nfila);
             $(row).attr('id', 'fila' + aux_nfila);

@@ -511,6 +511,7 @@ class NotaVentaController extends Controller
                             'vendedor_id' => $request->vendedor_id
                         ]
                     );
+                    //CREAR REPACION DE PRODUCTO CON CLIENTE PARA LUEGO FILTRAR LOS PRODUCTOS DE CADA CLIENTE
                     $ClienteProducto = ClienteProducto::updateOrCreate(
                         ['cliente_id' => $notaventa->cliente_id,'producto_id' => $productonew->id],
                         [

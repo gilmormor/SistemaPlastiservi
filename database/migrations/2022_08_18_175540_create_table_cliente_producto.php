@@ -20,8 +20,6 @@ class CreateTableClienteProducto extends Migration
             $table->foreign('cliente_id','fk_clienteproducto_cliente')->references('id')->on('cliente')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('producto_id');
             $table->foreign('producto_id','fk_clienteproducto_producto')->references('id')->on('producto')->onDelete('restrict')->onUpdate('restrict');
-            $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
-            $table->softDeletes();
             $table->timestamps();
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_spanish_ci';

@@ -167,8 +167,8 @@ class Producto extends Model
     public static function productosxCliente($request){
         $cliente_idCond = "true";
         if($request->cliente_id){
-            $cliente_idCond = "if(categoriaprod.asoprodcli = 1, ((producto.id IN (SELECT producto_id FROM cliente_producto WHERE isnull(cliente_producto.deleted_at)
-                                AND cliente_producto.cliente_id = $request->cliente_id)) OR producto.tipoprod = 1), TRUE )";
+            $cliente_idCond = "if(categoriaprod.asoprodcli = 1, ((producto.id IN (SELECT producto_id FROM cliente_producto WHERE 
+                                cliente_producto.cliente_id = $request->cliente_id)) OR producto.tipoprod = 1), TRUE )";
         }
         $users = Usuario::findOrFail(auth()->id());
         if($request->sucursal_id){
@@ -180,7 +180,7 @@ class Producto extends Model
 
         $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
                 producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
-                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod
@@ -189,6 +189,8 @@ class Producto extends Model
                 on categoriaprod.id = categoriaprodsuc.categoriaprod_id
                 INNER JOIN sucursal
                 ON categoriaprodsuc.sucursal_id = sucursal.id
+                LEFT JOIN acuerdotecnico
+                ON producto.id = acuerdotecnico.producto_id
                 WHERE sucursal.id in ($sucurcadena)
                 and $cliente_idCond
                 GROUP BY producto.id
@@ -201,11 +203,12 @@ class Producto extends Model
     public static function AsignarProductosAClientes($request){
         //dd($request);
         $cliente_idCond = "false";
-        if($request->cliente_id and $request->producto_id){
+        //dd($request->producto_id);
+        if($request->cliente_id and isset($request->producto_id)){
+            if(is_null($request->producto_id)){
+                $request->producto_id = "";
+            }
             $cliente_idCond = "categoriaprod.asoprodcli = 1 and producto.tipoprod = 0
-                                and 
-                                producto.id NOT IN (SELECT producto_id FROM cliente_producto WHERE isnull(cliente_producto.deleted_at)
-                                AND cliente_producto.cliente_id = $request->cliente_id)
                                 AND producto.id NOT IN ($request->producto_id)";
         };
         $users = Usuario::findOrFail(auth()->id());
@@ -218,7 +221,7 @@ class Producto extends Model
 
         $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
                 producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
-                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod
@@ -227,6 +230,8 @@ class Producto extends Model
                 on categoriaprod.id = categoriaprodsuc.categoriaprod_id
                 INNER JOIN sucursal
                 ON categoriaprodsuc.sucursal_id = sucursal.id
+                LEFT JOIN acuerdotecnico
+                ON producto.id = acuerdotecnico.producto_id
                 WHERE sucursal.id in ($sucurcadena)
                 and $cliente_idCond
                 GROUP BY producto.id
