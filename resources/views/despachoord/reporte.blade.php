@@ -154,7 +154,7 @@
 		</table>
 	</div>
 	<div>
-		@if (!is_null($despachosol->observacion))
+		@if (!is_null($despachoord->observacion))
 			<p class="nota"><strong> <H2>Observaciones: {{$despachoord->observacion}}</H2></strong></p>			
 		@endif
 	</div>
