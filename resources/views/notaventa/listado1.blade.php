@@ -204,7 +204,9 @@
 	</div>
 	<br>
 	<div>
-		<p class="nota"><strong>Observaciones: {{$notaventa->observacion}}</strong></p>
+		@if (!is_null($notaventa->observacion))
+			<p class="nota"><strong> <H2>Observaciones: {{$notaventa->observacion}}</H2></strong></p>			
+		@endif
 	</div>
 	<br>
 </div>

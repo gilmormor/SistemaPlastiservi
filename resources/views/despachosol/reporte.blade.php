@@ -154,7 +154,9 @@
 		</table>
 	</div>
 	<div>
-		<p class="nota"><strong>Observaciones: {{$despachosol->observacion}}</strong></p>
+		@if (!is_null($despachosol->observacion))
+			<p class="nota"><strong> <H2>Observaciones: {{$despachosol->observacion}}</H2></strong></p>			
+		@endif
 	</div>
 	<br>
 	<div class="round1">
