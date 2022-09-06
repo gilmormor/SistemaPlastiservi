@@ -151,6 +151,8 @@ class InvControlController extends Controller
                                                 DB::raw('sum(cant) as cant'),
                                                 DB::raw('sum(cantkg) as cantkg')
                                             ])
+                                    ->whereNull('invmov.deleted_at')
+                                    ->whereNull('invmovdet.deleted_at')        
                                     ->groupBy("invmovdet.invbodegaproducto_id")
                                     ->get();
                             $invmov_array = array();
