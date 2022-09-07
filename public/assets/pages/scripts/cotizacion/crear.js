@@ -132,6 +132,9 @@ $(document).ready(function () {
 		
 		$(this).val("");
 		$(".input-sm").val('');
+		data = datos();
+		$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
+
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
 

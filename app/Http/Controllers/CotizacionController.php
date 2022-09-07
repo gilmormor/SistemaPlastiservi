@@ -84,6 +84,27 @@ class CotizacionController extends Controller
 
         
     }
+
+    public function productobuscarpage(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpage(){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpageid($id){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
     /*
     public function consulta(){
         $cotizacionDetalle = CotizacionDetalle::where('cotizacion_id','14')->get()->count();
