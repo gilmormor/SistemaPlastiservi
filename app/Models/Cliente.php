@@ -162,5 +162,51 @@ class Cliente extends Model
 
         return $respuesta;
     }
+
+    public static function clientesxUsuarioSQL($vendedor_id = '0',$sucursal_id = false){
+        $users = Usuario::findOrFail(auth()->id());
+        if($sucursal_id){
+            $sucurArray = [$sucursal_id];
+        }else{
+            $sucurArray = $users->sucursales->pluck('id')->toArray();
+        }
+        $sucurcadena = implode(",", $sucurArray);
+        $vendedor_idCond = "true";
+
+        if($vendedor_id == '0'){
+            $sql= 'SELECT COUNT(*) AS contador
+                FROM vendedor INNER JOIN persona
+                ON vendedor.persona_id=persona.id
+                INNER JOIN usuario 
+                ON persona.usuario_id=usuario.id
+                WHERE usuario.id=' . auth()->id();
+            $counts = DB::select($sql);
+            $vendedor_id = '0';
+            if($counts[0]->contador>0){
+                $vendedor_id=$users->persona->vendedor->id;
+                //$clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+                $vendedor_idCond = "cliente_vendedor.vendedor_id = " . $vendedor_id;
+            }
+        }else{
+            $vendedor_idCond = "cliente_vendedor.vendedor_id = " . $vendedor_id;
+        }
+
+        $sqlclienteVendedor = "SELECT cliente_vendedor.cliente_id
+                                FROM cliente_vendedor
+                                WHERE $vendedor_idCond
+                                and isnull(cliente_vendedor.deleted_at)
+                                GROUP BY cliente_vendedor.cliente_id";
+
+        $sql = "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.direccion,cliente.telefono,cliente.giro_id
+                FROM cliente inner join cliente_sucursal
+                on cliente.id = cliente_sucursal.cliente_id and isnull(cliente.deleted_at) and isnull(cliente_sucursal.deleted_at)
+                where cliente.id in ($sqlclienteVendedor)
+                and cliente_sucursal.sucursal_id in ($sucurcadena)
+                GROUP BY cliente.id
+                ORDER BY cliente.id;";
+
+        $datas = DB::select($sql);
+        return $datas;
+    }
     
 }

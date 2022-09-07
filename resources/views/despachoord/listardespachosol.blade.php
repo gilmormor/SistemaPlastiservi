@@ -2,15 +2,19 @@
 @section('titulo')
 Pendiente Solicitud Orden Despacho
 @endsection
-<?php 
-    $selecmultprod = 1;
+
+<?php
+    $selecmultprod = true;
 ?>
+<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
 
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/despachoord/listardespachosol.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
 @section('contenido')
@@ -271,8 +275,8 @@ Pendiente Solicitud Orden Despacho
     </div>
 </div>
 
-@include('generales.buscarcliente')
+@include('generales.buscarclientebd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproducto')
+@include('generales.buscarproductobd')
 @endsection

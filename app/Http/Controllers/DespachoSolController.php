@@ -72,16 +72,31 @@ class DespachoSolController extends Controller
         return datatables($datas)->toJson();
     }
 
+    public function productobuscarpage(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpage(){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpageid($id){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
 
     public function listarnv()
     {
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
-        $clientevendedorArray = $arrayvend['clientevendedorArray'];
-
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $sucurArray = $clientesArray['sucurArray'];
 
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
@@ -90,10 +105,9 @@ class DespachoSolController extends Controller
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
-        $productos = Producto::productosxUsuario();
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        return view('despachosol.listarnotaventa', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','productos','tablashtml'));
+        return view('despachosol.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
     /**

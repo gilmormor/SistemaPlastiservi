@@ -14,17 +14,17 @@ $(document).ready(function () {
         }
 	});
 */
-    consultar(datos());
+    consultar(datoslsd());
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datoslsd());
     });
 
 
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf(datos());
+        consultarpdf(datoslsd());
     });
 
     //alert(aux_nfila);
@@ -149,7 +149,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datos(){
+function datoslsd(){
     var data = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -408,7 +408,7 @@ $(".requeridos").change(function(){
 function btnpdf(numrep){
     if(numrep==1){
         aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
-        data = datos();
+        data = datoslsd();
         cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
                 "&fechaestdesp=" + data.fechaestdesp +
                 "&rut=" + data.rut +
@@ -430,7 +430,7 @@ function btnpdf(numrep){
 $("#btnpdf2").click(function()
 {
     aux_titulo = 'Pendientes Solicitud Despacho';
-    data = datos();
+    data = datoslsd();
     cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
             "&fechaestdesp=" + data.fechaestdesp +
             "&rut=" + data.rut +

@@ -28,6 +28,11 @@
 </div>
 
 <?php
+    $selecmultprod = false;
+?>
+<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
+
+<?php
     $disabledReadOnly = "";
     //Si la pantalla es de aprobacion de Cotizacion desactiva todos input
     if(session('aux_aprocot')=='1'){
@@ -423,8 +428,8 @@
 </div>
 
 @include('generales.calcprecioprodsn')
-@include('generales.buscarcliente')
-@include('generales.buscarproducto')
+@include('generales.buscarclientebd')
+@include('generales.buscarproductobd')
 @if (session('aux_aprocot')=='1')
     @include('generales.aprobarcotnv')
 @endif

@@ -290,6 +290,13 @@ Route::post('cotizacion/aprobarcotsup/{id}', 'CotizacionController@aprobarcotsup
 Route::post('cotizacion/buscarCotizacion', 'CotizacionController@buscarCotizacion')->name('buscarCotizacion');
 Route::get('cotizacion/{id}/exportPdf', 'CotizacionController@exportPdf')->name('exportPdf_cotizacion');
 Route::get('cotizacion/{id}/{stareport}/exportPdfM', 'CotizacionController@exportPdfM')->name('exportPdfM_cotizacion');
+Route::get('cotizacion/productobuscarpage', 'CotizacionController@productobuscarpage')->name('productobuscarpage');
+Route::get('cotizacion/clientebuscarpage', 'CotizacionController@clientebuscarpage')->name('clientebuscarpage');
+Route::get('cotizacion/{id}/productobuscarpage', 'CotizacionController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('cotizacion/{id}/clientebuscarpage', 'CotizacionController@clientebuscarpageid')->name('clientebuscarpageid');
+Route::post('cotizacion/buscardetcot', 'CotizacionController@buscardetcot')->name('buscardetcot');
+Route::post('cotizacion/updateobsdet', 'CotizacionController@updateobsdet')->name('updateobsdet');
+
 
 
 /*RUTAS CONSULTAR COTIZACION*/
@@ -530,6 +537,11 @@ Route::post('despachosol/reporte', 'DespachoSolController@reporte')->name('repor
 Route::post('despachosol/{id}/anular', 'DespachoSolController@anular')->name('anular_despachosol');
 Route::get('despachosol/{id}/{stareport}/exportPdf', 'DespachoSolController@exportPdf')->name('exportPdf_despachosol');
 Route::post('despachosol/aproborddesp/{id}', 'DespachoSolController@aproborddesp')->name('aproborddesp_despachosol');
+Route::get('despachosol/productobuscarpage', 'DespachoSolController@productobuscarpage')->name('productobuscarpage');
+Route::get('despachosol/clientebuscarpage', 'DespachoSolController@clientebuscarpage')->name('clientebuscarpage');
+Route::get('despachosol/{id}/productobuscarpage', 'DespachoSolController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('despachosol/{id}/clientebuscarpage', 'DespachoSolController@clientebuscarpageid')->name('clientebuscarpageid');
+
 
 Route::post('despachosol/reportesoldesp', 'DespachoSolController@reportesoldesp')->name('reportesoldesp_despachosol');
 Route::post('despachosol/reportesoldespcerrarNV', 'DespachoSolController@reportesoldespcerrarNV')->name('reportesoldespcerrarNV_despachosol');
@@ -606,6 +618,12 @@ Route::get('despachoord/listarsoldesp', 'DespachoOrdController@listarsoldesp')->
 Route::get('despachoordguia', 'DespachoOrdGuiaController@index')->name('despachoordguia');
 Route::get('despachoordguiapage', 'DespachoOrdGuiaController@despachoordguiapage')->name('despachoordguiapage');
 Route::get('despachoordguia/totalizarindex', 'DespachoOrdGuiaController@totalizarindex')->name('despachoordguia_totalizarindex');
+
+Route::get('despachoord/productobuscarpage', 'DespachoOrdController@productobuscarpage')->name('productobuscarpage');
+Route::get('despachoord/clientebuscarpage', 'DespachoOrdController@clientebuscarpage')->name('clientebuscarpage');
+Route::get('despachoord/{id}/productobuscarpage', 'DespachoOrdController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('despachoord/{id}/clientebuscarpage', 'DespachoOrdController@clientebuscarpageid')->name('clientebuscarpageid');
+
 
 Route::get('despachoordfact', 'DespachoOrdFactController@index')->name('despachoordfact');
 Route::get('despachoordfactpage', 'DespachoOrdFactController@despachoordfactpage')->name('despachoordfactpage');

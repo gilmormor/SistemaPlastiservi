@@ -102,7 +102,7 @@ class DespachoOrdController extends Controller
         return view('despachoord.indexguiafact', compact('datas','aux_vista','aux_titulo'));
     }
 
-        public function indexcerrada()
+    public function indexcerrada()
     {
         can('listar-orden-despacho-cerrada');
         $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
@@ -116,6 +116,25 @@ class DespachoOrdController extends Controller
         return view('despachoord.indexguiafact', compact('datas','aux_vista','aux_titulo'));
     }
 
+    public function productobuscarpage(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpage(){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpageid($id){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -1178,10 +1197,6 @@ class DespachoOrdController extends Controller
     public function listarsoldesp() //Listar solicitudes de despacho
     {
         can('listar-orden-despacho');
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
 
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
@@ -1189,9 +1204,8 @@ class DespachoOrdController extends Controller
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        $productos = Producto::productosxUsuario();
 
-        return view('despachoord.listardespachosol', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','tablashtml','productos'));
+        return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
 
