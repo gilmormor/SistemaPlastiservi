@@ -295,6 +295,8 @@ Route::get('cotizacion/productobuscarpage', 'CotizacionController@productobuscar
 Route::get('cotizacion/clientebuscarpage', 'CotizacionController@clientebuscarpage')->name('clientebuscarpage');
 Route::get('cotizacion/{id}/productobuscarpage', 'CotizacionController@productobuscarpageid')->name('productobuscarpageid');
 Route::get('cotizacion/{id}/clientebuscarpage', 'CotizacionController@clientebuscarpageid')->name('clientebuscarpageid');
+Route::post('cotizacion/buscardetcot', 'CotizacionController@buscardetcot')->name('buscardetcot');
+Route::post('cotizacion/updateobsdet', 'CotizacionController@updateobsdet')->name('updateobsdet');
 
 
 

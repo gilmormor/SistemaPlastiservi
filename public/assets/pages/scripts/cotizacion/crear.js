@@ -500,6 +500,9 @@ function ajaxRequest(data,url,funcion) {
 					}
 				}
 			}
+			if(funcion=='buscardetcot'){
+				console.log(respuesta);
+			}
 		},
 		error: function () {
 		}
@@ -1099,3 +1102,56 @@ $(".form-horizontal").on("submit", function(event){
 	//console.log($("#acuerdotecnico").val());
 	//alert('prueba');
 });
+
+function ObsItemCot($id,$i){
+	var data = {
+		id: $id,
+		nfila : $i,
+		_token: $('input[name=_token]').val()
+	};
+
+    $.ajax({
+        url: '/cotizacion/buscardetcot',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+			aux_obs = "";
+			if(respuesta.obs != null){
+				aux_obs = respuesta.obs;
+			}
+			//var texto = prompt("Observacion:",aux_obs);
+			let input = document.createElement("input");
+			input.value = aux_obs;
+			input.type = 'text';
+			input.className = 'swal-content__input';
+		
+			swal({
+				text: "Editar Observación item",
+				content: input,
+				buttons: {
+					cancel: "Cancelar",
+					confirm: "Aceptar"
+				},
+			}).then((value) => {
+				if (value) {
+					var data = {
+						id: $id,
+						nfila : $i,
+						obs : input.value,
+						_token: $('input[name=_token]').val()
+					};
+				
+					$.ajax({
+						url: '/cotizacion/updateobsdet',
+						type: 'POST',
+						data: data,
+						success: function (respuesta) {
+							//console.log(respuesta.obs);
+						}
+					});
+	
+				}
+			});
+		}
+    });
+}

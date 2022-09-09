@@ -422,6 +422,10 @@
                                             <a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
                                                 <i class="fa fa-fw fa-trash text-danger"></i>
                                             </a>
+                                        @else
+                                            <a class="btn-accion-tabla tooltipsC" title="Editar Observación" onclick="ObsItemCot({{$CotizacionDetalle->id}},{{$aux_nfila}})">
+                                                <i class="fa fa-fw fa-comment-o"></i>
+                                            </a>                                        
                                         @endif
                                     </td>
                                 </tr>

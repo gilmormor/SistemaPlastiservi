@@ -852,6 +852,26 @@ class CotizacionController extends Controller
         }
     }
 
+    public function buscardetcot(Request $request){
+        if($request->ajax()){
+            $respuesta = array();
+            $cotizaciondetalle = CotizacionDetalle::findOrFail($request->id);
+            //dd($cotizaciondetalle);
+            return $cotizaciondetalle;
+        }
+    }
+
+    public function updateobsdet(Request $request){
+        if($request->ajax()){
+            $respuesta = array();
+            $cotizaciondetalle = CotizacionDetalle::findOrFail($request->id);
+            $cotizaciondetalle->obs = $request->obs;
+            $cotizaciondetalle->save();
+            //dd($data);
+            return $cotizaciondetalle;
+        }
+    }
+
 }
 
 /**Sumar dias habiles a fecha */
