@@ -208,7 +208,7 @@
 	</div>
 	<br>
 	<div>
-		@if (!is_null($despachosol->observacion))
+		@if (!is_null($despachoordrec->observacion))
 			<p class="nota"><strong> <H2>Observaciones: {{$despachoordrec->obs}}</H2></strong></p>			
 		@endif
 	</div>
