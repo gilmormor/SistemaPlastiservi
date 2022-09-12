@@ -19,13 +19,17 @@ class NotaVentaDetalle extends Model
         'cantgrupo',
         'cantxgrupo',
         'unidadmedida_id',
+        'descuento',
         'preciounit',
         'peso',
         'precioneto',
         'iva',
         'total',
         'usuariodel_id',
+        'precioxkilo',
         'precioxkiloreal',
+        'totalkilos',
+        'subtotal',
         'producto_nombre',
         'ancho',
         'largo',
@@ -35,7 +39,8 @@ class NotaVentaDetalle extends Model
         'claseprod_id',
         'grupoprod_id',
         'color_id',
-        'obs'
+        'obs',
+        'usuariodel_id'
     ];
     
     //RELACION INVERSA NotaVenta

@@ -392,11 +392,12 @@ function insertarTabla(){
 				$("#subtotalM").attr("valor")+
 			'</td>'+
 			'<td>' + 
-				'<a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
-				'<i class="fa fa-fw fa-pencil"></i>'+
+				'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+					'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
-				'<a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
-				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
+				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
+					'<i class="fa fa-fw fa-trash text-danger"></i>'+
+				'</a>'+
 			'</td>'+
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+

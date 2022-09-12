@@ -138,6 +138,16 @@
     </div>
 </div>
 <input type="hidden" name="mostunimed" id="mostunimed" value="{{old('mostunimed', $data->mostunimed ?? '0')}}">
+<div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_asoprodcli" name="aux_asoprodcli">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Asociar producto a Cliente
+        </label>
+    </div>
+</div>
+<input type="hidden" name="asoprodcli" id="asoprodcli" value="{{old('asoprodcli', $data->asoprodcli ?? '0')}}">
 
 <div class="col-md-6">
     <div class="box box-primary">

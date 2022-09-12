@@ -162,6 +162,7 @@ Route::post('producto/obtClaseProd', 'ProductoController@obtClaseProd')->name('o
 Route::post('producto/buscarUnProducto', 'ProductoController@buscarUnProducto')->name('buscarUnProducto');
 Route::get('producto/{id}/listar', 'ProductoController@listar')->name('listar_producto');
 Route::post('producto/obtGrupoProd', 'ProductoController@obtGrupoProd')->name('obtGrupoProd');
+Route::get('producto/{id}/acutecexportPdf', 'ProductoController@AcuTecExportPdf')->name('AcuTecExportPdf_producto');
 
 /*RUTAS CLIENTES*/
 Route::get('cliente', 'ClienteController@index')->name('cliente');
@@ -290,6 +291,14 @@ Route::post('cotizacion/aprobarcotsup/{id}', 'CotizacionController@aprobarcotsup
 Route::post('cotizacion/buscarCotizacion', 'CotizacionController@buscarCotizacion')->name('buscarCotizacion');
 Route::get('cotizacion/{id}/exportPdf', 'CotizacionController@exportPdf')->name('exportPdf_cotizacion');
 Route::get('cotizacion/{id}/{stareport}/exportPdfM', 'CotizacionController@exportPdfM')->name('exportPdfM_cotizacion');
+Route::get('cotizacion/productobuscarpage', 'CotizacionController@productobuscarpage')->name('productobuscarpage');
+Route::get('cotizacion/clientebuscarpage', 'CotizacionController@clientebuscarpage')->name('clientebuscarpage');
+Route::get('cotizacion/{id}/productobuscarpage', 'CotizacionController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('cotizacion/{id}/clientebuscarpage', 'CotizacionController@clientebuscarpageid')->name('clientebuscarpageid');
+Route::post('cotizacion/buscardetcot', 'CotizacionController@buscardetcot')->name('buscardetcot');
+Route::post('cotizacion/updateobsdet', 'CotizacionController@updateobsdet')->name('updateobsdet');
+
+
 
 
 /*RUTAS CONSULTAR COTIZACION*/
@@ -711,6 +720,14 @@ Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('
 Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
 Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');
 
+/*RUTAS MATERIA PRIMA*/
+Route::get('materiaprima', 'MateriaPrimaController@index')->name('materiaprima');
+Route::get('materiaprimapage', 'MateriaPrimaController@materiaprimapage')->name('materiaprimapage');
+Route::get('materiaprima/crear', 'MateriaPrimaController@crear')->name('crear_materiaprima');
+Route::post('materiaprima', 'MateriaPrimaController@guardar')->name('guardar_materiaprima');
+Route::get('materiaprima/{id}/editar', 'MateriaPrimaController@editar')->name('editar_materiaprima');
+Route::put('materiaprima/{id}', 'MateriaPrimaController@actualizar')->name('actualizar_materiaprima');
+Route::delete('materiaprima/{id}', 'MateriaPrimaController@eliminar')->name('eliminar_materiaprima');
 
 
 /*RUTAS NOTAS DE VENTA EN TRANSITO*/
@@ -848,6 +865,23 @@ Route::post('invmovmodulo', 'InvMovModuloController@guardar')->name('guardar_inv
 Route::get('invmovmodulo/{id}/editar', 'InvMovModuloController@editar')->name('editar_invmovmodulo');
 Route::put('invmovmodulo/{id}', 'InvMovModuloController@actualizar')->name('actualizar_invmovmodulo');
 Route::delete('invmovmodulo/{id}', 'InvMovModuloController@eliminar')->name('eliminar_invmovmodulo');
+/*RUTAS APROBAR ACUERDO TECNICO COTIZACION */
+Route::get('cotizacionaprobaracutec', 'CotizacionAprobarAcuTecController@index')->name('cotizacionaprobaracutec');
+Route::get('cotizacionaprobaracutecpage', 'CotizacionAprobarAcuTecController@cotizacionaprobaracutecpage')->name('cotizacionaprobaracutecpage');
+Route::get('cotizacionaprobaracutec/{id}/editar', 'CotizacionAprobarAcuTecController@editar')->name('editar_cotizacionaprobaracutec');
+Route::get('cotizacionaprobaracutec/{id}/productobuscarpage', 'CotizacionAprobarAcuTecController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('cotizacionaprobaracutec/{id}/clientebuscarpage', 'CotizacionAprobarAcuTecController@clientebuscarpageid')->name('clientebuscarpageid');
+
+/*RUTAS GUIA DESPACHO*/
+Route::get('guiadespacho', 'GuiaDespachoController@index')->name('guiadespacho');
+Route::get('guiadespachopage', 'GuiaDespachoController@guiadespachopage')->name('guiadespachopage');
+Route::get('guiadespacho/totalizarindex', 'GuiaDespachoController@totalizarindex')->name('guiadespacho_totalizarindex');
+
+/*RUTAS LISTAR ORDEN DESPACHO*/
+Route::get('listarorddesp', 'ListarorddespController@index')->name('listarorddesp');
+Route::get('listarorddesppage', 'ListarorddespController@listarorddesppage')->name('listarorddesppage');
+Route::get('listarorddesp/totalizarindex', 'ListarorddespController@totalizarindex')->name('listarorddesp_totalizarindex');
+Route::post('listarorddesp/guardarguiadesp', 'ListarorddespController@guardarguiadesp')->name('guardarguiadesp_listarorddesp');
 
 
 /*RUTAS INV STOCK BODEGA DE PRODUCTO TERMINADO MAS PIKING*/
@@ -856,4 +890,12 @@ Route::get('reportinvstockbppage', 'ReportInvStockBPController@reportinvstockbpp
 Route::get('reportinvstockbp/reporte', 'ReportInvStockBPController@reporte')->name('reportinvstockbp_reporte');
 Route::get('reportinvstockbp/exportPdf', 'ReportInvStockBPController@exportPdf')->name('reportinvstockbp_exportPdf');
 Route::get('reportinvstockbp/totalizarindex', 'ReportInvStockBPController@totalizarindex')->name('reportinvstockbp_totalizarindex');
+
+/*RUTAS ASIGNAR PRODUCTO A CLIENTE*/
+Route::get('clienteproducto', 'ClienteProductoController@index')->name('clienteproducto');
+Route::get('clienteproductopage', 'ClienteProductoController@clienteproductopage')->name('clienteproductopage');
+Route::get('clienteproducto/{id}/editar', 'ClienteProductoController@editar')->name('editar_clienteproducto');
+Route::put('clienteproducto/{id}', 'ClienteProductoController@actualizar')->name('actualizar_clienteproducto');
+Route::get('clienteproducto/productobuscarpage', 'ClienteProductoController@productobuscarpage')->name('productobuscarpage');
+Route::get('clienteproducto/{id}/productobuscarpage', 'ClienteProductoController@productobuscarpageid')->name('productobuscarpageid');
 

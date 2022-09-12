@@ -54,6 +54,9 @@ class CotizacionAprobarController extends Controller
     public function cotizacionaprobarpage(){
         session(['aux_aprocot' => '1']);
         $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         //$vendedor_id=$user->persona->vendedor->id;
 
         //$aux_statusPant 0=Pantalla Normal CRUD de Cotizaciones
@@ -71,7 +74,8 @@ class CotizacionAprobarController extends Controller
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
                 where aprobstatus=2
-                and cotizacion.deleted_at is null;";
+                and cotizacion.deleted_at is null
+                AND cotizacion.sucursal_id in ($sucurcadena);";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);

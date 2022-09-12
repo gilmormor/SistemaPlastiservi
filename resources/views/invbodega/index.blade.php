@@ -26,6 +26,7 @@ Bodega Invetario
                     <thead>
                         <tr>
                             <th class="width30">ID</th>
+                            <th>Nombre</th>
                             <th>Descripción</th>
                             <th>Sucursal</th>
                             <th class="width70">Acción</th>

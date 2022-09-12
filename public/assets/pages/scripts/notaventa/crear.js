@@ -55,7 +55,7 @@ $(document).ready(function () {
 	$("#cantM").numeric();
 	$("#precioM").numeric({decimalPlaces: 2});
 	$(".numerico").numeric();
-	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
+	//$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$(".modal-body label").css("margin-bottom", -2);
@@ -426,12 +426,19 @@ function insertarTabla(){
 				$("#subtotalM").attr("valor")+
 			'</td>'+
 			'<td>' + 
-				'<a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
-				'<a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
+			'<td style="text-align:right;display:none;">'+ 
+				'<input type="text" name="acuerdotecnico[]" id="acuerdotecnico'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
+			'</td>'+
+			'<td style="text-align:right;display:none;">'+
+				'<input type="text" name="tipoprod[]" id="tipoprod'+ aux_nfila + '" class="form-control" value="' + $("#tipoprodM").attr('valor') + '" style="display:none;"/>'+
+			'</td>'+
+
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+
 			'<td colspan="12" style="text-align:right"><b>Neto</b></td>'+
@@ -957,6 +964,7 @@ $('#form-general').submit(function(event) {
 	$("#plazoentrega").prop('disabled', false);
 	$("#lugarentrega").prop('disabled', false);
 	$("#tipoentrega_id").prop('disabled', false);
+
     //Rest of code
 })
 
@@ -999,4 +1007,43 @@ $("#botonNewProd").click(function(event)
 		$("#direccionM").focus();	
 	}
 	*/
+});
+
+$(".form-horizontal").on("submit", function(event){
+	var aux_nfila = $("#tabla-data tbody tr").length - 3;
+	//aux_nfila++;
+	aux_banacutec = 0;
+	for (i = 1; i <= aux_nfila; i++) {
+		if($("#tipoprod" + i).val() == 1){
+			aux_banacutec = 1;
+		}
+	}
+	if(aux_banacutec == 1){
+		event.preventDefault();
+		swal({
+			title: 'Se Crearán productos de Acuerdo Tecnico.',
+			text: "Desea Continuar S/N?",
+			icon: 'warning',
+			buttons: {
+				si: {
+					text: "Si",
+					value: "Si",
+				},	
+				no: {
+					text: "No",
+					value: "No",
+				},
+			},
+		}).then((value) => {
+			switch (value) {			 
+				case "Si":
+					//event.preventDefault();
+					event.target.submit();
+					break;
+				default:
+				  //swal("Got away safely!");
+			}
+	
+		});
+	}
 });

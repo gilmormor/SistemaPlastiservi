@@ -24,6 +24,7 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
+            {data: 'obsdev',className:"ocultar"},
             {data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
@@ -45,6 +46,14 @@ $(document).ready(function () {
             $('td', row).eq(1).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
+            if(data.obsdev != "" && data.obsdev != null){
+				aux_text = data.razonsocial +
+				" <a class='btn-sm tooltipsC' title='" + data.obsdev + "'>" +
+					"<i class='fa fa-fw fa-question-circle text-red'></i>" + 
+				"</a>";
+				$('td', row).eq(2).html(aux_text);
+			}
 
 
             if(data.oc_file != "" && data.oc_file != null){
@@ -96,13 +105,14 @@ $(document).ready(function () {
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
             }
-            $('td', row).eq(12).addClass('updated_at');
+
+            $('td', row).eq(13).addClass('updated_at');
 
             aux_text = aux_text +
             "<a href='despachosol' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Solicitud Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
-            $('td', row).eq(13).html(aux_text);
+            $('td', row).eq(14).html(aux_text);
         }
     });
 
