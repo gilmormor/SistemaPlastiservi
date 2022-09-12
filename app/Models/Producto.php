@@ -118,12 +118,11 @@ class Producto extends Model
         return $productos;
     }
 
-    public static function productosxCliente($request){
+    public static function productosxClienteTemp($request){ //Esta funcion es temporal mientras fusiono las 2 ramas de Santa Ester y San Bernardo
         //dd($request);
         $cliente_idCond = "true";
         if($request->cliente_id and $request->cliente_id != "undefined"){
-            $cliente_idCond = "if(categoriaprod.asoprodcli = 1, ((producto.id IN (SELECT producto_id FROM cliente_producto WHERE 
-                                cliente_producto.cliente_id = $request->cliente_id)) OR producto.tipoprod = 1), TRUE )";
+            $cliente_idCond = " TRUE ";
         }
         $users = Usuario::findOrFail(auth()->id());
         if($request->sucursal_id and $request->sucursal_id !=  "undefined"){
@@ -135,7 +134,7 @@ class Producto extends Model
 
         $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
                 producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
-                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,'' as acuerdotecnico_id
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod
@@ -144,8 +143,6 @@ class Producto extends Model
                 on categoriaprod.id = categoriaprodsuc.categoriaprod_id
                 INNER JOIN sucursal
                 ON categoriaprodsuc.sucursal_id = sucursal.id
-                LEFT JOIN acuerdotecnico
-                ON producto.id = acuerdotecnico.producto_id
                 WHERE sucursal.id in ($sucurcadena)
                 and $cliente_idCond
                 GROUP BY producto.id

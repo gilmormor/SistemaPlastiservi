@@ -57,6 +57,17 @@ class ClienteController extends Controller
             ->toJson();
     }
 
+    public function clientebuscarpage(){
+        $datas = Cliente::clientesxUsuarioSQLTemp();
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpageid($id){
+        $datas = Cliente::clientesxUsuarioSQLTemp();
+        return datatables($datas)->toJson();
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *

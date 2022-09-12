@@ -195,6 +195,28 @@ class NotaVentaController extends Controller
         //dd($datas);       
         return datatables($datas)->toJson();  
     }
+
+    public function productobuscarpage(Request $request){
+        $datas = Producto::productosxClienteTemp($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpage(){
+        $datas = Cliente::clientesxUsuarioSQLTemp();
+        return datatables($datas)->toJson();
+    }
+
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxClienteTemp($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpageid($id){
+        $datas = Cliente::clientesxUsuarioSQLTemp();
+        return datatables($datas)->toJson();
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -229,17 +251,22 @@ class NotaVentaController extends Controller
         ->whereIn('cliente.id',$clientevendedorArray)
         ->get();
         */
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
+
+        $user = Usuario::findOrFail(auth()->id());
+        if(isset($user->persona->vendedor->id)){
+            $vendedor_id = $user->persona->vendedor->id;
+        }else{
+            $vendedor_id = "0";
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+
 
         $fecha = date("d/m/Y");
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
         $comunas = Comuna::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
+        //$productos = Producto::productosxUsuario();
 
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
@@ -268,7 +295,7 @@ class NotaVentaController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
     
         //dd($vendedor_id);
-        return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','productos','clientes','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant','tablas'));
+        return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant','tablas'));
     }
 
     public function crearcot($id)
@@ -285,10 +312,14 @@ class NotaVentaController extends Controller
         $clienteselec = $data->cliente()->get();
         //dd($clienteselec);
 
-        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
+        $user = Usuario::findOrFail(auth()->id());
+        if(isset($user->persona->vendedor->id)){
+            $vendedor_id = $user->persona->vendedor->id;
+        }else{
+            $vendedor_id = "0";
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+
 
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
@@ -318,7 +349,7 @@ class NotaVentaController extends Controller
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
+        //$productos = Producto::productosxUsuario();
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $giros = Giro::orderBy('id')->get();
@@ -346,10 +377,10 @@ class NotaVentaController extends Controller
         $aux_statusPant = 0;
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
-        $tablas['sucursales'] = $clientesArray['sucursales'];
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
 
         //dd($aux_aproNV);
-        return view('notaventa.crear', compact('data','clienteselec','clientedirecs','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));
+        return view('notaventa.crearcot', compact('data','clienteselec','clientedirecs','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));
 
 
     }
@@ -459,10 +490,14 @@ class NotaVentaController extends Controller
         //session(['aux_aprocot' => '0']);
         //dd($clienteselec[0]->rut);
 
-        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
+        $user = Usuario::findOrFail(auth()->id());
+        if(isset($user->persona->vendedor->id)){
+            $vendedor_id = $user->persona->vendedor->id;
+        }else{
+            $vendedor_id = "0";
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+
 
         //dd($sucurArray);
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
@@ -491,7 +526,7 @@ class NotaVentaController extends Controller
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $productos = Producto::productosxUsuario(); 
+        //$productos = Producto::productosxUsuario(); 
 
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
@@ -518,10 +553,11 @@ class NotaVentaController extends Controller
         $aux_statusPant = 0;
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
-        $tablas['sucursales'] = $clientesArray['sucursales'];
+        //$tablas['sucursales'] = $clientesArray['sucursales'];
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
         //$tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
 
-        return view('notaventa.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
+        return view('notaventa.editar', compact('data','clienteselec','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }
 
     /**

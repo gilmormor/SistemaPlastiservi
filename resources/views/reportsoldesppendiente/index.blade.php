@@ -9,9 +9,9 @@ Notas de Venta
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/despachosol/listarnotaventa.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
+    <script src="{{autoVer("assets/pages/scripts/reportsoldesppendiente/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script> 
 @endsection
 
 @section('contenido')
@@ -217,12 +217,39 @@ Notas de Venta
             <div class="table-responsive" id="tablaconsulta">
             </div>-->
             <div class="row">
-                <div class="table-responsive" id="tablaconsulta">
+                <div class="col-md-12">
+                  <!-- Custom Tabs -->
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Pendiente x Nota Venta</a></li>
+                            <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Pendiente x Cliente</a></li>
+                            <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Pendiente x producto</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+                                <div class="table-responsive" id="tablaconsulta">
+                                </div>
+                                <div class="col-lg-12 text-center">
+                                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(1)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_2">
+                                <div class="table-responsive" id="tablaconsulta2">
+                                </div>
+                                <div class="col-lg-12 text-center">
+                                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(2)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_3">
+                                <div class="table-responsive" id="tablaconsulta3">
+                                </div>
+                                <div class="col-lg-12 text-center">
+                                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(3)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-lg-12 text-center">
-                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(1)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
-                </div>
-
             </div>
             <!--
             <div class="container">

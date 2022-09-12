@@ -428,8 +428,8 @@
 </div>
 
 @include('generales.calcprecioprodsn')
-@include('generales.buscarclientebd')
-@include('generales.buscarproductobd')
+@include('generales.buscarclientebdtemp')
+@include('generales.buscarproductobdtemp')
 @if (session('aux_aprocot')=='1')
     @include('generales.aprobarcotnv')
 @endif

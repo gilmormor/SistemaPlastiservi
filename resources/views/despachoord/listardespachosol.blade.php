@@ -6,8 +6,6 @@ Pendiente Solicitud Orden Despacho
 <?php
     $selecmultprod = true;
 ?>
-<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
-
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
@@ -38,6 +36,7 @@ Pendiente Solicitud Orden Despacho
                 <div class="row">
                     <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
+                        <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
@@ -275,8 +274,8 @@ Pendiente Solicitud Orden Despacho
     </div>
 </div>
 
-@include('generales.buscarclientebd')
+@include('generales.buscarclientebdtemp')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproductobd')
+@include('generales.buscarproductobdtemp')
 @endsection

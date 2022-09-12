@@ -73,22 +73,22 @@ class DespachoSolController extends Controller
     }
 
     public function productobuscarpage(Request $request){
-        $datas = Producto::productosxCliente($request);
+        $datas = Producto::productosxClienteTemp($request);
         return datatables($datas)->toJson();
     }
 
     public function clientebuscarpage(){
-        $datas = Cliente::clientesxUsuarioSQL();
+        $datas = Cliente::clientesxUsuarioSQLTemp();
         return datatables($datas)->toJson();
     }
 
     public function productobuscarpageid(Request $request){
-        $datas = Producto::productosxCliente($request);
+        $datas = Producto::productosxClienteTemp($request);
         return datatables($datas)->toJson();
     }
 
     public function clientebuscarpageid($id){
-        $datas = Cliente::clientesxUsuarioSQL();
+        $datas = Cliente::Temp();
         return datatables($datas)->toJson();
     }
 
@@ -1976,7 +1976,7 @@ function consulta($request,$aux_sql,$orden){
         GROUP BY notaventa.cliente_id
         ORDER BY $aux_orden;";
         //dd($sql);
-}
+    }
 
     $datas = DB::select($sql);
     //dd($datas);
@@ -2160,119 +2160,6 @@ function reporte1($request){
         </tfoot>
 
         </table>";
-
-        /*****CONSULTA AGRUPADO POR CLIENTE******/
-        $datas = consulta($request,1,2);
-        if($datas){
-            $aux_clienteid = $datas[0]->cliente_id . $datas[0]->comunanombre;
-        }
-        $respuesta['tabla2'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
-        <thead>
-            <tr>
-                <th>Razón Social</th>
-                <th>Comuna</th>
-                <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
-                <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
-            </tr>
-        </thead>
-        <tbody>";
-
-        $aux_kgpend = 0;
-        $aux_platapend = 0;
-        $razonsocial = "";
-        $aux_comuna  = "";
-        $aux_totalkg = 0;
-        $aux_totalplata = 0;
-
-        foreach ($datas as $data) {
-            if(($data->cliente_id . $data->comunanombre)!=$aux_clienteid){
-                $respuesta['tabla2'] .= "
-                <tr>
-                    <td>$razonsocial</td>
-                    <td>$aux_comuna</td>
-                    <td data-order='$aux_kgpend' data-search='$aux_kgpend' style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
-                    <td data-order='$aux_platapend' data-search='$aux_platapend' style='text-align:right'>".number_format($aux_platapend, 0, ",", ".") ."</td>
-                </tr>";
-                $aux_kgpend = 0;
-                $aux_platapend = 0;
-                $aux_clienteid = $data->cliente_id . $data->comunanombre;
-            }
-            $aux_kgpend += ($data->totalkilos - $data->totalkgsoldesp);
-            $aux_platapend += ($data->subtotal - $data->totalsubtotalsoldesp);
-            $aux_totalkg += ($data->totalkilos - $data->totalkgsoldesp);
-            $aux_totalplata += ($data->subtotal - $data->totalsubtotalsoldesp);
-            $razonsocial = $data->razonsocial;
-            $aux_comuna  = $data->comunanombre;
-
-        }
-        //dd($respuesta['tabla2']);
-        $respuesta['tabla2'] .= "
-            <tr>
-                <td>$razonsocial</td>
-                <td>$aux_comuna</td>
-                <td data-order='$aux_kgpend' data-search='$aux_kgpend' style='text-align:right'>".number_format($aux_kgpend, 2, ",", ".") ."</td>
-                <td data-order='$aux_platapend' data-search='$aux_platapend' style='text-align:right'>".number_format($aux_platapend, 0, ",", ".") ."</td>
-            </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan='2' style='text-align:left'>TOTALES</th>
-                    <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalplata, 0, ",", ".") ."</th>
-                </tr>
-            </tfoot>
-
-            </table>";
-
-        /*****CONSULTA AGRUPADO POR PRODUCTO*****/
-        $datas = consulta($request,2,1);
-        $respuesta['tabla3'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='50'>
-        <thead>
-            <tr>
-                <th>Descripción</th>
-                <th class='tooltipsC' title='Codigo Producto'>Cod<br>Prod</th>
-                <th>Diametro</th>
-                <th>Clase</th>
-                <th>Largo</th>
-                <th>Peso</th>
-                <th>TU</th>
-                <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant Pend</th>
-                <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
-                <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
-            </tr>
-        </thead>
-        <tbody>";
-        $aux_totalkg = 0;
-        $aux_totalplata = 0;
-        foreach ($datas as $data) {
-            if($data->saldoplata>0){
-                $aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
-                $aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);    
-                $respuesta['tabla3'] .= "
-                <tr>
-                    <td>$data->nombre</td>
-                    <td>$data->producto_id</td>
-                    <td>$data->diametro</td>
-                    <td>$data->cla_nombre</td>
-                    <td>$data->long</td>
-                    <td>$data->peso</td>
-                    <td>$data->tipounion</td>
-                    <td data-order='$data->saldocant' data-search='$data->saldocant' style='text-align:right'>".number_format($data->saldocant, 0, ",", ".") ."</td>
-                    <td data-order='$data->saldokg' data-search='$data->saldokg' style='text-align:right'>".number_format($data->saldokg, 2, ",", ".") ."</td>
-                    <td data-order='$data->saldoplata' data-search='$data->saldoplata' style='text-align:right'>".number_format($data->saldoplata, 0, ",", ".") ."</td>
-                </tr>";    
-            }
-        }
-        $respuesta['tabla3'] .= "
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan='8' style='text-align:left'>TOTAL</th>
-                    <th style='text-align:right'>". number_format($aux_totalkg, 2, ",", ".") ."</th>
-                    <th style='text-align:right'>". number_format($aux_totalplata, 0, ",", ".") ."</th>
-                </tr>
-            </tfoot>
-            </table>";
 
         return $respuesta;
     }

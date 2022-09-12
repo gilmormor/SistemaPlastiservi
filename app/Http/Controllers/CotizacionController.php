@@ -86,22 +86,22 @@ class CotizacionController extends Controller
     }
 
     public function productobuscarpage(Request $request){
-        $datas = Producto::productosxCliente($request);
+        $datas = Producto::productosxClienteTemp($request);
         return datatables($datas)->toJson();
     }
 
     public function clientebuscarpage(){
-        $datas = Cliente::clientesxUsuarioSQL();
+        $datas = Cliente::clientesxUsuarioSQLTemp();
         return datatables($datas)->toJson();
     }
 
     public function productobuscarpageid(Request $request){
-        $datas = Producto::productosxCliente($request);
+        $datas = Producto::productosxClienteTemp($request);
         return datatables($datas)->toJson();
     }
 
     public function clientebuscarpageid($id){
-        $datas = Cliente::clientesxUsuarioSQL();
+        $datas = Cliente::clientesxUsuarioSQLTemp();
         return datatables($datas)->toJson();
     }
 
@@ -118,13 +118,15 @@ class CotizacionController extends Controller
      */
     public function crear()
     {
-        can('crear-cotizacion');
         //CLIENTES POR USUARIO. SOLO MUESTRA LOS CLIENTES QUE PUEDE VER UN USUARIO
         $tablas = array();
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $tablas['vendedor_id'] = $clientesArray['vendedor_id'];
-        $tablas['sucurArray'] = $clientesArray['sucurArray'];
+        $user = Usuario::findOrFail(auth()->id());
+        if(isset($user->persona->vendedor->id)){
+            $tablas['vendedor_id'] = $user->persona->vendedor->id;
+        }else{
+            $tablas['vendedor_id'] = "0";
+        }
+        $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $fecha = date("d/m/Y");
         $tablas['formapagos'] = FormaPago::orderBy('id')->get();
         $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
@@ -139,11 +141,10 @@ class CotizacionController extends Controller
         $aux_sta=1;
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
-        $productos = Producto::productosxUsuario();
         //dd($tablas['unidadmedida']);
         session(['aux_aprocot' => '0']);
 
-        return view('cotizacion.crear',compact('clientes','fecha','productos','aux_sta','tablas'));
+        return view('cotizacion.crear',compact('fecha','aux_sta','tablas'));
     }
     /**
      * Store a newly created resource in storage.
@@ -289,10 +290,13 @@ class CotizacionController extends Controller
         
         $fecha = date("d/m/Y", strtotime($data->fechahora));
         $user = Usuario::findOrFail(auth()->id());
-        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
-        $clientes = $clientesArray['clientes'];
-        $tablas['vendedor_id'] = $clientesArray['vendedor_id'];
-        $productos = Producto::productosxUsuario();
+        if(isset($user->persona->vendedor->id)){
+            $tablas['vendedor_id'] = $user->persona->vendedor->id;
+        }else{
+            $tablas['vendedor_id'] = "0";
+        }
+        $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+
 
         $tablas['formapagos'] = FormaPago::orderBy('id')->get();
         $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
@@ -301,12 +305,13 @@ class CotizacionController extends Controller
         $tablas['regiones'] = Region::orderBy('id')->get();
         $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
         $tablas['giros'] = Giro::orderBy('id')->get();
-        $tablas['sucursales'] = $clientesArray['sucursales'];
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
+
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $aux_sta=2;
 
-        return view('cotizacion.editar', compact('data','clienteselec','clientes','cotizacionDetalles','productos','fecha','aux_sta','aux_cont','tablas'));
+        return view('cotizacion.editar', compact('data','clienteselec','clientes','cotizacionDetalles','fecha','aux_sta','aux_cont','tablas'));
     }
 
     /**

@@ -29,6 +29,12 @@
 <input type="hidden" name="imagen" id="imagen" value="{{old('imagen', $data->oc_file ?? '')}}">
 
 <?php
+    $selecmultprod = false;
+?>
+<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
+
+
+<?php
     $disabledReadOnly = "";
     $disabledcliente = "";
     $enableCamposCot = ""; //Este campo lo cambio a disbles si llegara a necesitar desactivar los campos marcados con esta variable
@@ -593,8 +599,8 @@
 -->
 
 @include('generales.calcprecioprodsn')
-@include('generales.buscarcliente')
-@include('generales.buscarproducto')
+@include('generales.buscarclientebdtemp')
+@include('generales.buscarproductobdtemp')
 @if (session('aux_aproNV')=='1')
     @include('generales.aprobarcotnv')
 @endif

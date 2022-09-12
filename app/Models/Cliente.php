@@ -163,7 +163,7 @@ class Cliente extends Model
         return $respuesta;
     }
 
-    public static function clientesxUsuarioSQL($vendedor_id = '0',$sucursal_id = false){
+    public static function clientesxUsuarioSQLTemp($vendedor_id = '0',$sucursal_id = false){ //Esta funcion es temporal mientras fusiono las 2 ramas de Santa Ester y San Bernardo
         $users = Usuario::findOrFail(auth()->id());
         if($sucursal_id){
             $sucurArray = [$sucursal_id];

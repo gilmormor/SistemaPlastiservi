@@ -117,22 +117,22 @@ class DespachoOrdController extends Controller
     }
 
     public function productobuscarpage(Request $request){
-        $datas = Producto::productosxCliente($request);
+        $datas = Producto::productosxClienteTemp($request);
         return datatables($datas)->toJson();
     }
 
     public function clientebuscarpage(){
-        $datas = Cliente::clientesxUsuarioSQL();
+        $datas = Cliente::clientesxUsuarioSQLTemp();
         return datatables($datas)->toJson();
     }
 
     public function productobuscarpageid(Request $request){
-        $datas = Producto::productosxCliente($request);
+        $datas = Producto::productosxClienteTemp($request);
         return datatables($datas)->toJson();
     }
 
     public function clientebuscarpageid($id){
-        $datas = Cliente::clientesxUsuarioSQL();
+        $datas = Cliente::clientesxUsuarioSQLTemp();
         return datatables($datas)->toJson();
     }
 

@@ -55,6 +55,15 @@ class ProductoController extends Controller
         */
     }
 
+    public function productobuscarpage(Request $request){
+        $datas = Producto::productosxClienteTemp($request);
+        return datatables($datas)->toJson();
+    }
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxClienteTemp($request);
+        return datatables($datas)->toJson();
+    }
+
     /**
      * Show the form for creating a new resource.
      *
