@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Producto extends Model
 {
@@ -32,6 +33,7 @@ class Producto extends Model
         'tipoprod',
         'stockmin',
         'stockmax',
+        'acuerdotecnico_id',
         'usuariodel_id'
     ];
 
@@ -78,6 +80,11 @@ class Producto extends Model
     {
         return $this->hasMany(InvMovDet::class);
     }
+    //RELACION MUCHO A MUCHOS CON CLIENTE A TRAVES DE cliente_producto
+    public function clientes()
+    {
+        return $this->belongsToMany(Cliente::class, 'cliente_producto')->withTimestamps();
+    }
 
     public static function productosxUsuario($sucursal_id = false){
         $users = Usuario::findOrFail(auth()->id());
@@ -116,5 +123,123 @@ class Producto extends Model
         ->get();
         return $productos;
     }
+    //RELACION UNO A UNO CON ACUERDOTECNICO
+    public function acuerdotecnico()
+    {
+        return $this->hasOne(AcuerdoTecnico::class);
+    }
+
+    //RELACION MUCHO A MUCHOS vendedor A TRAVES DE producto_vendedor
+    public function vendedores()
+    {
+        return $this->belongsToMany(Vendedor::class, 'producto_vendedor');
+    }
+    
+
+    public static function productosxUsuarioSQL($sucursal_id = false){
+        $users = Usuario::findOrFail(auth()->id());
+        if($sucursal_id){
+            $sucurArray = [$sucursal_id];
+        }else{
+            $sucurArray = $users->sucursales->pluck('id')->toArray();
+        }
+        $sucurcadena = implode(",", $sucurArray);
+
+        $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+                producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id
+                from producto inner join categoriaprod
+                on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
+                INNER JOIN claseprod
+                on producto.claseprod_id = claseprod.id and isnull(claseprod.deleted_at)
+                INNER JOIN categoriaprodsuc
+                on categoriaprod.id = categoriaprodsuc.categoriaprod_id
+                INNER JOIN sucursal
+                ON categoriaprodsuc.sucursal_id = sucursal.id
+                WHERE sucursal.id in ($sucurcadena)
+                GROUP BY producto.id
+                ORDER BY producto.id asc;";
+        //dd($sql);
+        $datas = DB::select($sql);
+        return $datas;
+    }
+
+    public static function productosxCliente($request){
+        $cliente_idCond = "true";
+        if($request->cliente_id){
+            $cliente_idCond = "if(categoriaprod.asoprodcli = 1, ((producto.id IN (SELECT producto_id FROM cliente_producto WHERE 
+                                cliente_producto.cliente_id = $request->cliente_id)) OR producto.tipoprod = 1), TRUE )";
+        }
+        $users = Usuario::findOrFail(auth()->id());
+        if($request->sucursal_id){
+            $sucurArray = [$request->sucursal_id];
+        }else{
+            $sucurArray = $users->sucursales->pluck('id')->toArray();
+        }
+        $sucurcadena = implode(",", $sucurArray);
+
+        $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+                producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
+                from producto inner join categoriaprod
+                on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
+                INNER JOIN claseprod
+                on producto.claseprod_id = claseprod.id and isnull(claseprod.deleted_at)
+                INNER JOIN categoriaprodsuc
+                on categoriaprod.id = categoriaprodsuc.categoriaprod_id
+                INNER JOIN sucursal
+                ON categoriaprodsuc.sucursal_id = sucursal.id
+                LEFT JOIN acuerdotecnico
+                ON producto.id = acuerdotecnico.producto_id
+                WHERE sucursal.id in ($sucurcadena)
+                and $cliente_idCond
+                GROUP BY producto.id
+                ORDER BY producto.id asc;";
+        //dd($sql);
+        $datas = DB::select($sql);
+        return $datas;
+    }
+
+    public static function AsignarProductosAClientes($request){
+        //dd($request);
+        $cliente_idCond = "false";
+        //dd($request->producto_id);
+        if($request->cliente_id and isset($request->producto_id)){
+            if(is_null($request->producto_id)){
+                $request->producto_id = "";
+            }
+            $cliente_idCond = "categoriaprod.asoprodcli = 1 and producto.tipoprod = 0
+                                AND producto.id NOT IN ($request->producto_id)";
+        };
+        $users = Usuario::findOrFail(auth()->id());
+        if($request->sucursal_id){
+            $sucurArray = [$request->sucursal_id];
+        }else{
+            $sucurArray = $users->sucursales->pluck('id')->toArray();
+        }
+        $sucurcadena = implode(",", $sucurArray);
+
+        $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+                producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
+                from producto inner join categoriaprod
+                on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
+                INNER JOIN claseprod
+                on producto.claseprod_id = claseprod.id and isnull(claseprod.deleted_at)
+                INNER JOIN categoriaprodsuc
+                on categoriaprod.id = categoriaprodsuc.categoriaprod_id
+                INNER JOIN sucursal
+                ON categoriaprodsuc.sucursal_id = sucursal.id
+                LEFT JOIN acuerdotecnico
+                ON producto.id = acuerdotecnico.producto_id
+                WHERE sucursal.id in ($sucurcadena)
+                and $cliente_idCond
+                GROUP BY producto.id
+                ORDER BY producto.id asc;";
+        //dd($sql);
+        $datas = DB::select($sql);
+        return $datas;
+    }
+
 
 }

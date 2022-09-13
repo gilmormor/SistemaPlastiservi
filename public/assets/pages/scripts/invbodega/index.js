@@ -13,6 +13,7 @@ $(document).ready(function () {
         'columns'     : [
             {data: 'id'},
             {data: 'nombre'},
+            {data: 'desc'},
             {data: 'nombre_suc'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : 

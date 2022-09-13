@@ -38,6 +38,7 @@ Solicitud de despacho
                                 <th class="ocultar">Icono</th>
                                 <th class="ocultar">Obs Bloqueo</th>
                                 <th class="ocultar">oc_file</th>
+                                <th class="ocultar">obsdev</th>
                                 <th class="ocultar">updated_at</th>
                                 <th class="width70">Acción</th>
                             </tr>

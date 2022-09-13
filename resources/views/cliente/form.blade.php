@@ -305,10 +305,10 @@
                                 </td>
                                 <td>
                                     @if(can('guardar-cliente',false) == true)
-                                        <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                        <a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
                                             <i class="fa fa-fw fa-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
+                                        <a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
                                             <i class="fa fa-fw fa-trash text-danger"></i>
                                         </a>
                                     @endif

@@ -72,6 +72,7 @@ class Vendedor extends Model
                 ->groupBy('vendedor.id')
                 ->get();
         }
+        $respuesta['vendedor_id'] = $vendedor_id;
         $respuesta['vendedores'] = $vendedores;
         $respuesta['clientevendedorArray'] = $clientevendedorArray;
         return $respuesta;
@@ -119,5 +120,36 @@ class Vendedor extends Model
         $respuesta .= "</select>";
         return $respuesta;
     }
+
+    public static function vendedor_id(){
+        $respuesta = array();
+        $user = Usuario::findOrFail(auth()->id());
+        //$vendedor_id=$user->persona->vendedor->id;
+        $sql= 'SELECT COUNT(*) AS contador
+                FROM vendedor INNER JOIN persona
+                ON vendedor.persona_id=persona.id
+                INNER JOIN usuario 
+                ON persona.usuario_id=usuario.id
+                WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id = $user->persona->vendedor->id;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+        }else{
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+        }
+        $respuesta['vendedor_id'] = $vendedor_id;
+        $respuesta['clientevendedorArray'] = $clientevendedorArray;
+
+        
+        return $respuesta;
+    }
+    //RELACION MUCHO A MUCHOS producto TRAVES DE producto_vendedor
+    public function productos()
+    {
+        return $this->belongsToMany(Cliente::class, 'producto_vendedor');
+    }
+
 
 }

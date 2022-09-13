@@ -48,7 +48,6 @@ class IndicadoresController extends Controller
         $clientes = $clientesArray['clientes'];
         $vendedor_id = $clientesArray['vendedor_id'];
         $sucurArray = $clientesArray['sucurArray'];
-
         
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];

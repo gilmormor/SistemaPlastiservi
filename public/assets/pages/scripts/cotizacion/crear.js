@@ -116,9 +116,35 @@ $(document).ready(function () {
 		}
 	});
 	$("#btnbuscarcliente").click(function(event){
-			$("#rut").val("");
-			$(".input-sm").val('');
-			$("#myModalBusqueda").modal('show');
+			var aux_nfila = $("#tabla-data tbody tr").length - 3;
+			if(aux_nfila>0){
+				swal({
+					title: '¿ Desea eliminar productos pre-cargados ?',
+					text: "Al cambiar de cliente se eliminaran los productos pre-cargados!",
+					icon: 'warning',
+					buttons: {
+						cancel: "Cancelar",
+						confirm: "Aceptar"
+					},
+				}).then((value) => {
+					if (value) {
+						for (i = 1; i <= aux_nfila; i++) {
+							$("#fila" + i).remove();
+						}
+						totalizar();
+						$("#rut").val("");
+						$(".input-sm").val('');
+						
+						$('#tabla-data-clientes').DataTable().ajax.url( "clientebuscarpage/").load();
+
+						$("#myModalBusqueda").modal('show');		
+					}
+				});
+			}else{
+				$("#rut").val("");
+				$(".input-sm").val('');
+				$("#myModalBusqueda").modal('show');	
+			}
 	});
 	$("#producto_idM").keyup(function(event){
 		if(event.which==113){
@@ -132,6 +158,9 @@ $(document).ready(function () {
 		
 		$(this).val("");
 		$(".input-sm").val('');
+		data = datos();
+		$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
+	
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
 
@@ -172,6 +201,28 @@ $(document).ready(function () {
 		$("#vendedor_idD").val("");
 	}
 	formato_rut($('#rut'));
+/*
+	const $ventanaModal = $("#myModalAcuerdoTecnico");
+	$ventanaModal.on("hidden.bs.modal", function(event){
+		const formulario = $ventanaModal.find("form");
+		console.log(formulario);
+		//formulario.prevObject[0].reset();
+	});
+*/
+	
+	const $ventanaModal = $("#myModalAcuerdoTecnico");
+
+	$ventanaModal.on("hidden.bs.modal", function(event){
+		//document.getElementById('form-acuerdotecnico').reset();
+		//$("#form-acuerdotecnico").trigger('reset'); 
+		/*const formulario = $ventanaModal.find("form");
+		console.log(formulario);
+		formulario[0].reset();*/
+		$(".form_acutec").serializeArray().map(function(x){
+			$("#" + x.name).val("");
+		});
+	});
+	//configTablaProd();
 
 });
 
@@ -201,7 +252,18 @@ function insertarTabla(){
 		aux_precioxkilo = $("#precioM").attr("valor");
 		aux_precioxkiloreal = $("#precioM").attr("valor");
 	}
+	//alert($("#tipoprodM").attr('valor'));
+	aux_botonAcuTec = '';
+	if($("#tipoprodM").attr('valor') == 1) {
+		aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
+		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>';
+	}
+	//aux_botonAcuTec = $("#tipoprodM").attr('valor') == '1' ? 'x' : '';
+
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
+			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;">'+ 
+				$("#producto_idM").val() + aux_botonAcuTec +
+			'</td>'+
 			'<td style="display:none;" name="cotdet_idTD'+ aux_nfila + '" id="cotdet_idTD'+ aux_nfila + '">'+ 
 				'0'+
 			'</td>'+
@@ -303,24 +365,30 @@ function insertarTabla(){
 			'<td name="subtotalSFTD'+ aux_nfila + '" id="subtotalSFTD'+ aux_nfila + '" class="subtotal" style="text-align:right;display:none;">'+ 
 				$("#subtotalM").attr("valor")+
 			'</td>'+
+			'<td style="text-align:right;display:none;">'+ 
+				'<input type="text" name="acuerdotecnico[]" id="acuerdotecnico'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
+			'</td>'+
+			'<td style="text-align:right;display:none;">'+
+				'<input type="text" name="tipoprod[]" id="tipoprod'+ aux_nfila + '" class="form-control" value="' + $("#tipoprodM").attr('valor') + '" style="display:none;"/>'+
+			'</td>'+
 			'<td>' + 
-				'<a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
-				'<a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+
-			'<td colspan="12" style="text-align:right"><b>Neto</b></td>'+
+			'<td colspan="13" style="text-align:right"><b>Neto</b></td>'+
 			'<td id="tdneto" name="tdneto" style="text-align:right">0,00</td>'+
 		'</tr>'+
 		'<tr id="triva" name="triva">'+
-			'<td colspan="12" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
+			'<td colspan="13" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
 			'<td id="tdiva" name="tdiva" style="text-align:right">0,00</td>'+
 		'</tr>'+
 		'<tr id="trtotal" name="trtotal">'+
-			'<td colspan="12" style="text-align:right"><b>Total</b></td>'+
+			'<td colspan="13" style="text-align:right"><b>Total</b></td>'+
 			'<td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>'+
 		'</tr>';
 	
@@ -417,7 +485,12 @@ function ajaxRequest(data,url,funcion) {
 					Biblioteca.notificaciones('El registro fue actualizado correctamente', 'Plastiservi', 'success');
 					// *** REDIRECCIONA A UNA RUTA*** 
 					var loc = window.location;
-    				window.location = loc.protocol+"//"+loc.hostname+"/cotizacionaprobar";
+					if($("#aprobstatus").val()== "2"){
+						window.location = loc.protocol+"//"+loc.hostname+"/cotizacionaprobar";
+					}
+					if($("#aprobstatus").val()== "5"){
+						window.location = loc.protocol+"//"+loc.hostname+"/cotizacionaprobaracutec";
+					}
 					// ****************************** 
 				} else {
 					if (respuesta.mensaje == "sp"){
@@ -426,6 +499,9 @@ function ajaxRequest(data,url,funcion) {
 						Biblioteca.notificaciones('El registro no puso se actualizado, hay recursos usandolo', 'Plastiservi', 'error');
 					}
 				}
+			}
+			if(funcion=='buscardetcot'){
+				console.log(respuesta);
 			}
 		},
 		error: function () {
@@ -457,12 +533,9 @@ function copiar_codprod(id,codintprod){
 
 				$(this).off('hidden.bs.modal'); // Remove the 'on' event binding
 			});
-
 	$("#producto_idM").val(id);
 	$("#producto_idM").blur();
 	$("#cantM").focus();
-	
-
 }
 
 $("#rut").blur(function(){
@@ -592,6 +665,8 @@ $("#rut").blur(function(){
 						*/
 						activar_controles();
 						formato_rut($("#rut"));
+						data = datos();
+						$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
 						$(".selectpicker").selectpicker('refresh');
 					}else{
 						$.ajax({
@@ -956,4 +1031,127 @@ function limpiarclientemp(){
 	$("#regionp_idCTM").val($('#comunap_idCTM option:selected').attr("region_id"));
 	$("#provinciap_idCTM").val($('#comunap_idCTM option:selected').attr("provincia_id"));
 	$(".selectpicker").selectpicker('refresh');
+}
+
+
+$("#btnAceptarAcuTecTemp").click(function(event)
+{
+	event.preventDefault();
+	if(verificarDato(".valorrequerido"))
+	{
+		var data = {};
+		$(".form_acutec").serializeArray().map(function(x){data[x.name] = x.value;});
+		arrayat_certificados = $("#at_certificados").val();
+		data.at_certificados = arrayat_certificados.toString();
+		localStorage.setItem('datos', JSON.stringify(data));
+		var guardado = localStorage.getItem('datos');
+		aux_nfila = $("#aux_numfilaAT").val();
+		$("#acuerdotecnico" + aux_nfila).val(guardado); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
+		$("#myModalAcuerdoTecnico").modal('hide');
+		//alert($("#acuerdotecnico" + i).val());
+		$("#icoat" + aux_nfila).attr('class','fa fa-cog text-aqua');
+		//console.log(guardado);
+	
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+	
+});
+
+
+function verificarDato(aux_nomclass)
+{
+	aux_resultado = true;
+	$(aux_nomclass).serializeArray().map(function(x){
+		aux_tipoval = $("#" + x.name).attr('tipoval');
+		if (validacion(x.name,aux_tipoval) == false)
+		{
+			//return false;
+			aux_resultado = false;
+
+		}else{
+			//return true;
+		}
+	});
+	return aux_resultado;
+}
+$(".valorrequerido").keyup(function(){
+	//alert($(this).parent().attr('class'));
+	validacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+
+$(".valorrequerido").change(function(){
+	//alert($(this).parent().attr('class'));
+	validacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+
+$(".form-horizontal").on("submit", function(event){
+	var aux_nfila = $("#tabla-data tbody tr").length - 3;
+	//aux_nfila++;
+	for (i = 1; i <= aux_nfila; i++) {
+		//alert($("#acuerdotecnico" + i).val());
+		//console.log($("#acuerdotecnico" + i).val());
+		if($("#tipoprod" + i).val() == 1){
+			if($("#acuerdotecnico" + i).val() == 0 || $("#acuerdotecnico" + i).val() == "null"  || $("#acuerdotecnico" + i).val() == ""){
+				event.preventDefault();
+				alertify.error("Falta acuerdo tecnico Item N°: " + i);
+				i = aux_nfila+1;
+			}	
+		}
+	}
+	//console.log($("#acuerdotecnico").val());
+	//alert('prueba');
+});
+
+function ObsItemCot($id,$i){
+	var data = {
+		id: $id,
+		nfila : $i,
+		_token: $('input[name=_token]').val()
+	};
+
+    $.ajax({
+        url: '/cotizacion/buscardetcot',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+			aux_obs = "";
+			if(respuesta.obs != null){
+				aux_obs = respuesta.obs;
+			}
+			//var texto = prompt("Observacion:",aux_obs);
+			let input = document.createElement("input");
+			input.value = aux_obs;
+			input.type = 'text';
+			input.className = 'swal-content__input';
+		
+			swal({
+				text: "Editar Observación item",
+				content: input,
+				buttons: {
+					cancel: "Cancelar",
+					confirm: "Aceptar"
+				},
+			}).then((value) => {
+				if (value) {
+					var data = {
+						id: $id,
+						nfila : $i,
+						obs : input.value,
+						_token: $('input[name=_token]').val()
+					};
+				
+					$.ajax({
+						url: '/cotizacion/updateobsdet',
+						type: 'POST',
+						data: data,
+						success: function (respuesta) {
+							//console.log(respuesta.obs);
+						}
+					});
+	
+				}
+			});
+		}
+    });
 }

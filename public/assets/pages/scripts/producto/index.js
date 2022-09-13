@@ -27,6 +27,11 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
+
+            $('td', row).eq(6).attr('data-order',data.peso);
+            $('td', row).eq(6).attr('data-search',data.peso);
+            $('td', row).eq(6).html(MASKLA(data.peso,3));
+
             $('td', row).eq(8).attr('data-order',data.precioneto);
             $('td', row).eq(8).attr('data-search',data.precioneto);
             $('td', row).eq(8).attr('style','text-align:right');

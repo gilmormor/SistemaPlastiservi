@@ -289,6 +289,7 @@ function reporte1($request){
             $producto = Producto::findOrFail($data->producto_id);
             $aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
 
+            //$aux_peso = $data->peso == 0 ? $data->totalkilos/ :
             $respuesta['tabla3'] .= "
             <tr>
                 <td>
@@ -367,6 +368,7 @@ function consulta($request,$aux_sql,$orden){
     }else{
         $aux_orden = "notaventa.cliente_id";
     }
+    //dd($request->vendedor_id);
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
@@ -394,7 +396,10 @@ function consulta($request,$aux_sql,$orden){
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
-    }  
+    }
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
 
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -590,7 +595,9 @@ function consulta($request,$aux_sql,$orden){
         producto.nombre,cliente.razonsocial,notaventadetalle.id,
         notaventadetalle.notaventa_id,oc_file,
         producto.diametro,notaventa.oc_id,
-        claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
+        claseprod.cla_nombre,producto.long,
+        if(producto.peso=0,notaventadetalle.totalkilos/notaventadetalle.cant,producto.peso) as peso,
+        producto.tipounion,
         notaventadetalle.totalkilos,
         subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
         notaventadetalle.precioxkilo
@@ -619,6 +626,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condplazoentrega
         and $aux_condproducto_id
         and $aux_condcategoriaprod_id
+        AND notaventa.sucursal_id in ($sucurcadena)
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND notaventadetalle.cant>if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)
