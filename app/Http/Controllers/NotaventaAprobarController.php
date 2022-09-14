@@ -14,6 +14,7 @@ use App\Models\NotaVenta;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
@@ -178,12 +179,13 @@ class NotaventaAprobarController extends Controller
         session(['aux_aprocot' => '2']);
         //dd($clienteselec[0]->rut);
 
-        //$clientesArray = Cliente::clientesxUsuario();
-        $clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
-
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
+        $user = Usuario::findOrFail(auth()->id());
+        if(isset($user->persona->vendedor->id)){
+            $vendedor_id = $user->persona->vendedor->id;
+        }else{
+            $vendedor_id = "0";
+        }
+        $sucurArray = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
 
         //dd($sucurArray);
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
@@ -213,8 +215,6 @@ class NotaventaAprobarController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
 
-        $productos = Producto::productosxUsuario();
-
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -240,10 +240,10 @@ class NotaventaAprobarController extends Controller
         $aux_statusPant = 0;
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
-        $tablas['sucursales'] = $clientesArray['sucursales'];
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
 
         //dd($clientedirecs);
-        return view('notaventaAprobar.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));
+        return view('notaventaAprobar.editar', compact('data','clienteselec','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));
     }
 
     /**
