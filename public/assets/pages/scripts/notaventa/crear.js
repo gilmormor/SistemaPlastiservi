@@ -131,6 +131,8 @@ $(document).ready(function () {
 		$(".input-sm").val('');
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
+		data = datos();
+		$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
 
 		$('#myModal')
 			.modal('hide')
