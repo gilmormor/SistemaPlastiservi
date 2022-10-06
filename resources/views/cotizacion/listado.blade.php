@@ -90,6 +90,7 @@
 					<th class="textleft" width="60px">Clase</th>
 					<th class="textcenter" width="35px">Diamet</th>
 					<th class="textright">Largo</th>
+					<th class="textcenter">TU</th>
 					<th class="textright" width="70px">Precio Neto</th>
 					<th class="textright" width="90px">Total Neto</th>
 				</tr>
@@ -106,6 +107,7 @@
 							{{$CotizacionDetalle->producto->diametro}}
 						</td>
 						<td class="textright">{{$CotizacionDetalle->producto->long}} mts</td>
+						<td class="textcenter">{{$CotizacionDetalle->producto->tipounion}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 0, ",", ".")}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 0, ",", ".")}}</td>
 					</tr>
@@ -117,15 +119,15 @@
 	<div class="round" style="padding-bottom: 0px;padding-top: 8px;margin-bottom: 3px;">
 		<table id="factura_detalle">
 			<tr>
-				<td colspan="8" class="textright" width="85%"><span><strong>NETO</strong></span></td>
+				<td colspan="9" class="textright" width="85%"><span><strong>NETO</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->neto, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr>
-				<td colspan="8" class="textright" width="85%"><span><strong>IVA {{$cotizacion->piva}}%</strong></span></td>
+				<td colspan="9" class="textright" width="85%"><span><strong>IVA {{$cotizacion->piva}}%</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->iva, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr>
-				<td colspan="8" class="textright" width="85%"><span><strong>TOTAL</strong></span></td>
+				<td colspan="9" class="textright" width="85%"><span><strong>TOTAL</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->total, 0, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
