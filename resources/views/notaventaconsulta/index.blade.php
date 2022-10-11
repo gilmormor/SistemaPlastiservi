@@ -17,9 +17,14 @@ Cotización
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/notaventaconsulta/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script>
 @endsection
-
+<?php 
+    $selecmultprod = false;
+?>
 @section('contenido')
+<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
@@ -236,10 +241,10 @@ Cotización
         </div>
     </div>
 </div>
-@include('generales.buscarcliente')
+@include('generales.buscarclientebdtemp')
+@include('generales.buscarproductobdtemp')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.listarorddesp')
 @include('generales.actualizarFileOC')
-@include('generales.buscarproducto')
 @endsection

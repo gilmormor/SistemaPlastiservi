@@ -29,16 +29,6 @@ class NotaVentaConsultaController extends Controller
     public function index()
     {
         can('consulta-nota-de-venta');
-        $user = Usuario::findOrFail(auth()->id());
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
-
-        $arrayvend = Vendedor::vendedores(); //Esto viene del modelo vendedores
-        $vendedores1 = $arrayvend['vendedores'];
-        $clientevendedorArray = $arrayvend['clientevendedorArray'];
-
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
@@ -46,10 +36,9 @@ class NotaVentaConsultaController extends Controller
                     'fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y"),
                     ];
-        $productos = Producto::productosxUsuario();
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        return view('notaventaconsulta.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaServ','productos','tablashtml'));
+        return view('notaventaconsulta.index', compact('giros','areaproduccions','tipoentregas','fechaServ','tablashtml'));
 
     }
 

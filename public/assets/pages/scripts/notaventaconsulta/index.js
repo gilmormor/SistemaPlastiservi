@@ -17,7 +17,7 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datosNVCons());
     });
 
     //alert(aux_nfila);
@@ -34,31 +34,10 @@ $(document).ready(function () {
 
     configurarTabla('.tablas');
 
-	$('#oc_file').fileinput({
-		language: 'es',
-		allowedFileExtensions: ['jpg', 'jpeg', 'png', "pdf"],
-		maxFileSize: 4000,
-		initialPreview: [
-			// PDF DATA
-			'/storage/imagenes/notaventa/'+$("#imagen").val(),
-		],
-		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
-		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
-		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
-		initialPreviewConfig: [
-			{type: "pdf", size: 8000, caption: $("#imagen").val(), url: "/file-upload-batch/2", key: 10, downloadUrl: false}, // disable download
-		],
-        showUpload: false,
-        showClose: false,
-        initialPreviewAsData: true,
-		dropZoneEnabled: false,
-		maxFileCount: 5,
-        theme: "fa",
-	});
 
     $("#btnpdf").click(function()
     {
-        btnpdf(datos());
+        btnpdf(datosNVCons());
     });
 
 
@@ -118,7 +97,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datos(){
+function datosNVCons(){
     var data1 = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -229,8 +208,13 @@ $("#rut").blur(function(){
 	}
 });
 
+$("#btnbuscarcliente1").click(function(event){
+    $("#rut").val("");
+    $("#myModalBusqueda").modal('show');
+});
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    $(".input-sm").val('');
     $("#myModalBusqueda").modal('show');
 });
 
@@ -252,7 +236,7 @@ function visto(id,visto){
 }
 
 function genreportepdf(){ //GENERAR REPORTE PDF NOTA DE VENTA
-    reportepdf(datos());
+    reportepdf(datosNVCons());
 /*
 	$("#myModalpdf").modal('show')
 	$('#contpdf').attr('src', 'notaventa/'+id+'/'+stareport+'/exportPdf');
@@ -263,52 +247,6 @@ function reportepdf(data){
     //htmlexterno = '';
     $('#contpdf').attr('src', '/notaventaconsulta/exportPdf/'+data);
     $("#myModalpdf").modal('show');
-    /*
-    $('#contpdf').attr('src', function(e){
-        $.ajax({
-            url: '/notaventaconsulta/exportPdf',
-            type: 'POST',
-            data: data,
-            success: function (datos) {
-                $('#contpdf').attr('src', datos);
-            }
-        });
-    });
-    $("#myModalpdf").modal('show');
-    */
-
-/*
-    $.ajax({
-        url: '/notaventaconsulta/exportPdf',
-        type: 'POST',
-        data: data,
-        success: function (datos) {
-            $('#contpdf').attr('src', datos);
-            $("#myModalpdf").modal('show');
-        }
-    });
-*/
-/*
-    $.post("/notaventaconsulta/exportPdf", data, function(htmlexterno){
-        alert(htmlexterno);
-        //$("#cargaexterna").html(htmlexterno);
-        $('#contpdf').attr('src', htmlexterno);
-        $("#myModalpdf").modal('show');
-    });*/
-    /*
-    alert('entro');
-    $.ajax({
-        url: '/notaventaconsulta/exportPdf',
-        type: 'GET',
-        data: data,
-        success: function (datos) {
-            $('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
-            $("#myModalpdf").modal('show')
-        
-            //$("#midiv").html(datos);
-        }
-    });
-    */
 }
 
 function clicbotonactfileoc(id,oc_id){
@@ -350,24 +288,30 @@ $("#btnGuardarFileOC").click(function(event)
 	
 });
 
-function verificarFileOC()
-{
-	var v1=0;
-	var v2=0;
 
-    v1=validacion('oc_id1','texto');
-	v2=validacion('oc_file','otro');
-	if (v1===false || v2===false){
-		return false;
-	}else{
-		return true;
-	}
-}
-
-$("#btnbuscarproducto").click(function(event){
+$("#btnbuscarproducto1").click(function(event){
     $(this).val("");
     $(".input-sm").val('');
     $("#myModalBuscarProd").modal('show');
+});
+$("#btnbuscarproducto").click(function(event){
+    $(this).val("");
+    $(".input-sm").val('');
+    data = datos();
+    $('#tabla-data-productos').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+    $('#myModalBuscarProd').modal('show');
 });
 
 function copiar_codprod(id,codintprod){
