@@ -666,7 +666,7 @@ $("#rut").blur(function(){
 			};
 			$.ajax({
 				//url: '/cliente/buscarCliId',
-				url: '/cliente/buscarCliRut',
+				url: '/cliente/buscarClixVenRut',
 				type: 'POST',
 				data: data,
 				success: function (respuesta) {
@@ -745,17 +745,41 @@ $("#rut").blur(function(){
 						}
 
 					}else{
-						swal({
-							title: 'Cliente no existe.',
-							text: "Presione F2 para buscar",
-							icon: 'error',
-							buttons: {
-								confirm: "Aceptar"
-							},
-						}).then((value) => {
-							if (value) {
-								//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-								$("#rut").focus();
+						$.ajax({
+							url: '/cliente/buscarCli',
+							type: 'POST',
+							data: data,
+							success: function (respuesta) {
+								if(respuesta.length>0){
+									swal({
+										title: 'Cliente pertenece a otro Vendedor',
+										text: respuesta.razonsocial,
+										icon: 'error',
+										buttons: {
+											confirm: "Aceptar"
+										},
+									}).then((value) => {
+										if (value) {
+											//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+											//$("#rut").val('');
+											$("#rut").focus();
+										}
+									});
+								}else{
+									swal({
+										title: 'Cliente no existe.',
+										text: "Presione F2 para buscar",
+										icon: 'error',
+										buttons: {
+											confirm: "Aceptar"
+										},
+									}).then((value) => {
+										if (value) {
+											//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+											$("#rut").focus();
+										}
+									});			
+								}
 							}
 						});
 					}

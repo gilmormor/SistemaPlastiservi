@@ -695,4 +695,55 @@ class ClienteController extends Controller
         }
     }
 
+    public function buscarClixVenRut(Request $request){
+        if($request->ajax()){
+            $respuesta = array();
+            $user = Usuario::findOrFail(auth()->id());
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            //dd($sucurArray);
+            $sucurcadena = implode(",", $sucurArray);
+
+            $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+            $counts = DB::select($sql);
+            $vendedor_id = '0';
+            if($counts[0]->contador>0){
+                $vendedor_id=$user->persona->vendedor->id;
+                $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            }else{
+                $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            }
+            $clientevendedorArray = implode(",", $clientevendedorArray);
+            $sql= "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.telefono,cliente.email,
+            cliente.direccion,cliente.vendedor_id,cliente.contactonombre,cliente.formapago_id,
+            cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
+            clientebloqueado.descripcion
+            FROM cliente left JOIN clientebloqueado
+            ON cliente.id=clientebloqueado.cliente_id and isnull(cliente.deleted_at) and isnull(clientebloqueado.deleted_at)
+            WHERE cliente.rut='$request->rut'
+            and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))
+            and cliente.id in (select cliente_id from cliente_vendedor where cliente_vendedor.vendedor_id in ($clientevendedorArray));";
+            $cliente = DB::select($sql);
+            //dd($cliente);
+            $respuesta['cliente'] = $cliente;
+
+            $sql= "SELECT sucursal.id,sucursal.nombre
+            FROM cliente left JOIN cliente_sucursal
+            ON cliente.id=cliente_sucursal.cliente_id and cliente_sucursal.sucursal_id in ($sucurcadena) and isnull(cliente_sucursal.deleted_at)
+            INNER JOIN sucursal
+            ON cliente_sucursal.sucursal_id=sucursal.id and isnull(sucursal.deleted_at)
+            WHERE cliente.rut='$request->rut'
+            and isnull(cliente.deleted_at)
+            order by cliente_sucursal.sucursal_id";
+
+            $sucursales = DB::select($sql);
+            $respuesta['sucursales'] = $sucursales;
+            return $respuesta;
+        }
+    }
+
 }

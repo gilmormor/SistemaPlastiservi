@@ -498,13 +498,12 @@ $("#rut").blur(function(){
 			};
 			$.ajax({
 				//url: '/cliente/buscarCliId',
-				url: '/cliente/buscarCliRut',
+				url: '/cliente/buscarClixVenRut',
 				type: 'POST',
 				data: data,
 				success: function (respuesta) {
-					//console.log(respuesta.cliente[0].razonsocial);
 					//console.log(respuesta.sucursales);
-					if(respuesta.cliente.length>0){
+					if((respuesta.cliente) && respuesta.cliente.length>0){
 						/*
 						//VALIDACION CLIENTE BLOQUEADO DESABILITADA EL 17-05-2021 POR SOLICITUD DE CRISTIAN GORIGOITIA
 						if(respuesta[0]['descripcion']==null){
@@ -605,7 +604,7 @@ $("#rut").blur(function(){
 								if(respuesta.length>0){
 									swal({
 										title: 'Cliente pertenece a otro Vendedor',
-										text: respuesta.cliente[0].razonsocial,
+										text: respuesta.razonsocial,
 										icon: 'error',
 										buttons: {
 											confirm: "Aceptar"

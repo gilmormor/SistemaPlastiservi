@@ -181,6 +181,7 @@ Route::post('cliente/buscarClixId', 'ClienteController@buscarClixId')->name('bus
 Route::post('cliente/buscarClisinsuc', 'ClienteController@buscarClisinsuc')->name('buscarClisinsuc');
 Route::post('cliente/guardarclientetemp', 'ClienteController@guardarclientetemp')->name('guardarclientetemp');
 Route::post('cliente/buscarCliRut', 'ClienteController@buscarCliRut')->name('buscarCliRut');
+Route::post('cliente/buscarClixVenRut', 'ClienteController@buscarClixVenRut')->name('buscarClixVenRut_cliente');
 
 Route::get('cliente/clientebuscarpage', 'ClienteController@clientebuscarpage')->name('clientebuscarpage_cliente');
 Route::get('cliente/{id}/clientebuscarpage', 'ClienteController@clientebuscarpageid')->name('clientebuscarpageid_cliente');
