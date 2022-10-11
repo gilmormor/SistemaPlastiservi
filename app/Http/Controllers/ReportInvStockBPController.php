@@ -33,9 +33,8 @@ class ReportInvStockBPController extends Controller
                                     ->get();
         $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
-        $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-        return view('reportinvstockbp.index', compact('tablashtml','productos','selecmultprod'));
+        return view('reportinvstockbp.index', compact('tablashtml','selecmultprod'));
 
     }
     public function reportinvstockbppage(Request $request){

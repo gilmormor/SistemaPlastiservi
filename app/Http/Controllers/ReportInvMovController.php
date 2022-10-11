@@ -31,9 +31,8 @@ class ReportInvMovController extends Controller
         $tablashtml['sucursales'] = $sucursales;
         $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
         $tablashtml['invbodegas'] = InvBodega::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-        return view('reportinvmov.index', compact('tablashtml','productos','selecmultprod'));
+        return view('reportinvmov.index', compact('tablashtml','selecmultprod'));
     }
 
     public function reporte(Request $request){

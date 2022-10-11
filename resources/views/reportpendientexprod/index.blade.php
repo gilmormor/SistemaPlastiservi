@@ -6,10 +6,15 @@ Pendiente x Producto
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportpendientexprod/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script>
 @endsection
 
-
+<?php 
+    $selecmultprod = true;
+?>
 @section('contenido')
+<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
@@ -81,18 +86,6 @@ Pendiente x Producto
                                     <?php
                                         echo $tablashtml['vendedores'];
                                     ?>
-<!--
-                                    <select name="vendedor_id" id="vendedor_id" class="selectpicker form-control vendedor_id">
-                                        <option value="">Todos</option>
-                                        @foreach($vendedores1 as $vendedor)
-                                            <option
-                                                value="{{$vendedor->id}}"
-                                                >
-                                                {{$vendedor->nombre}} {{$vendedor->apellido}}
-                                            </option>
-                                        @endforeach
-                                    </select>
--->
                                 </div>
                             </div>
                         </div>
@@ -278,9 +271,9 @@ Pendiente x Producto
         </div>
     </div>
 </div>
-@include('generales.buscarcliente')
+@include('generales.buscarclientebdtemp')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproducto')
+@include('generales.buscarproductobdtemp')
 @include('generales.listarorddesp')
 @endsection

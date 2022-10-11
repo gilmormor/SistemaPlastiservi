@@ -31,9 +31,8 @@ class ReportInvStockController extends Controller
         $tablashtml['invbodegas'] = InvBodega::orderBy('id')->get();
         $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
-        $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-        return view('reportinvstock.index', compact('tablashtml','productos','selecmultprod'));
+        return view('reportinvstock.index', compact('tablashtml','selecmultprod'));
     }
 
     public function reportinvstockpage(Request $request){
