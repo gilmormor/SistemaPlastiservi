@@ -7,11 +7,15 @@ Stock Inventario
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportinvstock/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
 @endsection
 <?php
     use App\Models\CategoriaGrupoValMes;
     $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Y") . date("m"));
+    $selecmultprod = true;
 ?>
+<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
+
 @section('contenido')
 <input type="hidden" name="tipo" id="tipo" value="">
 <div class="row">
@@ -146,7 +150,7 @@ Stock Inventario
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data-consulta" data-page-length="25">
+                <table class="table table-striped table-bordered table-hover" id="tabla-data-invstock" data-page-length="25">
                     <thead>
                         <tr>
                             <th class="width70 tooltipsC" title="Codigo Producto" style='text-align:center'>Cod</th>
@@ -184,6 +188,5 @@ Stock Inventario
 </div>
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproducto')
-
+@include('generales.buscarproductobdtemp')
 @endsection

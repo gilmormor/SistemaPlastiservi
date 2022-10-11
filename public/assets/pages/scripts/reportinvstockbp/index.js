@@ -9,10 +9,10 @@ $(document).ready(function () {
 		todayHighlight: true
     }).datepicker("setDate");
 
-    configurarTabla('#tabla-data-consulta');
+    configurarTabla('#tabla-data-reporte-stockpicking');
 
     function configurarTabla(aux_tabla){
-        data = datos();
+        data = datosstockpicking();
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
@@ -87,21 +87,21 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
-        data = datos();
-        $('#tabla-data-consulta').DataTable().ajax.url( "reportinvstockbppage/" + data.data2 ).load();
+        data = datosstockpicking();
+        $('#tabla-data-reporte-stockpicking').DataTable().ajax.url( "reportinvstockbppage/" + data.data2 ).load();
         totalizar();
     });
 
 });
 
 function totalizar(){
-    let  table = $('#tabla-data-consulta').DataTable();
+    let  table = $('#tabla-data-reporte-stockpicking').DataTable();
     //console.log(table);
     table
         .on('draw', function () {
             eventFired( 'Page' );
         });
-    data = datos();
+    data = datosstockpicking();
     $.ajax({
         url: '/reportinvstockbp/totalizarindex/' + data.data2,
         type: 'GET',
@@ -115,7 +115,7 @@ function totalizar(){
 
 var eventFired = function ( type ) {
 	total = 0;
-	$("#tabla-data-consulta tr .subtotalkg").each(function() {
+	$("#tabla-data-reporte-stockpicking tr .subtotalkg").each(function() {
 		valor = $(this).attr('data-order') ;
 		valorNum = parseFloat(valor);
 		total += valorNum;
@@ -123,7 +123,7 @@ var eventFired = function ( type ) {
     $("#subtotalkg").html(MASKLA(total,2))
 }
 
-function datos(){
+function datosstockpicking(){
     var data1 = {
         mesanno           : $("#annomes").val(),
         sucursal_id       : $("#sucursal_id").val(),
@@ -150,8 +150,10 @@ function datos(){
 }
 
 $("#btnbuscarproducto").click(function(event){
-    //$(this).val("");
+    $(this).val("");
     $(".input-sm").val('');
+    data = datos();
+    $('#tabla-data-productos').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();
     aux_id = $("#producto_idPxP").val();
     if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
         $("#divprodselec").hide();
@@ -164,8 +166,9 @@ $("#btnbuscarproducto").click(function(event){
         }
         $("#divprodselec").show();
     }
-    $("#myModalBuscarProd").modal('show');
+    $('#myModalBuscarProd').modal('show');
 });
+
 
 function copiar_codprod(id,codintprod){
     $("#myModalBuscarProd").modal('hide');
@@ -180,7 +183,7 @@ function copiar_codprod(id,codintprod){
 }
 
 $("#btnpdf").click(function(event){
-    data = datos();
+    data = datosstockpicking();
     //alert(cadena);
     $('#contpdf').attr('src', '/reportinvstockbp/exportPdf/'+data.data2);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');

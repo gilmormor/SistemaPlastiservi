@@ -7,12 +7,15 @@ Movimiento de Inventario
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportinvmov/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
 @endsection
 
 <?php
     use App\Models\CategoriaGrupoValMes;
     $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Y") . date("m"));
+    $selecmultprod = true;
 ?>
+<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
 
 @section('contenido')
 
@@ -159,7 +162,7 @@ Movimiento de Inventario
             </div>
 
             <div class="table-responsive">
-                <table class="table display AllDataTables table-condensed table-hover" id="tabla-data-consulta">
+                <table class="table display AllDataTables table-condensed table-hover" id="tabla-data-invmov">
                     <thead>
                         <tr>
                             <th class='tooltipsC' title='Id MovInv'>ID</th>
@@ -191,5 +194,5 @@ Movimiento de Inventario
 </div>
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproducto')
+@include('generales.buscarproductobdtemp')
 @endsection

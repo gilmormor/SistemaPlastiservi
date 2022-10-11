@@ -9,10 +9,10 @@ $(document).ready(function () {
 		todayHighlight: true
     }).datepicker("setDate");
 
-    configurarTabla('#tabla-data-consulta');
+    configurarTabla('#tabla-data-invstock');
 
     function configurarTabla(aux_tabla){
-        data = datos();
+        data = datosinvstock();
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
@@ -85,26 +85,25 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
-        data = datos();
-        $('#tabla-data-consulta').DataTable().ajax.url( "invcontrolpage/" + data.data2 ).load();
+        data = datosinvstock();
+        $('#tabla-data-invstock').DataTable().ajax.url( "invcontrolpage/" + data.data2 ).load();
         totalizar();
     });
 
 });
 
 function totalizar(){
-    let  table = $('#tabla-data-consulta').DataTable();
+    let  table = $('#tabla-data-invstock').DataTable();
     //console.log(table);
     table
         .on('draw', function () {
             eventFired( 'Page' );
         });
-    data = datos();
+    data = datosinvstock();
     $.ajax({
         url: '/reportinvstock/totalizarindex/' + data.data2,
         type: 'GET',
         success: function (datos) {
-            console.log(datos);
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
@@ -113,7 +112,7 @@ function totalizar(){
 
 var eventFired = function ( type ) {
 	total = 0;
-	$("#tabla-data-consulta tr .subtotalkg").each(function() {
+	$("#tabla-data-invstock tr .subtotalkg").each(function() {
 		valor = $(this).attr('data-order') ;
 		valorNum = parseFloat(valor);
 		total += valorNum;
@@ -121,7 +120,7 @@ var eventFired = function ( type ) {
     $("#subtotalkg").html(MASKLA(total,2))
 }
 
-function datos(){
+function datosinvstock(){
     var data1 = {
         mesanno           : $("#annomes").val(),
         sucursal_id       : $("#sucursal_id").val(),
@@ -148,8 +147,10 @@ function datos(){
 }
 
 $("#btnbuscarproducto").click(function(event){
-    //$(this).val("");
+    $(this).val("");
     $(".input-sm").val('');
+    data = datosinvstock();
+    $('#tabla-data-productos').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();
     aux_id = $("#producto_idPxP").val();
     if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
         $("#divprodselec").hide();
@@ -162,8 +163,9 @@ $("#btnbuscarproducto").click(function(event){
         }
         $("#divprodselec").show();
     }
-    $("#myModalBuscarProd").modal('show');
+    $('#myModalBuscarProd').modal('show');
 });
+
 
 function copiar_codprod(id,codintprod){
     $("#myModalBuscarProd").modal('hide');
@@ -178,7 +180,7 @@ function copiar_codprod(id,codintprod){
 }
 
 $("#btnpdf").click(function(event){
-    data = datos();
+    data = datosinvstock();
     //alert(cadena);
     $('#contpdf').attr('src', '/reportinvstock/exportPdf/'+data.data2);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');

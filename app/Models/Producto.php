@@ -125,7 +125,7 @@ class Producto extends Model
             $cliente_idCond = " TRUE ";
         }
         $users = Usuario::findOrFail(auth()->id());
-        if($request->sucursal_id and $request->sucursal_id !=  "undefined"){
+        if(($request->sucursal_id and $request->sucursal_id !=  "undefined") and ($request->sucursal_id != "x")){
             $sucurArray = [$request->sucursal_id];
         }else{
             $sucurArray = $users->sucursales->pluck('id')->toArray();
