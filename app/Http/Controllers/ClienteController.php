@@ -727,7 +727,6 @@ class ClienteController extends Controller
             WHERE cliente.rut='$request->rut'
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))
             and cliente.id in (select cliente_id from cliente_vendedor where cliente_vendedor.cliente_id in ($clientevendedorArray));";
-            dd($sql);
             $cliente = DB::select($sql);
             //dd($cliente);
             $respuesta['cliente'] = $cliente;
