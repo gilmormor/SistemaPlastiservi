@@ -703,21 +703,11 @@ class ClienteController extends Controller
             //dd($sucurArray);
             $sucurcadena = implode(",", $sucurArray);
 
-            $sql= 'SELECT COUNT(*) AS contador
-            FROM vendedor INNER JOIN persona
-            ON vendedor.persona_id=persona.id
-            INNER JOIN usuario 
-            ON persona.usuario_id=usuario.id
-            WHERE usuario.id=' . auth()->id();
-            $counts = DB::select($sql);
-            $vendedor_id = '0';
-            if($counts[0]->contador>0){
+            $aux_clientesvendedorCond = " true ";
+            if(isset($user->persona->vendedor)){
                 $vendedor_id=$user->persona->vendedor->id;
-                $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-            }else{
-                $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+                $aux_clientesvendedorCond = "cliente.id in (SELECT cliente_id from cliente_vendedor where cliente_vendedor.vendedor_id = $vendedor_id)";
             }
-            $clientevendedorArray = implode(",", $clientevendedorArray);
             $sql= "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.telefono,cliente.email,
             cliente.direccion,cliente.vendedor_id,cliente.contactonombre,cliente.formapago_id,
             cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
@@ -726,7 +716,7 @@ class ClienteController extends Controller
             ON cliente.id=clientebloqueado.cliente_id and isnull(cliente.deleted_at) and isnull(clientebloqueado.deleted_at)
             WHERE cliente.rut='$request->rut'
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))
-            and cliente.id in (select cliente_id from cliente_vendedor where cliente_vendedor.cliente_id in ($clientevendedorArray));";
+            and $aux_clientesvendedorCond;";
             $cliente = DB::select($sql);
             //dd($cliente);
             $respuesta['cliente'] = $cliente;
