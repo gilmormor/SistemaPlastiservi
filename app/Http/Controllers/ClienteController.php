@@ -726,7 +726,8 @@ class ClienteController extends Controller
             ON cliente.id=clientebloqueado.cliente_id and isnull(cliente.deleted_at) and isnull(clientebloqueado.deleted_at)
             WHERE cliente.rut='$request->rut'
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))
-            and cliente.id in (select cliente_id from cliente_vendedor where cliente_vendedor.vendedor_id in ($clientevendedorArray));";
+            and cliente.id in (select cliente_id from cliente_vendedor where cliente_vendedor.cliente_id in ($clientevendedorArray));";
+            dd($sql);
             $cliente = DB::select($sql);
             //dd($cliente);
             $respuesta['cliente'] = $cliente;
