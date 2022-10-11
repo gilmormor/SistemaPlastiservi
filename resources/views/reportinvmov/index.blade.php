@@ -15,10 +15,8 @@ Movimiento de Inventario
     $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Y") . date("m"));
     $selecmultprod = true;
 ?>
-<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
-
 @section('contenido')
-
+<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')

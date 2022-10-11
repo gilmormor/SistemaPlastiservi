@@ -14,8 +14,8 @@ Stock Inventario
     $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Y") . date("m"));
     $selecmultprod = true;
 ?>
-<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
 @section('contenido')
+<input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
 <input type="hidden" name="tipobodega" id="tipobodega" value="1,2">
 <div class="row">
     <div class="col-lg-12">
@@ -171,5 +171,4 @@ Stock Inventario
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.buscarproductobdtemp')
-
 @endsection
