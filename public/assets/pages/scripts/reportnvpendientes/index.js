@@ -14,15 +14,15 @@ $(document).ready(function () {
         }
 	});
 */
-    //consultar(datos());
+    //consultar(datosNVPend());
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datosNVPend());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf(datos());
+        consultarpdf(datosNVPend());
     });
 
     //alert(aux_nfila);
@@ -93,7 +93,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datos(){
+function datosNVPend(){
     var data = {
         id                : $("#id").val(),
         fechad            : $("#fechad").val(),
@@ -107,6 +107,7 @@ function datos(){
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
+        producto_idPxP    : $("#producto_idPxP").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -223,4 +224,41 @@ function visto(id,visto){
     };
     var ruta = '/notaventa/visto/' + id;
     ajaxRequest(data,ruta,'vistonotaventa');
+}
+
+$("#btnbuscarproducto").click(function(event){
+    $(this).val("");
+    $(".input-sm").val('');
+    data = datos();
+    $('#tabla-data-productos').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+    $('#myModalBuscarProd').modal('show');
+});
+$("#btnbuscarcliente").click(function(event){
+    $("#rut").val("");
+    $(".input-sm").val('');
+    $("#myModalBusqueda").modal('show');
+});
+
+function copiar_codprod(id,codintprod){
+    $("#myModalBuscarProd").modal('hide');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#producto_idPxP").val(id);
+    }else{
+        $("#producto_idPxP").val(aux_id + "," + id);
+    }
+	//$("#producto_idM").blur();
+	$("#producto_idPxP").focus();
 }

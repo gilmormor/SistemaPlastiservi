@@ -24,31 +24,12 @@ class ReportClientesController extends Controller
     public function index()
     {
         can('reporte-clientes');
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
-
-        $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $clientevendedorArray = $arrayvend['clientevendedorArray'];
-
-        /*
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        // Filtro solos los clientes que esten asignados a la sucursal y asignado al vendedor logueado
-        $clientes = Cliente::select(['cliente.id','cliente.rut','cliente.razonsocial','cliente.direccion','cliente.telefono'])
-        ->whereIn('cliente.id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->whereIn('cliente.id',$clientevendedorArray)
-        ->get();
-        */
- 
         $giros = Giro::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
 
-        return view('reportclientes.index',compact('clientes','giros','fechaAct','tablashtml'));
+        return view('reportclientes.index',compact('giros','fechaAct','tablashtml'));
     }
 
     public function reporte(Request $request){

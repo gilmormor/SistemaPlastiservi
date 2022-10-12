@@ -25,17 +25,11 @@ class CotizacionConsultaController extends Controller
     public function index()
     {
         can('consulta-cotizacion');
-        $user = Usuario::findOrFail(auth()->id());
-
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-
         $fechaServ = ['fechaAct' => date("d/m/Y"),
                     'fecha1erDiaMes' => date("01/m/Y")
                     ];
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-
-        return view('cotizacionconsulta.index', compact('datas','clientes','fechaServ','tablashtml'));
+        return view('cotizacionconsulta.index', compact('datas','fechaServ','tablashtml'));
     }
 
     /**

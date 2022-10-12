@@ -26,26 +26,15 @@ class ReportProdPendSolDespController extends Controller
     public function index()
     {
         can('producto-pendiente-soldesp');
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
-
-        $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $vendedores1 = $arrayvend['vendedores'];
-        $clientevendedorArray = $arrayvend['clientevendedorArray'];
-        $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
-        $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        return view('reportprodpendsoldesp.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos','selecmultprod','tablashtml'));
+        return view('reportprodpendsoldesp.index', compact('giros','areaproduccions','tipoentregas','comunas','fechaAct','selecmultprod','tablashtml'));
     
     }
     public function reporte(Request $request){

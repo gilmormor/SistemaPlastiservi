@@ -8,6 +8,7 @@
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/despachoordrec/consulta.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/despachoordrec/indexguiafact.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -292,7 +293,7 @@
         </div>
     </div>
 </div>
-@include('generales.buscarcliente')
+@include('generales.buscarclientebdtemp')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.despachoguia')

@@ -587,6 +587,7 @@ Route::post('reportorddespguiafact/reporte', 'ReportOrdDespGuiaFactController@re
 Route::get('reportorddespguiafact/exportPdf', 'ReportOrdDespGuiaFactController@exportPdf')->name('reportorddespguiafact_exportPdf');
 Route::get('reportorddespguiafact/indexupdateguiafact', 'ReportOrdDespGuiaFactController@indexupdateguiafact')->name('indexupdateguiafact');
 
+Route::get('updateguiafact', 'UpdateGuiaFactController@index')->name('updateguiafact');
 
 /*RUTAS REPORTE ORDEN DESPACHO CERRADAS*/
 Route::get('reportorddespcerrada', 'ReportOrdDespCerradaController@index')->name('reportorddespcerrada');
@@ -759,7 +760,7 @@ Route::post('despachoordrec', 'DespachoOrdRecController@guardar')->name('guardar
 Route::get('despachoordrec/{id}/editar', 'DespachoOrdRecController@editar')->name('editar_despachoordrec');
 Route::put('despachoordrec/{id}', 'DespachoOrdRecController@actualizar')->name('actualizar_despachoordrec');
 Route::delete('despachoordrec/{id}', 'DespachoOrdRecController@eliminar')->name('eliminar_despachoordrec');
-Route::get('despachoordrec/consultadespordfact', 'DespachoOrdRecController@consultadespordfact')->name('consultadespordfact_despachoordrec');
+//Route::get('despachoordrec/consultadespordfact', 'DespachoOrdRecController@consultadespordfact')->name('consultadespordfact_despachoordrec');
 Route::get('despachoordrec/reporte', 'DespachoOrdRecController@reporte')->name('reporte_despachoordrec');
 Route::get('despachoordrec/crearrec/{id}', 'DespachoOrdRecController@crearrec')->name('crearrec_despachoordrec');
 Route::post('despachoordrec/{id}/anular', 'DespachoOrdRecController@anular')->name('anular_despachoordrec');
@@ -767,6 +768,7 @@ Route::get('despachoordrec/{id}/{stareport}/exportPdf', 'DespachoOrdRecControlle
 Route::post('despachoordrec/valNCCerrada', 'DespachoOrdRecController@valNCCerrada')->name('valNCCerrada_despachoordrec');
 Route::post('despachoordrec/enviaraprorecod', 'DespachoOrdRecController@enviaraprorecod')->name('enviaraprorecod_despachoordrec');
 Route::post('despachoordrec/aprorecod', 'DespachoOrdRecController@aprorecod')->name('aprorecod_despachoordrec');
+Route::get('consultadespordfact', 'DespachoOrdRecController@consultadespordfact')->name('consultadespordfact');
 
 /*RUTAS Aprobar Rechazo Orden Despacho*/
 Route::get('despachoordrecapr', 'DespachoOrdRecAprController@index')->name('despachoordrecapr');

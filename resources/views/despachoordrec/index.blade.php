@@ -20,7 +20,7 @@ Rechazo Orden de Despacho
                 @if ( $pantalla==0 )
                     <h3 class="box-title">Rechazo Orden de Despacho</h3>
                     <div class="box-tools pull-right">
-                        <a href="{{route('consultadespordfact_despachoordrec')}}" class="btn btn-block btn-success btn-sm">
+                        <a href="{{route('consultadespordfact')}}" class="btn btn-block btn-success btn-sm">
                             <i class="fa fa-fw fa-plus-circle"></i> Crear Rechazo
                         </a>
                     </div>

@@ -113,6 +113,7 @@ function consultarpdf(fechad,fechah){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    $(".input-sm").val('');
     $("#myModalBusqueda").modal('show');
 });
 

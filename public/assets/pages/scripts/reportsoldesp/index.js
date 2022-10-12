@@ -14,15 +14,15 @@ $(document).ready(function () {
         }
 	});
 */
-    //consultar(datos());
+    //consultar(datosSolDesp());
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datosSolDesp());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf(datos());
+        consultarpdf(datosSolDesp());
     });
 
     //alert(aux_nfila);
@@ -95,7 +95,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datos(){
+function datosSolDesp(){
     var data = {
         id                : $("#id").val(),
         fechad            : $("#fechad").val(),
@@ -208,6 +208,7 @@ $("#rut").blur(function(){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    $(".input-sm").val('');
     $("#myModalBusqueda").modal('show');
 });
 

@@ -28,17 +28,17 @@ $(document).ready(function () {
 
     $("#btnconsultarpage").click(function()
     {
-        consultarpage(datos());
+        consultarpage(datosOrdDesp());
     });
 
     $("#btnpdf").click(function()
     {
-        btnpdf(datos());
+        btnpdf(datosOrdDesp());
     });
 
 });
 
-function datos(){
+function datosOrdDesp(){
     var data1 = {
         id                : $("#id").val(),
         fechad            : $("#fechad").val(),
@@ -143,6 +143,7 @@ $("#rut").blur(function(){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    $(".input-sm").val('');
     $("#myModalBusqueda").modal('show');
 });
 
@@ -318,8 +319,10 @@ var eventFired = function ( type ) {
 }
 
 $("#btnbuscarproducto").click(function(event){
-    //$(this).val("");
+    $(this).val("");
     $(".input-sm").val('');
+    data = datos();
+    $('#tabla-data-productos').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();
     aux_id = $("#producto_idPxP").val();
     if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
         $("#divprodselec").hide();
@@ -332,7 +335,7 @@ $("#btnbuscarproducto").click(function(event){
         }
         $("#divprodselec").show();
     }
-    $("#myModalBuscarProd").modal('show');
+    $('#myModalBuscarProd').modal('show');
 });
 
 function copiar_codprod(id,codintprod){

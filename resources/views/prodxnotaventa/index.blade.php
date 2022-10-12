@@ -7,7 +7,7 @@ Productos Notas de Venta
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/prodxnotaventa/index.js")}}" type="text/javascript"></script>
-
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -163,5 +163,5 @@ Productos Notas de Venta
         </div>
     </div>
 </div>
-@include('generales.buscarcliente')
+@include('generales.buscarclientebdtemp')
 @endsection

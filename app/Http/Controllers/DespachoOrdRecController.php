@@ -380,23 +380,19 @@ class DespachoOrdRecController extends Controller
     }
 
     public function consultadespordfact(Request $request){
-        $respuesta = cargadatos();
-        $clientes = $respuesta['clientes'];
-        $tablashtml['giros'] = $respuesta['giros'];
-        $tablashtml['areaproduccions'] = $respuesta['areaproduccions'];
-        $tablashtml['tipoentregas'] = $respuesta['tipoentregas'];
+        $tablashtml['giros'] = Giro::orderBy('id')->get();
+        $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
+        $tablashtml['tipoentregas'] = TipoEntrega::orderBy('id')->get();
         $tablashtml['fechaServ'] = [
-                    'fecha1erDiaMes' => $respuesta['fecha1erDiaMes'],
-                    'fechaAct' => $respuesta['fechaAct']
+                    'fecha1erDiaMes' => date("01/m/Y"),
+                    'fechaAct' => date("d/m/Y")
                     ];
-
         $tablashtml['aux_verestado']='1'; //Mostrar todas los opciopnes de estado de OD
-
         $tablashtml['titulo'] = "Consultar Orden Despacho, Guia, Factura, cerrada";
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
         $tablashtml['rutacrearrec'] = route('crearrec_despachoordrec', ['id' => '0']);
-        return view('despachoordrec.consulta', compact('clientes','tablashtml'));
+        return view('despachoordrec.consulta', compact('tablashtml'));
     }
 
     public function reporte(Request $request){

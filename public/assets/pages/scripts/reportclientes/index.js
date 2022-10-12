@@ -1,14 +1,14 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-    //consultar(datos());
+    //consultar(datosRepCli());
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datosRepCli());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf(datos());
+        consultarpdf(datosRepCli());
     });
 
     //alert(aux_nfila);
@@ -94,7 +94,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datos(){
+function datosRepCli(){
     var data = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -185,8 +185,10 @@ $("#rut").blur(function(){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    $(".input-sm").val('');
     $("#myModalBusqueda").modal('show');
 });
+
 
 function copiar_rut(id,rut){
 	$("#myModalBusqueda").modal('hide');
@@ -195,11 +197,8 @@ function copiar_rut(id,rut){
 	$("#rut").blur();
 }
 
-
-
-
 $("#btnpdf").click(function(event){
-    data = datos();
+    data = datosRepCli();
     cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
             "&rut=" + data.rut + "&giro_id="+data.giro_id +
             "&comuna_id="+data.comuna_id + "&bloqueado="+data.bloqueado +

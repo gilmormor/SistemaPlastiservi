@@ -14,15 +14,15 @@ $(document).ready(function () {
         }
 	});
 */
-    //consultar(datos());
+    //consultar(datosGuiaFact());
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datosGuiaFact());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf(datos());
+        consultarpdf(datosGuiaFact());
     });
 
     //alert(aux_nfila);
@@ -92,7 +92,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datos(){
+function datosGuiaFact(){
     var data = {
         id                : $("#id").val(),
         fechad            : $("#fechad").val(),
@@ -213,6 +213,7 @@ $("#rut").blur(function(){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    $(".input-sm").val('');
     $("#myModalBusqueda").modal('show');
 });
 
@@ -235,14 +236,14 @@ function visto(id,visto){
 
 $("#btnpdf").click(function()
 {
-    var data = datos();
+    var data = datosGuiaFact();
     $.ajax({
         url: '/indicadores/imagengrafico',
         type: 'POST',
         data: data,
         success: function (respuesta) {
             aux_titulo = "Orden Despacho";
-            data = datos();
+            data = datosGuiaFact();
             cadena = "?id=" +
                     "&fechad="+data.fechad+"&fechah="+data.fechah +
                     "&fechadfac="+data.fechadfac+"&fechahfac="+data.fechahfac +
@@ -271,8 +272,10 @@ $("#btnpdf").click(function()
 });
 
 $("#btnbuscarproducto").click(function(event){
-    //$(this).val("");
+    $(this).val("");
     $(".input-sm").val('');
+    data = datos();
+    $('#tabla-data-productos').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();
     aux_id = $("#producto_idPxP").val();
     if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
         $("#divprodselec").hide();
@@ -285,8 +288,9 @@ $("#btnbuscarproducto").click(function(event){
         }
         $("#divprodselec").show();
     }
-    $("#myModalBuscarProd").modal('show');
+    $('#myModalBuscarProd').modal('show');
 });
+
 
 function copiar_codprod(id,codintprod){
     $("#myModalBuscarProd").modal('hide');

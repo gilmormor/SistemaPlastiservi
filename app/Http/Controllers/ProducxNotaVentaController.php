@@ -27,26 +27,16 @@ class ProducxNotaVentaController extends Controller
     public function index()
     {
         can('reporte-productos-x-nota-venta');
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
-
-        
-        $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $clientevendedorArray = $arrayvend['clientevendedorArray'];
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
-
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $fechaServ = [
                     'fechaAct' => date("d/m/Y"),
                     'fecha1erDiaMes' => date("01/m/Y")
                     ];
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        return view('prodxnotaventa.index', compact('clientes','giros','categoriaprods','areaproduccions','fechaServ','tablashtml'));
+        return view('prodxnotaventa.index', compact('giros','categoriaprods','areaproduccions','fechaServ','tablashtml'));
     }
-
     
     public function reporte(Request $request){
         $respuesta = array();

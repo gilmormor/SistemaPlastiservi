@@ -12,16 +12,16 @@ $(document).ready(function () {
     });
     $("#btnconsultarpage").click(function()
     {
-        consultarpage(datos());
+        consultarpage(datosOrdDespPrec());
     });
     $("#btnpdf").click(function()
     {
-        btnpdf(datos());
+        btnpdf(datosOrdDespPrec());
     });
 
 });
 
-function datos(){
+function datosOrdDespPrec(){
     var data1 = {
         id                : $("#id").val(),
         fechad            : $("#fechad").val(),
@@ -146,9 +146,9 @@ $("#rut").blur(function(){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    $(".input-sm").val('');
     $("#myModalBusqueda").modal('show');
 });
-
 function copiar_rut(id,rut){
 	$("#myModalBusqueda").modal('hide');
 	$("#rut").val(rut);

@@ -17,12 +17,12 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datosProdxNV());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf(datos());
+        consultarpdf(datosProdxNV());
     });
 
     //alert(aux_nfila);
@@ -40,7 +40,7 @@ $(document).ready(function () {
 
 });
 
-function datos(){
+function datosProdxNV(){
     var data = {
         fechad: $("#fechad").val(),
         fechah: $("#fechah").val(),
@@ -126,9 +126,9 @@ function consultarpdf(data){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    $(".input-sm").val('');
     $("#myModalBusqueda").modal('show');
 });
-
 function copiar_rut(id,rut){
 	$("#myModalBusqueda").modal('hide');
 	$("#rut").val(rut);

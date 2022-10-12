@@ -25,23 +25,13 @@ class ReportNVPendientesController extends Controller
     public function index()
     {
         can('reporte-notas-de-ventas-pendientes');
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
-
-        
-        $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
-        $clientevendedorArray = $arrayvend['clientevendedorArray'];
-
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
         $fechaAct = date("d/m/Y");
-
-        return view('reportnvpendientes.index', compact('clientes','giros','areaproduccions','tipoentregas','tablashtml','fechaAct'));
+        return view('reportnvpendientes.index', compact('giros','areaproduccions','tipoentregas','tablashtml','fechaAct'));
     }
 
     public function reporte(Request $request){

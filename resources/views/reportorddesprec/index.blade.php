@@ -7,6 +7,7 @@ Rechazo Orden Despacho
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportorddesprec/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -274,7 +275,7 @@ Rechazo Orden Despacho
         </div>
     </div>
 </div>
-@include('generales.buscarcliente')
+@include('generales.buscarclientebdtemp')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @endsection

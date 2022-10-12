@@ -33,7 +33,6 @@ class ReportOrdDespGuiaFactController extends Controller
         //can('listar-despacho-consulta-guia-factura-cerradas');
         can('reporte-orden-despacho,-guia,-factura,-cerrada');
         $respuesta = cargadatos();
-        $clientes = $respuesta['clientes'];
         $giros = $respuesta['giros'];
         $areaproduccions = $respuesta['areaproduccions'];
         $tipoentregas = $respuesta['tipoentregas'];
@@ -47,10 +46,9 @@ class ReportOrdDespGuiaFactController extends Controller
         $titulo = "Consultar Orden Despacho, Guia, Factura, cerrada";
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
 
-        return view('reportorddespguiafact.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaServ','aux_verestado','titulo','tablashtml','productos','selecmultprod'));
+        return view('reportorddespguiafact.index', compact('giros','areaproduccions','tipoentregas','fechaServ','aux_verestado','titulo','tablashtml','selecmultprod'));
 
     }
 
@@ -58,31 +56,32 @@ class ReportOrdDespGuiaFactController extends Controller
     {
         can('listar-despacho-consulta-cerradas');
         $respuesta = cargadatos();
-        $clientes = $respuesta['clientes'];
-        $vendedores = $respuesta['vendedores'];
-        $vendedores1 = $respuesta['vendedores1'];
         $giros = $respuesta['giros'];
         $areaproduccions = $respuesta['areaproduccions'];
         $tipoentregas = $respuesta['tipoentregas'];
-        $comunas = $respuesta['comunas'];
         $fechaAct = $respuesta['fechaAct'];
-
         $aux_verestado='2'; //Mostrar solo opcion orddesp cerradas
         $titulo = "Consultar Orden Despacho Cerradas";
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-
-        return view('reportorddespguiafact.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','aux_verestado','titulo','tablashtml'));
+        return view('reportorddespguiafact.index', compact('giros','areaproduccions','tipoentregas','fechaAct','aux_verestado','titulo','tablashtml'));
 
     }
+
+    public function productobuscarpage(Request $request){
+        $datas = Producto::productosxClienteTemp($request);
+        return datatables($datas)->toJson();
+    }
+    public function clientebuscarpage(){
+        $datas = Cliente::clientesxUsuarioSQLTemp();
+        return datatables($datas)->toJson();
+    }
+
 
     public function indexupdateguiafact()
     {
         can('listar-despacho-cerradas-edit-guia-fact');
         $respuesta = cargadatos();
-        $clientes = $respuesta['clientes'];
-        $vendedores = $respuesta['vendedores'];
-        $vendedores1 = $respuesta['vendedores1'];
         $giros = $respuesta['giros'];
         $areaproduccions = $respuesta['areaproduccions'];
         $tipoentregas = $respuesta['tipoentregas'];
@@ -93,10 +92,8 @@ class ReportOrdDespGuiaFactController extends Controller
         $titulo = "Editar Número Guia o Factura";
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-
-        return view('reportorddespguiafact.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaAct','aux_verestado','titulo','tablashtml','productos','selecmultprod'));
+        return view('reportorddespguiafact.index', compact('giros','areaproduccions','tipoentregas','fechaAct','aux_verestado','titulo','tablashtml','selecmultprod'));
     }
 
     public function reporte(Request $request){

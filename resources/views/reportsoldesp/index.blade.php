@@ -7,6 +7,7 @@ Solicitud Despacho
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportsoldesp/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -210,7 +211,7 @@ Solicitud Despacho
         </div>
     </div>
 </div>
-@include('generales.buscarcliente')
+@include('generales.buscarclientebdtemp')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.listarorddesp')
