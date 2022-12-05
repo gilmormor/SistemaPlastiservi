@@ -590,6 +590,7 @@ $("#oc_id").blur(function(){
 	if(aux_ocid != "" ){
 		var data = {
 			oc_id: $("#oc_id").val(),
+			cliente_rut: eliminarFormatoRutret($("#rut").val()),
 			_token: $('input[name=_token]').val()
 		};
 		$.ajax({
@@ -598,18 +599,36 @@ $("#oc_id").blur(function(){
 			data: data,
 			success: function (respuesta) {
 				if(respuesta.mensaje == 'ok'){
-					swal({
-						title: 'Orden de compra N°.' +data.oc_id+ ' ya existe.',
-						text: "",
-						icon: 'error',
-						buttons: {
-							confirm: "Aceptar"
-						},
-					}).then((value) => {
-						if (value) {
-							//$("#oc_id").focus();
-						}
-					});
+					if(respuesta.mismocliente == 1){
+						swal({
+							title: 'Orden de compra Nro.' +data.oc_id+ ' no puede ser usada.',
+							text: "OC usada por el mismo cliente en Nota de Venta Nro:" + respuesta.notaventa_id,
+							icon: 'error',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								//$("#oc_id").focus();
+							}
+						});	
+						$("#oc_id").focus();
+						$("#oc_id").val("");
+					}else{
+						swal({
+							title: 'Orden de compra Nro.' +data.oc_id+ ' usada en otra NV.',
+							text: "Nro OC usada en Nota de Venta Nro:" + respuesta.notaventa_id + ' Cliente: ' + respuesta.cliente_nombre,
+							icon: 'info',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								//$("#oc_id").focus();
+							}
+						});	
+
+					}
 				
 				}
 			}
@@ -858,6 +877,7 @@ function limpiarCampos(){
 	$("#neto").val('');
 	$("#iva").val('');
 	$("#total").val('');
+	$("#oc_id").val('');
 	totalizar();
 }
 

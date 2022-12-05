@@ -1135,17 +1135,36 @@ class NotaVentaController extends Controller
 
     public function buscaroc_id(Request $request)
     {
-        //dd($request);
         if ($request->ajax()) {
-            $notaventa = NotaVenta::where('oc_id' ,'=',$request->oc_id)->get();
-            if(count($notaventa) > 0){
+            $notaventa = NotaVenta::where('oc_id' ,'=',$request->oc_id)
+                        ->where('oc_id' ,'=',$request->oc_id)->get();
+
+            $sql = "SELECT notaventa.*
+                FROM notaventa INNER JOIN cliente
+                ON notaventa.cliente_id = cliente.id and isnull(notaventa.deleted_at)  and isnull(cliente.deleted_at)
+                WHERE notaventa.oc_id = $request->oc_id and cliente.rut = '$request->cliente_rut'
+                AND isnull(notaventa.anulada);";
+            $datas = DB::select($sql);
+            if(count($datas) > 0){
                 return response()->json(['mensaje' => 'ok',
-                'Mensaje' => 'Encontrado'
+                'Mensaje' => 'Encontrado',
+                'notaventa_id' => $datas[0]->id,
+                'mismocliente' => 1,
                ]);
             }else{
-                return response()->json(['mensaje' => 'no',
-                'Mensaje' => 'Orden de compra no existe.'
-               ]);
+                if(count($notaventa)>0){
+                    $cliente = Cliente::findOrFail($notaventa[0]->cliente_id);
+                    return response()->json(['mensaje' => 'ok',
+                    'Mensaje' => 'Encontrado',
+                    'notaventa_id' => $notaventa[0]->id,
+                    'cliente_nombre' => $cliente->razonsocial,
+                    'mismocliente' => 0,
+                    ]);
+                }else{
+                    return response()->json(['mensaje' => 'no',
+                    'Mensaje' => 'Orden de compra no existe.'
+                   ]);        
+                }
             }
         }
     }
