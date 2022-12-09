@@ -33,7 +33,7 @@ $(document).ready(function () {
     $("#rut").focus(function(){
         eliminarFormatoRut($(this));
     });
-
+    tablascolsultainv($("#sucursal_id").val());
 });
 
 
@@ -225,3 +225,33 @@ $("#btnpdf").click(function(event){
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 });
+
+$("#sucursal_id").change(function(){
+    tablascolsultainv($("#sucursal_id").val());
+});
+
+
+function tablascolsultainv(id){
+    $("#invbodega_id").empty();
+    if((id == "" || id == "0" || id == "x") == false){
+        var data = {
+            id: id,
+            _token: $('input[name=_token]').val()
+        };
+        //console.log(data);
+        
+        $.ajax({
+            url: '/sucursal/tablascolsultainv',
+            type: 'POST',
+            data: data,
+            success: function (respuesta) {
+                $.each(respuesta.invbodegas, function(index,value){
+                    $("#invbodega_id").append("<option value='" + value.id + "'>" + value.nombre + "</option>")
+                });
+                $(".selectpicker").selectpicker('refresh');
+            }
+        });    
+    }else{
+        $(".selectpicker").selectpicker('refresh');
+    }
+}

@@ -76,6 +76,7 @@ $(document).ready(function () {
         $('#tabla-data-consulta').DataTable().ajax.url( "reportinvstockvendpage/" + data.data2 ).load();
         totalizar();
     });
+    tablascolsultainv($("#sucursal_id").val());
 
 });
 
@@ -91,7 +92,6 @@ function totalizar(){
         url: '/reportinvstock/totalizarindex/' + data.data2,
         type: 'GET',
         success: function (datos) {
-            console.log(datos);
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
@@ -171,3 +171,33 @@ $("#btnpdf").click(function(event){
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 });
+
+$("#sucursal_id").change(function(){
+    tablascolsultainv($("#sucursal_id").val());
+});
+
+
+function tablascolsultainv(id){
+    $("#categoriaprod_id").empty();
+    if((id == "" || id == "x") == false){
+        var data = {
+            id: id,
+            _token: $('input[name=_token]').val()
+        };
+        //console.log(data);
+        
+        $.ajax({
+            url: '/sucursal/tablascolsultainv',
+            type: 'POST',
+            data: data,
+            success: function (respuesta) {
+                $.each(respuesta.categoria, function(index,value){
+                    $("#categoriaprod_id").append("<option value='" + value.id + "'>" + value.nombre + "</option>")
+                });
+                $(".selectpicker").selectpicker('refresh');
+            }
+        });    
+    }else{
+        $(".selectpicker").selectpicker('refresh');
+    }
+}

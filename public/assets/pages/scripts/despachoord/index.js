@@ -25,6 +25,7 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
+            {data: 'obsdevolucion',className:"ocultar"},
             {data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
@@ -41,6 +42,13 @@ $(document).ready(function () {
                     + data.id +
                 "</a>";
             $('td', row).eq(0).html(aux_text);
+            if(data.obsdevolucion !=""){
+                aux_text =
+                    "<a class='btn-sm tooltipsC' title='" + data.obsdevolucion + "'>" +
+                        "<i class='fa fa-fw fa-question-circle text-red'></i>" + 
+                    "</a>";
+                $('td', row).eq(0).html($('td', row).eq(0).html() + aux_text);
+            }
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
@@ -104,14 +112,14 @@ $(document).ready(function () {
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
             }
-            $('td', row).eq(13).addClass('updated_at');
-            $('td', row).eq(13).attr('id','updated_at' + data.id);
-            $('td', row).eq(13).attr('name','updated_at' + data.id);
+            $('td', row).eq(14).addClass('updated_at');
+            $('td', row).eq(14).attr('id','updated_at' + data.id);
+            $('td', row).eq(14).attr('name','updated_at' + data.id);
             aux_text = aux_text +
             "<a href='despachoord' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Orden Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
-            $('td', row).eq(14).html(aux_text);
+            $('td', row).eq(15).html(aux_text);
         }
     });
 
@@ -157,19 +165,37 @@ function ajaxRequestOD(data,url,funcion) {
                 switch (respuesta.mensaje) {
                     case 'ok':
                         swal({
-                            title: '¿ Desea ver PDF Orden Despacho ?',
+                            title: '¿ Hacer Guia Despacho SII ?',
                             text: "",
                             icon: 'success',
                             buttons: {
-                                cancel: "Cancelar",
-                                confirm: "Aceptar"
+                                cancel: "No",
+                                confirm: "Si"
                             },
                         }).then((value) => {
                             if (value) {
-                                genpdfOD(respuesta.id,1);
+                                window.location = respuesta.ruta_crear_guiadesp;
+                            }else{
+                                swal({
+                                    title: '¿ Desea ver PDF Orden Despacho ?',
+                                    text: "",
+                                    icon: 'success',
+                                    buttons: {
+                                        cancel: "Cancelar",
+                                        confirm: "Aceptar"
+                                    },
+                                }).then((value) => {
+                                    if (value) {
+                                        genpdfOD(respuesta.id,1);
+                                        console.log(respuesta.ruta_crear_guiadesp);
+                                        window.location = respuesta.ruta_crear_guiadesp;
+                                    }
+                                    //$("#fila"+data['nfila']).remove();                            
+                                });        
                             }
                             //$("#fila"+data['nfila']).remove();                            
                         });
+
                         $("#fila"+respuesta.nfila).remove();
                         Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                         break;

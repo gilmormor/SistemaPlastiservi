@@ -32,7 +32,6 @@ class ReportInvStockVendController extends Controller
                                     ->where("tipo","=",2)
                                     ->get();
         $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
-        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
         return view('reportinvstockvend.index', compact('tablashtml','productos','selecmultprod'));

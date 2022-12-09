@@ -66,6 +66,16 @@ class DespachoOrdController extends Controller
 
     public function despachoordpage(){
         $datas = consultaindex();
+        $i = 0;
+        foreach ($datas as $data) {
+            //dd($datas[$i]);
+            $datas[$i]->obsdevolucion = ""; //Observacion devolucion
+            $despachoord = DespachoOrd::findOrFail($data->id);
+            if($despachoord->despachoordanulguiafacts->count()>0){
+                $datas[$i]->obsdevolucion = $despachoord->despachoordanulguiafacts->last()->observacion;
+            }
+            $i++;
+        }
         return datatables($datas)->toJson();
     }
 
@@ -970,6 +980,7 @@ class DespachoOrdController extends Controller
                                             'mensaje' => 'ok',
                                             'id' => $request->id,
                                             'nfila' => $request->nfila,
+                                            'ruta_crear_guiadesp' => route('crear_dteguiadesp', ['id' => $request->id, 'updated_at' => $despachoord->updated_at])
                                         ]);
                 } else {
                     return response()->json(['mensaje' => 'ng']);

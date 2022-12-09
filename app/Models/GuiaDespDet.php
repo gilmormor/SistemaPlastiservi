@@ -10,10 +10,21 @@ class GuiaDespDet extends Model
     use SoftDeletes;
     protected $table = "guiadespdet";
     protected $fillable = [
-        'guiadespacho_id',
+        'guiadesp_id',
         'despachoorddet_id',
         'notaventadetalle_id',
-        'cantdesp',
+        'producto_id',
+        'nrolindet',
+        'vlrcodigo',
+        'nmbitem',
+        'dscitem',
+        'qtyitem',
+        'unmditem',
+        'unidadmedida_id',
+        'prcitem',
+        'montoitem',
+        'obsdet',
+        'itemkg',
         'usuariodel_id'
     ];
 

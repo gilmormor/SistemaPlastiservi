@@ -743,6 +743,7 @@ $("#btnGuardarM").click(function(event)
 function totalizar(){
 	total_neto = 0;
 	total_kg = 0;
+	total_cant = 0;
 	$("#tabla-data tr .subtotal").each(function() {
 		valor = $(this).html() ;
 		valorNum = parseFloat(valor);
@@ -756,7 +757,17 @@ function totalizar(){
 		valorNum = parseFloat(valor);
 		total_kg += valorNum;
 	});
+	$("#tabla-data tr .subtotalcant").each(function() {
+		//valor = $(this).html() ;
+		valor = $(this).attr("valor");
+		valor = valor.replace(/,/g, ""); //Elimina comas al valor con formato
+		//alert(valor);
+		valorNum = parseFloat(valor);
+		total_cant += valorNum;
+	});
+
 	aux_totalkgform = MASKLA(total_kg,2); //MASK(0, total_kg, '-##,###,##0.00',1)
+	aux_totalcantform = MASKLA(total_cant,2); //MASK(0, total_kg, '-##,###,##0.00',1)
 
 	aux_porciva = $("#aux_iva").val();
 	aux_porciva = parseFloat(aux_porciva);
@@ -767,6 +778,7 @@ function totalizar(){
 	aux_tdtotalform = MASKLA(aux_total,0); //MASK(0, aux_total, '-#,###,###,##0.00',1)
 	
 	//$("#tdneto").html(total_neto.toFixed(2));
+	$("#Tcant").html(aux_totalcantform);
 	$("#totalkg").html(aux_totalkgform);
 	$("#tdneto").html(aux_netoform);
 	$("#tdiva").html(aux_ivaform);
@@ -776,8 +788,10 @@ function totalizar(){
 	$("#iva").val(aux_iva);
 	if(aux_total == 0){
 		$("#total").val("");
+		$("tfoot").hide();
 	}else{
 		$("#total").val(aux_total);
+		$("tfoot").show();
 	}
 }
 
@@ -1027,13 +1041,23 @@ $(document).on("click", ".btngenpdfCot1", function(){
 	}
 	genpdfCOT(id,1);
 });
-function genpdfCOT(id,stareport){ //GENERAR PDF COTIZACION
+function genpdfCOT(id,stareport,aux_venmodant = ""){ //GENERAR PDF COTIZACION
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
 	$('#contpdf').attr('src', '/cotizacion/'+id+'/'+stareport+'/exportPdfM');
 	$("#myModalpdf").modal('show')
 }
 
 
-function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
+function genpdfNV(id,stareport,aux_venmodant = ""){ //GENERAR PDF NOTA DE VENTA
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
 	$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 }
@@ -1087,7 +1111,12 @@ $(document).on("click", ".btngenpdfINVENTSAL", function(){
 	genpdfINVENTSAL(id,1);
 });
 
-function genpdfSD(id,stareport){ //GENERAR PDF Solicitud de Despacho
+function genpdfSD(id,stareport,aux_venmodant = ""){ //GENERAR PDF Solicitud de Despacho
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
 	$('#contpdf').attr('src', '/despachosol/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 }
@@ -1097,7 +1126,13 @@ function genpdfVPOD(id,stareport){ //GENERAR PDF Vista Previa Orden Despacho
 }
 
 
-function genpdfOD(id,stareport){ //GENERAR PDF Orden de Despacho
+function genpdfOD(id,stareport,aux_venmodant = ""){ //GENERAR PDF Orden de Despacho
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+
 	if($("#myModalTablaOD")){
 		$("#myModalTablaOD").modal('hide');
 	}
@@ -1133,6 +1168,26 @@ function genpdfINVENTSAL(id,stareport){ //GENERAR PDF INVENTARIO ENTRADA SALIDA
 	$("#myModalpdf").modal('show')
 }
 
+function genpdfGD(id,nombre,aux_venmodant = ""){ //GENERAR PDF Guia Despacho
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/ge'+id+nombre+'.pdf');
+	$("#myModalpdf").modal('show');
+}
+
+function genpdfFAC(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/fc'+id+nombre+'.pdf');
+	$("#myModalpdf").modal('show');
+}
+
 
 $("#myModalpdf").on("hidden.bs.modal", function () {
 	$('#contpdf').attr('src', 'about:blank');
@@ -1150,7 +1205,7 @@ $("#precionetoM").blur(function(event){
 });
 
 //FUNCIONES VER DOCUMENTO ADJUNTO ODEN DE COMPRA
-function verpdf2(nameFile,stareport){ 
+function verpdf2(nameFile,stareport,aux_venmodant = ""){ 
 	if(nameFile==""){
 		swal({
 			title: 'Archivo Orden de Compra no se Adjuntó a la Nota de Venta.',
@@ -1175,6 +1230,11 @@ function verpdf2(nameFile,stareport){
 				if(respuesta.resp){
 					$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile);
 					if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
+						$("#venmodant").val("");
+						if(aux_venmodant!=""){
+							$("#" + aux_venmodant).modal('hide');
+							$("#venmodant").val(aux_venmodant);
+						}
 						$("#myModalpdf").modal('show');
 					}	
 				}else{
@@ -1194,6 +1254,14 @@ function verpdf2(nameFile,stareport){
 	
 
 }
+
+$('#myModalpdf').on('hidden.bs.modal', function (event) {
+	aux_venmodant = $("#venmodant").val();
+	if(aux_venmodant != ""){
+		$("#" + aux_venmodant).modal('show');
+	}
+})
+
 //
 
 //FUNCIONES VER DOCUMENTO ADJUNTO RECHAZO ORDEN DESPACHO
@@ -1403,7 +1471,6 @@ $("#botonNewProdxCli").click(function(event)
 		$("#aux_sta").val('1');
 		$("#myModal").modal('show');
 		$("#direccionM").focus();	
-		console.log('entro1');
 	}
 });
 
@@ -1948,9 +2015,6 @@ function crearEditarAcuTec(i){
     $("#myModalAcuerdoTecnico").modal('show');
 }
 
-function verAcuerdoTecnico(id){
-	console.log(id);
-}
 
 function genpdfAcuTec(id){ //GENERAR PDF Acuerdo Tecnico
 	if($("#contpdf")){
@@ -1978,3 +2042,88 @@ $("#btnbuscarproductogen").click(function(event){
     }
     $("#myModalBuscarProd").modal('show');
 });
+
+
+function redirigirARuta(ruta){
+	setTimeout(function(){
+		// *** REDIRECCIONA A UNA RUTA*** 
+		var loc = window.location;
+		window.location = loc.protocol+"//"+loc.hostname+"/"+ruta;
+		// ******************************
+	}, 2500,ruta);
+}
+
+function llenarselectGD(i,dte_id,nrodocto){
+	let strdte_id = $("#selectguiadesp").val();
+	strdte_id = strdte_id.trim();
+	let arrdte_id = strdte_id.split(','); 
+	if(strdte_id == ""){
+		arrdte_id.pop();
+	}
+	let str = dte_id.toString();
+	indice = arrdte_id.indexOf(str);
+	if(indice != -1){
+		arrdte_id.splice(indice, 1);
+	}else{
+		arrdte_id.push(dte_id);
+	}
+	//arrdte_id.toString();
+	arrdte_id = arrdte_id.sort((a,b) => parseInt(a) > parseInt(b) ? 1 : -1);
+
+	$("#selectguiadesp").val(arrdte_id.toString());
+	for (i = 0; i < arrdte_id.length; i++) {
+		aux_text = 
+		"<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\",\"\")'>"+
+			+ data.nrodocto +
+		"</a>";
+
+	}
+
+	let aux_selectguiadesp = $("#selectguiadesp").val();
+	aux_selectguiadesp = aux_selectguiadesp.trim();
+	if(aux_selectguiadesp == ""){
+		$("#btnaceptarGD").attr('disabled', true);
+	}else{
+		$("#btnaceptarGD").attr('disabled', false);
+	}
+}
+
+
+function delguiadespfactdet(nrodocto,id,dte_id){ //Borrar guias de despacho del detalle de facturar Guias despacho
+	swal({
+		title: '¿ Seguro desea eliminar ?',
+		text: "Se eliminaran todos los item asociados a la guia: " + nrodocto,
+			icon: 'warning',
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+			$("." + nrodocto).remove();
+
+			llenarselectGD(0,dte_id,nrodocto)		
+
+			totalizar();
+		}
+	});
+
+
+}
+
+function sumarDias(fecha, dias){
+	fecha.setDate(fecha.getDate() + dias);
+	return fecha;
+}
+
+function fechaddmmaaaa(f){
+    dia = f.getDate();
+    d = dia.toString();
+    d = d.padStart(2, 0);
+    mes = f.getMonth();
+    m = f.toLocaleString('es', { month: '2-digit' }); //mes.toString();
+    m = m.padStart(2, 0);
+    fecha = d + "/" + m + "/" + f.getFullYear();
+    
+    return fecha; 
+}

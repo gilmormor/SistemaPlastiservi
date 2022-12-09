@@ -90,5 +90,17 @@ class DespachoOrd extends Model
         return $this->belongsToMany(InvMov::class, 'despachoord_invmov','despachoord_id','invmov_id')->withTimestamps();
     }
 
+    //Relacion uno a Muchos con guiadesp
+    public function guiadesp()
+    {
+        return $this->hasMany(GuiaDesp::class,"despachoord_id");
+    }
+    
+    //RELACION DE UNO A MUCHOS despachoordanulguiafact
+    public function despachoordanulguiafacts()
+    {
+        return $this->hasMany(DespachoOrdAnulGuiaFact::class,'despachoord_id');
+    }
+
 
 }

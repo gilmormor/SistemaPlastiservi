@@ -425,7 +425,7 @@
                                         @else
                                             <a class="btn-accion-tabla tooltipsC" title="Editar Observación" onclick="ObsItemCot({{$CotizacionDetalle->id}},{{$aux_nfila}})">
                                                 <i class="fa fa-fw fa-comment-o"></i>
-                                            </a>                                        
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>

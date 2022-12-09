@@ -140,11 +140,13 @@ function configTablaProd(){
         },
         "createdRow": function ( row, data, index ) {
             aux_nfila++;
-            selecmultprod = true;
-            //aux_onclick = "llenarlistaprod(" + aux_nfila + "," + data.id + ")";
-            aux_onclick = "insertarTabla(" + data.id + ",'" + data.nombre + "'," + data.acuerdotecnico_id + ")";
-            aux_onclick = "copiar_codprod(" + data.id + ",'')";
-
+            //console.log($("#selecmultprod").val());
+            if($("#selecmultprod").val()){
+                aux_onclick = "llenarlistaprod(" + aux_nfila + "," + data.id + ")";
+            }else{
+                aux_onclick = "copiar_codprod(" + data.id + ",'')";
+                //aux_onclick = "insertarTabla(" + data.id + ",'" + data.nombre + "'," + data.acuerdotecnico_id + ")";
+            }
 
             $(row).attr('name', 'fila' + aux_nfila);
             $(row).attr('id', 'fila' + aux_nfila);

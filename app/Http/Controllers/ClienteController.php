@@ -57,6 +57,16 @@ class ClienteController extends Controller
             ->toJson();
     }
 
+    public function clientebuscarpage(){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpageid($id){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -105,6 +115,7 @@ class ClienteController extends Controller
                     if(is_null($request->direcciondetalle[$i])==false && is_null($request->region_id[$i])==false && is_null($request->provincia_id[$i])==false && is_null($request->comuna_id[$i])==false){
                         $clienteDireccion = new ClienteDirec();
                         $clienteDireccion->cliente_id = $clienteid;
+                        $clienteDireccion->direccion = $request->direcciondetalle[$i];
                         $clienteDireccion->direcciondetalle = $request->direcciondetalle[$i];
                         $clienteDireccion->region_id = $request->region_id[$i];
                         $clienteDireccion->provincia_id = $request->provincia_id[$i];
@@ -277,6 +288,7 @@ class ClienteController extends Controller
                         if( $request->direccion_id[$i] == '0' ){
                             $clienteDireccion = new ClienteDirec;
                             $clienteDireccion->cliente_id = $id;
+                            $clienteDireccion->direccion = $request->direcciondetalle[$i];
                             $clienteDireccion->direcciondetalle = $request->direcciondetalle[$i];
                             $clienteDireccion->region_id = $request->region_id[$i];
                             $clienteDireccion->provincia_id = $request->provincia_id[$i];
@@ -286,6 +298,7 @@ class ClienteController extends Controller
                             DB::table('clientedirec')->updateOrInsert(
                                 ['id' => $request->direccion_id[$i], 'cliente_id' => $id],
                                 [
+                                    'direccion' => $request->direcciondetalle[$i],
                                     'direcciondetalle' => $request->direcciondetalle[$i],
                                     'region_id' => $request->region_id[$i],
                                     'provincia_id' => $request->provincia_id[$i],
@@ -657,9 +670,18 @@ class ClienteController extends Controller
             $sql= "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.telefono,cliente.email,
             cliente.direccion,cliente.vendedor_id,cliente.contactonombre,cliente.formapago_id,
             cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
-            clientebloqueado.descripcion
+            clientebloqueado.descripcion,comuna.nombre as comuna_nombre,provincia.nombre as provincia_nombre,
+            formapago.descripcion as formapago_desc,plazopago.dias as plazopago_dias
             FROM cliente left JOIN clientebloqueado
             ON cliente.id=clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
+            left join comuna
+            ON cliente.comunap_id=comuna.id and isnull(comuna.deleted_at)
+            left join provincia
+            ON cliente.provinciap_id=provincia.id and isnull(provincia.deleted_at)
+            INNER JOIN formapago
+            ON  cliente.formapago_id = formapago.id and isnull(formapago.deleted_at)
+            INNER JOIN plazopago
+            ON  cliente.plazopago_id = plazopago.id and isnull(plazopago.deleted_at)
             WHERE cliente.rut='$request->rut'
             and isnull(cliente.deleted_at)
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))";

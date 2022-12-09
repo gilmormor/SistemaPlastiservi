@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnulGuiaFact;
+use App\Models\GuiaDesp;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
@@ -92,9 +93,22 @@ class DespachoOrdAnulGuiaFactController extends Controller
 
     public function guardaranularguia(Request $request)
     {
-        //dd($request);
         if ($request->ajax()) {
-            $despachoord = DespachoOrd::findOrFail($request->id);
+            /*
+            $guiadesp = GuiaDesp::findOrFail($request->id);
+            if($request->updated_at != $guiadesp->updated_at){
+                return response()->json([
+                    'mensaje' => 'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                    'tipo_alert' => 'alert-error'
+                ]);
+                //POR ALGUNA RAZON NO REDIRECCIONA A 'factura_listarguiadesp'
+                return redirect('factura_listarguiadesp')->with([
+                    'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            */
+            $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
 
             $aux_bandera = true;
             foreach ($despachoord->despachoorddets as $despachoorddet) {
@@ -225,12 +239,16 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     }
                 }else{
                     return response()->json([
+                        'mensaje' => "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"]
+                    ]);
+                    return response()->json([
                         'mensaje' => 'MensajePersonalizado',
                         'menper' => "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"]
                     ]);
                 }
                  
             }else{
+
                 $invmoduloGiaD = InvMovModulo::where("cod","GUIADESP")->get();
                 if(count($invmoduloGiaD) == 0){
                     return response()->json([
@@ -239,7 +257,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     ]);
                 }
                 $invmoduloBGiaD = InvMovModulo::findOrFail($invmoduloGiaD[0]->id);
-
+                
                 if($request->statusM == '1'){
                     $invmov_array = array();
                     $invmov_array["fechahora"] = date("Y-m-d H:i:s");
@@ -332,9 +350,9 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     } 
                 }
             }
-
+            $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
             $despachoordanulguiafact = new DespachoOrdAnulGuiaFact();
-            $despachoordanulguiafact->despachoord_id = $request->id;
+            $despachoordanulguiafact->despachoord_id = $request->despachoord_id;
             $despachoordanulguiafact->guiadespacho = $despachoord->guiadespacho;
             $despachoordanulguiafact->guiadespachofec = $despachoord->guiadespachofec;
             $despachoordanulguiafact->numfactura = $despachoord->numfactura;
@@ -354,6 +372,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 $despachoord->fechafactura = NULL;
                 $despachoord->numfacturafec = NULL;
                 $despachoord->aprguiadesp = NULL;
+                $despachoord->aprguiadespfh = NULL;
             }
             if ($despachoord->save()) {
                 return response()->json([

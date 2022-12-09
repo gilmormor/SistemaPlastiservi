@@ -181,7 +181,7 @@ class InvBodegaController extends Controller
         $respuesta["id"] = $request->id;
         $respuesta["nfila"] = $request->nfila;
         $respuesta["tipobodega"] = $request->tipobodega;
-        //dd($datas);
+        //dd($respuesta);
         //$datas = CategoriaProd::catxUsuCostoAnnoMes($request);
         return $respuesta; //response()->json($data)
 

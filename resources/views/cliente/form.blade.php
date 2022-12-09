@@ -74,7 +74,7 @@
     </div>
     <div class="form-group col-xs-12 col-sm-9">
         <label for="giro" class="control-label requerido" data-toggle='tooltip' title="Descripción Giro">Descripción Giro</label>
-        <input type="text" name="giro" id="giro" class="form-control" value="{{old('giro', $data->giro ?? '')}}" maxlength="100" required/>
+        <input type="text" name="giro" id="giro" class="form-control" value="{{old('giro', $data->giro ?? '')}}" maxlength="40" required/>
     </div>
 
 </div>

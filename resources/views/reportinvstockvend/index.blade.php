@@ -71,11 +71,6 @@ Stock Inventario
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name='categoriaprod_id' id='categoriaprod_id' class='selectpicker form-control categoriaprod_id' data-live-search='true' multiple data-actions-box='true'>
-                                            @foreach($tablashtml['categoriaprod'] as $categoriaprod)
-                                                <option value="{{$categoriaprod->id}}">
-                                                    {{$categoriaprod->nombre}}
-                                                </option>";
-                                            @endforeach
                                         </select>
                                     </div>
                                 </div>

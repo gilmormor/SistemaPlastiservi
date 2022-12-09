@@ -212,7 +212,7 @@
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Guia Despacho: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{str_pad($despachoord->guiadespacho, 10, "0", STR_PAD_LEFT)}}</span></td>
+				<td class="textleft" width="50%"><span>{{str_pad($despachoord->guiadespacho , 10, "0", STR_PAD_LEFT)}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Nro Factura: </strong></span></td>

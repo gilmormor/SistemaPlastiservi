@@ -160,4 +160,12 @@ class SucursalController extends Controller
         return $datas; //response()->json($data)
     }
 
+    public function tablasColsultaInv(Request $request){
+        $sucursal = Sucursal::findOrFail($request->id);
+        $respuesta = array();
+        $respuesta['categoria'] = $sucursal->categorias;
+        $respuesta['invbodegas'] = $sucursal->invbodegas;
+        return $respuesta;
+    }
+
 }

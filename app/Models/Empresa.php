@@ -9,5 +9,21 @@ class Empresa extends Model
 {
     use SoftDeletes;
     protected $table = "empresa";
-    protected $fillable = ['nombre','rut','iva','sucursal_id','usuariodel_id'];
+    protected $fillable = [
+        'rut',
+        'nombre',
+        'razonsocial',
+        'giro',
+        'iva',
+        'sucursal_id',
+        'acteco',
+        'usuariodel_id'
+    ];
+
+    //Relacion inversa a Sucursal
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class);
+    }
+    
 }

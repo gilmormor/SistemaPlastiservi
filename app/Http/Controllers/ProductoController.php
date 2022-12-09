@@ -60,6 +60,11 @@ class ProductoController extends Controller
         return datatables($datas)->toJson();
 
     }
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
 
     /**
      * Show the form for creating a new resource.
