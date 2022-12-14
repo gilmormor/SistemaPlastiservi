@@ -31,8 +31,6 @@ class CreateTableDte extends Migration
             $table->unsignedBigInteger('vendedor_id');
             $table->foreign('vendedor_id','fk_dte_vendedor')->references('id')->on('vendedor')->onDelete('restrict')->onUpdate('restrict');
             $table->string('obs',200)->comment('Observaciones')->nullable();
-            $table->string('oc_id',10)->comment('Numero de Orden de Compra')->nullable();
-            $table->string('oc_file',100)->comment('Archivo o imagen de Orden de Compra')->nullable();
             $table->string('tipodespacho',1)->comment('1: Despacho por cuenta del receptor del documento (cliente o vendedor en caso de Facturas de compra.) 2: Despacho por cuenta del emisor a instalaciones del cliente 3: Despacho por cuenta del emisor a otras instalaciones (Ejemplo: entrega en Obra)')->nullable();
             $table->string('indtraslado',1)->comment('Indicador Tipo de traslado de bienes 1: Operación constituye venta1 2: Ventas por efectuar 3: Consignaciones 4: Entrega gratuita 5: Traslados internos 6: Otros traslados no venta 7: Guía de devolución 8: Traslado para exportación. (no venta) 9: Venta para exportación')->nullable();
             $table->double('mntneto',18)->comment('Monto neto Suma de valores total de ítems afectos -descuentos globales + recargos globales (Asignados a ítems afectos). Si está encendido el Indicador de Montos Brutos (=1) entonces el resultado anterior se debe dividir por (1 + tasa de IVA)');

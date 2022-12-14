@@ -43,46 +43,46 @@
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="telefono" class="control-label requerido">Telefono</label>
-                            <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->notaventa->telefono : $data->notaventa->telefono ?? '')}}" required readonly/>
+                            <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->notaventa->telefono : $data->notaventa->telefono ?? '')}}" required readonly/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="email" class="control-label requerido">Email</label>
-                            <input type="text" name="email" id="email" class="form-control" value="{{old('email', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->notaventa->email : $data->notaventa->email ?? '')}}" required readonly/>
+                            <input type="text" name="email" id="email" class="form-control" value="{{old('email', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->notaventa->email : $data->notaventa->email ?? '')}}" required readonly/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="comuna_nombre" class="control-label requerido">Comuna</label>
-                            <input type="text" name="comuna_nombre" id="comuna_nombre" class="form-control" value="{{old('comuna_nombre', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->notaventa->comuna->nombre : $data->notaventa->comuna->nombre ?? '')}}" required readonly/>
+                            <input type="text" name="comuna_nombre" id="comuna_nombre" class="form-control" value="{{old('comuna_nombre', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->notaventa->comuna->nombre : $data->notaventa->comuna->nombre ?? '')}}" required readonly/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="provincia_nombre" class="control-label requerido">Provincia</label>
-                            <input type="text" name="provincia_nombre" id="provincia_nombre" class="form-control" value="{{old('provincia_nombre', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->notaventa->comuna->provincia->nombre : $data->notaventa->comuna->provincia->nombre ?? '')}}" required readonly/>
+                            <input type="text" name="provincia_nombre" id="provincia_nombre" class="form-control" value="{{old('provincia_nombre', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->notaventa->comuna->provincia->nombre : $data->notaventa->comuna->provincia->nombre ?? '')}}" required readonly/>
                         </div>
                     </div>
                     
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="vendedor_nombre" class="control-label requerido">Vendedor</label>
-                            <input type="text" name="vendedor_nombre" id="vendedor_nombre" class="form-control" value="{{old('vendedor_nombre', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->notaventa->vendedor->persona->nombre . " " . $dteguiadesp->dtedespachoord->notaventa->vendedor->persona->apellido : $data->notaventa->vendedor->persona->nombre . " " . $data->notaventa->vendedor->persona->apellido ?? '')}}" required readonly/>
+                            <input type="text" name="vendedor_nombre" id="vendedor_nombre" class="form-control" value="{{old('vendedor_nombre', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->notaventa->vendedor->persona->nombre . " " . $dteguiadesp->dteguiadesp->notaventa->vendedor->persona->apellido : $data->notaventa->vendedor->persona->nombre . " " . $data->notaventa->vendedor->persona->apellido ?? '')}}" required readonly/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="plazopago_desc" class="control-label requerido">Plazo</label>
-                            <input type="text" name="plazopago_desc" id="plazopago_desc" class="form-control" value="{{old('plazopago_desc', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->notaventa->plazopago->descripcion : $data->notaventa->plazopago->descripcion ?? '')}}" required readonly/>
+                            <input type="text" name="plazopago_desc" id="plazopago_desc" class="form-control" value="{{old('plazopago_desc', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->notaventa->plazopago->descripcion : $data->notaventa->plazopago->descripcion ?? '')}}" required readonly/>
                         </div>
                     
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="formapago_desc" class="control-label requerido">Forma de Pago</label>
-                            <input type="text" name="formapago_desc" id="formapago_desc" class="form-control" value="{{old('formapago_desc', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->notaventa->formapago->descripcion : $data->notaventa->formapago->descripcion ?? '')}}" required readonly/>
+                            <input type="text" name="formapago_desc" id="formapago_desc" class="form-control" value="{{old('formapago_desc', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->notaventa->formapago->descripcion : $data->notaventa->formapago->descripcion ?? '')}}" required readonly/>
                         </div>
                     
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="giro_nombre" class="control-label requerido">Giro</label>
-                            <input type="text" name="giro_nombre" id="giro_nombre" class="form-control" value="{{old('giro_nombre', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->notaventa->giro->nombre : $data->notaventa->giro->nombre ?? '')}}" required readonly/>
+                            <input type="text" name="giro_nombre" id="giro_nombre" class="form-control" value="{{old('giro_nombre', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->notaventa->giro->nombre : $data->notaventa->giro->nombre ?? '')}}" required readonly/>
                         </div>
                     
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="tipoentrega_id" class="control-label requerido">Tipo Entrega</label>
-                            <input type="text" name="tipoentrega_nombre" id="tipoentrega_nombre" class="form-control" value="{{old('tipoentrega_nombre', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->tipoentrega->nombre : $data->tipoentrega->nombre ?? '')}}" required readonly/>
-                            <input type="text" name="tipoentrega_id" id="tipoentrega_id" class="form-control" value="{{old('tipoentrega_id', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->tipoentrega_id : ($data->tipoentrega_id ?? ''))}}" required style="display:none;" readonly/>
+                            <input type="text" name="tipoentrega_nombre" id="tipoentrega_nombre" class="form-control" value="{{old('tipoentrega_nombre', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->tipoentrega->nombre : $data->tipoentrega->nombre ?? '')}}" required readonly/>
+                            <input type="text" name="tipoentrega_id" id="tipoentrega_id" class="form-control" value="{{old('tipoentrega_id', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->tipoentrega_id : ($data->tipoentrega_id ?? ''))}}" required style="display:none;" readonly/>
 <!--
                             <select name="tipoentrega_id" id="tipoentrega_id" class="form-control select2 tipoentrega_id" required  disabled>
                                 <option value=''>Seleccione...</option>
@@ -123,7 +123,7 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-1">
                             <label for="ot" class="control-label" data-toggle='tooltip' title="Orden de trabajo">OT</label>
-                            <input type="text" name="ot" id="ot" class="form-control pull-right numerico" value="{{old('ot', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->ot : '')}}" maxlength="5"/>
+                            <input type="text" name="ot" id="ot" class="form-control pull-right numerico" value="{{old('ot', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->ot : '')}}" maxlength="5"/>
                         </div>
 
                         <div class="form-group col-xs-12 col-sm-2">
@@ -208,7 +208,7 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
-                            <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', isset($dteguiadesp) ? $dteguiadesp->dtedespachoord->lugarentrega : ($data->lugarentrega ?? ''))}}" required placeholder="Lugar de Entrega"/>
+                            <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->lugarentrega : ($data->lugarentrega ?? ''))}}" required placeholder="Lugar de Entrega"/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="comunaentrega_id" class="control-label requerido">Comuna Entrega</label>
@@ -220,7 +220,7 @@
                                         @if (!isset($dteguiadesp) and $comuna->id==$data->comunaentrega_id)
                                             {{'selected'}}
                                         @else 
-                                            @if(isset($dteguiadesp) and $comuna->id==$dteguiadesp->dtedespachoord->comunaentrega_id)
+                                            @if(isset($dteguiadesp) and $comuna->id==$dteguiadesp->dteguiadesp->comunaentrega_id)
                                                 {{'selected'}}
                                             @endif
                                         @endif

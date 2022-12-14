@@ -15,6 +15,8 @@ use App\Models\DteAnul;
 use App\Models\DteDespachoOrd;
 use App\Models\DteDet;
 use App\Models\DteDet_DespachoOrdDet;
+use App\Models\DteGuiaDesp;
+use App\Models\DteOC;
 use App\Models\Empresa;
 use App\Models\Foliocontrol;
 use App\Models\Giro;
@@ -175,23 +177,28 @@ class DteGuiaDespController extends Controller
         $request->request->add(['cliente_id' => $despachoord->notaventa->cliente_id]);
         $request->request->add(['comuna_id' => $despachoord->notaventa->comuna_id]);
         $request->request->add(['vendedor_id' => $despachoord->notaventa->vendedor_id]);
-        $request->request->add(['oc_id' => $despachoord->notaventa->oc_id]);
-        $request->request->add(['oc_file' => $despachoord->notaventa->oc_file]);
         $request->request->add(['foliocontrol_id' => 2]);
 
         $dte = Dte::create($request->all());
         $dte_id = $dte->id;
         //dd($request);
+        //CREAR REGISTRO PROPIO DE GUIA DE DESPACHO
+        $dteguiadesp = new DteGuiaDesp();
+        $dteguiadesp->dte_id = $dte_id;
+        $dteguiadesp->despachoord_id = $despachoord->id;
+        $dteguiadesp->notaventa_id = $despachoord->notaventa_id;
+        $dteguiadesp->tipoentrega_id = $request->tipoentrega_id;
+        $dteguiadesp->comunaentrega_id = $request->comunaentrega_id;
+        $dteguiadesp->lugarentrega = $request->lugarentrega;
+        $dteguiadesp->ot = $request->ot;
+        $dteguiadesp->save();
 
-        $dtedespachoord = new DteDespachoOrd();
-        $dtedespachoord->dte_id = $dte_id;
-        $dtedespachoord->despachoord_id = $despachoord->id;
-        $dtedespachoord->notaventa_id = $despachoord->notaventa_id;
-        $dtedespachoord->tipoentrega_id = $request->tipoentrega_id;
-        $dtedespachoord->comunaentrega_id = $request->comunaentrega_id;
-        $dtedespachoord->lugarentrega = $request->lugarentrega;
-        $dtedespachoord->ot = $request->ot;
-        $dtedespachoord->save();
+        //CREAR REGISTRO DE ORDEN DE COMPRA
+        $dteoc = new DteOC();
+        $dteoc->dte_id = $dte_id;
+        $dteoc->oc_id = $despachoord->notaventa->oc_id;
+        $dteoc->oc_file = $despachoord->notaventa->oc_file;
+        $dteoc->save();
 
         //$notaventaid = 1;
         //SI ESTA VACIO EL NUMERO DE COTIZACION SE CREA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DEL LADO DEL CLIENTE
@@ -274,7 +281,7 @@ class DteGuiaDespController extends Controller
             ]);
         }
         $detalles = $dteguiadesp->dtedets;
-        $data = DespachoOrd::findOrFail($dteguiadesp->dtedespachoord->despachoord_id);
+        $data = DespachoOrd::findOrFail($dteguiadesp->dteguiadesp->despachoord_id);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         //dd($data->notaventa->cliente->clientedirecs);
@@ -326,8 +333,8 @@ class DteGuiaDespController extends Controller
 
         $mntneto = 0;
         $kgtotal = 0;
-        //dd($dte->dtedespachoord->despachoord);
-        foreach($dte->dtedespachoord->despachoord->despachoorddets as $despachoorddet){
+        //dd($dte->dteguiadesp->despachoord);
+        foreach($dte->dteguiadesp->despachoord->despachoorddets as $despachoorddet){
             $NVDet = $despachoorddet->notaventadetalle;
             $mntneto += (($NVDet->subtotal/$NVDet->cant) * $despachoorddet->cantdesp);
             $kgtotal += (($NVDet->totalkilos/$NVDet->cant) * $despachoorddet->cantdesp);
@@ -344,7 +351,7 @@ class DteGuiaDespController extends Controller
         $dte->updated_at = date("Y-m-d H:i:s");
         $dte->save();
 
-        $dte->dtedespachoord->update([
+        $dte->dteguiadesp->update([
             'ot' => $request->ot,
             'tipoentrega_id' => $request->tipoentrega_id,
             'comunaentrega_id' => $request->comunaentrega_id,
@@ -414,6 +421,14 @@ class DteGuiaDespController extends Controller
     {
         if ($request->ajax()) {
             $dte = Dte::findOrFail($request->guiadesp_id);
+            if(is_null($dte->cliente->giro) or empty($dte->cliente->giro) or $dte->cliente->giro ==""){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje'=>'Giro de Cliente no puede estar vacio.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
+
             if($dte->updated_at != $request->updated_at){
                 return response()->json([
                     'id' => 0,
@@ -472,7 +487,7 @@ class DteGuiaDespController extends Controller
                 $foliocontrol->bloqueo = 1;
                 $foliocontrol->save();
             }
-            $despachoord = DespachoOrd::findOrFail($dte->dtedespachoord->despachoord_id);
+            $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
             $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$despachoord->notaventa_id)->get();
             if(count($notaventacerrada) == 0){
                 $aux_bandera = true;
@@ -714,7 +729,7 @@ class DteGuiaDespController extends Controller
         $dteanul = DteAnul::create($request->all());
         $dte->updated_at = date("Y-m-d H:i:s");
         if($dte->save()){
-            $despachoord = DespachoOrd::findOrFail($dte->dtedespachoord->despachoord_id);
+            $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
             $despachoord->updated_at = date("Y-m-d H:i:s");
             if($despachoord->save()){
                 return response()->json(['mensaje' => 'ok']);
@@ -735,7 +750,7 @@ class DteGuiaDespController extends Controller
                 return response()->json([
                                         'mensaje' => 'ok',
                                         'dte' => $dte,
-                                        'despachoord_id' => $dte->dtedespachoord->despachoord_id,
+                                        'despachoord_id' => $dte->dteguiadesp->despachoord_id,
                                         'fechafactura' => date("d/m/Y", strtotime($dte->fchemis))
                                         ]);
             } else {
@@ -759,17 +774,17 @@ function consultaindex(){
     $sucurcadena = implode(",", $sucurArray);
 
     $sql ="SELECT dte.id,dte.nrodocto,dte.fechahora,dte.fchemis,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
-        despachoord.despachosol_id,dtedespachoord.despachoord_id,despachoord.fechaestdesp,comuna.nombre as cmnarecep,dte.kgtotal,
-        dtedespachoord.tipoentrega_id,tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
+        despachoord.despachosol_id,dteguiadesp.despachoord_id,despachoord.fechaestdesp,comuna.nombre as cmnarecep,dte.kgtotal,
+        dteguiadesp.tipoentrega_id,tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.updated_at
-        FROM dte INNER JOIN dtedespachoord
-        ON dte.id = dtedespachoord.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedespachoord.deleted_at)
+        FROM dte INNER JOIN dteguiadesp
+        ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
         INNER JOIN despachoord
-        ON dtedespachoord.despachoord_id = despachoord.id AND ISNULL(despachoord.deleted_at)
+        ON dteguiadesp.despachoord_id = despachoord.id AND ISNULL(despachoord.deleted_at)
         INNER JOIN notaventa
         ON despachoord.notaventa_id = notaventa.id AND ISNULL(dte.deleted_at) and isnull(notaventa.deleted_at)
         INNER JOIN tipoentrega
-        ON dtedespachoord.tipoentrega_id  = tipoentrega.id AND ISNULL(tipoentrega.deleted_at)
+        ON dteguiadesp.tipoentrega_id  = tipoentrega.id AND ISNULL(tipoentrega.deleted_at)
         INNER JOIN cliente
         ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
         inner join comuna
@@ -844,7 +859,7 @@ function consultalistarorddesppage($request){
     if(empty($request->tipoentrega_id)){
         $aux_condtipoentrega_id = " true";
     }else{
-        $aux_condtipoentrega_id = "dtedespachoord.tipoentrega_id='$request->tipoentrega_id'";
+        $aux_condtipoentrega_id = "dteguiadesp.tipoentrega_id='$request->tipoentrega_id'";
     }
     if(empty($request->notaventa_id)){
         $aux_condnotaventa_id = " true";
@@ -919,7 +934,12 @@ function consultalistarorddesppage($request){
     AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
     AND notaventa.sucursal_id in ($sucurcadena)
     AND despachoord.id NOT IN (SELECT guiadesp.despachoord_id FROM guiadesp WHERE ISNULL(guiadesp.deleted_at) AND guiadesp.id not in (SELECT guiadespanul.guiadesp_id FROM guiadespanul WHERE ISNULL(guiadespanul.deleted_at)))
-    GROUP BY despachoorddet.despachoord_id;";
+    AND despachoord.id NOT IN (SELECT dteguiadesp.despachoord_id
+        FROM dte INNER JOIN dteguiadesp
+        ON dte.id=dteguiadesp.dte_id AND ISNULL(dte.deleted_at) AND ISNULL(dteguiadesp.deleted_at)
+        WHERE dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at)))
+    GROUP BY despachoorddet.despachoord_id
+    ORDER BY despachoorddet.despachoord_id DESC";
     $arrays = DB::select($sql);
     $i = 0;
     foreach ($arrays as $array) {
@@ -965,7 +985,7 @@ function dteguiadesp($id,$Folio,$tipoArch){
     $DirOrigen = strtoupper(substr(trim($empresa->sucursal->direccion),0,60));
     $CmnaOrigen = strtoupper(substr(trim($empresa->sucursal->comuna->nombre),0,20));
     $CiudadOrigen = strtoupper(substr(trim($empresa->sucursal->comuna->provincia->nombre),0,20));
-    $contacto = strtoupper(substr(trim($dte->dtedespachoord->notaventa->contacto . " Telf:" . $dte->dtedespachoord->notaventa->contactotelf),0,80));
+    $contacto = strtoupper(substr(trim($dte->dteguiadesp->notaventa->contacto . " Telf:" . $dte->dteguiadesp->notaventa->contactotelf),0,80));
     $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
     $RznSocRecep = strtoupper(substr(trim($dte->cliente->razonsocial),0,100));
     $GiroRecep = strtoupper(substr(trim($dte->cliente->giro),0,42));
@@ -973,7 +993,9 @@ function dteguiadesp($id,$Folio,$tipoArch){
     $CmnaRecep = strtoupper(substr(trim($dte->cliente->comuna->nombre),0,20));
     $CiudadRecep = strtoupper(substr(trim($dte->cliente->provincia->nombre),0,20));
 
-    $FolioRef = substr(trim($dte->oc_id),0,20);
+    //$FolioRef = substr(trim($dte->oc_id),0,20);
+    $FolioRef = $dte->dteguiadesp->notaventa->oc_id;
+
     $contenido = "";
 
     if($tipoArch == "TXT"){
@@ -988,7 +1010,7 @@ function dteguiadesp($id,$Folio,$tipoArch){
             $contenido .= "DET|$dtedet->nrolindet||$dtedet->nmbitem|$dtedet->dscitem||||$dtedet->qtyitem|||$dtedet->unmditem|$dtedet->prcitem|||||||||$dtedet->montoitem|\r\n" . 
                         "ITEM|INTERNO|$dtedet->vlrcodigo|\r\n";
         }
-        $TpoDocRef = (empty($dte->dtedespachoord->despachoord_id) ? "" : "OD:" . $dte->dtedespachoord->despachoord_id . " ") . (empty($dte->dtedespachoord->ot) ? "" : "OT:" . $dte->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->lugarentrega . " ")  . (empty($dte->comunaentrega_id) ? "" : $dte->comunaentrega->nombre . " ");
+        $TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->dteguiadesp->ot) ? "" : "OT:" . $dte->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->lugarentrega . " ")  . (empty($dte->comunaentrega_id) ? "" : $dte->comunaentrega->nombre . " ");
         $TpoDocRef = substr(trim($TpoDocRef),0,90);
         $contenido .= "REF|1|801||$dte->oc_id||$fchemis||$TpoDocRef|";
     
@@ -1067,7 +1089,7 @@ function dteguiadesp($id,$Folio,$tipoArch){
             $aux_totalqtyitem += $dtedet->qtyitem;
         }
     
-        $TpoDocRef = (empty($dte->dtedespachoord->despachoord_id) ? "" : "OD:" . $dte->dtedespachoord->despachoord_id . " ") . (empty($dte->ot) ? "" : "OT:" . $dte->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->lugarentrega . " ")  . (empty($dte->comunaentrega_id) ? "" : $dte->comunaentrega->nombre . " ");
+        $TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->dteguiadesp->ot) ? "" : "OT:" . $dte->dteguiadesp->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->dteguiadesp->lugarentrega . " ")  . (empty($dte->dteguiadesp->comunaentrega_id) ? "" : $dte->dteguiadesp->comunaentrega->nombre . " ");
         $TpoDocRef = strtoupper(substr(trim($TpoDocRef),0,90));
     
         $contenido .= "<Referencia>" .

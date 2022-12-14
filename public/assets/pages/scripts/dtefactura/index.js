@@ -166,7 +166,7 @@ $(document).ready(function () {
             $('td', row).eq(14).attr('name','updated_at' + data.id);
 
             aux_text = aux_text +
-            "<a onclick='anularguiafact(" + data.id + "," + data.despachoord_id + ")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro y devolver a Orden de Despacho' data-toggle='tooltip'>"+
+            "<a onclick='anularfac(" + data.id + ")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
             $('td', row).eq(15).html(aux_text);
@@ -244,13 +244,12 @@ function ajaxRequest(data,url,funcion) {
 				}
 			}
 
-            if (funcion=='validarupdated') {
-                if (respuesta.mensaje == "ok") {
-                    var ruta = '/despachoord/consultarod';
-                    ajaxRequest(datatemp,ruta,'consultaranularguiafact');    
-                } else {
-                    Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+            if (funcion=='anularfac') {
+                if (respuesta.id == "1") {
+					$("#fila" + datatemp.dte_id).remove();
                 }
+                console.log(respuesta);
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
             }
             if (funcion=='eliminar') { //Elimino desde aqui porque debo hacer previamente varias validaciones
                 if (respuesta.mensaje == "ok") {
@@ -332,7 +331,48 @@ function verificarAnulGuia()
 	}
 }
 
-function anularguiafact(nfila,id){
+function anularfac(id){
+    var data = {
+        dte_id : id,
+        nfila  : id,
+        updated_at : $("#updated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dtefactura/anularfac';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Anular Factura ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequest(data,ruta,'anularfac');
+        }
+    });
+    return 0;
+
+	$("#idanul").val(id);
+	$("#guiadespachoanul").val(nfila);
+    $("#id2").html("Id Guia Despacho:");
+	$("#nfilaanul").val(nfila);
+    $("#tituloAGFAC").html("Devolver a Orden de Despacho");
+	var data = {
+		id    : id,
+		nfila : nfila,
+		fac_id : nfila,
+		updated_at : $("#updated_at" + nfila).html(),
+        rutarecarga : "dtefactura",
+		_token: $('input[name=_token]').val()
+	};
+    var ruta = "/dtefactura/validarupdated";
+    ajaxRequest(data,ruta,'validarupdated');
+    return 0;
+
+
 	$("#idanul").val(id);
 	$("#guiadespachoanul").val('');
 	$("#nfilaanul").val(nfila);

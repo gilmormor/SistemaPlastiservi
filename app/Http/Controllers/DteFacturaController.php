@@ -11,6 +11,7 @@ use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
 use App\Models\Dte;
+use App\Models\DteAnul;
 use App\Models\DteDet;
 use App\Models\DteDet_DespachoOrdDet;
 use App\Models\DteDte;
@@ -421,6 +422,7 @@ class DteFacturaController extends Controller
         $dte->obs = $request->obs;
         $dte->vendedor_id = $request->vendedor_id;
         $dte->centroeconomico_id = $request->centroeconomico_id;
+        $dte->fchemis = date('Y-m-d');
         $dte->save();
 
         $dtefac = DteFac::findOrFail($dte->dtefac->id);
@@ -490,6 +492,13 @@ class DteFacturaController extends Controller
     {
         if ($request->ajax()) {
             $dte = Dte::findOrFail($request->dte_id);
+            if(is_null($dte->cliente->giro) or empty($dte->cliente->giro) or $dte->cliente->giro ==""){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje'=>'Giro de Cliente no puede estar vacio.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
             if($dte->updated_at != $request->updated_at){
                 return response()->json([
                     'id' => 0,
@@ -524,7 +533,8 @@ class DteFacturaController extends Controller
             return $ArchivoTXT;
             */
             //dd("entro");
-
+            $dte->fchemis = date('Y-m-d');
+            $dte->save();
             $foliocontrol = Foliocontrol::findOrFail($foliocontrol[0]->id);
             if($foliocontrol->bloqueo == 1){
                 $aux_guidesp = Dte::whereNotNull("nrodocto")
@@ -610,8 +620,8 @@ class DteFacturaController extends Controller
                 //ACTUALIZO EL CAMPO nrodocto
                 //SI OCURRIO ALGUN ERROR SE QUE TENGO EL FOLIO, 
                 //SE QUE NO LO PUEDO VOLVER A PEDIR PORQUE POR ALGUNA RAZON SE GENERO UN ERROR EN EL ULTIMO FOLIO SOLICITADO
-                $aux_giadesp = Dte::where('id', $dte->id)
-                        ->update(['nrodocto' => $aux_folio]);
+                /*$aux_giadesp = Dte::where('id', $dte->id)
+                        ->update(['nrodocto' => $aux_folio]);*/
                 if($Carga_TXTDTE->Estatus == 0){
                     $dte->fchemisgen = date("Y-m-d H:i:s");
                     //$date = str_replace('/', '-', $request->fchemis);
@@ -622,6 +632,7 @@ class DteFacturaController extends Controller
                     $dte->pdfcedible = $Carga_TXTDTE->PDFCedible;
                     $dte->xml = $Carga_TXTDTE->XML;
                     */
+                    $dte->nrodocto = $aux_folio;
                     $dte->statusgen = 1;
                     $dte->aprobstatus = 1;
                     $dte->aprobusu_id = auth()->id();
@@ -677,7 +688,47 @@ class DteFacturaController extends Controller
             abort(404);
         }    
     }
-    
+
+    public function anularfac(Request $request)
+    {
+        //PROCESO DE ANULAR DTE SIN HABER ASIGNADO O GENERADO UN NUMERO DE DTE (DOCUMENTO TRIBUTARIO LELECTRONICO)
+        //dd($request);
+        $dte = Dte::findOrFail($request->dte_id);
+        if($request->updated_at != $dte->updated_at){
+            return response()->json([
+                'id' => 0,
+                'mensaje'=>'Registro no puede editado, fué modificado por otro usuario.',
+                'tipo_alert' => 'error'
+            ]);
+        }
+        $dte->updated_at = date("Y-m-d H:i:s"); //ACTUALIZO LA FECHA PARA EVITAR QUE OTRO USUARIO HAGA ALGO SOBRE EL REGISTRO MODIFICADO
+
+        //INSERTO UN REGISTRO EN DTE ANULADAS
+        $dteanul = new DteAnul();
+        $dteanul->dte_id = $request->dte_id;
+        $dteanul->obs = "Factura anulada.";
+        $dteanul->motanul_id = 5;
+        $dteanul->moddevgiadesp_id = "FC";
+        $dteanul->usuario_id = auth()->id();
+
+        foreach ($dte->dtedtes as $dtedte) {
+            DteDte::destroy($dtedte->id); //ELIMINO LAS GUIAS ASOCIADAS A LA FACTURA
+            DteGuiaUsada::destroy($dtedte->dter->dteguiausada->id); //ELIMINO LAS GUIAS USADAS POR LA FACTURA
+        }
+        if($dte->save() and $dteanul->save()){
+            return response()->json([
+                'id' => 1,
+                'mensaje'=>'Registro procesado con exito.',
+                'tipo_alert' => 'success'
+            ]);
+        }else{
+            return response()->json([
+                'id' => 0,
+                'mensaje'=>'Ocurrio un error al intentan Guardar el registro.',
+                'tipo_alert' => 'error'
+            ]);
+        }
+    }
 }
 
 
@@ -699,9 +750,9 @@ function consultaindex($dte_id){
     GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
     GROUP_CONCAT(DISTINCT notaventa.oc_id) AS oc_id,
     GROUP_CONCAT(DISTINCT notaventa.oc_file) AS oc_file,
-    GROUP_CONCAT(DISTINCT dtedespachoord.notaventa_id) AS notaventa_id,
+    GROUP_CONCAT(DISTINCT dteguiadesp.notaventa_id) AS notaventa_id,
     GROUP_CONCAT(DISTINCT despachoord.despachosol_id) AS despachosol_id,
-    GROUP_CONCAT(DISTINCT dtedespachoord.despachoord_id) AS despachoord_id,
+    GROUP_CONCAT(DISTINCT dteguiadesp.despachoord_id) AS despachoord_id,
     (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) 
     FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
     ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
@@ -710,10 +761,10 @@ function consultaindex($dte_id){
     dte.updated_at
     FROM dte INNER JOIN dtedte
     ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
-    INNER JOIN dtedespachoord
-    ON dtedte.dter_id = dtedespachoord.dte_id
+    INNER JOIN dteguiadesp
+    ON dtedte.dter_id = dteguiadesp.dte_id
     INNER JOIN despachoord
-    ON despachoord.id = dtedespachoord.despachoord_id
+    ON despachoord.id = dteguiadesp.despachoord_id
     INNER JOIN notaventa
     ON notaventa.id = despachoord.notaventa_id
     INNER JOIN cliente
@@ -775,7 +826,7 @@ function dtefactura($id,$Folio,$tipoArch){
             $contenido .= "DET|$dtedet->nrolindet||$dtedet->nmbitem|$dtedet->dscitem||||$dtedet->qtyitem|||$dtedet->unmditem|$dtedet->prcitem|||||||||$dtedet->montoitem|\r\n" . 
                         "ITEM|INTERNO|$dtedet->vlrcodigo|\r\n";
         }
-        $TpoDocRef = (empty($dte->dtedespachoord->despachoord_id) ? "" : "OD:" . $dte->dtedespachoord->despachoord_id . " ") . (empty($dte->dtedespachoord->ot) ? "" : "OT:" . $dte->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->lugarentrega . " ")  . (empty($dte->comunaentrega_id) ? "" : $dte->comunaentrega->nombre . " ");
+        $TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->dteguiadesp->ot) ? "" : "OT:" . $dte->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->lugarentrega . " ")  . (empty($dte->comunaentrega_id) ? "" : $dte->comunaentrega->nombre . " ");
         $TpoDocRef = substr(trim($TpoDocRef),0,90);
         $contenido .= "REF|1|801||$dte->oc_id||$fchemis||$TpoDocRef|";
     
@@ -853,7 +904,7 @@ function dtefactura($id,$Folio,$tipoArch){
             $aux_totalqtyitem += $dtedet->qtyitem;
         }
     
-        $TpoDocRef = (empty($dte->dtedespachoord->despachoord_id) ? "" : "OD:" . $dte->dtedespachoord->despachoord_id . " ") . (empty($dte->ot) ? "" : "OT:" . $dte->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->lugarentrega . " ")  . (empty($dte->comunaentrega_id) ? "" : $dte->comunaentrega->nombre . " ");
+        $TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->ot) ? "" : "OT:" . $dte->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->lugarentrega . " ")  . (empty($dte->comunaentrega_id) ? "" : $dte->comunaentrega->nombre . " ");
         $TpoDocRef = strtoupper(substr(trim($TpoDocRef),0,90));
 
         //dd($aux_dte[0]->oc_id);
@@ -877,15 +928,21 @@ function dtefactura($id,$Folio,$tipoArch){
 
         $array_ocs = explode(",", $aux_dte[0]->oc_id);
         $i = 2;
+        $aux_hep = $dte->dtefac->hep ? $dte->dtefac->hep : "";
+        $aux_RazonRef = "Hep: " . $aux_hep;
+        $aux_RazonRefImp = false;
         foreach ($array_ocs as $oc_id) {
             $i++;
             $contenido .= "<Referencia>" .
             "<NroLinRef>$i</NroLinRef>" .
             "<TpoDocRef>801</TpoDocRef>" .
             "<FolioRef>$oc_id</FolioRef>" .
-            "<FchRef>$FchEmis</FchRef>" .
-            //"<RazonRef></RazonRef>" .
-            "</Referencia>";
+            "<FchRef>$FchEmis</FchRef>";
+            if($aux_RazonRefImp == false){
+                $aux_RazonRefImp = true;
+                $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
+            }
+            $contenido .= "</Referencia>";
         }
 
         $array_dter_id = explode(",", $aux_dte[0]->dter_id);
@@ -896,9 +953,12 @@ function dtefactura($id,$Folio,$tipoArch){
             "<NroLinRef>$i</NroLinRef>" .
             "<TpoDocRef>52</TpoDocRef>" .
             "<FolioRef>$dtedg->nrodocto</FolioRef>" .
-            "<FchRef>$dtedg->fchemis</FchRef>" .
-            //"<RazonRef></RazonRef>" .
-            "</Referencia>";
+            "<FchRef>$dtedg->fchemis</FchRef>";
+            if($aux_RazonRefImp == false){
+                $aux_RazonRefImp = true;
+                $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
+            }
+            $contenido .= "</Referencia>";
         }
         $contenido .= "</Documento>" .
         "</DTE>";

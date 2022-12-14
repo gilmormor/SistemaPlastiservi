@@ -19,7 +19,7 @@ Factura
         @include('includes.mensaje')
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Factura por aprobar</h3>
+                <h3 class="box-title">Facturas DTE por aprobar</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('dtefactura_listarguiadesp')}}" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i> Nueva Factura

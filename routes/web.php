@@ -1042,6 +1042,12 @@ Route::post('dtefactura/dtedtefactura', 'DteFacturaController@dtedtefactura')->n
 Route::get('dtefactura/{id}/{stareport}/exportPdf', 'DteFacturaController@exportPdf')->name('exportPdf_dtefactura');
 Route::post('dtefactura/validarupdated', 'DteFacturaController@validarupdated')->name('validarupdated');
 Route::post('dtefactura/listardtedet', 'DteFacturaController@listardtedet')->name('dtefactura_listardtedet');
+Route::post('dtefactura/anularfac', 'DteFacturaController@anularfac')->name('dtefactura_anularfac');
 
 
-Route::post('dteguiadesp/guardardteguiadesp', 'DteGuiaDespController@guardardteguiadesp')->name('dteguiadesp_guardardteguiadesp');
+/*RUTAS REPORTE DTE FACTURA*/
+Route::get('reportdtefac', 'ReportDTEFacController@index')->name('reportdtefac');
+Route::get('reportdtefac/reportdtefacpage', 'ReportDTEFacController@reportdtefacpage')->name('reportdtefacpage');
+Route::get('reportdtefac/reporte', 'ReportDTEFacController@reporte')->name('reportdtefac_reporte');
+Route::get('reportdtefac/exportPdf', 'ReportDTEFacController@exportPdf')->name('reportdtefac_exportPdf');
+Route::get('reportdtefac/totalizarindex', 'ReportDTEFacController@totalizarindex')->name('reportdtefac_totalizarindex');
