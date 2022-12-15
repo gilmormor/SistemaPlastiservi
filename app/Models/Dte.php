@@ -108,7 +108,6 @@ class Dte extends Model
 
     public static function reportguiadesppage($request){
         //dd($request->tipobodega);
-
         if(empty($request->vendedor_id)){
             $user = Usuario::findOrFail(auth()->id());
             $sql= 'SELECT COUNT(*) AS contador
@@ -130,7 +129,11 @@ class Dte extends Model
         }else{
             $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
         }
-    
+
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+        $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
+
         if(!isset($request->fechad) or empty($request->fechad) or empty($request->fechah)){
             $aux_condFecha = " true";
         }else{
@@ -222,8 +225,10 @@ class Dte extends Model
         ON dte.id = dteguiadesp.dte_id and isnull(dteguiadesp.deleted_at)
         LEFT JOIN notaventa
         ON notaventa.id=dteguiadesp.notaventa_id and isnull(notaventa.deleted_at)
+        INNER JOIN dtedet_despachoorddet
+        ON dtedet_despachoorddet.dtedet_id = dtedet.id and isnull(dtedet_despachoorddet.deleted_at)
         INNER JOIN notaventadetalle
-        ON dtedet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at)
+        ON notaventadetalle.id=dtedet_despachoorddet.notaventadetalle_id and isnull(notaventadetalle.deleted_at)
         INNER JOIN despachoord
         ON despachoord.id=dteguiadesp.despachoord_id and isnull(despachoord.deleted_at)
         INNER JOIN despachoorddet
@@ -256,6 +261,7 @@ class Dte extends Model
         and $aux_condnotaventa_id
         and $aux_condcomuna_id
         and $aux_aprobstatus
+        and $aux_condsucurArray
         GROUP BY dte.id
         ORDER BY dte.id desc;";
 

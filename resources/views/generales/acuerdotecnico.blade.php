@@ -535,24 +535,24 @@
                                     <h3 class="box-title">Certificados</h3>
                                 </div>
                                 <div class="box-body">
-                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
-                                        <label for="at_certificados" class="control-label certificados" data-toggle='tooltip' title="Certificado">Certificado</label>
-                                        <select name="at_certificados" id="at_certificados"  class="selectpicker form-control form_acutec at_certificados" data-live-search='true' multiple>
-                                            @foreach($tablas['certificado'] as $certificado)
-                                                <option
-                                                    value="{{$certificado->id}}"
-                                                    >
-                                                    {{$certificado->descripcion}}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <span class="help-block"></span>
-                                    </div>
 
-                                    <div class="col-xs-12 col-sm-6">
-                                        <label for="at_otrocertificado" class="control-label" data-toggle='tooltip' title="Otro certificado">Otro certificado</label>
-                                        <input type="text" name="at_otrocertificado" id="at_otrocertificado" class="form-control form_acutec" placeholder="Otro certificado"/>
-                                        <span class="help-block"></span>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                            <label for="at_certificados" class="control-label certificados requerido" data-toggle='tooltip' title="Certificado">Certificado</label>
+                                            <!--<select name="at_certificados" id="at_certificados"  class="selectpicker form-control etiqplastiservi form_acutec valorrequerido1" tipoval="combobox" value="" multiple>-->
+                                            <select name="at_certificados" id="at_certificados"  class="selectpicker form-control form_acutec at_certificados valorrequerido" data-live-search='true' tipoval="combobox" multiple>
+                                                @foreach($tablas['certificado'] as $certificado)
+                                                    <option value="{{$certificado->id}}">{{$certificado->descripcion}}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="help-block"></span>
+                                        </div>
+
+                                        <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                            <label for="at_otrocertificado" class="control-label" data-toggle='tooltip' title="Otro certificado">Otro certificado</label>
+                                            <input type="text" name="at_otrocertificado" id="at_otrocertificado" class="form-control form_acutec" placeholder="Otro certificado"/>
+                                            <span class="help-block"></span>
+                                        </div>
                                     </div>
 
                                 </div>

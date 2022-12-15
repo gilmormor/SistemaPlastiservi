@@ -501,7 +501,7 @@ function ajaxRequest(data,url,funcion) {
 				}
 			}
 			if(funcion=='buscardetcot'){
-				console.log(respuesta);
+				//console.log(respuesta);
 			}
 		},
 		error: function () {
@@ -1055,7 +1055,6 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 	}else{
 		alertify.error("Falta incluir informacion");
 	}
-	
 });
 
 
@@ -1073,8 +1072,22 @@ function verificarDato(aux_nomclass)
 			//return true;
 		}
 	});
+	$(aux_nomclass).each(function(){
+		if(($(this).attr('name') != undefined) && Array.isArray($(this).val()) ){
+			aux_array = $(this).val();
+			if(aux_array.length == 0){
+				aux_name = $(this).attr('name');
+				aux_tipoval = $(this).attr('tipoval');
+				if (validacion(aux_name,aux_tipoval) == false)
+				{
+					aux_resultado = false;		
+				}				
+			}
+		}
+	});
 	return aux_resultado;
 }
+
 $(".valorrequerido").keyup(function(){
 	//alert($(this).parent().attr('class'));
 	validacion($(this).prop('name'),$(this).attr('tipoval'));

@@ -250,6 +250,10 @@ function consultasoldesp($request){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+    $aux_condsucurArray = "notaventa.sucursal_id  in ($sucurcadena)";
+
 
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -392,6 +396,7 @@ function consultasoldesp($request){
             and $aux_condaprobord
             and $aux_condid
             and $aux_condfechaestdesp
+            and $aux_condsucurArray
             and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachosol.id;";
     //dd($sql);

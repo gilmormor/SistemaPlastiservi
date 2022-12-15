@@ -26,18 +26,7 @@ class ClienteBloqueadoController extends Controller
     public function index()
     {
         can('listar-cliente-bloqueado');
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = $user->sucursales->pluck('id')->toArray();
-        $datas = ClienteBloqueado::whereIn('clientebloqueado.cliente_id' , ClienteSucursal::select(['cliente_sucursal.cliente_id'])
-                ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->pluck('cliente_sucursal.cliente_id')->toArray())
-        ->get();
-        $aux_razonsocial = $datas[0]->cliente->razonsocial;
-        //dd($aux_razonsocial);
-        //dd($datas[0]->cliente->id);
-        //$datas = ClienteBloqueado::orderBy('id')->get();
-        //dd($datas[0]->cliente);
-        return view('clientebloqueado.index', compact('datas','sucursales'));
+        return view('clientebloqueado.index');
     }
 
     public function clientebloqueadopage(){

@@ -1981,6 +1981,7 @@ function sumbodrec(i,y){
 }
 
 function crearEditarAcuTec(i){
+	$("#at_certificados").val("");
 	$('.scrollg').animate({
 
 		scrollTop: 0

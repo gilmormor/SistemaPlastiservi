@@ -213,6 +213,11 @@ function consulta($request,$aux_cons,$auxproducto_id){
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+    $aux_condsucurArray = "notaventa.sucursal_id  in ($sucurcadena)";
+
+
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
     }else{
@@ -296,6 +301,7 @@ function consulta($request,$aux_cons,$auxproducto_id){
         and $aux_condnotaventa_id
         and $aux_condcomuna_id
         and $aux_condproducto_id
+        and $aux_condsucurArray
         AND vista_soldespconsudespacho.kgorddesp < vista_soldespconsudespacho.kgsoldesp
         GROUP BY producto_id
         ORDER BY producto_id;";
@@ -325,6 +331,7 @@ function consulta($request,$aux_cons,$auxproducto_id){
         and $aux_condnotaventa_id
         and $aux_condcomuna_id
         and $aux_condproducto_id
+        and $aux_condsucurArray
         and producto.id = '$auxproducto_id'
         AND vista_soldespconsudespacho.kgorddesp < vista_soldespconsudespacho.kgsoldesp;";
     }
