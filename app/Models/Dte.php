@@ -332,13 +332,13 @@ class Dte extends Model
         }else{
             $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
         }
-    
+        /*
         if(empty($request->dtenotnull)){
             $aux_conddtenotnull = " true";
         }else{
             $aux_conddtenotnull = "dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))";
         }
-
+        */
         if(empty($request->dteguiausada)){
             $aux_conddteguiausada = " true";
         }else{
@@ -385,11 +385,13 @@ class Dte extends Model
         AND dte.sucursal_id in ($sucurcadena)
         AND NOT ISNULL(dte.nrodocto)
         AND NOT ISNULL(dte.fchemis)
-        AND $aux_conddtenotnull
         and $aux_conddteguiausada
         and dte.foliocontrol_id = 2
         order BY dte.nrodocto;";
-    
+
+        //AND $aux_conddtenotnull
+
+
         $arrays = DB::select($sql);
         $i = 0;
         foreach ($arrays as $array) {
@@ -493,7 +495,7 @@ class Dte extends Model
         dte.kgtotal as aux_totalkg,
         dte.mnttotal as subtotal,
         dte.updated_at,'' as rutacrear,
-        dtedet.id as dtedet_id,dtedet.dtedet_id as dtedetr_id,dtedet.despachoorddet_id,dtedet.notaventadetalle_id,
+        dtedet.id as dtedet_id,dtedet.dtedet_id as dtedetr_id,dtedet_despachoorddet.despachoorddet_id,dtedet_despachoorddet.notaventadetalle_id,
         dtedet.producto_id,dtedet.nrolindet,dtedet.vlrcodigo,dtedet.nmbitem,dtedet.dscitem,dtedet.qtyitem,dtedet.unmditem,
         dtedet.unidadmedida_id,dtedet.prcitem,dtedet.montoitem,dtedet.obsdet,dtedet.itemkg,
         dteanul.obs as anul_obs,dteanul.created_at as anul_created_at,

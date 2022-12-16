@@ -712,7 +712,7 @@ class DteFacturaController extends Controller
         $dteanul->usuario_id = auth()->id();
 
         foreach ($dte->dtedtes as $dtedte) {
-            DteDte::destroy($dtedte->id); //ELIMINO LAS GUIAS ASOCIADAS A LA FACTURA
+            //DteDte::destroy($dtedte->id); //ELIMINO LAS GUIAS ASOCIADAS A LA FACTURA
             DteGuiaUsada::destroy($dtedte->dter->dteguiausada->id); //ELIMINO LAS GUIAS USADAS POR LA FACTURA
         }
         if($dte->save() and $dteanul->save()){

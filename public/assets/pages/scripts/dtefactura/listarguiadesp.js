@@ -128,7 +128,7 @@ $(document).ready(function () {
             $('td', row).eq(16).addClass('updated_at');
             $('td', row).eq(16).attr('id','updated_at' + data.id);
             $('td', row).eq(16).attr('name','updated_at' + data.id);
-
+            /*
             aux_text = "<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Factura: " + data.tipoentrega_nombre + "'>" +
                             "<button type='button' class='btn btn-default btn-xs'>" +
                                 "<i class='fa fa-fw " + data.icono + "'></i>"+
@@ -140,6 +140,7 @@ $(document).ready(function () {
                             "</button>" +
                         "</a>";
             $('td', row).eq(17).html(aux_text);
+            */
         }
     });
 
