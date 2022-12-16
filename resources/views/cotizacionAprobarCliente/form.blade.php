@@ -789,19 +789,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
-                        <label for="telefonoCTM" class="control-label" data-toggle='tooltip' title="Teléfono">Teléfono</label>
-                        <input type="text" name="telefonoCTM" id="telefonoCTM" class="form-control requeridos" tipoval="numerico" maxlength="50" value="{{$clienteselec[0]->telefono}}" placeholder="Teléfono"/>
-                        <span class="help-block"></span>
-                    </div>
-                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
-                        <label for="emailCTM" class="control-label" data-toggle='tooltip' title="email">Email</label>
-                        <input type="text" name="emailCTM" id="emailCTM" class="form-control requeridos" tipoval="email" maxlength="50" value="{{$clienteselec[0]->email}}" placeholder="Email"/>
-                        <span class="help-block"></span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                    <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
                         <label for="giro_idCTM" class="control-label" data-toggle='tooltip' title="Giro">Giro</label>
                         <select name="giro_idCTM" id="giro_idCTM" class="selectpicker form-control requeridos" tipoval="texto" value="{{$clienteselec[0]->giro_id}}">
                             <option value="">Seleccione...</option>
@@ -813,6 +801,23 @@
                                 </option>
                             @endforeach
                         </select>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                        <label for="giroCTM" class="control-label" data-toggle='tooltip' title="Descripción Giro">Descripción Giro</label>
+                        <input type="text" name="giroCTM" id="giroCTM" class="form-control requeridos" tipoval="texto" value="{{$clienteselec[0]->giro}}" placeholder="Descripción Giro"/>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
+                        <label for="telefonoCTM" class="control-label" data-toggle='tooltip' title="Teléfono">Teléfono</label>
+                        <input type="text" name="telefonoCTM" id="telefonoCTM" class="form-control requeridos" tipoval="numerico" maxlength="50" value="{{$clienteselec[0]->telefono}}" placeholder="Teléfono"/>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="emailCTM" class="control-label" data-toggle='tooltip' title="email">Email</label>
+                        <input type="text" name="emailCTM" id="emailCTM" class="form-control requeridos" tipoval="email" maxlength="50" value="{{$clienteselec[0]->email}}" placeholder="Email"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">

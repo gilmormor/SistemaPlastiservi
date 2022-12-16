@@ -1347,6 +1347,7 @@ function guardarclientenuevo(){
 		telefono : $("#telefonoCTM").val(),
 		email : $("#emailCTM").val(),
 		giro_id : $("#giro_idCTM").val(),
+		giro : $("#giroCTM").val(),
 		formapago_id : $("#formapago_idCTM").val(),
 		plazopago_id : $("#plazopago_idCTM").val(),
 		comunap_id : $("#comunap_idCTM").val(),
