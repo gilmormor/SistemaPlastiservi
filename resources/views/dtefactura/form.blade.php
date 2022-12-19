@@ -258,7 +258,7 @@
                             @endforeach
                         @endif
                     </tbody>
-                    <tfoot style="display:none;">
+                    <tfoot style="display:none;" id="foottotal" name="foottotal">
                         <div id="foot">
                             <tr id="trneto" name="trneto">
                                 <th colspan="3" style="text-align:right">

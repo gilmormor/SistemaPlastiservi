@@ -378,3 +378,70 @@ td.highlight {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
 }
+
+/* Formateamos el label que servirá de contenedor */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 17px;
+  }
+   
+  /* Ocultamos el checkbox html */
+  .switch input {
+    display:none;
+  }
+   
+  /* Formateamos la caja del interruptor sobre la cual se deslizará la perilla de control o slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+   
+  /* Pintamos la perilla de control o slider usando el selector before */
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 13px;
+    width: 13px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+   
+  /* Cambiamos el color de fondo cuando el checkbox esta activado */
+  input:checked + .slider {
+    background-color: #00c0ef;
+  }
+   
+  /* Deslizamos el slider a la derecha cuando el checkbox esta activado */ 
+  input:checked + .slider:before {
+    -webkit-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    transform: translateX(13px);
+  }
+   
+  /* Aplicamos efecto de bordes redondeados en slider y en el fondo del slider */
+  .slider.round {
+    border-radius: 34px;
+  }
+   
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  span.question {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+    font-weight: bold;
+    }

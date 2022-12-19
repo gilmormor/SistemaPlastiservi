@@ -177,7 +177,11 @@ class Producto extends Model
             $sucurArray = $users->sucursales->pluck('id')->toArray();
         }
         $sucurcadena = implode(",", $sucurArray);
-
+        if(!isset($request->tipoprod) or ($request->tipoprod == "undefined") or is_null($request->tipoprod)){
+            $tipoprodCond = "producto.tipoprod = 0";
+        }else{
+            $tipoprodCond = "producto.tipoprod = " . $request->tipoprod;
+        }
         $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
                 producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
                 categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
@@ -193,6 +197,7 @@ class Producto extends Model
                 ON producto.id = acuerdotecnico.producto_id
                 WHERE sucursal.id in ($sucurcadena)
                 and $cliente_idCond
+                and $tipoprodCond
                 GROUP BY producto.id
                 ORDER BY producto.id asc;";
         //dd($sql);

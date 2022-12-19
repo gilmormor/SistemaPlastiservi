@@ -788,10 +788,13 @@ function totalizar(){
 	$("#iva").val(aux_iva);
 	if(aux_total == 0){
 		$("#total").val("");
-		$("tfoot").hide();
+		//$("tfoot").hide();
+		$("#foottotal").hide();
+		
 	}else{
 		$("#total").val(aux_total);
-		$("tfoot").show();
+		//$("tfoot").show();
+		$("#foottotal").show();
 	}
 }
 

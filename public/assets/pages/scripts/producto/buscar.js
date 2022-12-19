@@ -158,14 +158,14 @@ function configTablaProd(){
 
             //$(row).attr('id','fila' + data.id);
 
-
+/*
             if(data.tipoprod == 1){
                 aux_text = 
                     data.nombre +
                 " <i id='icoat1' class='fa fa-cog text-red girarimagen'></i>";
                 $('td', row).eq(1).html(aux_text);
             }
-
+*/
             $('td', row).eq(5).attr('data-order',data.peso);
             $('td', row).eq(5).attr('data-search',data.peso);
             $('td', row).eq(5).html(MASKLA(data.peso,3));

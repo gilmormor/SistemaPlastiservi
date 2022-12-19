@@ -11,6 +11,13 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-lg-12">
+                        <label class="switch"  data-toggle='tooltip' title="Acuerdo Técnico">
+                            <input id="VerAcuTec" name="VerAcuTec" type="checkbox" >
+                            <div class="slider round"></div>
+                        </label>
+                        <label id="lbltipoprod" name="lbltipoprod">Producto</label>
+                    </div>
+                    <div class="col-lg-12">
                         <div class="box box-primary">
                             <div class="box-body">
                                 <div class="row">
