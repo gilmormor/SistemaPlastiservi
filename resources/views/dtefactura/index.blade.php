@@ -22,12 +22,12 @@ Factura
                 <h3 class="box-title">Facturas DTE por aprobar</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('dtefactura_listarguiadesp')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nueva Factura
+                        <i class="fa fa-fw fa-plus-circle"></i> Guias x Facturar
                     </a>
                 </div>
                 <div class="box-tools pull-right">
                     <a href="{{route('crear_dtefactura')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nueva Factura1
+                        <i class="fa fa-fw fa-plus-circle"></i> Nueva Factura
                     </a>
                 </div>
             </div>
