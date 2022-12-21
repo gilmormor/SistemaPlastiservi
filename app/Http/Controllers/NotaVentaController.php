@@ -280,6 +280,7 @@ class NotaVentaController extends Controller
             ])
             ->get();
         $tablas = array();
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
 

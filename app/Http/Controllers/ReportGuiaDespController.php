@@ -33,7 +33,7 @@ class ReportGuiaDespController extends Controller
         return view('reportguiadesp.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
 
     }
-
+/*
     public function productobuscarpage(Request $request){
         $datas = Producto::productosxCliente($request);
         return datatables($datas)->toJson();
@@ -53,7 +53,7 @@ class ReportGuiaDespController extends Controller
         $datas = Cliente::clientesxUsuarioSQLTemp();
         return datatables($datas)->toJson();
     }
-
+*/
     public function reportguiadesppage(Request $request){
         //can('reporte-guia_despacho');
         //dd('entro');

@@ -54,7 +54,7 @@ class ClienteProductoController extends Controller
             )
             ->toJson();
     }
-
+/*
     public function productobuscarpage(Request $request){
         $datas = Producto::AsignarProductosAClientes($request);
         return datatables($datas)->toJson();
@@ -64,7 +64,7 @@ class ClienteProductoController extends Controller
         $datas = Producto::AsignarProductosAClientes($request);
         return datatables($datas)->toJson();
     }
-
+*/
     /**
      * Show the form for creating a new resource.
      *

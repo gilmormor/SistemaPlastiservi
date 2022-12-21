@@ -6,6 +6,7 @@ Clientes
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportclientes/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
 
@@ -128,7 +129,7 @@ Clientes
         </div>
     </div>
 </div>
-@include('generales.buscarcliente')
+@include('generales.buscarclientebd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @endsection

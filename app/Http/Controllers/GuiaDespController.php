@@ -83,7 +83,7 @@ class GuiaDespController extends Controller
         //dd($datas);
         return datatables($datas)->toJson();
     }
-
+/*
     public function productobuscarpage(Request $request){
         $datas = Producto::productosxCliente($request);
         return datatables($datas)->toJson();
@@ -103,7 +103,7 @@ class GuiaDespController extends Controller
         $datas = Cliente::clientesxUsuarioSQL();
         return datatables($datas)->toJson();
     }
-
+*/
     /**
      * Show the form for creating a new resource.
      *

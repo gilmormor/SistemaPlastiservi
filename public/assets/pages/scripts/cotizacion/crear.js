@@ -1167,17 +1167,3 @@ function ObsItemCot($id,$i){
 		}
     });
 }
-
-function cargardatospantprod(){
-	$(this).val("");
-	$(".input-sm").val('');
-	data = datos();
-	aux_tipoprod = "0";
-	$("#lbltipoprod").html("Producto");
-	if($("#VerAcuTec").prop("checked")){
-		aux_tipoprod = "1";
-		$("#lbltipoprod").html("Acuerdo Técnico");
-	}
-	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
-
-}

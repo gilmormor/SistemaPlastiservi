@@ -165,11 +165,12 @@ class Producto extends Model
     }
 
     public static function productosxCliente($request){
-        $cliente_idCond = "true";
+        $cliente_idCond = " true";
         if(isset($request->cliente_id) and ($request->cliente_id != "undefined")){
             $cliente_idCond = "if(categoriaprod.asoprodcli = 1, ((producto.id IN (SELECT producto_id FROM cliente_producto WHERE 
                                 cliente_producto.cliente_id = $request->cliente_id)) OR producto.tipoprod = 1), TRUE )";
         }
+        //dd($cliente_idCond);
         $users = Usuario::findOrFail(auth()->id());
         if(isset($request->sucursal_id) and ($request->sucursal_id != "undefined")){
             $sucurArray = [$request->sucursal_id];

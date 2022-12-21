@@ -131,6 +131,7 @@ $(document).ready(function () {
 		$(".input-sm").val('');
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
+		cargardatospantprod();
 
 		$('#myModal')
 			.modal('hide')
@@ -324,6 +325,9 @@ function insertarTabla(){
 	}
 
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
+			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;">'+ 
+				$("#producto_idM").val() +
+			'</td>'+
 			'<td style="display:none;" name="NVdet_idTD'+ aux_nfila + '" id="NVdet_idTD'+ aux_nfila + '">'+ 
 				'0'+
 			'</td>'+
@@ -441,15 +445,15 @@ function insertarTabla(){
 
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+
-			'<td colspan="12" style="text-align:right"><b>Neto</b></td>'+
+			'<td colspan="13" style="text-align:right"><b>Neto</b></td>'+
 			'<td id="tdneto" name="tdneto" style="text-align:right">0.00</td>'+
 		'</tr>'+
 		'<tr id="triva" name="triva">'+
-			'<td colspan="12" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
+			'<td colspan="13" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
 			'<td id="tdiva" name="tdiva" style="text-align:right">0.00</td>'+
 		'</tr>'+
 		'<tr id="trtotal" name="trtotal">'+
-			'<td colspan="12" style="text-align:right"><b>Total</b></td>'+
+			'<td colspan="13" style="text-align:right"><b>Total</b></td>'+
 			'<td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>'+
 		'</tr>';
 	
@@ -977,6 +981,7 @@ $(document).on('click','.fileinput-remove-button', function(){
 
  });
 */
+/*
 $("#botonNewProd").click(function(event)
 {
 	clientedirec_id = $("#clientedirec_id").val();
@@ -992,23 +997,8 @@ $("#botonNewProd").click(function(event)
 		$("#myModal").modal('show');
 		$("#direccionM").focus();	
 	}
-	/*
-	if(clientedirec_id==""){
-		mensaje('Debes seleccionar una dirección','','error');
-		return 0;
-	}
-	
-	if(clientedirec_id!="" && aux_rut!=""){
-		event.preventDefault();
-		limpiarInputOT();
-		quitarverificar();
-		$("#aux_sta").val('1');
-		$("#myModal").modal('show');
-		$("#direccionM").focus();	
-	}
-	*/
 });
-
+*/
 $(".form-horizontal").on("submit", function(event){
 	var aux_nfila = $("#tabla-data tbody tr").length - 3;
 	//aux_nfila++;

@@ -1444,15 +1444,23 @@ $("#botonNewProd").click(function(event)
 {
 	clientedirec_id = $("#clientedirec_id").val();
 	aux_rut = $("#rut").val();
+	aux_sucursal = $("#sucursal_id option:selected").attr('value');
 	if(aux_rut==""){
 		mensaje('Debes Incluir RUT del cliente','','error');
 		return 0;
 	}else{
-		limpiarInputOT();
-		quitarverificar();
-		$("#aux_sta").val('1');
-		$("#myModal").modal('show');
-		$("#direccionM").focus();	
+		if(aux_sucursal==""){
+			mensaje('Debes Seleccionar una sucursal','','error');
+			return 0;
+		}else{
+			//$("#tabla-data-productos").dataTable().fnDestroy();
+			$('#tabla-data-productos tbody').html("");
+			limpiarInputOT();
+			quitarverificar();
+			$("#aux_sta").val('1');
+			$("#myModal").modal('show');
+			$("#direccionM").focus();
+		}
 	}
 });
 
@@ -2130,4 +2138,68 @@ function fechaddmmaaaa(f){
     fecha = d + "/" + m + "/" + f.getFullYear();
     
     return fecha; 
+}
+
+
+$("#VerAcuTec").change(function(){
+	cargardatospantprod();
+});
+
+$("#VerTodosProd").change(function(){
+	primerfiltrobuscarprod();
+});
+
+function cargardatospantprod(){
+	$('#DivchVerAcuTec').show()
+	$(this).val("");
+	$(".input-sm").val('');
+	data = datos();
+	aux_tipoprod = "0";
+
+	$("#lbltipoprod").html("Productos");
+	$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");
+
+	if($("#VerAcuTec").prop("checked")){
+		aux_tipoprod = "1";
+		$("#VerTodosProd").prop("checked",false);
+		$("#lbltipoprod").html("Productos Base para crear Acuerdo Técnico");
+		$("#lblVerAcuTec").attr("data-original-title","Ver Productos existentes");		
+	}
+	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
+}
+
+function primerfiltrobuscarprod(){
+	$('#DivchVerAcuTec').show()
+	$(this).val("");
+	$(".input-sm").val('');
+	data = datos();
+	aux_tipoprod = "0";
+
+	$("#lblTitVerTosdosProd").html("Productos X Cliente");
+	$("#lblVerTodosProd").attr("data-original-title","Ver Productos X Cliente");
+
+	if($("#VerTodosProd").prop("checked")){
+		aux_tipoprod = "";
+		$("#VerAcuTec").prop("checked",false);
+		$("#lbltipoprod").html("Productos");
+		$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");
+	
+		$("#lblTitVerTosdosProd").html("Todos los productos");
+		$("#lblVerTodosProd").attr("data-original-title","Ver Productos X Cliente");
+
+		var data1 = {
+			cliente_id  : "",
+			sucursal_id : $("#sucursal_id").val(),
+			_token      : $('input[name=_token]').val()
+		};
+	
+		var data2 = "?cliente_id="+data1.cliente_id +
+		"&sucursal_id="+data1.sucursal_id
+	
+		var data = {
+			data1 : data1,
+			data2 : data2
+		};
+	}
+	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
 }

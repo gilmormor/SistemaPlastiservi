@@ -262,8 +262,7 @@
                                             @if (isset($data->sucursal_id) and ($data->sucursal_id==$sucursal->id))
                                                 {{'selected'}}
                                             @endif
-                                            >
-                                            {{$sucursal->nombre}}
+                                            >{{$sucursal->nombre}}
                                         </option>
                                     @endforeach
                                 @endif
@@ -620,8 +619,10 @@
 -->
 
 @include('generales.calcprecioprodsn')
-@include('generales.buscarcliente')
-@include('generales.buscarproducto')
+@if (($aux_sta!=3))
+    @include('generales.buscarclientebd')
+    @include('generales.buscarproductobd')
+@endif
 @if (session('aux_aproNV')=='1')
     @include('generales.aprobarcotnv')
 @endif

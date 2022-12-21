@@ -93,7 +93,7 @@ class CotizacionController extends Controller
 
         
     }
-
+/*
     public function productobuscarpage(Request $request){
         $datas = Producto::productosxCliente($request);
         return datatables($datas)->toJson();
@@ -113,7 +113,7 @@ class CotizacionController extends Controller
         $datas = Cliente::clientesxUsuarioSQL();
         return datatables($datas)->toJson();
     }
-
+*/
 
     /*
     public function consulta(){

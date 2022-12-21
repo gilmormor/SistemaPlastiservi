@@ -10,12 +10,20 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-lg-12">
-                        <label class="switch"  data-toggle='tooltip' title="Acuerdo Técnico">
+                    <div class="col-lg-6" id="DivVerTodosProd" name="DivVerTodosProd">
+                        <label class="switch tooltipsC" id="lblVerTodosProd" name="lblVerTodosProd" title="Ver todos los Productos">
+                            <input id="VerTodosProd" name="VerTodosProd" type="checkbox" >
+                            <div class="slider round"></div>
+                        </label>
+                        <label id="lblTitVerTosdosProd" name="lblTitVerTosdosProd">Productos X Cliente</label>
+                    </div>
+
+                    <div class="col-lg-6" id="DivchVerAcuTec" name="DivchVerAcuTec" style="display:none;">
+                        <label class="switch tooltipsC" id="lblVerAcuTec" name="lblVerAcuTec" title="Ver Productos Base para crear Acuerdo Técnico">
                             <input id="VerAcuTec" name="VerAcuTec" type="checkbox" >
                             <div class="slider round"></div>
                         </label>
-                        <label id="lbltipoprod" name="lbltipoprod">Producto</label>
+                        <label id="lbltipoprod" name="lbltipoprod">Productos</label>
                     </div>
                     <div class="col-lg-12">
                         <div class="box box-primary">
