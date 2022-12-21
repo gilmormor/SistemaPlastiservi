@@ -39,7 +39,7 @@
                         @endif
                     @else
                         <button type="reset" class="btn btn-default">Cancel</button>
-                        <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Actualizar</button>
+                        <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Aprobar/Rechazar</button>
                     @endif
                     <!--
                     <a href="{{route('exportPdf_cotizacion', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="PDF" target="_blank">

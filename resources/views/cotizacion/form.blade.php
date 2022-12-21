@@ -31,8 +31,9 @@
 <?php
     $disabledReadOnly = "";
     //Si la pantalla es de aprobacion de Cotizacion desactiva todos input
-    if(strpos("15", session('aux_aprocot'))){ //(session('aux_aprocot')=='1'){
-        $disabledReadOnly = ' disabled ';
+    //if(strpos("15", session('aux_aprocot'))){ //(session('aux_aprocot')=='1'){
+    if (session('aux_aprocot')=='1' or session('aux_aprocot')=='5'){
+        $disabledReadOnly = ' readonly disabled ';
     }
 ?>
 
@@ -452,10 +453,11 @@
 </div>
 
 @include('generales.calcprecioprodsn')
-@include('generales.buscarclientebd')
-@include('generales.buscarproductobd')
 @if (session('aux_aprocot')=='1' or session('aux_aprocot')=='5') <!--(strpos("15", session('aux_aprocot'))) -->
     @include('generales.aprobarcotnv')
+@else
+    @include('generales.buscarclientebd')
+    @include('generales.buscarproductobd')
 @endif
 @include('generales.acuerdotecnico')
 
