@@ -2556,7 +2556,7 @@ function consultasoldesp($request){
         }else{
             $aux_comuna = $request->comuna_id;
         }
-        $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
+        $aux_condcomuna_id = " despachosol.comunaentrega_id in ($aux_comuna) ";
     }
 
 
