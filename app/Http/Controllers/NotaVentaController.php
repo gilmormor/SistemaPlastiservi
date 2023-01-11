@@ -677,15 +677,15 @@ class NotaVentaController extends Controller
                     }
                 }
             }
-            return redirect('notaventa/'.$id.'/editar')->with([
-                                                                'mensaje'=>'Nota de Venta Actualizada con exito.',
-                                                                'tipo_alert' => 'alert-success'
-                                                            ]);
+            return redirect('notaventa')->with([
+                'mensaje'=>'Nota de Venta Actualizada con exito.',
+                'tipo_alert' => 'alert-success'
+            ]);
         }else{
-            return redirect('notaventa/'.$id.'/editar')->with([
-                                                                'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
-                                                                'tipo_alert' => 'alert-error'
-                                                            ]);
+            return redirect('notaventa')->with([
+                'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
+                'tipo_alert' => 'alert-error'
+            ]);
         }
         
     }
