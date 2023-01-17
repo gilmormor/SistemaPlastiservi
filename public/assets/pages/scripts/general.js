@@ -1316,7 +1316,9 @@ $("#producto_idM").blur(function(){
 					$("#producto_idM").keyup();
 					$("#cantM").focus();
 					totalizarItem(1);
-					
+					if($("#precionetoM").attr("valor")>0){
+						$("#precionetoM").blur();
+					}					
 				}else{
 					swal({
 						title: 'Producto no existe.',
