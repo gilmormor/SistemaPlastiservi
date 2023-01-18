@@ -1,22 +1,24 @@
 <div class="modal fade" id="myModalAcuerdoTecnico" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-    
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h3 class="modal-title">Acuerdo Tecnico</h3>
+                <h3 class="modal-title" id="lbltitAT1" name="lbltitAT1">Acuerdo Tecnico</h3>
             </div>
-            <div class="modal-body">
+            <div class="modal-body form">
                 <input type="hidden" name="aux_numfilaAT" id="aux_numfilaAT" value="0">
+                <input type="hidden" name="at_id" id="at_id" class="form_acutec">
                 <div class="scrollg">
                     <div class="col-xs-11">
                         <div class="row">
                             <div class="box box-primary">
+                                <!--
                                 <div class="box-header with-border">
-                                    <h3 class="box-title">Acuerdo tecnico</h3>
+                                    <h3 class="box-title" id="lbltitAT2" name="lbltitAT2">Acuerdo tecnico</h3>
                                 </div>
+                                -->
                                 <div class="box-body">
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-7" classorig="col-xs-12 col-sm-7">
@@ -35,7 +37,39 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
+                                        <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                            <label for="at_claseprod_id" class="control-label requerido" data-toggle='tooltip' title="Clase">Tipo/Clase</label>
+                                            <select name="at_claseprod_id" id="at_claseprod_id" class="selectpicker form-control at_claseprod_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                            </select>
+                                            <span class="help-block"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="box box-primary">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Caracteristicas Extrusión</h3>
+                                </div>
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                            <label for="at_materiaprima_id" class="control-label requerido" data-toggle='tooltip' title="Materia Prima">Materia Prima</label>
+                                            <select name="at_materiaprima_id" id="at_materiaprima_id" class="selectpicker form-control materiaprima_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                                <option value="">Seleccione...</option>
+                                                @foreach($tablas['materiPrima'] as $materiprima)
+                                                    <option
+                                                        value="{{$materiprima->id}}" data-subtext="{{$materiprima->desc}}"
+                                                        desc="{{$materiprima->desc}}"
+                                                        >
+                                                        {{$materiprima->nombre}}
+                                                    </option>
+                                                @endforeach            
+                                            </select>
+                                            <span class="help-block"></span>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
                                             <label for="at_color_id" class="control-label color_id requerido" data-toggle='tooltip' title="Color">Color</label>
                                             <select name="at_color_id" id="at_color_id" class="selectpicker form-control color_id form_acutec valorrequerido" data-live-search='true' title='Seleccione...' tipoval="combobox">
                                                 @foreach($tablas['color'] as $color)
@@ -50,16 +84,26 @@
                                             </select>
                                             <span class="help-block"></span>
                                         </div>
-                                        <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                                            <label for="at_colordesc" class="control-label requerido" data-toggle='tooltip' title="Descripción Color">Descripción Color</label>
+                                        <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
+                                            <label for="at_pigmentacion" class="control-label requerido" data-toggle='tooltip' title="% Pigmentacion entre 0 y 100%">%Pigmento</label>
+                                            <input type="text" name="at_pigmentacion" id="at_pigmentacion" class="form-control form_acutec valorrequerido numerico" placeholder="%" tipoval="number" min1="0" max1="100"/>
+                                            <span class="help-block"></span>
+                                        </div>
+<!--
+                                        <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
+                                            <label for="at_colordesc" class="control-label requerido" data-toggle='tooltip' title="Descripción Color">Desc. Color</label>
                                             <input type="text" name="at_colordesc" id="at_colordesc" class="form-control form_acutec valorrequerido" placeholder="Descripción Color" tipoval="texto"/>
                                             <span class="help-block"></span>
                                         </div>
+-->
                                         <div class="col-xs-12 col-sm-3">
                                             <label for="at_npantone" class="control-label" data-toggle='tooltip' title="Número Pantone">Número Pantone</label>
                                             <input type="text" name="at_npantone" id="at_npantone" class="form-control form_acutec" placeholder="Número Pantone"/>
                                             <span class="help-block"></span>
                                         </div>
+
+                                    </div>
+                                    <div class="row">
                                         <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
                                             <label for="at_translucidez" class="control-label translucidez requerido" data-toggle='tooltip' title="translucidez">Translucidez</label>
                                             <select name="at_translucidez" id="at_translucidez" class="selectpicker form-control translucidez form_acutec valorrequerido" data-live-search='true' title='Seleccione...' tipoval="combobox">
@@ -69,40 +113,19 @@
                                             </select>
                                             <span class="help-block"></span>
                                         </div>
+                                        <div class="col-xs-12 col-sm-5">
+                                            <label for="at_materiaprimaobs" class="control-label" data-toggle='tooltip' title="Observación Materia Prima">Observación</label>
+                                            <input type="text" name="at_materiaprimaobs" id="at_materiaprimaobs" class="form-control form_acutec" placeholder="Observacion"/>
+                                            <span class="help-block"></span>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-4">
+                                            <label for="at_usoprevisto" class="control-label" data-toggle='tooltip' title="Uso Previsto">Uso Previsto</label>
+                                            <input type="text" name="at_usoprevisto" id="at_usoprevisto" class="form-control form_acutec" placeholder="Uso Previsto"/>
+                                            <span class="help-block"></span>
+                                        </div>
+    
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="box box-primary">
-                                <div class="box-header with-border">
-                                    <h3 class="box-title">Caracteristicas Extrusión</h3>
-                                </div>
-                                <div class="box-body">
-                                    <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
-                                        <label for="at_materiaprima_id" class="control-label requerido" data-toggle='tooltip' title="Materia Prima">Materia Prima</label>
-                                        <select name="at_materiaprima_id" id="at_materiaprima_id" class="selectpicker form-control materiaprima_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
-                                            <option value="">Seleccione...</option>
-                                            @foreach($tablas['materiPrima'] as $materiprima)
-                                                <option
-                                                    value="{{$materiprima->id}}" data-subtext="{{$materiprima->desc}}"
-                                                    >
-                                                    {{$materiprima->nombre}}
-                                                </option>
-                                            @endforeach            
-                                        </select>
-                                        <span class="help-block"></span>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-5">
-                                        <label for="at_materiaprimaobs" class="control-label" data-toggle='tooltip' title="Observación Materia Prima">Observación</label>
-                                        <input type="text" name="at_materiaprimaobs" id="at_materiaprimaobs" class="form-control form_acutec" placeholder="Observacion"/>
-                                        <span class="help-block"></span>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-4">
-                                        <label for="at_usoprevisto" class="control-label" data-toggle='tooltip' title="Uso Previsto">Uso Previsto</label>
-                                        <input type="text" name="at_usoprevisto" id="at_usoprevisto" class="form-control form_acutec" placeholder="Uso Previsto"/>
-                                        <span class="help-block"></span>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -206,58 +229,61 @@
                                         <div class="box box-default">
                                             <div class="box-body">
                                                 <div class="row">
-                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                                         <label for="at_ancho" class="control-label requerido" data-toggle='tooltip' title="Ancho">Ancho</label>
                                                         <input type="text" name="at_ancho" id="at_ancho" class="form-control form_acutec numerico valorrequerido" placeholder="Ancho" tipoval="texto"/>
                                                         <span class="help-block"></span>
                                                     </div>
-                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
-                                                        <label for="at_anchoum_id" class="control-label anchoum_id requerido" data-toggle='tooltip' title="Unidad Medida Ancho">Unid Medida</label>
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                                        <label for="at_anchoum_text" class="control-label anchoum_id requerido" data-toggle='tooltip' title="Unidad Medida Ancho">UM</label>
                                                         <select name="at_anchoum_id" id="at_anchoum_id"  class="selectpicker form-control anchoum_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
                                                             <option value="">Seleccione...</option>
                                                             @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
-                                                                <option
-                                                                    value="{{$unidadmedida->id}}"
-                                                                    >
-                                                                    {{$unidadmedida->nombre}}
-                                                                </option>
+                                                                @if ($unidadmedida->id == 1)
+                                                                    <option
+                                                                        value="{{$unidadmedida->id}}"
+                                                                        {{$unidadmedida->id == 1 ? 'selected' : ''}}
+                                                                        >
+                                                                        {{$unidadmedida->nombre}}
+                                                                    </option>
+                                                                    
+                                                                @endif
                                                             @endforeach
-                                                        </select>                                
+                                                        </select>
                                                     </div>
-                                                    <!--
-                                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
-                                                        <label for="at_anchodesv" class="control-label requerido" data-toggle='tooltip' title="Desviación Ancho">Desviación</label>
-                                                        <input type="text" name="at_anchodesv" id="at_anchodesv" class="form-control form_acutec valorrequerido" placeholder="Desviación" tipoval="texto"/>
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                                        <label for="at_anchodesv" class="control-label requerido" data-toggle='tooltip' title="Desviación Ancho">Desv</label>
+                                                        <input type="text" name="at_anchodesv" id="at_anchodesv" class="form-control form_acutec valorrequerido" placeholder="Desviación" tipoval="texto" style="padding-right: 0px;padding-left: 2px;" readonly/>
                                                         <span class="help-block"></span>
                                                     </div>
-                                                    -->
                                                 </div>
                                                 <div class="row">                    
-                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                                         <label for="at_largo" class="control-label" data-toggle='tooltip' title="Largo">Largo</label>
                                                         <input type="text" name="at_largo" id="at_largo" class="form-control form_acutec numerico" placeholder="Largo"/>
-                                                        <span class="help-block"></span>
+                                                        <span class="help-block" style="margin-top: -2px; display: none;"></span>
                                                     </div>
-                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
-                                                        <label for="at_largoum_id" class="control-label largoum_id" data-toggle='tooltip' title="Unidad Medida Largo">Unid Medida</label>
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                                        <label for="at_largoum_text" class="control-label largoum_id" data-toggle='tooltip' title="Unidad Medida Largo">UM</label>
                                                         <select name="at_largoum_id" id="at_largoum_id"  class="selectpicker form-control largoum_id form_acutec" data-live-search='true'>
                                                             <option value="">Seleccione...</option>
                                                             @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
-                                                                <option
-                                                                    value="{{$unidadmedida->id}}"
-                                                                    >
-                                                                    {{$unidadmedida->nombre}}
-                                                                </option>
+                                                                @if ($unidadmedida->id == 1)
+                                                                    <option
+                                                                        value="{{$unidadmedida->id}}"
+                                                                        {{$unidadmedida->id == 1 ? 'selected' : ''}}
+                                                                        >
+                                                                        {{$unidadmedida->nombre}}
+                                                                    </option>
+                                                                @endif
                                                             @endforeach
-                                                        </select>                                
+                                                        </select>
                                                     </div>
-                                                    <!--
-                                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
-                                                        <label for="at_largodesv" class="control-label" data-toggle='tooltip' title="Desviación Largo">Desviación</label>
-                                                        <input type="text" name="at_largodesv" id="at_largodesv" class="form-control form_acutec" placeholder="Desviación"/>
-                                                        <span class="help-block"></span>
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                                        <label for="at_largodesv" class="control-label" data-toggle='tooltip' title="Desviación Largo">Desv</label>
+                                                        <input type="text" name="at_largodesv" id="at_largodesv" class="form-control form_acutec" placeholder="Desviación" style="padding-right: 0px;padding-left: 2px;" readonly/>
+                                                        <span class="help-block" style="margin-top: -2px; display: none;"></span>
                                                     </div>
-                                                    -->
                                                 </div>
                                             </div>
                                         </div>
@@ -267,27 +293,31 @@
                                         <div class="box box-default">
                                             <div class="box-body">
                                                 <div class="row">
-                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                                         <label for="at_fuelle" class="control-label" data-toggle='tooltip' title="Fuelle">Fuelle</label>
-                                                        <input type="text" name="at_fuelle" id="at_fuelle" class="form-control form_acutec" placeholder="Fuelle"/>
-                                                        <span class="help-block"></span>
+                                                        <input type="text" name="at_fuelle" id="at_fuelle" class="form-control form_acutec numerico" placeholder="Fuelle"/>
+                                                        <span class="help-block" style="margin-top: -2px; display: none;"></span>
                                                     </div>
-                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
-                                                        <label for="at_fuelleum_id" class="control-label fuelleum_id" data-toggle='tooltip' title="Unidad Medida Fuelle">Unid Medida</label>
-                                                        <select name="at_fuelleum_id" id="at_fuelleum_id"  class="selectpicker form-control fuelleum_id form_acutec" data-live-search='true'>
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                                        <label for="at_fuelleum_text" class="control-label fuelleum_id" data-toggle='tooltip' title="Unidad Medida Fuelle">UM</label>
+                                                        <select name="at_fuelleum_id" id="at_fuelleum_id" class="selectpicker form-control fuelleum_id form_acutec" data-live-search='true'>
                                                             <option value="">Seleccione...</option>
                                                             @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
-                                                                <option
-                                                                    value="{{$unidadmedida->id}}"
-                                                                    >
-                                                                    {{$unidadmedida->nombre}}
-                                                                </option>
+                                                                @if ($unidadmedida->id == 1)
+                                                                    <option
+                                                                        value="{{$unidadmedida->id}}"
+                                                                        {{$unidadmedida->id == 1 ? 'selected' : ''}}
+                                                                        >
+                                                                        {{$unidadmedida->nombre}}
+                                                                    </option>
+4                                                            
+                                                                @endif
                                                             @endforeach
-                                                        </select>                                
+                                                        </select>
                                                     </div>
                                                     <!--
-                                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
-                                                        <label for="at_fuelledesv" class="control-label" data-toggle='tooltip' title="Desviación Fuelle">Desviación</label>
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                                        <label for="at_fuelledesv" class="control-label" data-toggle='tooltip' title="Desviación Fuelle">Desv</label>
                                                         <input type="text" name="at_fuelledesv" id="at_fuelledesv" class="form-control form_acutec" placeholder="Desviación"/>
                                                         <span class="help-block"></span>
                                                     </div>
@@ -295,31 +325,32 @@
                                                 </div>
                                                 <div class="row">
                 
-                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                                         <label for="at_espesor" class="control-label requerido" data-toggle='tooltip' title="Espesor">Espesor</label>
-                                                        <input type="text" name="at_espesor" id="at_espesor" class="form-control form_acutec numerico4d valorrequerido" placeholder="Espesor" tipoval="texto"/>
+                                                        <input type="text" name="at_espesor" id="at_espesor" class="form-control form_acutec numerico4d valorrequerido" placeholder="Espesor" tipoval="texto" style="padding-right: 2px;padding-left: 6px;"/>
                                                         <span class="help-block"></span>
                                                     </div>
-                                                    <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
-                                                        <label for="at_espesorum_id" class="control-label espesorum_id requerido" data-toggle='tooltip' title="Unidad Medida Espesor">Unid Medida</label>
-                                                        <select name="at_espesorum_id" id="at_espesorum_id"  class="selectpicker form-control espesorum_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                                        <label for="at_espesorum_text" class="control-label espesorum_id requerido" data-toggle='tooltip' title="Unidad Medida Espesor">UM</label>
+                                                        <select name="at_espesorum_id" id="at_espesorum_id" class="selectpicker form-control espesorum_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
                                                             <option value="">Seleccione...</option>
                                                             @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
-                                                                <option
-                                                                    value="{{$unidadmedida->id}}"
-                                                                    >
-                                                                    {{$unidadmedida->nombre}}
-                                                                </option>
+                                                                @if ($unidadmedida->id == 2)
+                                                                    <option
+                                                                        value="{{$unidadmedida->id}}"
+                                                                        {{$unidadmedida->id == 2 ? 'selected' : ''}}
+                                                                        >
+                                                                        {{$unidadmedida->nombre}}
+                                                                    </option>                                                                    
+                                                                @endif
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <!--
-                                                    <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
-                                                        <label for="at_espesordesv" class="control-label requerido" data-toggle='tooltip' title="Desviación Espesor">Desviación</label>
-                                                        <input type="text" name="at_espesordesv" id="at_espesordesv" class="form-control form_acutec valorrequerido" placeholder="Desviación" tipoval="texto"/>
+                                                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                                        <label for="at_espesordesv" class="control-label requerido" data-toggle='tooltip' title="Desviación Espesor">Desv</label>
+                                                        <input type="text" name="at_espesordesv" id="at_espesordesv" class="form-control form_acutec valorrequerido" placeholder="Desviación" tipoval="texto" style="padding-right: 0px;padding-left: 2px;" readonly/>
                                                         <span class="help-block"></span>
                                                     </div>
-                                                    -->
                                                 </div>
                                             </div>
                                         </div>
@@ -360,6 +391,28 @@
                                     <h3 class="box-title">Tipo de Sello</h3>
                                 </div>
                                 <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
+                                            <label for="at_tiposello_id" class="control-label requerido" data-toggle='tooltip' title="Tipo de Sello">Tipo Sello</label>
+                                            <select name="at_tiposello_id" id="at_tiposello_id" class="selectpicker form-control tiposello_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                                <option value="">Seleccione...</option>
+                                                @foreach($tablas['tipoSello'] as $tiposello)
+                                                    <option
+                                                        value="{{$tiposello->id}}"
+                                                        >
+                                                        {{$tiposello->desc}}
+                                                    </option>
+                                                @endforeach            
+                                            </select>
+                                            <span class="help-block"></span>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-9">
+                                            <label for="at_tiposelloobs" class="control-label" data-toggle='tooltip' title="Observación fondo">Observación</label>
+                                            <input type="text" name="at_tiposelloobs" id="at_tiposelloobs" class="form-control form_acutec" placeholder="Observación"/>
+                                            <span class="help-block"></span>
+                                        </div>
+                                    </div>
+<!--
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
                                             <label for="at_sfondo" class="control-label requerido" data-toggle='tooltip' title="Fondo">Fondo</label>
@@ -440,6 +493,7 @@
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
+-->
                                 </div>
                             </div>
                         </div>
@@ -449,42 +503,42 @@
                                     <h3 class="box-title">Forma de Embalaje</h3>
                                 </div>
                                 <div class="box-body">
-                                    <div class="col-xs-12 col-sm-6">
-                                        <label for="at_feunidxpaq" class="control-label" data-toggle='tooltip' title="Unidades por empaque">Unidades por empaque</label>
-                                        <input type="text" name="at_feunidxpaq" id="at_feunidxpaq" class="form-control form_acutec" placeholder="Unidades por empaque"/>
+                                    <div class="col-xs-12 col-sm-4">
+                                        <label for="at_feunidxpaq" class="control-label" data-toggle='tooltip' title="Unidades por empaque">Unid x empaque</label>
+                                        <input type="text" name="at_feunidxpaq" id="at_feunidxpaq" class="form-control form_acutec numerico" placeholder="Unidades por empaque"/>
                                         <span class="help-block"></span>
                                     </div>
-                                    <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-sm-8">
                                         <label for="at_feunidxpaqobs" class="control-label" data-toggle='tooltip' title="Observacion Unidades por empaque">Observación</label>
                                         <input type="text" name="at_feunidxpaqobs" id="at_feunidxpaqobs" class="form-control form_acutec" placeholder="Observación Unidades por empaque"/>
                                         <span class="help-block"></span>
                                     </div>
-                                    <div class="col-xs-12 col-sm-6">
-                                        <label for="at_feunidxcont" class="control-label" data-toggle='tooltip' title="Unidades por contenedor">Unidades por contenedor</label>
-                                        <input type="text" name="at_feunidxcont" id="at_feunidxcont" class="form-control form_acutec" placeholder="Unidades por contenedor"/>
+                                    <div class="col-xs-12 col-sm-4">
+                                        <label for="at_feunidxcont" class="control-label" data-toggle='tooltip' title="Unidades por contenedor">Unid x contenedor</label>
+                                        <input type="text" name="at_feunidxcont" id="at_feunidxcont" class="form-control form_acutec numerico" placeholder="Unidades por contenedor"/>
                                         <span class="help-block"></span>
                                     </div>
-                                    <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-sm-8">
                                         <label for="at_feunidxcontobs" class="control-label" data-toggle='tooltip' title="Observacion Unidades por contenedor">Observación</label>
                                         <input type="text" name="at_feunidxcontobs" id="at_feunidxcontobs" class="form-control form_acutec" placeholder="Observación Unidades por contenedor"/>
                                         <span class="help-block"></span>
                                     </div>
-                                    <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-sm-4">
                                         <label for="at_fecolorcont" class="control-label" data-toggle='tooltip' title="Color contenedor">Color contenedor</label>
                                         <input type="text" name="at_fecolorcont" id="at_fecolorcont" class="form-control form_acutec" placeholder="Color contenedor"/>
                                         <span class="help-block"></span>
                                     </div>
-                                    <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-sm-8">
                                         <label for="at_fecolorcontobs" class="control-label" data-toggle='tooltip' title="Observacion Color contenedor">Observación</label>
                                         <input type="text" name="at_fecolorcontobs" id="at_fecolorcontobs" class="form-control form_acutec" placeholder="Observación Color contenedor"/>
                                         <span class="help-block"></span>
                                     </div>
-                                    <div class="col-xs-12 col-sm-6">
-                                        <label for="at_feunitxpalet" class="control-label" data-toggle='tooltip' title="Unidades por palet">Unidades por palet</label>
-                                        <input type="text" name="at_feunitxpalet" id="at_feunitxpalet" class="form-control form_acutec" placeholder="Unidades por palet"/>
+                                    <div class="col-xs-12 col-sm-4">
+                                        <label for="at_feunitxpalet" class="control-label" data-toggle='tooltip' title="Unidades por palet">Unid x palet</label>
+                                        <input type="text" name="at_feunitxpalet" id="at_feunitxpalet" class="form-control form_acutec numerico" placeholder="Unidades por palet"/>
                                         <span class="help-block"></span>
                                     </div>
-                                    <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-sm-8">
                                         <label for="at_feunitxpaletobs" class="control-label" data-toggle='tooltip' title="Observacion Unidades por palet">Observación</label>
                                         <input type="text" name="at_feunitxpaletobs" id="at_feunitxpaletobs" class="form-control form_acutec" placeholder="Observación Unidades por palet"/>
                                         <span class="help-block"></span>
@@ -566,8 +620,13 @@
                 @if (session('editaracutec') == '1')
                     <button type="button" class="btn btn-primary" id="btnAceptarAcuTecTemp" name="btnAceptarAcuTecTemp" title="Guardar">Aceptar</button>
                 @endif
+                <!--<input type="button" id="create_pdf1" value="Generate PDF">  -->
             </div>
         </div>
         
     </div>
 </div>
+<!--
+<div id="contenedorCanvas" style="border: 1px solid red;">
+</div>
+-->

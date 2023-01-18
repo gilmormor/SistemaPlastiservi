@@ -10,7 +10,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" id="modal-bodymymodadpdf" name="modal-bodymymodadpdf">
                 <iframe id="contpdf" name="contpdf" src="" frameborder="0" allowfullscreen width="100%" height="100%" scrolling="yes"></iframe>
             </div>
             <div class="modal-footer">

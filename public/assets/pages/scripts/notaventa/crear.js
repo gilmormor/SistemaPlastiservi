@@ -276,6 +276,31 @@ $(document).ready(function () {
 
 	$(".kv-file-remove").hide();
 	$(".file-drag-handle").hide();
+
+	if($("#staapronv").val() == "1"){
+		/*
+		$("#cotizacion_id").prop('disabled', false);
+		$("#clientedirec_id").prop('disabled', false);
+		$("#plazoentrega").prop('disabled', false);
+		$("#lugarentrega").prop('disabled', false);
+		*/
+		
+		$("#vendedor_idD").prop('disabled', true);
+		$("#tipoentrega_id").prop('disabled', true);
+		$("#sucursal_id").prop('disabled', true);
+		$("#lugarentrega").prop('disabled', true);
+		$("#comunaentrega_id").prop('disabled', true);
+		$("#contacto").prop('disabled', true);
+		$("#oc_id").prop('disabled', true);
+		$("#contactotelf").prop('disabled', true);
+		$("#contactoemail").prop('disabled', true);
+		$("#observacion").prop('disabled', true);
+		$("#oc_file").prop('disabled', true);
+		$("#oc_file").prop('readonly', true);
+		$(".input-group .file-caption-main").hide();;
+		
+	}
+
 });
 /*
 $("#botonNewProd").click(function(event)
@@ -945,7 +970,9 @@ $('#form-general').submit(function(event) {
 	console.log($("#imagen").val());
 	$('#group_oc_id').removeClass('has-error');
 	$('#group_oc_file').removeClass('has-error');
-	$('#oc_id').prop('required', false);
+	if($("#sucursal_id option:selected").attr('value') == 3){
+		$('#oc_id').prop('required', false);
+	}
 	$("#oc_file-error").hide();
 	aux_ocarchivo = $.trim($('#oc_file').val()) + $.trim($('#oc_file').attr("data-initial-preview"));
 	//if (($('#oc_id').val().length == 0) && (($('#oc_file').val().length != 0) || ($('#oc_file').attr("data-initial-preview").length != 0))) {
@@ -999,6 +1026,7 @@ $("#botonNewProd").click(function(event)
 	}
 });
 */
+/*
 $(".form-horizontal").on("submit", function(event){
 	var aux_nfila = $("#tabla-data tbody tr").length - 3;
 	//aux_nfila++;
@@ -1037,3 +1065,4 @@ $(".form-horizontal").on("submit", function(event){
 		});
 	}
 });
+*/

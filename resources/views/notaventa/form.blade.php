@@ -27,6 +27,7 @@
     <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
 </div>
 <input type="hidden" name="imagen" id="imagen" value="{{old('imagen', $data->oc_file ?? '')}}">
+<input type="hidden" name="staapronv" id="staapronv" value="{{old('staapronv', $tablas['staapronv'] ?? '')}}">
 
 <?php
     $disabledReadOnly = "";
@@ -42,6 +43,12 @@
     if ($aux_sta==2 and $data->cotizacion_id and $data->id){
         $disabledcliente = ' disabled ';
         $aux_concot = true;
+    }
+    $aux_labelRequerido = "";
+    $aux_inputRequerido = "";
+    if(isset($data) and ($data->sucursal_id == 1 or $data->sucursal_id == 3)){
+        $aux_labelRequerido = "requerido";
+        $aux_inputRequerido = "required";
     }
 
 ?>
@@ -157,7 +164,7 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
-                            <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required {{(isset($data) ? ($data->vendedor_id == $vendedor_id ? "readonly disabled" : "") : "readonly disabled")  }}>
+                                <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required {{(isset($data) ? ($data->vendedor_id == $vendedor_id ? "readonly disabled" : "") : "readonly disabled")  }}>
                                 <option value="">Seleccione...</option>
                                 @foreach($vendedores1 as $vendedor)
                                     <option
@@ -324,12 +331,9 @@
                 <div class="box-body">
                     <div class="row">
                         <div id="group_oc_id" class="form-group col-xs-12 col-sm-12">
-                            <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label">Nro OrdenCompra</label>
+                            <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label {{$aux_labelRequerido}}">Nro OrdenCompra</label>
                             <div class="input-group">
-                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="15" {{$enableCamposCot}}/>
-                                <!--<span class="input-group-btn">
-                                    <button class="btn btn-default" type="button" id="btnfotooc" name="btnfotooc" data-toggle='tooltip' title="Cargar Imagen OC" {{$enableCamposCot}}>Examinar...</button>
-                                </span>-->
+                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="15" {{$enableCamposCot}} {{$aux_inputRequerido}}/>
                             </div>
                         </div>
                         <div id="group_oc_file" class="form-group col-xs-12 col-sm-12">
@@ -429,13 +433,31 @@
                         @if ($aux_sta==2 or $aux_sta==3)
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($detalles as $detalle)
-                                <?php $aux_nfila++; ?>
+                                <?php $aux_nfila++;
+                                    $acuerdotecnico = null;
+                                    if ($detalle->producto->tipoprod == 1){
+                                        //SI 
+                                        if($detalle->acuerdotecnicotempunoauno){
+                                            $acuerdotecnico = $detalle->acuerdotecnicotempunoauno;
+                                        }else{
+                                            $acuerdotecnico = $detalle->cotizaciondetalle->acuerdotecnicotempunoauno;
+                                        }
+                                    }
+                                ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;">
-                                        {{$detalle->producto_id}}
+                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$detalle->producto->categoriaprod_id}}">
+                                        @if ($detalle->producto->tipoprod == 1)
+                                            <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$acuerdotecnico->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                {{$detalle->producto_id}}
+                                            </a>
+                                        @else
+                                            {{$detalle->producto_id}}
+                                        @endif
+
+
                                         @if ($detalle->producto->tipoprod == 1)
                                             <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
-                                                @if ($detalle->acuerdotecnicotemp == null)
+                                                @if ($acuerdotecnico == null)
                                                     <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
                                                 @else
                                                     <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
@@ -584,7 +606,7 @@
                                         </td>
                                     @endif
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="acuerdotecnico[]" id="acuerdotecnico{{$aux_nfila}}" class="form-control" value="{{json_encode($detalle->acuerdotecnicotemp)}}" style="display:none;"/>
+                                        <input type="text" name="acuerdotecnico[]" id="acuerdotecnico{{$aux_nfila}}" class="form-control" value="{{json_encode($acuerdotecnico)}}" style="display:none;"/>
                                     </td>
                                     <td style="text-align:right;display:none;">
                                         <input type="text" name="tipoprod[]" id="tipoprod{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->tipoprod}}" style="display:none;"/>
@@ -618,6 +640,7 @@
 </div>
 -->
 
+@include('generales.modalpdf')
 @include('generales.calcprecioprodsn')
 @if (($aux_sta!=3))
     @include('generales.buscarclientebd')
@@ -626,6 +649,7 @@
 @if (session('aux_aproNV')=='1')
     @include('generales.aprobarcotnv')
 @endif
+@include('generales.acuerdotecnico')
 
 
 <div class="modal fade" id="myModalFotoOC" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -666,5 +690,3 @@
         @include('generales.verfoto')
     @endif
 @endif
-
-@include('generales.modalpdf')

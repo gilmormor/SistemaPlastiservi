@@ -272,34 +272,36 @@
                                             <tbody>
                                                 <?php $i=0; //dd($invbodegaproductos) ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    <?php
-                                                        $i++;
-                                                        $request = new Request();
-                                                        $request["producto_id"] = $invbodegaproducto->producto_id;
-                                                        $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
-                                                        $request["tipo"] = 2;
-                                                        $existencia = $invbodegaproducto::existencia($request);
-                                                        //$existencia = $invbodegaproductoobj->consexistencia($request);
-                                                        $aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
-                                                    ?>
-                                                    @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
-                                                        <tr name="fbod{{$invbodegaproducto->id}}" id="fbod{{$invbodegaproducto->id}}">
-                                                            <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
-                                                                <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
-                                                                <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
-                                                                <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
-                                                                {{$invbodegaproducto->id}}
-                                                            </td>
-                                                            <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}}'>
-                                                                {{$invbodegaproducto->invbodega->nomabre}}
-                                                            </td>
-                                                            <td name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
-                                                                {{$aux_stock}}
-                                                            </td>
-                                                            <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right">
-                                                                <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{$invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : ''}}" title='Cant a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
-                                                            </td>
-                                                        </tr>
+                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                                        <?php
+                                                            $i++;
+                                                            $request = new Request();
+                                                            $request["producto_id"] = $invbodegaproducto->producto_id;
+                                                            $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
+                                                            $request["tipo"] = 2;
+                                                            $existencia = $invbodegaproducto::existencia($request);
+                                                            //$existencia = $invbodegaproductoobj->consexistencia($request);
+                                                            $aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
+                                                        ?>
+                                                        @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                            <tr name="fbod{{$invbodegaproducto->id}}" id="fbod{{$invbodegaproducto->id}}">
+                                                                <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
+                                                                    <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
+                                                                    <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
+                                                                    <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
+                                                                    {{$invbodegaproducto->id}}
+                                                                </td>
+                                                                <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}}'>
+                                                                    {{$invbodegaproducto->invbodega->nomabre}}
+                                                                </td>
+                                                                <td name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="text-align:right"  class='tooltipsC' title='Stock disponible'>
+                                                                    {{$aux_stock}}
+                                                                </td>
+                                                                <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right">
+                                                                    <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{$invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : ''}}" title='Cant a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
                                                     @endif
                                                 @endforeach
                                                 @if ($i == 0)

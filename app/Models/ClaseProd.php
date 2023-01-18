@@ -22,9 +22,22 @@ class ClaseProd extends Model
     }
     
 
-    //RELACION INVERSA PARA BUSCAR EL PADRE DE UNA CLASE
+    //RELACION INVERSA PARA BUSCAR CategoriaProd PADRE DE UNA CLASE
     public function categoriaprod()
     {
         return $this->belongsTo(CategoriaProd::class);
     }
+
+    //RELACION DE UNO A MUCHOS acuerdotecnico
+    public function acuerdotecnicos()
+    {
+        return $this->hasMany(AcuerdoTecnico::class,"at_claseprod_id");
+    }
+
+    //RELACION DE UNO A MUCHOS acuerdoTecnicoTemp
+    public function acuerdotecnicotemps()
+    {
+        return $this->hasMany(AcuerdoTecnicoTemp::class,"at_claseprod_id");
+    }
+    
 }

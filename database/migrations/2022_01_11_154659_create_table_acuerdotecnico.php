@@ -22,7 +22,6 @@ class CreateTableAcuerdotecnico extends Migration
             $table->tinyInteger('at_entmuestra')->comment('No=, Si=1')->default(0);
             $table->unsignedBigInteger('at_color_id')->comment('Color de producto acuerdo tecnico.')->nullable();
             $table->foreign('at_color_id','fk_acuerdotecnico_color')->references('id')->on('color')->onDelete('restrict')->onUpdate('restrict');
-            $table->string('at_colordesc',100)->comment('Descripcion de color producto.');
             $table->string('at_npantone',50)->comment('Codigo de color de la bolsa. Esto viene de un talon de colores')->nullable();
             $table->tinyInteger('at_translucidez')->comment('1=No translucido, 2=Opaco semi translucido, 3=Alta Transparencia');
             $table->unsignedBigInteger('at_materiaprima_id')->comment('Codigo materia prima.')->nullable();

@@ -114,7 +114,7 @@ $(document).ready(function () {
             $('td', row).eq(15).attr('name','updated_at' + data.id);
 
             aux_text = aux_text +
-            "<a onclick='anularguiafact(" + data.id + "," + data.despachoord_id + ")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro y devolver a Orden de Despacho' data-toggle='tooltip'>"+
+            "<a onclick='anularguiafact(" + data.id + "," + data.despachoord_id + ",\"dteguiadesp\")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro y devolver a Orden de Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
             $('td', row).eq(16).html(aux_text);
@@ -441,7 +441,7 @@ function verificarAnulGuia()
 	}
 }
 
-function anularguiafact(nfila,id){
+function anularguiafact(nfila,id,aux_rutacargs){
 	$("#idanul").val(id);
 	$("#guiadespachoanul").val(nfila);
     $("#id2").html("Id Guia Despacho:");
@@ -452,7 +452,7 @@ function anularguiafact(nfila,id){
 		nfila : nfila,
 		guiadesp_id : nfila,
 		updated_at : $("#updated_at" + nfila).html(),
-        rutarecarga : "dteguiadesp",
+        rutarecarga : aux_rutacargs,
 		_token: $('input[name=_token]').val()
 	};
     var ruta = "/dteguiadesp/validarupdated";

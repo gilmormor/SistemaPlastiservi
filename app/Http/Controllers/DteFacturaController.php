@@ -729,6 +729,81 @@ class DteFacturaController extends Controller
             ]);
         }
     }
+
+    public function buscarfactura(Request $request)
+    {  
+        if($request->ajax()){
+            $respuesta = array();
+            $sql = "SELECT dte.id as dte_id,dte.fechahora,dte.centroeconomico_id,dte.vendedor_id,dte.obs,dtefac.hep,
+            dtefac.formapago_id,cliente.id as cliente_id,cliente.rut,cliente.razonsocial,
+            cliente.telefono,cliente.email,cliente.direccion,cliente.contactonombre,
+            cliente.formapago_id,cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,
+            cliente.provinciap_id,cliente.comunap_id,
+            clientebloqueado.descripcion,comuna.nombre as comuna_nombre,provincia.nombre as provincia_nombre,
+            formapago.descripcion as formapago_desc,plazopago.dias as plazopago_dias
+            FROM dte INNER JOIN cliente
+            ON dte.cliente_id  = cliente.id AND ISNULL(dte.deleted_at) AND ISNULL(cliente.deleted_at)
+            INNER JOIN dtefac
+            on dte.id = dtefac.dte_id
+            LEFT JOIN clientebloqueado
+            ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+            left join comuna
+            ON cliente.comunap_id=comuna.id and isnull(comuna.deleted_at)
+            left join provincia
+            ON cliente.provinciap_id=provincia.id and isnull(provincia.deleted_at)
+            INNER JOIN formapago
+            ON  cliente.formapago_id = formapago.id and isnull(formapago.deleted_at)
+            INNER JOIN plazopago
+            ON  cliente.plazopago_id = plazopago.id and isnull(plazopago.deleted_at)
+            WHERE dte.foliocontrol_id=1 
+            AND dte.nrodocto = $request->nrodocto
+            AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+            AND dte.statusgen = 1
+            ORDER BY dte.id desc;";
+            $cliente = DB::select($sql);
+            $respuesta['cliente'] = $cliente;
+            //dd($cliente[0]->id);
+            if(count($cliente) > 0){
+                $sql = "SELECT dtedet.id,dtedet.dte_id,dtedet.nrolindet,dtedet.producto_id,dtedet.nmbitem,
+                dtedet.qtyitem,dtedet.unmditem,dtedet.unidadmedida_id,dtedet.prcitem,dtedet.montoitem,dtedet.obsdet,
+                dtedet.itemkg
+                FROM dtedet
+                WHERE dtedet.dte_id = " . $cliente[0]->dte_id .
+                " ORDER BY dtedet.nrolindet;";
+
+
+                $dtedetfact = DB::select($sql);
+                $respuesta['dtedetfact'] = $dtedetfact;
+                $dtefact = Dte::findOrFail($cliente[0]->dte_id);
+                $dtefactdets = $dtefact->dtedets;
+                foreach ($dtefact->dtedtes as $dtedte) {
+                    //BUSCO TODOS LOS DTE RELACIONADOS A LA FACTURA EXCLUYENDO LA FACTURA ORIGINAL
+                    if($dtedte->dtefac_id != $dtefact->id){ 
+                        //ME UBICO EN EL DTE RELACIONADO
+                        $dteNCND = Dte::findOrFail($dtedte->dtefac_id);
+                        if(is_null($dteNCND->dteanul)){
+                            $operador = 1;
+                            if($dteNCND->foliocontrol_id == 5){
+                                $operador = -1;
+                            }
+                            foreach ($dteNCND->dtedets as $dteNCNDdet) {
+                                for ($i=0; $i < count($dtefactdets); $i++) { 
+                                    if($dteNCNDdet->producto_id == $dtefactdets[$i]->producto_id){
+                                        $dtefactdets[$i]->qtyitem += ($dteNCNDdet->qtyitem * $operador);
+                                        $dtefactdets[$i]->montoitem += ($dteNCNDdet->montoitem * $operador);
+                                    }
+                                }
+                                //dd($i);
+                            }
+                        }
+                    }
+                }
+                $respuesta['dtefacdet'] = $dtefactdets->toArray();
+            }
+            return $respuesta;
+        }        
+    }
+
 }
 
 
@@ -928,8 +1003,7 @@ function dtefactura($id,$Folio,$tipoArch){
 
         $array_ocs = explode(",", $aux_dte[0]->oc_id);
         $i = 2;
-        $aux_hep = $dte->dtefac->hep ? $dte->dtefac->hep : "";
-        $aux_RazonRef = "Hep: " . $aux_hep;
+        $aux_RazonRef = $dte->dtefac->hep ? ("Hep: " . $dte->dtefac->hep) : "";;
         $aux_RazonRefImp = false;
         foreach ($array_ocs as $oc_id) {
             $i++;

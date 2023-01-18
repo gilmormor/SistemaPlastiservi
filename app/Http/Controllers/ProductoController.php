@@ -272,12 +272,14 @@ class ProductoController extends Controller
                     'producto.precioneto',
                     'producto.estado',
                     'producto.tipoprod',
+                    'producto.categoriaprod_id',
                     'categoriaprod.precio',
                     'categoriaprodsuc.sucursal_id',
                     'categoriaprod.unidadmedida_id',
                     'categoriaprod.unidadmedidafact_id',
                     'categoriaprod.mostdatosad',
                     'categoriaprod.mostunimed',
+                    'categoriaprod.stakilos',
                     'unidadmedida.nombre as unidadmedidanombre'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)

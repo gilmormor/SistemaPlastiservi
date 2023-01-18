@@ -106,6 +106,19 @@ class Cliente extends Model
     {
         return $this->belongsToMany(Producto::class, 'cliente_producto')->withTimestamps();
     }
+
+    //RELACION DE UNO A MUCHOS acuerdotecnico_cliente
+    public function acuerdotecnico_cliente()
+    {
+        return $this->hasMany(AcuerdoTecnico_Cliente::class);
+    }
+    
+    //RELACION DE UNO A MUCHOS acuerdotecnicotemp_cliente
+    public function acuerdotecnicotemp_cliente()
+    {
+        return $this->hasMany(AcuerdoTecnicoTemp_Cliente::class);
+    }
+    
     
 
     public static function clientesxUsuario($vendedor_id = '0',$cliente_id = 0){

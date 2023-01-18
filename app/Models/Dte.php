@@ -356,8 +356,7 @@ class Dte extends Model
         tipoentrega.nombre as tipoentrega_nombre,'  ' as te,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
         dte.kgtotal as aux_totalkg,
         dte.mnttotal as subtotal,
-        dte.updated_at,'' as rutacrear,
-        dteanul.obs as anul_obs,dteanul.created_at as anul_created_at
+        dte.updated_at,'' as rutacrear
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
         INNER JOIN despachoord
@@ -372,8 +371,6 @@ class Dte extends Model
         ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
         LEFT JOIN clientebloqueado
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-        LEFT JOIN dteanul
-        ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -387,6 +384,7 @@ class Dte extends Model
         AND NOT ISNULL(dte.fchemis)
         and $aux_conddteguiausada
         and dte.foliocontrol_id = 2
+        AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
         order BY dte.nrodocto;";
 
         //AND $aux_conddtenotnull
@@ -498,7 +496,6 @@ class Dte extends Model
         dtedet.id as dtedet_id,dtedet.dtedet_id as dtedetr_id,dtedet_despachoorddet.despachoorddet_id,dtedet_despachoorddet.notaventadetalle_id,
         dtedet.producto_id,dtedet.nrolindet,dtedet.vlrcodigo,dtedet.nmbitem,dtedet.dscitem,dtedet.qtyitem,dtedet.unmditem,
         dtedet.unidadmedida_id,dtedet.prcitem,dtedet.montoitem,dtedet.obsdet,dtedet.itemkg,
-        dteanul.obs as anul_obs,dteanul.created_at as anul_created_at,
         notaventadetalle.precioxkilo,notaventadetalle.precioxkiloreal,
         dte.vendedor_id
         FROM dte INNER JOIN dteguiadesp
@@ -521,22 +518,21 @@ class Dte extends Model
         ON notaventadetalle.id = dtedet_despachoorddet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
         LEFT JOIN clientebloqueado
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-        LEFT JOIN dteanul
-        ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
         WHERE $vendedorcond
-        and $aux_condFecha
-        and $aux_condrut
-        and $aux_condoc_id
-        and $aux_condgiro_id
-        and $aux_condtipoentrega_id
-        and $aux_condnotaventa_id
-        and $aux_condcomuna_id
+        AND $aux_condFecha
+        AND $aux_condrut
+        AND $aux_condoc_id
+        AND $aux_condgiro_id
+        AND $aux_condtipoentrega_id
+        AND $aux_condnotaventa_id
+        AND $aux_condcomuna_id
         AND dte.sucursal_id in ($sucurcadena)
         AND NOT ISNULL(dte.nrodocto)
         AND NOT ISNULL(dte.fchemis)
         AND $aux_conddtenotnull
         AND $aux_conddtedet
         AND isnull(despachoord.numfactura)
+        AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
         order BY dte.nrodocto;";
     
         $arrays = DB::select($sql);
