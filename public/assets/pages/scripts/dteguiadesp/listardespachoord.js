@@ -142,7 +142,7 @@ $(document).ready(function () {
     {
         //consultar(datosod());
         data = datosod();
-        console.log(data.data2);
+        //console.log(data.data2);
         $('#tabla-data-despachoord').DataTable().ajax.url( "listarorddesppage/"+data.data2 ).load();
 
     });

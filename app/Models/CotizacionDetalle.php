@@ -61,5 +61,12 @@ class CotizacionDetalle extends Model
     public function acuerdotecnicotemp()
     {
         return $this->belongsTo(AcuerdoTecnicoTemp::class);
-    }    
+    }
+
+    //RELACION de uno a uno acuerdotecnicotemp
+    public function acuerdotecnicotempunoauno()
+    {
+        return $this->hasOne(AcuerdoTecnicoTemp::class,"at_cotizaciondetalle_id");
+    }
+    
 }

@@ -577,6 +577,14 @@ class DespachoOrdController extends Controller
     {
         if ($request->ajax()) {
             $despachoord = DespachoOrd::findOrFail($request->id);
+            if($despachoord->updated_at != $request->updated_at){
+                return response()->json([
+                    'error' => '0',
+                    'mensaje' => 'No se pudo modificar. Registro Editado por otro usuario. Fecha Hora: '.$despachoord->updated_at,
+                    'tipo_alert' => 'error'
+                ]);
+
+            }    
             if(empty($despachoord->guiadespacho) and empty($despachoord->numfactura)){
                 $despachoordanul = new DespachoOrdAnul();
                 $despachoordanul->despachoord_id = $request->id;

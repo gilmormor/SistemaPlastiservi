@@ -86,7 +86,11 @@ class ReportInvStockBPController extends Controller
         $aux_totalkg = 0;
         foreach ($datas as $data) {
             //$aux_totalkg += $data->stockkg;
-            $aux_totalkg += $data->stock * $data->peso;
+            if($data->peso <= 0){
+                $aux_totalkg += $data->stockkg;
+            }else{
+                $aux_totalkg += $data->stock * $data->peso;
+            }
         }
         $respuesta['aux_totalkg'] = $aux_totalkg;
         return $respuesta;

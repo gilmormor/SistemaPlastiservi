@@ -3,15 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AcuerdoTecnicoTemp extends Model
 {
+    use SoftDeletes;
     protected $table = "acuerdotecnicotemp";
     protected $fillable = [
+        'at_cotizaciondetalle_id',
+        'at_claseprod_id',
+        'at_grupoprod_id',
         'at_desc',
         'at_entmuestra',
         'at_color_id',
-        'at_colordesc',
         'at_npantone',
         'at_translucidez',
         'at_materiaprima_id',
@@ -41,6 +45,8 @@ class AcuerdoTecnicoTemp extends Model
         'at_espesordesv',
         'at_impreso',
         'at_impresoobs',
+        'at_tiposello_id',
+        'at_tiposelloobs',
         'at_sfondo',
         'at_sfondoobs',
         'at_slateral',
@@ -68,10 +74,71 @@ class AcuerdoTecnicoTemp extends Model
         'at_aprobado'
     ];
 
-                        
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function color()
+    {
+        return $this->belongsTo(Color::class,'at_color_id');
+    }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function materiaprima()
+    {
+        return $this->belongsTo(MateriaPrima::class,'at_materiaprima_id');
+    }
+    
     //RELACION DE UNO A MUCHOS cotizaciondetalle
     public function cotizaciondetalles()
     {
         return $this->hasMany(CotizacionDetalle::class);
     }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function tiposello()
+    {
+        return $this->belongsTo(TipoSello::class,'at_tiposello_id');
+    }
+
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function claseprod()
+    {
+        return $this->belongsTo(ClaseProd::class,"at_claseprod_id");
+    }
+
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function grupoprod()
+    {
+        return $this->belongsTo(GrupoProd::class,"at_grupoprod_id");
+    }
+
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function cotizaciondetalle()
+    {
+        return $this->belongsTo(CotizacionDetalle::class,'at_cotizaciondetalle_id');
+    }
+    
+    //RELACION DE UNO A MUCHOS acuerdotecnicotemp_cliente
+    public function acuerdotecnicotemp_cliente()
+    {
+        return $this->hasMany(AcuerdoTecnicoTemp_Cliente::class,"acuerdotecnicotemp_id");
+    }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function anchounidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class,"at_anchoum_id");
+    }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function largounidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class,"at_anchoum_id");
+    }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function fuelleunidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class,"at_fuelleum_id");
+    }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function espesorunidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class,"at_espesorum_id");
+    }
+    
+    
 }

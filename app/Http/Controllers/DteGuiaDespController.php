@@ -1079,8 +1079,8 @@ function dteguiadesp($id,$Folio,$tipoArch){
             "<TpoCodigo>INTERNO</TpoCodigo>" .
             "<VlrCodigo>" . $VlrCodigo . "</VlrCodigo>" .
             "</CdgItem>" .
-            "<NmbItem>" . $NmbItem . "</NmbItem>" .
-            "<DscItem>" . $DscItem . "</DscItem>" .
+            "<NmbItem>" . $VlrCodigo . "</NmbItem>" .
+            "<DscItem>" . $NmbItem . "</DscItem>" .
             "<QtyItem>" . $dtedet->qtyitem . "</QtyItem>" .
             "<UnmdItem>" . $UnmdItem . "</UnmdItem>" .
             "<PrcItem>$dtedet->prcitem</PrcItem>" .
@@ -1090,7 +1090,7 @@ function dteguiadesp($id,$Folio,$tipoArch){
         }
     
         $TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->dteguiadesp->ot) ? "" : "OT:" . $dte->dteguiadesp->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->dteguiadesp->lugarentrega . " ")  . (empty($dte->dteguiadesp->comunaentrega_id) ? "" : $dte->dteguiadesp->comunaentrega->nombre . " ");
-        $TpoDocRef = strtoupper(substr(trim($TpoDocRef),0,90));
+        $TpoDocRef = sanear_string(strtoupper(substr(trim($TpoDocRef),0,90)));
     
         $contenido .= "<Referencia>" .
         "<NroLinRef>1</NroLinRef>" .

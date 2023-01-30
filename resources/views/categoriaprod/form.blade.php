@@ -148,6 +148,16 @@
     </div>
 </div>
 <input type="hidden" name="asoprodcli" id="asoprodcli" value="{{old('asoprodcli', $data->asoprodcli ?? '0')}}">
+<div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_stakilos" name="aux_stakilos">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Solicitar precio por kilo y kilos totales en Procesos (Cotizacion, Nota de Venta)
+        </label>
+    </div>
+</div>
+<input type="hidden" name="stakilos" id="stakilos" value="{{old('stakilos', $data->stakilos ?? '0')}}">
 
 <div class="col-md-6">
     <div class="box box-primary">

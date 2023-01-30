@@ -74,4 +74,11 @@ class NotaVentaDetalle extends Model
     {
         return $this->hasMany(DespachoOrdDet::class);
     }
+
+    //RELACION de uno a uno acuerdotecnico
+    public function acuerdotecnico()
+    {
+        return $this->hasOne(AcuerdoTecnico::class,"at_notaventadetalle_id");
+    }
+    
 }

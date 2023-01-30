@@ -57,7 +57,11 @@ $(document).ready(function () {
                 $('td', row).eq(5).html(MASK(0, data.metacomerkg, '-###,###,###,##0.00',1));
                 */
                 $('td', row).eq(0).attr('style','text-align:center');
-                stockKg = data.stock * data.peso
+                if(data.peso <= 0){
+                    stockKg = data.stockkg;
+                }else{
+                    stockKg = data.stock * data.peso
+                }
                 $('td', row).eq(5).attr('style','text-align:center');
 
                 $('td', row).eq(6).html(NUM(data.peso, 2));

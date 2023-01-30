@@ -44,6 +44,12 @@ $(document).ready(function () {
         $("#aux_asoprodcli").prop("checked", false);    
     }
 
+    if($("#stakilos").val() == '1'){
+        $("#aux_stakilos").prop("checked", true);    
+    }else{
+        $("#aux_stakilos").prop("checked", false);    
+    }
+
 });
 
 $("#aux_mostdatosad").change(function() {
@@ -66,6 +72,14 @@ $("#aux_asoprodcli").change(function() {
     $("#asoprodcli").val('0');
     if(estaSeleccionado){
         $("#asoprodcli").val('1');
+    }
+});
+
+$("#aux_stakilos").change(function() {
+    estaSeleccionado = $("#aux_stakilos").is(":checked");
+    $("#stakilos").val('0');
+    if(estaSeleccionado){
+        $("#stakilos").val('1');
     }
 });
 
