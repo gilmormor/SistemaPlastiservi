@@ -22,6 +22,7 @@
 					<span class="h3">{{$request->aux_titulo}}</span>
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
 					<p>Area Producción: {{$nombreAreaproduccion}}</p>
+					<p>Vendedor: {{$request->nombreVendedor}}</p>
 					<p>Giro: {{$nombreGiro}} </p>
 					<p>Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
 				</div>

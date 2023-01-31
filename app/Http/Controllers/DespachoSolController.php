@@ -1517,6 +1517,19 @@ class DespachoSolController extends Controller
             $nombreGiro=$giro->nombre;
         }
 
+        $request->nombreVendedor = "Todos";
+        if($request->vendedor_id){
+            $vendedor = Vendedor::whereIn('vendedor.id', explode (",",$request->vendedor_id))
+                        ->join('persona', 'vendedor.persona_id', '=', 'persona.id')
+                        ->select([
+                            'persona.nombre'
+                        ])
+                        ->pluck('persona.nombre')->toArray();
+            //implode(",", $vendedor);
+            $request->nombreVendedor = implode(",", $vendedor);
+            //$request->nombreVendedor = $vendedor->persona->nombre;
+        }
+
         //return armarReportehtml($request);
         if($datas){
                 if(env('APP_DEBUG')){
