@@ -2527,7 +2527,7 @@ function consultasoldesp($request){
     if(empty($request->tipoentrega_id)){
         $aux_condtipoentrega_id = " true";
     }else{
-        $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$request->tipoentrega_id'";
+        $aux_condtipoentrega_id = "despachosol.tipoentrega_id='$request->tipoentrega_id'";
     }
     if(empty($request->notaventa_id)){
         $aux_condnotaventa_id = " true";
