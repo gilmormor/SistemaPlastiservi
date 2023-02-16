@@ -51,5 +51,13 @@ class DteDet extends Model
     {
         return $this->belongsTo(DteDet::class,"dtedet_id");
     }
+
+    //RELACION DE UNO A MUCHOS dtedets
+    public function dtedets()
+    {
+        return $this->hasMany(DteDet::class,'dtedet_id');
+    }
+
+    
     
 }

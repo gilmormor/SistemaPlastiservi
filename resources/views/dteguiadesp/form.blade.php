@@ -1,3 +1,6 @@
+<?php 
+    use App\Models\Producto;
+?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', isset($dteguiadesp) ? $dteguiadesp->updated_at : $data->updated_at ?? '')}}">
 <input type="hidden" name="notaventa_id" id="notaventa_id" value="{{$data->notaventa_id}}">
 <!--<input type="hidden" name="aux_sta" id="aux_sta" value="$aux_sta">-->
@@ -296,6 +299,30 @@
                                     $aux_kilos = ($NVDet->totalkilos/$NVDet->cant) * $detalle->cantdesp;
                                 }
                                 $aux_Tkilos += $aux_kilos;
+                                $producto_id = isset($dteguiadesp) ? $detalle->producto_id : $NVDet->producto_id;
+                                $producto = Producto::findOrFail($producto_id);
+                                if(isset($dteguiadesp)){
+                                    //esto es para reemplazar el caracter comilla doble " de la cadena, para evitar que me trunque los valores en javascript al asignar a attr val 
+                                    $detalle->nmbitem = str_replace('"',"'",$detalle->nmbitem) ;
+                                    $aux_nombreprod = $detalle->nmbitem;
+                                }else{
+                                    $aux_nombreprod = $NVDet->producto->nombre;
+                                    if(isset($producto->acuerdotecnico)){
+                                        $at_ancho = $producto->acuerdotecnico->at_ancho;
+                                        $at_largo = $producto->acuerdotecnico->at_largo;
+                                        $at_espesor = $producto->acuerdotecnico->at_espesor;
+                                        $at_ancho = empty($at_ancho) ? "0.00" : $at_ancho;
+                                        $at_largo = empty($at_largo) ? "0.00" : $at_largo;
+                                        $at_espesor = empty($at_espesor) ? "0.00" : $at_espesor;
+                                        $aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
+                                    }else{
+                                        //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
+                                        $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_nombre);
+                                        $aux_nombreprod = $aux_nombreprod . " D:" . $producto->diametro . " L:" . $producto->long . " " . $aux_cla_nombre;
+                                    }
+                                }
+                                //esto es para reemplazar el caracter comilla doble " de la cadena, para evitar que me trunque los valores en javascript al asignar a attr val 
+                                $aux_nombreprod = str_replace('"',"'",$aux_nombreprod);
                                 //dd($detalle->dteguiadespdet);
                             ?>
                             <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="proditems">
@@ -327,10 +354,10 @@
                                     <input type="text" name="unmditem[]" id="unmditem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->unmditem : $NVDet->unidadmedida->nombre}}" style="display:none;"/>
                                 </td>
                                 <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                    <a id="producto_nombre{{$aux_nfila}}" name="producto_nombre{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Nombre Producto" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->nmbitem : $NVDet->producto->nombre}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="producto_nombre">
-                                        {{isset($dteguiadesp) ? $detalle->nmbitem : $NVDet->producto->nombre}}
+                                    <a id="producto_nombre{{$aux_nfila}}" name="producto_nombre{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Nombre Producto" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="producto_nombre">
+                                        {{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}
                                     </a>
-                                    <input type="text" name="nmbitem[]" id="nmbitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->nmbitem : $NVDet->producto->nombre}}" style="display:none;"/>
+                                    <input type="text" name="nmbitem[]" id="nmbitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}" style="display:none;"/>
                                     <input type="text" name="dscitem[]" id="dscitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->dscitem : ''}}" style="display:none;"/>
                                 </td>
                                 <td style="text-align:right;"> 

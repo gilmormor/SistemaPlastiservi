@@ -225,7 +225,16 @@ function ajaxRequest(data,url,funcion) {
                     $("#fila"+datatemp.nfila).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
-					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                    swal({
+						//title: 'Error',
+						text: respuesta.mensaje,
+						icon: 'error',
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+					});
+					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
 				}
 			}
             if(funcion=='consultaranularguiafact'){
@@ -338,7 +347,7 @@ function anularfac(id){
         updated_at : $("#updated_at" + id).html(),
         _token: $('input[name=_token]').val()
     };
-    var ruta = '/dtefactura/anularfac';
+    var ruta = '/dtefactura/anular';
     //var ruta = '/guiadesp/dteguiadesp';
     swal({
         title: '¿ Anular Factura ?',

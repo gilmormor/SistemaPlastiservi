@@ -1081,8 +1081,8 @@ function dteguiadesp($id,$Folio,$tipoArch){
             "<TpoCodigo>INTERNO</TpoCodigo>" .
             "<VlrCodigo>" . $VlrCodigo . "</VlrCodigo>" .
             "</CdgItem>" .
-            "<NmbItem>" . $NmbItem . "</NmbItem>" .
-            "<DscItem>" . $DscItem . "</DscItem>" .
+            "<NmbItem>" . $VlrCodigo . "</NmbItem>" .
+            "<DscItem>" . $NmbItem . "</DscItem>" .
             "<QtyItem>" . $guiadespdet->qtyitem . "</QtyItem>" .
             "<UnmdItem>" . $UnmdItem . "</UnmdItem>" .
             "<PrcItem>$guiadespdet->prcitem</PrcItem>" .
@@ -1092,7 +1092,8 @@ function dteguiadesp($id,$Folio,$tipoArch){
         }
     
         $TpoDocRef = (empty($guiadesp->despachoord_id) ? "" : "OD:" . $guiadesp->despachoord_id . " ") . (empty($guiadesp->ot) ? "" : "OT:" . $guiadesp->ot . " ")  . (empty($guiadesp->obs) ? "" : $guiadesp->obs . " ") . (empty($guiadesp->lugarentrega) ? "" : $guiadesp->lugarentrega . " ")  . (empty($guiadesp->comunaentrega_id) ? "" : $guiadesp->comunaentrega->nombre . " ");
-        $TpoDocRef = strtoupper(substr(trim($TpoDocRef),0,90));
+        $TpoDocRef = sanear_string(strtoupper(substr(trim($TpoDocRef),0,90)));
+        //dd($TpoDocRef);
     
         $contenido .= "<Referencia>" .
         "<NroLinRef>1</NroLinRef>" .

@@ -230,16 +230,19 @@ $("#btnaceptarMT").click(function(event){
 	$("#auxeditcampoN").val(1);
 	if(verificarDato(".valorrequerido"))
 	{
+		let auxeditcampoT = $("#auxeditcampoT").val();
+		//esto es para reemplazar el caracter comilla doble " de la cadena, para evitar que me trunque los valores en javascript al asignar a attr val 
+		auxeditcampoT = auxeditcampoT.replaceAll('"', "'");
 		id = $("#auxeditcampoT").attr('fila_id');
 		if($("#auxeditcampoT").attr('aux_nomcampot') == "producto_nombre"){
-			$("#producto_nombre" + id).html($("#auxeditcampoT").val());
-			$("#producto_nombre" + id).attr('valor', $("#auxeditcampoT").val());
-			$("#nmbitem" + id).val($("#auxeditcampoT").val());			
+			$("#producto_nombre" + id).html(auxeditcampoT);
+			$("#producto_nombre" + id).attr('valor', auxeditcampoT);
+			$("#nmbitem" + id).val(auxeditcampoT);			
 		}
 		if($("#auxeditcampoT").attr('aux_nomcampot') == "unmditemlbl"){
-			$("#unmditemlbl" + id).html($("#auxeditcampoT").val());
-			$("#unmditemlbl" + id).attr('valor', $("#auxeditcampoT").val());
-			$("#unmditem" + id).val($("#auxeditcampoT").val());			
+			$("#unmditemlbl" + id).html(auxeditcampoT);
+			$("#unmditemlbl" + id).attr('valor', auxeditcampoT);
+			$("#unmditem" + id).val(auxeditcampoT);			
 		}
 		$("#myModalEditarCampoTex").modal('hide');
 	}else{

@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AreaProduccion;
+use App\Models\Comuna;
+use App\Models\Dte;
+use App\Models\Giro;
+use App\Models\TipoEntrega;
+use App\Models\Vendedor;
 use Illuminate\Http\Request;
 
-class DteNCController extends Controller
+class ReportDTENcController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,7 +19,25 @@ class DteNCController extends Controller
      */
     public function index()
     {
-        //
+        can('listar-dte-nota-credito-reporte');
+
+        $giros = Giro::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $tipoentregas = TipoEntrega::orderBy('id')->get();
+        $fechaAct = date("d/m/Y");
+        $tablashtml['comunas'] = Comuna::selectcomunas();
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+
+        return view('reportdtenc.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
+    }
+    
+    public function reportdtencpage(Request $request){
+        //can('reporte-guia_despacho');
+        //dd('entro');
+        //$datas = GuiaDesp::reporteguiadesp($request);
+        $request->request->add(['foliocontrol_id' => 5]);
+        $datas = Dte::reportdtencnd($request);
+        return datatables($datas)->toJson();
     }
 
     /**

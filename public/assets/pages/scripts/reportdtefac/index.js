@@ -63,6 +63,13 @@ $(document).ready(function () {
                     "</a>";
                     $('td', row).eq(0).html(aux_text);
                 }
+                /*
+                aux_text = 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='generarFactSii(" + data.id + ")' title='Generar DTE Factura SII'>"+
+                    + data.id + 
+                "</a>";
+                $('td', row).eq(0).html(aux_text);
+                */
                 $('td', row).eq(0).attr('data-order',data.id);
 
     
@@ -360,7 +367,7 @@ function datosFac(){
         data1 : data1,
         data2 : data2
     };
-    console.log(data);
+    //console.log(data);
     return data;
 }
 function consultar(data){

@@ -278,3 +278,12 @@ H1.SaltoDePagina
 .width200{
     width: 200px !important;
 }
+
+.headtarial td {
+	height: 20px;
+}
+
+.headtarial td p {
+	font-size: 13px;
+	font-family: Arial;
+}

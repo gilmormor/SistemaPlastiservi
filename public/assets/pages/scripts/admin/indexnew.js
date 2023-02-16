@@ -58,7 +58,8 @@ $(document).on("click", ".btnAnular", function(event){
         //alert(id);
         var data = {
             _token  : $('input[name=_token]').val(),
-            id      : id
+            id      : id,
+            updated_at : $("#updated_at" + id).html()
         };
         if (value) {
             ajaxRequest(data,form.attr('href')+'/'+id+'/anular','anular',form);

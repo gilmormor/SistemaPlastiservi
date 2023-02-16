@@ -40,7 +40,7 @@ $(document).ready(function () {
             $(row).attr('name','fila' + data.id);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: " + data.id + "' onclick='genpdfGD(" + data.id + ",1)'>"+
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>" +
                     + data.id +
                 "</a>";
             $('td', row).eq(0).html(aux_text);
@@ -73,7 +73,12 @@ $(document).ready(function () {
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden Despacho' onclick='genpdfOD(" + data.despachoord_id + ",1)'>" + 
                     data.despachoord_id + 
                 "</a>";
-            $('td', row).eq(7).html(aux_text);            
+            $('td', row).eq(7).html(aux_text);
+            aux_text = 
+                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>" +
+                        data.nrodocto +
+                    "</a>";
+            $('td', row).eq(8).html(aux_text);
             $('td', row).eq(8).attr('style','text-align:center');
             $('td', row).eq(10).attr('data-order',data.kgtotal);
             $('td', row).eq(10).attr('style','text-align:right');
@@ -104,17 +109,19 @@ $(document).ready(function () {
                 aux_text = 
                 "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarGD(" + data.id + "," + data.despachoord_id + ")' title='Generar DTE Guia Despacho'>"+
                     "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+
+                "</a>";
+                /*
                 "<a href='dteguiadesp' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
+                */
             }
             $('td', row).eq(15).addClass('updated_at');
             $('td', row).eq(15).attr('id','updated_at' + data.id);
             $('td', row).eq(15).attr('name','updated_at' + data.id);
 
             aux_text = aux_text +
-            "<a onclick='anularguiafact(" + data.id + "," + data.despachoord_id + ")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro y devolver a Orden de Despacho' data-toggle='tooltip'>"+
+            "<a onclick='anularguiafact(" + data.id + "," + data.despachoord_id + ",\"dteguiadesp\")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro y devolver a Orden de Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
             $('td', row).eq(16).html(aux_text);
@@ -202,7 +209,16 @@ function ajaxRequest(data,url,funcion) {
                     genpdfGD(respuesta.nrodocto,"_U");
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
-					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                    swal({
+						//title: 'Error',
+						text: respuesta.mensaje,
+						icon: 'error',
+						buttons: {
+							confirm: "Cerrar"
+						},
+					});
+
+					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
 				}
 			}
             if(funcion=='buscarBodegaDespachoAsignarGuia'){
@@ -231,7 +247,7 @@ function ajaxRequest(data,url,funcion) {
                         };
                         var ruta = '/dteguiadesp/guardardteguiadesp';
                         //var ruta = '/guiadesp/dteguiadesp';
-                        console.log(data);
+                        //console.log(data);
                         swal({
                             title: '¿ Generar DTE Guia Despacho ?',
                             text: "Esta acción no se puede deshacer!",
@@ -441,7 +457,7 @@ function verificarAnulGuia()
 	}
 }
 
-function anularguiafact(nfila,id){
+function anularguiafact(nfila,id,aux_rutacargs){
 	$("#idanul").val(id);
 	$("#guiadespachoanul").val(nfila);
     $("#id2").html("Id Guia Despacho:");
@@ -452,7 +468,7 @@ function anularguiafact(nfila,id){
 		nfila : nfila,
 		guiadesp_id : nfila,
 		updated_at : $("#updated_at" + nfila).html(),
-        rutarecarga : "dteguiadesp",
+        rutarecarga : aux_rutacargs,
 		_token: $('input[name=_token]').val()
 	};
     var ruta = "/dteguiadesp/validarupdated";

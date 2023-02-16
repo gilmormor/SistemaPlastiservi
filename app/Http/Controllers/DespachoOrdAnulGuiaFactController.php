@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnulGuiaFact;
+use App\Models\Dte;
+use App\Models\DteAnul;
 use App\Models\GuiaDesp;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
@@ -108,6 +110,47 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 ]);
             }
             */
+            if(isset($request->procesoorigen)){
+                //SI SE ANULA DESDE LA GUIA DESPACHO GENERADA DTE
+                if($request->procesoorigen == "AnularDTE"){
+                    $dte = Dte::findOrFail($request->dte_id);
+                    if($request->updated_at != $dte->updated_at){
+                        return redirect('dteguiadesp')->with([
+                            'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                            'tipo_alert' => 'alert-error'
+                        ]);
+                    }
+                    //dd($request);
+                    $request->request->add(['usuario_id' => auth()->id()]);
+                    $dteanul = DteAnul::create($request->all());
+                    $dte->updated_at = date("Y-m-d H:i:s");
+                    if($dte->save()){
+                        $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
+                        $despachoord->updated_at = date("Y-m-d H:i:s");
+                        if(!$despachoord->save()){
+                            return response()->json([
+                                'mensaje' => 'Error al guardar!',
+                                'tipo_alert' => 'error'
+                            ]);
+                        }
+                    }else{
+                        return response()->json([
+                            'mensaje' => 'Error al guardar!',
+                            'tipo_alert' => 'error'
+                        ]);
+                    }
+                }
+                //ESTO EN CASO QUE SE ANULE DESDE ORDEN DE DESPACHO, OJO EN ESTE MODULO NO ESTOY ENVIANDO ESTE VALOR
+                if($request->procesoorigen == "AnularDespOrd"){
+                    $data = DespachoOrd::findOrFail($request->despachoord_id);
+                    if($request->updated_at != $data->updated_at){
+                        return response()->json([
+                            'mensaje' => 'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                            'tipo_alert' => 'error'
+                        ]);
+                    }    
+                }
+            }
             $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
 
             $aux_bandera = true;
@@ -121,7 +164,6 @@ class DespachoOrdAnulGuiaFactController extends Controller
 
             if($request->pantalla_origen == 1){
                 if($aux_bandera){
-
                     $invmodulo = InvMovModulo::where("cod","ORDDESP")->get();
                     if(count($invmodulo) == 0){
                         return response()->json([
@@ -301,11 +343,24 @@ class DespachoOrdAnulGuiaFactController extends Controller
                         }
                     } 
                 }else{
+                    $aux_codigos = " NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id; //CODIGOS TRAZABILIDAD
+                    if(isset($request->descmovinv)){                        
+                        $aux_desc = $request->descmovinv;
+                        if(isset($request->dte_id)){
+                            $dte = Dte::findOrFail($request->dte_id);
+                            $aux_desc = $aux_desc . $aux_codigos . " DTE_ID:" . $dte->id;
+                            if(!is_null($dte->nrodocto)){
+                                $aux_desc = $aux_desc . " DTE_nrodocto:" . $dte->nrodocto;
+                            }
+                        }
+                    }else{
+                        $aux_desc = "Entrada por anulacion desde asignar Fact / NV:" . $aux_codigos;
+                    }
                     $invmov_array = array();
                     $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                     $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                    $invmov_array["desc"] = "Entrada por anulacion desde asignar Fact / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
-                    $invmov_array["obs"] = "Entrada por anulacion desde asignar Fact / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+                    $invmov_array["desc"] = $aux_desc;
+                    $invmov_array["obs"] = $aux_desc;
                     $invmov_array["invmovmodulo_id"] = $invmoduloBGiaD->id; //Modulo Guia Despacho
                     $invmov_array["idmovmod"] = $request->id;
                     $invmov_array["invmovtipo_id"] = 1;

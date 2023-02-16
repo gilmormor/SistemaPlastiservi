@@ -32,5 +32,10 @@ class DteDte extends Model
     {
         return $this->belongsTo(Dte::class,"dtefac_id");
     }
-    
+
+    //RELACION de uno a uno dteguiadesp
+    public function dteguiadesp()
+    {
+        return $this->hasOne(DteGuiaDesp::class,"dte_id","dter_id");
+    }    
 }

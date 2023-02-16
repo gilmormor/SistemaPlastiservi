@@ -58,7 +58,11 @@ $(document).ready(function () {
                 $('td', row).eq(12).attr('style','text-align:center');
                 $('td', row).eq(13).attr('style','text-align:right');
                 //$('td', row).eq(13).html(MASK(0, data.stockkg, '-###,###,###,##0.00',1));
-                stockKg = data.stock * data.peso
+                if(data.peso <= 0){
+                    stockKg = data.stockkg;
+                }else{
+                    stockKg = data.stock * data.peso;
+                }
                 $('td', row).eq(13).attr('data-order',stockKg);
                 $('td', row).eq(13).attr('data-search',stockKg);
                 $('td', row).eq(13).html(MASKLA(stockKg,2));

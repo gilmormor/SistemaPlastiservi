@@ -10,6 +10,7 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
+        "order"       : [[ 0, "desc" ]],
         'ajax'        : "despachoordpage",
         'columns'     : [
             {data: 'id'},

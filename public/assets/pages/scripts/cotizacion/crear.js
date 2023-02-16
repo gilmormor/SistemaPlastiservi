@@ -223,8 +223,92 @@ $(document).ready(function () {
 	});
 	//configTablaProd();
 
+
 });
 
+//CAPTURE DE PANTALLA Y GENERAR PDF
+/*
+const $boton = document.querySelector("#create_pdf"), // El botón que desencadena
+$objetivo = $("#acuerdotecnicotemp"); //document.body, // A qué le tomamos la foto
+$contenedorCanvas = document.querySelector("#contenedorCanvas"); // En dónde ponemos el elemento canvas
+
+// Agregar el listener al botón
+$boton.addEventListener("click", () => {
+html2canvas($objetivo) // Llamar a html2canvas y pasarle el elemento
+  .then(canvas => {
+	// Cuando se resuelva la promesa traerá el canvas
+	$contenedorCanvas.appendChild(canvas); // Lo agregamos como hijo del div
+  },
+  windowHeight = 1000,
+  );
+});
+*/
+
+/*
+var form = $('#acuerdotecnico'),  
+cache_width = form.width(),  
+a4 = [595.28, 841.89]; // for a4 size paper width and height  
+
+$('#create_pdf1').on('click', function () {  
+   $('body').scrollTop(0);
+   createPDF(); 
+   //pruebaDivAPdf();
+});  
+
+//create pdf  
+function createPDF() {  
+	getCanvas().then(function (canvas) {  
+		var  
+		 img = canvas.toDataURL("image/png"),  
+		 doc = new jsPDF({  
+			 unit: 'px',  
+			 format: 'a4'  
+		 });  
+		doc.addImage(img, 'JPEG', 20, 20);  
+		doc.save('Bhavdip-html-to-pdf.pdf');  
+		form.width(cache_width);  
+	});  
+}  
+
+// create canvas object  
+function getCanvas() {  
+	form.width((a4[0] * 1.33333) - 80).css('max-width', 'none');  
+	return html2canvas(form, {  
+		imageTimeout: 2000,  
+		removeContainer: true  
+	});  
+}  
+
+function pruebaDivAPdf() {
+	var pdf = new jsPDF('p', 'pt', 'letter');
+	source = $('#imprimir')[0];
+
+	specialElementHandlers = {
+		'#bypassme': function (element, renderer) {
+			return true
+		}
+	};
+	margins = {
+		top: 80,
+		bottom: 60,
+		left: 40,
+		width: 522
+	};
+
+	pdf.fromHTML(
+		source, 
+		margins.left, // x coord
+		margins.top, { // y coord
+			'width': margins.width, 
+			'elementHandlers': specialElementHandlers
+		},
+
+		function (dispose) {
+			pdf.save('Prueba.pdf');
+		}, margins
+	);
+}
+*/
 function insertarTabla(){
 	$("#trneto").remove();
 	$("#triva").remove();
@@ -246,6 +330,10 @@ function insertarTabla(){
 	{
 		aux_precioxkilo = 0; //$("#precioM").attr("valor");
 		aux_precioxkiloreal = 0; // $("#precioxkilorealM").val();
+		if($("#precioM").val()>0){
+			aux_precioxkilo = $("#precioM").attr("valor");
+			aux_precioxkiloreal = $("#precioM").attr("valor");
+		}
 	}
 	if($("#unidadmedida_idM option:selected").attr('value') == 7){
 		aux_precioxkilo = $("#precioM").attr("valor");
@@ -254,13 +342,13 @@ function insertarTabla(){
 	//alert($("#tipoprodM").attr('valor'));
 	aux_botonAcuTec = '';
 	if($("#tipoprodM").attr('valor') == 1) {
-		aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
+		aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
 		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>';
 	}
 	//aux_botonAcuTec = $("#tipoprodM").attr('valor') == '1' ? 'x' : '';
 
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
-			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;">'+ 
+			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;" categoriaprod_id="' + $("#categoriaprod_id").val() + '">'+ 
 				$("#producto_idM").val() + aux_botonAcuTec +
 			'</td>'+
 			'<td style="display:none;" name="cotdet_idTD'+ aux_nfila + '" id="cotdet_idTD'+ aux_nfila + '">'+ 
@@ -450,7 +538,9 @@ function eliminarRegistro(i){
 		},
 	}).then((value) => {
 		if (value) {
-			ajaxRequest(data,ruta,'eliminar');
+			$("#fila"+data['nfila']).remove();
+			totalizar();
+			//ajaxRequest(data,ruta,'eliminar');
 		}
 	});
 }
@@ -1045,6 +1135,65 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 		localStorage.setItem('datos', JSON.stringify(data));
 		var guardado = localStorage.getItem('datos');
 		aux_nfila = $("#aux_numfilaAT").val();
+		//console.log(guardado)
+		//console.log(data);
+		data.objtxt = guardado;
+		data._token = $('input[name=_token]').val();
+
+		$.ajax({
+			url: '/acuerdotecnico/buscaratxcampos',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				if(respuesta.length > 0){
+					/*
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: 'Something went wrong!',
+						footer: '<a href="">Why do I have this issue?</a>'
+					  })*/
+					swal({
+						title: 'Acuerdo técnico ya existe',
+						text: 'Producto Cod: ' + respuesta[0].producto_id + ', ' + respuesta[0].producto_nombre,
+						icon: 'warning',
+						buttons: {
+							cancel: "Cerrar",
+							confirm: "Ver AT"
+						},
+						}).then((value) => {
+							/*
+							fila = $(this).closest("tr");
+							form = $(this);
+							id = fila.find('td:eq(0)').text();
+							//alert(id);
+							var data = {
+								_token  : $('input[name=_token]').val(),
+								id      : id
+							};
+							if (value) {
+								ajaxRequest(data,form.attr('href')+'/'+id+'/anular','anular',form);
+							}*/
+						});
+				}else{
+
+				}
+				//console.log(respuesta);
+				/*
+				if(respuesta['cont']>0){
+					mostrardatosadUniMed(respuesta);
+					if($("#invbodega_idM")){
+						llenarselectbodega(respuesta);
+						//console.log(respuesta);
+						$("#invbodega_idM").val($("#invbodega_idTD"+i).val());
+						$("#invbodega_idM").selectpicker('refresh');
+						$("#stakilos").val(respuesta['stakilos']);
+					}
+				}*/
+			}
+		});
+		
+
 		$("#acuerdotecnico" + aux_nfila).val(guardado); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
 		$("#myModalAcuerdoTecnico").modal('hide');
 		//alert($("#acuerdotecnico" + i).val());
@@ -1089,6 +1238,7 @@ function verificarDato(aux_nomclass)
 
 $(".valorrequerido").keyup(function(){
 	//alert($(this).parent().attr('class'));
+	//console.log($(this).prop('min'));
 	validacion($(this).prop('name'),$(this).attr('tipoval'));
 });
 
@@ -1166,4 +1316,79 @@ function ObsItemCot($id,$i){
 			});
 		}
     });
+}
+
+$("#at_ancho").blur(function(event){
+	$("#at_anchodesv").val(desvAnchoLargo($("#at_ancho").val()));
+});
+
+$("#at_largo").blur(function(event){
+	$("#at_largodesv").val(desvAnchoLargo($("#at_largo").val()));
+});
+
+$("#at_espesor").blur(function(event){
+	aux_valor = $("#at_espesor").val();
+	aux_desc = $("#at_materiaprima_id option:selected").attr('desc');
+	$("#at_espesordesv").val(desvEspesor(aux_valor,aux_desc));
+});
+
+
+function desvAnchoLargo(aux_valor){
+	aux_desv = "";
+	if(aux_valor > 0){
+		switch(true) {
+			case aux_valor <= 50:
+				aux_desv = "±1 CM";
+				break;
+			case aux_valor > 50 && aux_valor <= 150:
+				aux_desv = "±2 CM";
+				break;
+			default:
+				aux_desv = "±3 CM";
+				break;
+		}	
+	}
+	return aux_desv;
+}
+
+function desvEspesor(aux_valor,aux_desc){
+	aux_desv = "";
+	if(aux_valor > 0){
+		if(aux_desc == "Baja"){
+			switch(true) {
+				case aux_valor >= 0.025 && aux_valor <= 0.040:
+					aux_desv = "±2 µ";
+					break;
+				case aux_valor >= 0.041 && aux_valor <= 0.080:
+					aux_desv = "±3 µ";
+					break;
+				case aux_valor >= 0.081 && aux_valor <= 0.090:
+					aux_desv = "±4 µ";
+					break;
+				case aux_valor >= 0.091 && aux_valor <= 0.140:
+					aux_desv = "±5 µ";
+					break;
+				case aux_valor >= 0.141 && aux_valor <= 0.200:
+					aux_desv = "±7 µ";
+					break;
+			}		
+		}else{
+			switch(true) {
+				case aux_valor >= 0.010 && aux_valor <= 0.013:
+					aux_desv = "±1 µ";
+					break;
+				case aux_valor >= 0.014 && aux_valor <= 0.018:
+					aux_desv = "±2 µ";
+					break;
+				case aux_valor >= 0.019 && aux_valor <= 0.030:
+					aux_desv = "±3 µ";
+					break;
+				case aux_valor >= 0.031 && aux_valor <= 0.050:
+					aux_desv = "±4 µ";
+					break;
+			}
+		}
+	}
+	return aux_desv;
+
 }

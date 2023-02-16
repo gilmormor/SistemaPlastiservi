@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarCotizacion;
 use App\Models\AcuerdoTecnicoTemp;
+use App\Models\AcuerdoTecnicoTemp_Cliente;
 use App\Models\CategoriaProd;
 use App\Models\Certificado;
 use App\Models\Cliente;
@@ -27,6 +28,7 @@ use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\SucursalClienteDirec;
 use App\Models\TipoEntrega;
+use App\Models\TipoSello;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
 use DateTime;
@@ -93,7 +95,6 @@ class CotizacionController extends Controller
 
         
     }
-/*
     public function productobuscarpage(Request $request){
         $datas = Producto::productosxCliente($request);
         return datatables($datas)->toJson();
@@ -113,7 +114,6 @@ class CotizacionController extends Controller
         $datas = Cliente::clientesxUsuarioSQL();
         return datatables($datas)->toJson();
     }
-*/
 
     /*
     public function consulta(){
@@ -162,6 +162,7 @@ class CotizacionController extends Controller
         $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
+        $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         //dd($tablas['unidadmedida']);
         session(['aux_aprocot' => '0']);
         session(['editaracutec' => '1']);
@@ -281,7 +282,12 @@ class CotizacionController extends Controller
                                 }
                             }
                             $arrayAT = (array) $objetAT;
+                            $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                            $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
+                                "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
+                                "cliente_id" => $request->cliente_id,
+                            ]);
                             $acuerdotecnicotemp_id = $acuerdotecnicotemp->id;
                             $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp_id]);
                         }
@@ -387,6 +393,13 @@ class CotizacionController extends Controller
     {
         //dd($request);
         can('guardar-cotizacion');
+        $cotizacion = Cotizacion::findOrFail($id);
+        if($cotizacion->updated_at != $request->updated_at){
+            return redirect('cotizacion')->with([
+                'mensaje' => 'No se pudo modificar. Registro Editado por otro usuario. Fecha Hora: '.$cotizacion->updated_at,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $cont_cotdet = count($request->cotdet_id);
         if($cont_cotdet <=0 ){
             return redirect('notaventa')->with([
@@ -429,7 +442,6 @@ class CotizacionController extends Controller
                 $request->request->add(['clientetemp_id' => $clientetemp->id]);
             }
         }
-        $cotizacion = Cotizacion::findOrFail($id);
         $request->request->add(['fechahora' => $cotizacion->fechahora]);
         /*
         $aux_plazoentrega= DateTime::createFromFormat('d/m/Y', $request->plazoentrega)->format('Y-m-d');
@@ -439,8 +451,22 @@ class CotizacionController extends Controller
         $request->request->add(['plazoentrega' => sumdiashabfec(date("Y-m-d",strtotime($cotizacion->fechahora)),$request->plaentdias)]);/****Funcion: Calcular fecha de entrega segun los dias ingresados, solo dias habiles */
         //dd($request->plazoentrega);
         $cotizacion->update($request->all());
+        //dd($request->cotdet_id);
         $auxCotDet=CotizacionDetalle::where('cotizacion_id',$id)->whereNotIn('id', $request->cotdet_id)->pluck('id')->toArray(); //->destroy();
+        //dd($auxCotDet);
         for ($i=0; $i < count($auxCotDet) ; $i++){
+            //BUSCO EN COTIZACIONDETALLE LOS REGISTROS DE PRODUCTOS ELIMINADOS DE LA COTIZACION 
+            //LUEGO SI EL PRODUCTO TIENE ACUERDO TECNICO LO BUSCO Y SE ELIMINA DE LA TABLA DE ACUERDOTECNICOTEMP
+            $cotizaciondetalle = CotizacionDetalle::findOrFail($auxCotDet[$i]);
+            if($cotizaciondetalle->acuerdotecnicotempunoauno){
+                //BUSCO LOS ACUERDOS TECNICOS ASOCIADOS AL CLIENTE, DEBERIA SER UN SOLO ACUERDO ASOCIADO AN UN CLIENTE
+                //PERO BUSCO TODOS LOS ACUERDOS 
+                $acuerdotecnicotemp_clientes = AcuerdoTecnicoTemp_Cliente::where("acuerdotecnicotemp_id",$cotizaciondetalle->acuerdotecnicotempunoauno->id)->where("cliente_id",$cotizacion->cliente_id)->whereNull("deleted_at")->get();
+                foreach($acuerdotecnicotemp_clientes as $acuerdotecnicotemp_cliente) {
+                    AcuerdoTecnicoTemp_Cliente::destroy($acuerdotecnicotemp_cliente->id);
+                }
+                AcuerdoTecnicoTemp::destroy($cotizaciondetalle->acuerdotecnicotempunoauno->id);
+            }
             CotizacionDetalle::destroy($auxCotDet[$i]);
         }
         if($cont_cotdet>0){
@@ -464,6 +490,7 @@ class CotizacionController extends Controller
                             $acuerdotecnico_id = "";
                         }*/
                         unset($objetAT->id);
+                        unset($objetAT->at_id);
                         unset($objetAT->deleted_at);
                         unset($objetAT->created_at);
                         unset($objetAT->updated_at);
@@ -545,7 +572,13 @@ class CotizacionController extends Controller
 
                     if($producto->tipoprod == 1){
                         if($request->acuerdotecnico[$i] != "null"){
+                            $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                            $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
+                                "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
+                                "cliente_id" => $cotizacion->cliente_id,
+                            ]);
+        
                             $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
                         }
     
@@ -581,6 +614,7 @@ class CotizacionController extends Controller
                     );
                     $cotizaciondetalle = CotizacionDetalle::findOrFail($request->cotdet_id[$i]);
                     if(($producto->tipoprod == 1) and ($request->acuerdotecnico[$i] != "null")){
+                        $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                         if($cotizaciondetalle->acuerdotecnicotemp_id == null){
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
                             $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
@@ -952,6 +986,7 @@ function editar($id){
         $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
+        $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
 
         $aux_sta=2;
 

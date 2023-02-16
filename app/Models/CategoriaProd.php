@@ -22,7 +22,8 @@ class CategoriaProd extends Model
         'usuariodel_id',
         'mostdatosad',
         'mostunimed',
-        'asoprodcli'
+        'asoprodcli',
+        'stakilos'
     ];
 
     public function productos()

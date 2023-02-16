@@ -10,6 +10,7 @@
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
 <input type="hidden" name="giro" id="giro" value="{{old('giro', $data->giro ?? '')}}">
+<input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
 
 @if($aux_sta==1)
     <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $tablas['vendedor_id'] ?? '')}}">
@@ -295,10 +296,17 @@
                                     $aux_nfila++;
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;">
-                                        {{$CotizacionDetalle->producto_id}}
+                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$CotizacionDetalle->producto->categoriaprod_id}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
-                                            <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
+                                            <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$CotizacionDetalle->acuerdotecnicotempunoauno->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                {{$CotizacionDetalle->producto_id}}
+                                            </a>
+                                        @else
+                                            {{$CotizacionDetalle->producto_id}}
+                                        @endif
+
+                                        @if ($CotizacionDetalle->producto->tipoprod == 1)
+                                            <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
                                             @if ($CotizacionDetalle->acuerdotecnicotemp == null)
                                                 <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
                                             @else

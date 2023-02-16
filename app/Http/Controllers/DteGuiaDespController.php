@@ -140,6 +140,14 @@ class DteGuiaDespController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        if(is_null($despachoord->notaventa->cliente->giro) or empty($despachoord->notaventa->cliente->giro) or $despachoord->notaventa->cliente->giro ==""){
+            return response()->json([
+                'id' => 0,
+                'mensaje'=>'Giro de Cliente no puede estar vacio.',
+                'tipo_alert' => 'error'
+            ]);
+        }
+
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
             return redirect('dteguiadesp')->with([
@@ -179,6 +187,162 @@ class DteGuiaDespController extends Controller
         $request->request->add(['vendedor_id' => $despachoord->notaventa->vendedor_id]);
         $request->request->add(['foliocontrol_id' => 2]);
 
+
+        //Inicio prueba
+        //******************************************** */
+        $dte = new Dte();
+        //$dte->id = 1;
+
+        $Tmntneto = 0;
+        $Tiva = 0;
+        $Tmnttotal = 0;
+        $Tkgtotal = 0;
+
+        if(!empty($request->despachoord_id)){
+            if($cont_producto>0){
+                for ($i=0; $i < $cont_producto ; $i++){
+                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                        $producto = Producto::findOrFail($request->producto_id[$i]);
+                        $dtedet = new DteDet();
+                        $dtedet->dte_id = null;
+                        $dtedet->producto_id = $request->producto_id[$i];
+                        $dtedet->nrolindet = $request->nrolindet[$i];
+                        $dtedet->vlrcodigo = $request->producto_id[$i];
+                        $dtedet->nmbitem = $request->nmbitem[$i];
+                        $dtedet->dscitem = $request->dscitem[$i];
+                        $dtedet->qtyitem = $request->qtyitem[$i];
+                        $dtedet->unmditem = $request->unmditem[$i];
+                        $dtedet->unidadmedida_id = $request->unidadmedida_id[$i];
+                        $dtedet->prcitem = $request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
+                        $dtedet->montoitem = $request->montoitem[$i];
+                        $dtedet->obsdet = $request->obsdet[$i];
+                        $dtedet->itemkg = $request->itemkg[$i];
+                        
+                        $Tmntneto += $request->montoitem[$i];
+                        $Tkgtotal += $request->itemkg[$i];
+                        $dtedet_id = $dtedet->id;
+                        $dtedet->despachoorddet_id = $request->despachoorddet_id[$i];
+                        $dtedet->notaventadetalle_id = $request->notaventadetalle_id[$i];
+
+                        $dte->dtedets[] = $dtedet;
+
+
+                        //$dtedet->save();
+                        /*
+                        $dtedet_id = $dtedet->id;
+                        $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
+                        $dtedet_despachoorddet->dtedet_id = $dtedet_id;
+                        $dtedet_despachoorddet->despachoorddet_id = $request->despachoorddet_id[$i];
+                        $dtedet_despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];
+                        $dtedet_despachoorddet->save();
+                        */
+                    }
+                }
+            }
+        }
+        if($Tmntneto>0){
+            $Tiva = round(($empresa->iva/100) * $Tmntneto);
+            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);    
+        }
+
+        $dte->foliocontrol_id = 2;
+        $dte->nrodocto = "";
+        $dte->fchemis = $request->fchemis;
+        $dte->fchemisgen = $hoy;
+        $dte->fechahora = $hoy;
+        $dte->sucursal_id = $despachoord->notaventa->sucursal_id;
+        $dte->cliente_id = $despachoord->notaventa->cliente_id;
+        $dte->comuna_id = $despachoord->notaventa->comuna_id;
+        $dte->vendedor_id = $despachoord->notaventa->vendedor_id;
+        $dte->obs = $request->obs;
+        $dte->tipodespacho = $request->tipodespacho;
+        $dte->indtraslado =  $request->indtraslado;
+        $dte->mntneto = $Tmntneto;
+        $dte->tasaiva = $empresa->iva;
+        $dte->iva = $Tiva;
+        $dte->mnttotal = $Tmnttotal;
+        $dte->kgtotal = $Tkgtotal;
+        $dte->centroeconomico_id = $request->centroeconomico_id;
+        //$dte->statusgen = 
+        //$dte->aprobstatus = 
+        //$dte->aprobusu_id = 
+        //$dte->aprobfechahora = 
+        $dte->usuario_id = $request->usuario_id;
+        //$dte->usuariodel_id = 
+
+        //dd($dte->foliocontrol->tipodocto);
+        $dteguiadesp = new DteGuiaDesp();
+        $dteguiadesp->despachoord_id = $despachoord->id;
+        $dteguiadesp->notaventa_id = $despachoord->notaventa_id;
+        $dteguiadesp->tipoentrega_id = $request->tipoentrega_id;
+        $dteguiadesp->comunaentrega_id = $request->comunaentrega_id;
+        $dteguiadesp->lugarentrega = $request->lugarentrega;
+        $dteguiadesp->ot = $request->ot;
+
+        $dte->dteguiadesp = $dteguiadesp;
+
+
+
+        
+        $respuesta = Dte::generardteprueba($dte);
+        /*
+        $respuesta = response()->json([
+            'id' => 1
+        ]);
+        */
+        $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
+        if($respuesta->original["id"] == 1){
+            $dteNew = Dte::create($dte->toArray());
+            foreach ($dte->dtedets as $dtedet) {
+                $dtedet->dte_id = $dteNew->id;
+                $despachoorddet_id = $dtedet->despachoorddet_id;
+                $notaventadetalle_id = $dtedet->notaventadetalle_id;
+                $aux_dtedet = $dtedet->toArray();
+                unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
+                unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
+    
+                $dtedetNew = DteDet::create($aux_dtedet);
+                $dtedet_id = $dtedetNew->id;
+                $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
+                $dtedet_despachoorddet->dtedet_id = $dtedet_id;
+                $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
+                $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
+                $dtedet_despachoorddet->save();
+            }
+            $dteguiadesp->dte_id = $dteNew->id;
+            $dteguiadesp->save();
+            //CREAR REGISTRO DE ORDEN DE COMPRA
+            $dteoc = new DteOC();
+            $dteoc->dte_id = $dteNew->id;
+            $dteoc->oc_id = $despachoord->notaventa->oc_id;
+            $dteoc->oc_file = $despachoord->notaventa->oc_file;
+            $dteoc->save();
+
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+            $foliocontrol->save();
+            return redirect('dteguiadesp')->with([
+                'mensaje'=>'Guia Despacho creada con exito.',
+                'tipo_alert' => 'alert-success'
+            ]);    
+        }else{
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->save();
+            return redirect('dteguiadesp')->with([
+                'mensaje'=>$respuesta->original["mensaje"] ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
+
+
+
+        dd($dte);
+
+        //FIN DE PRUEBA
+        //************************************************ */
+
+
         $dte = Dte::create($request->all());
         $dte_id = $dte->id;
         //dd($request);
@@ -203,7 +367,11 @@ class DteGuiaDespController extends Controller
         //$notaventaid = 1;
         //SI ESTA VACIO EL NUMERO DE COTIZACION SE CREA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DEL LADO DEL CLIENTE
         //SI NO ESTA VACIO EL NUMERO DE COTIZACION SE LLENA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DETALLE COTIZACION
-        $kgtotal = 0;
+        $Tmntneto = 0;
+        $Tiva = 0;
+        $Tmnttotal = 0;
+        $Tkgtotal = 0;
+
 
         if(!empty($request->despachoord_id)){
             if($cont_producto>0){
@@ -224,7 +392,10 @@ class DteGuiaDespController extends Controller
                         $dtedet->montoitem = $request->montoitem[$i];
                         $dtedet->obsdet = $request->obsdet[$i];
                         $dtedet->itemkg = $request->itemkg[$i];
-                        $kgtotal += $request->itemkg[$i];
+                        
+                        $Tmntneto += $request->montoitem[$i];
+                        $Tkgtotal += $request->itemkg[$i];
+        
                         $dtedet->save();
                         $dtedet_id = $dtedet->id;
                         $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
@@ -236,7 +407,17 @@ class DteGuiaDespController extends Controller
                 }
             }
         }
-        $dte->kgtotal = $kgtotal;
+        if($Tmntneto>0){
+            $Tiva = round(($empresa->iva/100) * $Tmntneto);
+            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);    
+        }
+
+        $dte = Dte::findOrFail($dte_id);
+        $dte->mntneto = $Tmntneto;
+        $dte->tasaiva = $empresa->iva;
+        $dte->iva = $Tiva;
+        $dte->mnttotal = $Tmnttotal;
+        $dte->kgtotal = $Tkgtotal;
         $dte->save();
         return redirect('dteguiadesp')->with([
                                             'mensaje'=>'Guia Despacho creada con exito.',
@@ -364,7 +545,11 @@ class DteGuiaDespController extends Controller
         //$notaventaid = 1;
         //SI ESTA VACIO EL NUMERO DE COTIZACION SE CREA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DEL LADO DEL CLIENTE
         //SI NO ESTA VACIO EL NUMERO DE COTIZACION SE LLENA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DETALLE COTIZACION
-        $kgtotal = 0;
+        $Tmntneto = 0;
+        $Tiva = 0;
+        $Tmnttotal = 0;
+        $Tkgtotal = 0;
+
         if(!empty($request->despachoord_id)){
             if($cont_producto>0){
                 for ($i=0; $i < $cont_producto ; $i++){
@@ -379,13 +564,25 @@ class DteGuiaDespController extends Controller
                         $dtedet->montoitem = $request->montoitem[$i];
                         $dtedet->obsdet = $request->obsdet[$i];
                         $dtedet->itemkg = $request->itemkg[$i];
-                        $kgtotal += $request->itemkg[$i];
+
+                        $Tmntneto += $request->montoitem[$i];
+                        $Tkgtotal += $request->itemkg[$i];
+
                         $dtedet->save();
                     }
                 }
             }
         }
-        $dte->kgtotal = $kgtotal;
+        if($Tmntneto>0){
+            $Tiva = round(($empresa->iva/100) * $Tmntneto);
+            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);    
+        }
+        $dte = Dte::findOrFail($id);
+        $dte->mntneto = $Tmntneto;
+        $dte->tasaiva = $empresa->iva;
+        $dte->iva = $Tiva;
+        $dte->mnttotal = $Tmnttotal;
+        $dte->kgtotal = $Tkgtotal;   
         $dte->save();
         return redirect('dteguiadesp')->with([
                                             'mensaje'=>'Guia Despacho Actualizada con exito.',
@@ -421,13 +618,11 @@ class DteGuiaDespController extends Controller
     {
         if ($request->ajax()) {
             $dte = Dte::findOrFail($request->guiadesp_id);
-            if(is_null($dte->cliente->giro) or empty($dte->cliente->giro) or $dte->cliente->giro ==""){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Giro de Cliente no puede estar vacio.',
-                    'tipo_alert' => 'error'
-                ]);
-            }
+            /*
+            $tipoArch = "XML";
+            $ArchivoTXT = dteguiadesp($dte->id,"1234",$tipoArch);
+            dd($ArchivoTXT);
+            */
 
             if($dte->updated_at != $request->updated_at){
                 return response()->json([
@@ -436,6 +631,7 @@ class DteGuiaDespController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
+            /*
             if(!is_null($dte->statusgen)){
                 return response()->json([
                     'id' => 0,
@@ -487,6 +683,7 @@ class DteGuiaDespController extends Controller
                 $foliocontrol->bloqueo = 1;
                 $foliocontrol->save();
             }
+            */
             $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
             $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$despachoord->notaventa_id)->get();
             if(count($notaventacerrada) == 0){
@@ -504,8 +701,10 @@ class DteGuiaDespController extends Controller
                 if($aux_bandera){
                     $invmodulo = InvMovModulo::where("cod","ORDDESP")->get();
                     if(count($invmodulo) == 0){
+                        /*
                         $foliocontrol->bloqueo = 0;
                         $foliocontrol->save();
+                        */
                         return response()->json([
                             'mensaje' => 'MensajePersonalizado',
                             'menper' => "No existe modulo SOLDESP"    
@@ -521,12 +720,15 @@ class DteGuiaDespController extends Controller
                         }
                     }
                     if($aux_bodegadespacho == 0){
+                        /*
                         $foliocontrol->bloqueo = 0;
                         $foliocontrol->save();
+                        */
                         return response()->json([
                             'mensaje' => 'No existe Bodega Despacho en Sucursal: ' . $despachoord->notaventa->sucursal->nombre
                         ]);
                     }
+                    /*
                     $empresa = Empresa::findOrFail(1);
                     $soap = new SoapController();
                     $aux_folio = $dte->nrodocto;
@@ -577,11 +779,6 @@ class DteGuiaDespController extends Controller
                             //$date = str_replace('/', '-', $request->fchemis);
                             //$dte->fchemis = date('Y-m-d', strtotime($date));
                             //$dte->fchemis = date("Y-m-d H:i:s");
-                            /*
-                            $dte->pdf = $Carga_TXTDTE->PDF;
-                            $dte->pdfcedible = $Carga_TXTDTE->PDFCedible;
-                            $dte->xml = $Carga_TXTDTE->XML;
-                            */
                             $dte->statusgen = 1;
                             $dte->aprobstatus = 1;
                             $dte->aprobusu_id = auth()->id();
@@ -589,13 +786,13 @@ class DteGuiaDespController extends Controller
                 
                             $dte->save();
                             //$fchemisDMY = date("d-m-Y_His",strtotime($dte->fchemis));
-
-                            Storage::disk('public')->put('/facturacion/dte/procesados/ge' . $aux_folio . '.xml', $Carga_TXTDTE->XML);
-                            Storage::disk('public')->put('/facturacion/dte/procesados/ge' . $aux_folio . '.pdf', $Carga_TXTDTE->PDF);
-                            Storage::disk('public')->put('/facturacion/dte/procesados/ge' . $aux_folio . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
+                            $nombreArchPDF =  $foliocontrol->nombrepdf . str_pad($aux_folio, 8, "0", STR_PAD_LEFT);
+                            Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.xml', $Carga_TXTDTE->XML);
+                            Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.pdf', $Carga_TXTDTE->PDF);
+                            Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
 
                             $pdf = new Fpdi();
-                            $files = array("storage/facturacion/dte/procesados/ge" . $aux_folio . ".pdf","storage/facturacion/dte/procesados/ge" . $aux_folio . "_cedible.pdf");
+                            $files = array("storage/facturacion/dte/procesados/" . $nombreArchPDF .  ".pdf","storage/facturacion/dte/procesados/" . $nombreArchPDF .  "_cedible.pdf");
                             foreach ($files as $file) {
                                 $pageCount = $pdf->setSourceFile($file);
                                 for ($pagNo=1; $pagNo <= $pageCount; $pagNo++) { 
@@ -605,14 +802,10 @@ class DteGuiaDespController extends Controller
                                     $pdf->useTemplate($template);
                                 }
                             }
-                            $pdf->Output("F","storage/facturacion/dte/procesados/ge" . $aux_folio . "_U.pdf");
+                            $pdf->Output("F","storage/facturacion/dte/procesados/" . $nombreArchPDF .  "_U.pdf");
 
                             //dd($Carga_TXTDTE);
                         }else{
-                            /*
-                            $foliocontrol->bloqueo = 0;
-                            $foliocontrol->save();
-                            */
                             return response()->json([
                                 'id' => 0,
                                 'mensaje'=>'Error: #' . $Carga_TXTDTE->Estatus . " " . $Carga_TXTDTE->MsgEstatus,
@@ -628,12 +821,13 @@ class DteGuiaDespController extends Controller
                             'tipo_alert' => 'error'                
                         ]);
                     }
+                    */
     
                     $invmov_array = array();
                     $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                     $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                    $invmov_array["desc"] = "Salida de BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
-                    $invmov_array["obs"] = "Salida de BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+                    $invmov_array["desc"] = "Salida de BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $despachoord->id;
+                    $invmov_array["obs"] = "Salida de BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $despachoord->id;
                     $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Guia de Despacho
                     $invmov_array["idmovmod"] = $request->id;
                     $invmov_array["invmovtipo_id"] = 2;
@@ -673,10 +867,13 @@ class DteGuiaDespController extends Controller
                         }
                     }
                     $dte = Dte::findOrFail($request->guiadesp_id);
-                    return updatenumguia($despachoord,$dte,$foliocontrol,$request);
+                    //return updatenumguia($despachoord,$dte,$foliocontrol,$request);
+                    return updatenumguia($despachoord,$dte,$request);
                 }else{
+                    /*
                     $foliocontrol->bloqueo = 0;
                     $foliocontrol->save();
+                    */
                     return response()->json([
                         'id' => 0,
                         'mensaje'=> "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"],
@@ -689,8 +886,10 @@ class DteGuiaDespController extends Controller
                     ]);
                 }
             }else{
+                /*
                 $foliocontrol->bloqueo = 0;
                 $foliocontrol->save();
+                */
                 $mensaje = 'Nota Venta fue cerrada: Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at));
                 return response()->json(['mensaje' => $mensaje]);
             }
@@ -773,7 +972,8 @@ function consultaindex(){
     $sucurArray = $user->sucursales->pluck('id')->toArray();
     $sucurcadena = implode(",", $sucurArray);
 
-    $sql ="SELECT dte.id,dte.nrodocto,dte.fechahora,dte.fchemis,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
+    $sql ="SELECT dte.id,dte.nrodocto,dte.fechahora,dte.fchemis,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
+        despachoord.notaventa_id,
         despachoord.despachosol_id,dteguiadesp.despachoord_id,despachoord.fechaestdesp,comuna.nombre as cmnarecep,dte.kgtotal,
         dteguiadesp.tipoentrega_id,tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.updated_at
@@ -950,13 +1150,21 @@ function consultalistarorddesppage($request){
 }
 
 
-function updatenumguia($despachoord,$dte,$foliocontrol,$request){
+//function updatenumguia($despachoord,$dte,$foliocontrol,$request){
+function updatenumguia($despachoord,$dte,$request){
+    /*
     $foliocontrol->ultfoliouti = $dte->nrodocto;
     $foliocontrol->bloqueo = 0;
+    */
+    $dte->statusgen = 1;
+    $dte->aprobstatus = 1;
+    $dte->aprobusu_id = auth()->id();
+    $dte->aprobfechahora = date("Y-m-d H:i:s");
     $despachoord->guiadespacho = $dte->nrodocto;
     $despachoord->guiadespachofec = ($dte->fchemis . " 00:00:00");
-    if ($despachoord->save() and $dte->save() and $foliocontrol->save()) {
-        //dteguiadesp($dte->id);
+    //if ($despachoord->save() and $dte->save() and $foliocontrol->save()) {
+    if ($despachoord->save() and $dte->save()) {
+            //dteguiadesp($dte->id);
         Event(new GuardarGuiaDespacho($despachoord));
         return response()->json([
                                 'mensaje' => 'ok',
@@ -979,19 +1187,19 @@ function dteguiadesp($id,$Folio,$tipoArch){
     $rutrecep = number_format( substr ( $rutrecep, 0 , -1 ) , 0, "", "") . '-' . substr ( $rutrecep, strlen($rutrecep) -1 , 1 );
 
     $empresa = Empresa::findOrFail(1);
-    $RznSoc = strtoupper(substr(trim($empresa->razonsocial),0,100));
-    $GiroEmis = strtoupper(substr(trim($empresa->giro),0,80));
+    $RznSoc = strtoupper(sanear_string(substr(trim($empresa->razonsocial),0,100)));
+    $GiroEmis = strtoupper(sanear_string(substr(trim($empresa->giro),0,80)));
     $Acteco = substr(trim($empresa->acteco),0,6);
-    $DirOrigen = strtoupper(substr(trim($empresa->sucursal->direccion),0,60));
-    $CmnaOrigen = strtoupper(substr(trim($empresa->sucursal->comuna->nombre),0,20));
-    $CiudadOrigen = strtoupper(substr(trim($empresa->sucursal->comuna->provincia->nombre),0,20));
-    $contacto = strtoupper(substr(trim($dte->dteguiadesp->notaventa->contacto . " Telf:" . $dte->dteguiadesp->notaventa->contactotelf),0,80));
+    $DirOrigen = strtoupper(sanear_string(substr(trim($empresa->sucursal->direccion),0,60)));
+    $CmnaOrigen = strtoupper(sanear_string(substr(trim($empresa->sucursal->comuna->nombre),0,20)));
+    $CiudadOrigen = strtoupper(sanear_string(substr(trim($empresa->sucursal->comuna->provincia->nombre),0,20)));
+    $contacto = strtoupper(sanear_string(substr(trim($dte->dteguiadesp->notaventa->contacto . " Telf:" . $dte->dteguiadesp->notaventa->contactotelf),0,80)));
     $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
-    $RznSocRecep = strtoupper(substr(trim($dte->cliente->razonsocial),0,100));
-    $GiroRecep = strtoupper(substr(trim($dte->cliente->giro),0,42));
-    $DirRecep = strtoupper(substr(trim($dte->cliente->direccion),0,70));
-    $CmnaRecep = strtoupper(substr(trim($dte->cliente->comuna->nombre),0,20));
-    $CiudadRecep = strtoupper(substr(trim($dte->cliente->provincia->nombre),0,20));
+    $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
+    $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,42)));
+    $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
+    $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
+    $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
 
     //$FolioRef = substr(trim($dte->oc_id),0,20);
     $FolioRef = $dte->dteguiadesp->notaventa->oc_id;
@@ -1070,8 +1278,8 @@ function dteguiadesp($id,$Folio,$tipoArch){
     
         foreach ($dte->dtedets as $dtedet) {
             $VlrCodigo = substr(trim($dtedet->vlrcodigo),0,35);
-            $NmbItem = strtoupper(substr(trim($dtedet->nmbitem),0,80));
-            $DscItem = strtoupper(trim($dtedet->dscitem));
+            $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,80)));
+            $DscItem = strtoupper(sanear_string(trim($dtedet->dscitem)));
             $UnmdItem = substr(trim($dtedet->unmditem),0,4);
             $contenido .= "<Detalle>" .
             "<NroLinDet>$dtedet->nrolindet</NroLinDet>" .
@@ -1079,8 +1287,8 @@ function dteguiadesp($id,$Folio,$tipoArch){
             "<TpoCodigo>INTERNO</TpoCodigo>" .
             "<VlrCodigo>" . $VlrCodigo . "</VlrCodigo>" .
             "</CdgItem>" .
-            "<NmbItem>" . $NmbItem . "</NmbItem>" .
-            "<DscItem>" . $DscItem . "</DscItem>" .
+            "<NmbItem>" . $VlrCodigo . "</NmbItem>" .
+            "<DscItem>" . $NmbItem . "</DscItem>" .
             "<QtyItem>" . $dtedet->qtyitem . "</QtyItem>" .
             "<UnmdItem>" . $UnmdItem . "</UnmdItem>" .
             "<PrcItem>$dtedet->prcitem</PrcItem>" .
@@ -1090,7 +1298,7 @@ function dteguiadesp($id,$Folio,$tipoArch){
         }
     
         $TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->dteguiadesp->ot) ? "" : "OT:" . $dte->dteguiadesp->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->dteguiadesp->lugarentrega . " ")  . (empty($dte->dteguiadesp->comunaentrega_id) ? "" : $dte->dteguiadesp->comunaentrega->nombre . " ");
-        $TpoDocRef = strtoupper(substr(trim($TpoDocRef),0,90));
+        $TpoDocRef = strtoupper(sanear_string(substr(trim($TpoDocRef),0,90)));
     
         $contenido .= "<Referencia>" .
         "<NroLinRef>1</NroLinRef>" .
@@ -1105,15 +1313,18 @@ function dteguiadesp($id,$Folio,$tipoArch){
         "<FolioRef>00001000</FolioRef>" .
         "<FchRef>$FchEmis</FchRef>" .
         "<RazonRef>DESPACHO: $DirRecep</RazonRef>" .
-        "</Referencia>" .
-        "<Referencia>" .
-        "<NroLinRef>3</NroLinRef>" .
-        "<TpoDocRef>801</TpoDocRef>" .
-        "<FolioRef>$FolioRef</FolioRef>" .
-        "<FchRef>$FchEmis</FchRef>" .
-        "<RazonRef>$TpoDocRef</RazonRef>" .
-        "</Referencia>" .
-        "</Documento>" .
+        "</Referencia>";
+        if($FolioRef){
+            $contenido .= "<Referencia>" .
+            "<NroLinRef>3</NroLinRef>" .
+            "<TpoDocRef>801</TpoDocRef>" .
+            "<FolioRef>$FolioRef</FolioRef>" .
+            "<FchRef>$FchEmis</FchRef>" .
+            "<RazonRef>$TpoDocRef</RazonRef>" .
+            "</Referencia>";
+    
+        }
+        $contenido .= "</Documento>" .
         "</DTE>";
 
         //"</DTE>]]>";
