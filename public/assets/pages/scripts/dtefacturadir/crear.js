@@ -3,42 +3,10 @@ $(document).ready(function () {
 	aux_obs = $("#aux_obs").val();
 	$("#obs").val(aux_obs);
 
-	$('.tablas').DataTable({
-		'paging'      : true, 
-		'lengthChange': true,
-		'searching'   : true,
-		'ordering'    : true,
-		'info'        : true,
-		'autoWidth'   : false,
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-        }
-	});
-
 	var dateToday = new Date(); 
 	var date = new Date();
 	var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-	/*
-	$("#fchemis").datepicker({
-		language: "es",
-		autoclose: true,
-		endDate: ultimoDia,
-		minDate: dateToday,
-		startDate: new Date(),
-		todayHighlight: true
-	}).datepicker("setDate");
-	/*
-
-
-	$("#mdialTamanio").css({'width': '50% !important'});
-	//$(".control-label").css({'padding-top': '2px'});
 	
-	/*
-    var styles = {
-		backgroundColor : "#ddd",
-		fontWeight: ""
-	  };
-	$( this ).css( styles );*/
 	aux_sta = $("#aux_sta").val();
 	//$("#rut").numeric();
 	$("#cantM").numeric();
@@ -53,6 +21,12 @@ $(document).ready(function () {
 		$("#fechahora").val($("#aux_fechaphp").val());
 	}
 
+	aux_nfilas=parseInt($("#tabla-data >tbody >tr").length);
+    //alert(aux_nfilas);
+	$("#agregar_reg").click(function()
+    {
+        agregarFila(2);
+    });
 	totalizar();
 
 });
@@ -226,31 +200,9 @@ $("#rut").blur(function(){
 							$("#formapago_desc").val(respuesta.cliente[0].formapago_desc);
 							$("#plazopago").val(respuesta.cliente[0].plazopago_dias);
 							$("#fchemis").change();
+							agregarFila();
 							
-							/*
-							$("#giro_id").val(respuesta.cliente[0].giro_id);
-							$("#giro_idD").val(respuesta.cliente[0].giro_id);
-							$("#plazopago_id").val(respuesta.cliente[0].plazopago_id);
-							$("#plazopago_idD").val(respuesta.cliente[0].plazopago_id);
-							$("#formapago_id").val(respuesta.cliente[0].formapago_id);
-							$("#formapago_idD").val(respuesta.cliente[0].formapago_id);
-
-							$("#sucursal_id option").remove();
-							$("#sucursal_id").prop("disabled",false);
-							$("#sucursal_id").prop("readonly",false);	
-							$('#sucursal_id').attr("required", true);
-							$("#sucursal_id").append("<option value=''>Seleccione...</option>")
-							for(var i=0;i<respuesta.sucursales.length;i++){
-								$("#sucursal_id").append("<option value='" + respuesta.sucursales[i].id + "'>" + respuesta.sucursales[i].nombre + "</option>")
-							}
-							if (respuesta.sucursales.length == 1){
-								$("#sucursal_id").val(respuesta.sucursales[0].id);
-							}	
-							activar_controles();
-							*/
 							$('#botonNewGuia').show();
-							data = datosdteguiadesp(1);
-							$('#tabla-data-dteguiadesp').DataTable().ajax.url( "/dtefactura/listarguiadesppage/" + data.data2, ).load();
 						
 							$(".selectpicker").selectpicker('refresh');
 						}else{
@@ -298,36 +250,6 @@ $("#rut").focus(function(){
 	//$("#rut").val(aux_rut);
 })
 
-$("#botonNewGuia").click(function(event){
-    //$("#rut").val("");
-
-	$(this).val("");
-	$(".input-sm").val('');
-	data = datosdteguiadesp(1);
-	$('#tabla-data-dteguiadesp').DataTable().ajax.url( "/dtefactura/listarguiadesppage/" + data.data2, ).load();
-
-    $("#myModalBuscardteguiadesp").modal('show');
-
-});
-
-
-
-$("#btnaceptarGD").click(function(event){
-	//console.log($("#selectguiadesp").val());
-	let strdte_id = $("#selectguiadesp").val();
-	strdte_id = strdte_id.trim();
-	let arrdte_id = strdte_id.split(','); 
-
-	var data = {
-        arrdte_id   : arrdte_id,
-		strdte_id   : strdte_id,
-        dtenotnull  : 1, //Estatus que se envia a la consulta para mostrar o no los dte anulados (1=no se trae los anulados ""=empty se trae todo sin importar que esta anulado)
-        _token      : $('input[name=_token]').val()
-    };
-	url = "/dtefactura/listardtedet";
-	funcion = "listardtedet";
-	ajaxRequest(data,url,funcion);
-});
 
 
 function llenarItemFact(data){
@@ -340,7 +262,7 @@ function llenarItemFact(data){
 				'<input type="text" name="det_id[]" id="det_id' + (i+1) + '" class="form-control" value="0" style="display:none;"/>' +
 				'<input type="text" name="nrolindet[]" id="nrolindet' + (i+1) + '" class="form-control" value="' + (i + 1) + '" style="display:none;"/>' +
 				'<input type="text" name="despachoorddet_id[]" id="despachoorddet_id' + (i+1) + '" class="form-control" value="' + data[i].dtedet_id + '" style="display:none;"/>' +
-				'<input type="text" name="notaventadetalle_id[]" id="notaventadetalle_id' + (i+1) + '" class="form-control" value="' + data[i].notaventadetalle_id + '" style="display:none;"/>' +
+				'<input type="text" name="notaventadetalle_id[]" id="notaventadetalle_id' + (i+1) + '" class="form-control" value="' + data[i].notaventadetalle_id + '" style=display:none;"/>' +
 				'<input type="text" name="dte_id[]" id="dte_id' + (i+1) + '" class="form-control" value="' + $("#dte_id").val() + '" style="display:none;"/>' +
 				'<input type="text" name="dtedet_id[]" id="dtedet_id' + (i+1) + '" class="form-control" value="' + data[i].dtedet_id + '" style="display:none;"/>' +
 				'<input type="text" name="dteorigen_id[]" id="dteorigen_id' + (i+1) + '" class="form-control" value="' + data[i].id + '" style="display:none;"/>' +
@@ -460,4 +382,111 @@ function blanquearDatos(){
 	$('.select2').trigger('change');
 	$('#tabla-data tbody').html("");
 	totalizar();
+}
+
+function agregarFila() {
+	//aux_num=parseInt($("#tabla-data >tbody >tr").length);
+	//console.log(aux_num);
+    aux_num=parseInt($("#ids").val());
+    //alert(aux_num);
+    aux_num=aux_num+1;
+    aux_nfila=aux_num;
+    $("#ids").val(aux_nfila);
+    var htmlTags = '<tr name="fila' + (aux_nfila) + '" id="fila' + (aux_nfila) + '" class="proditems">' +
+		'<td style="text-align:center">' +
+			(aux_nfila) +
+			'<input type="text" name="det_id[]" id="det_id' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
+			'<input type="text" name="nrolindet[]" id="nrolindet' + (aux_nfila) + '" class="form-control" value="' + (aux_nfila) + '" style="display:none;"/>' +
+			'<input type="text" name="despachoorddet_id[]" id="despachoorddet_id' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			'<input type="text" name="notaventadetalle_id[]" id="notaventadetalle_id' + (aux_nfila) + '" class="form-control" value="" style=display:none;"/>' +
+			'<input type="text" name="dte_id[]" id="dte_id' + (aux_nfila) + '" class="form-control" value="' + $("#dte_id").val() + '" style="display:none;"/>' +
+			'<input type="text" name="dtedet_id[]" id="dtedet_id' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			'<input type="text" name="dteorigen_id[]" id="dteorigen_id' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			'<input type="text" name="obsdet[]" id="obsdet' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+		'</td>' +
+		'<td style="text-align:center" name="producto_idTD' + (aux_nfila) + '" id="producto_idTD' + (aux_nfila) + '" >' +
+			'<input type="text" name="producto_id[]" id="producto_id' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+		'</td>' +
+		'<td name="nrodoctoTD' + (aux_nfila) + '" id="nrodoctoTD' + (aux_nfila) + '" style="text-align:right">' +
+			'<a id="nrodocto' + (aux_nfila) + '" name="nrodocto' + (aux_nfila) + '" class="btn-accion-tabla btn-sm verguiasii" title="Editar valor" data-toggle="tooltip" nomcampo="nrodocto" valor="" title="Guia Despacho: ">' +
+				
+			'</a>' +
+		'</td>' +
+		'<td name="cantTD' + (aux_nfila) + '" id="cantTD' + (aux_nfila) + '" style="text-align:right" class="subtotalcant" valor="">' +
+				
+			'<input type="text" name="cant[]" id="cant' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			'<input type="text" name="qtyitem[]" id="qtyitem' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+		'</td>' +
+		'<td name="unidadmedida_nombre' + (aux_nfila) + '" id="unidadmedida_nombre' + (aux_nfila) + '" valor="">' +
+				
+			'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			'<input type="text" name="unmditem[]" id="unmditem' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+		'</td>' +
+		'<td name="nombreProdTD' + (aux_nfila) + '" id="nombreProdTD' + (aux_nfila) + '" valor="">' +
+				
+			'<input type="text" name="nmbitem[]" id="nmbitem' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			'<input type="text" name="dscitem[]" id="dscitem' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+		'</td>' +
+		'<td style="text-align:right;" class="subtotalkg" valor="">' +
+			'<input type="text" name="totalkilos[]" id="totalkilos' + (aux_nfila) + '" class="form-control" value="" style="display:none;" valor="" fila="' + (aux_nfila) + '"/>' +
+			'<input type="text" name="itemkg[]" id="itemkg' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+		'</td>' +
+		'<td name="descuentoTD' + (aux_nfila) + '" id="descuentoTD' + (aux_nfila) + '" style="text-align:right;display:none;">' +
+			'0%' +
+		'</td>' +
+		'<td style="text-align:right;display:none;">' + 
+			'<input type="text" name="descuento[]" id="descuento' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
+		'</td>' +
+		'<td style="text-align:right;display:none;">' +
+			'<input type="text" name="descuentoval[]" id="descuentoval' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
+		'</td>' +
+		'<td name="preciounitTD' + (aux_nfila) + '" id="preciounitTD' + (aux_nfila) + '" style="text-align:right;">' +
+			'<input type="text" name="preciounit[]" id="preciounit' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			'<input type="text" name="prcitem[]" id="prcitem' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+		'</td>' +
+		'<td style="display:none;" name="precioxkiloTD' + (aux_nfila) + '" id="precioxkiloTD' + (aux_nfila) + '" style="text-align:right">' +
+		'</td>' +
+		'<td style="text-align:right;display:none;">' +
+			'<input type="text" name="precioxkilo[]" id="precioxkilo' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
+		'</td>' +
+		'<td style="text-align:right;display:none;">' +
+			'<input type="text" name="precioxkiloreal[]" id="precioxkiloreal' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
+		'</td>' +
+		'<td name="subtotalFactDet' + (aux_nfila) + '" id="subtotalFactDet' + (aux_nfila) + '" class="subtotalFactDet" style="text-align:right">' +
+			'0' +
+			'<input type="text" name="subtotal[]" id="subtotal' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
+			'<input type="text" name="montoitem[]" id="montoitem' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
+		'</td>' +
+		'<td name="subtotalSFTD' + (aux_nfila) + '" id="subtotalSFTD' + (aux_nfila) + '" class="subtotal" style="text-align:right;display:none;">' +
+			'0' +
+		'</td>' +
+		'<td style="vertical-align:middle;">' + 
+			'<a onclick="agregarEliminar('+ aux_nfila +')" class="btn-accion-tabla" title="Agregar" data-original-title="Agregar" id="agregar_reg'+ aux_nfila + '" name="agregar_reg'+ aux_nfila + '" valor="fa-plus">'+
+				'<i class="fa fa-fw fa-plus"></i>'+
+			'</a>'+
+		'</td>'+
+	'</tr>';
+    $('#tabla-data tbody').append(htmlTags);
+	totalizar();
+}
+
+function agregarEliminar(fila){
+    aux_nfila=parseInt($("#tabla-data >tbody >tr").length);
+    if(aux_nfila>=1){
+        aux_valorboton = $("#agregar_reg"+fila).attr("data-original-title");
+        if(aux_valorboton=='Eliminar'){
+            $("#agregar_reg"+fila).attr("data-original-title", "");
+            $("#agregar_reg"+fila).children('i').removeClass("fa-minus");
+            //$("#agregar_reg"+fila).removeClass("tooltipsC");
+            $("#cla_stadel"+fila).val(1);
+            //$("#fila" + fila).fadeOut(2000);
+            $("#fila" + fila).remove();
+            return 0;
+        }
+        $("#agregar_reg"+fila).children('i').removeClass("fa-plus");
+        $("#agregar_reg"+fila).children('i').addClass("fa-minus");
+        $("#agregar_reg"+fila).attr("data-original-title", "Eliminar");
+        $("#agregar_reg"+fila).attr("title", "Eliminar");
+        agregarFila(fila)
+    }
 }

@@ -128,12 +128,25 @@ class Dte extends Model
         return $this->hasMany(DteDte::class,'dter_id');
     }
 
+    //RELACION UNO A UNO CON DTEDTE CON EL CAMPO dter_id, esto se presta para cuando dte anula a otro es decir que tiene un solo dte asociado
+    //RELACION de uno a uno DteDter
+    public function dtedter()
+    {
+        return $this->hasOne(DteDte::class,'dter_id');
+    }
+    
     //RELACION de uno a uno dtencnd
     public function dtencnd()
     {
         return $this->hasOne(DteNcNd::class);
     }
 
+    //RELACION DE UNO A MUCHOS dteguiausada
+    public function dteguiausadas()
+    {
+        return $this->hasMany(DteGuiaUsada::class,'dte_id');
+    }
+    
     public static function reportguiadesppage($request){
         //dd($request->tipobodega);
         if(empty($request->vendedor_id)){
@@ -802,14 +815,31 @@ class Dte extends Model
                     $dte->dtedets[$i]->dtedetAsociados = [];
                     $dtedetAsociados = [];
                     foreach ($dtedet->dtedets as $dtedetss) {
+                        $contanul = 0;
                         if(!is_null($dtedetss->dte->nrodocto)){ //SI NO SE HA ASIGNADO DTE NO ESTA EN SII, ES DECIR NO SE HA ASIGNADO A UN DTE
-                            $dtedetAsociados[] = [
-                                "id" => $dtedetss->id,
-                                "dte_id" => $dtedetss->dte_id,
-                                "nrodocto" => $dtedetss->dte->nrodocto,
-                                "dtedet_id" => $dtedetss->dtedet_id,
-                                "foliocontrol_id" => $dtedetss->dte->foliocontrol_id,
-                            ]; //"dte_id=" . $dtedetss->dte->id . ",foliocontrol_id=" . $dtedetss->dte->foliocontrol_id . ",dtedet_id=" . $dtedetss->id;
+                            $dteQueAnula = $dtedetss->dte;
+                            //SI EL DTE TIENE UN DTE QUE LO ANULA LO BUSCO
+                            //SI TIENE stedter ESE DTE QUE ANULA EL CAMPO nrodocto DEBE SER DIFERENTE A EMPTY O VACIO 
+                            //$dteQueAnula->dtedter->dte->nrodocto= NUMERO DE DOCUMENTO GENERADO POR SII DEL DOCUMENTO QUE ANULA
+                            if($dteQueAnula->dtedter and !empty($dteQueAnula->dtedter->dte->nrodocto)){
+                                //AQUI INCLUSO BUSCO SI ESE DTE QUE ANULA TAMBIEN ES ANULADO POR OTRO DTE
+                                //EJEMPLO: SI LA NC:30 FUE ANULADA POR UNA ND:155, PERO ESTA ND:155 TAMBIEN FUE ANULADA POR NC:31, ESTO QUIERE QUE LA NC :30 VUELVE A ESTAR ACTIVA
+                                do {
+                                    $dteQueAnula = $dteQueAnula->dtedter->dte;
+                                    $contanul++;
+                                } while ($dteQueAnula->dtedter);
+                            }
+                            //SI EL VALOR DE $contanul ES 0 EL DOCUMENTO NUNCA FUE ANULADO, AHORA SI ES PAR ESO QUIERE DECIR QUE EL DOCUMENTO QUE EL NUNCA FUE ANULADO POR OTRO.
+                            //CUALQUIER A DE ESTAAS 2 OPCIONES QUIERE DECIR QUE EL DOCUMENTO ESTA ACTIVO O VIVO AUN.
+                            if(($contanul % 2) == 0){
+                                $dtedetAsociados[] = [
+                                    "id" => $dtedetss->id,
+                                    "dte_id" => $dtedetss->dte_id,
+                                    "nrodocto" => $dtedetss->dte->nrodocto,
+                                    "dtedet_id" => $dtedetss->dtedet_id,
+                                    "foliocontrol_id" => $dtedetss->dte->foliocontrol_id,
+                                ]; //"dte_id=" . $dtedetss->dte->id . ",foliocontrol_id=" . $dtedetss->dte->foliocontrol_id . ",dtedet_id=" . $dtedetss->id;
+                            }
                         }
                     }
                     $dte->dtedets[$i]->dtedetAsociados = $dtedetAsociados; //implode(",", $dtedetAsociados);
@@ -1103,6 +1133,11 @@ class Dte extends Model
     }
 
     public static function generardteprueba($dte){
+        /*
+        $tipoArch = "XML";
+        $ArchivoTXT = dtefacturaprueba($dte,"2514",$tipoArch);
+        dd($ArchivoTXT);
+        */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if(is_null($foliocontrol)){
             return response()->json([
@@ -1283,12 +1318,15 @@ class Dte extends Model
         //dd($dtedet);
         $aux_dtedet_id = $dtedet1->dtedet_id;
         $arrayDTEDet = null;
+        $dtedet = DteDet::findOrFail($aux_dtedet_id);
+        $dte = $dtedet->dte;
         do{
-            $dtedet = DteDet::findOrFail($aux_dtedet_id);
-            $dte = $dtedet->dte;
             if($dte->foliocontrol_id == $foliocontrol_id){
                 $arrayDTEDet = $dtedet;
                 break;
+            }else{
+                //BUSCO EL ORIGEN DEL DTE 
+                $dte = $dte->dtedte->dter;
             }
         }while ($dte->foliocontrol_id != $foliocontrol_id);
         return $arrayDTEDet;
@@ -1424,6 +1462,24 @@ class Dte extends Model
 
         $arrays = DB::select($sql);
         return $arrays;
+    }
+
+    public static function updateStatusGen($dte,$request){
+        $dte->statusgen = 1;
+        $dte->aprobstatus = 1;
+        $dte->aprobusu_id = auth()->id();
+        $dte->aprobfechahora = date("Y-m-d H:i:s");
+        if ($dte->save()) {
+            return response()->json([
+                                    'mensaje' => 'ok',
+                                    'status' => '0',
+                                    'id' => $request->id,
+                                    'nfila' => $request->nfila,
+                                    'nrodocto' => $dte->nrodocto
+                                    ]);
+        } else {
+            return response()->json(['mensaje' => 'ng']);
+        }
     }
 
 }
@@ -1693,25 +1749,6 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
     
         $contenido = "";
     
-        if($tipoArch == "TXT"){
-            $fchemisDMY = date("d-m-Y_His",strtotime($dte->fchemis));
-            $fchemis = date("d-m-Y",strtotime($dte->fchemis)); // date("Y-m-d");
-            $contenido = "ENC|52||$Folio|$fchemis||$dte->tipodespacho|$dte->indtraslado|||||||||||$fchemis|" . 
-            "$empresa->rut|$RznSoc|$GiroEmis|||$DirOrigen|$CmnaOrigen|$CiudadOrigen|||$rutrecep||" . 
-            "$RznSocRecep|$GiroRecep|$contacto|$CorreoRecep|$DirRecep|$CmnaRecep|$CiudadRecep||||||||||" .
-            "$dte->mntneto|||$dte->tasaiva|$dte->iva||||||$dte->mnttotal||$dte->mnttotal|\r\n" . 
-            "ACT|$Acteco|\r\n";
-            foreach ($dte->dtedets as $dtedet) {
-                $contenido .= "DET|$dtedet->nrolindet||$dtedet->nmbitem|$dtedet->dscitem||||$dtedet->qtyitem|||$dtedet->unmditem|$dtedet->prcitem|||||||||$dtedet->montoitem|\r\n" . 
-                            "ITEM|INTERNO|$dtedet->vlrcodigo|\r\n";
-            }
-            $TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->dteguiadesp->ot) ? "" : "OT:" . $dte->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->lugarentrega . " ")  . (empty($dte->comunaentrega_id) ? "" : $dte->comunaentrega->nombre . " ");
-            $TpoDocRef = substr(trim($TpoDocRef),0,90);
-            $contenido .= "REF|1|801||$dte->oc_id||$fchemis||$TpoDocRef|";
-        
-        }
-        
-    
         if($tipoArch == "XML"){
             $FchEmis = $dte->fchemis;
             //$FchEmis = date("d-m-Y",strtotime($dte->fchemis));
@@ -1821,7 +1858,169 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         }
     
         return $contenido;
-    }else{
+    }
+    if($dte->foliocontrol->tipodocto == 33){
+        //$aux_dte = consultaindex($id);
+        $Folio = str_pad($Folio, 10, "0", STR_PAD_LEFT);
+        //$dte = Dte::findOrFail($id);
+        $rutrecep = $dte->cliente->rut;
+        $rutrecep = number_format( substr ( $rutrecep, 0 , -1 ) , 0, "", "") . '-' . substr ( $rutrecep, strlen($rutrecep) -1 , 1 );
+    
+        $empresa = Empresa::findOrFail(1);
+        $RznSoc = strtoupper(sanear_string(substr(trim($empresa->razonsocial),0,100)));
+        $GiroEmis = strtoupper(sanear_string(substr(trim($empresa->giro),0,80)));
+        $Acteco = substr(trim($empresa->acteco),0,6);
+        $DirOrigen = strtoupper(sanear_string(substr(trim($empresa->sucursal->direccion),0,60)));
+        $CmnaOrigen = strtoupper(sanear_string(substr(trim($empresa->sucursal->comuna->nombre),0,20)));
+        $CiudadOrigen = strtoupper(sanear_string(substr(trim($empresa->sucursal->comuna->provincia->nombre),0,20)));
+        $contacto = strtoupper(sanear_string(substr(trim($dte->cliente->contactonombre . " Telf:" . $dte->cliente->contactotelef),0,80)));
+        $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
+        $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
+        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,42)));
+        $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
+        $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
+        $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
+        $formapago_desc = $dte->dtefac->formapago->descripcion;
+        $FchVenc = $dte->dtefac->fchvenc;
+        if($dte->dtefac->formapago_id == 2 or $dte->dtefac->formapago_id == 3){
+            $formapago_desc .= " " . $dte->cliente->plazopago->descripcion;
+        }
+        $FolioRef = substr(trim($dte->oc_id),0,20);
+        $contenido = "";
+    
+        if($tipoArch == "XML"){
+            $FchEmis = $dte->fchemis;
+            $contenido = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"yes\"?>" .
+            "<DTE version=\"1.0\">" .
+            "<Documento ID=\"R" .$empresa->rut . "T52F" . $Folio . "\">" .
+            "<Encabezado>" .
+            "<IdDoc>" .
+            "<TipoDTE>33</TipoDTE>" .
+            "<Folio>$Folio</Folio>" .
+            "<FchEmis>$FchEmis</FchEmis>" .
+            "<TipoDespacho>$dte->tipodespacho</TipoDespacho>" .
+            "<TpoImpresion>N</TpoImpresion>" .
+            "<TermPagoGlosa>$formapago_desc</TermPagoGlosa>" .
+            "<FchVenc>$FchVenc</FchVenc>" .
+            "</IdDoc>" .
+            "<Emisor>" .
+            "<RUTEmisor>$empresa->rut</RUTEmisor>" .
+            "<RznSoc>$RznSoc</RznSoc>" .
+            "<GiroEmis>$GiroEmis</GiroEmis>" .
+            "<Acteco>$Acteco</Acteco>" .
+            "<DirOrigen>$DirOrigen</DirOrigen>" .
+            "<CmnaOrigen>$CmnaOrigen</CmnaOrigen>" .
+            "<CiudadOrigen>$CiudadOrigen</CiudadOrigen>" .
+            "</Emisor>" .
+            "<Receptor>" .
+            "<RUTRecep>$rutrecep</RUTRecep>" .
+            "<RznSocRecep>$RznSocRecep</RznSocRecep>" .
+            "<GiroRecep>$GiroRecep</GiroRecep>" .
+            "<Contacto>$contacto</Contacto>" .
+            "<CorreoRecep>$CorreoRecep</CorreoRecep>" .
+            "<DirRecep>$DirRecep</DirRecep>" .
+            "<CmnaRecep>$CmnaRecep</CmnaRecep>" .
+            "<CiudadRecep>$CiudadRecep</CiudadRecep>" .
+            "</Receptor>" .
+            "<Totales>" .
+            "<MntNeto>$dte->mntneto</MntNeto>" .
+            "<TasaIVA>$dte->tasaiva</TasaIVA>" .
+            "<IVA>$dte->iva</IVA>" .
+            "<MntTotal>$dte->mnttotal</MntTotal>" .
+            "</Totales>" .
+            "</Encabezado>";
+        
+            $aux_totalqtyitem = 0;
+        
+            foreach ($dte->dtedets as $dtedet) {
+                $VlrCodigo = substr(trim($dtedet->vlrcodigo),0,35);
+                $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,80)));
+                $DscItem = strtoupper(sanear_string(trim($dtedet->dscitem)));
+                $UnmdItem = substr(trim($dtedet->unmditem),0,4);
+                $contenido .= "<Detalle>" .
+                "<NroLinDet>$dtedet->nrolindet</NroLinDet>" .
+                "<CdgItem>" .
+                "<TpoCodigo>INTERNO</TpoCodigo>" .
+                "<VlrCodigo>" . $VlrCodigo . "</VlrCodigo>" .
+                "</CdgItem>" .
+                "<NmbItem>" . $VlrCodigo . "</NmbItem>" .
+                "<DscItem>" . $NmbItem . "</DscItem>" .
+                "<QtyItem>" . $dtedet->qtyitem . "</QtyItem>" .
+                "<UnmdItem>" . $UnmdItem . "</UnmdItem>" .
+                "<PrcItem>$dtedet->prcitem</PrcItem>" .
+                "<MontoItem>$dtedet->montoitem</MontoItem>" .
+                "</Detalle>";
+                $aux_totalqtyitem += $dtedet->qtyitem;
+            }
+        
+            $contenido .= "<Referencia>" .
+            "<NroLinRef>1</NroLinRef>" .
+            "<TpoDocRef>TPR</TpoDocRef>" .
+            "<FolioRef>00001000</FolioRef>" .
+            "<FchRef>$FchEmis</FchRef>" .
+            "<RazonRef>TOTAL UNIDADES:$aux_totalqtyitem</RazonRef>" .
+            "</Referencia>" .
+            "<Referencia>" .
+            "<NroLinRef>2</NroLinRef>" .
+            "<TpoDocRef>SRD</TpoDocRef>" .
+            "<FolioRef>00001000</FolioRef>" .
+            "<FchRef>$FchEmis</FchRef>" .
+            "<RazonRef>DESPACHO: $DirRecep</RazonRef>" .
+            "</Referencia>";
+            $array_ocs = []; //ARRAY ORDENES DE COMPPRA
+            $array_GDs = []; //ARRAY GUIAS DE DESPACHO
+            foreach ($dte->dtedtes as $dtedte) {
+                $oc_id = $dtedte->dteguiadesp->notaventa->oc_id;
+                $array_ocs [$oc_id] = [
+                    "oc_id" => $oc_id,
+                    "fecha" => date("Y-m-d", strtotime($dtedte->dteguiadesp->notaventa->fechahora))
+                    
+                ];
+                $array_GDs[] = [
+                    "nrodocto" => $dtedte->dter->nrodocto,
+                    "fchemis" => date("Y-m-d", strtotime($dtedte->dter->fchemis))
+                ];
+            }
+            //$array_ocs = explode(",", $aux_dte[0]->oc_id);
+            $i = 2;
+            $aux_RazonRef = strtoupper(sanear_string(($dte->dtefac->hep ? ("Hep: " . $dte->dtefac->hep) : "") . ($dte->obs ? (" " . $dte->obs) : "")));
+            $aux_RazonRefImp = false;
+            foreach ($array_ocs as $array_oc) {
+                if(!is_null($oc_id) and !empty($oc_id)){
+                    $i++;
+                    $contenido .= "<Referencia>" .
+                    "<NroLinRef>$i</NroLinRef>" .
+                    "<TpoDocRef>801</TpoDocRef>" .
+                    "<FolioRef>" . $array_oc["oc_id"] . "</FolioRef>" .
+                    "<FchRef>" . $array_oc["fecha"] . "</FchRef>";
+                    if($aux_RazonRefImp == false){
+                        $aux_RazonRefImp = true;
+                        $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
+                    }
+                    $contenido .= "</Referencia>";    
+                }
+            }
+
+            //$array_dter_id = explode(",", $aux_dte[0]->dter_id);
+            foreach ($array_GDs as $array_GD) {
+                $i++;
+                $contenido .= "<Referencia>" .
+                "<NroLinRef>$i</NroLinRef>" .
+                "<TpoDocRef>52</TpoDocRef>" .
+                "<FolioRef>" . $array_GD["nrodocto"] . "</FolioRef>" .
+                "<FchRef>" . $array_GD["fchemis"] . "</FchRef>";
+                if($aux_RazonRefImp == false){
+                    $aux_RazonRefImp = true;
+                    $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
+                }
+                $contenido .= "</Referencia>";
+            }
+            $contenido .= "</Documento>" .
+            "</DTE>";
+        }
+        return $contenido;
+    }
+    if(($dte->foliocontrol->tipodocto == 56) or ($dte->foliocontrol->tipodocto == 61)){
         $Folio = str_pad($Folio, 10, "0", STR_PAD_LEFT);
         $rutrecep = $dte->cliente->rut;
         $rutrecep = number_format( substr ( $rutrecep, 0 , -1 ) , 0, "", "") . '-' . substr ( $rutrecep, strlen($rutrecep) -1 , 1 );
@@ -1920,68 +2119,14 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                 "</Detalle>";
                 $aux_totalqtyitem += $dtedet->qtyitem;
             }
-        
-            $TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->ot) ? "" : "OT:" . $dte->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->lugarentrega . " ")  . (empty($dte->comunaentrega_id) ? "" : $dte->comunaentrega->nombre . " ");
-            $TpoDocRef = strtoupper(sanear_string(substr(trim($TpoDocRef),0,90)));
-    
-            if($TipoDocto == 33){
-                $contenido .= "<Referencia>" .
-                "<NroLinRef>1</NroLinRef>" .
-                "<TpoDocRef>TPR</TpoDocRef>" .
-                "<FolioRef>00001000</FolioRef>" .
-                "<FchRef>$FchEmis</FchRef>" .
-                "<RazonRef>TOTAL UNIDADES:$aux_totalqtyitem</RazonRef>" .
-                "</Referencia>" .
-                "<Referencia>" .
-                "<NroLinRef>2</NroLinRef>" .
-                "<TpoDocRef>SRD</TpoDocRef>" .
-                "<FolioRef>00001000</FolioRef>" .
-                "<FchRef>$FchEmis</FchRef>" .
-                "<RazonRef>DESPACHO: $DirRecep</RazonRef>" .
-                "</Referencia>";
-        
-    
-                $array_ocs = explode(",", $dte->oc_id);
-                $i = 2;
-                $aux_RazonRef = substr($dte->dtefac->hep ? ("Hep: " . $dte->dtefac->hep) : "",0,90);
-                $aux_RazonRefImp = false;
-                foreach ($array_ocs as $oc_id) {
-                    $i++;
-                    $contenido .= "<Referencia>" .
-                    "<NroLinRef>$i</NroLinRef>" .
-                    "<TpoDocRef>801</TpoDocRef>" .
-                    "<FolioRef>$oc_id</FolioRef>" .
-                    "<FchRef>$FchEmis</FchRef>";
-                    if($aux_RazonRefImp == false){
-                        $aux_RazonRefImp = true;
-                        $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
-                    }
-                    $contenido .= "</Referencia>";
-                }
-        
-                $array_dter_id = explode(",", $dte->dter_id);
-                foreach ($array_dter_id as $dter_id) {
-                    $i++;
-                    $dtedg = Dte::findOrFail($dter_id);
-                    $contenido .= "<Referencia>" .
-                    "<NroLinRef>$i</NroLinRef>" .
-                    "<TpoDocRef>52</TpoDocRef>" .
-                    "<FolioRef>$dtedg->nrodocto</FolioRef>" .
-                    "<FchRef>$dtedg->fchemis</FchRef>";
-                    if($aux_RazonRefImp == false){
-                        $aux_RazonRefImp = true;
-                        $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
-                    }
-                    $contenido .= "</Referencia>";
-                }    
-            }
-    
+            //dd($dte->dtedte->dter);
+
             if($TipoDocto == 61 or $TipoDocto == 56){
                 $TipoDocto = $dte->dtedte->dter->foliocontrol->tipodocto;
                 $aux_nrodocto = $dte->dtedte->dter->nrodocto;
                 $aux_FchEmis = $dte->dtedte->dter->fchemis;
-                $TpoDocRef = strtoupper(sanear_string(substr(empty($dte->obs) ? "" : $dte->obs,0,90)));
                 $aux_codref = $dte->dtencnd->codref;
+                $TpoDocRef = strtoupper(sanear_string(substr(empty($dte->obs) ? " " : $dte->obs,0,90)));
     
                 $contenido .= "<Referencia>" .
                 "<NroLinRef>1</NroLinRef>" .

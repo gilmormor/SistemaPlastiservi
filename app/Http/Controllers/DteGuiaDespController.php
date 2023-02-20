@@ -187,11 +187,7 @@ class DteGuiaDespController extends Controller
         $request->request->add(['vendedor_id' => $despachoord->notaventa->vendedor_id]);
         $request->request->add(['foliocontrol_id' => 2]);
 
-
-        //Inicio prueba
-        //******************************************** */
         $dte = new Dte();
-        //$dte->id = 1;
 
         $Tmntneto = 0;
         $Tiva = 0;
@@ -225,8 +221,6 @@ class DteGuiaDespController extends Controller
                         $dtedet->notaventadetalle_id = $request->notaventadetalle_id[$i];
 
                         $dte->dtedets[] = $dtedet;
-
-
                         //$dtedet->save();
                         /*
                         $dtedet_id = $dtedet->id;
@@ -280,10 +274,6 @@ class DteGuiaDespController extends Controller
         $dteguiadesp->ot = $request->ot;
 
         $dte->dteguiadesp = $dteguiadesp;
-
-
-
-        
         $respuesta = Dte::generardteprueba($dte);
         /*
         $respuesta = response()->json([
@@ -311,6 +301,13 @@ class DteGuiaDespController extends Controller
             }
             $dteguiadesp->dte_id = $dteNew->id;
             $dteguiadesp->save();
+            //GUARDO EN DespachoOrd EL nrodocto DE GUI DE DESPACHO SII
+            $despachoord = DespachoOrd::findOrFail($dteguiadesp->despachoord_id);
+            $despachoord->guiadespacho = $dteNew->nrodocto;
+            $despachoord->guiadespachofec = date("Y-m-d H:i:s");
+            if ($despachoord->save()) {
+                Event(new GuardarGuiaDespacho($despachoord));
+            }
             //CREAR REGISTRO DE ORDEN DE COMPRA
             $dteoc = new DteOC();
             $dteoc->dte_id = $dteNew->id;
@@ -333,96 +330,6 @@ class DteGuiaDespController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
-
-
-
-
-        dd($dte);
-
-        //FIN DE PRUEBA
-        //************************************************ */
-
-
-        $dte = Dte::create($request->all());
-        $dte_id = $dte->id;
-        //dd($request);
-        //CREAR REGISTRO PROPIO DE GUIA DE DESPACHO
-        $dteguiadesp = new DteGuiaDesp();
-        $dteguiadesp->dte_id = $dte_id;
-        $dteguiadesp->despachoord_id = $despachoord->id;
-        $dteguiadesp->notaventa_id = $despachoord->notaventa_id;
-        $dteguiadesp->tipoentrega_id = $request->tipoentrega_id;
-        $dteguiadesp->comunaentrega_id = $request->comunaentrega_id;
-        $dteguiadesp->lugarentrega = $request->lugarentrega;
-        $dteguiadesp->ot = $request->ot;
-        $dteguiadesp->save();
-
-        //CREAR REGISTRO DE ORDEN DE COMPRA
-        $dteoc = new DteOC();
-        $dteoc->dte_id = $dte_id;
-        $dteoc->oc_id = $despachoord->notaventa->oc_id;
-        $dteoc->oc_file = $despachoord->notaventa->oc_file;
-        $dteoc->save();
-
-        //$notaventaid = 1;
-        //SI ESTA VACIO EL NUMERO DE COTIZACION SE CREA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DEL LADO DEL CLIENTE
-        //SI NO ESTA VACIO EL NUMERO DE COTIZACION SE LLENA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DETALLE COTIZACION
-        $Tmntneto = 0;
-        $Tiva = 0;
-        $Tmnttotal = 0;
-        $Tkgtotal = 0;
-
-
-        if(!empty($request->despachoord_id)){
-            if($cont_producto>0){
-                for ($i=0; $i < $cont_producto ; $i++){
-                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                        $producto = Producto::findOrFail($request->producto_id[$i]);
-                        $dtedet = new DteDet();
-                        $dtedet->dte_id = $dte_id;
-                        $dtedet->producto_id = $request->producto_id[$i];
-                        $dtedet->nrolindet = $request->nrolindet[$i];
-                        $dtedet->vlrcodigo = $request->producto_id[$i];
-                        $dtedet->nmbitem = $request->nmbitem[$i];
-                        $dtedet->dscitem = $request->dscitem[$i];
-                        $dtedet->qtyitem = $request->qtyitem[$i];
-                        $dtedet->unmditem = $request->unmditem[$i];
-                        $dtedet->unidadmedida_id = $request->unidadmedida_id[$i];
-                        $dtedet->prcitem = $request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
-                        $dtedet->montoitem = $request->montoitem[$i];
-                        $dtedet->obsdet = $request->obsdet[$i];
-                        $dtedet->itemkg = $request->itemkg[$i];
-                        
-                        $Tmntneto += $request->montoitem[$i];
-                        $Tkgtotal += $request->itemkg[$i];
-        
-                        $dtedet->save();
-                        $dtedet_id = $dtedet->id;
-                        $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
-                        $dtedet_despachoorddet->dtedet_id = $dtedet_id;
-                        $dtedet_despachoorddet->despachoorddet_id = $request->despachoorddet_id[$i];
-                        $dtedet_despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];                        
-                        $dtedet_despachoorddet->save();
-                    }
-                }
-            }
-        }
-        if($Tmntneto>0){
-            $Tiva = round(($empresa->iva/100) * $Tmntneto);
-            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);    
-        }
-
-        $dte = Dte::findOrFail($dte_id);
-        $dte->mntneto = $Tmntneto;
-        $dte->tasaiva = $empresa->iva;
-        $dte->iva = $Tiva;
-        $dte->mnttotal = $Tmnttotal;
-        $dte->kgtotal = $Tkgtotal;
-        $dte->save();
-        return redirect('dteguiadesp')->with([
-                                            'mensaje'=>'Guia Despacho creada con exito.',
-                                            'tipo_alert' => 'alert-success'
-                                        ]);
     }
      
 
@@ -1160,12 +1067,12 @@ function updatenumguia($despachoord,$dte,$request){
     $dte->aprobstatus = 1;
     $dte->aprobusu_id = auth()->id();
     $dte->aprobfechahora = date("Y-m-d H:i:s");
-    $despachoord->guiadespacho = $dte->nrodocto;
-    $despachoord->guiadespachofec = ($dte->fchemis . " 00:00:00");
+    //$despachoord->guiadespacho = $dte->nrodocto;
+    //$despachoord->guiadespachofec = date("Y-m-d H:i:s");
     //if ($despachoord->save() and $dte->save() and $foliocontrol->save()) {
     if ($despachoord->save() and $dte->save()) {
             //dteguiadesp($dte->id);
-        Event(new GuardarGuiaDespacho($despachoord));
+        //Event(new GuardarGuiaDespacho($despachoord));
         return response()->json([
                                 'mensaje' => 'ok',
                                 'despachoord' => $despachoord,

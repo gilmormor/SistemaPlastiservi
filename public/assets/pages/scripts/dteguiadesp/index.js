@@ -107,7 +107,7 @@ $(document).ready(function () {
                 "</a>"+
 */
                 aux_text = 
-                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarGD(" + data.id + "," + data.despachoord_id + ")' title='Generar DTE Guia Despacho'>"+
+                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + "," + data.despachoord_id + ")' title='Enviar a procesados'>"+
                     "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
                 "</a>";
                 /*
@@ -206,7 +206,7 @@ function ajaxRequest(data,url,funcion) {
                     $("#fila"+datatemp.nfila).remove();
                     totalizarpagina();
                     totalizarTabla();
-                    genpdfGD(respuesta.nrodocto,"_U");
+                    //genpdfGD(respuesta.nrodocto,"_U");
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
                     swal({
@@ -249,7 +249,7 @@ function ajaxRequest(data,url,funcion) {
                         //var ruta = '/guiadesp/dteguiadesp';
                         //console.log(data);
                         swal({
-                            title: '¿ Generar DTE Guia Despacho ?',
+                            title: '¿ Procesar DTE Guia Despacho ?',
                             text: "Esta acción no se puede deshacer!",
                             icon: 'warning',
                             buttons: {
@@ -432,7 +432,7 @@ function ajaxRequest(data,url,funcion) {
 }
 
 
-function aprobarGD(i,id){
+function procesar(i,id){
     var data = {
         id         : id,
         nfila      : i,

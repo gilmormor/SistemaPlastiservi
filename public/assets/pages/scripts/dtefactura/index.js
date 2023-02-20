@@ -24,10 +24,11 @@ $(document).ready(function () {
             {data: 'despachoord_id'}, // 8
             {data: 'nrodocto_guiadesp'}, // 9
             {data: 'nrodocto_guiadesp'}, // 10
-            {data: 'nombre_comuna'}, // 11
-            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //12
-            {data: 'oc_file',className:"ocultar"}, //13
-            {data: 'updated_at',className:"ocultar"}, //14
+            {data: 'nrodocto_factura'}, // 11
+            {data: 'nombre_comuna'}, // 12
+            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //13
+            {data: 'oc_file',className:"ocultar"}, //14
+            {data: 'updated_at',className:"ocultar"}, //15
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -38,6 +39,12 @@ $(document).ready(function () {
             $(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
+
+            aux_text = 
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"\")'>" +
+                data.id +
+            "</a>";
+            $('td', row).eq(0).html(aux_text);
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
@@ -138,6 +145,16 @@ $(document).ready(function () {
             }
             $('td', row).eq(10).html(aux_text);
 
+            aux_text = 
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"\")'>" +
+                data.nrodocto_factura +
+            "</a>," +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"_cedible\")'>" +
+                data.nrodocto_factura +
+            "</a>";
+            $('td', row).eq(11).html(aux_text);
+
+
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
                     "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
@@ -154,22 +171,22 @@ $(document).ready(function () {
                 "</a>"+
 */
                 aux_text = 
-                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='generarFactSii(" + data.id + ")' title='Generar DTE Factura SII'>"+
+                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + ")' title='Generar DTE Factura SII'>"+
                     "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
                 "</a>"+
                 "<a href='dtefactura' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
             }
-            $('td', row).eq(14).addClass('updated_at');
-            $('td', row).eq(14).attr('id','updated_at' + data.id);
-            $('td', row).eq(14).attr('name','updated_at' + data.id);
+            $('td', row).eq(15).addClass('updated_at');
+            $('td', row).eq(15).attr('id','updated_at' + data.id);
+            $('td', row).eq(15).attr('name','updated_at' + data.id);
 
-            aux_text = aux_text +
-            "<a onclick='anularfac(" + data.id + ")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro' data-toggle='tooltip'>"+
-                "<span class='glyphicon glyphicon-remove text-danger'></span>"
+            aux_text = 
+            "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + ")' title='Enviar a procesados'>"+
+                "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
             "</a>";
-            $('td', row).eq(15).html(aux_text);
+            $('td', row).eq(16).html(aux_text);
         }
     });
 
@@ -219,9 +236,9 @@ function ajaxRequest(data,url,funcion) {
 		data: data,
 		success: function (respuesta) {
 			
-			if(funcion=='generarfactsii'){
+			if(funcion=='procesar'){
 				if (respuesta.mensaje == "ok") {
-                    genpdfFAC(respuesta.nrodocto,"_U");
+                    //genpdfFAC(respuesta.nrodocto,"_U");
                     $("#fila"+datatemp.nfila).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
@@ -301,17 +318,17 @@ function ajaxRequest(data,url,funcion) {
 }
 
 
-function generarFactSii(id){
+function procesar(id){
     var data = {
         dte_id : id,
         nfila  : id,
         updated_at : $("#updated_at" + id).html(),
         _token: $('input[name=_token]').val()
     };
-    var ruta = '/dtefactura/generarfactsii';
+    var ruta = '/dtefactura/procesar';
     //var ruta = '/guiadesp/dteguiadesp';
     swal({
-        title: '¿ Generar DTE Factura ?',
+        title: '¿ Procesar DTE Factura ?',
         text: "Esta acción no se puede deshacer!",
         icon: 'warning',
         buttons: {
@@ -320,7 +337,7 @@ function generarFactSii(id){
         },
     }).then((value) => {
         if (value) {
-            ajaxRequest(data,ruta,'generarfactsii');
+            ajaxRequest(data,ruta,'procesar');
         }
     });
 

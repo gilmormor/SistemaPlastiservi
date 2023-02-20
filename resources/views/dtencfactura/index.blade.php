@@ -44,6 +44,7 @@ Nota Crédito
                                 <th class='tooltipsC' title='Guia Despacho'>GD</th>
                                 <th class='tooltipsC' title='Guia Despacho Cedible'>GDC</th>
                                 <th class='tooltipsC' title='Factura'>Fact</th>
+                                <th class='tooltipsC' title='Nota Crédito'>NC</th>
                                 <th class='tooltipsC' title='Comuna'>Comuna</th>
                                 <th class="ocultar">Obs Bloqueo</th>
                                 <th class="ocultar">oc_file</th>

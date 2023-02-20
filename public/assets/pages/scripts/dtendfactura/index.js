@@ -25,10 +25,11 @@ $(document).ready(function () {
             {data: 'nrodocto_guiadesp'}, // 9
             {data: 'nrodocto_guiadesp'}, // 10
             {data: 'nrodocto_factura'}, // 11
-            {data: 'nombre_comuna'}, // 12
-            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //13
-            {data: 'oc_file',className:"ocultar"}, //14
-            {data: 'updated_at',className:"ocultar"}, //15
+            {data: 'nrodocto'}, // 12
+            {data: 'nombre_comuna'}, // 13
+            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //14
+            {data: 'oc_file',className:"ocultar"}, //15
+            {data: 'updated_at',className:"ocultar"}, //16
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -147,6 +148,14 @@ $(document).ready(function () {
             "</a>";
             $('td', row).eq(11).html(aux_text);
 
+            aux_text = 
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito' onclick='genpdfND(" + data.nrodocto + ",\"\")'>" +
+                data.nrodocto +
+            "</a>," +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito Cedible' onclick='genpdfND(" + data.nrodocto + ",\"_cedible\")'>" +
+                data.nrodocto +
+            "</a>";
+            $('td', row).eq(12).html(aux_text);
 
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
@@ -173,15 +182,21 @@ $(document).ready(function () {
                 "</a>";
                 */
             }
-            $('td', row).eq(15).addClass('updated_at');
-            $('td', row).eq(15).attr('id','updated_at' + data.id);
-            $('td', row).eq(15).attr('name','updated_at' + data.id);
-
+            $('td', row).eq(16).addClass('updated_at');
+            $('td', row).eq(16).attr('id','updated_at' + data.id);
+            $('td', row).eq(16).attr('name','updated_at' + data.id);
+            /*
             aux_text = aux_text +
             "<a onclick='anularfac(" + data.id + ")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
-            $('td', row).eq(16).html(aux_text);
+            */
+            aux_text = 
+            "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + ")' title='Enviar a procesados'>"+
+                "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
+            "</a>";
+
+            $('td', row).eq(17).html(aux_text);
         }
     });
 
@@ -230,9 +245,9 @@ function ajaxRequest(data,url,funcion) {
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			if(funcion=='generarsii'){
+			if(funcion=='procesar'){
 				if (respuesta.mensaje == "ok") {
-                    genpdfND(respuesta.nrodocto,"_U");
+                    //genpdfND(respuesta.nrodocto,"_U");
                     $("#fila"+datatemp.nfila).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
@@ -395,3 +410,28 @@ $("#btnGuardarGanul").click(function(event)
 		alertify.error("Falta incluir informacion");
 	}
 });
+
+function procesar(id){
+    var data = {
+        dte_id : id,
+        nfila  : id,
+        updated_at : $("#updated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dtendfactura/procesar';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Procesar DTE Nota Débito ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequest(data,ruta,'procesar');
+        }
+    });
+
+}

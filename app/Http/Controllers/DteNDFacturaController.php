@@ -9,6 +9,7 @@ use App\Models\DteDet;
 use App\Models\DteDte;
 use App\Models\DteNcNd;
 use App\Models\Empresa;
+use App\Models\Foliocontrol;
 use App\Models\Seguridad\Usuario;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -79,7 +80,112 @@ class DteNDFacturaController extends Controller
             ]);
         }
 
+        $dte = new Dte();
+        $Tmntneto = 0;
+        $Tiva = 0;
+        $Tmnttotal = 0;
+        $Tkgtotal = 0;
+
+        for ($i=0; $i < $cont_producto ; $i++){
+            if(is_null($request->producto_id[$i])==false AND (is_null($request->qtyitem[$i])==false) OR $request->codref == 2){
+                //$producto = Producto::findOrFail($request->producto_id[$i]);
+                $dtedet = new DteDet();
+                //$dtedet->dte_id = $dte_id;
+                $dtedet->dtedet_id = $request->dtedetorigen_id[$i];
+                $dtedet->producto_id = $request->producto_id[$i];
+                $dtedet->nrolindet = ($i + 1);
+                $dtedet->vlrcodigo = $request->producto_id[$i];
+                $dtedet->nmbitem = $request->nmbitem[$i];
+                //$dtedet->dscitem = $request->dscitem[$i]; este valor aun no lo uso
+                $dtedet->qtyitem = $request->qtyitem[$i];
+                $dtedet->unmditem = $request->unmditem[$i];
+                $dtedet->unidadmedida_id = $request->unidadmedida_id[$i];
+                $dtedet->prcitem = $request->prcitem[$i]; //$request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
+                $dtedet->montoitem = $request->montoitem[$i];
+                //$dtedet->obsdet = $request->obsdet[$i];
+                $dtedet->itemkg = $request->itemkg[$i];
+                $dte->dtedets[] = $dtedet;
+                
+                $Tmntneto += $request->montoitem[$i];
+                $Tkgtotal += $request->itemkg[$i];
+            }
+        }
+        $empresa = Empresa::findOrFail(1);
+        if($Tmntneto>0){
+            $Tiva = round(($empresa->iva/100) * $Tmntneto);
+            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);    
+        }
+
         $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
+
+        $hoy = date("Y-m-d H:i:s");
+        $dte->foliocontrol_id = 6;
+        $dte->nrodocto = "";
+        $dte->fchemis = date("Y-m-d");
+        $dte->fchemisgen = $hoy;
+        $dte->fechahora = $hoy;
+        $dte->sucursal_id = $centroeconomico->sucursal_id;
+        $dte->cliente_id = $dtefac->cliente_id;
+        $dte->comuna_id = $dtefac->comuna_id;
+        $dte->vendedor_id = $dtefac->vendedor_id;
+        $dte->obs = $request->obs;
+        $dte->tipodespacho = $dtefac->tipodespacho;
+        $dte->indtraslado = $dtefac->indtraslado;
+        $dte->mntneto = $Tmntneto;
+        $dte->tasaiva = $dtefac->tasaiva;
+        $dte->iva = $Tiva;
+        $dte->mnttotal = $Tmnttotal;
+        $dte->kgtotal = $Tkgtotal;
+        $dte->centroeconomico_id = $request->centroeconomico_id;
+        $dte->usuario_id = auth()->id();
+
+        $arrayDTE = Dte::busDTEOrig($request->dte_id); //Buscar la factura inicial del DTE
+        $dtedte = new DteDte();
+        $dtedte->dte_id = "";
+        $dtedte->dter_id = $request->dte_id;
+        $dtedte->dtefac_id = $arrayDTE["dtefac_id"];
+        $dte->dtedte = $dtedte;
+
+        $dtencnd = new DteNcNd();
+        $dtencnd->dte_id = "";
+        $dtencnd->codref = $request->codref;
+        $dte->dtencnd = $dtencnd;
+
+        $respuesta = Dte::generardteprueba($dte);
+        /*$respuesta = response()->json([
+            'id' => 1
+        ]);
+        */
+        //dd("");
+        $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
+        if($respuesta->original["id"] == 1){
+            $dteNew = Dte::create($dte->toArray());
+            foreach ($dte->dtedets as $dtedet) {
+                //dd($dtedet->toArray());
+                $dtedet->dte_id = $dteNew->id;
+                DteDet::create($dtedet->toArray());
+            }
+            $dtedte->dte_id = $dteNew->id;
+            $dtedte->save();
+            $dtencnd->dte_id = $dteNew->id;
+            $dtencnd->save();
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+            $foliocontrol->save();
+            return redirect('dtendfactura')->with([
+                'mensaje'=>'Nota de Credito creada con exito.',
+                'tipo_alert' => 'alert-success'
+            ]);    
+        }else{
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->save();
+            return redirect('dtendfactura')->with([
+                'mensaje'=>$respuesta->original["mensaje"] ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
+
         //$cliente = Cliente::findOrFail($request->cliente_id);
         $request->request->add(['fchemis' => date('Y-m-d')]);
 
@@ -91,7 +197,6 @@ class DteNDFacturaController extends Controller
         $request->request->add(['comuna_id' => $dtefac->comuna_id]);
         $request->request->add(['foliocontrol_id' => 6]); //CODIGO DE TIPO DE DTE 6=NOTA DEBITO
         $request->request->add(['usuario_id' => auth()->id()]);
-
 
         $dte = Dte::create($request->all());
         $dte_id = $dte->id;
@@ -211,11 +316,20 @@ class DteNDFacturaController extends Controller
         return $respuesta;
     }
 
-    public function generardtesii(Request $request){
-        $request->request->add(['foliocontrol_id' => "6"]);
-        $aux_respuesta = Dte::generardte($request);
-        return $aux_respuesta;
+    public function procesar(Request $request){
+        if ($request->ajax()) {
+            $dte = Dte::findOrFail($request->dte_id);
+            if($dte->updated_at != $request->updated_at){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje'=>'Registro modificado por otro usuario.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            return Dte::updateStatusGen($dte,$request);
+        }
     }
+
 
     //ANULAR DTE
     public function anular(Request $request)
@@ -241,7 +355,7 @@ function consultaindex($dte_id){
         $aux_conddte_id = "dte.id = $dte_id";
     }
 
-    $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
+    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     GROUP_CONCAT(DISTINCT dtedtenc.dter_id) AS dter_id,
     GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
