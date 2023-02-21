@@ -94,60 +94,42 @@ class DteFacturaController extends Controller
         }
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
-            /*
-            return redirect('dtefactura')->with([
-                'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
-                'tipo_alert' => 'alert-error'
-            ]);*/
-
             return redirect('dtefactura')->with([
                 'mensaje'=>'No hay items, no se guardó.',
                 'tipo_alert' => 'alert-error'
             ]);
         }
-        
-        $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
+
         $cliente = Cliente::findOrFail($request->cliente_id);
-        $date = str_replace('/', '-', $request->fchemis);
-        $request->request->add(['fchemis' => date('Y-m-d')]);
-
-
-        $hoy = date("Y-m-d H:i:s");
-        $request->request->add(['tipodespacho' => 2]);
-        $request->request->add(['fechahora' => $hoy]);
-        $request->request->add(['tasaiva' => $dteguiadesp->iva]);
-        $request->request->add(['sucursal_id' => $centroeconomico->sucursal_id]);
-        $request->request->add(['comuna_id' => $cliente->comunap_id]);
-        $request->request->add(['foliocontrol_id' => 1]); //CODIGO DE TIPO DE DTE 1=FACTURA
-
-        $dte = Dte::create($request->all());
-        $dte_id = $dte->id;
-        //GUARDAR DATOS FACTURA
+        $dte = new Dte();
         $dtefac = new DteFac();
-        $dtefac->dte_id = $dte_id;
+        //$dtefac->dte_id = $dte_id;
         $dtefac->hep = $request->hep;
         $dtefac->formapago_id = $cliente->formapago_id;
         $dtefac->fchvenc =  date('Y-m-d', strtotime(date('Y-m-d') ."+ " . $cliente->plazopago->dias . " days"));
-        $dtefac->save();
+        $dte->dtefac = $dtefac;
+        //$dtefac->save();
 
         $Tmntneto = 0;
         $Tiva = 0;
         $Tmnttotal = 0;
         $Tkgtotal = 0;
-
+        //$dtedtes = [];
+        $dteguiausadas = [];
         $aux_nrolindet = 0;
         foreach ($aux_arrayselgd as &$dter_id){
             $dtedte = new DteDte();
-            $dtedte->dte_id = $dte_id;
+            $dtedte->dte_id = ""; //$dte_id;
             $dtedte->dter_id = $dter_id;
-            $dtedte->dtefac_id = $dte_id; 
-            $dtedte->save();
+            $dtedte->dtefac_id = ""; //$dte_id; 
+            $dte->dtedtes[] = $dtedte;
+            //$dtedte->save();
 
             $dteguiadesp = Dte::findOrFail($dter_id); //BUSCO LA GUIA ORIGEN
             foreach($dteguiadesp->dtedets as $dtedetguia){ //RECORRO EL DETALLE DE LA GUIA ORIGEN
                 $aux_nrolindet++;
                 $dtedet = new DteDet();
-                $dtedet->dte_id = $dte_id;
+                $dtedet->dte_id = ""; //$dte_id;
                 $dtedet->dtedet_id = $dtedetguia->id;
                 $dtedet->producto_id = $dtedetguia->producto_id;
                 $dtedet->nrolindet = $aux_nrolindet;
@@ -161,22 +143,28 @@ class DteFacturaController extends Controller
                 $dtedet->montoitem = $dtedetguia->montoitem;
                 $dtedet->obsdet = $dtedetguia->obsdet;
                 $dtedet->itemkg = $dtedetguia->itemkg;
-                $dtedet->save();
+
+                $dtedet->despachoorddet_id = $dtedetguia->dtedet_despachoorddet->despachoorddet_id;
+                $dtedet->notaventadetalle_id = $dtedetguia->dtedet_despachoorddet->notaventadetalle_id;
+                $dte->dtedets[] = $dtedet;
+                //$dtedet->save();
 
                 $Tmntneto += $dtedetguia->montoitem;
                 $Tkgtotal += $dtedetguia->itemkg;
-
+                /*
                 $dtedet_id = $dtedet->id;
                 $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
                 $dtedet_despachoorddet->dtedet_id = $dtedet_id;
                 $dtedet_despachoorddet->despachoorddet_id = $dtedetguia->dtedet_despachoorddet->despachoorddet_id;
                 $dtedet_despachoorddet->notaventadetalle_id = $dtedetguia->dtedet_despachoorddet->notaventadetalle_id;
                 $dtedet_despachoorddet->save();
+                */
             }
             $dteguiausada = new DteGuiaUsada();
             $dteguiausada->dte_id = $dteguiadesp->id;
             $dteguiausada->usuario_id = auth()->id();
-            $dteguiausada->save();
+            $dte->dteguiausadas[] = $dteguiausada;
+            //$dteguiausada->save();
         }
         $empresa = Empresa::findOrFail(1);
         if($Tmntneto>0){
@@ -184,18 +172,110 @@ class DteFacturaController extends Controller
             $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);    
         }
 
-        $dte = Dte::findOrFail($dte_id);
+
+        $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
+        $date = str_replace('/', '-', $request->fchemis);
+        $request->request->add(['fchemis' => date('Y-m-d')]);
+
+
+        $hoy = date("Y-m-d H:i:s");
+        $request->request->add(['tipodespacho' => 2]);
+        $request->request->add(['fechahora' => $hoy]);
+        $request->request->add(['tasaiva' => $dteguiadesp->iva]);
+        $request->request->add(['sucursal_id' => $centroeconomico->sucursal_id]);
+        $request->request->add(['comuna_id' => $cliente->comunap_id]);
+        $request->request->add(['foliocontrol_id' => 1]); //CODIGO DE TIPO DE DTE 1=FACTURA
+
+        $dte->foliocontrol_id = 1;
+        $dte->nrodocto = "";
+        $dte->fchemis = $request->fchemis;
+        $dte->fchemisgen = $hoy;
+        $dte->fechahora = $hoy;
+        $dte->sucursal_id = $centroeconomico->sucursal_id;
+        $dte->cliente_id = $cliente->id;
+        $dte->comuna_id = $cliente->comunap_id;
+        $dte->vendedor_id = $request->vendedor_id;
+        $dte->obs = $request->obs;
+        $dte->tipodespacho = 2;
+        $dte->indtraslado =  1;
         $dte->mntneto = $Tmntneto;
-        $dte->tasaiva = $empresa->iva;
+        $dte->tasaiva = $dteguiadesp->tasaiva;
         $dte->iva = $Tiva;
         $dte->mnttotal = $Tmnttotal;
         $dte->kgtotal = $Tkgtotal;
-        $dte->save();
+        $dte->centroeconomico_id = $request->centroeconomico_id;
+        //$dte->statusgen = 
+        //$dte->aprobstatus = 
+        //$dte->aprobusu_id = 
+        //$dte->aprobfechahora = 
+        $dte->usuario_id = $request->usuario_id;
+        //dd($dte);
 
-        return redirect('dtefactura')->with([
-            'mensaje'=>'Factura creada con exito.',
-            'tipo_alert' => 'alert-success'
+        $respuesta = Dte::generardteprueba($dte);
+        /*
+        $respuesta = response()->json([
+            'id' => 1
         ]);
+        */
+
+        $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
+        if($respuesta->original["id"] == 1){
+            $dteNew = Dte::create($dte->toArray());
+            foreach ($dte->dtedets as $dtedet) {
+                $dtedet->dte_id = $dteNew->id;
+                $despachoorddet_id = $dtedet->despachoorddet_id;
+                $notaventadetalle_id = $dtedet->notaventadetalle_id;
+                $aux_dtedet = $dtedet->toArray();
+                unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
+                unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
+    
+                $dtedetNew = DteDet::create($aux_dtedet);
+                $dtedet_id = $dtedetNew->id;
+                $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
+                $dtedet_despachoorddet->dtedet_id = $dtedet_id;
+                $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
+                $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
+                $dtedet_despachoorddet->save();
+            }
+
+            $dtefac->dte_id = $dteNew->id;
+            $dtefac->save();
+
+            foreach ($dte->dtedtes as $dtedte) {
+                $dtedteNew = new DteDte();
+                $dtedteNew->dte_id = $dteNew->id;
+                $dtedteNew->dter_id = $dtedte->dter_id;
+                $dtedteNew->dtefac_id = $dteNew->id; 
+                $dtedteNew->save();
+                //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS 
+                if($dtedte->dter->foliocontrol_id == 2){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2
+                    //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA 
+                    DespachoOrd::guardarfactdesp($dtedteNew);
+                }
+            }
+
+            foreach ($dte->dteguiausadas as $dteguiausada) {
+                $dteguiausadaNew = new DteGuiaUsada();
+                $dteguiausadaNew->dte_id = $dteguiausada->dte_id;
+                $dteguiausadaNew->usuario_id = auth()->id();
+                $dteguiausadaNew->save();    
+            }
+
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+            $foliocontrol->save();
+            return redirect('dtefactura')->with([
+                'mensaje'=>'Factura creada con exito.',
+                'tipo_alert' => 'alert-success'
+            ]);
+        }else{
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->save();
+            return redirect('dtefactura')->with([
+                'mensaje'=>$respuesta->original["mensaje"] ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
     }
 
     /**
@@ -215,224 +295,6 @@ class DteFacturaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function editar($id)
-    {
-        can('editar-dte-factura-gd');
-        $data = Dte::findOrFail($id);
-        //dd(date("d/m/Y", strtotime($data->fchemis)));
-        if($data->statusgen == 1){
-            return redirect('data')->with([
-                'mensaje'=>'Factura ya fue Generada! Nro: ' . $data->nrodocto ,
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-
-        if($data->guiadespanul){
-            return redirect('dtefactura')->with([
-                'mensaje'=>'Registro fué anulado!',
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        //dd($data->notaventa->cliente->clientedirecs);
-        $comunas = Comuna::orderBy('id')->get();
-        $centroeconomicos = CentroEconomico::orderBy('id')->get();
-        $tablas['empresa'] = Empresa::findOrFail(1);
-        $vendedor = Vendedor::vendedores();
-        $tablas['vendedores'] = $vendedor['vendedores'];
-
-        return view('dtefactura.editar', compact('data','comunas','tablas','centroeconomicos'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function actualizar(ValidarDTEFac $request, $id)
-    {
-        //dd($request);
-        can('guardar-dte-factura-gd');
-        $aux_arrayselgd = explode(",", $request->selectguiadesp);
-        //dd($request);
-        //BUSCO SI HUBO MODIFICACION EN LAS GUIAS DE DESPACHO 
-        //SI LA FECHA UPDATE_AT ES DIFERENTE A LA QUE VIENE DE LAS GUIAS SELECCIONADAS DETIENE LA EJECUCION Y RETORNA AL INDEX dtefactura
-        //dd($request->dte_idGD);
-        if($request->dte_idGD){
-            for ($i=0; $i < count($request->dte_idGD); $i++) { 
-                $valor = $request->dte_idGD[$i];
-                $indice = array_search($valor,$aux_arrayselgd,false);
-                if($indice){
-                    $dteguiadesp = Dte::findOrFail($valor);
-                    if($request->updated_atGD[$i] != $dteguiadesp->updated_at){
-                        return redirect('dtefactura')->with([
-                            'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
-                            'tipo_alert' => 'alert-error'
-                        ]);
-                    }
-        
-                }
-            }    
-        }
-        $dte = Dte::findOrFail($id);
-        //dd($dte->updated_at);
-        if($dte->updated_at != $request->updated_at){
-            return redirect('dtefactura')->with([
-                'mensaje'=>'Registro fué modificado por otro usuario.',
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-
-        if(!isset($request->producto_id)){
-            return redirect('dtefactura')->with([
-                'mensaje'=>'Factura sin items, no se actualizó.',
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        $cont_det = count($request->producto_id);
-        if($cont_det <=0 ){
-            return redirect('dtefactura')->with([
-                'mensaje'=>'Factura sin items, no se actualizó.',
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        //dd($request->dtedet_id[0]);
-        $det_id_array = $request->det_id;
-        //dd($det_id_array);
-        for ($i=0; $i < count($request->dtedet_id) ; $i++){
-            $sql = "SELECT *
-                FROM dtedet
-                WHERE dte_id = '$id' AND dtedet_id = '" . $request->dtedet_id[$i] . "'" .
-                " AND isnull(dtedet.deleted_at);";
-            $datadtedet = DB::select($sql);
-            if(count($datadtedet) > 0){
-                $var = $datadtedet[0]->id;
-                $det_id_array[$i] = (string)$var;
-            }
-        }
-        //$auxDet=DteDet::where('dte_id',$id)->whereNotIn('id', $request->det_id)->pluck('id')->toArray(); //->destroy();
-        $auxDet=DteDet::where('dte_id',$id)->whereNotIn('id', $det_id_array)->pluck('id')->toArray(); //->destroy();
-        for ($i=0; $i < count($auxDet) ; $i++){
-            $dtedet = DteDet::findOrFail($auxDet[$i]);
-            $aux_dte_id = $dtedet->dtedet->dte_id;
-            DteDte::where("dte_id","=",$id)
-                    ->where("dter_id","=",$aux_dte_id)->delete(); //Elimino Guias asociadas a la factura
-            DteGuiaUsada::where("dte_id","=",$aux_dte_id)->delete(); //Libero las guias de la factura
-            DteDet_DespachoOrdDet::where("dtedet_id","=",$auxDet[$i])->delete(); //Elimino la relacion con la orden de despacho y nota de Venta
-            DteDet::destroy($auxDet[$i]); //elimino los registros de detalle de factura
-        }
-        //return 0;
-        
-        $aux_nrolindet = 0;
-        $aux_arrayselgd = explode(",", $request->selectguiadesp);
-
-        foreach ($aux_arrayselgd as &$dter_id){
-            //SI no existe en DteDte agrego
-            /*
-                SI NO EXISTE EN DTEDET AGREGO EL REGISTRO
-            */
-            $sql = "SELECT *
-                FROM dtedte
-                WHERE dte_id = '$id' AND dter_id = '$dter_id'
-                AND isnull(dtedte.deleted_at);";
-            $datadtedte = DB::select($sql);
-            if(count($datadtedte) <=0 ){
-                $dtedte = new DteDte();
-                $dtedte->dte_id = $id;
-                $dtedte->dter_id = $dter_id;
-                $dtedte->dtefac_id = $id; 
-                $dtedte->save();
-
-                $dteguiadesp = Dte::findOrFail($dter_id); //BUSCO LA GUIA ORIGEN
-                foreach($dteguiadesp->dtedets as $dtedetguia){ //RECORRO EL DETALLE DE LA GUIA ORIGEN
-                    /*
-                        SI NO EXISTE EN DTEDET AGREGO EL REGISTRO
-                    */
-                    $aux_nrolindet++;
-                    $dtedet = new DteDet();
-                    $dtedet->dte_id = $id;
-                    $dtedet->dtedet_id = $dtedetguia->id;
-                    $dtedet->producto_id = $dtedetguia->producto_id;
-                    $dtedet->nrolindet = $aux_nrolindet;
-                    $dtedet->vlrcodigo = $dtedetguia->vlrcodigo;
-                    $dtedet->nmbitem = $dtedetguia->nmbitem;
-                    $dtedet->dscitem = $dtedetguia->dscitem;
-                    $dtedet->qtyitem = $dtedetguia->qtyitem;
-                    $dtedet->unmditem = $dtedetguia->unmditem;
-                    $dtedet->unidadmedida_id = $dtedetguia->unidadmedida_id;
-                    $dtedet->prcitem = $dtedetguia->prcitem;
-                    $dtedet->montoitem = $dtedetguia->montoitem;
-                    $dtedet->obsdet = $dtedetguia->obsdet;
-                    $dtedet->itemkg = $dtedetguia->itemkg;
-                    $dtedet->save();
-                    $dtedet_id = $dtedet->id;
-                    $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
-                    $dtedet_despachoorddet->dtedet_id = $dtedet_id;
-                    $dtedet_despachoorddet->despachoorddet_id = $dtedetguia->dtedet_despachoorddet->despachoorddet_id;
-                    $dtedet_despachoorddet->notaventadetalle_id = $dtedetguia->dtedet_despachoorddet->notaventadetalle_id;
-                    $dtedet_despachoorddet->save();
-                }
-                $dteguiausada = new DteGuiaUsada();
-                $dteguiausada->dte_id = $dteguiadesp->id;
-                $dteguiausada->usuario_id = auth()->id();
-                $dteguiausada->save();
-            }
-        }
-        $Tmntneto = 0;
-        $Tiva = 0;
-        $Tmnttotal = 0;
-        $Tkgtotal = 0;
-        $empresa = Empresa::findOrFail(1);
-
-        $sql = "SELECT *
-        FROM dtedet
-        WHERE dte_id = '$id'
-        AND isnull(dtedet.deleted_at);";
-        $datadtedet = DB::select($sql);
-        for ($i=0; $i < count($datadtedet) ; $i++){
-            $Tmntneto += $datadtedet[$i]->montoitem;
-            $Tkgtotal += $datadtedet[$i]->itemkg;
-            $dtedet = DteDet::findOrFail($datadtedet[$i]->id);
-            $dtedet->nrolindet = $i + 1;
-            $dtedet->save();
-        }
-        if($Tmntneto>0){
-            $Tiva = round(($empresa->iva/100) * $Tmntneto);
-            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);
-        }
-
-        $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
-        $cliente = Cliente::findOrFail($request->cliente_id);
-        $date = str_replace('/', '-', $request->fchemis);
-
-        $request->request->add(['fchemis' => date('Y-m-d')]);
-
-        $hoy = date("Y-m-d H:i:s");
-
-        $dte = Dte::findOrFail($id);
-        $dte->tipodespacho = $request->tipodespacho;
-        $dte->indtraslado = $request->indtraslado;
-        $dte->fechahora = $hoy;
-        $dte->mntneto = $Tmntneto;
-        $dte->tasaiva = $empresa->iva;
-        $dte->iva = $Tiva;
-        $dte->mnttotal = $Tmnttotal;
-        $dte->kgtotal = $Tkgtotal;
-        $dte->obs = $request->obs;
-        $dte->vendedor_id = $request->vendedor_id;
-        $dte->centroeconomico_id = $request->centroeconomico_id;
-        $dte->fchemis = date('Y-m-d');
-        $dte->save();
-
-        $dtefac = DteFac::findOrFail($dte->dtefac->id);
-        $dtefac->hep = $request->hep;
-        $dtefac->formapago_id = $cliente->formapago_id;
-        $dtefac->fchvenc =  date('Y-m-d', strtotime(date('Y-m-d') ."+ " . $cliente->plazopago->dias . " days"));
-        $dtefac->save();
-        
-        return redirect('dtefactura')->with('mensaje','Factura actualizada con exito!');
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -488,205 +350,19 @@ class DteFacturaController extends Controller
         return $datas;
     }
 
-    public function generarfactsii(Request $request)
+    public function procesar(Request $request)
     {
         if ($request->ajax()) {
             $dte = Dte::findOrFail($request->dte_id);
-            if(is_null($dte->cliente->giro) or empty($dte->cliente->giro) or $dte->cliente->giro ==""){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Giro de Cliente no puede estar vacio.',
-                    'tipo_alert' => 'error'
-                ]);
-            }
             if($dte->updated_at != $request->updated_at){
                 return response()->json([
                     'id' => 0,
-                    'mensaje'=>'Registro fué creado o modificado por otro usuario.',
+                    'mensaje'=>'Registro modificado por otro usuario.',
                     'tipo_alert' => 'error'
                 ]);
             }
-            if(!is_null($dte->statusgen)){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'DTE ya fue Generada! Nro: ' . $dte->nrodocto,
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            $foliocontrol = Foliocontrol::where("doc","=","FAVE")->get();
-            if(count($foliocontrol) == 0){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Numero de folio no encontrado.',
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            if($foliocontrol[0]->ultfoliouti >= $foliocontrol[0]->ultfoliohab ){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Se agotaron los folios. Se deben de pedir nuevos folios',
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            /*
-            $ArchivoTXT = dtefactura($dte->id,"12345","XML");
-            dd($ArchivoTXT);
-            */
-            //dd("entro");
-            $dte->fchemis = date('Y-m-d');
-            $dte->save();
-            $foliocontrol = Foliocontrol::findOrFail($foliocontrol[0]->id);
-            if($foliocontrol->bloqueo == 1){
-                $aux_guidesp = Dte::whereNotNull("nrodocto")
-                            ->whereNull("statusgen")
-                            ->whereNull("deleted_at")
-                            ->get();
-                //dd($aux_guidesp);
-                if(count($aux_guidesp) == 0){
-                    return response()->json([
-                        'id' => 0,
-                        'mensaje'=>'Folio bloqueado, vuelva a intentar. Folio: ' . $foliocontrol->ultfoliouti,
-                        'tipo_alert' => 'error'
-                    ]);
-                }else{
-                    if(is_null($dte->nrodocto)){
-                        return response()->json([
-                            'id' => 0,
-                            'mensaje' => 'Existe un DTE pendiente por Generar: ' . $aux_guidesp[0]->nrodocto,
-                            'tipo_alert' => 'error'
-                        ]);        
-                    }
-                }
-            }else{
-                //Si $foliocontrol->bloqueo = 0;
-                //Bloqueo el registro para que no pueda ser modificado por otro usuario
-                //Al procesar el registro desbloqueo 
-                $foliocontrol->bloqueo = 1;
-                $foliocontrol->save();
-            }
-            $empresa = Empresa::findOrFail(1);
-            $soap = new SoapController();
-            $aux_folio = $dte->nrodocto;
-            //dd($dte->nrodocto);
-            if(!is_null($dte->nrodocto)){
-                $Estado_DTE = $soap->Estado_DTE($empresa->rut,"33",$aux_folio);
-                if($Estado_DTE->Estatus == 3){
-                    $bandNoExisteFolio = false;
-                    $aux_folio = null;
-                    $dte->nrodocto = null;
-                    $foliocontrol->bloqueo = 0;
-                    $foliocontrol->save();
-                }
-            }
-            //dd($dte->nrodocto);
-            if(is_null($dte->nrodocto)){
-                $bandNoExisteFolio = true;
-                do {
-                    $Solicitar_Folio = $soap->Solicitar_Folio($empresa->rut,"33");
-                    if(isset($Solicitar_Folio->Estatus)){
-                        if($Solicitar_Folio->Estatus == 0){
-                            $Estado_DTE = $soap->Estado_DTE($empresa->rut,"33",$Solicitar_Folio->Folio);
-                            if($Estado_DTE->Estatus == 3){
-                                $bandNoExisteFolio = false;
-                                $aux_folio = $Solicitar_Folio->Folio;
-                            }
-                        }else{
-                            $foliocontrol->bloqueo = 0;
-                            $foliocontrol->save();
-                            //dd($Solicitar_Folio);
-                            return response()->json([
-                                'id' => 0,
-                                'mensaje'=>'Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus,
-                                'tipo_alert' => 'error'                
-                            ]);    
-                        }
-                    }else{
-                        $foliocontrol->bloqueo = 0;
-                        $foliocontrol->save();    
-                        return response()->json([
-                            'id' => 0,
-                            'mensaje'=>'Error: ' . $Solicitar_Folio,
-                            'tipo_alert' => 'error'                
-                        ]);    
-                    }
-                }while($bandNoExisteFolio);
-            }
-            $tipoArch = "XML";
-            $ArchivoTXT = dtefactura($dte->id,$aux_folio,$tipoArch);
-            $Carga_TXTDTE = $soap->Carga_TXTDTE($ArchivoTXT,$tipoArch);
-            //$Carga_TXTDTE = $soap->Carga_TXTDTE($ArchivoTXT,"XML");
-            //dd($Carga_TXTDTE->Estatus);
-            if(isset($Carga_TXTDTE->Estatus)){
-                //ACTUALIZO EL CAMPO nrodocto
-                //SI OCURRIO ALGUN ERROR SE QUE TENGO EL FOLIO, 
-                //SE QUE NO LO PUEDO VOLVER A PEDIR PORQUE POR ALGUNA RAZON SE GENERO UN ERROR EN EL ULTIMO FOLIO SOLICITADO
-                /*$aux_giadesp = Dte::where('id', $dte->id)
-                        ->update(['nrodocto' => $aux_folio]);*/
-                if($Carga_TXTDTE->Estatus == 0){
-                    $dte->fchemisgen = date("Y-m-d H:i:s");
-                    //$date = str_replace('/', '-', $request->fchemis);
-                    //$dte->fchemis = date('Y-m-d', strtotime($date));
-                    //$dte->fchemis = date("Y-m-d H:i:s");
-                    /*
-                    $dte->pdf = $Carga_TXTDTE->PDF;
-                    $dte->pdfcedible = $Carga_TXTDTE->PDFCedible;
-                    $dte->xml = $Carga_TXTDTE->XML;
-                    */
-                    $dte->nrodocto = $aux_folio;
-                    $dte->statusgen = 1;
-                    $dte->aprobstatus = 1;
-                    $dte->aprobusu_id = auth()->id();
-                    $dte->aprobfechahora = date("Y-m-d H:i:s");
-        
-                    $dte->save();
-                    //$fchemisDMY = date("d-m-Y_His",strtotime($dte->fchemis));
-                    $nombreArchPDF =  $foliocontrol->nombrepdf . str_pad($aux_folio, 8, "0", STR_PAD_LEFT);
-                    Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.xml', $Carga_TXTDTE->XML);
-                    Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.pdf', $Carga_TXTDTE->PDF);
-                    Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
-
-                    $pdf = new Fpdi();
-                    $files = array("storage/facturacion/dte/procesados/" . $nombreArchPDF . ".pdf","storage/facturacion/dte/procesados/" . $nombreArchPDF . "_cedible.pdf");
-                    foreach ($files as $file) {
-                        $pageCount = $pdf->setSourceFile($file);
-                        for ($pagNo=1; $pagNo <= $pageCount; $pagNo++) { 
-                            $template = $pdf->importPage($pagNo);
-                            $size = $pdf->getTemplateSize($template);
-                            $pdf->AddPage($size['orientation'], $size);
-                            $pdf->useTemplate($template);
-                        }
-                    }
-                    $pdf->Output("F","storage/facturacion/dte/procesados/" . $nombreArchPDF . "_U.pdf");
-
-                    //dd($Carga_TXTDTE);
-                }else{
-                    /*
-                    $foliocontrol->bloqueo = 0;
-                    $foliocontrol->save();
-                    */
-                    return response()->json([
-                        'id' => 0,
-                        'mensaje'=>'Error: #' . $Carga_TXTDTE->Estatus . " " . $Carga_TXTDTE->MsgEstatus,
-                        'tipo_alert' => 'error'                
-                    ]);    
-                }
-            }else{
-                /*
-                $foliocontrol->bloqueo = 0;
-                $foliocontrol->save();
-                */
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Error: ' . $Solicitar_Folio,
-                    'tipo_alert' => 'error'                
-                ]);
-            }
-
-            $dte = Dte::findOrFail($request->dte_id);
-            return updatenumfact($dte,$foliocontrol,$request);
-        } else {
-            abort(404);
-        }    
+            return Dte::updateStatusGen($dte,$request);
+        }
     }
 
     public function anular(Request $request)
@@ -843,7 +519,8 @@ function consultaindex($dte_id){
     }
 
 
-    $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
+    $sql = "SELECT dte.id,dte.nrodocto as nrodocto_factura,dte.fechahora,cliente.rut,cliente.razonsocial,
+    comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
     GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
@@ -1072,16 +749,20 @@ function dtefactura($id,$Folio,$tipoArch){
     return $contenido;
 }
 
-function updatenumfact($dte,$foliocontrol,$request){
+function updatenumfact($dte,$request){
+    /*
     foreach ($dte->dtedtes as $dtedte) { //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS 
         if($dtedte->dter->foliocontrol_id == 2){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2
         //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA 
         $respuesta = DespachoOrd::guardarfactdesp($dtedte); 
         }
     }
-    $foliocontrol->ultfoliouti = $dte->nrodocto;
-    $foliocontrol->bloqueo = 0;    
-    if ($dte->save() and $foliocontrol->save()) {
+    */
+    $dte->statusgen = 1;
+    $dte->aprobstatus = 1;
+    $dte->aprobusu_id = auth()->id();
+    $dte->aprobfechahora = date("Y-m-d H:i:s");
+    if ($dte->save()) {
         return response()->json([
                                 'mensaje' => 'ok',
                                 'status' => '0',

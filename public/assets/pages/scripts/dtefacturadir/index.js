@@ -11,7 +11,7 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
         "order"       : [[ 0, "desc" ]],
-        'ajax'        : "dtencfacturapage", 
+        'ajax'        : "dtefacturadirpage",
         'columns'     : [
             {data: 'id'}, // 0
             {data: 'fechahora'}, // 1
@@ -25,11 +25,10 @@ $(document).ready(function () {
             {data: 'nrodocto_guiadesp'}, // 9
             {data: 'nrodocto_guiadesp'}, // 10
             {data: 'nrodocto_factura'}, // 11
-            {data: 'nrodocto'}, // 12
-            {data: 'nombre_comuna'}, // 13
-            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //14
-            {data: 'oc_file',className:"ocultar"}, //15
-            {data: 'updated_at',className:"ocultar"}, //16
+            {data: 'nombre_comuna'}, // 12
+            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //13
+            {data: 'oc_file',className:"ocultar"}, //14
+            {data: 'updated_at',className:"ocultar"}, //15
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -40,6 +39,12 @@ $(document).ready(function () {
             $(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
+
+            aux_text = 
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"\")'>" +
+                data.id +
+            "</a>";
+            $('td', row).eq(0).html(aux_text);
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
@@ -113,6 +118,7 @@ $(document).ready(function () {
             }
             $('td', row).eq(8).html(aux_text);
 
+
             aux_text = "";
             let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
             for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
@@ -148,72 +154,18 @@ $(document).ready(function () {
             "</a>";
             $('td', row).eq(11).html(aux_text);
 
-            aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito' onclick='genpdfNC(" + data.nrodocto + ",\"\")'>" +
-                data.nrodocto +
-            "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito Cedible' onclick='genpdfNC(" + data.nrodocto + ",\"_cedible\")'>" +
-                data.nrodocto +
-            "</a>";
-            $('td', row).eq(12).html(aux_text);
-
-
-            if(data.clientebloqueado_descripcion != null){
-                aux_text = 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
-                        "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
-                    "</a>";
-            }else{
-                /*
-                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarsol(" + i + "," + data.id + ")' title='Aprobar Orden Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+*/
-/*
-                "<a href='/despachoord/aproborddesp' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar Orden Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+
-*/
-                aux_text = 
-                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + ")' title='Generar DTE Nota Crédito SII'>"+
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>";
-                /*
-                "<a href='dtefactura' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-                    "<i class='fa fa-fw fa-pencil'></i>"
-                "</a>";
-                */
-            }
-            $('td', row).eq(16).addClass('updated_at');
-            $('td', row).eq(16).attr('id','updated_at' + data.id);
-            $('td', row).eq(16).attr('name','updated_at' + data.id);
+            $('td', row).eq(15).addClass('updated_at');
+            $('td', row).eq(15).attr('id','updated_at' + data.id);
+            $('td', row).eq(15).attr('name','updated_at' + data.id);
 
             aux_text = 
             "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + ")' title='Enviar a procesados'>"+
                 "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
             "</a>";
-
-            $('td', row).eq(17).html(aux_text);
+            $('td', row).eq(16).html(aux_text);
         }
     });
 
-    /*
-    let  table = $('#tabla-data-factura').DataTable();
-    //console.log(table);
-    table
-        .on('draw', function () {
-            eventFired( 'Page' );
-        });
-
-    $.ajax({
-        url: '/dtefactura/totalizarindex',
-        type: 'GET',
-        success: function (datos) {
-            //console.log(datos);
-            $("#totalkg").html(MASKLA(datos.kgtotal,2));
-            //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
-        }
-    });
-    */
 });
 
 var eventFired = function ( type ) {
@@ -241,9 +193,10 @@ function ajaxRequest(data,url,funcion) {
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
+			
 			if(funcion=='procesar'){
 				if (respuesta.mensaje == "ok") {
-                    //genpdfNC(respuesta.nrodocto,"_U");
+                    //genpdfFAC(respuesta.nrodocto,"_U");
                     $("#fila"+datatemp.nfila).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
@@ -252,8 +205,9 @@ function ajaxRequest(data,url,funcion) {
 						text: respuesta.mensaje,
 						icon: 'error',
 						buttons: {
-							confirm: "Cerrar"
+							confirm: "Aceptar"
 						},
+					}).then((value) => {
 					});
 					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
 				}
@@ -329,10 +283,10 @@ function procesar(id){
         updated_at : $("#updated_at" + id).html(),
         _token: $('input[name=_token]').val()
     };
-    var ruta = '/dtencfactura/procesar';
+    var ruta = '/dtefacturadir/procesar';
     //var ruta = '/guiadesp/dteguiadesp';
     swal({
-        title: '¿ Procesar DTE Nota Crédito ?',
+        title: '¿ Procesar DTE Factura ?',
         text: "Esta acción no se puede deshacer!",
         icon: 'warning',
         buttons: {
@@ -360,49 +314,3 @@ function verificarAnulGuia()
 		return true;
 	}
 }
-
-function anularfac(id){
-    var data = {
-        dte_id : id,
-        nfila  : id,
-        updated_at : $("#updated_at" + id).html(),
-        _token: $('input[name=_token]').val()
-    };
-    var ruta = '/dtencfactura/anular';
-    //var ruta = '/guiadesp/dteguiadesp';
-    swal({
-        title: '¿ Anular Nota Crédito ?',
-        text: "Esta acción no se puede deshacer!",
-        icon: 'warning',
-        buttons: {
-            cancel: "Cancelar",
-            confirm: "Aceptar"
-        },
-    }).then((value) => {
-        if (value) {
-            ajaxRequest(data,ruta,'anularfac');
-        }
-    });
-}
-
-
-$("#btnGuardarGanul").click(function(event)
-{
-	event.preventDefault();
-	if(verificarAnulGuia())
-	{
-		var data = {
-			id         : $("#idanul").val(),
-			nfila      : $("#nfilaanul").val(),
-			guiadesp_id : $("#guiadesp_id").val(),
-			updated_at  : $("#updated_at").val(),
-			tipobodega : 3, //Codigo de tipo de bodega = 3 (Bodegas de despacho)
-			_token: $('input[name=_token]').val()
-		};
-        //console.log(data);
-		var ruta = '/invbodega/buscarTipoBodegaOrdDesp';
-		respuesta = ajaxRequest(data,ruta,'buscarTipoBodegaOrdDesp');
-	}else{
-		alertify.error("Falta incluir informacion");
-	}
-});

@@ -1033,7 +1033,7 @@ Route::put('dtefactura/{id}', 'DteFacturaController@actualizar')->name('actualiz
 Route::delete('dtefactura/{id}', 'DteFacturaController@eliminar')->name('eliminar_dtefactura');
 Route::get('dtefactura/listarguiadesp', 'DteFacturaController@listarguiadesp')->name('dtefactura_listarguiadesp');
 Route::get('dtefactura/listarguiadesppage', 'DteFacturaController@listarguiadesppage')->name('dtefactura_listarguiadesppage');
-Route::post('dtefactura/generarfactsii', 'DteFacturaController@generarfactsii')->name('dtefactura_generarfactsii');
+Route::post('dtefactura/procesar', 'DteFacturaController@procesar')->name('dtefactura_procesar');
 Route::get('dtefactura/productobuscarpage', 'DteFacturaController@productobuscarpage')->name('dtefactura_productobuscarpage');
 Route::get('dtefactura/clientebuscarpage', 'DteFacturaController@clientebuscarpage')->name('dtefactura_clientebuscarpage');
 Route::get('dtefactura/{id}/productobuscarpage', 'DteFacturaController@productobuscarpageid')->name('dtefactura_productobuscarpageid');
@@ -1082,7 +1082,7 @@ Route::put('dtencfactura/{id}', 'DteNCFacturaController@actualizar')->name('actu
 Route::delete('dtencfactura/{id}', 'DteNCFacturaController@eliminar')->name('eliminar_dtencfactura');
 Route::get('dtencfactura/listarguiadesp', 'DteNCFacturaController@listarguiadesp')->name('dtencfactura_listarguiadesp');
 Route::get('dtencfactura/listarguiadesppage', 'DteNCFacturaController@listarguiadesppage')->name('dtencfactura_listarguiadesppage');
-Route::post('dtencfactura/generardtesii', 'DteNCFacturaController@generardtesii')->name('dtencfactura_generardtesii');
+Route::post('dtencfactura/procesar', 'DteNCFacturaController@procesar')->name('dtencfactura_procesar');
 Route::post('dtencfactura/consdte_dtedet', 'DteNCFacturaController@consdte_dtedet')->name('dtencfactura_consdte_dtedet');
 Route::post('dtencfactura/anular', 'DteNCFacturaController@anular')->name('dtencfactura_anular');
 
@@ -1097,7 +1097,7 @@ Route::put('dtendfactura/{id}', 'DteNDFacturaController@actualizar')->name('actu
 Route::delete('dtendfactura/{id}', 'DteNDFacturaController@eliminar')->name('eliminar_dtendfactura');
 Route::get('dtendfactura/listarguiadesp', 'DteNDFacturaController@listarguiadesp')->name('dtendfactura_listarguiadesp');
 Route::get('dtendfactura/listarguiadesppage', 'DteNDFacturaController@listarguiadesppage')->name('dtendfactura_listarguiadesppage');
-Route::post('dtendfactura/generardtesii', 'DteNDFacturaController@generardtesii')->name('dtendfactura_generardtesii');
+Route::post('dtendfactura/procesar', 'DteNDFacturaController@procesar')->name('dtendfactura_procesar');
 Route::post('dtendfactura/consdte_dtedet', 'DteNDFacturaController@consdte_dtedet')->name('dtendfactura_consdte_dtedet');
 Route::post('dtendfactura/anular', 'DteNDFacturaController@anular')->name('dtendfactura_anular');
 
@@ -1108,3 +1108,26 @@ Route::get('reportdtenc/reportdtencpage', 'ReportDTENcController@reportdtencpage
 Route::get('reportdtenc/reporte', 'ReportDTENcController@reporte')->name('reportdtenc_reporte');
 Route::get('reportdtenc/exportPdf', 'ReportDTENcController@exportPdf')->name('reportdtenc_exportPdf');
 Route::get('reportdtenc/totalizarindex', 'ReportDTENcController@totalizarindex')->name('reportdtenc_totalizarindex');
+
+
+/*RUTAS FACTURA DIRECTA*/
+Route::get('dtefacturadir', 'DteFacturaDirController@index')->name('dtefacturadir');
+Route::get('dtefacturadirpage', 'DteFacturaDirController@dtefacturadirpage')->name('dtefacturadirpage');
+Route::get('dtefacturadir/totalizarindex', 'DteFacturaDirController@totalizarindex')->name('dtefacturadir_totalizarindex');
+Route::get('dtefacturadir/crear', 'DteFacturaDirController@crear')->name('crear_dtefacturadir');
+Route::post('dtefacturadir', 'DteFacturaDirController@guardar')->name('guardar_dtefacturadir');
+Route::get('dtefacturadir/{id}/editar', 'DteFacturaDirController@editar')->name('editar_dtefacturadir');
+Route::put('dtefacturadir/{id}', 'DteFacturaDirController@actualizar')->name('actualizar_dtefacturadir');
+Route::delete('dtefacturadir/{id}', 'DteFacturaDirController@eliminar')->name('eliminar_dtefacturadir');
+Route::get('dtefacturadir/listarguiadesp', 'DteFacturaDirController@listarguiadesp')->name('dtefacturadir_listarguiadesp');
+Route::get('dtefacturadir/listarguiadesppage', 'DteFacturaDirController@listarguiadesppage')->name('dtefacturadir_listarguiadesppage');
+Route::post('dtefacturadir/procesar', 'DteFacturaDirController@procesar')->name('dtefacturadir_procesar');
+Route::get('dtefacturadir/productobuscarpage', 'DteFacturaDirController@productobuscarpage')->name('dtefacturadir_productobuscarpage');
+Route::get('dtefacturadir/clientebuscarpage', 'DteFacturaDirController@clientebuscarpage')->name('dtefacturadir_clientebuscarpage');
+Route::get('dtefacturadir/{id}/productobuscarpage', 'DteFacturaDirController@productobuscarpageid')->name('dtefacturadir_productobuscarpageid');
+Route::get('dtefacturadir/{id}/clientebuscarpage', 'DteFacturaDirController@clientebuscarpageid')->name('dtefacturadir_clientebuscarpageid');
+Route::post('dtefacturadir/dtedtefacturadir', 'DteFacturaDirController@dtedtefacturadir')->name('dtefacturadir_dtedtefacturadir');
+Route::get('dtefacturadir/{id}/{stareport}/exportPdf', 'DteFacturaDirController@exportPdf')->name('exportPdf_dtefacturadir');
+Route::post('dtefacturadir/validarupdated', 'DteFacturaDirController@validarupdated')->name('validarupdated');
+Route::post('dtefacturadir/listardtedet', 'DteFacturaDirController@listardtedet')->name('dtefacturadir_listardtedet');
+Route::post('dtefacturadir/buscarfactura', 'DteFacturaDirController@buscarfactura')->name('dtefacturadir_buscarfactura');

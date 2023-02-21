@@ -11,6 +11,7 @@ class DteDet extends Model
     protected $table = "dtedet";
     protected $fillable = [
         'dte_id',
+        'dtedet_id',
         'despachoorddet_id',
         'notaventadetalle_id',
         'producto_id',

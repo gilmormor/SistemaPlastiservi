@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Factura
+Factura Directa
 @endsection
 
 <?php 
@@ -10,7 +10,7 @@ Factura
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/dtefactura/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/dtefacturadir/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -19,14 +19,9 @@ Factura
         @include('includes.mensaje')
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Facturas DTE por aprobar</h3>
+                <h3 class="box-title">Factura Directa DTE</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('dtefactura_listarguiadesp')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Guias x Facturar
-                    </a>
-                </div>
-                <div class="box-tools pull-right">
-                    <a href="{{route('crear_dtefactura')}}" class="btn btn-block btn-success btn-sm">
+                    <a href="{{route('crear_dtefacturadir')}}" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i> Nueva Factura
                     </a>
                 </div>
