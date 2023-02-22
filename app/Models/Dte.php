@@ -1985,8 +1985,14 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             $i = 2;
             $aux_RazonRef = strtoupper(sanear_string(($dte->dtefac->hep ? ("Hep: " . $dte->dtefac->hep) : "") . ($dte->obs ? (" " . $dte->obs) : "")));
             $aux_RazonRefImp = false;
+            foreach ($dte->dteocs as $dteoc) {
+                $array_ocs [$dteoc->oc_id] = [
+                    "oc_id" => $dteoc->oc_id,
+                    "fecha" => date("Y-m-d")
+                ];                
+            }
             foreach ($array_ocs as $array_oc) {
-                if(!is_null($oc_id) and !empty($oc_id)){
+                if(!is_null($array_oc["oc_id"]) and !empty($array_oc["oc_id"])){
                     $i++;
                     $contenido .= "<Referencia>" .
                     "<NroLinRef>$i</NroLinRef>" .

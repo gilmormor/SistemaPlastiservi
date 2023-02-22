@@ -2494,3 +2494,55 @@ function validarlistcodrefNd(){
 	//$('.select2').trigger('change');
 	//$(".selectpicker").selectpicker('refresh');
 }
+
+async function buscarDatosProd(producto_id){
+	codigo = producto_id.val();
+	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
+	{
+		var data = {
+			id: codigo,
+			_token: $('input[name=_token]').val()
+		};
+		return resul = await $.ajax({
+			url: '/producto/buscarUnProducto',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				//console.log(respuesta);
+				if(respuesta['cont']>0){
+					if(respuesta['estado'] == 0){
+						swal({
+							title: 'Producto inactivo.',
+							text: "Producto existe pero está Inactivo.",
+							icon: 'error',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								$("#producto_idM").focus();
+							}
+						});
+					}
+				}else{
+					swal({
+						title: 'Producto no existe.',
+						text: "Presione F2 para buscar",
+						icon: 'error',
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							//$("#producto_idM").focus();
+						}
+					});
+				}
+				return respuesta;
+			}
+		});
+		//console.log(resul);
+	}else{
+		return [];
+	}
+}

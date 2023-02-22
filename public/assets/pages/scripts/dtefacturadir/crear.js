@@ -7,7 +7,6 @@ $(document).ready(function () {
 	var date = new Date();
 	var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 	
-	aux_sta = $("#aux_sta").val();
 	//$("#rut").numeric();
 	$("#cantM").numeric();
 	$("#precioM").numeric({decimalPlaces: 2});
@@ -73,19 +72,6 @@ function ajaxRequest(data,url,funcion) {
 					}
 				}
 			}
-			if(funcion=="listardtedet"){
-				//console.log(respuesta.length);
-				console.log(respuesta);
-				if(respuesta.length>0){
-					$('#centroeconomico_id').val(respuesta[0].centroeconomico_id); // Select the option with a value of '1'
-					$('#vendedor_id').val(respuesta[0].vendedor_id); // Select the option with a value of '1'
-					
-					$('.select2').trigger('change'); // Notify any JS components that the value changed
-					//$("#centroeconomico_id option[value='"+ respuesta[0].centroeconomico_id +"']").attr("selected",true);
-					//$(".selectpicker").selectpicker('refresh');
-					llenarItemFact(respuesta)
-				}
-			}
 		},
 		error: function () {
 		}
@@ -143,7 +129,6 @@ $("#rut").blur(function(){
 	blanquearDatos();
 	codigo = $("#rut").val();
 	//limpiarCampos();
-	aux_sta = $("#aux_sta").val();
 	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
 	{
 		//totalizar();
@@ -254,95 +239,6 @@ $("#rut").focus(function(){
 })
 
 
-
-function llenarItemFact(data){
-	let htmlTags = "";
-	$('#tabla-data tbody').html(htmlTags);
-	for (i = 0; i < data.length; i++) {
-		htmlTags = '<tr name="fila' + (i+1) + '" id="fila' + (i+1) + '" class="proditems ' + data[i].nrodocto + '">' +
-			'<td style="text-align:center">' +
-				(i + 1) +
-				'<input type="text" name="det_id[]" id="det_id' + (i+1) + '" class="form-control" value="0" style="display:none;"/>' +
-				'<input type="text" name="nrolindet[]" id="nrolindet' + (i+1) + '" class="form-control" value="' + (i + 1) + '" style="display:none;"/>' +
-				'<input type="text" name="despachoorddet_id[]" id="despachoorddet_id' + (i+1) + '" class="form-control" value="' + data[i].dtedet_id + '" style="display:none;"/>' +
-				'<input type="text" name="notaventadetalle_id[]" id="notaventadetalle_id' + (i+1) + '" class="form-control" value="' + data[i].notaventadetalle_id + '" style=display:none;"/>' +
-				'<input type="text" name="dte_id[]" id="dte_id' + (i+1) + '" class="form-control" value="' + $("#dte_id").val() + '" style="display:none;"/>' +
-				'<input type="text" name="dtedet_id[]" id="dtedet_id' + (i+1) + '" class="form-control" value="' + data[i].dtedet_id + '" style="display:none;"/>' +
-				'<input type="text" name="dteorigen_id[]" id="dteorigen_id' + (i+1) + '" class="form-control" value="' + data[i].id + '" style="display:none;"/>' +
-				'<input type="text" name="obsdet[]" id="obsdet' + (i+1) + '" class="form-control" value="' + data[i].obsdet + '" style="display:none;"/>' +
-			'</td>' +
-			'<td style="text-align:center" name="producto_idTD' + (i+1) + '" id="producto_idTD' + (i+1) + '" >' +
-				data[i].producto_id +
-				'<input type="text" name="producto_id[]" id="producto_id' + (i+1) + '" class="form-control" value="' + data[i].producto_id +'" style="display:none;"/>' +
-			'</td>' +
-			'<td name="nrodoctoTD' + (i+1) + '" id="nrodoctoTD' + (i+1) + '" style="text-align:right">' +
-				'<a id="nrodocto' + (i+1) + '" name="nrodocto' + (i+1) + '" class="btn-accion-tabla btn-sm verguiasii" title="Editar valor" data-toggle="tooltip" nomcampo="nrodocto" valor="' + data[i].nrodocto + '" title="Guia Despacho: ' + data[i].nrodocto + '" onclick="verGD(' + data[i].nrodocto + ')">' +
-					data[i].nrodocto + 
-				'</a>' +
-			'</td>' +
-			'<td name="cantTD' + (i+1) + '" id="cantTD' + (i+1) + '" style="text-align:right" class="subtotalcant" valor="' + data[i].qtyitem + '">' +
-					data[i].qtyitem +
-				'<input type="text" name="cant[]" id="cant' + (i+1) + '" class="form-control" value="' + data[i].qtyitem + '" style="display:none;"/>' +
-				'<input type="text" name="qtyitem[]" id="qtyitem' + (i+1) + '" class="form-control" value="' + data[i].qtyitem + '" style="display:none;"/>' +
-			'</td>' +
-			'<td name="unidadmedida_nombre' + (i+1) + '" id="unidadmedida_nombre' + (i+1) + '" valor="' + data[i].unmditem + '">' +
-					data[i].unmditem +
-				'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id' + (i+1) + '" class="form-control" value="' + data[i].unidadmedida_id + '" style="display:none;"/>' +
-				'<input type="text" name="unmditem[]" id="unmditem' + (i+1) + '" class="form-control" value="' + data[i].unmditem + '" style="display:none;"/>' +
-			'</td>' +
-			'<td name="nombreProdTD' + (i+1) + '" id="nombreProdTD' + (i+1) + '" valor="' + data[i].nmbitem + '">' +
-					data[i].nmbitem +
-				'<input type="text" name="nmbitem[]" id="nmbitem' + (i+1) + '" class="form-control" value="' + data[i].nmbitem + '" style="display:none;"/>' +
-				'<input type="text" name="dscitem[]" id="dscitem' + (i+1) + '" class="form-control" value="' + data[i].dscitem + '" style="display:none;"/>' +
-			'</td>' +
-			'<td style="text-align:right;" class="subtotalkg" valor="' + data[i].itemkg + '">' +
-					MASKLA(data[i].itemkg,2) +
-				'<input type="text" name="totalkilos[]" id="totalkilos' + (i+1) + '" class="form-control" value="' + data[i].itemkg + '" style="display:none;" valor="' + data[i].itemkg + '" fila="' + (i+1) + '"/>' +
-				'<input type="text" name="itemkg[]" id="itemkg' + (i+1) + '" class="form-control" value="' + data[i].itemkg + '" style="display:none;"/>' +
-			'</td>' +
-			'<td name="descuentoTD' + (i+1) + '" id="descuentoTD' + (i+1) + '" style="text-align:right;display:none;">' +
-				'0%' +
-			'</td>' +
-			'<td style="text-align:right;display:none;">' + 
-				'<input type="text" name="descuento[]" id="descuento' + (i+1) + '" class="form-control" value="0" style="display:none;"/>' +
-			'</td>' +
-			'<td style="text-align:right;display:none;">' +
-				'<input type="text" name="descuentoval[]" id="descuentoval' + (i+1) + '" class="form-control" value="0" style="display:none;"/>' +
-			'</td>' +
-			'<td name="preciounitTD' + (i+1) + '" id="preciounitTD' + (i+1) + '" style="text-align:right;">' +
-				MASKLA(data[i].prcitem,0) +
-				'<input type="text" name="preciounit[]" id="preciounit' + (i+1) + '" class="form-control" value="' + data[i].prcitem +'" style="display:none;"/>' +
-				'<input type="text" name="prcitem[]" id="prcitem' + (i+1) + '" class="form-control" value="' + data[i].prcitem + '" style="display:none;"/>' +
-			'</td>' +
-			'<td style="display:none;" name="precioxkiloTD' + (i+1) + '" id="precioxkiloTD' + (i+1) + '" style="text-align:right">' +
-				data[i].precioxkilo +
-			'</td>' +
-			'<td style="text-align:right;display:none;">' +
-				'<input type="text" name="precioxkilo[]" id="precioxkilo' + (i+1) + '" class="form-control" value="' + data[i].precioxkilo + '" style="display:none;"/>' +
-			'</td>' +
-			'<td style="text-align:right;display:none;">' +
-				'<input type="text" name="precioxkiloreal[]" id="precioxkiloreal' + (i+1) + '" class="form-control" value="' + data[i].precioxkiloreal +'" style="display:none;"/>' +
-			'</td>' +
-			'<td name="subtotalFactDet' + (i+1) + '" id="subtotalFactDet' + (i+1) + '" class="subtotalFactDet" style="text-align:right">' +
-				MASKLA(data[i].montoitem,0) +
-				'<input type="text" name="subtotal[]" id="subtotal' + (i+1) + '" class="form-control" value="' + data[i].montoitem + '" style="display:none;"/>' +
-				'<input type="text" name="montoitem[]" id="montoitem' + (i+1) + '" class="form-control" value="' + data[i].montoitem + '" style="display:none;"/>' +
-			'</td>' +
-			'<td name="subtotalSFTD' + (i+1) + '" id="subtotalSFTD' + (i+1) + '" class="subtotal" style="text-align:right;display:none;">' +
-				data[i].montoitem +
-			'</td>' +
-			'<td name="accion' + (i+1) + '" id="accion' + (i+1) + '" style="text-align:center">' +
-				'<a class="btn-accion-tabla btn-sm tooltipsC" onclick="delguiadespfactdet(' + data[i].nrodocto + ',' + (i+1) + ',' + data[i].id + ')" title="Eliminar Guia ' + data[i].nrodocto + '">' +
-					'<span class="glyphicon glyphicon-erase" style="bottom: 0px;top: 2px;"></span>' +
-				'</a>' +
-			'</td>' +
-		'</tr>';
-		$('#tabla-data tbody').append(htmlTags);
-	}
-	totalizar();
-}
-
-
 function verGD(nrodocto){
 	genpdfGD(nrodocto,"","");
 }
@@ -387,42 +283,38 @@ function blanquearDatos(){
 	totalizar();
 }
 
+
 function agregarFila() {
 	aux_num=parseInt($("#tabla-data >tbody >tr").length);
-	console.log(aux_num);
     aux_num=parseInt($("#ids").val());
     //alert(aux_num);
     aux_num = aux_num + 1;
     aux_nfila = aux_num;
     $("#ids").val(aux_nfila);
+	aux_htmlunidades = '<select id="unmditem' + (aux_nfila) + '" name="unmditem[]" class="form-control select2 itemrequerido" required>' +
+							$("#unidadmedida_id").html() +
+						'</select>';
+	//'<input type="text" name="unmditem[]" id="unmditem' + (aux_nfila) + '" class="form-control" value=""  maxlength="4"/>' +
     var htmlTags = '<tr name="fila' + (aux_nfila) + '" id="fila' + (aux_nfila) + '" class="proditems" item="' + aux_nfila + '">' +
-		'<td style="text-align:center">' +
+		'<td style="text-align:center" style="display:none;">' +
 			(aux_nfila) +
-			'<input type="text" name="det_id[]" id="det_id' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
 			'<input type="text" name="nrolindet[]" id="nrolindet' + (aux_nfila) + '" class="form-control" value="' + (aux_nfila) + '" style="display:none;"/>' +
-			'<input type="text" name="despachoorddet_id[]" id="despachoorddet_id' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
-			'<input type="text" name="notaventadetalle_id[]" id="notaventadetalle_id' + (aux_nfila) + '" class="form-control" value="" style=display:none;"/>' +
-			'<input type="text" name="dte_id[]" id="dte_id' + (aux_nfila) + '" class="form-control" value="' + $("#dte_id").val() + '" style="display:none;"/>' +
-			'<input type="text" name="dtedet_id[]" id="dtedet_id' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
-			'<input type="text" name="dteorigen_id[]" id="dteorigen_id' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
-			'<input type="text" name="obsdet[]" id="obsdet' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
 		'</td>' +
 		'<td style="text-align:center" name="producto_idTD' + (aux_nfila) + '" id="producto_idTD' + (aux_nfila) + '" >' +
-			'<input type="text" name="producto_id[]" id="producto_id' + (aux_nfila) + '" class="form-control numerico" value="" maxlength="4" onkeyup="buscarProd(this,event)"/>' +
+			'<input type="text" name="vlrcodigo[]" id="vlrcodigo' + (aux_nfila) + '" onblur="onBlurProducto_id(this)" class="form-control numerico itemrequerido" value="" maxlength="4" onkeyup="buscarProd(this,event)" style="text-align:right" item="' + (aux_nfila) +'" required/>' +
+			'<input type="text" name="producto_id[]" id="producto_id' + (aux_nfila) + '" class="form-control numerico" value="" maxlength="4" onkeyup="buscarProd(this,event)" style="text-align:right;display:none;"/>' +
 		'</td>' +
 		'<td name="cantTD' + (aux_nfila) + '" id="cantTD' + (aux_nfila) + '" style="text-align:right" class="subtotalcant" valor="">' +
-			'<input type="text" name="cant[]" id="cant' + (aux_nfila) + '" class="form-control numerico" value="" style="text-align:right;" maxlength="6"/>' +
-			'<input type="text" name="qtyitem[]" id="qtyitem' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			'<input type="text" name="qtyitem[]" id="qtyitem' + (aux_nfila) + '" class="form-control numerico calsubtotalitem itemrequerido" value="" valor="0" valorini="" item="' + (aux_nfila) + '"style="text-align:right" required/>' +
 		'</td>' +
 		'<td name="unidadmedida_nombre' + (aux_nfila) + '" id="unidadmedida_nombre' + (aux_nfila) + '" valor="">' +
-			'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id' + (aux_nfila) + '" class="form-control" value="" maxlength="4"/>' +
-			'<input type="text" name="unmditem[]" id="unmditem' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			aux_htmlunidades +
 		'</td>' +
-		'<td name="nombreProdTD' + (aux_nfila) + '" id="nombreProdTD' + (aux_nfila) + '" valor="">' +				
-			'<input type="text" name="nmbitem[]" id="nmbitem' + (aux_nfila) + '" class="form-control" value=""/>' +
+		'<td name="nombreProdTD' + (aux_nfila) + '" id="nombreProdTD' + (aux_nfila) + '" valor="">' +
+			'<input type="text" name="nmbitem[]" id="nmbitem' + (aux_nfila) + '" class="form-control itemrequerido" value="" required/>' +
 			'<input type="text" name="dscitem[]" id="dscitem' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
 		'</td>' +
-		'<td style="text-align:right;" class="subtotalkg" valor="">' +
+		'<td style="text-align:right;" class="subtotalkg" valor="0">' +
 			'<input type="text" name="totalkilos[]" id="totalkilos' + (aux_nfila) + '" class="form-control" value="" style="display:none;" valor="" fila="' + (aux_nfila) + '"/>' +
 			'<input type="text" name="itemkg[]" id="itemkg' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
 		'</td>' +
@@ -436,8 +328,7 @@ function agregarFila() {
 			'<input type="text" name="descuentoval[]" id="descuentoval' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
 		'</td>' +
 		'<td name="preciounitTD' + (aux_nfila) + '" id="preciounitTD' + (aux_nfila) + '" style="text-align:right;">' +
-			'<input type="text" name="preciounit[]" id="preciounit' + (aux_nfila) + '" class="form-control numerico" value="" style="text-align:right;"/>' +
-			'<input type="text" name="prcitem[]" id="prcitem' + (aux_nfila) + '" class="form-control" value="" style="display:none;"/>' +
+			'<input type="text" name="prcitem[]" id="prcitem' + (aux_nfila) + '" class="form-control numerico calsubtotalitem  itemrequerido" value="" valor="" valorini="" item="' + (aux_nfila) + '" style="text-align:right" required/>' +
 		'</td>' +
 		'<td style="display:none;" name="precioxkiloTD' + (aux_nfila) + '" id="precioxkiloTD' + (aux_nfila) + '" style="text-align:right">' +
 		'</td>' +
@@ -448,9 +339,7 @@ function agregarFila() {
 			'<input type="text" name="precioxkiloreal[]" id="precioxkiloreal' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
 		'</td>' +
 		'<td name="subtotalFactDet' + (aux_nfila) + '" id="subtotalFactDet' + (aux_nfila) + '" class="subtotalFactDet" style="text-align:right">' +
-			'0' +
-			'<input type="text" name="subtotal[]" id="subtotal' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
-			'<input type="text" name="montoitem[]" id="montoitem' + (aux_nfila) + '" class="form-control" value="0" style="display:none;"/>' +
+			'<input type="text" name="montoitem[]" id="montoitem' + (aux_nfila) + '" class="form-control numerico calpreciounit" value="0" valor="" valorini="" item="' + (aux_nfila) + '" style="text-align:right" readonly/>' +
 		'</td>' +
 		'<td name="subtotalSFTD' + (aux_nfila) + '" id="subtotalSFTD' + (aux_nfila) + '" class="subtotal" style="text-align:right;display:none;">' +
 			'0' +
@@ -464,6 +353,11 @@ function agregarFila() {
     $('#tabla-data tbody').append(htmlTags);
 	activarClases();
 	totalizar();
+	$("#vlrcodigo" + aux_nfila).focus();
+	$(".select2").select2({
+		tags: true
+	  });
+	//$('.select2').trigger('change')
 }
 
 function agregarEliminar(fila){
@@ -477,14 +371,37 @@ function agregarEliminar(fila){
             $("#cla_stadel"+fila).val(1);
             //$("#fila" + fila).fadeOut(2000);
             $("#fila" + fila).remove();
+			totalizar();
             return 0;
         }
         $("#agregar_reg"+fila).children('i').removeClass("fa-plus");
         $("#agregar_reg"+fila).children('i').addClass("fa-minus");
         $("#agregar_reg"+fila).attr("data-original-title", "Eliminar");
         $("#agregar_reg"+fila).attr("title", "Eliminar");
-        agregarFila(fila)
+        agregarFila(fila);
     }
+}
+
+function calsubtotalitem(name){
+	let i = $(name).attr("item");
+	let qtyitem = $("#qtyitem" + i).val() == "" ? 0 : parseFloat($("#qtyitem" + i).val());
+	let prcitem = $("#prcitem" + i).val() == "" ? 0 : parseFloat($("#prcitem" + i).val());
+
+	if(qtyitem == 0){
+		$("#qtyitem" + i).val("");
+	}
+	if(prcitem == 0){
+		$("#prcitem" + i).val("");
+	}
+
+	let aux_subtotal = qtyitem * prcitem;
+	$("#qtyitem" + i).attr("valor",$("#qtyitem" + i).val());
+	$("#cantTD" + i).attr("valor",$("#qtyitem" + i).val());
+	$("#prcitem" + i).attr("valor",$("#prcitem" + i).val());
+	$("#montoitem" + i).val(aux_subtotal);
+	$("#montoitem" + i).attr("valor",aux_subtotal);
+	$("#subtotalSFTD" + i).html(aux_subtotal);
+	totalizar();
 }
 
 function activarClases(){
@@ -492,11 +409,7 @@ function activarClases(){
 	$(".calsubtotalitem").keyup(function(){
 		calsubtotalitem(this)
 	});
-	$(".calpreciounit").keyup(function(){
-		calpreciounit(this)
-	});
 }
-
 
 function buscarProd(obj,event){
 	//console.log(obj.id)
@@ -515,8 +428,46 @@ function copiar_codprod(id,codintprod){
 	//$("#myModal").modal('show');
 	$('#myModalBuscarProd').modal('hide');
 	let itemAct = $("#itemAct").val();
-	$("#producto_id" + itemAct).val(id);
-	$("#producto_id" + itemAct).blur();
-	$("#cant" + itemAct).focus();
+	//$("#producto_id" + itemAct).val(id);
+	$("#vlrcodigo" + itemAct).val(id);
+	//$("#vlrcodigo" + itemAct).blur();
+	$("#qtyitem" + itemAct).focus();
+	$("#qtyitem" + itemAct).select();
+	llenarDatosProd($("#vlrcodigo" + itemAct));// buscarDatosProd($("#vlrcodigo" + itemAct));
+	//console.log(arrayDatosProducto);
 	//$("#cantM").focus();
 }
+
+function onBlurProducto_id(vlrcodigo){
+	objvlrcodigo = $("#" + vlrcodigo["id"]);
+	llenarDatosProd(objvlrcodigo);
+	//console.log(vlrcodigo["id"]);
+}
+
+//FUNCTION CON ASYNC YA QUE ME INTERESA ESPERAR LA RESPUESTA DE LA BUSQUEDA
+async function llenarDatosProd(vlrcodigo){
+	item = vlrcodigo.attr("item");
+	if($("#vlrcodigo" + item).val() != $("#producto_id" + item).val()){
+		arrayDatosProducto = await buscarDatosProd(vlrcodigo);
+		$("#producto_id" + item).val("");
+		$("#nmbitem" + item).val("");
+		$("#prcitem" + item).val("0");
+		if(arrayDatosProducto['cont'] > 0){
+			$("#producto_id" + item).val(arrayDatosProducto["id"]);
+			$("#nmbitem" + item).val(arrayDatosProducto["nombre"]);
+			$("#prcitem" + item).val(arrayDatosProducto["precio"]);		
+		}
+		calsubtotalitem($("#vlrcodigo" + item));	
+	}
+}
+
+
+$(".form-horizontal").on("submit", function(event){
+	$('.itemrequerido').each(function(){
+		let id=$(this).attr("id");
+		let valor=$(this).val();
+		console.log('id: ' + id + 'Valor: ' + valor);
+	  });
+	//console.log($(".itemrequerido").val());
+	event.preventDefault();
+});
