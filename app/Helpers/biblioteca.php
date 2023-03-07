@@ -87,4 +87,15 @@ function autoVer($url)
   //dd(asset($url).$ver);
   return (asset($url).$ver);
 }
+
+function getIniciales($nombre){
+    $name = '';
+    $explode = explode(' ',$nombre);
+    foreach($explode as $x){
+        $name .=  $x[0];
+    }
+    return $name;    
+}
+
+
 ?>

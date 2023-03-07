@@ -466,6 +466,15 @@
                                                         $request["tipo"] = 2;
                                                         $existencia = $invbodegaproducto::existencia($request);
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
+                                                        if ($invbodegaproducto->invbodega->sucursal_id == 1) {
+                                                            $colorSuc = "#26ff00";
+                                                        }
+                                                        if ($invbodegaproducto->invbodega->sucursal_id == 2) {
+                                                            $colorSuc = "#1500ff";
+                                                        }
+                                                        if ($invbodegaproducto->invbodega->sucursal_id == 3) {
+                                                            $colorSuc = "#00c3ff";
+                                                        }
                                                     ?>
                                                     @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
                                                         <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
@@ -476,9 +485,9 @@
 
                                                                 {{$invbodegaproducto->id}}
                                                             </td>
-                                                            <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left;width: 10% !importan;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}}'>
+                                                            <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left;width: 10% !importan;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
                                                                 <div class="centrarhorizontal">
-                                                                    {{$invbodegaproducto->invbodega->nomabre}}
+                                                                    <p style="color:{{$colorSuc}};">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
                                                                 </div>
                                                             </td>
                                                             <td name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="text-align:right;width: 20% !importan"  class='tooltipsC' title='Stock disponible'>
