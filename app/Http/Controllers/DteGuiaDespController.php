@@ -538,6 +538,26 @@ class DteGuiaDespController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
+            $empresa = Empresa::findOrFail(1);
+            $soap = new SoapController();
+            $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
+            //VALLIDAR QUE DOCUMENTO FUE ACEPTAFO POR SII
+            //SI NO EXISTE DOCUMENTO EN SII
+            if($Estado_DTE->Estatus == 3){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => $Estado_DTE->MsgEstatus . " Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            //SI NO FUE ACEPTADO POR SII
+            if($Estado_DTE->EstadoDTE != 16){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => $Estado_DTE->DescEstado . " Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'error'
+                ]);
+            }
             /*
             if(!is_null($dte->statusgen)){
                 return response()->json([
@@ -871,6 +891,32 @@ class DteGuiaDespController extends Controller
         }
     }
 
+    public function volverGenDTE(Request $request){
+        $dte = Dte::findOrFail($request->dte_id);
+        $respuesta = Dte::generardteprueba($dte);
+        /*
+        $respuesta = response()->json([
+            'id' => 1
+        ]);
+        */
+        $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
+        $foliocontrol->bloqueo = 0;
+        $foliocontrol->save();
+        if($respuesta->original["id"] == 1){
+            return response()->json([
+                'id' => 1,
+                'mensaje'=>'DTE Generado con exito: ' . $dte->nrodocto,
+                'tipo_alert' => 'success'
+            ]);
+        }else{
+            return response()->json([
+                'id' => 0,
+                'titulo' => $respuesta->original["titulo"],
+                'mensaje'=> $respuesta->original["mensaje"],
+                'tipo_alert' => 'error'
+            ]);
+        }
+    }
 }
 
 function consultaindex(){

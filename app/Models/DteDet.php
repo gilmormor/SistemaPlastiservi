@@ -59,6 +59,10 @@ class DteDet extends Model
         return $this->hasMany(DteDet::class,'dtedet_id');
     }
 
-    
+    public function unidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class);
+    }
+
     
 }

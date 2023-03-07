@@ -57,7 +57,9 @@ class DteFacturaController extends Controller
         can('crear-dte-factura-gd');
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
+        $tablas['foliocontrol'] = Foliocontrol::orderBy('id')->get();
         $tablas['empresa'] = Empresa::findOrFail(1);
+
         $centroeconomicos = CentroEconomico::orderBy('id')->get();
 
         //dd($tablas);
@@ -167,28 +169,25 @@ class DteFacturaController extends Controller
             //$dteguiausada->save();
         }
         $empresa = Empresa::findOrFail(1);
-        if($Tmntneto>0){
-            $Tiva = round(($empresa->iva/100) * $Tmntneto);
-            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);    
+        $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
+        if($request->foliocontrol_id == 1){
+            if($Tmntneto > 0){
+                $Tiva = round(($empresa->iva/100) * $Tmntneto);
+                $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);
+                $dte->tasaiva = $dteguiadesp->tasaiva;
+                $dte->iva = $Tiva;
+                $dte->mnttotal = $Tmnttotal;        
+            }    
+        }else{
+            $dte->tasaiva = 0;
+            $dte->iva = 0;
+            $dte->mnttotal = $Tmntneto;
         }
 
-
-        $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
-        $date = str_replace('/', '-', $request->fchemis);
-        $request->request->add(['fchemis' => date('Y-m-d')]);
-
-
         $hoy = date("Y-m-d H:i:s");
-        $request->request->add(['tipodespacho' => 2]);
-        $request->request->add(['fechahora' => $hoy]);
-        $request->request->add(['tasaiva' => $dteguiadesp->iva]);
-        $request->request->add(['sucursal_id' => $centroeconomico->sucursal_id]);
-        $request->request->add(['comuna_id' => $cliente->comunap_id]);
-        $request->request->add(['foliocontrol_id' => 1]); //CODIGO DE TIPO DE DTE 1=FACTURA
-
-        $dte->foliocontrol_id = 1;
+        $dte->foliocontrol_id = $request->foliocontrol_id;
         $dte->nrodocto = "";
-        $dte->fchemis = $request->fchemis;
+        $dte->fchemis = date('Y-m-d');
         $dte->fchemisgen = $hoy;
         $dte->fechahora = $hoy;
         $dte->sucursal_id = $centroeconomico->sucursal_id;
@@ -199,17 +198,9 @@ class DteFacturaController extends Controller
         $dte->tipodespacho = 2;
         $dte->indtraslado =  1;
         $dte->mntneto = $Tmntneto;
-        $dte->tasaiva = $dteguiadesp->tasaiva;
-        $dte->iva = $Tiva;
-        $dte->mnttotal = $Tmnttotal;
         $dte->kgtotal = $Tkgtotal;
         $dte->centroeconomico_id = $request->centroeconomico_id;
-        //$dte->statusgen = 
-        //$dte->aprobstatus = 
-        //$dte->aprobusu_id = 
-        //$dte->aprobfechahora = 
         $dte->usuario_id = $request->usuario_id;
-        //dd($dte);
 
         $respuesta = Dte::generardteprueba($dte);
         /*
@@ -353,7 +344,7 @@ class DteFacturaController extends Controller
     public function procesar(Request $request)
     {
         if ($request->ajax()) {
-            $dte = Dte::findOrFail($request->dte_id);
+            $dte = Dte::findOrFail($request->dte_id);   
             if($dte->updated_at != $request->updated_at){
                 return response()->json([
                     'id' => 0,
@@ -361,8 +352,49 @@ class DteFacturaController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
-            return Dte::updateStatusGen($dte,$request);
+            $empresa = Empresa::findOrFail(1);
+            $soap = new SoapController();
+            $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
+            //$Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,"200");
+            //dd($Estado_DTE);
+            if($Estado_DTE->Estatus == 3){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => $Estado_DTE->MsgEstatus . " Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            if($Estado_DTE->EstadoDTE == 16){
+                return Dte::updateStatusGen($dte,$request);
+            }else{
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => $Estado_DTE->DescEstado . " Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'error'
+                ]);
+            }
         }
+    }
+
+    public function estadoDTE(Request $request)
+    {
+        $empresa = Empresa::findOrFail(1);
+        $soap = new SoapController();
+        $dte = Dte::findOrFail($request->dte_id);
+        $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
+        //$Estado_DTE = $soap->Estado_DTE($empresa->rut,"200",$dte->nrodocto);
+        $mensaje = "";
+        if($Estado_DTE->Estatus == 3){
+            $mensaje = $Estado_DTE->MsgEstatus . " Nro: " . $dte->nrodocto;
+        }else{
+            $mensaje =  $Estado_DTE->DescEstado . " Nro: " . $dte->nrodocto;
+        }
+        return response()->json([
+            'id' => 0,
+            'mensaje' => $Estado_DTE->DescEstado . " Nro: " . $dte->nrodocto,
+            'tipo_alert' => 'error'
+        ]);    
+    
     }
 
     public function anular(Request $request)
@@ -534,7 +566,7 @@ function consultaindex($dte_id){
     ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
     WHERE dtedte1.dte_id = dte.id
     GROUP BY dtedte1.dte_id) AS nrodocto_guiadesp,
-    dte.updated_at
+    foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at
     FROM dte INNER JOIN dtedte
     ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
     INNER JOIN dteguiadesp
@@ -549,7 +581,9 @@ function consultaindex($dte_id){
     ON comuna.id = cliente.comunap_id
     LEFT JOIN clientebloqueado
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-    WHERE dte.foliocontrol_id=1 
+    INNER JOIN foliocontrol
+    ON  foliocontrol.id = dte.foliocontrol_id
+    WHERE (dte.foliocontrol_id=1 OR dte.foliocontrol_id=7)
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.sucursal_id IN ($sucurcadena)
     AND ISNULL(dte.statusgen)

@@ -18,27 +18,6 @@ $(document).ready(function () {
 	var dateToday = new Date(); 
 	var date = new Date();
 	var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-	/*
-	$("#fchemis").datepicker({
-		language: "es",
-		autoclose: true,
-		endDate: ultimoDia,
-		minDate: dateToday,
-		startDate: new Date(),
-		todayHighlight: true
-	}).datepicker("setDate");
-	/*
-
-
-	$("#mdialTamanio").css({'width': '50% !important'});
-	//$(".control-label").css({'padding-top': '2px'});
-	
-	/*
-    var styles = {
-		backgroundColor : "#ddd",
-		fontWeight: ""
-	  };
-	$( this ).css( styles );*/
 	aux_sta = $("#aux_sta").val();
 	//$("#rut").numeric();
 	$("#cantM").numeric();
@@ -53,6 +32,8 @@ $(document).ready(function () {
 		$("#fechahora").val($("#aux_fechaphp").val());
 	}
 
+	fieldHTML = "<input type='hidden' name='itemAct' id='itemAct'>"; //Creo input con campo itemAct=item actual
+	$("#DivVerTodosProd").append(fieldHTML);
 	blanquearDatos();
 	$("#codref").val("");
 
@@ -163,94 +144,6 @@ function copiar_rut(id,rut){
 	$("#rut").blur();
 }
 
-$("#rut").blur(function(){
-	blanquearDatos();
-	codigo = $("#rut").val();
-	//limpiarCampos();
-	aux_sta = $("#aux_sta").val();
-	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
-	{
-		//totalizarNc();
-		if(!dgv(codigo.substr(0, codigo.length-1))){
-			swal({
-				title: 'Dígito verificador no es Válido.',
-				text: "",
-				icon: 'error',
-				buttons: {
-					confirm: "Aceptar"
-				},
-			}).then((value) => {
-				if (value) {
-					//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-					$("#rut").focus();
-				}
-			});
-			//$(this).val('');
-		}else{
-			var data = {
-				rut: codigo,
-				_token: $('input[name=_token]').val()
-			};
-			$.ajax({
-				//url: '/cliente/buscarCliId',
-				url: '/cliente/buscarCliRut',
-				type: 'POST',
-				data: data,
-				success: function (respuesta) {
-					if(respuesta.dte.length>0){
-						//alert(respuesta[0]['vendedor_id']);
-						if(respuesta.dte[0].descripcion==null){
-							//llenarDatosCliente(respuesta);
-							
-							$('#botonNewGuia').show();
-							data = datosdteguiadesp(1);
-							$('#tabla-data-dteguiadesp').DataTable().ajax.url( "/dtefactura/listarguiadesppage/" + data.data2, ).load();
-						
-							$(".selectpicker").selectpicker('refresh');
-						}else{
-							swal({
-								title: 'Cliente Bloqueado.',
-								text: respuesta.dte[0].descripcion,
-								icon: 'error',
-								buttons: {
-									confirm: "Aceptar"
-								},
-							}).then((value) => {
-								if (value) {
-									//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-									$("#rut").val('');
-									$("#rut").focus();
-								}
-							});
-						}
-
-					}else{
-						swal({
-							title: 'Cliente no existe.',
-							text: "Presione F2 para buscar",
-							icon: 'error',
-							buttons: {
-								confirm: "Aceptar"
-							},
-						}).then((value) => {
-							if (value) {
-								//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-								$("#rut").focus();
-							}
-						});
-					}
-				}
-			});
-		}
-	}
-});
-
-$("#rut").focus(function(){
-	blanquearDatos();
-	eliminarFormatoRut($("#rut"));
-	$('#botonNewGuia').hide();
-	//$("#rut").val(aux_rut);
-});
 
 $("#nrodoctoF").focus(function(){
 	blanquearDatos();
@@ -357,67 +250,81 @@ function llenarItemFact(data){
 			//genpdfNC(respuesta.nrodocto,"")
 		}
 		aux_nmbitemhtml += aux_txt;
-		htmlTags = '<tr name="fila' + data[i].id + '" id="fila' + data[i].id + '" class="proditems ' + data[i].id + '">' +
-			'<td style="text-align:center">' +
-				data[i].nrolindet +
-				'<input type="text" name="det_id[]" id="det_id' + data[i].id + '" class="form-control" value="0" style="display:none;"/>' +
-				'<input type="text" name="dtedetorigen_id[]" id="dtedetorigen_id' + data[i].id + '" class="form-control" value="' + data[i].id + '" style="display:none;"/>' + //ID origen del registro detalle
-				'<input type="text" name="nrolindet[]" id="nrolindet' + data[i].id + '" class="form-control" value="' + data[i].nrolindet + '" style="display:none;"/>' +
-				'<input type="text" name="dtedet_id[]" id="dtedet_id' + data[i].id + '" class="form-control" value="' + data[i].dtedet_id + '" style="display:none;"/>' +
-				'<input type="text" name="obsdet[]" id="obsdet' + data[i].id + '" class="form-control" value="' + data[i].obsdet + '" style="display:none;"/>' +
-				'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id' + data[i].id + '" class="form-control" value="' + data[i].unidadmedida_id + '" style="display:none;"/>' +
-				'<input type="text" name="unmditem[]" id="unmditem' + data[i].id + '" class="form-control" value="' + data[i].unmditem + '" style="display:none;"/>' +
-			'</td>' +
-			'<td style="text-align:center" name="producto_idTD' + data[i].id + '" id="producto_idTD' + data[i].id + '" >' +
-				data[i].producto_id +
-				'<input type="text" name="producto_id[]" id="producto_id' + data[i].id + '" class="form-control" value="' + data[i].producto_id +'" style="display:none;"/>' +
-			'</td>' +
-			'<td name="cantTD' + data[i].id + '" id="cantTD' + data[i].id + '" style="text-align:right" class="subtotalcant" valor="' + data[i].qtyitem + '">' +
-				'<input type="text" name="qtyitem[]" id="qtyitem' + data[i].id + '" class="form-control numerico calsubtotalitem" value="' + data[i].qtyitem + '" valor="' + data[i].qtyitem + '" valorini="' + data[i].qtyitem + '" item="' + data[i].id + '"style="text-align:right"/>' +
-			'</td>' +
-			'<td name="unidadmedida_nombre' + data[i].id + '" id="unidadmedida_nombre' + data[i].id + '" valor="' + data[i].unmditem + '">' +
-					data[i].unmditem +
-			'</td>' +
-			'<td name="NPTD' + data[i].id + '" id="NPTD' + data[i].id + '" valor="' + aux_nmbitem + '">' +
-				'<p name="nombreProdTD' + data[i].id + '" id="nombreProdTD' + data[i].id + '" valor="' + aux_nmbitem + '">' +
-					aux_nmbitemhtml +
-				'</p>' +
-				'<input type="text" name="nmbitem[]" id="nmbitem' + data[i].id + '" class="form-control" value="' + aux_nmbitem  + '" style="display:none;"/>' +
-				'<input type="text" name="dscitem[]" id="dscitem' + data[i].id + '" class="form-control" value="' + data[i].dscitem + '" style="display:none;"/>' +
-			'</td>' +
-			'<td name="subtotalkg' + data[i].id + '" id="subtotalkg' + data[i].id + '" style="text-align:right;" class="subtotalkg" valor="' + data[i].itemkg + '">' +
-					MASKLA(data[i].itemkg,2) +
-			'</td>' +
-			'<td name="descuentoTD' + data[i].id + '" id="descuentoTD' + data[i].id + '" style="text-align:right;display:none;">' +
-				'0%' +
-			'</td>' +
-			'<td style="text-align:right;display:none;">' + 
-				'<input type="text" name="descuento[]" id="descuento' + data[i].id + '" class="form-control" value="0" style="display:none;"/>' +
-				'<input type="text" name="totalkilos[]" id="totalkilos' + data[i].id + '" class="form-control" value="' + data[i].itemkg + '" style="display:none;" valor="' + data[i].itemkg + '" fila="' + data[i].id + '"/>' +
-				'<input type="text" name="itemkg[]" id="itemkg' + data[i].id + '" class="form-control" value="' + data[i].itemkg + '" style="display:none;"/>' +
-			'</td>' +
-			'<td style="text-align:right;display:none;">' +
-				'<input type="text" name="descuentoval[]" id="descuentoval' + data[i].id + '" class="form-control" value="0" style="display:none;"/>' +
-			'</td>' +
-			'<td name="preciounitTD' + data[i].id + '" id="preciounitTD' + data[i].id + '" style="text-align:right;">' +
-				'<input type="text" name="prcitem[]" id="prcitem' + data[i].id + '" class="form-control numerico calsubtotalitem" value="' + data[i].prcitem + '" valor="' + data[i].prcitem + '" valorini="' + data[i].prcitem + '" item="' + data[i].id + '" style="text-align:right"/>' +
-			'</td>' +
-			'<td style="display:none;" name="precioxkiloTD' + data[i].id + '" id="precioxkiloTD' + data[i].id + '" style="text-align:right">' +
-				data[i].precioxkilo +
-			'</td>' +
-			'<td name="subtotalFactDet' + data[i].id + '" id="subtotalFactDet' + data[i].id + '" class="subtotalFactDet" style="text-align:right">' +
-				'<input type="text" name="montoitem[]" id="montoitem' + data[i].id + '" class="form-control numerico calpreciounit" value="' + data[i].montoitem + '" valor="' + data[i].montoitem + '" valorini="' + data[i].montoitem + '" item="' + data[i].id + '" style="text-align:right" readonly/>' +
-			'</td>' +
-			'<td name="subtotalSFTD' + data[i].id + '" id="subtotalSFTD' + data[i].id + '" class="subtotal" item="' + data[i].id + '" style="text-align:right;display:none;">' +
-				data[i].montoitem +
-			'</td>' +
-			'<td name="accion' + data[i].id + '" id="accion' + data[i].id + '" style="text-align:center">' +
-				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar item" onclick="eliminarRegistro('+ data[i].id +')">'+
-					'<i class="fa fa-fw fa-trash text-danger"></i>' +
-				'</a>'+
-			'</td>' +
-		'</tr>';
+		htmlTags = `<tr name="fila${data[i].id}" id="fila${data[i].id}" class="proditems ${data[i].id}" item="${data[i].id}">
+			<td style="text-align:center">
+				<div id="nroitem${data[i].id}" name="nroitem${data[i].id}" class="nroitem">
+					${data[i].nrolindet}
+				</div>				
+				<input type="text" name="det_id[]" id="det_id${data[i].id}" class="form-control" value="0" style="display:none;"/>
+				<input type="text" name="dtedetorigen_id[]" id="dtedetorigen_id${data[i].id}" class="form-control" value="${data[i].id}" style="display:none;"/> <!--ID origen del registro detalle-->
+				<input type="text" name="nrolindet[]" id="nrolindet${data[i].id}" class="form-control" value="${data[i].nrolindet}" style="display:none;"/>
+				<input type="text" name="dtedet_id[]" id="dtedet_id${data[i].id}" class="form-control" value="${data[i].dtedet_id}" style="display:none;"/>
+				<input type="text" name="obsdet[]" id="obsdet${data[i].id}" class="form-control" value="${data[i].obsdet}" style="display:none;"/>
+				<input type="text" name="unidadmedida_id[]" id="unidadmedida_id${data[i].id}" class="form-control" value="${data[i].unidadmedida_id}" style="display:none;"/>
+			</td>
+			<td style="text-align:center" name="producto_idTD${data[i].id}" id="producto_idTD${data[i].id}">
+				<div id="lblvlrcodigo${data[i].id}" name="lblvlrcodigo${data[i].id}" class="tooltipsC" title="Codigo de Producto">
+					${data[i].producto_id}
+				</div>
+				<input type="text" name="vlrcodigo[]" id="vlrcodigo${data[i].id}" class="form-control numerico itemrequerido" value="${data[i].producto_id}" item="${data[i].id}" onblur="onBlurProducto_id(this)" onkeyup="buscarProdKeyUp(this,event)" style="text-align:right;display:none;" title="Código producto"/>
+				<input type="text" name="producto_id[]" id="producto_id${data[i].id}" class="form-control" value="${data[i].producto_id}" style="display:none;"/>
+			</td>
+			<td name="cantTD${data[i].id}" id="cantTD${data[i].id}" style="text-align:right" class="subtotalcant" valor="${data[i].qtyitem}">
+				<input type="text" name="qtyitem[]" id="qtyitem${data[i].id}" class="form-control numerico calsubtotalitem" value="${data[i].qtyitem}" valor="${data[i].qtyitem}" valorini="${data[i].qtyitem}" item="${data[i].id}" style="text-align:right" title="Cantidad"/>
+			</td>
+			<td name="unidadmedida_nombre${data[i].id}" id="unidadmedida_nombre${data[i].id}" valor="${data[i].unmditem}">
+					<div id="lblunmditem${data[i].id}" name="lblunmditem${data[i].id}" class="tooltipsC" title="Unidad Medida">
+						${data[i].unmditem}
+					</div>
+					<select id="unmditemselect${data[i].id}" name="unmditemselect[]" class="form-control select2 itemrequerido" title="Unidad Medida" style="display:none;">
+						${$("#unidadmedida_id").html()}
+					</select>
+					<input type="text" name="unmditem[]" id="unmditem${data[i].id}" class="form-control" value="${data[i].unmditem}" style="display:none;"/>
+			</td>
+			<td name="NPTD${data[i].id}" id="NPTD${data[i].id}" valor="${aux_nmbitem}">
+				<p name="nombreProdTD${data[i].id}" id="nombreProdTD${data[i].id}" valor="${aux_nmbitem}">
+					${aux_nmbitemhtml}
+				</p>
+				<input type="text" name="nmbitem[]" id="nmbitem${data[i].id}" class="form-control itemrequerido" value="${aux_nmbitem}" style="display:none;" title="Nombre producto"/>
+				<input type="text" name="dscitem[]" id="dscitem${data[i].id}" class="form-control" value="${data[i].dscitem}" style="display:none;"/>
+			</td>
+			<td name="subtotalkg${data[i].id}" id="subtotalkg${data[i].id}" style="text-align:right;" class="subtotalkg" valor="${data[i].itemkg}">
+					${MASKLA(data[i].itemkg,2)}
+			</td>
+			<td name="descuentoTD${data[i].id}" id="descuentoTD${data[i].id}" style="text-align:right;display:none;">
+				0%
+			</td>
+			<td style="text-align:right;display:none;"> 
+				<input type="text" name="descuento[]" id="descuento${data[i].id}" class="form-control" value="0" style="display:none;"/>
+				<input type="text" name="totalkilos[]" id="totalkilos${data[i].id}" class="form-control" value="${data[i].itemkg}" style="display:none;" valor="${data[i].itemkg}" fila="${data[i].id}"/>
+				<input type="text" name="itemkg[]" id="itemkg${data[i].id}" class="form-control" value="${data[i].itemkg}" style="display:none;"/>
+			</td>
+			<td style="text-align:right;display:none;">
+				<input type="text" name="descuentoval[]" id="descuentoval${data[i].id}" class="form-control" value="0" style="display:none;"/>
+			</td>
+			<td name="preciounitTD${data[i].id}" id="preciounitTD${data[i].id}" style="text-align:right;">
+				<input type="text" name="prcitem[]" id="prcitem${data[i].id}" class="form-control numerico calsubtotalitem" value="${data[i].prcitem}" valor="${data[i].prcitem}" valorini="${data[i].prcitem}" item="${data[i].id}" style="text-align:right" title="Precio Unitario"/>
+			</td>
+			<td style="display:none;" name="precioxkiloTD${data[i].id}" id="precioxkiloTD${data[i].id}" style="text-align:right">
+				${data[i].precioxkilo}
+			</td>
+			<td name="subtotalFactDet${data[i].id}" id="subtotalFactDet${data[i].id}" class="subtotalFactDet" style="text-align:right">
+				<input type="text" name="montoitem[]" id="montoitem${data[i].id}" class="form-control numerico calpreciounit" value="${data[i].montoitem}" valor="${data[i].montoitem}" valorini="${data[i].montoitem}" item="${data[i].id}" style="text-align:right" readonly/>
+			</td>
+			<td name="subtotalSFTD${data[i].id}" id="subtotalSFTD${data[i].id}" class="subtotal" item="${data[i].id}" style="text-align:right;display:none;">
+				${data[i].montoitem}
+			</td>
+			<td name="accion${data[i].id}" id="accion${data[i].id}" style="text-align:center">
+				<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Editar" onclick="editarItem(${data[i].id})">
+					<i class="fa fa-fw fa-pencil-square-o"></i>
+				</a>
+				<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar item" onclick="eliminarRegistro(${data[i].id})">
+					<i class="fa fa-fw fa-trash text-danger"></i>
+				</a>
+			</td>
+		</tr>`;
 		$('#tabla-data tbody').append(htmlTags);
+		$(`#unmditemselect${data[i].id} > option[value=${data[i].unidadmedida_id}]`).attr("selected",true);
 	}
 	totalizar();
 	totalizarNc();
@@ -428,11 +335,6 @@ function llenarItemFact(data){
 	$("#tdtotalrestante").html(MASKLA(aux_totalini,0));
 	$("#tdtotalrestante").attr("valor",$("#tdtotalmodificado").attr("valor"));
 	activarClases();
-
-	aux_txt = "Factura: <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + $("#nrodoctoF").val() + ",\"\")'>" +
-				$("#nrodoctoF").val() +
-			"</a>";
-	$("#dtencdet").html(aux_txt);
 
 	validarlistcodrefNc();
 	$("#tablaoriginal").val($('#tabla-data tbody').html());
@@ -540,12 +442,22 @@ function llenarDatosCliente(respuesta){
 	$("#tdtotalmodificado").html(MASKLA(respuesta.totalmodificado,0));
 	$("#tdtotalmodificado").attr("valor",respuesta.totalmodificado);
 
+	let id_str = respuesta.dte[0].nrodocto.toString();
+	id_str = respuesta.dte[0].nombrepdf + id_str.padStart(8, "0");
+
+	aux_txt = 	`DTE: <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="DTE" onclick="genpdfFAC('${id_str}','')">
+					${respuesta.dte[0].nrodocto}
+				</a>`;
+	$("#dtencdet").html(aux_txt);
+
+
 }
 
 
 function eliminarRegistro(i){
+	let item = $("#nroitem" + i).html();
 	swal({
-		title: '¿ Seguro desea eliminar item ?',
+		title: `¿ Seguro desea eliminar item ${item}?`,
 		text: "",
 		icon: 'warning',
 		buttons: {
@@ -644,6 +556,7 @@ $("#tdfoliocontrol_id").change(function(){
 	}else{
 		$('#nrodoctoF').attr("readonly",true);
 	}
+	//blanquearDatos();
 });
 
 $("#codref").change(function(){
@@ -741,6 +654,8 @@ $("#form-general").on('submit', function (event) {
 		}
 	});
 	*/
+	activarClases();
+	validarItemVacios();
 	let tdtotaloriginal = parseFloat($("#tdtotaloriginal").attr("valor"));
 	let tdtotalmodificado = parseFloat($("#tdtotalmodificado").attr("valor"));
 	let tdneto = parseFloat($("#tdneto").attr("valor"));
@@ -829,4 +744,46 @@ function activarClases(){
 	$(".calpreciounit").keyup(function(){
 		calpreciounit(this)
 	});
+	$(".itemrequerido").change(function(){
+		validarItemVacios();
+	});
+
+	validarItemVacios();
+
+}
+
+function copiar_codprod(id,codintprod){
+	//$("#myModalBuscarProd").modal('hide');
+	//$("#myModal").modal('show');
+	$('#myModalBuscarProd').modal('hide');
+	let itemAct = $("#itemAct").val();
+	console.log(itemAct);
+	//$("#producto_id" + itemAct).val(id);
+	$("#vlrcodigo" + itemAct).val(id);
+	//$("#vlrcodigo" + itemAct).blur();
+	$("#qtyitem" + itemAct).focus();
+	$("#qtyitem" + itemAct).select();
+	llenarDatosProd($("#vlrcodigo" + itemAct));// buscarDatosProd($("#vlrcodigo" + itemAct));
+	//console.log(arrayDatosProducto);
+	//$("#cantM").focus();
+}
+
+const editarItem = (item) => {
+	$("#lblvlrcodigo" + item).hide();
+	$("#vlrcodigo" + item).show();
+	$("#lblunmditem" + item).hide();
+	$("#unmditemselect" + item).show();
+	$("#nombreProdTD" + item).hide();
+	$("#nmbitem" + item).show();
+//	$(`#unmditemselect${item} > option[value=${$("#unidadmedida_id" + item).val()}]`).attr("selected",true);
+	
+	//buscarProd(item);
+}
+
+function onBlurProducto_id(vlrcodigo){
+	objvlrcodigo = $("#" + vlrcodigo["id"]);
+	llenarDatosProd(objvlrcodigo);
+	let i = objvlrcodigo.attr("item");
+	$("#qtyitem" + i).focus();
+	//console.log(vlrcodigo["id"]);
 }

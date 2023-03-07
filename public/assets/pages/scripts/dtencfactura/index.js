@@ -29,7 +29,8 @@ $(document).ready(function () {
             {data: 'nombre_comuna'}, // 13
             {data: 'clientebloqueado_descripcion',className:"ocultar"}, //14
             {data: 'oc_file',className:"ocultar"}, //15
-            {data: 'updated_at',className:"ocultar"}, //16
+            {data: 'nombrepdf',className:"ocultar"}, //16
+            {data: 'updated_at',className:"ocultar"}, //17
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -139,11 +140,13 @@ $(document).ready(function () {
             }
             $('td', row).eq(10).html(aux_text);
 
+            let id_str = data.nrodocto_factura.toString();
+            id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"\")'>" +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
                 data.nrodocto_factura +
             "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"_cedible\")'>" +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
                 data.nrodocto_factura +
             "</a>";
             $('td', row).eq(11).html(aux_text);
@@ -183,16 +186,18 @@ $(document).ready(function () {
                 "</a>";
                 */
             }
-            $('td', row).eq(16).addClass('updated_at');
-            $('td', row).eq(16).attr('id','updated_at' + data.id);
-            $('td', row).eq(16).attr('name','updated_at' + data.id);
+            $('td', row).eq(17).addClass('updated_at');
+            $('td', row).eq(17).attr('id','updated_at' + data.id);
+            $('td', row).eq(17).attr('name','updated_at' + data.id);
 
             aux_text = 
-            "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + ")' title='Enviar a procesados'>"+
-                "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-            "</a>";
-
-            $('td', row).eq(17).html(aux_text);
+            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesar(${data.id})" title="Enviar a procesados">
+                <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+            </a> | 
+            <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
+                <span class="fa fa-upload text-danger"></span>
+            </a>`;
+            $('td', row).eq(18).html(aux_text);
         }
     });
 

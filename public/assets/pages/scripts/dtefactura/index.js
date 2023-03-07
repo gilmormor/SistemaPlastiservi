@@ -28,7 +28,8 @@ $(document).ready(function () {
             {data: 'nombre_comuna'}, // 12
             {data: 'clientebloqueado_descripcion',className:"ocultar"}, //13
             {data: 'oc_file',className:"ocultar"}, //14
-            {data: 'updated_at',className:"ocultar"}, //15
+            {data: 'nombrepdf',className:"ocultar"}, //15
+            {data: 'updated_at',className:"ocultar"}, //16
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -40,8 +41,10 @@ $(document).ready(function () {
             $(row).attr('name','fila' + data.id);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
 
+            let id_str = data.nrodocto_factura.toString();
+            id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"\")'>" +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
                 data.id +
             "</a>";
             $('td', row).eq(0).html(aux_text);
@@ -146,10 +149,10 @@ $(document).ready(function () {
             $('td', row).eq(10).html(aux_text);
 
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"\")'>" +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
                 data.nrodocto_factura +
             "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"_cedible\")'>" +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
                 data.nrodocto_factura +
             "</a>";
             $('td', row).eq(11).html(aux_text);
@@ -178,15 +181,19 @@ $(document).ready(function () {
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
             }
-            $('td', row).eq(15).addClass('updated_at');
-            $('td', row).eq(15).attr('id','updated_at' + data.id);
-            $('td', row).eq(15).attr('name','updated_at' + data.id);
+
+            $('td', row).eq(16).addClass('updated_at');
+            $('td', row).eq(16).attr('id','updated_at' + data.id);
+            $('td', row).eq(16).attr('name','updated_at' + data.id);
 
             aux_text = 
-            "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + ")' title='Enviar a procesados'>"+
-                "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-            "</a>";
-            $('td', row).eq(16).html(aux_text);
+            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesar(${data.id})" title="Enviar a procesados">
+                <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+            </a> | 
+            <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
+                <span class="fa fa-upload text-danger"></span>
+            </a>`;
+            $('td', row).eq(17).html(aux_text);
         }
     });
 
@@ -311,6 +318,9 @@ function ajaxRequest(data,url,funcion) {
 					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
 				}
 			}
+            if(funcion=='estadoDTE'){
+                console.log(respuesta);
+			}
 		},
 		error: function () {
 		}
@@ -342,6 +352,31 @@ function procesar(id){
     });
 
 }
+
+function estadoDTE(id){
+    var data = {
+        dte_id : id,
+        nfila  : id,
+        updated_at : $("#updated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dtefactura/estadoDTE';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Ver estado DTE?',
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequest(data,ruta,'estadoDTE');
+        }
+    });
+
+}
+
 
 function verificarAnulGuia()
 {

@@ -8,7 +8,15 @@
 <input type="hidden" name="indtraslado" id="indtraslado" value="{{old('indtraslado', $data->indtraslado ?? '')}}">
 <input type="hidden" name="dtefoliocontrol_id" id="dtefoliocontrol_id" value="5">
 <input type="hidden" name="foliocontrol_id" id="foliocontrol_id" value="{{old('foliocontrol_id', $data->foliocontrol_id ?? '')}}">
-<input type="hidden" name="tablaoriginal" id="tablaoriginal" value="">
+<input type="hidden" name="tablaoriginal" id="tablaoriginal" value="" disabled>
+<div style="display: none">
+    <select name="unidadmedida_id" id="unidadmedida_id" class="form-control">
+        <option value=""></option>
+        @foreach($tablas['unidadmedidas'] as $id => $unidadmedida)
+            <option value="{{$unidadmedida->id}}">{{$unidadmedida->nombre}}</option>
+        @endforeach
+    </select>
+</div>
 
 <?php 
     $aux_rut = "";
@@ -26,6 +34,7 @@
                     <option value="" {{'selected'}}>Seleccione...</option>
                     <option value="1">Factura</option>
                     <option value="6">Nota Débito</option>
+                    <option value="7">Factura exenta</option>
                 </select>
             </div>
 
@@ -155,6 +164,11 @@
     <input type="hidden" name="total" id="total" class="form-control" style="text-align:right;" readonly required>
     <input type="hidden" name="totalini" id="totalini" value="0" valor="0" style="display:none;">
 </div>
+<div class="form-group col-xs-4 col-sm-4" style="display:none;">
+    <label name="lblitemcompletos" id="lblitemcompletos" for="itemcompletos" class="control-label requerido" data-toggle='tooltip' title="Complete valores item">Complete valores item 1</label>
+    <input type="hidden" name="itemcompletos" id="itemcompletos" value="" class="form-control" style="text-align:right;" readonly required>
+</div>
+
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
         <h3 class="box-title">Detalle</h3>
@@ -178,16 +192,10 @@
                             <th style="display:none;">V Kilo</th>
                             <th class="width100" style="text-align:right;">Sub Total</th>
                             <th style="display:none;">Sub Total</th>
-                            <th class="width30" >Acción</th>
+                            <th class="width80" >Acción</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $aux_nfila = 0; $i = 0;
-                            $aux_Tsubtotal = 0;
-                            $aux_Tcant = 0;
-                            $aux_Tkilos = 0;
-                            $aux_Tiva = 0;
-                        ?>
                     </tbody>
                     <tfoot style="display:none;" id="foottotal" name="foottotal">
                         <div id="foot">
@@ -196,28 +204,24 @@
                                     <b>Totales:</b>
                                 </th>
                                 <th id="Tcant" name="Tcant" style="text-align:right">
-                                    {{$aux_Tcant}}
+                                    0
                                 </th>
                                 <th colspan="2" style="text-align:right"><b>Total Kg</b></th>
-                                <th id="totalkg" name="totalkg" style="text-align:right" valor="{{$aux_Tkilos}}">{{number_format($aux_Tkilos, 2, ',', '.')}}</th>
+                                <th id="totalkg" name="totalkg" style="text-align:right" valor="0">0</th>
                                 <th style="text-align:right"><b>Neto</b></th>
-                                <th id="tdneto" name="tdneto" style="text-align:right">{{number_format($aux_Tsubtotal, 0, ',', '.')}}</th>
+                                <th id="tdneto" name="tdneto" style="text-align:right">0</th>
                             </tr>
-                            <?php 
-                                $aux_Tiva = round(($tablas['empresa']->iva * $aux_Tsubtotal/100));
-                                $aux_total = round($aux_Tsubtotal + $aux_Tiva);
-                            ?>
                             <tr id="triva" name="triva">
                                 <th colspan="7" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></th>
-                                <th id="tdiva" name="tdiva" style="text-align:right">{{number_format($aux_Tiva, 0, ',', '.')}}</th>
+                                <th id="tdiva" name="tdiva" style="text-align:right">0</th>
                             </tr>
                             <tr id="trtotal" name="trtotal">
                                 <th colspan="7" style="text-align:right"><b>Total</b></th>
-                                <th id="tdtotal" name="tdtotal" style="text-align:right">{{number_format($aux_total, 0, ',', '.')}}</th>
+                                <th id="tdtotal" name="tdtotal" style="text-align:right">0</th>
                             </tr>
                             <tr id="trtotalrestante" name="trtotalrestante" style="display:none;">
                                 <th colspan="7" style="text-align:right" class="tooltipsC" title="Monto maximo permitido para hacer Nota Credito a Factura"><b>Total Restante Fact</b></th>
-                                <th id="tdtotalrestante" name="tdtotalrestante" class="tooltipsC" title="Monto maximo permitido para hacer Nota Credito a Factura" style="text-align:right">{{number_format($aux_total, 0, ',', '.')}}</th>
+                                <th id="tdtotalrestante" name="tdtotalrestante" class="tooltipsC" title="Monto maximo permitido para hacer Nota Credito a Factura" style="text-align:right">0</th>
                             </tr>
                             <tr id="trtotaloriginal" name="trtotaloriginal">
                                 <th colspan="7" style="text-align:right" class="tooltipsC" title="Monto neto Inicial"><b>Monto neto Inicial</b></th>
@@ -237,3 +241,4 @@
 
 @include('generales.modalpdf')
 @include('generales.buscarclientebd')
+@include('generales.buscarproductobd')

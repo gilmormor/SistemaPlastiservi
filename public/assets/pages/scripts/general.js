@@ -891,15 +891,34 @@ function totalizar(){
 		valor = valor.replace(/,/g, ""); //Elimina comas al valor con formato
 		//alert(valor);
 		valorNum = parseFloat(valor);
+		if(isNaN(valorNum)){
+			valorNum = 0;
+		}
 		total_cant += valorNum;
 	});
 
 	aux_totalkgform = MASKLA(total_kg,2); //MASK(0, total_kg, '-##,###,##0.00',1)
 	aux_totalcantform = MASKLA(total_cant,2); //MASK(0, total_kg, '-##,###,##0.00',1)
-
-	aux_porciva = $("#aux_iva").val();
-	aux_porciva = parseFloat(aux_porciva);
-	aux_iva = Math.round(total_neto * (aux_porciva/100));
+	let aux_foliocontrol_id = "";
+	aux_p = $("#foliocontrol_id").val();
+	if($("#foliocontrol_id").val() === 'undefined' || $("#foliocontrol_id").val() == null){
+		aux_foliocontrol_id = 1;
+	}else{
+		aux_foliocontrol_id = $("#foliocontrol_id").val();
+	}
+	if($("#dtefoliocontrol_id").val() == 5 || $("#dtefoliocontrol_id").val() == 6){
+		if($("#tdfoliocontrol_id").val() == 7){
+			aux_foliocontrol_id = 7;	
+		}
+	}
+	if(aux_foliocontrol_id == 7){
+		aux_porciva = 0;
+		aux_iva = 0;
+	}else{
+		aux_porciva = $("#aux_iva").val();
+		aux_porciva = parseFloat(aux_porciva);
+		aux_iva = Math.round(total_neto * (aux_porciva/100));	
+	}
 	aux_total = total_neto + aux_iva;
 	aux_netoform = MASKLA(total_neto,0); //MASK(0, total_neto, '-#,###,###,##0.00',1)
 	aux_ivaform = MASKLA(aux_iva,0); //MASK(0, aux_iva, '-#,###,###,##0.00',1)
@@ -1331,9 +1350,10 @@ function genpdfFAC(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
 		$("#" + aux_venmodant).modal('hide');
 		$("#venmodant").val(aux_venmodant);
 	}
-	let id_str = id.toString();
-	id_str = id_str.padStart(8, "0");
-	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T33FE'+id_str+nombre+'.pdf');
+	//let id_str = id.toString();
+	//id_str = id_str.padStart(8, "0");
+	console.log(id);
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/'+id+nombre+'.pdf');
 	$("#myModalpdf").modal('show');
 }
 
@@ -1403,6 +1423,57 @@ function verpdf2(nameFile,stareport,aux_venmodant = ""){
 				//console.log(respuesta);
 				if(respuesta.resp){
 					$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile);
+					if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
+						$("#venmodant").val("");
+						if(aux_venmodant!=""){
+							$("#" + aux_venmodant).modal('hide');
+							$("#venmodant").val(aux_venmodant);
+						}
+						$("#myModalpdf").modal('show');
+					}	
+				}else{
+					swal({
+						title: respuesta.mensaje,
+						text:  respuesta.mensaje2,
+						icon: 'error',
+						buttons: {
+							confirm: "Cerrar",
+						},
+					}).then((value) => {
+					});
+				}
+			}
+		});
+	}
+	
+
+}
+
+//FUNCIONES VER DOCUMENTO ADJUNTO ODEN DE COMPRA
+function verpdf3(nameFile,stareport,ruta,aux_venmodant = ""){ 
+	if(nameFile==""){
+		swal({
+			title: 'Archivo Orden de Compra no se Adjuntó a la Nota de Venta.',
+			text: "",
+			icon: 'error',
+			buttons: {
+				confirm: "Cerrar",
+			},
+		}).then((value) => {
+		});
+	}else{
+		var data = {
+			slug: 'ver-pdf-orden-de-compra',
+			_token: $('input[name=_token]').val()
+		};
+		$.ajax({
+			url: '/generales_valpremiso',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				//console.log(respuesta);
+				if(respuesta.resp){
+					$('#contpdf').attr('src', '/storage/imagenes/' + ruta + '/'+nameFile);
 					if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
 						$("#venmodant").val("");
 						if(aux_venmodant!=""){
@@ -2370,8 +2441,10 @@ function cargardatospantprod(){
 	$(this).val("");
 	$(".input-sm").val('');
 	data = datos();
-	aux_tipoprod = "0";
-
+	let aux_tipoprod = "0";
+	if($("#tipoprod").val()){ //0=PRODUCTO NORMAL, 1=PRODUCTO TRANSACCIONAL PARA HACER ACUERDO TECNICO, 2=PRODUCTO PARA HACER FACTURA DIRECTA
+        aux_tipoprod = $("#tipoprod").val();
+    }
 	$("#lbltipoprod").html("Productos");
 	$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");
 
@@ -2468,7 +2541,7 @@ function validarlistcodrefNc(){
 		*/
 		$("#codref").append("<option value='1'>Anula Documento de Referencia</option>");
 	}
-	if(tdfoliocontrol_id == 1){
+	if(tdfoliocontrol_id == 1 || tdfoliocontrol_id == 7){
 		$("#codref").append("<option value='2'>Corrige Texto Documento Referencia</option>");
 		$("#codref").append("<option value='3' selected>Corrige montos</option>");
 	}
@@ -2485,7 +2558,7 @@ function totalizarNd(){
 function validarlistcodrefNd(){
 	$('#codref option').remove();
 	$("#codref").append("<option value=''>Seleccione...</option>");
-	if($("#tdfoliocontrol_id").val() == 1){
+	if($("#tdfoliocontrol_id").val() == 1 || $("#tdfoliocontrol_id").val() == 7){
 		$("#codref").append("<option value='3' selected>Corrige montos</option>");
 	}else{
 		$("#codref").append("<option value='1'>Anula Documento de Referencia</option>");
@@ -2525,8 +2598,9 @@ async function buscarDatosProd(producto_id){
 						});
 					}
 				}else{
+					producto_id.val("");
 					swal({
-						title: 'Producto no existe.',
+						title: `Código producto ${codigo} no existe.`,
 						text: "Presione F2 para buscar",
 						icon: 'error',
 						buttons: {
@@ -2534,7 +2608,7 @@ async function buscarDatosProd(producto_id){
 						},
 					}).then((value) => {
 						if (value) {
-							//$("#producto_idM").focus();
+							producto_id.focus();
 						}
 					});
 				}
@@ -2545,4 +2619,118 @@ async function buscarDatosProd(producto_id){
 	}else{
 		return [];
 	}
+}
+
+$("#foliocontrol_id").change(function(){
+	totalizar();
+});
+
+function buscarProdKeyUp(obj,event){
+	//console.log(obj)
+	if(event.which==113){
+		//console.log(obj);
+		$(obj).val("");
+		//console.log($(obj).parent().parent().attr("item"));
+		cargardatospantprod();
+		$("#itemAct").val($(obj).parent().parent().attr("item")); //Crear input Item actual
+		$("#myModalBuscarProd").modal('show');
+	}
+}
+
+function buscarProd(item){
+	//console.log($(obj).parent().parent().attr("item"));
+	cargardatospantprod();
+	$("#itemAct").val(item); //Crear input Item actual
+	$("#myModalBuscarProd").modal('show');
+}
+
+//FUNCTION CON ASYNC, YA QUE ME INTERESA ESPERAR LA RESPUESTA DE LA BUSQUEDA
+async function llenarDatosProd(vlrcodigo){
+	let item = vlrcodigo.attr("item");
+	//console.log(item);
+	if($("#vlrcodigo" + item).val() != $("#producto_id" + item).val()){
+		arrayDatosProducto = await buscarDatosProd(vlrcodigo);
+		//console.log(arrayDatosProducto);
+		$("#producto_id" + item).val("");
+		$("#nmbitem" + item).val("");
+		$("#prcitem" + item).val("0");
+		if(arrayDatosProducto['cont'] > 0){
+			$("#lblproducto_id" + item).html(arrayDatosProducto["id"]);
+			$("#vlrcodigo" + item).val(arrayDatosProducto["id"]);
+			$("#producto_id" + item).val(arrayDatosProducto["id"]);
+			$("#nombreProdTD" + item).html(arrayDatosProducto["nombre"]);
+			$("#nmbitem" + item).val(arrayDatosProducto["nombre"]);
+			$("#prcitem" + item).val(arrayDatosProducto["precio"]);
+		}
+		calsubtotalitem($("#vlrcodigo" + item));	
+	}
+}
+
+function validarItemVacios(){
+	//VALIDAR QUE LOS ITEM DE PRODUCTOS NO QUEDEN EN BLANCO
+	//$(".itemrequerido").change(function(){
+		//console.log("entro");
+		$('.itemrequerido').each(function(){
+			let id = $(this).attr("id");
+			let valor = $(this).val();
+			$("#itemcompletos").val("");
+			if( (valor == null || valor.length == 0 || /^\s+$/.test(valor)) || valor == ""){
+				//$("#itemcompletos").val("");
+				let item = $(this).parent().parent().attr("item");
+				$("#lblitemcompletos").html($(this).attr("title") + " item: " + $("#nroitem" + item).html());
+				//$(this).focus();
+				return false;
+			}else{
+				$("#itemcompletos").val("1");
+			}
+			//console.log('id: ' + id + '  Valor: ' + valor);
+		});	
+	//});
+}
+
+function volverGenDTE(dte_id){
+	var data = {
+        dte_id : dte_id,
+        updated_at : $("#updated_at" + dte_id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dteguiadesp/volverGenDTE';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Generar DTE ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequestGeneral(data,ruta,'volverGenDTE');
+        }
+    });
+
+}
+
+function ajaxRequestGeneral(data,url,funcion) {
+	$.ajax({
+		url: url,
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			if(funcion=='volverGenDTE'){
+				swal({
+					title: respuesta.titulo,
+					text: respuesta.mensaje,
+					icon: respuesta.tipo_alert,
+					buttons: {
+						confirm: "Aceptar"
+					},
+				}).then((value) => {
+				});
+			}
+		},
+		error: function () {
+		}
+	});
 }

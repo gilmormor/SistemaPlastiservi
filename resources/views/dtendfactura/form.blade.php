@@ -144,7 +144,7 @@
                 </select>
             </div>
             <div class="form-group col-xs-12 col-sm-5">
-                <label for="obs" class="control-label" data-toggle='tooltip' title="Observación Nota de Crédito">Observación NC</label>
+                <label for="obs" class="control-label" data-toggle='tooltip' title="Observación Nota de Débito">Observación ND</label>
                 <textarea class="form-control" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90" readonly></textarea>
             </div>
         </div>    

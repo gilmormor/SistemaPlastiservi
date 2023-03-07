@@ -456,6 +456,7 @@ function blanquearDatos(){
 	$("#vendedor_id").val("");
 	$("#centroeconomico_id").val("");
 	$("#hep").val("");
+	$("#foliocontrol_id").val("");
 	$("#obs").val("");
 	$('.select2').trigger('change');
 	$('#tabla-data tbody').html("");

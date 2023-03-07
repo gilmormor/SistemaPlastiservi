@@ -18,6 +18,7 @@ class CreateTableDteoc extends Migration
             $table->unsignedBigInteger('dte_id');
             $table->foreign('dte_id','fk_dteoc_dte')->references('id')->on('dte')->onDelete('restrict')->onUpdate('restrict');
             $table->string('oc_id',10)->comment('Numero de Orden de Compra')->nullable();
+            $table->string('oc_folder',5)->comment('Carpeta donde se guarda archivo, dentro de public\storage\imagenes')->nullable();
             $table->string('oc_file',100)->comment('Archivo o imagen de Orden de Compra')->nullable();
             $table->engine = 'InnoDB';
             $table->softDeletes();

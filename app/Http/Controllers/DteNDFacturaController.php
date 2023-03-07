@@ -103,11 +103,12 @@ class DteNDFacturaController extends Controller
                 $dtedet->prcitem = $request->prcitem[$i]; //$request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
                 $dtedet->montoitem = $request->montoitem[$i];
                 //$dtedet->obsdet = $request->obsdet[$i];
-                $dtedet->itemkg = $request->itemkg[$i];
+                $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                $dtedet->itemkg = $aux_itemkg;
                 $dte->dtedets[] = $dtedet;
                 
                 $Tmntneto += $request->montoitem[$i];
-                $Tkgtotal += $request->itemkg[$i];
+                $Tkgtotal += $aux_itemkg;
             }
         }
         $empresa = Empresa::findOrFail(1);
@@ -326,7 +327,25 @@ class DteNDFacturaController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
-            return Dte::updateStatusGen($dte,$request);
+            $empresa = Empresa::findOrFail(1);
+            $soap = new SoapController();
+            $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
+            if($Estado_DTE->Estatus == 3){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => $Estado_DTE->MsgEstatus . " Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            if($Estado_DTE->EstadoDTE == 16){
+                return Dte::updateStatusGen($dte,$request);
+            }else{
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => $Estado_DTE->DescEstado . " Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'error'
+                ]);
+            }
         }
     }
 
@@ -345,6 +364,107 @@ class DteNDFacturaController extends Controller
 
 
 function consultaindex($dte_id){
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+
+    if(empty($dte_id)){
+        $aux_conddte_id = " true";
+    }else{
+        $aux_conddte_id = "dte.id = $dte_id";
+    }
+
+    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
+    clientebloqueado.descripcion as clientebloqueado_descripcion,
+    dte.updated_at,0 as dtefac_id
+    FROM dte INNER JOIN cliente
+    ON dte.cliente_id  = cliente.id AND ISNULL(dte.deleted_at) AND ISNULL(cliente.deleted_at)
+    INNER JOIN comuna
+    ON comuna.id = cliente.comunap_id AND ISNULL(comuna.deleted_at)
+    LEFT JOIN clientebloqueado
+    ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+    WHERE dte.foliocontrol_id=6
+    AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+    AND ISNULL(dte.statusgen)
+    AND dte.sucursal_id IN ($sucurcadena)
+    AND $aux_conddte_id
+    AND !ISNULL(dte.nrodocto)
+    GROUP BY dte.id
+    ORDER BY dte.id desc;";
+
+    $dteDocs = DB::select($sql);
+    for ($i = 0; $i < count($dteDocs);$i++) {
+        $aux_dteId = $dteDocs[$i]->id;
+        do{
+            $dte = Dte::findOrFail($aux_dteId);
+            $aux_dteId = $dte->dtedte ? $dte->dtedte->dter_id : "";
+            //dd($aux_dteId);
+            if($dte->foliocontrol_id == 1 or $dte->foliocontrol_id == 7){
+                $dteDocs[$i]->dtefac_id = $dte->id;
+                $dteDocs[$i]->dte_id = $dte->id;
+                $dteDocs[$i]->dter_id = $aux_dteId;
+                $dteDocs[$i]->nrodocto_factura = $dte->nrodocto;
+                break;
+            }
+        }while ($dte->dtedte and $dte->foliocontrol_id != 1);
+        //dd($dteDocs);
+        if($dteDocs[$i]->dte_id){
+            $sql = "SELECT dte.id,dte.nrodocto AS nrodocto_fac,
+                        GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
+                        GROUP_CONCAT(DISTINCT notaventa.oc_id) AS oc_id,
+                        GROUP_CONCAT(DISTINCT notaventa.oc_file) AS oc_file,
+                        GROUP_CONCAT(DISTINCT dteguiadesp.notaventa_id) AS notaventa_id,
+                        GROUP_CONCAT(DISTINCT despachoord.despachosol_id) AS despachosol_id,
+                        GROUP_CONCAT(DISTINCT dteguiadesp.despachoord_id) AS despachoord_id,
+                        GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
+                        GROUP_CONCAT(DISTINCT dter.nrodocto) AS nrodocto_guiadesp,
+                        foliocontrol.nombrepdf,foliocontrol.tipodocto
+                        FROM dte LEFT JOIN dtedte
+                        ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
+                        LEFT JOIN dte AS dter
+                        ON dter.id = dtedte.dter_id AND ISNULL(dter.deleted_at)
+                        LEFT JOIN dteguiadesp
+                        ON dteguiadesp.dte_id = dter.id AND ISNULL(dteguiadesp.deleted_at)
+                        LEFT JOIN despachoord
+                        ON despachoord.id = dteguiadesp.despachoord_id AND ISNULL(despachoord.deleted_at)
+                        LEFT JOIN notaventa
+                        ON notaventa.id = despachoord.notaventa_id AND ISNULL(notaventa.deleted_at)
+                        INNER JOIN foliocontrol
+                        ON foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
+                        WHERE dte.id = $dte->id
+                        GROUP BY dte.id;";
+            $guia = DB::select($sql);
+            if(count($guia) > 0){
+                $dteDocs[$i]->nrodocto_fac = $guia[0]->nrodocto_fac;
+                $dteDocs[$i]->cotizacion_id = $guia[0]->cotizacion_id ? $guia[0]->cotizacion_id : "";
+                $dteDocs[$i]->oc_id = $guia[0]->oc_id;
+                $dteDocs[$i]->oc_file = $guia[0]->oc_file;
+                $dteDocs[$i]->notaventa_id = $guia[0]->notaventa_id ? $guia[0]->notaventa_id : "";
+                $dteDocs[$i]->despachosol_id = $guia[0]->despachosol_id ? $guia[0]->despachosol_id : "";
+                $dteDocs[$i]->despachoord_id = $guia[0]->despachoord_id ? $guia[0]->despachoord_id : "";
+                $dteDocs[$i]->dter_id = $guia[0]->dter_id ? $guia[0]->dter_id : "";
+                $dteDocs[$i]->nombrepdf = $guia[0]->nombrepdf;
+                $dteDocs[$i]->nrodocto_guiadesp = $guia[0]->nrodocto_guiadesp ? $guia[0]->nrodocto_guiadesp : "";
+                //dd($dteDocs[$i]);    
+            }else{
+                $dteDocs[$i]->nrodocto_fac = "";
+                $dteDocs[$i]->cotizacion_id = "";
+                $dteDocs[$i]->oc_id = "";
+                $dteDocs[$i]->oc_file = "";
+                $dteDocs[$i]->notaventa_id = "";
+                $dteDocs[$i]->despachosol_id = "";
+                $dteDocs[$i]->despachoord_id = "";
+                $dteDocs[$i]->dter_id = "";
+                $dteDocs[$i]->nombrepdf = "";
+                $dteDocs[$i]->nrodocto_guiadesp = "";
+            }
+            $nrodocto_guiadesp = 0;
+        }
+    }
+    return $dteDocs;
+
+
+
     $user = Usuario::findOrFail(auth()->id());
     $sucurArray = $user->sucursales->pluck('id')->toArray();
     $sucurcadena = implode(",", $sucurArray);

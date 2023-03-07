@@ -15,6 +15,7 @@ use App\Models\Empresa;
 use App\Models\Foliocontrol;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\UnidadMedida;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +49,7 @@ class DteNCFacturaController extends Controller
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
         $tablas['empresa'] = Empresa::findOrFail(1);
+        $tablas['unidadmedidas'] = UnidadMedida::orderBy('id')->get();
         $centroeconomicos = CentroEconomico::orderBy('id')->get();
 
         //dd($tablas);
@@ -95,26 +97,28 @@ class DteNCFacturaController extends Controller
                 //$producto = Producto::findOrFail($request->producto_id[$i]);
                 $dtedet = new DteDet();
                 $dtedet->dtedet_id = $request->dtedetorigen_id[$i];
-                $dtedet->producto_id = $request->producto_id[$i];
+                $dtedet->producto_id = $request->vlrcodigo[$i];
                 $dtedet->nrolindet = ($i + 1);
-                $dtedet->vlrcodigo = $request->producto_id[$i];
+                $dtedet->vlrcodigo = $request->vlrcodigo[$i];
                 $dtedet->nmbitem = $request->nmbitem[$i];
                 //$dtedet->dscitem = $request->dscitem[$i]; este valor aun no lo uso
                 $dtedet->qtyitem = $request->qtyitem[$i];
-                $dtedet->unmditem = $request->unmditem[$i];
-                $dtedet->unidadmedida_id = $request->unidadmedida_id[$i];
+                $dtedet->unidadmedida_id = $request->unmditemselect[$i];
+                $dtedet->unmditem = substr($dtedet->unidadmedida->nombre, 0, 4) ; //$request->unmditem[$i];
                 $dtedet->prcitem = $request->prcitem[$i]; //$request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
-                $dtedet->montoitem = $request->montoitem[$i];
+                $dtedet->montoitem = ($dtedet->qtyitem * $dtedet->prcitem); //$request->montoitem[$i];
                 //$dtedet->obsdet = $request->obsdet[$i];
-                $dtedet->itemkg = $request->itemkg[$i];
+                $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                $dtedet->itemkg = $aux_itemkg;
                 //$dtedet->save();
                 $dte->dtedets[] = $dtedet;
                 $dtedet_id = $dtedet->id;
 
-                $Tmntneto += $request->montoitem[$i];
-                $Tkgtotal += $request->itemkg[$i];
+                $Tmntneto += $dtedet->montoitem; //$request->montoitem[$i];
+                $Tkgtotal += $aux_itemkg;
             }
         }
+        //dd($dte);
         $empresa = Empresa::findOrFail(1);
         if($Tmntneto>0){
             $Tiva = round(($empresa->iva/100) * $Tmntneto);
@@ -320,7 +324,25 @@ class DteNCFacturaController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
-            return Dte::updateStatusGen($dte,$request);
+            $empresa = Empresa::findOrFail(1);
+            $soap = new SoapController();
+            $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
+            if($Estado_DTE->Estatus == 3){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => $Estado_DTE->MsgEstatus . " Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            if($Estado_DTE->EstadoDTE == 16){
+                return Dte::updateStatusGen($dte,$request);
+            }else{
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => $Estado_DTE->DescEstado . " Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'error'
+                ]);
+            }
         }
     }
 
@@ -354,30 +376,34 @@ function consultaindex($dte_id){
     ON comuna.id = cliente.comunap_id AND ISNULL(comuna.deleted_at)
     LEFT JOIN clientebloqueado
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-    WHERE dte.foliocontrol_id=5 
+    WHERE dte.foliocontrol_id = 5 
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND ISNULL(dte.statusgen)
     AND dte.sucursal_id IN ($sucurcadena)
     AND $aux_conddte_id
+    AND !ISNULL(dte.nrodocto)
     GROUP BY dte.id
     ORDER BY dte.id desc;";
 
     $dteDocs = DB::select($sql);
+    //dd($dteDocs);
     for ($i = 0; $i < count($dteDocs);$i++) {
         $aux_dteId = $dteDocs[$i]->id;
         do{
             $dte = Dte::findOrFail($aux_dteId);
             $aux_dteId = $dte->dtedte ? $dte->dtedte->dter_id : "";
-            if($dte->foliocontrol_id == 1){
+            if($dte->foliocontrol_id == 1 or $dte->foliocontrol_id == 7){
+                //dd($dte->foliocontrol_id);
                 $dteDocs[$i]->dtefac_id = $dte->id;
                 $dteDocs[$i]->dte_id = $dte->id;
                 $dteDocs[$i]->dter_id = $aux_dteId;
                 $dteDocs[$i]->nrodocto_factura = $dte->nrodocto;
                 break;
             }
-        }while ($dte->dtedte and $dte->foliocontrol_id != 1);
+        }while ($dte->dtedte and ($dte->foliocontrol_id != 1 or $dte->foliocontrol_id != 7));
         //dd($dteDocs);
         if($dteDocs[$i]->dte_id){
+            //dd($dte->id);
             $sql = "SELECT dte.id,dte.nrodocto AS nrodocto_fac,
                         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
                         GROUP_CONCAT(DISTINCT notaventa.oc_id) AS oc_id,
@@ -386,33 +412,49 @@ function consultaindex($dte_id){
                         GROUP_CONCAT(DISTINCT despachoord.despachosol_id) AS despachosol_id,
                         GROUP_CONCAT(DISTINCT dteguiadesp.despachoord_id) AS despachoord_id,
                         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
-                        GROUP_CONCAT(DISTINCT dter.nrodocto) AS nrodocto_guiadesp
-                        FROM dte INNER JOIN dtedte
+                        GROUP_CONCAT(DISTINCT dter.nrodocto) AS nrodocto_guiadesp,
+                        foliocontrol.nombrepdf,foliocontrol.tipodocto
+                        FROM dte LEFT JOIN dtedte
                         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
-                        INNER JOIN dte AS dter
+                        LEFT JOIN dte AS dter
                         ON dter.id = dtedte.dter_id AND ISNULL(dter.deleted_at)
-                        INNER JOIN dteguiadesp
+                        LEFT JOIN dteguiadesp
                         ON dteguiadesp.dte_id = dter.id AND ISNULL(dteguiadesp.deleted_at)
-                        INNER JOIN despachoord
+                        LEFT JOIN despachoord
                         ON despachoord.id = dteguiadesp.despachoord_id AND ISNULL(despachoord.deleted_at)
-                        INNER JOIN notaventa
+                        LEFT JOIN notaventa
                         ON notaventa.id = despachoord.notaventa_id AND ISNULL(notaventa.deleted_at)
+                        INNER JOIN foliocontrol
+                        ON foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
                         WHERE dte.id = $dte->id
                         GROUP BY dte.id;";
             $guia = DB::select($sql);
-            $dteDocs[$i]->nrodocto_fac = $guia[0]->nrodocto_fac;
-            $dteDocs[$i]->cotizacion_id = $guia[0]->cotizacion_id;
-            $dteDocs[$i]->oc_id = $guia[0]->oc_id;
-            $dteDocs[$i]->oc_file = $guia[0]->oc_file;
-            $dteDocs[$i]->notaventa_id = $guia[0]->notaventa_id;
-            $dteDocs[$i]->despachosol_id = $guia[0]->despachosol_id;
-            $dteDocs[$i]->despachoord_id = $guia[0]->despachoord_id;
-            $dteDocs[$i]->dter_id = $guia[0]->dter_id;
-            $dteDocs[$i]->nrodocto_guiadesp = $guia[0]->nrodocto_guiadesp;
-            //dd($dteDocs[$i]);
+            if(count($guia) > 0){
+                $dteDocs[$i]->nrodocto_fac = $guia[0]->nrodocto_fac;
+                $dteDocs[$i]->cotizacion_id = $guia[0]->cotizacion_id ? $guia[0]->cotizacion_id : "";
+                $dteDocs[$i]->oc_id = $guia[0]->oc_id;
+                $dteDocs[$i]->oc_file = $guia[0]->oc_file;
+                $dteDocs[$i]->notaventa_id = $guia[0]->notaventa_id ? $guia[0]->notaventa_id : "";
+                $dteDocs[$i]->despachosol_id = $guia[0]->despachosol_id ? $guia[0]->despachosol_id : "";
+                $dteDocs[$i]->despachoord_id = $guia[0]->despachoord_id ? $guia[0]->despachoord_id : "";
+                $dteDocs[$i]->dter_id = $guia[0]->dter_id ? $guia[0]->dter_id : "";
+                $dteDocs[$i]->nombrepdf = $guia[0]->nombrepdf;
+                $dteDocs[$i]->nrodocto_guiadesp = $guia[0]->nrodocto_guiadesp ? $guia[0]->nrodocto_guiadesp : "";
+                //dd($dteDocs[$i]);    
+            }else{
+                $dteDocs[$i]->nrodocto_fac = "";
+                $dteDocs[$i]->cotizacion_id = "";
+                $dteDocs[$i]->oc_id = "";
+                $dteDocs[$i]->oc_file = "";
+                $dteDocs[$i]->notaventa_id = "";
+                $dteDocs[$i]->despachosol_id = "";
+                $dteDocs[$i]->despachoord_id = "";
+                $dteDocs[$i]->dter_id = "";
+                $dteDocs[$i]->nombrepdf = "";
+                $dteDocs[$i]->nrodocto_guiadesp = "";
+            }
             $nrodocto_guiadesp = 0;
         }
-
     }
     return $dteDocs;
 

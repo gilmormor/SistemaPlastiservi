@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Str;
+use SplFileInfo;
 use setasign\Fpdi\Fpdi;
 
 class Dte extends Model
@@ -785,7 +788,7 @@ class Dte extends Model
                 $aux_saldomntneto = $dte->mntneto;
                 $aux_saldomntnetoband = 0;
                 if(str_contains("NC,ND", $request->TipoDTE)){
-                    if($dte->foliocontrol_id == 1){
+                    if($dte->foliocontrol_id == 1 or $dte->foliocontrol_id == 7){
                         //dd($dte->dtedtefacasosiadas);
                         foreach ($dte->dtedtefacasosiadas as $dtedtefacasosiada) {
                             //BUSCO TODOS LOS DTE RELACIONADOS A LA FACTURA EXCLUYENDO LA FACTURA ORIGINAL
@@ -1169,32 +1172,50 @@ class Dte extends Model
         }
         $empresa = Empresa::findOrFail(1);
         $soap = new SoapController();
-        $bandNoExisteFolio = true;
-        do {
-            $Solicitar_Folio = $soap->Solicitar_Folio($empresa->rut,$foliocontrol->tipodocto);
-            if(isset($Solicitar_Folio->Estatus)){
-                if($Solicitar_Folio->Estatus == 0){
-                    $Estado_DTE = $soap->Estado_DTE($empresa->rut,$foliocontrol->tipodocto,$Solicitar_Folio->Folio);
-                    if($Estado_DTE->Estatus == 3){
-                        $bandNoExisteFolio = false;
-                        $aux_folio = $Solicitar_Folio->Folio;
+        //SI DOCUMENTO YA FUE ASIGNADO, QUIERE DECIR QUE SE PUEDE VOLVER A GENERAR
+        //PERO SI NO HA SIDO ELIMINADO EN LA PLATAFORMA DE BES NO DEJA VOLVER A SUBIRLO
+        if($dte->nrodocto != ""){
+            $Estado_DTE = $soap->Estado_DTE($empresa->rut,$foliocontrol->tipodocto,$dte->nrodocto);
+            if($Estado_DTE->EstadoDTE == 0 and $Estado_DTE->Estatus == 3){ // EN ESTE CASO EL DOCUMENTO NO EXISTE EN LA PLATAFORMA BES, ESO QUIERE DECIR QUE FUE ELIMINADO PREVIAMENTE
+                $aux_folio = $dte->nrodocto;
+            }else{ //PERO SI NO HA SIDO ELIMINADO EN PLATAFORMA BES NO DEJA VOLVER A GENERAR EL DTE
+                return response()->json([
+                    'id' => 0,
+                    'titulo' => "DTE $dte->nrodocto Generado en SII.",
+                    'mensaje' => "Estatus: " . $Estado_DTE->DescEstado,
+                    'tipo_alert' => 'error'
+                ]);
+            }
+        }else{
+            //SI EL $dte->nrodocto VIENE VACIO O = A NULL, ESO QUIERE DECIR QUE SE VA A GENERAR LA PRIMERA VEZ EL DTE
+            $bandNoExisteFolio = true;
+            do {
+                $Solicitar_Folio = $soap->Solicitar_Folio($empresa->rut,$foliocontrol->tipodocto);
+                if(isset($Solicitar_Folio->Estatus)){
+                    if($Solicitar_Folio->Estatus == 0){
+                        $Estado_DTE = $soap->Estado_DTE($empresa->rut,$foliocontrol->tipodocto,$Solicitar_Folio->Folio);
+                        if($Estado_DTE->Estatus == 3){
+                            $bandNoExisteFolio = false;
+                            $aux_folio = $Solicitar_Folio->Folio;
+                        }
+                    }else{
+                        //dd($Solicitar_Folio);
+                        return response()->json([
+                            'id' => 0,
+                            'mensaje'=>'Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus,
+                            'tipo_alert' => 'error'                
+                        ]);    
                     }
                 }else{
-                    //dd($Solicitar_Folio);
                     return response()->json([
                         'id' => 0,
-                        'mensaje'=>'Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus,
+                        'mensaje'=>'Error: TipoDTE ' . $foliocontrol->tipodocto . ", " . $Solicitar_Folio,
                         'tipo_alert' => 'error'                
                     ]);    
                 }
-            }else{
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Error: ' . $Solicitar_Folio,
-                    'tipo_alert' => 'error'                
-                ]);    
-            }
-        }while($bandNoExisteFolio);
+            }while($bandNoExisteFolio);    
+        }
+
         $tipoArch = "XML";
         $ArchivoTXT = dtefacturaprueba($dte,$aux_folio,$tipoArch);
         $Carga_TXTDTE = $soap->Carga_TXTDTE($ArchivoTXT,$tipoArch);
@@ -1299,7 +1320,7 @@ class Dte extends Model
         do{
             $dte = Dte::findOrFail($aux_dteId);
             $aux_dteId = $dte->dtedte ? $dte->dtedte->dter_id : "";
-            if($dte->foliocontrol_id == 1){
+            if($dte->foliocontrol_id == 1 or $dte->foliocontrol_id == 7){
                 $arrayDTE = [
                     "dtefac_id" => $dte->id,
                     "dte_id"    => $dte->id,
@@ -1479,6 +1500,42 @@ class Dte extends Model
                                     ]);
         } else {
             return response()->json(['mensaje' => 'ng']);
+        }
+    }
+
+    public static function setFoto($foto,$id,$request,$ininombre,$ruta, $actual = false){
+        //dd($foto);
+        $id = $ininombre . str_pad($id, 8, "0", STR_PAD_LEFT);
+        if ($foto) {
+            if ($actual) {
+                $actual = $id;
+                Storage::disk('public')->delete("imagenes/$ruta/$actual");
+            }
+            $file = $request->file('oc_file');
+            $nombre = $file->getClientOriginalName();
+            $info = new SplFileInfo($nombre);
+            $ext = strtolower($info->getExtension()); //Obtener extencion de un archivo
+            //$imageName = Str::random(10) . '.jpg';
+            $imageName = $id . '.' . $ext;
+            //dd($imageName);
+            //      $imagen = Image::make($foto)->encode('jpg', 75);
+            //$imagen->fit(530, 470); //Fit() SUpuestamente mantiene la proporcion de la imagen
+            /*$imagen->resize(530, 470, function ($constraint) {
+                $constraint->upsize();
+            });*/
+            //Storage::disk('public')->put("imagenes/notaventa/$imageName", $imagen->stream());
+            //Storage::disk('public')->put("imagenes/notaventa/$imageName", $file);
+            $file->move(public_path() . "/storage/imagenes/$ruta/" , $imageName);
+            //$request->file('')
+            return $imageName;
+        } else {
+            if ($actual) {
+                $actual = $id;
+                Storage::disk('public')->delete("imagenes/$ruta/$actual");
+                return "null";
+            }else{
+                return false;
+            }
         }
     }
 
@@ -1849,17 +1906,12 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         
             }
             $contenido .= "</Documento>" .
-            "</DTE>";
-    
-            //"</DTE>]]>";
-    
-            //dd($contenido);
-        
+            "</DTE>";        
         }
     
         return $contenido;
     }
-    if($dte->foliocontrol->tipodocto == 33){
+    if($dte->foliocontrol->tipodocto == 33 or $dte->foliocontrol->tipodocto == 34){
         //$aux_dte = consultaindex($id);
         $Folio = str_pad($Folio, 10, "0", STR_PAD_LEFT);
         //$dte = Dte::findOrFail($id);
@@ -1887,19 +1939,21 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         }
         $FolioRef = substr(trim($dte->oc_id),0,20);
         $contenido = "";
+        $TipoDTE = $dte->foliocontrol->tipodocto;
     
         if($tipoArch == "XML"){
             $FchEmis = $dte->fchemis;
             $contenido = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"yes\"?>" .
             "<DTE version=\"1.0\">" .
-            "<Documento ID=\"R" .$empresa->rut . "T52F" . $Folio . "\">" .
+            "<Documento ID=\"R" . $empresa->rut . "T" . $TipoDTE . "F" . $Folio . "\">" .
             "<Encabezado>" .
             "<IdDoc>" .
-            "<TipoDTE>33</TipoDTE>" .
+            "<TipoDTE>$TipoDTE</TipoDTE>" .
             "<Folio>$Folio</Folio>" .
             "<FchEmis>$FchEmis</FchEmis>" .
             "<TipoDespacho>$dte->tipodespacho</TipoDespacho>" .
             "<TpoImpresion>N</TpoImpresion>" .
+            "<FchPago>$FchVenc</FchPago>" .            
             "<TermPagoGlosa>$formapago_desc</TermPagoGlosa>" .
             "<FchVenc>$FchVenc</FchVenc>" .
             "</IdDoc>" .
@@ -1922,12 +1976,17 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<CmnaRecep>$CmnaRecep</CmnaRecep>" .
             "<CiudadRecep>$CiudadRecep</CiudadRecep>" .
             "</Receptor>" .
-            "<Totales>" .
-            "<MntNeto>$dte->mntneto</MntNeto>" .
-            "<TasaIVA>$dte->tasaiva</TasaIVA>" .
-            "<IVA>$dte->iva</IVA>" .
-            "<MntTotal>$dte->mnttotal</MntTotal>" .
-            "</Totales>" .
+            "<Totales>";
+            if($TipoDTE == 33){
+                $contenido .= "<MntNeto>$dte->mntneto</MntNeto>" .
+                "<TasaIVA>$dte->tasaiva</TasaIVA>" .
+                "<IVA>$dte->iva</IVA>" .
+                "<MntTotal>$dte->mnttotal</MntTotal>";
+            }else{
+                $contenido .= "<MntExe>$dte->mnttotal</MntExe>" .
+                "<MntTotal>$dte->mnttotal</MntTotal>";
+            }
+            $contenido .= "</Totales>" .
             "</Encabezado>";
         
             $aux_totalqtyitem = 0;
@@ -2030,7 +2089,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         $Folio = str_pad($Folio, 10, "0", STR_PAD_LEFT);
         $rutrecep = $dte->cliente->rut;
         $rutrecep = number_format( substr ( $rutrecep, 0 , -1 ) , 0, "", "") . '-' . substr ( $rutrecep, strlen($rutrecep) -1 , 1 );
-    
+
         $empresa = Empresa::findOrFail(1);
         $RznSoc = strtoupper(sanear_string(substr(trim($empresa->razonsocial),0,100)));
         $GiroEmis = strtoupper(sanear_string(substr(trim($empresa->giro),0,80)));
@@ -2045,7 +2104,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
         $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
         $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
-        if($dte->foliocontrol_id == 1){
+        if($dte->foliocontrol_id == 1 or $dte->foliocontrol_id == 7){
             $FchVenc = $dte->dtefac->fchvenc;
             $formapago_desc = $dte->dtefac->formapago->descripcion;
             if($dte->dtefac->formapago_id == 2 or $dte->dtefac->formapago_id == 3){
@@ -2060,7 +2119,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
     
             $contenido = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"yes\"?>" .
             "<DTE version=\"1.0\">" .
-            "<Documento ID=\"R" .$empresa->rut . "T52F" . $Folio . "\">" .
+            "<Documento ID=\"R" .$empresa->rut  . "T" . $TipoDocto . "F" .  $Folio . "\">" .
             "<Encabezado>" .
             "<IdDoc>" .
             "<TipoDTE>$TipoDocto</TipoDTE>" .
@@ -2068,7 +2127,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<FchEmis>$FchEmis</FchEmis>" .
             "<TipoDespacho>$dte->tipodespacho</TipoDespacho>" .
             "<TpoImpresion>N</TpoImpresion>";
-            if($dte->foliocontrol_id == 1){
+            if($dte->foliocontrol_id == 1 or $dte->foliocontrol_id == 7){
                 $contenido .= "<TermPagoGlosa>$formapago_desc</TermPagoGlosa>" .
                 "<FchVenc>$FchVenc</FchVenc>";
         
@@ -2093,12 +2152,17 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<CmnaRecep>$CmnaRecep</CmnaRecep>" .
             "<CiudadRecep>$CiudadRecep</CiudadRecep>" .
             "</Receptor>" .
-            "<Totales>" .
-            "<MntNeto>$dte->mntneto</MntNeto>" .
-            "<TasaIVA>$dte->tasaiva</TasaIVA>" .
-            "<IVA>$dte->iva</IVA>" .
-            "<MntTotal>$dte->mnttotal</MntTotal>" .
-            "</Totales>" .
+            "<Totales>";
+            if($dte->dtedte->dter->foliocontrol->tipodocto == 34){
+                $contenido .= "<MntExe>$dte->mnttotal</MntExe>" .
+                "<MntTotal>$dte->mnttotal</MntTotal>";
+            }else{
+                $contenido .= "<MntNeto>$dte->mntneto</MntNeto>" .
+                "<TasaIVA>$dte->tasaiva</TasaIVA>" .
+                "<IVA>$dte->iva</IVA>" .
+                "<MntTotal>$dte->mnttotal</MntTotal>";    
+            }
+            $contenido .= "</Totales>" .
             "</Encabezado>";
         
             $aux_totalqtyitem = 0;
@@ -2128,19 +2192,19 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             //dd($dte->dtedte->dter);
 
             if($TipoDocto == 61 or $TipoDocto == 56){
-                $TipoDocto = $dte->dtedte->dter->foliocontrol->tipodocto;
+                $TpoDocRef = $dte->dtedte->dter->foliocontrol->tipodocto;
                 $aux_nrodocto = $dte->dtedte->dter->nrodocto;
                 $aux_FchEmis = $dte->dtedte->dter->fchemis;
                 $aux_codref = $dte->dtencnd->codref;
-                $TpoDocRef = strtoupper(sanear_string(substr(empty($dte->obs) ? " " : $dte->obs,0,90)));
+                $RazonRef = strtoupper(sanear_string(substr(empty($dte->obs) ? " " : $dte->obs,0,90)));
     
                 $contenido .= "<Referencia>" .
                 "<NroLinRef>1</NroLinRef>" .
-                "<TpoDocRef>$TipoDocto</TpoDocRef>" .
+                "<TpoDocRef>$TpoDocRef</TpoDocRef>" .
                 "<FolioRef>$aux_nrodocto</FolioRef>" .
                 "<FchRef>$aux_FchEmis</FchRef>" .
                 "<CodRef>$aux_codref</CodRef>" .
-                "<RazonRef>$TpoDocRef</RazonRef>" .
+                "<RazonRef>$RazonRef</RazonRef>" .
                 "</Referencia>";
             }
             $contenido .= "</Documento>" .
@@ -2253,7 +2317,8 @@ function consultasql_dte($request){
     cliente.formapago_id,cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,
     cliente.provinciap_id,cliente.comunap_id,
     clientebloqueado.descripcion,comuna.nombre as comuna_nombre,provincia.nombre as provincia_nombre,
-    formapago.descripcion as formapago_desc,plazopago.dias as plazopago_dias
+    formapago.descripcion as formapago_desc,plazopago.dias as plazopago_dias,
+    foliocontrol.tipodocto,foliocontrol.nombrepdf
     FROM dte INNER JOIN cliente
     ON dte.cliente_id  = cliente.id AND ISNULL(dte.deleted_at) AND ISNULL(cliente.deleted_at)
     LEFT JOIN dtefac
@@ -2267,7 +2332,9 @@ function consultasql_dte($request){
     INNER JOIN formapago
     ON  cliente.formapago_id = formapago.id and isnull(formapago.deleted_at)
     INNER JOIN plazopago
-    ON  cliente.plazopago_id = plazopago.id and isnull(plazopago.deleted_at)
+    ON cliente.plazopago_id = plazopago.id and isnull(plazopago.deleted_at)
+    INNER JOIN foliocontrol
+    ON foliocontrol.id = dte.foliocontrol_id
     WHERE dte.foliocontrol_id in ($request->condFoliocontrol) 
     AND dte.nrodocto = $request->nrodocto
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))

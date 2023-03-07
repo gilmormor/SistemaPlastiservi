@@ -12,6 +12,7 @@ class DteOC extends Model
     protected $fillable = [
         'dte_id',
         'oc_id',
+        'oc_folder',
         'oc_file',
     ];
 

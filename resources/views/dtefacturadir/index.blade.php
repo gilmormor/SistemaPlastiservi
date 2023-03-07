@@ -36,36 +36,18 @@ Factura Directa
                                 <th class='tooltipsC' title='Fecha'>Fecha</th>
                                 <th>RUT</th>
                                 <th>Razón Social</th>
-                                <th class='tooltipsC' title='Cotizacion'>Cot</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
-                                <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                                <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
-                                <th class='tooltipsC' title='Orden de Despacho'>OD</th>
-                                <th class='tooltipsC' title='Guia Despacho'>GD</th>
-                                <th class='tooltipsC' title='Guia Despacho Cedible'>GDC</th>
                                 <th class='tooltipsC' title='Factura'>Factura</th>
                                 <th class='tooltipsC' title='Comuna'>Comuna</th>
                                 <th class="ocultar">Obs Bloqueo</th>
+                                <th class="ocultar">oc_folder</th>
                                 <th class="ocultar">oc_file</th>
+                                <th class="ocultar">nombrepdf</th>
                                 <th class="ocultar">updated_at</th>
                                 <th class="width70">Acción</th>
                             </tr>
                         </thead>
                         <tfoot>
-                            <!--
-                            <tr>
-                            </tr>
-                            <tr>
-                                <th colspan='9' style='text-align:right'>Total página</th>
-                                <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
-                                <th colspan='2' style='text-align:right'></th>
-                            </tr>
-                            <tr>
-                                <th colspan='9' style='text-align:right'>TOTAL GENERAL</th>
-                                <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
-                                <th colspan='2' style='text-align:right'></th>
-                            </tr>
-                            -->
                         </tfoot>
                     </table>
                 </div>

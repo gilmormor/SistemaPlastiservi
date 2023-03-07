@@ -48,6 +48,7 @@ Nota Crédito
                                 <th class='tooltipsC' title='Comuna'>Comuna</th>
                                 <th class="ocultar">Obs Bloqueo</th>
                                 <th class="ocultar">oc_file</th>
+                                <th class="ocultar">nombrepdf</th>
                                 <th class="ocultar">updated_at</th>
                                 <th class="width70">Acción</th>
                             </tr>

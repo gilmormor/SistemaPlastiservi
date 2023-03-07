@@ -150,4 +150,14 @@ if (!function_exists('sanear_string')) {
     }
 }
 
+if (!function_exists('cadVacia')) { //VALIDAR CADENA VACIA O NULL
+    function cadVacia($cad)
+    {
+        if($cad == "" OR is_null($cad)){
+            return true;
+        }
+        return false;
+    }
+}
+
 ?>

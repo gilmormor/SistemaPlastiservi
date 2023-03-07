@@ -17,18 +17,14 @@ $(document).ready(function () {
             {data: 'fechahora'}, // 1
             {data: 'rut'}, // 2
             {data: 'razonsocial'}, // 3
-            {data: 'cotizacion_id'}, // 4
-            {data: 'oc_id'}, // 5
-            {data: 'notaventa_id'}, // 6
-            {data: 'despachosol_id'}, // 7
-            {data: 'despachoord_id'}, // 8
-            {data: 'nrodocto_guiadesp'}, // 9
-            {data: 'nrodocto_guiadesp'}, // 10
-            {data: 'nrodocto_factura'}, // 11
-            {data: 'nombre_comuna'}, // 12
-            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //13
-            {data: 'oc_file',className:"ocultar"}, //14
-            {data: 'updated_at',className:"ocultar"}, //15
+            {data: 'oc_id'}, // 4
+            {data: 'nrodocto'}, // 5
+            {data: 'nombre_comuna'}, // 6
+            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //7
+            {data: 'oc_file',className:"ocultar"}, //8
+            {data: 'oc_file',className:"ocultar"}, //9
+            {data: 'nombrepdf',className:"ocultar"}, //10           
+            {data: 'updated_at',className:"ocultar"}, //11
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -40,8 +36,10 @@ $(document).ready(function () {
             $(row).attr('name','fila' + data.id);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
 
+            let id_str = data.nrodocto.toString();
+            id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"\")'>" +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
                 data.id +
             "</a>";
             $('td', row).eq(0).html(aux_text);
@@ -50,119 +48,39 @@ $(document).ready(function () {
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 
-            if(data.cotizacion_id != null){
-                let arr_cotizacion_id = data.cotizacion_id.split(','); 
-                aux_text = "";
-                for (let i = 0; i < arr_cotizacion_id.length; i++) {
-                    aux_text += 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion' onclick='genpdfCOT(" + arr_cotizacion_id[i] + ",1)'>" +
-                        arr_cotizacion_id[i] +
-                    "</a>";
-                }    
-            }else{
-                aux_text = "";
-            }
-            $('td', row).eq(4).html(aux_text);
 
             aux_text = "";
             if(data.oc_file != "" && data.oc_file != null){
-                let arr_oc_id = data.oc_id.split(','); 
-                let arr_oc_file = data.oc_file.split(','); 
-                for (let i = 0; i < arr_oc_file.length; i++) {
-                    aux_text += 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"" + arr_oc_file[i] + "\",2)'>" + 
-                        arr_oc_id[i] + 
-                    "</a>";
-                    if((i+1) < arr_oc_file.length){
-                        aux_text += ",";
-                    }
-                }
-                $('td', row).eq(5).html(aux_text);
-            }
-            aux_text = "";
-            let arr_notaventa_id = data.notaventa_id.split(','); 
-            for (let i = 0; i < arr_notaventa_id.length; i++){
-                aux_text += 
-                "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + arr_notaventa_id[i] + ",1)'>" +
-                    arr_notaventa_id[i] +
+                aux_text = 
+                "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf3(\"" + data.oc_file + "\",2,\"" + data.oc_folder + "\")'>" + 
+                    data.oc_id + 
                 "</a>";
-                if((i+1) < arr_notaventa_id.length){
-                    aux_text += ",";
-                }
+                $('td', row).eq(4).html(aux_text);
             }
-            $('td', row).eq(6).html(aux_text);
-
-            aux_text = "";
-            let arr_despachosol_id = data.despachosol_id.split(','); 
-            for (let i = 0; i < arr_despachosol_id.length; i++){
-                aux_text += 
-                "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud Despacho' onclick='genpdfSD(" + arr_despachosol_id[i] + ",1)'>" +
-                    arr_despachosol_id[i] +
-                "</a>";
-                if((i+1) < arr_despachosol_id.length){
-                    aux_text += ",";
-                }
-            }
-            $('td', row).eq(7).html(aux_text);
-
-            aux_text = "";
-            let arr_despachoord_id = data.despachoord_id.split(','); 
-            for (let i = 0; i < arr_despachoord_id.length; i++){
-                aux_text += 
-                "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Orden Despacho' onclick='genpdfOD(" + arr_despachoord_id[i] + ",1)'>" +
-                    arr_despachoord_id[i] +
-                "</a>";
-                if((i+1) < arr_despachoord_id.length){
-                    aux_text += ",";
-                }
-            }
-            $('td', row).eq(8).html(aux_text);
 
 
-            aux_text = "";
-            let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
-            for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
-                aux_text += 
-                "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"\")'>" +
-                    arr_nrodocto_guiadesp[i] +
-                "</a>";
-                if((i+1) < arr_nrodocto_guiadesp.length){
-                    aux_text += ",";
-                }
-            }
-            $('td', row).eq(9).html(aux_text);
-
-            aux_text = "";
-            let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
-            for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
-                aux_text += 
-                "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + arr_nrodocto_guiadespced[i] + ",\"_cedible\")'>" +
-                    arr_nrodocto_guiadespced[i] +
-                "</a>";
-                if((i+1) < arr_nrodocto_guiadespced.length){
-                    aux_text += ",";
-                }
-            }
-            $('td', row).eq(10).html(aux_text);
 
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"\")'>" +
-                data.nrodocto_factura +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
+                data.nrodocto +
             "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"_cedible\")'>" +
-                data.nrodocto_factura +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
+                data.nrodocto +
             "</a>";
-            $('td', row).eq(11).html(aux_text);
+            $('td', row).eq(5).html(aux_text);
 
-            $('td', row).eq(15).addClass('updated_at');
-            $('td', row).eq(15).attr('id','updated_at' + data.id);
-            $('td', row).eq(15).attr('name','updated_at' + data.id);
+            $('td', row).eq(11).addClass('updated_at');
+            $('td', row).eq(11).attr('id','updated_at' + data.id);
+            $('td', row).eq(11).attr('name','updated_at' + data.id);
 
             aux_text = 
-            "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + ")' title='Enviar a procesados'>"+
-                "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-            "</a>";
-            $('td', row).eq(16).html(aux_text);
+            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesar(${data.id})" title="Enviar a procesados">
+                <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+            </a> | 
+            <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
+                <span class="fa fa-upload text-danger"></span>
+            </a>`;
+            $('td', row).eq(12).html(aux_text);
         }
     });
 

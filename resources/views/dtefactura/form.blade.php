@@ -159,11 +159,21 @@
                         >Otros traslados no venta</option>
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-6">
+            <div class="form-group col-xs-12 col-sm-3">
+                <label for="foliocontrol_id" class="control-label requerido">Tipo Documento</label>
+                <select name="foliocontrol_id" id="foliocontrol_id" class="form-control select2  foliocontrol_id" data-live-search='true' value="{{old('foliocontrol_id', isset($data) ? $data->foliocontrol_id : ($data->foliocontrol_id ?? ''))}}" required>
+                    <option value="">Seleccione...</option>
+                    @foreach($tablas['foliocontrol'] as $foliocontrol)
+                        @if ($foliocontrol->tipodocto == 33 or $foliocontrol->tipodocto == 34)
+                            <option value="{{$foliocontrol->id}}">{{$foliocontrol->desc}}</option>                        
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group col-xs-12 col-sm-3">
                 <label for="obs" class="control-label">Observaciones</label>
                 <textarea class="form-control" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
             </div>
-
         </div>
     </div>    
 </div>
@@ -204,99 +214,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $aux_nfila = 0; $i = 0;
-                            $aux_Tsubtotal = 0;
-                            $aux_Tcant = 0;
-                            $aux_Tkilos = 0;
-                            $aux_Tiva = 0;
-                        ?>
-                        @if (isset($data))
-                            @foreach($data->dtedets as $dtedet)
-                                <tr name="fila{{$data->id}}" id="fila{{$data->id}}" class="proditems {{$dtedet->dtedet->dte->nrodocto}}">
-                                    <td style="text-align:center">
-                                        {{$dtedet->nrolindet}}
-                                        <input type="text" name="det_id[]" id="det_id{{$dtedet->id}}" class="form-control" value="{{$dtedet->id}}" style="display:none;"/>
-                                        <input type="text" name="nrolindet[]" id="nrolindet{{$dtedet->id}}" class="form-control" value="{{$dtedet->nrolindet}}" style="display:none;"/>
-                                        <input type="text" name="despachoorddet_id[]" id="despachoorddet_id{{$dtedet->id}}" class="form-control" value="{{$dtedet->id}}" style="display:none;"/>
-                                        <input type="text" name="notaventadetalle_id[]" id="notaventadetalle_id{{$dtedet->id}}" class="form-control" value="{{$dtedet->notaventadetalle_id}}" style=display:none;"/>
-                                        <input type="text" name="dte_id[]" id="dte_id{{$dtedet->id}}" class="form-control" value="{{$dtedet->dte_id}}" style="display:none;"/>
-                                        <input type="text" name="dtedet_id[]" id="dtedet_id{{$dtedet->id}}" class="form-control" value="{{$dtedet->dtedet_id}}" style="display:none;"/>
-                                        <input type="text" name="dteorigen_id[]" id="dteorigen_id{{$dtedet->id}}" class="form-control" value="{{$dtedet->dtedet->dte_id}}" style="display:none;"/>
-                                        <input type="text" name="obsdet[]" id="obsdet{{$dtedet->id}}" class="form-control" value="{{$dtedet->obsdet}}" style="display:none;"/>
-                                    </td>
-                                    <td style="text-align:center" name="producto_idTD{{$dtedet->id}}" id="producto_idTD{{$dtedet->id}}" >
-                                        {{$dtedet->producto_id}}
-                                        <input type="text" name="producto_id[]" id="producto_id{{$dtedet->id}}" class="form-control" value="{{$dtedet->producto_id}}'" style="display:none;"/>
-                                    </td>
-                                    <td name="nrodoctoTD{{$dtedet->id}}" id="nrodoctoTD{{$dtedet->id}}" style="text-align:right">
-                                        <a id="nrodocto{{$dtedet->id}}" name="nrodocto{{$dtedet->id}}" class="btn-accion-tabla btn-sm verguiasii" title="Editar valor" data-toggle="tooltip" nomcampo="nrodocto" valor="{{$dtedet->dtedet->dte->nrodocto}}" title="Guia Despacho: {{$dtedet->dtedet->dte->nrodocto}} '" onclick="verGD({{$dtedet->dtedet->dte->nrodocto}})">
-                                            {{$dtedet->dtedet->dte->nrodocto}} 
-                                        </a>
-                                    </td>
-                                    <td name="cantTD{{$dtedet->id}}" id="cantTD{{$dtedet->id}}" style="text-align:right" class="subtotalcant" valor="{{$dtedet->qtyitem}}">
-                                        {{$dtedet->qtyitem}}
-                                        <input type="text" name="cant[]" id="cant{{$dtedet->id}}" class="form-control" value="{{$dtedet->qtyitem}}" style="display:none;"/>
-                                        <input type="text" name="qtyitem[]" id="qtyitem{{$dtedet->id}}" class="form-control" value="{{$dtedet->qtyitem}}" style="display:none;"/>
-                                    </td>
-                                    <td name="unidadmedida_nombre{{$dtedet->id}}" id="unidadmedida_nombre{{$dtedet->id}}" valor="{{$dtedet->unmditem}}">
-                                        {{$dtedet->unmditem}}
-                                        <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$dtedet->id}}" class="form-control" value="{{$dtedet->unidadmedida_id}}" style="display:none;"/>
-                                        <input type="text" name="unmditem[]" id="unmditem{{$dtedet->id}}" class="form-control" value="{{$dtedet->unmditem}}" style="display:none;"/>
-                                    </td>
-                                    <td name="nombreProdTD{{$dtedet->id}}" id="nombreProdTD{{$dtedet->id}}" valor="{{$dtedet->nmbitem}}">
-                                        {{$dtedet->nmbitem}}
-                                        <input type="text" name="nmbitem[]" id="nmbitem{{$dtedet->id}}" class="form-control" value="{{$dtedet->nmbitem}}" style="display:none;"/>
-                                        <input type="text" name="dscitem[]" id="dscitem{{$dtedet->id}}" class="form-control" value="{{$dtedet->dscitem}}" style="display:none;"/>
-                                    </td>
-                                    <td style="text-align:right;" class="subtotalkg" valor="{{$dtedet->itemkg}}">
-                                        {{number_format($dtedet->itemkg, 2, ',', '.')}}
-                                        <input type="text" name="totalkilos[]" id="totalkilos{{$dtedet->id}}" class="form-control" value="{{$dtedet->itemkg}}" style="display:none;" valor="{{$dtedet->itemkg}}" fila="{{$dtedet->id}}"/>
-                                        <input type="text" name="itemkg[]" id="itemkg{{$dtedet->id}}" class="form-control" value="{{$dtedet->itemkg}}" style="display:none;"/>
-                                    </td>
-                                    <td name="descuentoTD{{$dtedet->id}}" id="descuentoTD{{$dtedet->id}}" style="text-align:right;display:none;">
-                                        '0%'
-                                    </td>
-                                    <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="descuento[]" id="descuento{{$dtedet->id}}" class="form-control" value="0" style="display:none;"/>
-                                    </td>
-                                    <td style="text-align:right;display:none;">
-                                        <input type="text" name="descuentoval[]" id="descuentoval{{$dtedet->id}}" class="form-control" value="0" style="display:none;"/>
-                                    </td>
-                                    <td name="preciounitTD{{$dtedet->id}}" id="preciounitTD{{$dtedet->id}}" style="text-align:right;">
-                                        {{number_format($dtedet->prcitem, 0, ',', '.')}}
-                                        <input type="text" name="preciounit[]" id="preciounit{{$dtedet->id}}" class="form-control" value="{{$dtedet->prcitem}}'" style="display:none;"/>
-                                        <input type="text" name="prcitem[]" id="prcitem{{$dtedet->id}}" class="form-control" value="{{$dtedet->prcitem}}" style="display:none;"/>
-                                    </td>
-                                    <td style="display:none;" name="precioxkiloTD{{$dtedet->id}}" id="precioxkiloTD{{$dtedet->id}}" style="text-align:right">
-                                        {{$dtedet->precioxkilo}}
-                                    </td>
-                                    <td style="text-align:right;display:none;">
-                                        <input type="text" name="precioxkilo[]" id="precioxkilo{{$dtedet->id}}" class="form-control" value="{{$dtedet->precioxkilo}}" style="display:none;"/>
-                                    </td>
-                                    <td style="text-align:right;display:none;">
-                                        <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$dtedet->id}}" class="form-control" value="{{$dtedet->precioxkiloreal}}'" style="display:none;"/>
-                                    </td>
-                                    <td name="subtotalCFTD{{$dtedet->id}}" id="subtotalCFTD{{$dtedet->id}}" class="subtotalCFTD" style="text-align:right">
-                                        {{number_format($dtedet->montoitem, 0, ',', '.')}}
-                                        <input type="text" name="subtotal[]" id="subtotal{{$dtedet->id}}" class="form-control" value="{{$dtedet->montoitem}}" style="display:none;"/>
-                                        <input type="text" name="montoitem[]" id="montoitem{{$dtedet->id}}" class="form-control" value="{{$dtedet->montoitem}}" style="display:none;"/>
-                                    </td>
-                                    <td name="subtotalFactDet{{$aux_nfila}}" id="subtotalFactDet{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
-                                        {{$dtedet->montoitem}}
-                                    </td>
-                                    <td name="accion{{$dtedet->id}}" id="accion{{$dtedet->id}}" style="text-align:center">
-                                        <a class="btn-accion-tabla btn-sm tooltipsC" onclick="delguiadespfactdet({{$dtedet->dtedet->dte->nrodocto}},{{$dtedet->id}},{{$dtedet->dtedet->dte->id}})" title="Eliminar Guia {{$dtedet->dtedet->dte->nrodocto}}">
-                                            <span class="glyphicon glyphicon-erase" style="bottom: 0px;top: 2px;"></span>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <?php 
-                                    $aux_Tcant += $dtedet->qtyitem;
-                                    $aux_Tkilos += $dtedet->itemkg;
-                                    $aux_Tsubtotal += $dtedet->montoitem;
-                                ?>                        
-                            @endforeach
-                        @endif
                     </tbody>
                     <tfoot style="display:none;" id="foottotal" name="foottotal">
                         <div id="foot">
@@ -305,24 +222,20 @@
                                     <b>Totales:</b>
                                 </th>
                                 <th id="Tcant" name="Tcant" style="text-align:right">
-                                    {{$aux_Tcant}}
+                                    0
                                 </th>
                                 <th colspan="2" style="text-align:right"><b>Total Kg</b></th>
-                                <th id="totalkg" name="totalkg" style="text-align:right" valor="{{$aux_Tkilos}}">{{number_format($aux_Tkilos, 2, ',', '.')}}</th>
+                                <th id="totalkg" name="totalkg" style="text-align:right" valor="0">0</th>
                                 <th style="text-align:right"><b>Neto</b></th>
-                                <th id="tdneto" name="tdneto" style="text-align:right">{{number_format($aux_Tsubtotal, 0, ',', '.')}}</th>
+                                <th id="tdneto" name="tdneto" style="text-align:right">0</th>
                             </tr>
-                            <?php 
-                                $aux_Tiva = round(($tablas['empresa']->iva * $aux_Tsubtotal/100));
-                                $aux_total = round($aux_Tsubtotal + $aux_Tiva);
-                            ?>
                             <tr id="triva" name="triva">
                                 <th colspan="8" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></th>
-                                <th id="tdiva" name="tdiva" style="text-align:right">{{number_format($aux_Tiva, 0, ',', '.')}}</th>
+                                <th id="tdiva" name="tdiva" style="text-align:right">0</th>
                             </tr>
                             <tr id="trtotal" name="trtotal">
                                 <th colspan="8" style="text-align:right"><b>Total</b></th>
-                                <th id="tdtotal" name="tdtotal" style="text-align:right">{{number_format($aux_total, 0, ',', '.')}}</th>
+                                <th id="tdtotal" name="tdtotal" style="text-align:right">0</th>
                             </tr>
                         </div>
                     </tfoot>
