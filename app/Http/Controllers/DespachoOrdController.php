@@ -833,7 +833,7 @@ class DespachoOrdController extends Controller
                 }
                 $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
                 $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Despacho (La bodega despacho debe ser unica)
-                $aux_bodegadespacho = 0;
+                $aux_bodegadespacho = 0; //ESTO ESTA CORREGISO EN LA 2 VERSIONES TANTO EN P5 Y P2=DESARROLLO SANTA ESTER
                 foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
                     //BUSCAR BODEGA DESPACHO DE SUCURSAL 
                     if($invmovmodulobodent->sucursal_id == $despachoord->notaventa->sucursal_id){
@@ -904,16 +904,16 @@ class DespachoOrdController extends Controller
                 foreach ($despachoord->despachoorddets as $despachoorddet) {
                     foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
                         $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                            ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_DespachoBodegaId],
+                            ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_bodegadespacho],
                             [
                                 'producto_id' => $oddetbodprod->invbodegaproducto->producto_id,
-                                'invbodega_id' => $aux_DespachoBodegaId
+                                'invbodega_id' => $aux_bodegadespacho
                             ]
                         );
                         $array_invmovdet = $oddetbodprod->attributesToArray();
                         $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                         $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                        $array_invmovdet["invbodega_id"] = $aux_DespachoBodegaId;
+                        $array_invmovdet["invbodega_id"] = $aux_bodegadespacho;
                         $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
                         $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                         $array_invmovdet["invmovtipo_id"] = 1;
