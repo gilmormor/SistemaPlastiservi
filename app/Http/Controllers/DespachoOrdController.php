@@ -833,6 +833,18 @@ class DespachoOrdController extends Controller
                 }
                 $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
                 $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Despacho (La bodega despacho debe ser unica)
+                $aux_bodegadespacho = 0;
+                foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
+                    //BUSCAR BODEGA DESPACHO DE SUCURSAL 
+                    if($invmovmodulobodent->sucursal_id == $despachoord->notaventa->sucursal_id){
+                        $aux_bodegadespacho = $invmovmodulobodent->id;
+                    }
+                }
+                if($aux_bodegadespacho == 0){
+                    return response()->json([
+                        'mensaje' => 'No existe Bodega Despacho en Sucursal: ' . $despachoord->notaventa->sucursal->nombre
+                    ]);
+                }
 
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
