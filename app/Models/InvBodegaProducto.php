@@ -111,4 +111,22 @@ class InvBodegaProducto extends Model
         }
         return $respuesta;
     }
+
+    public static function crearBodegasPorCategoria($invbodega){
+        foreach ($invbodega->categoriaprods as $categoriaprod) {
+            foreach ($categoriaprod->productos as $producto) {
+                if($producto->id == 141){
+                    //dd("bodega_id: " . $invbodega->id . " Producto_id: " . $producto->id);
+                }
+                //dd($producto->id . " : " .  $invbodega->id);
+                $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                    ['producto_id' => $producto->id,'invbodega_id' => $invbodega->id],
+                    [
+                        'producto_id' => $producto->id,
+                        'invbodega_id' => $invbodega->id
+                    ]
+                );
+            }
+        }
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Requests\ValidarInvBodega;
 use App\Models\CategoriaProd;
 use App\Models\CategoriaProdSuc;
 use App\Models\InvBodega;
+use App\Models\InvBodegaProducto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
@@ -74,6 +75,7 @@ class InvBodegaController extends Controller
         $request->request->add(['usuario_id' => auth()->id()]);
         $invbodega = InvBodega::create($request->all());
         $invbodega->categoriaprods()->sync($request->categoriaprod_id);
+        InvBodegaProducto::crearBodegasPorCategoria($invbodega);
         return redirect('invbodega')->with('mensaje','Bodega creado con exito.');
     }
 
@@ -124,6 +126,7 @@ class InvBodegaController extends Controller
         $invbodega = InvBodega::findOrFail($id);
         $invbodega->update($request->all());
         $invbodega->categoriaprods()->sync($request->categoriaprod_id);
+        InvBodegaProducto::crearBodegasPorCategoria($invbodega);
         return redirect('invbodega')->with('mensaje','Bodega actualizada con exito');
 
     }

@@ -273,6 +273,7 @@
                                                 <?php $i=0; //dd($invbodegaproductos) ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
                                                     <?php
+                                                        //dd($invbodegaproducto);
                                                         $i++;
                                                         $request = new Request();
                                                         $request["producto_id"] = $invbodegaproducto->producto_id;

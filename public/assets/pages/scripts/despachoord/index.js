@@ -281,6 +281,27 @@ function ajaxRequestOD(data,url,funcion) {
 
 function aprobarord(i,id){
     var data = {
+        id: id,
+        nfila : i,
+        updated_at   : $("#updated_at" + i).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/despachoord/aproborddesp/'+id;
+    swal({
+        title: '¿ Aprobar Orden de Despacho ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequestOD(data,ruta,'aproborddesp');
+        }
+    });
+    return 0;
+    var data = {
 		id         : id,
         nfila      : i,
         tipobodega : 3, //Codigo de tipo de bodega = 3 (Bodegas de despacho)
