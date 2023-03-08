@@ -290,12 +290,14 @@ class ProductoController extends Controller
                 $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->toArray();
                 //dd($respuesta['bodegas']);
                 foreach ($respuesta['bodegas'] as &$bodega) {
-                    $request1 = new Request();
-                    $request1["producto_id"] = $request->id;
-                    $request1["invbodega_id"] = $bodega["id"];
-                    $request1["tipo"] = 2;
-                    $aux_stosk = InvBodegaProducto::existencia($request1);
-                    $bodega["stock"] = $aux_stosk["stock"]["cant"];
+                    if($bodega["activo"] == 1){
+                        $request1 = new Request();
+                        $request1["producto_id"] = $request->id;
+                        $request1["invbodega_id"] = $bodega["id"];
+                        $request1["tipo"] = 2;
+                        $aux_stosk = InvBodegaProducto::existencia($request1);
+                        $bodega["stock"] = $aux_stosk["stock"]["cant"];    
+                    }
                     //dd($bodega);
                 }
             }
