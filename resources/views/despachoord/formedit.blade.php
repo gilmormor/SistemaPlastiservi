@@ -265,6 +265,7 @@
                                             <tbody>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
                                                     <?php
+                                                        //dd($invbodegaproductos);
                                                         $request = new Request();
                                                         $request["producto_id"] = $invbodegaproducto->producto_id;
                                                         $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
