@@ -287,17 +287,15 @@ class ProductoController extends Controller
             if(count($array_productos) > 0){
                 $respuesta = $array_productos[0];
                 $producto = Producto::findOrFail($request->id);
-                $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->toArray();
+                $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->where('activo','=',1)->toArray();
                 //dd($respuesta['bodegas']);
                 foreach ($respuesta['bodegas'] as &$bodega) {
-                    if($bodega["activo"] == 1){
-                        $request1 = new Request();
-                        $request1["producto_id"] = $request->id;
-                        $request1["invbodega_id"] = $bodega["id"];
-                        $request1["tipo"] = 2;
-                        $aux_stosk = InvBodegaProducto::existencia($request1);
-                        $bodega["stock"] = $aux_stosk["stock"]["cant"];    
-                    }
+                    $request1 = new Request();
+                    $request1["producto_id"] = $request->id;
+                    $request1["invbodega_id"] = $bodega["id"];
+                    $request1["tipo"] = 2;
+                    $aux_stosk = InvBodegaProducto::existencia($request1);
+                    $bodega["stock"] = $aux_stosk["stock"]["cant"];    
                     //dd($bodega);
                 }
             }
