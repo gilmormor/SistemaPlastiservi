@@ -169,6 +169,7 @@ class InvBodegaController extends Controller
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $respuesta["datas"] = InvBodega::join('sucursal', 'invbodega.sucursal_id', '=', 'sucursal.id')
                             ->where('invbodega.tipo','=',$request->tipobodega)
+                            ->where('invbodega.activo','=',1)
                             ->whereIn('invbodega.sucursal_id', $sucurArray)
                             ->select([
                                 'invbodega.id',
