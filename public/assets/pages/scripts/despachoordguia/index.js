@@ -160,7 +160,7 @@ function ajaxRequest(datas,url,funcion) {
 		type: 'POST',
 		data: datas,
 		success: function (respuesta) {
-			console.log(datas);
+			//console.log(datas);
 			if(funcion=='guardarguiadesp'){
 				if (respuesta.mensaje == "ok") {
 					//alert(data['nfila']);
@@ -175,6 +175,14 @@ function ajaxRequest(datas,url,funcion) {
 					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
 					if(respuesta.mensaje != "ng"){
 						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
+						swal({
+							title: 'Producto sin stock suficiente.',
+							text: respuesta.mensaje,
+								icon: 'warning',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						})
 					}
 				}
 				$("#myModalguiadesp").modal('hide');
@@ -418,6 +426,30 @@ $("#btnGuardarG").click(function(event)
 				
 				}else{
 					var data = {
+						id    : $("#idg").val(),
+						guiadespacho : $("#guiadespachom").val(),
+						nfila : $("#nfila").val(),
+						status : $("#status").val(),
+						//invbodega_id : respuesta.datas[0].id,
+						_token: $('input[name=_token]').val()
+					};
+					var ruta = '/despachoord/guardarguiadesp';
+					swal({
+						title: '¿ Seguro desea continuar ?',
+						text: "Esta acción no se puede deshacer!",
+							icon: 'warning',
+						buttons: {
+							cancel: "Cancelar",
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							ajaxRequest(data,ruta,'guardarguiadesp');
+						}
+					});
+					return 0;
+
+					var data = {
 						id         : $("#idg").val(),
 						nfila      : $("#nfila").val(),
 						tipobodega : 3, //Codigo de tipo de bodega = 3 (Bodegas de despacho)
@@ -464,6 +496,30 @@ $("#btnGuardarGanul").click(function(event)
 	if(verificarAnulGuia())
 	{
 
+		var data = {
+			id    : $("#idanul").val(),
+			nfila : $("#nfilaanul").val(),
+			observacion : $("#observacionanul").val(),
+			statusM : $("#statusM").val(),
+			//invbodega_id : respuesta.datas[0].id,
+			pantalla_origen  : 1, //Para saber de donde viene la anulacion en este caso de la pantalla Asignar Guia
+			_token: $('input[name=_token]').val()
+		};
+		var ruta = '/guardaranularguia';
+		swal({
+			title: '¿ Seguro desea continuar ?',
+			text: "Esta acción no se puede deshacer!",
+				icon: 'warning',
+			buttons: {
+				cancel: "Cancelar",
+				confirm: "Aceptar"
+			},
+		}).then((value) => {
+			if (value) {
+				ajaxRequest(data,ruta,'guardaranularguia');
+			}
+		});
+		return 0;
 		var data = {
 			id         : $("#idanul").val(),
 			nfila      : $("#nfilaanul").val(),

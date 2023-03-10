@@ -274,6 +274,13 @@
                                                         $aux_cant = 0;
                                                         //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                         $aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
+                                                        $aux_valueStock = ""; 
+                                                        if(array_key_exists($invbodegaproducto->id, $arrayBodegasPicking)){
+                                                            $aux_stock = $arrayBodegasPicking[$invbodegaproducto->id]["stock"];
+                                                            $aux_valueStock = $aux_stock;
+                                                        }else{
+                                                            $aux_stock = $existencia["stock"]["cant"];
+                                                        }
                                                         if ($invbodegaproducto->invbodega->sucursal_id == 1) {
                                                             $colorSuc = "#26ff00";
                                                         }
@@ -292,13 +299,17 @@
                                                                 <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
                                                                 {{$invbodegaproducto->id}}
                                                             </td>
-                                                            <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left;padding-right: 0px;padding-left: 2px;" class="tooltipsC" title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
-                                                                <p style="color:{{$colorSuc}};font-size: 11px;">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
+                                                            <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left;padding-right: 0px;padding-left: 2px;padding-top: 4px;padding-bottom: 4px;" class="tooltipsC" title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
+                                                                <div class="centrarhorizontal">
+                                                                    <p style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
+                                                                </div>
                                                             </td>
-                                                            <td name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="text-align:right;padding-left: 0px;padding-right: 0px;"  class='tooltipsC' title='Stock disponible'>
-                                                                {{$aux_stock}}
+                                                            <td name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="text-align:right;padding-left: 0px;padding-right: 0px;padding-top: 4px;padding-bottom: 4px;"  class='tooltipsC' title='Stock disponible'>
+                                                                <div class="centrarhorizontal">
+                                                                    {{$aux_stock}}
+                                                                </div>
                                                             </td>
-                                                            <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;">
+                                                            <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
                                                                 @if ($existencia["stock"]["cant"] > 0)
                                                                     @foreach($detalle->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto)
                                                                         @if ($despachoorddet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)

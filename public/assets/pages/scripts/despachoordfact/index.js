@@ -237,12 +237,23 @@ function ajaxRequest(datas,url,funcion) {
 			}
 			
 			if(funcion=='guardaranularguia'){
-				if (respuesta.mensaje == "ok") {
+				if (respuesta.status == "1") {
 					$("#fila" + datas['nfila']).remove();
 					$("#myModalanularguiafact").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
+					if(respuesta.mensaje != "ng"){
+						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
+						swal({
+							//title: 'Producto sin stock suficiente.',
+							text: respuesta.mensaje,
+								icon: 'error',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						})
+					}
 				}
 			}
 
@@ -392,6 +403,31 @@ $("#btnGuardarGanul").click(function(event)
 	if(verificarAnulGuia())
 	{
 
+		var data = {
+			id    : $("#idanul").val(),
+			nfila : $("#nfilaanul").val(),
+			observacion : $("#observacionanul").val(),
+			statusM : $("#statusM").val(),
+			//invbodega_id : respuesta.datas[0].id,
+			pantalla_origen  : 2, //Para saber de donde viene la anulacion en este caso de la pantalla Asignar factura
+			_token: $('input[name=_token]').val()
+		};
+		var ruta = '/guardaranularguia';
+		swal({
+			title: '¿ Seguro desea continuar ?',
+			text: "Esta acción no se puede deshacer!",
+				icon: 'warning',
+			buttons: {
+				cancel: "Cancelar",
+				confirm: "Aceptar"
+			},
+		}).then((value) => {
+			if (value) {
+				ajaxRequest(data,ruta,'guardaranularguia');
+			}
+		});	
+
+		return 0;
 		var data = {
 			id         : $("#idanul").val(),
 			nfila      : $("#nfilaanul").val(),
