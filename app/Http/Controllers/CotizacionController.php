@@ -528,7 +528,10 @@ class CotizacionController extends Controller
         if ($request->ajax()) {
             $cotizacion = Cotizacion::findOrFail($request->id);
             $cotizacion->aprobstatus = $request->aprobstatus;    
-            if($request->aprobstatus=='1'){
+            if($request->aprobstatus=='1' or $cotizacion->sucursal_id == 2 or $cotizacion->sucursal_id == 3){ 
+                //SEGUN SOLICITUD SE ELIMINO LA VALIDACION DE PRECIOS
+                //ENTONCES SI LA SUCURSAL ES 2 O 3 LA COTIZACION PASA DIRECTO A NOTA DE VENTA
+                $cotizacion->aprobstatus = 1;
                 $cotizacion->aprobusu_id = auth()->id();
                 $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
                 $cotizacion->aprobobs = 'Aprobado por el mismo vendedor';
