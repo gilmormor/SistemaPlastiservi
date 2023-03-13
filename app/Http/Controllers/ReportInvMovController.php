@@ -90,8 +90,8 @@ function consultainvmov($request){
     $aux_annomes = CategoriaGrupoValMes::annomes($request->annomes);
     $aux_condannomes = "invmov.annomes='$aux_annomes'";
     $aux_condsucursal_id = " true";
-    if(empty($request->sucursal_id)){
-        $aux_condsucursal_id = "invmov.sucursal_id='$request->sucursal_id'";
+    if(!empty($request->sucursal_id)){
+        $aux_condsucursal_id = "invmovdet.sucursal_id='$request->sucursal_id'";
     }
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -118,11 +118,11 @@ function consultainvmov($request){
     }
     $sql = "SELECT invmov.id,invmovdet.id as invmovdet_id,invmov.fechahora,invmov.annomes,invmov.desc,invbodegaproducto.producto_id,invmov.idmovmod,
             invmovmodulo.nombre as invmovmodulo_nombre,
-            invbodega.nombre as invbodega_nombre,sucursal.nombre as sucursal_nombre,producto.nombre as producto_nombre,categoriaprod.nombre as categoriaprod_nombre,invmovdet.cant
+            CONCAT (invbodega.nombre, ' / ' , sucursal.abrev) as invbodega_nombre,sucursal.nombre as sucursal_nombre,producto.nombre as producto_nombre,categoriaprod.nombre as categoriaprod_nombre,invmovdet.cant
             FROM invmov INNER JOIN invmovdet
             ON invmov.id = invmovdet.invmov_id and isnull(invmov.deleted_at) and isnull(invmov.staanul) and isnull(invmovdet.deleted_at)
             INNER JOIN sucursal
-            on invmov.sucursal_id = sucursal.id and isnull(sucursal.deleted_at)
+            on invmovdet.sucursal_id = sucursal.id and isnull(sucursal.deleted_at)
             INNER JOIN invbodegaproducto
             on invmovdet.invbodegaproducto_id = invbodegaproducto.id and isnull(invbodegaproducto.deleted_at)
             INNER JOIN producto

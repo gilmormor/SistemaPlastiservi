@@ -43,7 +43,7 @@ class InvEntSalController extends Controller
             ->eloquent(InvEntSal::query()
                         ->whereNull('staaprob')
                         ->orWhere('staaprob', 3)
-                        ->whereIn('inventsal.sucursal_id', $sucurArray)                        
+                        ->whereIn('inventsal.sucursal_id', $sucurArray)
                     )
             ->toJson();
     }
