@@ -92,11 +92,20 @@ function ajaxRequest(data,url,funcion) {
 				}
 			}
             if(funcion=='btndevsol'){
-                if (respuesta.mensaje == "ok") {
+                if (respuesta.status == "1") {
                     //form.parents('tr').remove();
                     $("#fila"+data['nfila']).remove();
                     Biblioteca.notificaciones('El registro fue procesado correctamente.', 'Plastiservi', 'success');
                 } else {
+                    swal({
+                        title: respuesta.title,
+                        text: respuesta.mensaje,
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            cancel: "Cerrar",
+                        },
+                    });
+                    return 0;
                     if (respuesta.mensaje == "sp"){
                         Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
                     }else{

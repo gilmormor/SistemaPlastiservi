@@ -715,43 +715,60 @@ class DespachoSolController extends Controller
             }
             $aux_banderacant = true; //VALIDAR QUE EXISTE AL MENOS 1 PRODUCTO CON CANTIDAD
             //dd("entro");
-            /*
             foreach ($despachosol->despachosoldets as $despachosoldet) {
                 foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
-                    $aux_invbodega_id = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega_id;
-                    //$aux_cant = $despachosoldet_invbodegaproducto->cant * -1;
-                    $aux_cant = 0;
-                    foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
-                        $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
-                    }
-                    //dd($aux_cant);
-                    if($aux_cant > 0){
-                        $aux_banderacant = true;
-                        $aux_producto =$despachosoldet_invbodegaproducto->invbodegaproducto->producto;
-                        $invbodegaproducto = InvBodegaProducto::where("producto_id","=",$aux_producto->id)
-                        ->where("invbodega_id","=",$aux_invbodega_id)
-                        ->select([
-                            'id as invbodegaproducto_id',
-                            'producto_id',
-                            'invbodega_id'
-                        ])
-                        ->get();
-                        $aux_respuesta = InvBodegaProducto::existencia($invbodegaproducto[0]);
-                        if($aux_respuesta["stock"]["cant"] < $aux_cant){ //VALIDAR STOCK DE PRODUCTO EN BODEGA
-                            //dd($aux_respuesta);
-                            dd($invbodegaproducto);
-                            //dd($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps[1]->invmovdet);
-                            //dd($aux_respuesta["stock"]["cant"]);
-                            return response()->json([
-                                'mensaje' => 'MensajePersonalizado',
-                                'menper' => "Producto sin Stock,  ID: " . $aux_producto->id . ", Nombre: " . $aux_producto->nombre . ", Stock: " . $aux_respuesta["stock"]["cant"]
-                            ]);               
-                            break;
+                    //CONSULTA EL STOCK SOLO CUANDO LA CANT ES DIFERENTE A 0, ES DECIR SOLO CUANDO SE FUE A PICKING
+                    if($despachosoldet_invbodegaproducto->cant != 0){
+                        $aux_invbodega_id = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega_id;
+                        //$aux_cant = $despachosoldet_invbodegaproducto->cant * -1;
+                        $aux_cant = 0;
+                        foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                            $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
                         }
+                        if($aux_cant > 0){
+                            $aux_sucursal_id_producto = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega->sucursal_id; 
+                            $aux_bodegadespacho_id = 0;
+                            foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
+                                //BUSCAR BODEGA PICKING CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
+                                if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
+                                    $aux_bodegadespacho_id = $invmovmodulobodent->id;
+                                }
+                            }
+                            if($aux_bodegadespacho_id == 0){
+                                return response()->json([
+                                    "status" => "0",
+                                    "title" => "No existe Bodega Picking",
+                                    'mensaje' => "" . "Debe crear Bodega Picking para \nProducto Id:" . $despachosoldet_invbodegaproducto->invbodegaproducto->producto_id . "\nNombre:" . $despachosoldet_invbodegaproducto->invbodegaproducto->producto->nombre,
+                                    'tipo_alert' => 'error',
+                                ]);
+                            }
+                            $aux_banderacant = true;
+                            $aux_producto =$despachosoldet_invbodegaproducto->invbodegaproducto->producto;
+                            $invbodegaproducto = InvBodegaProducto::where("producto_id","=",$aux_producto->id)
+                            ->where("invbodega_id","=",$aux_bodegadespacho_id)
+                            ->select([
+                                'id as invbodegaproducto_id',
+                                'producto_id',
+                                'invbodega_id'
+                            ])
+                            ->get();
+                            $aux_respuesta = InvBodegaProducto::existencia($invbodegaproducto[0]);
+                            if($aux_respuesta["stock"]["cant"] < $aux_cant){ //VALIDAR STOCK DE PRODUCTO EN BODEGA
+                                //dd($aux_respuesta);
+                                //dd($invbodegaproducto);
+                                //dd($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps[1]->invmovdet);
+                                //dd($aux_respuesta["stock"]["cant"]);
+                                return response()->json([
+                                    "status" => "0",
+                                    'mensaje' => "Producto sin Stock,  ID: " . $aux_producto->id . ", Nombre: " . $aux_producto->nombre . ", Stock: " . $aux_respuesta["stock"]["cant"],
+                                    'tipo_alert' => 'error',
+                                ]);               
+                                break;
+                            }
+                        }    
                     }
                 }
             }
-            */
             //dd("entro");
             if($aux_banderacant){
                 $invmov_array = array();
@@ -868,9 +885,17 @@ class DespachoSolController extends Controller
             $despachosol->aprorddespfh = null;        
             if ($despachosol->save()) {
                 event(new DevolverSolDesp($despachosol,$request));
-                return response()->json(['mensaje' => 'ok']);
+                return response()->json([
+                    "status" => "1",
+                    'mensaje' => 'Registro procesado con exito',
+                    'tipo_alert' => 'success'
+                ]);
             } else {
-                return response()->json(['mensaje' => 'ng']);
+                return response()->json([
+                    "status" => "0",
+                    'mensaje' => 'Error al guardar en despachosol',
+                    'tipo_alert' => 'error'
+                ]);
             }
         } else {
             abort(404);
