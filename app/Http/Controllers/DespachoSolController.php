@@ -715,6 +715,7 @@ class DespachoSolController extends Controller
             }
             $aux_banderacant = true; //VALIDAR QUE EXISTE AL MENOS 1 PRODUCTO CON CANTIDAD
             //dd("entro");
+            /*
             foreach ($despachosol->despachosoldets as $despachosoldet) {
                 foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
                     $aux_invbodega_id = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega_id;
@@ -737,6 +738,8 @@ class DespachoSolController extends Controller
                         ->get();
                         $aux_respuesta = InvBodegaProducto::existencia($invbodegaproducto[0]);
                         if($aux_respuesta["stock"]["cant"] < $aux_cant){ //VALIDAR STOCK DE PRODUCTO EN BODEGA
+                            //dd($aux_respuesta);
+                            dd($invbodegaproducto);
                             //dd($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps[1]->invmovdet);
                             //dd($aux_respuesta["stock"]["cant"]);
                             return response()->json([
@@ -748,6 +751,8 @@ class DespachoSolController extends Controller
                     }
                 }
             }
+            */
+            //dd("entro");
             if($aux_banderacant){
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");

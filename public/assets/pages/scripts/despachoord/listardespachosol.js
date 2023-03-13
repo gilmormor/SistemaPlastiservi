@@ -369,6 +369,7 @@ $("#btnGuardarDSD").click(function(event){
                 status : $("#status").val(),
                 _token : $('input[name=_token]').val()
             };
+            //console.log($("#boton").val());
             if (value) {
                 ajaxRequest(data,$("#ruta").val(),$("#boton").val(),form);
             }
