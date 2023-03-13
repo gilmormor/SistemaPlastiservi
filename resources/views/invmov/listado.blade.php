@@ -73,7 +73,7 @@
 						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto_id}}</td>
 						<td class="textleft">{{$invmovdet->invbodegaproducto->producto->nombre}}</td>
 						<td class="textleft">{{$invmovdet->invbodegaproducto->producto->categoriaprod->nombre}}</td>
-						<td class="textleft">{{$invmovdet->invbodegaproducto->invbodega->nombre}}</td>
+						<td class="textleft">{{$invmovdet->invbodegaproducto->invbodega->nombre}} / {{$invmovdet->invbodegaproducto->invbodega->sucursal->nombre}}</td>
 						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto->diametro}}</td>
 						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto->claseprod->cla_nombre}}</td>
 						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto->long}} mts</td>
