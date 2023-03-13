@@ -1742,7 +1742,7 @@ function llenarselectbodega(respuesta){
 		$("#invbodega_idM").empty();
 		$.each(respuesta['bodegas'], function(id,value){
 			//console.log(respuesta['bodegas'][id]);
-			$("#invbodega_idM").append('<option value="'+respuesta['bodegas'][id].id+'">'+respuesta['bodegas'][id].nombre+' / Stock: ' + respuesta['bodegas'][id].stock + '</option>');
+			$("#invbodega_idM").append(`<option value="${respuesta['bodegas'][id].id}">${respuesta['bodegas'][id].nombre} ${respuesta['bodegas'][id].sucursal_nombre} / Stock: ${respuesta['bodegas'][id].stock}</option>`);
 		});
 		$("#invbodega_idM").selectpicker('refresh');
 	}	

@@ -154,6 +154,34 @@ function ajaxRequestOD(data,url,funcion) {
 		data: data,
 		success: function (respuesta) {
 			if(funcion=='aproborddesp'){
+                if(respuesta.status == "1"){
+                    swal({
+                        title: '¿ Desea ver PDF Orden Despacho ?',
+                        text: "",
+                        icon: 'success',
+                        buttons: {
+                            cancel: "Cancelar",
+                            confirm: "Aceptar"
+                        },
+                    }).then((value) => {
+                        if (value) {
+                            genpdfOD(respuesta.id,1);
+                        }
+                        //$("#fila"+data['nfila']).remove();                            
+                    });
+                    $("#fila"+respuesta.nfila).remove();
+                    Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                }else{
+                    swal({
+                        title: respuesta.title,
+                        text: respuesta.mensaje,
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            cancel: "Cerrar",
+                        },
+                    });
+                }
+                return 0;
                 switch (respuesta.mensaje) {
                     case 'ok':
                         swal({

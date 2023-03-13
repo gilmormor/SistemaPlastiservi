@@ -593,6 +593,14 @@ class DespachoOrdController extends Controller
     {
         if ($request->ajax()) {
             $despachoord = DespachoOrd::findOrFail($request->id);
+            if($request->updated_at != $despachoord->updated_at){
+                return response()->json([
+                    'id' => 0,
+                    'error' => '0',
+                    'mensaje' => 'Registro fué modificado por otro usuario.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
             if(empty($despachoord->guiadespacho) and empty($despachoord->numfactura)){
                 $despachoordanul = new DespachoOrdAnul();
                 $despachoordanul->despachoord_id = $request->id;
@@ -635,6 +643,14 @@ class DespachoOrdController extends Controller
                 return response()->json(['mensaje' => 'dup']);
             }else{
                 $despachoord = DespachoOrd::findOrFail($request->id);
+                if($request->updated_at != $despachoord->updated_at){
+                    return response()->json([
+                        'id' => 0,
+                        'error' => '0',
+                        'mensaje' => 'Registro fué modificado por otro usuario.',
+                        'tipo_alert' => 'error'
+                    ]);
+                }
                 $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$despachoord->notaventa_id)->get();
                 if(count($notaventacerrada) == 0){
                     if($request->updatesolonumguia){
@@ -670,8 +686,11 @@ class DespachoOrdController extends Controller
                                         if($existencia < 0){
                                             //$aux_bandera = $aux_respuesta["bandera"];
                                             return response()->json([
-                                                'mensaje' => "Sucursal: " . $invmovmodulobodent->sucursal->nombre . ". Id: " . $requestProd["producto_id"] . ", Nombre: " . $oddetbodprod->invbodegaproducto->producto->nombre . ", Stock: " . $arrayExistencia["stock"]["cant"] . " Mov: " . $oddetbodprod->cant,
-                                                'menper' => "Sucursal: " . $invmovmodulobodent->sucursal->nombre . ". Id: " . $requestProd["producto_id"] . ", Nombre: " . $oddetbodprod->invbodegaproducto->producto->nombre . ", Stock: " . $arrayExistencia["stock"]["cant"] . " Mov: " . $oddetbodprod->cant
+                                                'status' => "0",
+                                                'title' => "Bodega sin stock!",
+                                                //'mensaje1' => "Bodega: " . $oddetbodprod->invbodegaproducto->invbodega->nombre . ".\nSucursal: " . $oddetbodprod->invbodegaproducto->invbodega->sucursal->nombre . ".\nIdProd: " . $oddetbodprod->invbodegaproducto->producto_id . "\nNombre: " . $oddetbodprod->invbodegaproducto->producto->nombre. "\nCantidad movimiento: " . $oddetbodprod->cant . "\nStock actual: " . $arrayStock["stock"]["cant"],
+                                                'mensaje' => "Bodega: " . $invmovmodulobodent->nombre . ".\nSucursal: " . $invmovmodulobodent->sucursal->nombre . ". IdProd: " . $requestProd["producto_id"] . ".\nNombre: " . $oddetbodprod->invbodegaproducto->producto->nombre . ".\nMov: " . $oddetbodprod->cant . ".\nStock: " . $arrayExistencia["stock"]["cant"],
+                                                'tipo_alert' => 'error'
                                             ]);
                                         }    
                                     }
@@ -687,7 +706,7 @@ class DespachoOrdController extends Controller
                         $invmov_array["annomes"] = $annomes;
                         $invmov_array["desc"] = "Salida de BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
                         $invmov_array["obs"] = "Salida de BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
-                        $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Guia de Despacho
+                        $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //
                         $invmov_array["idmovmod"] = $request->id;
                         $invmov_array["invmovtipo_id"] = 2;
                         $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
@@ -786,6 +805,16 @@ class DespachoOrdController extends Controller
         if ($request->ajax()) {
             //dd($request);
             $despachoord = DespachoOrd::findOrFail($request->id);
+            if($request->updated_at != $despachoord->updated_at){
+                return response()->json([
+                    'status' => '0',
+                    'id' => 0,
+                    'error' => '0',
+                    'title' => '',
+                    'mensaje' => 'Registro fué modificado por otro usuario.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
             $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$despachoord->notaventa_id)->get();
             if(count($notaventacerrada) == 0){
                 $despachoord->numfactura = $request->numfactura;
@@ -795,11 +824,17 @@ class DespachoOrdController extends Controller
                 if ($despachoord->save()) {
                     Event(new GuardarFacturaDespacho($despachoord));
                     return response()->json([
+                                            'status' => '1',
+                                            'title' => '',
                                             'mensaje' => 'ok',
                                             'despachoord' => $despachoord
                                             ]);
                 } else {
-                    return response()->json(['mensaje' => 'ng']);
+                    return response()->json([
+                        'status' => '0',
+                        'title' => '',
+                        'mensaje' => 'Error al guardar registro.'
+                    ]);
                 }    
             }else{
                 $mensaje = 'Nota Venta fue cerrada: Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at));
@@ -846,175 +881,177 @@ class DespachoOrdController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
-            $aux_bandera = true;
-            foreach ($despachoord->despachoorddets as $despachoorddet) {
-                $aux_respuesta = InvBodegaProducto::validarExistenciaStock($despachoorddet->despachoorddet_invbodegaproductos);
-                if($aux_respuesta["bandera"] == false){
-                    $aux_bandera = $aux_respuesta["bandera"];
-                    break;
-                }
+            //VALIDAR LOS ITEM DE BODEGAS INVOLUCRADAS EN EL DETALLE DE ORDEN DE DESPACHO
+            //ENVIO EL DETALLE DE LA ORDEN DE DESPACHO
+            $arrayExistencia = InvBodegaProducto::existenciaxSolDespOrdDesp($despachoord->despachoorddets);
+            if($arrayExistencia["status"] == "0"){
+                return response()->json($arrayExistencia);
             }
-            if($aux_bandera){
-
-                $invmodulo = InvMovModulo::where("cod","ORDDESP")->get();
-                if(count($invmodulo) == 0){
-                    return response()->json([
-                        'mensaje' => 'MensajePersonalizado',
-                        'menper' => "No existe modulo SOLDESP"    
-                    ]);
-                }
-                $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
-                $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Despacho (La bodega despacho debe ser unica)
-                validarSiExisteBodega($despachoord,$invmoduloBod);   
-                
-                $invmov_array = array();
-                $invmov_array["fechahora"] = date("Y-m-d H:i:s");
-                $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                $invmov_array["desc"] = "Salida de Bodega / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
-                $invmov_array["obs"] = "Salida de Bodega / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
-                $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Modulo Orden Despacho
-                $invmov_array["idmovmod"] = $request->id;
-                $invmov_array["invmovtipo_id"] = 2;
-                $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
-                $invmov_array["usuario_id"] = auth()->id();
-                $arrayinvmov_id = array();
-                
-                $invmov = InvMov::create($invmov_array);
-                array_push($arrayinvmov_id, $invmov->id);
-                foreach ($despachoord->despachoorddets as $despachoorddet) {
-                    foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
-                        $array_invmovdet = $oddetbodprod->attributesToArray();
-                        $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                        $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                        $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
-                        $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
-                        $array_invmovdet["invmovtipo_id"] = 2;
-                        $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
-                        $array_invmovdet["cantxgrupo"] = 1;
-                        $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
-                        $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
-                        $array_invmovdet["invmov_id"] = $invmov->id;
-                        $invmovdet = InvMovDet::create($array_invmovdet);                                
-                        if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
-                            /***BUSCO LA BODEGA QUE TIENE PICKING */
-                            foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
-                                if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
-                                    $invmovdet_bodsoldesp = InvMovDet_BodSolDesp ::create([
-                                        'invmovdet_id' => $invmovdet->id,
-                                        'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
-                                    ]);
-                                    break;
-                                }
+            $invmodulo = InvMovModulo::where("cod","ORDDESP")->get();
+            if(count($invmodulo) == 0){
+                return response()->json([
+                    'status' => '0',
+                    'title' => "",
+                    'mensaje' => "No existe modulo SOLDESP",
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
+            $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Despacho (La bodega despacho debe ser unica)
+            validarSiExisteBodega($despachoord,$invmoduloBod);   
+            $annomes = date("Ym");
+            $invmov_array = array();
+            $invmov_array["fechahora"] = date("Y-m-d H:i:s");
+            $invmov_array["annomes"] = $annomes;
+            $invmov_array["desc"] = "Salida de Bodega / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+            $invmov_array["obs"] = "Salida de Bodega / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+            $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Modulo Orden Despacho
+            $invmov_array["idmovmod"] = $request->id;
+            $invmov_array["invmovtipo_id"] = 2;
+            $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
+            $invmov_array["usuario_id"] = auth()->id();
+            $arrayinvmov_id = array();
+            
+            $invmov = InvMov::create($invmov_array);
+            array_push($arrayinvmov_id, $invmov->id);
+            foreach ($despachoord->despachoorddets as $despachoorddet) {
+                foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
+                    $array_invmovdet = $oddetbodprod->attributesToArray();
+                    $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
+                    $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
+                    $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
+                    $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
+                    $array_invmovdet["invmovtipo_id"] = 2;
+                    $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
+                    $array_invmovdet["cantxgrupo"] = 1;
+                    $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
+                    $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                    $array_invmovdet["invmov_id"] = $invmov->id;
+                    $invmovdet = InvMovDet::create($array_invmovdet);                                
+                    if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
+                        /***BUSCO LA BODEGA QUE TIENE PICKING */
+                        foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                            if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                                $invmovdet_bodsoldesp = InvMovDet_BodSolDesp ::create([
+                                    'invmovdet_id' => $invmovdet->id,
+                                    'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
+                                ]);
+                                break;
                             }
                         }
                     }
                 }
-                $invmov_array = array();
-                $invmov_array["fechahora"] = date("Y-m-d H:i:s");
-                $invmov_array["annomes"] = $aux_respuesta["annomes"];
-                $invmov_array["desc"] = "Entrada a BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
-                $invmov_array["obs"] = "Entrada a BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
-                $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Modulo Orden Despacho
-                $invmov_array["idmovmod"] = $request->id;
-                $invmov_array["invmovtipo_id"] = 1;
-                $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
-                $invmov_array["usuario_id"] = auth()->id();
-                
-                $invmov = InvMov::create($invmov_array);
-                array_push($arrayinvmov_id, $invmov->id);
-                foreach ($despachoord->despachoorddets as $despachoorddet) {
-                    foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
-                        $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
-                        //ESTO DEBE IR EN EL PROYECTO FINAL
-                        foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
-                            //BUSCAR BODEGA DESPACHO CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
-                            if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
-                                $aux_bodegadespacho_id = $invmovmodulobodent->id;
-                            }
-                        }      
-                        //ESTO DEBE IR EN EL PROYECTO FINAL
-                        $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                            ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_bodegadespacho_id],
-                            [
-                                'producto_id' => $oddetbodprod->invbodegaproducto->producto_id,
-                                'invbodega_id' => $aux_bodegadespacho_id
-                            ]
-                        );
-                        $array_invmovdet = $oddetbodprod->attributesToArray();
-                        $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
-                        $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                        $array_invmovdet["invbodega_id"] = $aux_bodegadespacho_id;
-                        $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
-                        $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
-                        $array_invmovdet["invmovtipo_id"] = 1;
-                        $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
-                        $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
-                        $array_invmovdet["cantxgrupo"] = 1;
-                        $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
-                        $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"] *-1;
-                        $array_invmovdet["invmov_id"] = $invmov->id;
-                        $invmovdet = InvMovDet::create($array_invmovdet);
-                        $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
-                            'invmovdet_id' => $invmovdet->id,
-                            'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
-                        ]);
-                    }
-                }
-                $despachoord->aprguiadesp = 1;
-                $despachoord->aprguiadespfh = date("Y-m-d H:i:s");
-                if ($despachoord->save()) {
-                    //$despachoord->invmovs()->sync($arrayinvmov_id);
-                    $despachoord_invmov = DespachoOrd_InvMov::create([
-                            'despachoord_id' => $despachoord->id,
-                            'invmov_id' => $arrayinvmov_id[0]
-                        ]);
-                    $despachoord_invmov = DespachoOrd_InvMov::create(
+            }
+            $invmov_array = array();
+            $invmov_array["fechahora"] = date("Y-m-d H:i:s");
+            $invmov_array["annomes"] = $annomes;
+            $invmov_array["desc"] = "Entrada a BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+            $invmov_array["obs"] = "Entrada a BD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+            $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Modulo Orden Despacho
+            $invmov_array["idmovmod"] = $request->id;
+            $invmov_array["invmovtipo_id"] = 1;
+            $invmov_array["sucursal_id"] = $despachoord->notaventa->sucursal_id;
+            $invmov_array["usuario_id"] = auth()->id();
+            
+            $invmov = InvMov::create($invmov_array);
+            array_push($arrayinvmov_id, $invmov->id);
+            foreach ($despachoord->despachoorddets as $despachoorddet) {
+                foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
+                    $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
+                    //ESTO DEBE IR EN EL PROYECTO FINAL
+                    foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
+                        //BUSCAR BODEGA DESPACHO CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
+                        if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
+                            $aux_bodegadespacho_id = $invmovmodulobodent->id;
+                        }
+                    }      
+                    //ESTO DEBE IR EN EL PROYECTO FINAL
+                    $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                        ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_bodegadespacho_id],
                         [
-                            'despachoord_id' => $despachoord->id,
-                            'invmov_id' => $arrayinvmov_id[1]
-                        ]);
-                    $aux_usuariodestino_id = NULL;
-                    if($despachoord->notaventa->vendedor->persona->usuario){
-                        $aux_usuariodestino_id = $despachoord->notaventa->vendedor->persona->usuario->id;
-                    }
-                    Event(new Notificacion( //ENVIO ARRAY CON LOS DATOS PARA CREAR LA NOTIFICACION
-                        [
-                            'usuarioorigen_id' => auth()->id(),
-                            'usuariodestino_id' => $aux_usuariodestino_id,
-                            'vendedor_id' => $despachoord->notaventa->vendedor_id,
-                            'status' => 1,
-                            'nombretabla' => 'despachoord',
-                            'mensaje' => 'Nueva Orden Despacho Nro:'.$despachoord->id,
-                            'rutadestino' => 'notaventaconsulta',
-                            'tabla_id' => $despachoord->id,
-                            'accion' => 'Nueva Orden Despacho',
-                            'mensajetitle' => 'OD:'.$despachoord->id.' NV:'.$despachoord->notaventa_id,
-                            'icono' => 'fa fa-fw fa-male text-primary',
-                            'detalle' => "
-                                <p><b>Datos:</b></p>
-                                <ul>
-                                    <li><b>PEDIDO EN PREPARACION DE DESPACHO</b></li>
-                                    <li><b>Nro. Nota Venta: </b> $despachoord->notaventa_id </li>
-                                    <li><b>Nro. Orden Despacho: </b> $despachoord->id </li>
-                                    <li><b>RUT:</b> " . $despachoord->notaventa->cliente->rut . "</li>
-                                    <li><b>Razon Social:</b> " . $despachoord->notaventa->cliente->razonsocial . "</li>
-                                    <li><b>Vendedor:</b> " . $despachoord->notaventa->vendedor->persona->nombre . " " . $despachoord->notaventa->vendedor->persona->apellido . "</li>
-                                </ul>                    
-                            "
+                            'producto_id' => $oddetbodprod->invbodegaproducto->producto_id,
+                            'invbodega_id' => $aux_bodegadespacho_id
                         ]
-                    ));
-                    return response()->json([
-                                            'mensaje' => 'ok',
-                                            'id' => $request->id,
-                                            'nfila' => $request->nfila,
-                                        ]);
-                } else {
-                    return response()->json(['mensaje' => 'ng']);
+                    );
+                    $array_invmovdet = $oddetbodprod->attributesToArray();
+                    $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
+                    $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
+                    $array_invmovdet["invbodega_id"] = $aux_bodegadespacho_id;
+                    $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
+                    $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
+                    $array_invmovdet["invmovtipo_id"] = 1;
+                    $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
+                    $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
+                    $array_invmovdet["cantxgrupo"] = 1;
+                    $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
+                    $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"] *-1;
+                    $array_invmovdet["invmov_id"] = $invmov->id;
+                    $invmovdet = InvMovDet::create($array_invmovdet);
+                    $invmovdet_bodorddesp = InvMovDet_BodOrdDesp ::create([
+                        'invmovdet_id' => $invmovdet->id,
+                        'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
+                    ]);
                 }
-            }else{
+            }
+            $despachoord->aprguiadesp = 1;
+            $despachoord->aprguiadespfh = date("Y-m-d H:i:s");
+            if ($despachoord->save()) {
+                //$despachoord->invmovs()->sync($arrayinvmov_id);
+                $despachoord_invmov = DespachoOrd_InvMov::create([
+                        'despachoord_id' => $despachoord->id,
+                        'invmov_id' => $arrayinvmov_id[0]
+                    ]);
+                $despachoord_invmov = DespachoOrd_InvMov::create(
+                    [
+                        'despachoord_id' => $despachoord->id,
+                        'invmov_id' => $arrayinvmov_id[1]
+                    ]);
+                $aux_usuariodestino_id = NULL;
+                if($despachoord->notaventa->vendedor->persona->usuario){
+                    $aux_usuariodestino_id = $despachoord->notaventa->vendedor->persona->usuario->id;
+                }
+                Event(new Notificacion( //ENVIO ARRAY CON LOS DATOS PARA CREAR LA NOTIFICACION
+                    [
+                        'usuarioorigen_id' => auth()->id(),
+                        'usuariodestino_id' => $aux_usuariodestino_id,
+                        'vendedor_id' => $despachoord->notaventa->vendedor_id,
+                        'status' => 1,
+                        'nombretabla' => 'despachoord',
+                        'mensaje' => 'Nueva Orden Despacho Nro:'.$despachoord->id,
+                        'rutadestino' => 'notaventaconsulta',
+                        'tabla_id' => $despachoord->id,
+                        'accion' => 'Nueva Orden Despacho',
+                        'mensajetitle' => 'OD:'.$despachoord->id.' NV:'.$despachoord->notaventa_id,
+                        'icono' => 'fa fa-fw fa-male text-primary',
+                        'detalle' => "
+                            <p><b>Datos:</b></p>
+                            <ul>
+                                <li><b>PEDIDO EN PREPARACION DE DESPACHO</b></li>
+                                <li><b>Nro. Nota Venta: </b> $despachoord->notaventa_id </li>
+                                <li><b>Nro. Orden Despacho: </b> $despachoord->id </li>
+                                <li><b>RUT:</b> " . $despachoord->notaventa->cliente->rut . "</li>
+                                <li><b>Razon Social:</b> " . $despachoord->notaventa->cliente->razonsocial . "</li>
+                                <li><b>Vendedor:</b> " . $despachoord->notaventa->vendedor->persona->nombre . " " . $despachoord->notaventa->vendedor->persona->apellido . "</li>
+                            </ul>                    
+                        "
+                    ]
+                ));
                 return response()->json([
-                    'mensaje' => 'MensajePersonalizado',
-                    'menper' => "Producto sin Stock,  ID: " . $aux_respuesta["producto_id"] . ", Nombre: " . $aux_respuesta["producto_nombre"] . ", Stock: " . $aux_respuesta["stock"]
+                                        'status' => '1',
+                                        'title' => "",
+                                        'mensaje' => "No existe modulo SOLDESP",
+                                        'id' => $request->id,
+                                        'nfila' => $request->nfila,
+                                        'tipo_alert' => 'success'
+                                    ]);
+            } else {
+                return response()->json([
+                    'status' => '0',
+                    'title' => "",
+                    'mensaje' => "Error al guardar despachoord",
+                    'id' => $request->id,
+                    'nfila' => $request->nfila,
+                    'tipo_alert' => 'error'
                 ]);
             }
         } else {
@@ -1455,12 +1492,15 @@ function updatenumguia($despachoord,$request){
                                 'mensaje' => 'ok',
                                 'despachoord' => $despachoord,
                                 'guiadespachofec' => date("Y-m-d", strtotime($despachoord->guiadespachofec)),
-                                'status' => '0',
+                                'status' => '1',
                                 'id' => $request->id,
                                 'nfila' => $request->nfila,
                                 ]);
     } else {
-        return response()->json(['mensaje' => 'ng']);
+        return response()->json([
+            'status' => '0',
+            'mensaje' => 'Error al guardar despachoord.'
+        ]);
     }
 
 }

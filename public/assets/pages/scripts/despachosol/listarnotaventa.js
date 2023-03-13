@@ -161,7 +161,7 @@ function consultar(data){
 
                 configurarTabla('#tabla-data-listar1');
                 let  table = $('#tabla-data-listar1').DataTable();
-                console.log(table);
+                //console.log(table);
                 table
                     .on('draw', function () {
                         eventFired( 'Page' );

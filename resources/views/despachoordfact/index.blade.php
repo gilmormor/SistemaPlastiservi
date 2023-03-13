@@ -39,6 +39,7 @@ Asignar Número de Factura
                                 <th class="ocultar">Icono</th>
                                 <th class="ocultar">clientebloqueado_descripcion</th>
                                 <th class="ocultar">oc_file</th>
+                                <th class="ocultar">updated_at</th>
                                 <th class="width100">Accion</th>
                             </tr>
                         </thead>

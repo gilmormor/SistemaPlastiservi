@@ -27,6 +27,7 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
+			{data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -95,19 +96,26 @@ $(document).ready(function () {
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
             $('td', row).eq(11).html(aux_text);
 
+			$('td', row).eq(15).addClass('updated_at');
+            $('td', row).eq(15).attr('item',data.id);
+            $('td', row).eq(15).attr('id','updated_at'+data.id);
+            $('td', row).eq(15).attr('name','updated_at'+data.id);
+
 			aux_text = 
-			"<a onclick='guiadesp(" + data.id + "," + data.id + ",1)' class='btn btn-primary btn-xs tooltipsC' title='Guia de despacho'>Guia" +
-			"</a>"+
-			"|" +
-			"<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn btn-danger btn-xs' title='Anular Guia' data-toggle='tooltip'>Anular"+
-			"</a>";
+			`<a onclick="guiadesp(${data.id},${data.id},1)" class="btn btn-primary btn-xs tooltipsC" title="Guia de despacho">
+				Guia
+			</a> | 
+			<a onclick="anularguiafact(${data.id},${data.id})" class="btn btn-danger btn-xs" title="Anular Guia" data-toggle="tooltip">
+				Anular
+			</a>`;
 			/*
 			aux_text = aux_text +
             "<a href='despachoord' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Orden Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
             */
-            $('td', row).eq(15).html(aux_text);
+
+            $('td', row).eq(16).html(aux_text);
         }
     });
 
@@ -155,6 +163,7 @@ var eventFired = function ( type ) {
 }
 
 function ajaxRequest(datas,url,funcion) {
+	aux_datas = datas;
 	$.ajax({
 		url: url,
 		type: 'POST',
@@ -162,6 +171,26 @@ function ajaxRequest(datas,url,funcion) {
 		success: function (respuesta) {
 			//console.log(datas);
 			if(funcion=='guardarguiadesp'){
+                if(respuesta.status == "1"){
+					if(aux_datas['status']=='1'){
+						$("#fila" + aux_datas['nfila']).remove();
+					}else{
+						$("#guiadespacho" + aux_datas['nfila']).html(respuesta.despachoord.guiadespacho);
+						$("#fechaguia" + aux_datas['nfila']).html(respuesta.guiadespachofec);	
+					}
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				}else{
+                    swal({
+                        title: respuesta.title,
+                        text: respuesta.mensaje,
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            cancel: "Cerrar",
+                        },
+                    });
+                }
+				$("#myModalguiadesp").modal('hide');
+				return 0
 				if (respuesta.mensaje == "ok") {
 					//alert(data['nfila']);
 					if(datas['status']=='1'){
@@ -249,13 +278,20 @@ function ajaxRequest(datas,url,funcion) {
 			}
 			
 			if(funcion=='guardaranularguia'){
-				if (respuesta.mensaje == "ok") {
+				if (respuesta.status == "1") {
 					$("#fila" + respuesta.nfila).remove();
-					$("#myModalanularguiafact").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
-					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
+					swal({
+                        title: respuesta.title,
+                        text: respuesta.mensaje,
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            cancel: "Cerrar",
+                        },
+                    });
 				}
+				$("#myModalanularguiafact").modal('hide');
 			}
 
 			if(funcion=='buscarTipoBodegaOrdDesp'){
@@ -425,11 +461,13 @@ $("#btnGuardarG").click(function(event)
 					});
 				
 				}else{
+					aux_updated_at = $("#updated_at" + $("#idg").val()).html();
 					var data = {
 						id    : $("#idg").val(),
 						guiadespacho : $("#guiadespachom").val(),
 						nfila : $("#nfila").val(),
 						status : $("#status").val(),
+						updated_at : aux_updated_at,
 						//invbodega_id : respuesta.datas[0].id,
 						_token: $('input[name=_token]').val()
 					};
@@ -495,7 +533,7 @@ $("#btnGuardarGanul").click(function(event)
 	event.preventDefault();
 	if(verificarAnulGuia())
 	{
-
+		aux_updated_at = $("#updated_at" + $("#idanul").val()).html();
 		var data = {
 			id    : $("#idanul").val(),
 			nfila : $("#nfilaanul").val(),
@@ -503,6 +541,7 @@ $("#btnGuardarGanul").click(function(event)
 			statusM : $("#statusM").val(),
 			//invbodega_id : respuesta.datas[0].id,
 			pantalla_origen  : 1, //Para saber de donde viene la anulacion en este caso de la pantalla Asignar Guia
+			updated_at : aux_updated_at,
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/guardaranularguia';

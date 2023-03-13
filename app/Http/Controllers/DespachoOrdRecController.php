@@ -620,6 +620,51 @@ class DespachoOrdRecController extends Controller
                                 }    
                             }
                             if($tipomovinv == 2){
+                                $invmodulo = InvMovModulo::where("cod","RecOD")->get();
+                                if(count($invmodulo) == 0){
+                                    return response()->json([
+                                        'status' => "0",
+                                        'title' => "",
+                                        'mensaje' => "No existe modulo RecOD",
+                                        'tipo_alert' => 'error'
+                                    ]);
+                                }
+                                $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
+        
+                                foreach ($despachoordrec->despachoordrecdets as $despachoordrecdet) {
+                                    //ESTO DEBE IR EN EL PROYECTO FINAL
+                                    foreach ($despachoordrecdet->despachoordrecdet_invbodegaproductos as $oddetbodprod) {
+                                        $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
+                                        $aux_bodegadespacho_id = 0;
+                                        foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
+                                            //BUSCAR BODEGA DESPACHO CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
+                                            if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
+                                                $aux_bodegadespacho_id = $invmovmodulobodent->id;
+                                                $requestProd = new Request();
+                                                $requestProd["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
+                                                $requestProd["invbodega_id"] = $aux_bodegadespacho_id;
+                                                $requestProd["tipo"] = 2;
+                                                $arrayExistencia = InvBodegaProducto::existencia($requestProd);
+                                                $existencia = $arrayExistencia["stock"]["cant"];
+                                                $existencia += $oddetbodprod->cant;
+                                                //$aux_respuesta = InvBodegaProducto::validarExistenciaStock($despachoorddet->despachoorddet_invbodegaproductos,$aux_bodegadespacho_id);
+                                                if($existencia < 0){
+                                                    //$aux_bandera = $aux_respuesta["bandera"];
+                                                    return response()->json([
+                                                        'status' => "0",
+                                                        'title' => "Bodega sin stock!",
+                                                        //'mensaje1' => "Bodega: " . $oddetbodprod->invbodegaproducto->invbodega->nombre . ".\nSucursal: " . $oddetbodprod->invbodegaproducto->invbodega->sucursal->nombre . ".\nIdProd: " . $oddetbodprod->invbodegaproducto->producto_id . "\nNombre: " . $oddetbodprod->invbodegaproducto->producto->nombre. "\nCantidad movimiento: " . $oddetbodprod->cant . "\nStock actual: " . $arrayStock["stock"]["cant"],
+                                                        'mensaje' => "Bodega: " . $invmovmodulobodent->nombre . ".\nSucursal: " . $invmovmodulobodent->sucursal->nombre . ". IdProd: " . $requestProd["producto_id"] . ".\nNombre: " . $oddetbodprod->invbodegaproducto->producto->nombre . ".\nMov: " . $oddetbodprod->cant . ".\nStock: " . $arrayExistencia["stock"]["cant"],
+                                                        'tipo_alert' => 'error'
+                                                    ]);
+                                                }    
+                                            }
+                                        }
+                                    }
+                                    //ESTO DEBE IR EN EL PROYECTO FINAL
+                                }
+                                $annomes = date("Ym");
+        
                                 $invmov_array = array();
                                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                                 $invmov_array["annomes"] = date("Ym");
@@ -653,18 +698,28 @@ class DespachoOrdRecController extends Controller
                                 ->groupBy('invbodegaproducto.producto_id')
                                 ->get();
                                 foreach ($despachoordrecdet_invbodegaproductos as $despachoordrecdet_invbodegaproducto) {
+                                    //ESTO DEBE IR EN EL PROYECTO FINAL
+                                    $aux_sucursal_id_producto = $despachoordrecdet_invbodegaproducto->invbodegaproducto->invbodega->sucursal_id; 
+                                    foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
+                                        //BUSCAR BODEGA DESPACHO CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
+                                        if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
+                                            $aux_bodegadespacho_id = $invmovmodulobodent->id;
+                                        }
+                                    }
+                                    //ESTO DEBE IR EN EL PROYECTO FINAL
+
                                     $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                                        ['producto_id' => $despachoordrecdet_invbodegaproducto->producto_id,'invbodega_id' => $aux_DespachoBodegaId],
+                                        ['producto_id' => $despachoordrecdet_invbodegaproducto->producto_id,'invbodega_id' => $aux_bodegadespacho_id],
                                         [
                                             'producto_id' => $despachoordrecdet_invbodegaproducto->producto_id,
-                                            'invbodega_id' => $aux_DespachoBodegaId
+                                            'invbodega_id' => $aux_bodegadespacho_id
                                         ]
                                     );
                                     $despachoordrecdet = DespachoOrdRecDet::findOrFail($despachoordrecdet_invbodegaproducto->despachoordrecdet_id);
                                     $array_invmovdet = $despachoordrecdet_invbodegaproducto->attributesToArray();
                                     $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                                     $array_invmovdet["producto_id"] = $despachoordrecdet_invbodegaproducto->producto_id;
-                                    $array_invmovdet["invbodega_id"] = $aux_DespachoBodegaId;
+                                    $array_invmovdet["invbodega_id"] = $aux_bodegadespacho_id;
                                     $array_invmovdet["sucursal_id"] = $despachoordrecdet_invbodegaproducto->sucursal_id;
                                     $array_invmovdet["unidadmedida_id"] = $despachoordrecdet->despachoorddet->notaventadetalle->unidadmedida_id;
                                     $array_invmovdet["invmovtipo_id"] = 1;

@@ -95,6 +95,16 @@ class DespachoOrdAnulGuiaFactController extends Controller
         //dd($request);
         if ($request->ajax()) {
             $despachoord = DespachoOrd::findOrFail($request->id);
+            if($request->updated_at != $despachoord->updated_at){
+                return response()->json([
+                    'status' => 0,
+                    'id' => 0,
+                    'error' => '0',
+                    'title' => '',
+                    'mensaje' => 'Registro fué modificado por otro usuario.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
             /*
             $aux_bandera = true;
             foreach ($despachoord->despachoorddets as $despachoorddet) {
@@ -111,6 +121,9 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 if(count($invmodulo) == 0){
                     return response()->json([
                         'status'=>'0',
+                        'id' => 0,
+                        'error' => '0',
+                        'title' => '',    
                         'mensaje'=> "No existe modulo ORDDESP",
                         'tipo_alert' => 'error'
                     ]);
@@ -140,7 +153,10 @@ class DespachoOrdAnulGuiaFactController extends Controller
                                     //$aux_bandera = $aux_respuesta["bandera"];
                                     return response()->json([
                                         'status'=>'0',
-                                        'mensaje'=> "Sucursal: " . $invmovmodulobodent->sucursal->nombre . ". Id: " . $requestProd["producto_id"] . ", Nombre: " . $oddetbodprod->invbodegaproducto->producto->nombre . ", Stock: " . $arrayExistencia["stock"]["cant"] . " Mov: " . $oddetbodprod->cant,
+                                        'id' => 0,
+                                        'error' => '0',
+                                        'title' => '',                    
+                                        'mensaje'=> "Sin Stock Sucursal: " . $invmovmodulobodent->sucursal->nombre . ", Bodega: " . $oddetbodprod->invbodegaproducto->invbodega->nombre . ". Id: " . $requestProd["producto_id"] . ", Nombre: " . $oddetbodprod->invbodegaproducto->producto->nombre . ", Stock: " . $arrayExistencia["stock"]["cant"] . " Mov: " . $oddetbodprod->cant,
                                         'tipo_alert' => 'error'
                                     ]);
                                 }    
@@ -149,6 +165,9 @@ class DespachoOrdAnulGuiaFactController extends Controller
                         if($aux_bodegadespacho_id == 0){
                             return response()->json([
                                 'status'=>'0',
+                                'id' => 0,
+                                'error' => '0',
+                                'title' => '',            
                                 'mensaje'=> "No existe Bodega Despacho de Salida en modulo invmodulo: " . $invmoduloBod->nombre . ". Debe ser creada. ",
                                 'tipo_alert' => 'error'
                             ]);         
@@ -265,6 +284,9 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 if(count($invmoduloGiaD) == 0){
                     return response()->json([
                         'status'=>'0',
+                        'id' => 0,
+                        'error' => '0',
+                        'title' => '',    
                         'mensaje'=> "No existe modulo GUIADESP",
                         'tipo_alert' => 'error'
                     ]);
@@ -284,6 +306,9 @@ class DespachoOrdAnulGuiaFactController extends Controller
                         if($aux_bodegadespacho_id == 0){
                             return response()->json([
                                 'status'=>'0',
+                                'id' => 0,
+                                'error' => '0',
+                                'title' => '',            
                                 'mensaje'=> "No existe Bodega Despacho de Entrada en modulo invmodulo: " . $invmoduloBGiaD->nombre . ". Debe ser creada. ",
                                 'tipo_alert' => 'error'
                             ]);         
@@ -421,6 +446,8 @@ class DespachoOrdAnulGuiaFactController extends Controller
             if ($despachoord->save()) {
                 return response()->json([
                                 'status'=>'1',
+                                'error' => '0',
+                                'title' => '',            
                                 'mensaje'=> "Registro procesado con exito",
                                 'tipo_alert' => 'success',
                                 'id' => $request->id,
@@ -429,6 +456,8 @@ class DespachoOrdAnulGuiaFactController extends Controller
             } else {
                 return response()->json([
                     'status'=>'0',
+                    'error' => '0',
+                    'title' => '',
                     'mensaje'=> "Error al eliminar Guia de despacho de Orden de despacho",
                     'id' => $request->id,
                     'nfila' => $request->nfila,
@@ -459,6 +488,9 @@ function validarSiExisteBodega($despachoord,$invmoduloBod){
             if($aux_bodegadespacho_id == 0){
                 return response()->json([
                     'status'=>'0',
+                    'id' => 0,
+                    'error' => '0',
+                    'title' => '',
                     'mensaje'=> 'No existe Bodega Despacho en Sucursal: ' . $despachoord->notaventa->sucursal->nombre,
                     'tipo_alert' => 'error'
                 ]);
