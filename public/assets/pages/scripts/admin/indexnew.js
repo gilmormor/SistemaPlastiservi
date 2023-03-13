@@ -55,10 +55,15 @@ $(document).on("click", ".btnAnular", function(event){
         fila = $(this).closest("tr");
         form = $(this);
         id = fila.find('td:eq(0)').text();
+        aux_updated_at = "";
+        if(fila.find('.updated_at').text()){
+            aux_updated_at = fila.find('.updated_at').text();
+        }
         //alert(id);
         var data = {
-            _token  : $('input[name=_token]').val(),
-            id      : id
+            _token     : $('input[name=_token]').val(),
+            updated_at : aux_updated_at,
+            id         : id
         };
         if (value) {
             ajaxRequest(data,form.attr('href')+'/'+id+'/anular','anular',form);
@@ -101,7 +106,7 @@ $(document).on("click", ".btnaprobar", function(event){
 
 
 function ajaxRequest(data,url,funcion,form = false) {
-    //console.log('respuesta2');
+    //console.log(data);
     $.ajax({
         url: url,
         type: 'POST',

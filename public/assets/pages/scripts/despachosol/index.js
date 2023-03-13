@@ -35,6 +35,7 @@ $(document).ready(function () {
             i++;
             $(row).attr('id','fila'+i);
             $(row).attr('name','fila'+i);
+            $(row).attr('item',data.id);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud despacho: " + data.id + "' onclick='genpdfSD(" + data.id + ",1)'>"+
@@ -89,19 +90,21 @@ $(document).ready(function () {
                 "</a>"+*/
 
                 aux_text = 
-                "<a href='/despachosol/aproborddesp' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar Solicitud Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+
-                "<a href='despachosol' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-                    "<i class='fa fa-fw fa-pencil'></i>"
-                "</a>";
+                `<a href="/despachosol/aproborddesp" class="btn-accion-tabla btn-sm tooltipsC btnaprobar" title="Aprobar Solicitud Despacho" item="${data.id}">
+                    <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+                </a>
+                <a href="despachosol" class="btn-accion-tabla tooltipsC btnEditar" title="Editar este registro" item="${data.id}">
+                    <i class='fa fa-fw fa-pencil'></i>
+                </a>`;
             }
             $('td', row).eq(12).addClass('updated_at');
-
+            $('td', row).eq(12).attr('item',data.id);
+            $('td', row).eq(12).attr('id','updated_at'+data.id);
+            $('td', row).eq(12).attr('name','updated_at'+data.id);
             aux_text = aux_text +
-            "<a href='despachosol' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Solicitud Despacho' data-toggle='tooltip'>"+
-                "<span class='glyphicon glyphicon-remove text-danger'></span>"
-            "</a>";
+            `<a href="despachosol" class="btn-accion-tabla btn-sm btnAnular tooltipsC" title="Anular Solicitud Despacho" data-toggle="tooltip" item="${data.id}">
+                <span class="glyphicon glyphicon-remove text-danger"></span>
+            </a>`;
             $('td', row).eq(13).html(aux_text);
         }
     });

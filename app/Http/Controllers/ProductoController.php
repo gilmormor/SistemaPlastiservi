@@ -8,6 +8,7 @@ use App\Models\ClaseProd;
 use App\Models\Color;
 use App\Models\Empresa;
 use App\Models\GrupoProd;
+use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
@@ -295,7 +296,10 @@ class ProductoController extends Controller
                     $request1["invbodega_id"] = $bodega["id"];
                     $request1["tipo"] = 2;
                     $aux_stosk = InvBodegaProducto::existencia($request1);
-                    $bodega["stock"] = $aux_stosk["stock"]["cant"];    
+                    $bodega["stock"] = $aux_stosk["stock"]["cant"];
+                    $invbodega = InvBodega::findOrFail($bodega["id"]);
+                    $bodega["sucursal_id"] = $invbodega->sucursal_id;
+                    $bodega["sucursal_nombre"] = $invbodega->sucursal->nombre;
                     //dd($bodega);
                 }
             }

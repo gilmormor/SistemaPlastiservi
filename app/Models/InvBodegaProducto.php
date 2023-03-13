@@ -129,4 +129,32 @@ class InvBodegaProducto extends Model
             }
         }
     }
+
+    public static function existenciaxSolDespOrdDesp($despachosolorddets){
+        foreach ($despachosolorddets as $despachoSolOrddet) { //RECIBO EL OBJETO DE SOLICITUD U ORDEN DE DESPACHO
+            if($despachoSolOrddet->despachosoldet_invbodegaproductos){ //SI ES SOLICITUD DE DESPACHO ASIGNO EL DETALLE DE LAS BODEGAS INVOLUCRADAS EN CADA ITEN DEL DETALLE DE LA SOLICITUD DE DESPACHO
+                $despachoSolOrddet_invbodegaproductos = $despachoSolOrddet->despachosoldet_invbodegaproductos;
+            }else{ //SI NO ES ORDEN DE DESPACHO ENTONCES ASIGNO EL DETALLE DE LAS BODEGAS INVOLUCRADAS EN CADA ITEN DEL DETALLE DE LA ORDEN DE DESPACHO
+                $despachoSolOrddet_invbodegaproductos = $despachoSolOrddet->despachoorddet_invbodegaproductos;
+            }
+            foreach ($despachoSolOrddet_invbodegaproductos as $oddetbodprod) {
+                $arrayStock = InvBodegaProducto::existencia([
+                    "invbodegaproducto_id" => $oddetbodprod->invbodegaproducto_id
+                ]);
+                $saldoStock = $arrayStock["stock"]["cant"] + $oddetbodprod->cant;
+                if($saldoStock < 0){
+                    return [
+                        'status' => "0",
+                        'title' => "Bodega sin stock!",
+                        'mensaje' => "Bodega: " . $oddetbodprod->invbodegaproducto->invbodega->nombre . ".\nSucursal: " . $oddetbodprod->invbodegaproducto->invbodega->sucursal->nombre . ".\nIdProd: " . $oddetbodprod->invbodegaproducto->producto_id . "\nNombre: " . $oddetbodprod->invbodegaproducto->producto->nombre. "\nCantidad movimiento: " . $oddetbodprod->cant . "\nStock actual: " . $arrayStock["stock"]["cant"],
+                        'tipo_alert' => 'error'
+                    ];
+                }
+            }
+        }
+        return [
+            'status' => "1",
+        ];
+
+    }
 }

@@ -485,24 +485,26 @@
 
                                                                 {{$invbodegaproducto->id}}
                                                             </td>
-                                                            <td name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="text-align:left;width: 10% !importan;padding-right: 0px;padding-left: 2px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
+                                                            <td style="text-align:left;width: 10% !importan;padding-right: 0px;padding-left: 2px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
                                                                 <div class="centrarhorizontal">
-                                                                    <p style="color:{{$colorSuc}};font-size: 11px;">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
+                                                                    <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px;">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
                                                                 </div>
                                                             </td>
-                                                            <td name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="text-align:right;width: 20% !importan;padding-left: 0px;padding-right: 0px;"  class='tooltipsC' title='Stock disponible'>
-                                                                <div class="centrarhorizontal">
+                                                            <td style="text-align:right;width: 20% !importan;padding-left: 0px;padding-right: 0px;"  class='tooltipsC' title='Stock disponible'>
+                                                                <div name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="centrarhorizontal">
                                                                     {{$existencia["stock"]["cant"]}}
                                                                 </div>
                                                             </td>
                                                             <?php 
                                                                 $aux_invcant = 0;
                                                                 $aux_staexchecked = "";
+                                                                $aux_staex = "";
                                                                 foreach($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
                                                                     if ($despachosoldet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id){
                                                                         $aux_invcant = (($despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex) * -1);
                                                                         if($despachosoldet_invbodegaproducto->staex == 1){
                                                                             $aux_staexchecked = "checked";
+                                                                            $aux_staex = "1";
                                                                         }
                                                                     }
                                                                 }
@@ -513,7 +515,7 @@
                                                             <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;' class='tooltipsC' title='Marcar para no usar Stock'>
                                                                 <div class='checkbox'>
                                                                     <label style='font-size: 1.2em;padding-left: 0px;'>
-                                                                        <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="{{old('staex', $despachosoldet_invbodegaproducto->staex ?? '0')}}">
+                                                                        <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="{{$aux_staex}}">
                                                                         <input type="checkbox" class="checkstaex" id="aux_staex{{$invbodegaproducto->id}}" name="aux_staex[]" {{$aux_staexchecked}} onchange="clickstaex({{$invbodegaproducto->id}})">
                                                                         <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                                                                     </label>

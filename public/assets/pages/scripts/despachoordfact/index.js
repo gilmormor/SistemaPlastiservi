@@ -28,6 +28,7 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
+			{data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -102,7 +103,11 @@ $(document).ready(function () {
 			"<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn btn-danger btn-xs' title='Anular Guia o Factura' data-toggle='tooltip'>" +
 				"Anular" +
 			"</a>";
-            $('td', row).eq(16).html(aux_text);
+			$('td', row).eq(16).addClass('updated_at');
+            $('td', row).eq(16).attr('item',data.id);
+            $('td', row).eq(16).attr('id','updated_at'+data.id);
+            $('td', row).eq(16).attr('name','updated_at'+data.id);
+            $('td', row).eq(17).html(aux_text);
         }
     });
 
@@ -176,7 +181,7 @@ function ajaxRequest(datas,url,funcion) {
 				$("#myModalguiadesp").modal('hide');
 			}
 			if(funcion=='guardarfactdesp'){
-				if (respuesta.mensaje == "ok") {
+				if (respuesta.status == "1") {
 					if(datas['status'] == 1){
 						$("#fila" + datas['nfila']).remove();
 					}else{
@@ -185,10 +190,14 @@ function ajaxRequest(datas,url,funcion) {
 					}
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
-					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
-					if(respuesta.mensaje != "ng"){
-						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
-					}
+					swal({
+                        title: respuesta.title,
+                        text: respuesta.mensaje,
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            cancel: "Cerrar",
+                        },
+                    });
 				}
 				$("#myModalnumfactura").modal('hide');
 			}
@@ -239,22 +248,18 @@ function ajaxRequest(datas,url,funcion) {
 			if(funcion=='guardaranularguia'){
 				if (respuesta.status == "1") {
 					$("#fila" + datas['nfila']).remove();
-					$("#myModalanularguiafact").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
-					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
-					if(respuesta.mensaje != "ng"){
-						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
-						swal({
-							//title: 'Producto sin stock suficiente.',
-							text: respuesta.mensaje,
-								icon: 'error',
-							buttons: {
-								confirm: "Aceptar"
-							},
-						})
-					}
+					swal({
+                        title: respuesta.title,
+                        text: respuesta.mensaje,
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            cancel: "Cerrar",
+                        },
+                    });
 				}
+				$("#myModalanularguiafact").modal('hide');
 			}
 
 			if(funcion=='buscarTipoBodegaOrdDesp'){
@@ -402,7 +407,7 @@ $("#btnGuardarGanul").click(function(event)
 	event.preventDefault();
 	if(verificarAnulGuia())
 	{
-
+		aux_updated_at = $("#updated_at" + $("#idanul").val()).html();
 		var data = {
 			id    : $("#idanul").val(),
 			nfila : $("#nfilaanul").val(),
@@ -410,6 +415,7 @@ $("#btnGuardarGanul").click(function(event)
 			statusM : $("#statusM").val(),
 			//invbodega_id : respuesta.datas[0].id,
 			pantalla_origen  : 2, //Para saber de donde viene la anulacion en este caso de la pantalla Asignar factura
+			updated_at : aux_updated_at,
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/guardaranularguia';
@@ -504,12 +510,14 @@ $("#btnGuardarF").click(function(event)
 	event.preventDefault();
 	if(verificarFact())
 	{
+		aux_updated_at = $("#updated_at" + $("#idf").val()).html();
 		var data = {
 			id    : $("#idf").val(),
 			numfactura   : $("#numfacturam").val(),
 			fechafactura : $("#fechafacturam").val(),
 			nfila : $("#nfilaf").val(),
 			status : $("#status").val(),
+			updated_at : aux_updated_at,
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/despachoord/guardarfactdesp';
