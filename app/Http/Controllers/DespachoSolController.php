@@ -462,6 +462,7 @@ class DespachoSolController extends Controller
                 //dd($request);
                 if($despachosol->save()){
                     $aux_arraystocks = arraystocks($request);
+                    //dd($aux_arraystocks);
                     $cont_producto = count($request->producto_id);
                     if($cont_producto>0){
                         for ($i=0; $i < $cont_producto ; $i++){
@@ -475,6 +476,7 @@ class DespachoSolController extends Controller
                                         DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
                                         $despachosoldet->delete();
                                     }else{
+                                        //dd($request);
                                         $cont_bodegas = count($request->invcant);
                                         if($cont_bodegas>0){
                                             for ($b=0; $b < $cont_bodegas ; $b++){
@@ -496,6 +498,9 @@ class DespachoSolController extends Controller
                                                         if($request->staex[$b] == 1){
                                                             $aux_cant = 0;
                                                             $aux_cantex = $request->invcant[$b] * -1;
+                                                        }else{
+                                                            $aux_cant = $request->invcant[$b] * -1;
+                                                            $aux_cantex = 0;
                                                         }
                                                         //ACTUALIZAR SALDO DE STOCK EN ARREGLO QUE CONTIENE LA BODEGA DE CADA PRODUCTO
                                                         $aux_arraystocks[$invbodegaproducto_id]["stock"] = $aux_arraystocks[$invbodegaproducto_id]["stock"] + $aux_cant;
@@ -517,7 +522,6 @@ class DespachoSolController extends Controller
                                                             ]
                                                         );
                             
-                                                        //dd($request);
                                                     }else{
                                                         DB::table('despachosoldet_invbodegaproducto')
                                                             ->where('despachosoldet_id', $request->NVdet_id[$i])
@@ -689,8 +693,6 @@ class DespachoSolController extends Controller
                     }
                 }
             }
-            //dd("atajar");
-
             //dd($invmoduloBod->invmovmodulobodents[0]->id);
             if(count($invmodulo) == 0){
                 return response()->json([
@@ -769,7 +771,6 @@ class DespachoSolController extends Controller
                     }
                 }
             }
-            //dd("entro");
             if($aux_banderacant){
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
@@ -1093,7 +1094,6 @@ class DespachoSolController extends Controller
                             //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
                             //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
                             if(is_null($DespachoOrd->aprguiadesp)){
-                                //dd($despachoorddet_invbodegaproducto->cant);
                                 $aux_cantBodSD += $despachoorddet_invbodegaproducto->cant;
                                 $cantkg += ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $despachoorddet_invbodegaproducto->cant;
                                 $DespachoOrd_id = $DespachoOrd->id;
@@ -1255,7 +1255,6 @@ class DespachoSolController extends Controller
                     $invmodulo = InvMovModulo::where("cod","SOLDESP")->get();
                     $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
                     
-                    //dd($invmoduloBod->invmovmodulobodents[0]->id);
                     if(count($invmodulo) == 0){
                         return response()->json([
                             'mensaje' => 'No existe modulo SOLDESP'
@@ -1511,10 +1510,8 @@ class DespachoSolController extends Controller
         if(can('ver-pdf-solicitud-despacho',false)){
             $despachosol = DespachoSol::findOrFail($id);
             $despachosoldets = $despachosol->despachosoldets()->get();
-            //dd($despachosol);
             $empresa = Empresa::orderBy('id')->get();
             $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
-            //dd($empresa[0]['iva']);
             if($stareport == '1'){
                 if(env('APP_DEBUG')){
                     return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
@@ -1544,10 +1541,8 @@ class DespachoSolController extends Controller
         if(can('ver-pdf-vista-previa-orden-despacho',false)){
             $despachosol = DespachoSol::findOrFail($id);
             $despachosoldets = $despachosol->despachosoldets()->get();
-            //dd($despachosol);
             $empresa = Empresa::orderBy('id')->get();
             $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
-            //dd($empresa[0]['iva']);
             if($stareport == '1'){
                 if(env('APP_DEBUG')){
                     return view('despachosol.vistaprevod', compact('despachosol','despachosoldets','empresa'));
