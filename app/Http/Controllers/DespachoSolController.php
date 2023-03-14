@@ -265,7 +265,7 @@ class DespachoSolController extends Controller
                                                 $despachosoldet_invbodegaproducto->staex = $request->staex[$b];
                                             }
                                             else{
-                                                $invbodegaproducto_id = $request->invbodegaproducto_id[$i]; //TOMO EL CODIGO invbodegaproducto_id
+                                                $invbodegaproducto_id = $request->invbodegaproducto_id[$b]; //TOMO EL CODIGO invbodegaproducto_id
                                                 $aux_existencia = $aux_arraystocks[$invbodegaproducto_id]["stock"]; //AQUI ME UBICO EN LA POSICION DONDE ESTA LA BODEGA ESPECIFICA PARA TOMAR EL STOCK ACTUAL
                                                 if($request->invcant[$b] > $aux_existencia) {//$existencia["stock"]["cant"]){
                                                     $despachosoldet_invbodegaproducto->cant = $aux_existencia * -1; //$existencia["stock"]["cant"] * -1;
@@ -433,6 +433,7 @@ class DespachoSolController extends Controller
     public function actualizar(ValidarDespachoSol $request, $id)
     {
         can('guardar-solicitud-despacho');
+        //dd($request);
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
         //dd($notaventacerrada);
         if(count($notaventacerrada) == 0){
@@ -476,7 +477,6 @@ class DespachoSolController extends Controller
                                         DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
                                         $despachosoldet->delete();
                                     }else{
-                                        //dd($request);
                                         $cont_bodegas = count($request->invcant);
                                         if($cont_bodegas>0){
                                             for ($b=0; $b < $cont_bodegas ; $b++){
@@ -484,10 +484,8 @@ class DespachoSolController extends Controller
                                                     if($request->invcant[$b] > 0){
                                                         $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
                                                         //$existencia = InvBodegaProducto::existencia($array_request);
-                                                        
-                                                        $invbodegaproducto_id = $request->invbodegaproducto_id[$i]; //TOMO EL CODIGO invbodegaproducto_id
+                                                        $invbodegaproducto_id = $request->invbodegaproducto_id[$b]; //TOMO EL CODIGO invbodegaproducto_id
                                                         $aux_existencia = $aux_arraystocks[$invbodegaproducto_id]["stock"];//AQUI ME UBICO EN LA POSICION DONDE ESTA LA BODEGA ESPECIFICA PARA TOMAR EL STOCK ACTUAL
-        
                                                         if($request->invcant[$b] > $aux_existencia) { //$existencia["stock"]["cant"]){
                                                             $aux_cant = $aux_existencia * -1; //$existencia["stock"]["cant"] * -1;
                                                             $aux_cantex = ($request->invcant[$b] - $aux_existencia) * -1; // $existencia["stock"]["cant"]) * -1;
@@ -498,9 +496,6 @@ class DespachoSolController extends Controller
                                                         if($request->staex[$b] == 1){
                                                             $aux_cant = 0;
                                                             $aux_cantex = $request->invcant[$b] * -1;
-                                                        }else{
-                                                            $aux_cant = $request->invcant[$b] * -1;
-                                                            $aux_cantex = 0;
                                                         }
                                                         //ACTUALIZAR SALDO DE STOCK EN ARREGLO QUE CONTIENE LA BODEGA DE CADA PRODUCTO
                                                         $aux_arraystocks[$invbodegaproducto_id]["stock"] = $aux_arraystocks[$invbodegaproducto_id]["stock"] + $aux_cant;
@@ -518,10 +513,9 @@ class DespachoSolController extends Controller
                                                             [
                                                                 'cant' => $aux_cant,
                                                                 'cantex' => $aux_cantex,
-                                                                'staex' => $request->staex[$b]
+                                                                'staex' => is_null($request->staex[$b]) ? 0 : $request->staex[$b]
                                                             ]
                                                         );
-                            
                                                     }else{
                                                         DB::table('despachosoldet_invbodegaproducto')
                                                             ->where('despachosoldet_id', $request->NVdet_id[$i])
