@@ -196,6 +196,9 @@ $(document).ready(function () {
             </a> | 
             <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
                 <span class="fa fa-upload text-danger"></span>
+            </a> | 
+            <a onclick="anulardte(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Anular" data-toggle="tooltip">
+                <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
             $('td', row).eq(18).html(aux_text);
         }
@@ -411,3 +414,27 @@ $("#btnGuardarGanul").click(function(event)
 		alertify.error("Falta incluir informacion");
 	}
 });
+
+function anulardte(id){
+    var data = {
+        dte_id : id,
+        nfila  : id,
+        updated_at : $("#updated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dtendfactura/anular';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Anular DTE ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequest(data,ruta,'anulardte');
+        }
+    });
+}

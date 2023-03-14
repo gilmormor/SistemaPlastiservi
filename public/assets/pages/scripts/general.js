@@ -2729,8 +2729,49 @@ function ajaxRequestGeneral(data,url,funcion) {
 				}).then((value) => {
 				});
 			}
+			if(funcion=='anulardte'){
+				if (respuesta.id == 1) {
+                    //genpdfND(respuesta.nrodocto,"_U");
+                    $("#fila"+datatemp.nfila).remove();
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+                    swal({
+						title: respuesta.title,
+						text: respuesta.mensaje,
+						icon: 'error',
+						buttons: {
+							confirm: "Cerrar"
+						},
+					});
+					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+				}
+			}
 		},
 		error: function () {
 		}
 	});
+}
+
+function anulardte(id){
+    var data = {
+        dte_id : id,
+        nfila  : id,
+        updated_at : $("#updated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dtendfactura/anular';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Anular DTE ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequestGeneral(data,ruta,'anulardte');
+        }
+    });
 }

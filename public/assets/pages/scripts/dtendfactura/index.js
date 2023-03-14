@@ -151,10 +151,10 @@ $(document).ready(function () {
             $('td', row).eq(11).html(aux_text);
 
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito' onclick='genpdfND(" + data.nrodocto + ",\"\")'>" +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Débito' onclick='genpdfND(" + data.nrodocto + ",\"\")'>" +
                 data.nrodocto +
             "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito Cedible' onclick='genpdfND(" + data.nrodocto + ",\"_cedible\")'>" +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Débito Cedible' onclick='genpdfND(" + data.nrodocto + ",\"_cedible\")'>" +
                 data.nrodocto +
             "</a>";
             $('td', row).eq(12).html(aux_text);
@@ -199,6 +199,9 @@ $(document).ready(function () {
             </a> | 
             <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
                 <span class="fa fa-upload text-danger"></span>
+            </a> | 
+            <a onclick="anulardte(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Anular" data-toggle="tooltip">
+                <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
             $('td', row).eq(17).html(aux_text);
         }

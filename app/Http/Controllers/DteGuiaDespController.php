@@ -893,6 +893,7 @@ class DteGuiaDespController extends Controller
 
     public function volverGenDTE(Request $request){
         $dte = Dte::findOrFail($request->dte_id);
+        $dteini = Dte::findOrFail($request->dte_id);
         $respuesta = Dte::generardteprueba($dte);
         /*
         $respuesta = response()->json([
@@ -903,6 +904,17 @@ class DteGuiaDespController extends Controller
         $foliocontrol->bloqueo = 0;
         $foliocontrol->save();
         if($respuesta->original["id"] == 1){
+            if(empty($dteini->nrodocto)){
+                $dteini->nrodocto = $dte->nrodocto;
+                if(!$dteini->save()){
+                    return response()->json([
+                        'id' => 0,
+                        'titulo' => "",
+                        'mensaje'=> "Error al Guardar en dte",
+                        'tipo_alert' => 'error'
+                    ]);                            
+                }
+            }
             return response()->json([
                 'id' => 1,
                 'mensaje'=>'DTE Generado con exito: ' . $dte->nrodocto,

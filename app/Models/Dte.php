@@ -1268,6 +1268,18 @@ class Dte extends Model
         //PROCESO DE ANULAR DTE SIN HABER ASIGNADO O GENERADO UN NUMERO DE DTE (DOCUMENTO TRIBUTARIO LELECTRONICO)
         //dd($request);
         $dte = Dte::findOrFail($request->dte_id);
+        $aux_dtehijos = false;
+        foreach ($dte->dtedters as $dtedter) {
+            if($dtedter->dte->dteanul == null){
+                return response()->json([
+                    "id" => 0,
+                    "title" => "Registro no puede se anulado. ",
+                    "mensaje" => "Previamente debe anular documento asociado:\n" . $dtedter->dte->foliocontrol->desc . " Nro: " . $dtedter->dte->nrodocto . "",
+                    "tipo_alert" => 'error'
+                ]);
+    
+            }
+        }
         if($request->updated_at != $dte->updated_at){
             return response()->json([
                 'id' => 0,
@@ -1280,6 +1292,15 @@ class Dte extends Model
         //INSERTO UN REGISTRO EN DTE ANULADAS
         $dteanul = new DteAnul();
         $dteanul->dte_id = $request->dte_id;
+        if(isset($request->obs)){
+            $dteanul->obs = $request->obs;
+        }
+        if(isset($request->motanul_id)){
+            $dteanul->motanul_id = $request->motanul_id;
+        }
+        if(isset($request->moddevgiadesp_id)){
+            $dteanul->moddevgiadesp_id = $request->moddevgiadesp_id;
+        }
         $dteanul->usuario_id = auth()->id();
 
         foreach ($dte->dtedtes as $dtedte) {

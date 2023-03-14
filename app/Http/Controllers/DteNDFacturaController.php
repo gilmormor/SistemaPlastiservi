@@ -388,7 +388,6 @@ function consultaindex($dte_id){
     AND ISNULL(dte.statusgen)
     AND dte.sucursal_id IN ($sucurcadena)
     AND $aux_conddte_id
-    AND !ISNULL(dte.nrodocto)
     GROUP BY dte.id
     ORDER BY dte.id desc;";
 
