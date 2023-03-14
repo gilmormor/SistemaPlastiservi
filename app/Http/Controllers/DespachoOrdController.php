@@ -156,6 +156,7 @@ class DespachoOrdController extends Controller
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
         $arrayBodegasPicking = llenarArrayBodegasPickingSolDesp($detalles);
+        //dd($arrayBodegasPicking);
         //dd($detalles);
 
         /*

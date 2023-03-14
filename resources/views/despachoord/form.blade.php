@@ -287,7 +287,12 @@
                                                             $aux_stock = $arrayBodegasPicking[$invbodegaproducto->id]["stock"];
                                                             $aux_valueStock = $aux_stock == 0 ? "" : $aux_stock;
                                                         }else{
-                                                            $aux_stock = $existencia["stock"]["cant"];
+                                                            //SI NO ESTA EN EL ARRAY DE $arrayBodegasPicking NO TIENE PICKING, ENTONCES LE ASIGNO 0
+                                                            if($invbodegaproducto->invbodega->nomabre == "SolDe"){
+                                                                $aux_stock = 0;
+                                                            }else{
+                                                                $aux_stock = $existencia["stock"]["cant"];
+                                                            }
                                                         }
                                                         if ($invbodegaproducto->invbodega->sucursal_id == 1) {
                                                             $colorSuc = "#26ff00";
