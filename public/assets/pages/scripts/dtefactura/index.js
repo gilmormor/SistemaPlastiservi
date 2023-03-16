@@ -174,7 +174,7 @@ $(document).ready(function () {
                 "</a>"+
 */
                 aux_text = 
-                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + ")' title='Generar DTE Factura SII'>"+
+                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesarDTE(" + data.id + ")' title='Generar DTE Factura SII'>"+
                     "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
                 "</a>"+
                 "<a href='dtefactura' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
@@ -187,11 +187,14 @@ $(document).ready(function () {
             $('td', row).eq(16).attr('name','updated_at' + data.id);
 
             aux_text = 
-            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesar(${data.id})" title="Enviar a procesados">
+            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
                 <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
-            </a> | 
+            </a>|
             <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
                 <span class="fa fa-upload text-danger"></span>
+            </a>|
+            <a onclick="anulardte(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro" data-toggle="tooltip">
+                <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
             $('td', row).eq(17).html(aux_text);
         }
@@ -243,24 +246,6 @@ function ajaxRequest(data,url,funcion) {
 		data: data,
 		success: function (respuesta) {
 			
-			if(funcion=='procesar'){
-				if (respuesta.mensaje == "ok") {
-                    //genpdfFAC(respuesta.nrodocto,"_U");
-                    $("#fila"+datatemp.nfila).remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-				} else {
-                    swal({
-						//title: 'Error',
-						text: respuesta.mensaje,
-						icon: 'error',
-						buttons: {
-							confirm: "Aceptar"
-						},
-					}).then((value) => {
-					});
-					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
-				}
-			}
             if(funcion=='consultaranularguiafact'){
 				if (respuesta.mensaje == "ok") {
 					//alert(respuesta.despachoord.guiadespacho);
@@ -327,31 +312,6 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-
-function procesar(id){
-    var data = {
-        dte_id : id,
-        nfila  : id,
-        updated_at : $("#updated_at" + id).html(),
-        _token: $('input[name=_token]').val()
-    };
-    var ruta = '/dtefactura/procesar';
-    //var ruta = '/guiadesp/dteguiadesp';
-    swal({
-        title: '¿ Procesar DTE Factura ?',
-        text: "Esta acción no se puede deshacer!",
-        icon: 'warning',
-        buttons: {
-            cancel: "Cancelar",
-            confirm: "Aceptar"
-        },
-    }).then((value) => {
-        if (value) {
-            ajaxRequest(data,ruta,'procesar');
-        }
-    });
-
-}
 
 function estadoDTE(id){
     var data = {

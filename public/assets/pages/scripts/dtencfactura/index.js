@@ -191,7 +191,7 @@ $(document).ready(function () {
             $('td', row).eq(17).attr('name','updated_at' + data.id);
 
             aux_text = 
-            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesar(${data.id})" title="Enviar a procesados">
+            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
                 <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
             </a> | 
             <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
@@ -329,31 +329,6 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-
-function procesar(id){
-    var data = {
-        dte_id : id,
-        nfila  : id,
-        updated_at : $("#updated_at" + id).html(),
-        _token: $('input[name=_token]').val()
-    };
-    var ruta = '/dtencfactura/procesar';
-    //var ruta = '/guiadesp/dteguiadesp';
-    swal({
-        title: '¿ Procesar DTE Nota Crédito ?',
-        text: "Esta acción no se puede deshacer!",
-        icon: 'warning',
-        buttons: {
-            cancel: "Cancelar",
-            confirm: "Aceptar"
-        },
-    }).then((value) => {
-        if (value) {
-            ajaxRequest(data,ruta,'procesar');
-        }
-    });
-
-}
 
 function verificarAnulGuia()
 {

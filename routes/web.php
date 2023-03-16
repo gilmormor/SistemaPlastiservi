@@ -1131,3 +1131,25 @@ Route::get('dtefacturadir/{id}/{stareport}/exportPdf', 'DteFacturaDirController@
 Route::post('dtefacturadir/validarupdated', 'DteFacturaDirController@validarupdated')->name('validarupdated');
 Route::post('dtefacturadir/listardtedet', 'DteFacturaDirController@listardtedet')->name('dtefacturadir_listardtedet');
 Route::post('dtefacturadir/buscarfactura', 'DteFacturaDirController@buscarfactura')->name('dtefacturadir_buscarfactura');
+
+/*RUTAS FACTURA EXENTA*/
+Route::get('dtefacturaexenta', 'DteFacturaExentaController@index')->name('dtefacturaexenta');
+Route::get('dtefacturaexentapage', 'DteFacturaExentaController@dtefacturaexentapage')->name('dtefacturaexentapage');
+Route::get('dtefacturaexenta/totalizarindex', 'DteFacturaExentaController@totalizarindex')->name('dtefacturaexenta_totalizarindex');
+Route::get('dtefacturaexenta/crear', 'DteFacturaExentaController@crear')->name('crear_dtefacturaexenta');
+Route::post('dtefacturaexenta', 'DteFacturaExentaController@guardar')->name('guardar_dtefacturaexenta');
+Route::get('dtefacturaexenta/{id}/editar', 'DteFacturaExentaController@editar')->name('editar_dtefacturaexenta');
+Route::put('dtefacturaexenta/{id}', 'DteFacturaExentaController@actualizar')->name('actualizar_dtefacturaexenta');
+Route::delete('dtefacturaexenta/{id}', 'DteFacturaExentaController@eliminar')->name('eliminar_dtefacturaexenta');
+Route::get('dtefacturaexenta/listarguiadesp', 'DteFacturaExentaController@listarguiadesp')->name('dtefacturaexenta_listarguiadesp');
+Route::get('dtefacturaexenta/listarguiadesppage', 'DteFacturaExentaController@listarguiadesppage')->name('dtefacturaexenta_listarguiadesppage');
+Route::post('dtefacturaexenta/procesar', 'DteFacturaExentaController@procesar')->name('dtefacturaexenta_procesar');
+//Route::get('dtefacturaexenta/productobuscarpage', 'DteFacturaExentaController@productobuscarpage')->name('dtefacturaexenta_productobuscarpage');
+Route::get('dtefacturaexenta/clientebuscarpage', 'DteFacturaExentaController@clientebuscarpage')->name('dtefacturaexenta_clientebuscarpage');
+//Route::get('dtefacturaexenta/{id}/productobuscarpage', 'DteFacturaExentaController@productobuscarpageid')->name('dtefacturaexenta_productobuscarpageid');
+Route::get('dtefacturaexenta/{id}/clientebuscarpage', 'DteFacturaExentaController@clientebuscarpageid')->name('dtefacturaexenta_clientebuscarpageid');
+Route::post('dtefacturaexenta/dtedtefacturaexenta', 'DteFacturaExentaController@dtedtefacturaexenta')->name('dtefacturaexenta_dtedtefacturaexenta');
+Route::get('dtefacturaexenta/{id}/{stareport}/exportPdf', 'DteFacturaExentaController@exportPdf')->name('exportPdf_dtefacturaexenta');
+Route::post('dtefacturaexenta/validarupdated', 'DteFacturaExentaController@validarupdated')->name('validarupdated');
+Route::post('dtefacturaexenta/listardtedet', 'DteFacturaExentaController@listardtedet')->name('dtefacturaexenta_listardtedet');
+Route::post('dtefacturaexenta/buscarfactura', 'DteFacturaExentaController@buscarfactura')->name('dtefacturaexenta_buscarfactura');

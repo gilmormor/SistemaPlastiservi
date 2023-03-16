@@ -2713,6 +2713,7 @@ function volverGenDTE(dte_id){
 }
 
 function ajaxRequestGeneral(data,url,funcion) {
+	datatemp = data;
 	$.ajax({
 		url: url,
 		type: 'POST',
@@ -2728,6 +2729,24 @@ function ajaxRequestGeneral(data,url,funcion) {
 					},
 				}).then((value) => {
 				});
+			}
+			if(funcion=='procesarDTE'){
+				if (respuesta.id != 0) {
+                    //genpdfFAC(respuesta.nrodocto,"_U");
+                    $("#fila"+respuesta.nfila).remove();
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+                    swal({
+						title: respuesta.title,
+						text: respuesta.mensaje,
+						icon: respuesta.tipo_alert,
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+					});
+					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+				}
 			}
 			if(funcion=='anulardte'){
 				if (respuesta.id == 1) {
@@ -2774,4 +2793,29 @@ function anulardte(id){
             ajaxRequestGeneral(data,ruta,'anulardte');
         }
     });
+}
+
+function procesarDTE(id){
+    var data = {
+        dte_id : id,
+        nfila  : id,
+        updated_at : $("#updated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dtefactura/procesar';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Procesar DTE Factura ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequestGeneral(data,ruta,'procesarDTE');
+        }
+    });
+
 }

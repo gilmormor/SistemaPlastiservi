@@ -20,7 +20,7 @@ use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class DteFacturaDirController extends Controller
+class DteFacturaExentaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -29,11 +29,11 @@ class DteFacturaDirController extends Controller
      */
     public function index()
     {
-        can('listar-dte-factura-directa');
-        return view('dtefacturadir.index');
+        can('listar-dte-factura-exenta');
+        return view('dtefacturaexenta.index');
     }
 
-    public function dtefacturadirpage($dte_id = ""){
+    public function dtefacturaexentapage($dte_id = ""){
         $datas = consultaindex($dte_id);
         return datatables($datas)->toJson();
     }
@@ -46,7 +46,7 @@ class DteFacturaDirController extends Controller
      */
     public function crear()
     {
-        can('crear-dte-factura-directa');
+        can('crear-dte-factura-exenta');
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
         $tablas['empresa'] = Empresa::findOrFail(1);
@@ -55,7 +55,7 @@ class DteFacturaDirController extends Controller
         $centroeconomicos = CentroEconomico::orderBy('id')->get();
 
         //dd($tablas);
-        return view('dtefacturadir.crear',compact('tablas','centroeconomicos'));
+        return view('dtefacturaexenta.crear',compact('tablas','centroeconomicos'));
 
     }
 
@@ -67,11 +67,11 @@ class DteFacturaDirController extends Controller
      */
     public function guardar(Request $request)
     {
-        can('guardar-dte-factura-directa');
+        can('guardar-dte-factura-exenta');
         //dd($request);
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
-            return redirect('dtefacturadir')->with([
+            return redirect('dtefacturaexenta')->with([
                 'mensaje'=>'No hay items, no se guardó.',
                 'tipo_alert' => 'alert-error'
             ]);
@@ -174,24 +174,23 @@ class DteFacturaDirController extends Controller
             }
         }
         if($Tmntneto <= 0){
-            return redirect('dtefactura')->with([
+            return redirect('dtefacturaexenta')->with([
                 'mensaje'=> "Neto total de factura debe ser mayor a cero" ,
                 'tipo_alert' => 'alert-error'
             ]);
         }
 
         $empresa = Empresa::findOrFail(1);
-        if($request->foliocontrol_id == 1){
-            $Tiva = round(($empresa->iva/100) * $Tmntneto);
-            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);
-            $dte->tasaiva = $empresa->iva;
-            $dte->iva = $Tiva;
-            $dte->mnttotal = $Tmnttotal;        
-        }
         if($request->foliocontrol_id == 7){
             $dte->tasaiva = 0;
             $dte->iva = 0;
             $dte->mnttotal = $Tmntneto;
+        }else{
+            return redirect('dtefacturaexenta')->with([
+                'mensaje'=> "Tipo de documento es diferente a exento." ,
+                'tipo_alert' => 'alert-error'
+            ]);
+
         }
 
         $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
@@ -269,14 +268,14 @@ class DteFacturaDirController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
-            return redirect('dtefacturadir')->with([
+            return redirect('dtefacturaexenta')->with([
                 'mensaje'=>'Factura creada con exito.',
                 'tipo_alert' => 'alert-success'
             ]);
         }else{
             $foliocontrol->bloqueo = 0;
             $foliocontrol->save();
-            return redirect('dtefacturadir')->with([
+            return redirect('dtefacturaexenta')->with([
                 'mensaje'=>$respuesta->original["mensaje"] ,
                 'tipo_alert' => 'alert-error'
             ]);
@@ -286,35 +285,7 @@ class DteFacturaDirController extends Controller
     public function procesar(Request $request)
     {
         if ($request->ajax()) {
-            $dte = Dte::findOrFail($request->dte_id);
-            if($dte->updated_at != $request->updated_at){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Registro modificado por otro usuario.',
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            $empresa = Empresa::findOrFail(1);
-            $soap = new SoapController();
-            $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
-            //$Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,"200");
-            //dd($Estado_DTE);
-            if($Estado_DTE->Estatus == 3){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje' => $Estado_DTE->MsgEstatus . " Nro: " . $dte->nrodocto,
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            if($Estado_DTE->EstadoDTE == 16){
-                return Dte::updateStatusGen($dte,$request);
-            }else{
-                return response()->json([
-                    'id' => 0,
-                    'mensaje' => $Estado_DTE->DescEstado . " Nro: " . $dte->nrodocto,
-                    'tipo_alert' => 'error'
-                ]);
-            }
+            return Dte::procesarDTE($request);
         }
     }
 }
@@ -344,12 +315,11 @@ function consultaindex($dte_id){
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
     INNER JOIN foliocontrol
     ON  foliocontrol.id = dte.foliocontrol_id
-    WHERE (dte.foliocontrol_id=1 OR dte.foliocontrol_id=7)
+    WHERE dte.foliocontrol_id=7
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.id NOT IN (SELECT dtedte.dte_id FROM dtedte WHERE ISNULL(dtedte.deleted_at))
     AND dte.sucursal_id IN ($sucurcadena)
     AND ISNULL(dte.statusgen)
-    AND !ISNULL(dte.nrodocto)
     AND $aux_conddte_id
     GROUP BY dte.id
     ORDER BY dte.id desc;";
@@ -358,7 +328,7 @@ function consultaindex($dte_id){
 }
 
 function mensajeRespuesta($mensaje){
-    return redirect('dtefacturadir')->with([
+    return redirect('dtefacturaexenta')->with([
         'mensaje' => $mensaje,
         'tipo_alert' => 'alert-error'
     ]);

@@ -120,7 +120,6 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             'tipo_alert' => 'alert-error'
                         ]);
                     }
-                    //dd($request);
                     $request->request->add(['usuario_id' => auth()->id()]);
                     $dteanul = DteAnul::create($request->all());
                     $dte->updated_at = date("Y-m-d H:i:s");

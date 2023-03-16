@@ -11,7 +11,7 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
         "order"       : [[ 0, "desc" ]],
-        'ajax'        : "dtefacturadirpage",
+        'ajax'        : "dtefacturaexentapage",
         'columns'     : [
             {data: 'id'}, // 0
             {data: 'fechahora'}, // 1
@@ -192,6 +192,8 @@ function ajaxRequest(data,url,funcion) {
 		}
 	});
 }
+
+
 
 function verificarAnulGuia()
 {

@@ -416,18 +416,19 @@ class Dte extends Model
         LEFT JOIN clientebloqueado
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
         WHERE $vendedorcond
-        and $aux_condFecha
-        and $aux_condrut
-        and $aux_condoc_id
-        and $aux_condgiro_id
-        and $aux_condtipoentrega_id
-        and $aux_condnotaventa_id
-        and $aux_condcomuna_id
+        AND $aux_condFecha
+        AND $aux_condrut
+        AND $aux_condoc_id
+        AND $aux_condgiro_id
+        AND $aux_condtipoentrega_id
+        AND $aux_condnotaventa_id
+        AND $aux_condcomuna_id
         AND dte.sucursal_id in ($sucurcadena)
         AND NOT ISNULL(dte.nrodocto)
         AND NOT ISNULL(dte.fchemis)
-        and $aux_conddteguiausada
-        and dte.foliocontrol_id = 2
+        AND $aux_conddteguiausada
+        AND dte.foliocontrol_id = 2
+        AND dte.statusgen = 1
         AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
         order BY dte.nrodocto;";
 
@@ -759,8 +760,12 @@ class Dte extends Model
             $dtesql = consultasql_dte($request);
             $respuesta['dte'] = $dtesql;
             //dd($respuesta['dte']);
-            if(count($dtesql) > 0){
+            if(count($dtesql)){
                 $dte = Dte::findOrFail($dtesql[0]->dte_id);
+                if($dte->statusgen == null){
+                    $respuesta['mensaje'] = "Documento no ha sido aceptado por SII";
+                    return $respuesta;
+                }
                 foreach ($dte->dtedters as $dtedter) {
                     if(!isset($dtedter->dte->dteanul)){
                         if($dtedter->dte->dtencnd->codref == 1){
@@ -1560,6 +1565,40 @@ class Dte extends Model
         }
     }
 
+    public static function procesarDTE($request)
+    {
+        $dte = Dte::findOrFail($request->dte_id);   
+        if($dte->updated_at != $request->updated_at){
+            return response()->json([
+                'id' => 0,
+                'mensaje'=>'Registro modificado por otro usuario.',
+                'tipo_alert' => 'warning'
+            ]);
+        }
+        $empresa = Empresa::findOrFail(1);
+        $soap = new SoapController();
+        $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
+        //$Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,"200");
+        //dd($Estado_DTE);
+        if($Estado_DTE->Estatus == 3){
+            return response()->json([
+                'id' => 0,
+                'title' => "DTE aun no ha sido acetado por SII",
+                'mensaje' => "Estado: " . $Estado_DTE->MsgEstatus . "\n DTE Nro: " . $dte->nrodocto,
+                'tipo_alert' => 'warning'
+            ]);
+        }
+        if($Estado_DTE->EstadoDTE == 16){
+            return Dte::updateStatusGen($dte,$request);
+        }else{
+            return response()->json([
+                'id' => 0,
+                'title' => "DTE aun no ha sido acetado por SII",
+                'mensaje' => "Estado: " . $Estado_DTE->DescEstado . "\n DTE Nro: " . $dte->nrodocto,
+                'tipo_alert' => 'warning'
+            ]);
+        }
+    }
 }
 
 function dtefactura($id,$Folio,$tipoArch,$request){
@@ -2328,6 +2367,10 @@ function consultaindex($dte_id){
 }
 
 function consultasql_dte($request){
+    $aux_statusCond = "true";
+    if (isset($request->statusgen)){
+        $aux_statusCond = "dte.statusgen = $request->statusgen";
+    }
     //dte_idrefanul: CODIGO DTE QUE ANULO EL DTE
     //codref: CODIGO REFERENCIA QUE INDICA EL MOTIVO DE LA ANULACION DEL DTE
     $sql = "SELECT dte.id as dte_id,dte.fchemis,dte.nrodocto,dte.foliocontrol_id,dte.fechahora,dte.centroeconomico_id,
@@ -2339,7 +2382,7 @@ function consultasql_dte($request){
     cliente.provinciap_id,cliente.comunap_id,
     clientebloqueado.descripcion,comuna.nombre as comuna_nombre,provincia.nombre as provincia_nombre,
     formapago.descripcion as formapago_desc,plazopago.dias as plazopago_dias,
-    foliocontrol.tipodocto,foliocontrol.nombrepdf
+    foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.statusgen
     FROM dte INNER JOIN cliente
     ON dte.cliente_id  = cliente.id AND ISNULL(dte.deleted_at) AND ISNULL(cliente.deleted_at)
     LEFT JOIN dtefac
@@ -2359,7 +2402,7 @@ function consultasql_dte($request){
     WHERE dte.foliocontrol_id in ($request->condFoliocontrol) 
     AND dte.nrodocto = $request->nrodocto
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
-    AND dte.statusgen = 1
+    AND $aux_statusCond
     ORDER BY dte.id desc;";
     $dte = DB::select($sql);
     return $dte;    

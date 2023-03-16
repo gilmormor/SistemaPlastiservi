@@ -121,7 +121,7 @@ $(document).ready(function () {
             $('td', row).eq(15).attr('name','updated_at' + data.id);
 
             aux_text = aux_text +
-            `<a onclick="anularguiafact(${data.id},${data.despachoord_id},\"dteguiadesp\")" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro y devolver a Orden de Despacho" data-toggle="tooltip">
+            `<a onclick="anularguiafact(${data.id},${data.despachoord_id},'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro y devolver a Orden de Despacho" data-toggle="tooltip">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a> | 
             <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">

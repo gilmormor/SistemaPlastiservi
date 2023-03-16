@@ -4,6 +4,7 @@
 <input type='hidden' id="aux_obs" name="aux_obs" value="{{old('aux_obs', $data->obs ?? '')}}">
 <input type="hidden" name="aux_iva" id="aux_iva" value="{{old('aux_iva', $tablas['empresa']->iva ?? '')}}">
 <input type="hidden" name="dtefoliocontrol_id" id="dtefoliocontrol_id" value="1">
+<input type="hidden" name="foliocontrol_id" id="foliocontrol_id" value="1">
 <input type="text" name="ids" id="ids" value="0" style="display: none">
 <input type="hidden" name="imagen" id="imagen" value="{{old('imagen', $data->oc_file ?? '')}}">
 <input type="hidden" name="tipoprod" id="tipoprod" value="2">
@@ -123,7 +124,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-2">
+            <div class="form-group col-xs-12 col-sm-3">
                 <label for="hep" class="control-label" data-toggle='tooltip' title="Numero de Atencion o HEP">Hep</label>
                 <input type="text" name="hep" id="hep" class="form-control" value="{{old('hep', $data->dtefac->hep ?? '')}}" maxlength="12"/>
             </div>
@@ -176,18 +177,7 @@
                         >Otros traslados no venta</option>
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-3">
-                <label for="foliocontrol_id" class="control-label requerido">Tipo Documento</label>
-                <select name="foliocontrol_id" id="foliocontrol_id" class="form-control select2  foliocontrol_id" data-live-search='true' value="{{old('foliocontrol_id', isset($data) ? $data->foliocontrol_id : ($data->foliocontrol_id ?? ''))}}" required>
-                    <option value="">Seleccione...</option>
-                    @foreach($tablas['foliocontrol'] as $foliocontrol)
-                        @if ($foliocontrol->tipodocto == 33 or $foliocontrol->tipodocto == 34)
-                            <option value="{{$foliocontrol->id}}">{{$foliocontrol->desc}}</option>                        
-                        @endif
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group col-xs-12 col-sm-3">
+            <div class="form-group col-xs-12 col-sm-5">
                 <label for="obs" class="control-label">Observaciones</label>
                 <textarea class="form-control" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
             </div>

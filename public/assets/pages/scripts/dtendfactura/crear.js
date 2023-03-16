@@ -266,6 +266,7 @@ $("#nrodoctoF").blur(function(){
 	{
 		var data = {
 			nrodocto: codigo,
+			statusgen : null,
 			tdfoliocontrol_id : $("#tdfoliocontrol_id").val(),
 			_token: $('input[name=_token]').val()
 		};
@@ -277,10 +278,12 @@ $("#nrodoctoF").blur(function(){
 			success: function (respuesta) {
 				bandera = true;
 				if(respuesta.dte.length>0){
-					if(respuesta.dtefacdet.length>0){
-						llenarDatosCliente(respuesta);
-						llenarItemFact(respuesta.dtefacdet);
-						bandera = false;
+					if(respuesta.dte[0].statusgen == 1){
+						if(respuesta.dtefacdet.length>0){
+							llenarDatosCliente(respuesta);
+							llenarItemFact(respuesta.dtefacdet);
+							bandera = false;
+						}	
 					}
 				}
 				if(bandera){

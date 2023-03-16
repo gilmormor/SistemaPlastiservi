@@ -168,17 +168,22 @@ class DteFacturaController extends Controller
             $dte->dteguiausadas[] = $dteguiausada;
             //$dteguiausada->save();
         }
+        if($Tmntneto <= 0){
+            return redirect('dtefactura')->with([
+                'mensaje'=> "Neto total de factura debe ser mayor a cero" ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $empresa = Empresa::findOrFail(1);
         $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
         if($request->foliocontrol_id == 1){
-            if($Tmntneto > 0){
-                $Tiva = round(($empresa->iva/100) * $Tmntneto);
-                $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);
-                $dte->tasaiva = $dteguiadesp->tasaiva;
-                $dte->iva = $Tiva;
-                $dte->mnttotal = $Tmnttotal;        
-            }    
-        }else{
+            $Tiva = round(($empresa->iva/100) * $Tmntneto);
+            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);
+            $dte->tasaiva = $dteguiadesp->tasaiva;
+            $dte->iva = $Tiva;
+            $dte->mnttotal = $Tmnttotal;        
+        }
+        if($request->foliocontrol_id == 7){
             $dte->tasaiva = 0;
             $dte->iva = 0;
             $dte->mnttotal = $Tmntneto;
@@ -344,35 +349,7 @@ class DteFacturaController extends Controller
     public function procesar(Request $request)
     {
         if ($request->ajax()) {
-            $dte = Dte::findOrFail($request->dte_id);   
-            if($dte->updated_at != $request->updated_at){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Registro modificado por otro usuario.',
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            $empresa = Empresa::findOrFail(1);
-            $soap = new SoapController();
-            $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
-            //$Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,"200");
-            //dd($Estado_DTE);
-            if($Estado_DTE->Estatus == 3){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje' => $Estado_DTE->MsgEstatus . " Nro: " . $dte->nrodocto,
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            if($Estado_DTE->EstadoDTE == 16){
-                return Dte::updateStatusGen($dte,$request);
-            }else{
-                return response()->json([
-                    'id' => 0,
-                    'mensaje' => $Estado_DTE->DescEstado . " Nro: " . $dte->nrodocto,
-                    'tipo_alert' => 'error'
-                ]);
-            }
+            return Dte::procesarDTE($request);
         }
     }
 
@@ -583,7 +560,7 @@ function consultaindex($dte_id){
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
     INNER JOIN foliocontrol
     ON  foliocontrol.id = dte.foliocontrol_id
-    WHERE (dte.foliocontrol_id=1 OR dte.foliocontrol_id=7)
+    WHERE (dte.foliocontrol_id=1)
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.sucursal_id IN ($sucurcadena)
     AND ISNULL(dte.statusgen)
