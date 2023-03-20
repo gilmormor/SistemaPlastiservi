@@ -150,6 +150,7 @@ function ajaxRequest(data,url,funcion) {
                 if(respuesta.error == 0){
                     $("#fechaestdesp" + aux_data.i).html($("#fechaed" + aux_data.i).val());
                     $("#savefed" + aux_data.i).attr('updated_at',respuesta.updated_at);
+                    $("#fechaestdespTD" + aux_data.i).attr('data-order',respuesta.fechaestdesp);
                 }
             }
 		},

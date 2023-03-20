@@ -1750,6 +1750,7 @@ class DespachoSolController extends Controller
                     return response()->json([
                         'error'=>'0',
                         'mensaje'=>'Registro actualizado con exito.',
+                        'fechaestdesp' => $despachosol->fechaestdesp,
                         'updated_at' => date('Y-m-d H:i:s', strtotime($despachosol->updated_at)),
                         'tipo_alert' => 'success'
                     ]);
@@ -2390,8 +2391,10 @@ function reportesoldesp1($request){
                         $data->id
                     </a>
                 </td>
-                <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                <td>" . 
+                <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . 
+                    date('d-m-Y', strtotime($data->fechahora)) . 
+                "</td>
+                <td id='fechaestdespTD$i' name='fechaestdespTD$i' data-order='$data->fechaestdesp'>" . 
                     "<a id='fechaestdesp$i' name='fechaestdesp$i' class='editfed'>" .
                         date('d/m/Y', strtotime($data->fechaestdesp)) . 
                     "</a>
