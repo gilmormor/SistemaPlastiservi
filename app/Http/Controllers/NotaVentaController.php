@@ -289,6 +289,7 @@ class NotaVentaController extends Controller
                 'persona.nombre',
                 'persona.apellido'
             ])
+            ->groupBy('vendedor.id')
             ->get();
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
@@ -544,6 +545,7 @@ class NotaVentaController extends Controller
                 'persona.nombre',
                 'persona.apellido'
             ])
+            ->groupBy('vendedor.id')
             ->get();
 
         $empresa = Empresa::findOrFail(1);
