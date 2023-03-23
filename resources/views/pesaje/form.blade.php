@@ -68,14 +68,14 @@
 <input type="hidden" name="invmovtipo_id" id="invmovtipo_id" value="{{old('invmovtipo_id', $data->invmovtipo_id ?? '1')}}">
 
 <div class="form-group">
-    <label for="createdtemp_at" class="col-lg-3 control-label requerido" title="Fecha creación del registro">Fecha</label>
+    <label for="createdtemp_at" class="col-lg-3 control-label requerido tooltipsC" title="Fecha creación del registro">Fecha</label>
     <div class="col-lg-8">
         <input type="text" name="createdtemp_at" id="createdtemp_at" class="form-control" value="{{old('createdtemp_at', isset($data->created_at) ? date('d/m/Y', strtotime($data->created_at)) : date('d/m/Y'))}}" required readonly/>
     </div>
 </div>
 
 <div class="form-group">
-    <label for="fechahora" class="col-lg-3 control-label requerido">Fecha Producción</label>
+    <label for="fechahora" class="col-lg-3 control-label requerido tooltipsC" title="Fecha de Producción">Fecha Producción</label>
     <div class="col-lg-8">
         <input type="text" name="fechahora" id="fechahora" class="form-control datepicker" value="{{old('fechahora', $data->fechahora ?? '')}}" required readonly/>
     </div>

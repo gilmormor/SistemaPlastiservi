@@ -1,5 +1,3 @@
-<input type="text" name="ids" id="ids" value="{{$tablas['aux_cont'] ? $tablas['aux_cont'] : 0}}" style="display: none">
-
 <div class="form-group">
     <label for="nombre" class="col-lg-3 control-label requerido">Nombre</label>
     <div class="col-lg-9">
