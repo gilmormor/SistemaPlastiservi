@@ -1,6 +1,6 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-	$('#tabla-data-inventsal').DataTable({
+	$('#tabla-data-pesaje').DataTable({
 		'paging'      : true, 
 		'lengthChange': true,
 		'searching'   : true,
@@ -9,13 +9,14 @@ $(document).ready(function () {
 		'autoWidth'   : false,
 		'processing'  : true,
 		'serverSide'  : true,
-		'ajax'        : "inventsalaprobarpage",
+		'ajax'        : "pesajeaprobarpage",
 		"order": [[ 0, "id" ]],
 		'columns'     : [
 			{data: 'id'},
 			{data: 'fechahora'},
 			{data: 'desc'},
 			{data: 'id'},
+			{data: 'updated_at',className:"ocultar"},
             {defaultContent : 
 				""
             }
@@ -27,7 +28,7 @@ $(document).ready(function () {
 			$(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
 			aux_text = 
-			"<a class='btn-accion-tabla btn-sm tooltipsC' title='Entrada Salida de Inv' onclick='genpdfINVENTSAL(" + data.id + ",1)'>"+
+			"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Entrada Inv Pesaje' onclick='genpdfPESAJE(" + data.id + ",1)'>"+
 				data.id +
 			"</a>";
 			$('td', row).eq(0).html(aux_text);
@@ -37,17 +38,21 @@ $(document).ready(function () {
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 			aux_text = 
-			"<a class='btn-accion-tabla btn-sm btngenpdfINVENTSAL tooltipsC' title='PDF Entrada Salida Inv'>" +
+			"<a class='btn-accion-tabla btn-sm btngenpdfPESAJE tooltipsC' title='PDF Entrada Inv Pesaje'>" +
 				"<i class='fa fa-fw fa-file-pdf-o'></i>" +
 			"</a>";
 			$('td', row).eq(3).html(aux_text);
 
+			$('td', row).eq(4).html(data.updated_at);
+			$('td', row).eq(4).attr("id","updated_at"+data.id);
+			$('td', row).eq(4).attr("name","updated_at"+data.id);
+			$('td', row).eq(4).addClass("updated_at");
 
 			aux_text = 
-			"<a class='btn-accion-tabla btn-sm tooltipsC' title='Aprobar Entrada Salida Inv' onclick='aprobrecentsalinv(" + data.id + ")'>" +
+			"<a class='btn-accion-tabla btn-sm tooltipsC' title='Aprobar Entrada Salida Inv' onclick='aprobrecPesaje(" + data.id + ")'>" +
 				"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
 			"</a>"
-			$('td', row).eq(4).html(aux_text);
+			$('td', row).eq(5).html(aux_text);
 
 		}
 	});
@@ -59,7 +64,7 @@ $(document).ready(function () {
 	
 });
 
-function aprobrecentsalinv(id){
+function aprobrecPesaje(id){
 	quitarvalidacioneach();
 	$("#id").val(id);
 	$("#aprobobs").val("");
@@ -72,9 +77,10 @@ $("#btnaprobarM").click(function(event){
 		id       : $("#id").val(),
 		staaprob : 2,
 		obsaprob : $("#aprobobs").val(),
+		updated_at : $("#updated_at" + $("#id").val()).html(),
         _token: $('input[name=_token]').val()
 	};
-	var ruta = '/inventsal/aprobinventsal/'+data['id'];
+	var ruta = '/pesaje/aprobpesaje/'+data['id'];
 	swal({
 		title: '¿ Seguro desea Aprobar ?',
 		text: "Esta acción no se puede deshacer!",
@@ -85,7 +91,7 @@ $("#btnaprobarM").click(function(event){
 		},
 	}).then((value) => {
 		if (value) {
-			ajaxRequest(data,ruta,'aprobinventsal');
+			ajaxRequest(data,ruta,'aprobpesaje');
 		}
 	});
 
@@ -97,9 +103,10 @@ $("#btnrechazarM").click(function(event){
 			id       : $("#id").val(),
 			staaprob : 3,
 			obsaprob : $("#aprobobs").val(),
+			updated_at : $("#updated_at" + $("#id").val()).html(),
 			_token: $('input[name=_token]').val()
 		};
-		var ruta = '/inventsal/aprobinventsal/'+data['id'];
+		var ruta = '/pesaje/aprobpesaje/'+data['id'];
 		swal({
 			title: '¿ Seguro desea Rechazar ?',
 			text: "Esta acción no se puede deshacer!",
@@ -110,7 +117,7 @@ $("#btnrechazarM").click(function(event){
 			},
 		}).then((value) => {
 			if (value) {
-				ajaxRequest(data,ruta,'aprobinventsal');
+				ajaxRequest(data,ruta,'aprobpesaje');
 			}
 		});
 	}else{
@@ -124,7 +131,7 @@ function ajaxRequest(data,url,funcion) {
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			if(funcion=='aprobinventsal'){
+			if(funcion=='aprobpesaje'){
 				$("#aprobobs").val("");
 				$("#myModalaprobcot").modal('hide');
 				Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipmen);

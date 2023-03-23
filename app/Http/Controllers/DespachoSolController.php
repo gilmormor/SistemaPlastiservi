@@ -693,13 +693,6 @@ class DespachoSolController extends Controller
                     'mensaje' => 'No existe modulo SOLDESP'
                 ]);
             }
-
-            //dd($invmoduloBod->invmovmodulobodents[0]->id);
-            if(count($invmodulo) == 0){
-                return response()->json([
-                    'mensaje' => 'No existe modulo SOLDESP'
-                ]);
-            }
             //$despachosol = DespachoSol::findOrFail($request->id);
             $aux_bandera = true;
             foreach ($despachosol->despachosoldets as $despachosoldet) {

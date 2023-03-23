@@ -114,6 +114,22 @@
             >
                 Scrap
             </option>
+            <option
+                value="5"
+                @if (isset($data->tipo) and ($data->tipo==5))
+                    {{'selected'}}
+                @endif
+            >
+                Produccion
+            </option>
+            <option
+                value="6"
+                @if (isset($data->tipo) and ($data->tipo==6))
+                    {{'selected'}}
+                @endif
+            >
+                Transitoria Pesaje
+            </option>
 
         </select>
     </div>

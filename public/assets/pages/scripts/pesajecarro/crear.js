@@ -1,6 +1,5 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-    aux_nfilas=parseInt($("#dataTables >tbody >tr").length);
-    //alert(aux_nfilas);
+	$(".numerico").numeric({decimalPlaces: 2, negative : false });
     $("#nombre").focus();
 });

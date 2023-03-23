@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarProducto;
+use App\Models\AreaProduccionSucLinea;
 use App\Models\CategoriaProd;
 use App\Models\ClaseProd;
 use App\Models\Color;
@@ -289,6 +290,9 @@ class ProductoController extends Controller
                 $respuesta = $array_productos[0];
                 $producto = Producto::findOrFail($request->id);
                 $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->where('activo','=',1)->toArray();
+                //$respuesta['areaproduccion'] = $producto->categoriaprod->areaproduccion->toArray();
+                $respuesta['areaproduccionsucs'] = $producto->categoriaprod->areaproduccion->areaproduccionsucs->toArray();
+                $respuesta['areaproduccionsuclineas'] = AreaProduccionSucLinea::get();
                 //dd($respuesta['bodegas']);
                 foreach ($respuesta['bodegas'] as &$bodega) {
                     $request1 = new Request();

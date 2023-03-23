@@ -1068,6 +1068,17 @@ $(document).on("click", ".btngenpdfINVENTSAL", function(){
 	genpdfINVENTSAL(id,1);
 });
 
+$(document).on("click", ".btngenpdfPESAJE", function(){
+    fila = $(this).closest("tr");
+	form = $(this);
+	if(form.attr('col')){
+		id = fila.find('td:eq('+form.attr('col')+')').text();
+	}else{
+		id = fila.find('td:eq(0)').text();
+	}
+	genpdfPESAJE(id,1);
+});
+
 function genpdfSD(id,stareport){ //GENERAR PDF Solicitud de Despacho
 	$('#contpdf').attr('src', '/despachosol/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
@@ -1110,6 +1121,14 @@ function genpdfINVENTSAL(id,stareport){ //GENERAR PDF INVENTARIO ENTRADA SALIDA
 	var data = "?id=" + id +
     "&stareport="+stareport
 	$('#contpdf').attr('src', '/inventsal/exportPdf/' + data);
+	//console.log($('#contpdf'));
+	$("#myModalpdf").modal('show')
+}
+
+function genpdfPESAJE(id,stareport){ //GENERAR PDF PESAJE
+	var data = "?id=" + id +
+    "&stareport="+stareport
+	$('#contpdf').attr('src', '/pesaje/exportPdf/' + data);
 	//console.log($('#contpdf'));
 	$("#myModalpdf").modal('show')
 }
@@ -1887,3 +1906,255 @@ $("#btnbuscarproductogen").click(function(event){
     }
     $("#myModalBuscarProd").modal('show');
 });
+
+async function buscarDatosProd(producto_id){
+	codigo = producto_id.val();
+	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
+	{
+		var data = {
+			id: codigo,
+			_token: $('input[name=_token]').val()
+		};
+		return resul = await $.ajax({
+			url: '/producto/buscarUnProducto',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				//console.log(respuesta);
+				if(respuesta['cont']>0){
+					if(respuesta['estado'] == 0){
+						swal({
+							title: 'Producto inactivo.',
+							text: "Producto existe pero está Inactivo.",
+							icon: 'error',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								$("#producto_idM").focus();
+							}
+						});
+					}
+				}else{
+					producto_id.val("");
+					swal({
+						title: `Código producto ${codigo} no existe.`,
+						text: "Presione F2 para buscar",
+						icon: 'error',
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							producto_id.focus();
+						}
+					});
+				}
+				return respuesta;
+			}
+		});
+		//console.log(resul);
+	}else{
+		return [];
+	}
+}
+
+$("#foliocontrol_id").change(function(){
+	totalizar();
+});
+
+function buscarProdKeyUp(obj,event){
+	//console.log(obj)
+	if(event.which==113){
+		//console.log(obj);
+		$(obj).val("");
+		//console.log($(obj).parent().parent().attr("item"));
+		cargardatospantprod();
+		$("#itemAct").val($(obj).parent().parent().attr("item")); //Crear input Item actual
+		$("#myModalBuscarProd").modal('show');
+	}
+}
+
+function buscarProd(item){
+	//console.log($(obj).parent().parent().attr("item"));
+	cargardatospantprod();
+	$("#itemAct").val(item); //Crear input Item actual
+	$("#myModalBuscarProd").modal('show');
+}
+
+//FUNCTION CON ASYNC, YA QUE ME INTERESA ESPERAR LA RESPUESTA DE LA BUSQUEDA
+async function llenarDatosProd(vlrcodigo){
+	let item = vlrcodigo.attr("item");
+	//console.log(item);
+	if($("#vlrcodigo" + item).val() != $("#producto_id" + item).val()){
+		arrayDatosProducto = await buscarDatosProd(vlrcodigo);
+		//console.log(arrayDatosProducto);
+		$("#producto_id" + item).val("");
+		$("#nmbitem" + item).val("");
+		$("#prcitem" + item).val("0");
+		if(arrayDatosProducto['cont'] > 0){
+			$("#lblproducto_id" + item).html(arrayDatosProducto["id"]);
+			$("#vlrcodigo" + item).val(arrayDatosProducto["id"]);
+			$("#producto_id" + item).val(arrayDatosProducto["id"]);
+			$("#nombreProdTD" + item).html(arrayDatosProducto["nombre"]);
+			$("#nmbitem" + item).val(arrayDatosProducto["nombre"]);
+			$("#prcitem" + item).val(arrayDatosProducto["precio"]);
+		}
+		calsubtotalitem($("#vlrcodigo" + item));	
+	}
+}
+
+function validarItemVacios(){
+	//VALIDAR QUE LOS ITEM DE PRODUCTOS NO QUEDEN EN BLANCO
+	//$(".itemrequerido").change(function(){
+		//console.log("entro");
+		$('.itemrequerido').each(function(){
+			let id = $(this).attr("id");
+			let valor = $(this).val();
+			$("#itemcompletos").val("");
+			if( (valor == null || valor.length == 0 || /^\s+$/.test(valor)) || valor == ""){
+				//$("#itemcompletos").val("");
+				let item = $(this).parent().parent().attr("item");
+				$("#lblitemcompletos").html($(this).attr("title") + " item: " + $("#nroitem" + item).html());
+				//$(this).focus();
+				return false;
+			}else{
+				$("#itemcompletos").val("1");
+			}
+			//console.log('id: ' + id + '  Valor: ' + valor);
+		});	
+	//});
+}
+
+function volverGenDTE(dte_id){
+	var data = {
+        dte_id : dte_id,
+        updated_at : $("#updated_at" + dte_id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dteguiadesp/volverGenDTE';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Generar DTE ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequestGeneral(data,ruta,'volverGenDTE');
+        }
+    });
+
+}
+
+function ajaxRequestGeneral(data,url,funcion) {
+	datatemp = data;
+	$.ajax({
+		url: url,
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			if(funcion=='volverGenDTE'){
+				swal({
+					title: respuesta.titulo,
+					text: respuesta.mensaje,
+					icon: respuesta.tipo_alert,
+					buttons: {
+						confirm: "Aceptar"
+					},
+				}).then((value) => {
+				});
+			}
+			if(funcion=='procesarDTE'){
+				if (respuesta.id != 0) {
+                    //genpdfFAC(respuesta.nrodocto,"_U");
+                    $("#fila"+respuesta.nfila).remove();
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+                    swal({
+						title: respuesta.title,
+						text: respuesta.mensaje,
+						icon: respuesta.tipo_alert,
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+					});
+					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+				}
+			}
+			if(funcion=='anulardte'){
+				if (respuesta.id == 1) {
+                    //genpdfND(respuesta.nrodocto,"_U");
+                    $("#fila"+datatemp.nfila).remove();
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+                    swal({
+						title: respuesta.title,
+						text: respuesta.mensaje,
+						icon: 'error',
+						buttons: {
+							confirm: "Cerrar"
+						},
+					});
+					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+				}
+			}
+		},
+		error: function () {
+		}
+	});
+}
+
+function anulardte(id){
+    var data = {
+        dte_id : id,
+        nfila  : id,
+        updated_at : $("#updated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dtendfactura/anular';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Anular DTE ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequestGeneral(data,ruta,'anulardte');
+        }
+    });
+}
+
+function procesarDTE(id){
+    var data = {
+        dte_id : id,
+        nfila  : id,
+        updated_at : $("#updated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dtefactura/procesar';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Procesar DTE Factura ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequestGeneral(data,ruta,'procesarDTE');
+        }
+    });
+
+}
