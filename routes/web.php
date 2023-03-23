@@ -164,6 +164,8 @@ Route::get('producto/{id}/listar', 'ProductoController@listar')->name('listar_pr
 Route::post('producto/obtGrupoProd', 'ProductoController@obtGrupoProd')->name('obtGrupoProd');
 Route::get('producto/productobuscarpage', 'ProductoController@productobuscarpage')->name('productobuscarpage_producto');
 Route::get('producto/{id}/productobuscarpage', 'ProductoController@productobuscarpageid')->name('productobuscarpageid_producto');
+Route::get('productobuscarpage', 'ProductoController@productobuscarpage')->name('productobuscarpage');
+Route::get('{id}/productobuscarpage', 'ProductoController@productobuscarpageid')->name('productobuscarpageid');
 
 
 /*RUTAS CLIENTES*/
@@ -185,6 +187,7 @@ Route::post('cliente/buscarClixVenRut', 'ClienteController@buscarClixVenRut')->n
 
 Route::get('cliente/clientebuscarpage', 'ClienteController@clientebuscarpage')->name('clientebuscarpage_cliente');
 Route::get('cliente/{id}/clientebuscarpage', 'ClienteController@clientebuscarpageid')->name('clientebuscarpageid_cliente');
+Route::get('clientebuscarpage', 'ClienteController@clientebuscarpage')->name('clientebuscarpage_cliente');
 
 
 //Ruta para actualizar el campo giro_id en la tabla clientes
@@ -893,3 +896,64 @@ Route::get('reportinvstockbp/totalizarindex', 'ReportInvStockBPController@totali
 /*RUTAS Reporte Solicitudes de despacho pendientes*/
 Route::get('reportsoldesppendiente', 'ReportSolDespPendienteController@index')->name('reportsoldesppendiente');
 Route::post('reportsoldesppendiente/reporte', 'ReportSolDespPendienteController@reporte')->name('reporte_reportsoldesppendiente');
+
+/*RUTAS PesajeCarro*/
+Route::get('pesajecarro', 'PesajeCarroController@index')->name('pesajecarro');
+Route::get('pesajecarropage', 'PesajeCarroController@pesajecarropage')->name('pesajecarropage');
+Route::get('pesajecarro/crear', 'PesajeCarroController@crear')->name('crear_pesajecarro');
+Route::post('pesajecarro', 'PesajeCarroController@guardar')->name('guardar_pesajecarro');
+Route::get('pesajecarro/{id}/editar', 'PesajeCarroController@editar')->name('editar_pesajecarro');
+Route::put('pesajecarro/{id}', 'PesajeCarroController@actualizar')->name('actualizar_pesajecarro');
+Route::delete('pesajecarro/{id}', 'PesajeCarroController@eliminar')->name('eliminar_pesajecarro');
+Route::post('pesajecarro/listar', 'PesajeCarroController@listar')->name('listar');
+
+/*RUTAS Turno*/
+Route::get('turno', 'TurnoController@index')->name('turno');
+Route::get('turnopage', 'TurnoController@turnopage')->name('turnopage');
+Route::get('turno/crear', 'TurnoController@crear')->name('crear_turno');
+Route::post('turno', 'TurnoController@guardar')->name('guardar_turno');
+Route::get('turno/{id}/editar', 'TurnoController@editar')->name('editar_turno');
+Route::put('turno/{id}', 'TurnoController@actualizar')->name('actualizar_turno');
+Route::delete('turno/{id}', 'TurnoController@eliminar')->name('eliminar_turno');
+
+/*RUTAS Pesaje*/
+Route::get('pesaje', 'PesajeController@index')->name('pesaje');
+Route::get('pesajepage', 'PesajeController@pesajepage')->name('pesajepage');
+Route::get('pesaje/crear', 'PesajeController@crear')->name('crear_pesaje');
+Route::post('pesaje', 'PesajeController@guardar')->name('guardar_pesaje');
+Route::get('pesaje/{id}/editar', 'PesajeController@editar')->name('editar_pesaje');
+Route::put('pesaje/{id}', 'PesajeController@actualizar')->name('actualizar_pesaje');
+Route::delete('pesaje/{id}', 'PesajeController@eliminar')->name('eliminar_pesaje');
+Route::post('pesaje/enviaraprobarpesaje/{id}', 'PesajeController@enviaraprobarpesaje')->name('enviaraprobarpesaje_pesaje');
+Route::post('pesaje/aprobpesaje/{id}', 'PesajeController@aprobpesaje')->name('aprobpesaje_pesaje');
+Route::get('pesaje/exportPdf', 'PesajeController@exportPdf')->name('exportPdf_pesaje');
+Route::get('pesaje/{id}/productobuscarpage', 'PesajeController@productobuscarpageid')->name('productobuscarpageid_pesaje');
+
+/*RUTAS Pesaje Aprobar y pasar al inventario InvMov*/
+Route::get('pesajeaprobar', 'PesajeAprobarController@index')->name('pesajeaprobar');
+Route::get('pesajeaprobarpage', 'PesajeAprobarController@pesajeaprobarpage')->name('pesajeaprobarpage');
+
+Route::get('picking', 'PickingController@index')->name('picking');
+Route::get('pickingpage', 'PickingController@pickingpage')->name('pickingpage');
+Route::post('picking/actualizar', 'PickingController@actualizar')->name('actualizar_picking');
+Route::get('picking/{id}/crearord', 'PickingController@crearord')->name('crearord_picking');
+Route::post('picking/reportesoldesp', 'PickingController@reportesoldesp')->name('reportesoldesp_picking');
+Route::post('picking', 'PickingController@guardar')->name('guardar_picking');
+
+/*RUTAS Turno*/
+Route::get('areaproduccionsuclinea', 'AreaProduccionSucLineaController@index')->name('areaproduccionsuclinea');
+Route::get('areaproduccionsuclineapage', 'AreaProduccionSucLineaController@areaproduccionsuclineapage')->name('areaproduccionsuclineapage');
+Route::get('areaproduccionsuclinea/crear', 'AreaProduccionSucLineaController@crear')->name('crear_areaproduccionsuclinea');
+Route::post('areaproduccionsuclinea', 'AreaProduccionSucLineaController@guardar')->name('guardar_areaproduccionsuclinea');
+Route::get('areaproduccionsuclinea/{id}/editar', 'AreaProduccionSucLineaController@editar')->name('editar_areaproduccionsuclinea');
+Route::put('areaproduccionsuclinea/{id}', 'AreaProduccionSucLineaController@actualizar')->name('actualizar_areaproduccionsuclinea');
+Route::delete('areaproduccionsuclinea/{id}', 'AreaProduccionSucLineaController@eliminar')->name('eliminar_areaproduccionsuclinea');
+Route::post('areaproduccionsuclinea/listarlineasProduccionSuc', 'AreaProduccionSucLineaController@listarlineasProduccionSuc')->name('listarlineasProduccionSuc_areaproduccionsuclinea');
+
+/*RUTAS INV MOVER EL STOCK DE BODEGA PESAJE A BODEGA PRODUCTO TERMINADO*/
+Route::get('invbodpesajeabodprodterm', 'InvBodPesajeaBodProdTermController@index')->name('invbodpesajeabodprodterm');
+Route::get('invbodpesajeabodprodtermpage', 'InvBodPesajeaBodProdTermController@invbodpesajeabodprodtermpage')->name('invbodpesajeabodprodtermpage');
+Route::get('invbodpesajeabodprodterm/reporte', 'InvBodPesajeaBodProdTermController@reporte')->name('invbodpesajeabodprodterm_reporte');
+Route::get('invbodpesajeabodprodterm/exportPdf', 'InvBodPesajeaBodProdTermController@exportPdf')->name('invbodpesajeabodprodterm_exportPdf');
+Route::get('invbodpesajeabodprodterm/totalizarindex', 'InvBodPesajeaBodProdTermController@totalizarindex')->name('invbodpesajeabodprodterm_totalizarindex');
+Route::post('invbodpesajeabodprodterm', 'InvBodPesajeaBodProdTermController@guardar')->name('guardar_invbodpesajeabodprodterm');

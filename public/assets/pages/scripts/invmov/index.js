@@ -43,7 +43,7 @@ $(document).ready(function () {
 			switch (data.invmovmodulo_id) {
 				case 1:
 					aux_text = 
-					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Entrasa Salida de Inv: " + data.idmovmod + "' onclick='genpdfINVENTSAL(" + data.idmovmod + ",1)'>"+
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Entrada Salida de Inv: " + data.idmovmod + "' onclick='genpdfINVENTSAL(" + data.idmovmod + ",1)'>"+
 						data.idmovmod +
 					"</a>";
 					break;

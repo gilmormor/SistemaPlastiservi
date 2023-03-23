@@ -1,13 +1,15 @@
+<input type="text" name="ids" id="ids" value="{{$tablas['aux_cont'] ? $tablas['aux_cont'] : 0}}" style="display: none">
+
 <div class="form-group">
     <label for="nombre" class="col-lg-3 control-label requerido">Nombre</label>
     <div class="col-lg-9">
-    <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre', $data->nombre ?? '')}}" required/>
+        <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre', $data->nombre ?? '')}}" required/>
     </div>
 </div>
 <div class="form-group">
     <label for="descripcion" class="col-lg-3 control-label requerido">Descripción</label>
     <div class="col-lg-9">
-    <input type="text" name="descripcion" id="descripcion" class="form-control" value="{{old('descripcion', $data->descripcion ?? '')}}" required/>
+        <input type="text" name="descripcion" id="descripcion" class="form-control" value="{{old('descripcion', $data->descripcion ?? '')}}" required/>
     </div>
 </div>
 <div class="form-group">
@@ -16,15 +18,29 @@
         <select name="stapromkg" id="stapromkg" class="form-control select2 stapromkg" required>
             <option value="">Seleccione...</option>
             <option value="0"
-                @if ($data->stapromkg=="0")
+                @if (isset($data) and $data->stapromkg=="0")
                     {{'selected'}}
                 @endif
             >No</option>
             <option value="1"
-                @if ($data->stapromkg=="1")
+                @if (isset($data) and $data->stapromkg=="1")
                     {{'selected'}}
                 @endif    
-            >Si</option>
+            >Si</option>                
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label for="sucursal_id" class="col-lg-3 control-label requerido">Sucursal</label>
+    <div class="col-lg-9">
+        <select name="sucursal_id[]" id="sucursal_id" class="form-control select2" multiple required>
+            @foreach($tablas['sucursales'] as $sucursal)
+                <option
+                    value="{{$sucursal->id}}"
+                    {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
+                    >{{$sucursal->nombre}}
+                </option>
+            @endforeach
         </select>
     </div>
 </div>

@@ -20,4 +20,19 @@ class AreaProduccion extends Model
     {
         return $this->hasMany(CategoriaProd::class);
     }
+    //Relacion inversa a Sucursal
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class);
+    }
+    public function sucursales()
+    {
+        return $this->belongsToMany(Sucursal::class, 'areaproduccionsuc','areaproduccion_id')->withTimestamps();
+    }
+    //RELACION UNO A MUCHOS AreaProduccionSuc
+    public function areaproduccionsucs()
+    {
+        return $this->hasMany(AreaProduccionSuc::class,'areaproduccion_id');
+    }
+
 }

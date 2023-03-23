@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarAreaProduccion;
 use App\Models\AreaProduccion;
+use App\Models\Sucursal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AreaProduccionController extends Controller
 {
@@ -29,7 +31,11 @@ class AreaProduccionController extends Controller
     public function crear()
     {
         can('crear-areaproduccion');
-        return view('areaproduccion.crear');
+        $tablas = array();
+        $tablas['sucursales'] = Sucursal::orderBy('id')->get();
+        $tablas['aux_cont'] = 0;
+        $tablas['aux_sta'] = 1;
+        return view('areaproduccion.crear', compact('tablas'));
     }
 
     /**
@@ -41,7 +47,8 @@ class AreaProduccionController extends Controller
     public function guardar(ValidarAreaProduccion $request)
     {
         can('guardar-areaproduccion');
-        AreaProduccion::create($request->all());
+        $areaproduccion = AreaProduccion::create($request->all());
+        $areaproduccion->sucursales()->sync($request->sucursal_id);
         return redirect('areaproduccion')->with('mensaje','AreaProduccion creado con exito');
     }
 
@@ -66,7 +73,10 @@ class AreaProduccionController extends Controller
     {
         can('editar-areaproduccion');
         $data = AreaProduccion::findOrFail($id);
-        return view('areaproduccion.editar', compact('data'));
+        $tablas = array();
+        $tablas['sucursales'] = Sucursal::orderBy('id')->get();
+        $tablas['aux_sta'] = 2;
+        return view('areaproduccion.editar', compact('data','tablas'));
     }
 
     /**
@@ -78,7 +88,10 @@ class AreaProduccionController extends Controller
      */
     public function actualizar(ValidarAreaProduccion $request, $id)
     {
-        AreaProduccion::findOrFail($id)->update($request->all());
+        can('guardar-areaproduccion');
+        $areaproduccion = AreaProduccion::findOrFail($id);
+        $areaproduccion->update($request->all());
+        $areaproduccion->sucursales()->sync($request->sucursal_id);
         return redirect('areaproduccion')->with('mensaje','AreaProduccion actualizado con exito');
     }
 
@@ -95,7 +108,7 @@ class AreaProduccionController extends Controller
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
-            }
+            }    
         } else {
             abort(404);
         }

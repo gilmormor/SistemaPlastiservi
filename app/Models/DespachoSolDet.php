@@ -37,4 +37,10 @@ class DespachoSolDet extends Model
     {
         return $this->hasMany(DespachoSolDet_InvBodegaProducto::class,'despachosoldet_id');
     }
+    //Relacion uno a uno con despachosoldet_invbodegaproducto
+    public function despachosoldet_invbodegaproducto()
+    {
+        return $this->hasOne(DespachoSolDet_InvBodegaProducto::class,"despachosoldet_id");
+    }
+    
 }
