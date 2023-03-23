@@ -140,13 +140,13 @@
 				<tr>
 					<td colspan="6" class="textright"><span><strong>TOTAL</strong></span></td>
 					<td class="textcenter"><span><strong>{{number_format($total_tara, 0, ",", ".")}}</strong></span></td>
-					<td class="textcenter"><span><strong>{{number_format($total_cant, 0, ",", ".")}}</strong></span></td>
+					<td class="textcenter"><span><strong></strong></span></td>
 					<td class="textright"><span><strong>{{number_format($total_pesobaltotal, 2, ",", ".")}}</strong></span></td>
-					<td class="textright"><span><strong>{{number_format($total_pesobalprodunit, 2, ",", ".")}}</strong></span></td>
+					<td class="textright"><span><strong></strong></span></td>
 					<td class="textright"><span><strong>{{number_format($total_pesobalprodtotal, 2, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($total_PesoTotNorma, 2, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($total_DiferenciaKg, 2, ",", ".")}}</strong></span></td>
-					<td class="textright"><span><strong>{{number_format($total_DiferenciaPorc, 2, ",", ".")}}</strong></span></td>
+					<td class="textright"><span><strong>{{number_format(($total_DiferenciaKg / $total_PesoTotNorma) * 100, 2, ",", ".")}}</strong></span></td>
 				</tr>
 			</tbody>
 		</table>

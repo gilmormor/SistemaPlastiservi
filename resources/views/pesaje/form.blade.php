@@ -238,7 +238,7 @@
                                         <input type="text" name="DiferenciaPorc[]" id="DiferenciaPorc{{$i}}" class="form-control subtotalDiferenciaPorc" value="{{$DiferenciaPorc}}" style="text-align:right;padding-left: 0px;padding-right: 2px;" readonly disabled/>
                                     </td>
                                     <td style="vertical-align:middle;">
-                                        <a onclick="delitem({{$i}})" class="btn-accion-tabla tooltipsC" title="Precio Unitario" id="delitem{{$i}}" name="delitem{{$i}}" style="padding-left: 0px;">
+                                        <a onclick="delitem({{$i}})" class="btn-accion-tabla tooltipsC" title="Eliminar item" id="delitem{{$i}}" name="delitem{{$i}}" style="padding-left: 0px;">
                                             <i class="fa fa-fw fa-trash text-danger"></i>
                                         </a>
                                     </td>

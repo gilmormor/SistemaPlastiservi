@@ -117,7 +117,7 @@ function agregarFila() {
 			<input type="text" name="DiferenciaPorc[]" id="DiferenciaPorc${aux_nfila}" class="form-control subtotalDiferenciaPorc" value="" style="text-align:right;padding-left: 0px;padding-right: 2px;" readonly disabled/>
 		</td>
 		<td style="vertical-align:middle;">
-			<a onclick="delitem(${aux_nfila})" class="btn-accion-tabla tooltipsC" title="Precio Unitario" id="delitem${aux_nfila}" name="delitem${aux_nfila}" style="padding-left: 0px;">
+			<a onclick="delitem(${aux_nfila})" class="btn-accion-tabla tooltipsC" title="Eliminar item" id="delitem${aux_nfila}" name="delitem${aux_nfila}" style="padding-left: 0px;">
 				<i class="fa fa-fw fa-trash text-danger"></i>
 			</a>
 		</td>
