@@ -17,7 +17,7 @@
 			</td>
 			<td class="info_factura">
 				<div>
-					<span class="h3">Vista Previa Orden Despacho</span>
+					<span class="h3">Vista Previa Ord Desp / {{$despachosol->notaventa->sucursal->nombre}}</span>
 					<p>Nro SolDesp: <strong> {{ str_pad($despachosol->id, 10, "0", STR_PAD_LEFT) }}</strong>
 						@if ($despachosol->despachosolanul)
 							<small class="btn btn-danger btn-xs">Anulado</small>

@@ -175,6 +175,8 @@ function datoslsd(){
         id                : $("#id").val(),
         producto_id       : $("#producto_idPxP").val(),
         filtro            : 1,
+        sucursal_id       : $("#sucursal_id").val(),
+        sta_picking       : $("#sta_picking").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;

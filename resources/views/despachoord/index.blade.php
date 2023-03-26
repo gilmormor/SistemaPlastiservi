@@ -32,6 +32,7 @@ Orden de despacho
                                 <th class='tooltipsC' title='Fecha'>Fecha</th>
                                 <th class='tooltipsC' title='fecha estimada de Despacho'>Fecha ED</th>
                                 <th>Razón Social</th>
+                                <th>Sucursal</th>
                                 <th class='tooltipsC' title='Solicitud Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                                 <th class='tooltipsC' title='Nota de Venta'>NV</th>

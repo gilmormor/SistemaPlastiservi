@@ -1,6 +1,7 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
     i = 0;
+    cadena = "?sucursal_id=" + $("#sucursal_id").val();
     $('#tabla-data-despachoord').DataTable({
         'paging'      : true, 
         'lengthChange': true,
@@ -10,12 +11,13 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        'ajax'        : "despachoordpage",
+        'ajax'        : "despachoordpage/" + cadena,
         'columns'     : [
             {data: 'id'},
             {data: 'fechahora'},
             {data: 'fechaestdesp'},
             {data: 'razonsocial'},
+            {data: 'sucursal_nombre'},
             {data: 'despachosol_id'},
             {data: 'oc_id'},
             {data: 'notaventa_id'},
@@ -54,32 +56,32 @@ $(document).ready(function () {
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" + 
                     data.despachosol_id + 
                 "</a>";
-            $('td', row).eq(4).html(aux_text);
+            $('td', row).eq(5).html(aux_text);
             
             if(data.oc_file != "" && data.oc_file != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
                         data.oc_id + 
                     "</a>";
-                $('td', row).eq(5).html(aux_text);
+                $('td', row).eq(6).html(aux_text);
             }
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
                     data.notaventa_id +
                 "</a>";
-            $('td', row).eq(6).html(aux_text);
+            $('td', row).eq(7).html(aux_text);
 
 
-            $('td', row).eq(8).attr('data-order',data.aux_totalkg);
-            $('td', row).eq(8).attr('style','text-align:right');
+            $('td', row).eq(9).attr('data-order',data.aux_totalkg);
+            $('td', row).eq(9).attr('style','text-align:right');
             aux_text = MASKLA(data.aux_totalkg,2);
-            $('td', row).eq(8).html(aux_text);
-            $('td', row).eq(8).addClass('subtotalkg');
+            $('td', row).eq(9).html(aux_text);
+            $('td', row).eq(9).addClass('subtotalkg');
 
             
             aux_text = 
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
-            $('td', row).eq(9).html(aux_text);
+            $('td', row).eq(10).html(aux_text);
 
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
@@ -104,14 +106,14 @@ $(document).ready(function () {
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
             }
-            $('td', row).eq(13).addClass('updated_at');
-            $('td', row).eq(13).attr('id','updated_at' + data.id);
-            $('td', row).eq(13).attr('name','updated_at' + data.id);
+            $('td', row).eq(14).addClass('updated_at');
+            $('td', row).eq(14).attr('id','updated_at' + data.id);
+            $('td', row).eq(14).attr('name','updated_at' + data.id);
             aux_text = aux_text +
             "<a href='despachoord' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Orden Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
-            $('td', row).eq(14).html(aux_text);
+            $('td', row).eq(15).html(aux_text);
         }
     });
 

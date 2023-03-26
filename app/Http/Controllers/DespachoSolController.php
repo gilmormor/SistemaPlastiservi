@@ -36,6 +36,7 @@ use App\Models\NotaVentaDetalle;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -97,9 +98,7 @@ class DespachoSolController extends Controller
     {
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
-
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-
         $giros = Giro::orderBy('id')->get();
         $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
@@ -107,6 +106,9 @@ class DespachoSolController extends Controller
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $user = Usuario::findOrFail(auth()->id());
+        $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         return view('despachosol.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -1821,6 +1823,19 @@ function consulta($request,$aux_sql,$orden){
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
 
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        $aux_condsucursal_id = " true ";
+    }else{
+        if(is_array($request->sucursal_id)){
+            $aux_sucursal = implode ( ',' , $request->sucursal_id);
+        }else{
+            $aux_sucursal = $request->sucursal_id;
+        }
+        $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+        $aux_condsucursal_id = " (notaventa.sucursal_id in ($aux_sucursal) and notaventa.sucursal_id in ($sucurArray))";
+    }
+
+
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
     }else{
@@ -1926,7 +1941,7 @@ function consulta($request,$aux_sql,$orden){
     if($aux_sql==1){
         $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
-        comuna.nombre as comunanombre,
+        comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
         vista_notaventatotales.cant,
         vista_notaventatotales.precioxkilo,
         vista_notaventatotales.totalkilos,
@@ -1964,6 +1979,8 @@ function consulta($request,$aux_sql,$orden){
         ON tipoentrega.id=notaventa.tipoentrega_id
         INNER JOIN vista_notaventatotales
         ON notaventa.id=vista_notaventatotales.id
+        INNER JOIN sucursal
+        ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -1976,6 +1993,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condcomuna_id
         and $aux_condplazoentrega
         and $aux_condproducto_id
+        AND $aux_condsucursal_id
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
@@ -1988,7 +2006,7 @@ function consulta($request,$aux_sql,$orden){
     if($aux_sql==2){
         //if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,
         $sql = "SELECT notaventadetalle.producto_id,producto.nombre,
-        producto.diametro,
+        producto.diametro,sucursal.nombre as sucursal_nombre,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
         cant,cantsoldesp,
         totalkilos,
@@ -2009,6 +2027,8 @@ function consulta($request,$aux_sql,$orden){
         ON cliente.id=notaventa.cliente_id
         LEFT JOIN vista_sumsoldespdet
         ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
+        INNER JOIN sucursal
+        ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -2021,6 +2041,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condcomuna_id
         and $aux_condplazoentrega
         and $aux_condproducto_id
+        AND $aux_condsucursal_id
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
@@ -2119,6 +2140,7 @@ function reporte1($request){
                 <th class='tooltipsC' title='Nota de Venta PDF'>NV</th>
                 <th>Fecha</th>
                 <th>Razón Social</th>
+                <th>Sucursal</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                 <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
                 <th>Comuna</th>
@@ -2223,6 +2245,7 @@ function reporte1($request){
                 </td>
                 <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                <td id='sucursal_nombre$i' name='sucursal_nombre$i'>$data->sucursal_nombre</td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick='genpdfNV($data->id,2)'>
@@ -2295,6 +2318,7 @@ function reportesoldesp1($request){
                 <th>Fecha</th>
                 <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
                 <th>Razón Social</th>
+                <th>Sucursal</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th>Comuna</th>
@@ -2401,6 +2425,7 @@ function reportesoldesp1($request){
                     </a>" .
                 "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                <td id='sucursal_nombre$i' name='sucursal_nombre$i'>$data->sucursal_nombre</td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
@@ -2431,14 +2456,14 @@ function reportesoldesp1($request){
         </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='7' style='text-align:right'>Total página</th>
+                    <th colspan='8' style='text-align:right'>Total página</th>
                     <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                     <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
                     <th></th>
                     <th></th>
                 </tr>
                 <tr>
-                    <th colspan='7'  style='text-align:right'>TOTAL GENERAL</th>
+                    <th colspan='8'  style='text-align:right'>TOTAL GENERAL</th>
                     <th style='text-align:right'>". number_format($aux_Ttotalkilos, 2, ",", ".") ."</th>
                     <th style='text-align:right'>". number_format($aux_Tsubtotal, 0, ",", ".") ."</th>
                     <th></th>
@@ -2597,6 +2622,17 @@ function consultasoldesp($request){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        $aux_condsucursal_id = " true ";
+    }else{
+        if(is_array($request->sucursal_id)){
+            $aux_sucursal = implode ( ',' , $request->sucursal_id);
+        }else{
+            $aux_sucursal = $request->sucursal_id;
+        }
+        $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+        $aux_condsucursal_id = " (notaventa.sucursal_id in ($aux_sucursal) and notaventa.sucursal_id in ($sucurArray))";
+    }
 
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -2657,6 +2693,13 @@ function consultasoldesp($request){
         }
         
     }
+/*
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        $aux_condsucursal_id = " true";
+    }else{
+        $aux_condsucursal_id = "notaventa.sucursal_id='$request->sucursal_id'";
+    }
+*/
 /*
     if(empty($request->comuna_id)){
         $aux_condcomuna_id = " true";
@@ -2721,8 +2764,8 @@ function consultasoldesp($request){
     //$aux_condactivas = "true";
 
     $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
-            notaventa.oc_file,
-            comuna.nombre as comunanombre,
+            notaventa.oc_file,notaventa.sucursal_id,
+            comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
             despachosol.notaventa_id,despachosol.fechaestdesp,tipoentrega.nombre as tipentnombre,tipoentrega.icono,
             IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
             IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
@@ -2751,6 +2794,8 @@ function consultasoldesp($request){
             ON despachosol.id = vista_despsoltotales.id
             LEFT JOIN vista_despordxdespsoltotales
             ON despachosol.id = vista_despordxdespsoltotales.despachosol_id
+            INNER JOIN sucursal
+            ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -2765,6 +2810,7 @@ function consultasoldesp($request){
             and $aux_condfechaestdesp
             and $aux_condid
             and $aux_condproducto_id
+            and $aux_condsucursal_id
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             and isnull(despachosoldet.deleted_at)

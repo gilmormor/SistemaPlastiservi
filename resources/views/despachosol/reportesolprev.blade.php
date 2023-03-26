@@ -23,7 +23,7 @@
 			</td>
 			<td class="info_factura">
 				<div>
-					<span class="h3">Vista Previa Solicitud Despacho</span>
+					<span class="h3">Vista Previa Sol. Desp. / {{$notaventa->sucursal->nombre}}</span>
 					<p>Nro Nota Venta: <strong> {{ str_pad($notaventa->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
 					<p>Fecha Act: {{date('d-m-Y h:i:s A')}}</p>
 					<p>Fecha: {{date('d-m-Y', strtotime($notaventa->fechahora))}}</p>

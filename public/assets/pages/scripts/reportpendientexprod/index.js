@@ -117,6 +117,7 @@ function datosPentxProd(){
         comuna_id         : $("#comuna_id").val(),
         producto_id       : $("#producto_idPxP").val(),
         categoriaprod_id  : $("#categoriaprod_id").val(),
+        sucursal_id       : $("#sucursal_id").val(),
         filtro            : 0,
         _token            : $('input[name=_token]').val()
     };

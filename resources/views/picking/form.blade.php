@@ -259,63 +259,65 @@
                                             <tbody>
                                                 <?php $i=0; //dd($invbodegaproductos) ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    <?php
-                                                        //dd($invbodegaproducto);
-                                                        $i++;
-                                                        $request = new Request();
-                                                        $request["producto_id"] = $invbodegaproducto->producto_id;
-                                                        $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
-                                                        $request["tipo"] = 2;
-                                                        $existencia = $invbodegaproducto::existencia($request);
-                                                        //$existencia = $invbodegaproductoobj->consexistencia($request);
-                                                        //$aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
-                                                        $aux_valueStock = ""; 
-                                                        $despachosoldet_invbodegaproducto_id = $detalle->despachosoldet_invbodegaproducto->id;
-                                                        if(array_key_exists($invbodegaproducto->id, $arrayBodegasPicking)){
-                                                            $aux_stock = $arrayBodegasPicking[$invbodegaproducto->id]["stock"];
-                                                            $aux_valueStock = $aux_stock == 0 ? "" : $aux_stock;
-                                                        }else{
-                                                            //SI NO ESTA EN EL ARRAY DE $arrayBodegasPicking NO TIENE PICKING, ENTONCES LE ASIGNO 0
-                                                            if($invbodegaproducto->invbodega->nomabre == "SolDe"){
-                                                                $aux_stock = 0;
+                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                                        <?php
+                                                            //dd($invbodegaproducto);
+                                                            $i++;
+                                                            $request = new Request();
+                                                            $request["producto_id"] = $invbodegaproducto->producto_id;
+                                                            $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
+                                                            $request["tipo"] = 2;
+                                                            $existencia = $invbodegaproducto::existencia($request);
+                                                            //$existencia = $invbodegaproductoobj->consexistencia($request);
+                                                            //$aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
+                                                            $aux_valueStock = ""; 
+                                                            $despachosoldet_invbodegaproducto_id = $detalle->despachosoldet_invbodegaproducto->id;
+                                                            if(array_key_exists($invbodegaproducto->id, $arrayBodegasPicking)){
+                                                                $aux_stock = $arrayBodegasPicking[$invbodegaproducto->id]["stock"];
+                                                                $aux_valueStock = $aux_stock == 0 ? "" : $aux_stock;
                                                             }else{
-                                                                $aux_stock = $existencia["stock"]["cant"];
+                                                                //SI NO ESTA EN EL ARRAY DE $arrayBodegasPicking NO TIENE PICKING, ENTONCES LE ASIGNO 0
+                                                                if($invbodegaproducto->invbodega->nomabre == "SolDe"){
+                                                                    $aux_stock = 0;
+                                                                }else{
+                                                                    $aux_stock = $existencia["stock"]["cant"];
+                                                                }
                                                             }
-                                                        }
-                                                        if ($invbodegaproducto->invbodega->sucursal_id == 1) {
-                                                            $colorSuc = "#26ff00";
-                                                        }
-                                                        if ($invbodegaproducto->invbodega->sucursal_id == 2) {
-                                                            $colorSuc = "#1500ff";
-                                                        }
-                                                        if ($invbodegaproducto->invbodega->sucursal_id == 3) {
-                                                            $colorSuc = "#00c3ff";
-                                                        }
-                                                    ?>
-                                                    @if ($aux_stock > 0 and in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
-                                                        <tr name="fbod{{$invbodegaproducto->id}}" id="fbod{{$invbodegaproducto->id}}">
-                                                            <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
-                                                                <input type="text" name="pickingPrevio[]" id="pickingPrevio{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico pickingpreviobod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{$aux_valueStock}}" title='Picking previo' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}" style="display:none;"/>
-                                                                <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
-                                                                <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
-                                                                <input type="text" name="despachosoldet_invbodegaproducto_id[]" id="despachosoldet_invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$despachosoldet_invbodegaproducto_id}}" style="display:none;"/>
-                                                                <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
-                                                                {{$invbodegaproducto->id}}
-                                                            </td>
-                                                            <td style="text-align:left;padding-right: 0px;padding-left: 2px;padding-top: 4px;padding-bottom: 4px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} / {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
-                                                                <div class="centrarhorizontal">
-                                                                    <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px">{{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
-                                                                </div>
-                                                            </td>
-                                                            <td style="text-align:right;padding-left: 0px;padding-right: 0px;padding-top: 4px;padding-bottom: 4px;"  class='tooltipsC' title='Stock disponible'>
-                                                                <div name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="centrarhorizontal">
-                                                                    {{$aux_stock}}
-                                                                </div>
-                                                            </td>
-                                                            <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
-                                                                <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{$aux_valueStock}}" title='Cant a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
-                                                            </td>
-                                                        </tr>
+                                                            if ($invbodegaproducto->invbodega->sucursal_id == 1) {
+                                                                $colorSuc = "#26ff00";
+                                                            }
+                                                            if ($invbodegaproducto->invbodega->sucursal_id == 2) {
+                                                                $colorSuc = "#1500ff";
+                                                            }
+                                                            if ($invbodegaproducto->invbodega->sucursal_id == 3) {
+                                                                $colorSuc = "#00c3ff";
+                                                            }
+                                                        ?>
+                                                        @if ($aux_stock > 0 and in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                            <tr name="fbod{{$invbodegaproducto->id}}" id="fbod{{$invbodegaproducto->id}}">
+                                                                <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
+                                                                    <input type="text" name="pickingPrevio[]" id="pickingPrevio{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico pickingpreviobod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{$aux_valueStock}}" title='Picking previo' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}" style="display:none;"/>
+                                                                    <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
+                                                                    <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
+                                                                    <input type="text" name="despachosoldet_invbodegaproducto_id[]" id="despachosoldet_invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$despachosoldet_invbodegaproducto_id}}" style="display:none;"/>
+                                                                    <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
+                                                                    {{$invbodegaproducto->id}}
+                                                                </td>
+                                                                <td style="text-align:left;padding-right: 0px;padding-left: 2px;padding-top: 4px;padding-bottom: 4px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} / {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
+                                                                    <div class="centrarhorizontal">
+                                                                        <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px">{{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="text-align:right;padding-left: 0px;padding-right: 0px;padding-top: 4px;padding-bottom: 4px;"  class='tooltipsC' title='Stock disponible'>
+                                                                    <div name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="centrarhorizontal">
+                                                                        {{$aux_stock}}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
+                                                                    <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{$aux_valueStock}}" title='Cant a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
                                                     @endif
                                                 @endforeach
                                                 @if ($i == 0)

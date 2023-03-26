@@ -458,70 +458,72 @@
                                             <tbody>
                                                 <?php $i=0 ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    <?php
-                                                        $i++;
-                                                        $request = new Request();
-                                                        $request["producto_id"] = $invbodegaproducto->producto_id;
-                                                        $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
-                                                        $request["tipo"] = 2;
-                                                        $existencia = $invbodegaproducto::existencia($request);
-                                                        //$existencia = $invbodegaproductoobj->consexistencia($request);
-                                                        if ($invbodegaproducto->invbodega->sucursal_id == 1) {
-                                                            $colorSuc = "#26ff00";
-                                                        }
-                                                        if ($invbodegaproducto->invbodega->sucursal_id == 2) {
-                                                            $colorSuc = "#1500ff";
-                                                        }
-                                                        if ($invbodegaproducto->invbodega->sucursal_id == 3) {
-                                                            $colorSuc = "#00c3ff";
-                                                        }
-                                                    ?>
-                                                    @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
-                                                        <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
-                                                            <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
-                                                                <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
-                                                                <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
-                                                                <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
+                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                                        <?php
+                                                            $i++;
+                                                            $request = new Request();
+                                                            $request["producto_id"] = $invbodegaproducto->producto_id;
+                                                            $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
+                                                            $request["tipo"] = 2;
+                                                            $existencia = $invbodegaproducto::existencia($request);
+                                                            //$existencia = $invbodegaproductoobj->consexistencia($request);
+                                                            if ($invbodegaproducto->invbodega->sucursal_id == 1) {
+                                                                $colorSuc = "#26ff00";
+                                                            }
+                                                            if ($invbodegaproducto->invbodega->sucursal_id == 2) {
+                                                                $colorSuc = "#1500ff";
+                                                            }
+                                                            if ($invbodegaproducto->invbodega->sucursal_id == 3) {
+                                                                $colorSuc = "#00c3ff";
+                                                            }
+                                                        ?>
+                                                        @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                            <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
+                                                                <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
+                                                                    <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
+                                                                    <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
+                                                                    <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
 
-                                                                {{$invbodegaproducto->id}}
-                                                            </td>
-                                                            <td style="text-align:left;width: 10% !importan;padding-right: 0px;padding-left: 2px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
-                                                                <div class="centrarhorizontal">
-                                                                    <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px;">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
-                                                                </div>
-                                                            </td>
-                                                            <td style="text-align:right;width: 20% !importan;padding-left: 0px;padding-right: 0px;"  class='tooltipsC' title='Stock disponible'>
-                                                                <div name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="centrarhorizontal">
-                                                                    {{$existencia["stock"]["cant"]}}
-                                                                </div>
-                                                            </td>
-                                                            <?php 
-                                                                $aux_invcant = 0;
-                                                                $aux_staexchecked = "";
-                                                                $aux_staex = "";
-                                                                foreach($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
-                                                                    if ($despachosoldet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id){
-                                                                        $aux_invcant = (($despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex) * -1);
-                                                                        if($despachosoldet_invbodegaproducto->staex == 1){
-                                                                            $aux_staexchecked = "checked";
-                                                                            $aux_staex = "1";
+                                                                    {{$invbodegaproducto->id}}
+                                                                </td>
+                                                                <td style="text-align:left;width: 10% !importan;padding-right: 0px;padding-left: 2px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
+                                                                    <div class="centrarhorizontal">
+                                                                        <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px;">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="text-align:right;width: 20% !importan;padding-left: 0px;padding-right: 0px;"  class='tooltipsC' title='Stock disponible'>
+                                                                    <div name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="centrarhorizontal">
+                                                                        {{$existencia["stock"]["cant"]}}
+                                                                    </div>
+                                                                </td>
+                                                                <?php 
+                                                                    $aux_invcant = 0;
+                                                                    $aux_staexchecked = "";
+                                                                    $aux_staex = "";
+                                                                    foreach($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                                                        if ($despachosoldet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id){
+                                                                            $aux_invcant = (($despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex) * -1);
+                                                                            if($despachosoldet_invbodegaproducto->staex == 1){
+                                                                                $aux_staexchecked = "checked";
+                                                                                $aux_staex = "1";
+                                                                            }
                                                                         }
                                                                     }
-                                                                }
-                                                            ?>
-                                                            <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !importan"  title="Cant a despachar">
-                                                                <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD')" style="text-align:right;" value="{{$aux_invcant}}"/>
-                                                            </td>
-                                                            <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;' class='tooltipsC' title='Marcar para no usar Stock'>
-                                                                <div class='checkbox'>
-                                                                    <label style='font-size: 1.2em;padding-left: 0px;'>
-                                                                        <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="{{$aux_staex}}">
-                                                                        <input type="checkbox" class="checkstaex" id="aux_staex{{$invbodegaproducto->id}}" name="aux_staex[]" {{$aux_staexchecked}} onchange="clickstaex({{$invbodegaproducto->id}})">
-                                                                        <span class='cr'><i class='cr-icon fa fa-check'></i></span>
-                                                                    </label>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
+                                                                ?>
+                                                                <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !importan"  title="Cant a despachar">
+                                                                    <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD')" style="text-align:right;" value="{{$aux_invcant}}"/>
+                                                                </td>
+                                                                <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;' class='tooltipsC' title='Marcar para no usar Stock'>
+                                                                    <div class='checkbox'>
+                                                                        <label style='font-size: 1.2em;padding-left: 0px;'>
+                                                                            <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="{{$aux_staex}}">
+                                                                            <input type="checkbox" class="checkstaex" id="aux_staex{{$invbodegaproducto->id}}" name="aux_staex[]" {{$aux_staexchecked}} onchange="clickstaex({{$invbodegaproducto->id}})">
+                                                                            <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
                                                     @endif
                                                 @endforeach
                                             </tbody>

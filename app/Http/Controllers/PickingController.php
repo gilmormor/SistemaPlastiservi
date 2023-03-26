@@ -24,6 +24,7 @@ use App\Models\InvMovModulo;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -45,7 +46,9 @@ class PickingController extends Controller
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-
+        $user = Usuario::findOrFail(auth()->id());
+        $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         return view('picking.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -495,6 +498,7 @@ function reportesoldesp1($request){
                 <th>Fecha</th>
                 <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
                 <th>Razón Social</th>
+                <th>Sucursal</th>
                 <th class='tooltipsC' title='Orden de Compra'>OC</th>
                 <th class='tooltipsC' title='Nota de Venta'>NV</th>
                 <th>Comuna</th>
@@ -529,7 +533,7 @@ function reportesoldesp1($request){
                                 </a>";
             }else{
                 $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
-                $nuevoOrdDesp = "<a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
+                $nuevoOrdDesp = "<a href='$ruta_nuevoOrdDesp' target='_blank' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
                                     <button type='button' class='btn btn-default btn-xs'>
                                         <i class='fa fa-fw $data->icono'></i>
                                     </button>
@@ -582,6 +586,7 @@ function reportesoldesp1($request){
                     </a>" .
                 "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                <td id='sucursal_nombre$i' name='sucursal_nombre$i'>$data->sucursal_nombre</td>
                 <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</td>
                 <td>
                     <a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV($data->notaventa_id,1)'>
@@ -660,6 +665,18 @@ function consultasoldesp($request){
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+    }
+
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        $aux_condsucursal_id = " true ";
+    }else{
+        if(is_array($request->sucursal_id)){
+            $aux_sucursal = implode ( ',' , $request->sucursal_id);
+        }else{
+            $aux_sucursal = $request->sucursal_id;
+        }
+        $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+        $aux_condsucursal_id = " (notaventa.sucursal_id in ($aux_sucursal) and notaventa.sucursal_id in ($sucurArray))";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -772,6 +789,22 @@ function consultasoldesp($request){
         $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
     }
 
+    if(empty($request->sta_picking)){
+        $aux_condsta_picking = " true";
+    }else{
+        switch ($request->sta_picking) {
+            case 0:
+                $aux_condsta_picking = " true";
+                break;
+            case 1:
+                $aux_condsta_picking = "despachosoldet_invbodegaproducto.cantex == 0";
+                break;
+            case 2:
+                $aux_condsta_picking = "despachosoldet_invbodegaproducto.cantex != 0";
+                break;    
+        }
+
+    }
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
@@ -786,7 +819,7 @@ function consultasoldesp($request){
 
     $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
             notaventa.oc_file,
-            comuna.nombre as comunanombre,
+            comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
             despachosol.notaventa_id,despachosol.fechaestdesp,tipoentrega.nombre as tipentnombre,tipoentrega.icono,
             IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
             IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
@@ -815,6 +848,10 @@ function consultasoldesp($request){
             ON despachosol.id = vista_despsoltotales.id
             LEFT JOIN vista_despordxdespsoltotales
             ON despachosol.id = vista_despordxdespsoltotales.despachosol_id
+            INNER JOIN sucursal
+            ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
+            INNER JOIN despachosoldet_invbodegaproducto
+            ON despachosoldet.id = despachosoldet_invbodegaproducto.despachosoldet_id AND ISNULL(despachosoldet_invbodegaproducto.deleted_at)
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -829,6 +866,8 @@ function consultasoldesp($request){
             and $aux_condfechaestdesp
             and $aux_condid
             and $aux_condproducto_id
+            and $aux_condsucursal_id
+            and $aux_condsta_picking
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             and isnull(despachosoldet.deleted_at)

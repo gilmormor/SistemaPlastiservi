@@ -26,7 +26,7 @@
 			</td>
 			<td class="info_factura">
 				<div>
-					<span class="h3">Orden de Despacho</span>
+					<span class="h3">Orden Despacho / {{$despachoord->notaventa->sucursal->nombre}}</span>
 					<p>Nro: <strong> {{ str_pad($despachoord->id, 10, "0", STR_PAD_LEFT) }}</strong>
 						@if ($despachoord->despachoordanul)
 							<small class="btn btn-danger btn-xs">Anulado</small>

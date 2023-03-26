@@ -36,6 +36,7 @@ use App\Models\NotaVentaCerrada;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -66,8 +67,8 @@ class DespachoOrdController extends Controller
         return view('despachoord.index');
     }
 
-    public function despachoordpage(){
-        $datas = consultaindex();
+    public function despachoordpage(Request $request){
+        $datas = consultaindex($request);
         return datatables($datas)->toJson();
     }
 
@@ -1284,7 +1285,10 @@ class DespachoOrdController extends Controller
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-
+        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $user = Usuario::findOrFail(auth()->id());
+        $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -1456,7 +1460,7 @@ function consultaindex(){
 
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
     cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
-    '' as notaventaxk,comuna.nombre as comuna_nombre,
+    '' as notaventaxk,comuna.nombre as comuna_nombre, sucursal.nombre as sucursal_nombre,
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
     SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
     despachoord.updated_at
@@ -1474,6 +1478,8 @@ function consultaindex(){
     ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
     LEFT JOIN clientebloqueado
     ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+    INNER JOIN sucursal
+    ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
     WHERE ISNULL(despachoord.aprguiadesp)
     AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
     AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
@@ -1640,4 +1646,43 @@ function validarSiExisteBodega($despachoord,$invmoduloBod){
     }
     //ANTES DE PROCESAR LA ORDEN VALIDO QUE LOS PRODUCTOS INVOLUCRADOS TENGAN BODEGA DE DESPACHO CORRESPONDIENTE A LA SUCURSAL DE CADA PRODUCTO
     //ESTO DEBE IR EN EL PROYECTO FINAL
+}
+
+function consultaindexSuc($request){
+
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+
+
+    $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
+    cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
+    '' as notaventaxk,comuna.nombre as comuna_nombre,
+    tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
+    SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
+    despachoord.updated_at
+    FROM despachoord INNER JOIN notaventa
+    ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
+    INNER JOIN cliente
+    ON cliente.id = notaventa.cliente_id AND isnull(cliente.deleted_at)
+    INNER JOIN comuna
+    ON comuna.id = despachoord.comunaentrega_id AND isnull(comuna.deleted_at)
+    INNER JOIN despachoorddet
+    ON despachoorddet.despachoord_id = despachoord.id AND ISNULL(despachoorddet.deleted_at)
+    INNER JOIN notaventadetalle
+    ON notaventadetalle.id = despachoorddet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
+    INNER JOIN tipoentrega
+    ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
+    LEFT JOIN clientebloqueado
+    ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+    INNER JOIN sucursal
+    ON notaventa.sucursal_id in $sucurcadena
+    WHERE ISNULL(despachoord.aprguiadesp)
+    AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+    AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+    AND notaventa.sucursal_id = $request->sucursal_id
+    GROUP BY despachoorddet.despachoord_id;";
+
+    return DB::select($sql);
+
 }

@@ -13,6 +13,7 @@ use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -39,6 +40,9 @@ class ReportPendienteXProdController extends Controller
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
+        $user = Usuario::findOrFail(auth()->id());
+        $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         return view('reportpendientexprod.index', compact('giros','areaproduccions','tipoentregas','comunas','fechaAct','tablashtml'));
     
     }
@@ -462,6 +466,16 @@ function consulta($request,$aux_sql,$orden){
         $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
     }
 
+    if(empty($request->sucursal_id)){
+        $aux_condsucursal_id = " true ";
+    }else{
+        if(is_array($request->sucursal_id)){
+            $aux_sucursal = implode ( ',' , $request->sucursal_id);
+        }else{
+            $aux_sucursal = $request->sucursal_id;
+        }
+        $aux_condsucursal_id = " notaventa.sucursal_id in ($aux_sucursal) ";
+    }
 
 /*
     if(empty($request->plazoentrega)){
@@ -563,6 +577,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condcomuna_id
         and $aux_condplazoentrega
         and $aux_condcategoriaprod_id
+        and $aux_condsucursal_id
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
@@ -608,6 +623,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condplazoentrega
         and $aux_condproducto_id
         and $aux_condcategoriaprod_id
+        and $aux_condsucursal_id
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND notaventadetalle.cant>if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)
