@@ -178,8 +178,8 @@ class PickingController extends Controller
         can('guardar-picking');
         $despachosol = DespachoSol::findOrFail($request->despachosol_id);
         if($request->updated_at != $despachosol->updated_at){
-            return redirect('picking')->with([
-                'mensaje'=>'Registro no fue editado. Modificado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+            return redirect('/')->with([
+                'mensaje'=>'Picking: Registro no fue editado. Modificado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
                 'tipo_alert' => 'alert-error'
             ]);    
         }
@@ -222,8 +222,8 @@ class PickingController extends Controller
                 $aux_cant = ($request->pickingPrevio[$i] - $request->invcant[$i]);
                 $aux_existencia = $arrayExistencia["stock"]["cant"];
                 if(($aux_existencia - $aux_cant) < 0){                
-                    return redirect('picking')->with([
-                        'mensaje'=> "Sin Stock Sucursal: " . $despachosol->notaventa->sucursal->nombre . ", Bodega: " . $invbodegaproducto->invbodega->nombre . ". Id: " . $invbodegaproducto->producto_id . ", Nombre: " . $invbodegaproducto->producto->nombre . ", Stock: " . $arrayExistencia["stock"]["cant"] . " Cant: " . $aux_cant,
+                    return redirect('/')->with([
+                        'mensaje'=> "Picking: Sin Stock Sucursal: " . $despachosol->notaventa->sucursal->nombre . ", Bodega: " . $invbodegaproducto->invbodega->nombre . ". Id: " . $invbodegaproducto->producto_id . ", Nombre: " . $invbodegaproducto->producto->nombre . ", Stock: " . $arrayExistencia["stock"]["cant"] . " Cant: " . $aux_cant,
                         'tipo_alert' => 'alert-error'
                     ]);    
                 }
@@ -241,8 +241,8 @@ class PickingController extends Controller
                 $aux_cant = $request->invcant[$i];
                 $aux_existencia = $arrayExistencia["stock"]["cant"];
                 if(($aux_existencia - $aux_cant) < 0){                
-                    return redirect('picking')->with([
-                        'mensaje'=> "Sin Stock Sucursal: " . $despachosol->notaventa->sucursal->nombre . ", Bodega: " . $invbodegaproducto->invbodega->nombre . ". Id: " . $invbodegaproducto->producto_id . ", Nombre: " . $invbodegaproducto->producto->nombre . ", Stock: " . $arrayExistencia["stock"]["cant"] . " Cant: " . $aux_cant,
+                    return redirect('/')->with([
+                        'mensaje'=> "Picking: Sin Stock Sucursal: " . $despachosol->notaventa->sucursal->nombre . ", Bodega: " . $invbodegaproducto->invbodega->nombre . ". Id: " . $invbodegaproducto->producto_id . ", Nombre: " . $invbodegaproducto->producto->nombre . ", Stock: " . $arrayExistencia["stock"]["cant"] . " Cant: " . $aux_cant,
                         'tipo_alert' => 'alert-error'
                     ]);    
                 }
@@ -419,12 +419,12 @@ class PickingController extends Controller
 
         if ($despachosol->save()) {
             if($statusSalPicking == false and $statusEntPicking == false){
-                return redirect('picking')->with([
-                    'mensaje'=> "No se realizaron cambios. No se editaron campos.",
+                return redirect('/')->with([
+                    'mensaje'=> "Picking: no se realizaron modificaciones.",
                     'tipo_alert' => 'alert-error'
                 ]);    
             }else{
-                return redirect('picking')->with([
+                return redirect('/')->with([
                     'mensaje'=> "Picking generado con exito.",
                 ]);
             }
