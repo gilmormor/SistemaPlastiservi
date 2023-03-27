@@ -458,7 +458,7 @@
                                             <tbody>
                                                 <?php $i=0 ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                                    <!--@if ($invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)-->
                                                         <?php
                                                             $i++;
                                                             $request = new Request();
@@ -524,7 +524,7 @@
                                                                 </td>
                                                             </tr>
                                                         @endif
-                                                    @endif
+                                                    <!--@endif-->   
                                                 @endforeach
                                             </tbody>
                                         </table>

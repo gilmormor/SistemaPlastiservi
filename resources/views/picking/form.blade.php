@@ -259,7 +259,7 @@
                                             <tbody>
                                                 <?php $i=0; //dd($invbodegaproductos) ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                                    <!--@if ($invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)-->
                                                         <?php
                                                             //dd($invbodegaproducto);
                                                             $i++;
@@ -318,7 +318,7 @@
                                                                 </td>
                                                             </tr>
                                                         @endif
-                                                    @endif
+                                                    <!--@endif-->
                                                 @endforeach
                                                 @if ($i == 0)
                                                     <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada y sin Stock'>
