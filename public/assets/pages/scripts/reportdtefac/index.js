@@ -40,12 +40,15 @@ $(document).ready(function () {
                 {data: 'nrodocto_guiadesp'}, // 9
                 {data: 'nrodocto_guiadesp'}, // 10
                 {data: 'nrodocto'}, // 11
-                {data: 'nombre_comuna'}, // 12
+                {data: 'nrodocto'}, // 12
+                {data: 'nombre_comuna'}, // 13
                 {data: 'dteanul_obs',className:"ocultar"}, //14
                 {data: 'dteanulcreated_at',className:"ocultar"}, //15
                 {data: 'clientebloqueado_descripcion',className:"ocultar"}, //16
                 {data: 'oc_file',className:"ocultar"}, //17
-                {data: 'updated_at',className:"ocultar"}, //18
+                {data: 'nombrepdf',className:"ocultar"}, //18
+                {data: 'updated_at',className:"ocultar"}, //19
+                {data: 'dtefac_updated_at',className:"ocultar"}, //20                
                 {defaultContent : ""}
             ],
             "language": {
@@ -172,18 +175,36 @@ $(document).ready(function () {
                 }
                 $('td', row).eq(10).html(aux_text);
 
+                let id_str = data.nrodocto.toString();
+                id_str = data.nombrepdf + id_str.padStart(8, "0");
                 aux_text = "";
                 if(data.nrodocto != null){
                     aux_text = 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto + ",\"\")'>" +
-                        data.nrodocto +
-                    "</a>," +
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(" + data.nrodocto + ",\"_cedible\")'>" +
-                        data.nrodocto +
-                    "</a>";
-
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="\"genpdfFAC(${id_str}\",\"\")">
+                        ${data.nrodocto}
+                    </a>,
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Cedible" onclick="genpdfFAC(\"${id_str}\",\"_cedible\")">
+                        ${data.nrodocto}
+                    </a>`;
                 }
                 $('td', row).eq(11).html(aux_text);
+                aux_text = 
+                `<div class="checkbox">
+                    <label style="font-size: 1.2em;padding-left: 0px;">
+                        <input type="hidden" id="staverfacdesp${data.id}" name="staverfacdesp${data.id}" value="${data.staverfacdesp}">
+                        <input type="checkbox" class="checkstaex" id="aux_staverfacdesp${data.id}" name="aux_staverfacdesp${data.id}" onchange="clickstaverfacdesp(this)" item=${data.id}>
+                        <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                    </label>
+                </div>`;
+                $('td', row).eq(12).html(aux_text);
+
+                $('td', row).eq(19).addClass('updated_at');
+                $('td', row).eq(19).attr('id','updated_at' + data.id);
+                $('td', row).eq(19).attr('name','updated_at' + data.id);
+
+                $('td', row).eq(20).addClass('dtefac_updated_at');
+                $('td', row).eq(20).attr('id','dtefac_updated_at' + data.id);
+                $('td', row).eq(20).attr('name','dtefac_updated_at' + data.id);
 
             }
         });
@@ -301,6 +322,14 @@ function ajaxRequest(data,url,funcion) {
                     $("#fechaestdesp" + aux_data.i).html($("#fechaed" + aux_data.i).val());
                     $("#savefed" + aux_data.i).attr('updated_at',respuesta.updated_at);
                 }
+            }
+            if(funcion=='staverfacdesp'){
+				if (respuesta.error == 0) {
+                    $("#dtefac_updated_at" + aux_data.dte_id).html(respuesta.dtefac_updated_at);
+				} else {
+                    
+				}
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
             }
 		},
 		error: function () {
@@ -721,4 +750,17 @@ function restbotoneditfeced(i){
     $("#editfed" + i).show();
     $("#savefed" + i).hide();
     $(".datepicker").datepicker("refresh");
+}
+
+function clickstaverfacdesp(obj){
+    let item = $(obj).attr("item");
+    var data = {
+        dte_id : item,
+        updated_at : $("#updated_at" + item).html(),
+        dtefac_updated_at : $("#dtefac_updated_at" + item).html(),
+        _token : $('input[name=_token]').val()
+    };
+    var ruta = '/dtefactura/staverfacdesp'; //Guardar Fecha estimada de despacho
+    ajaxRequest(data,ruta,'staverfacdesp');
+
 }

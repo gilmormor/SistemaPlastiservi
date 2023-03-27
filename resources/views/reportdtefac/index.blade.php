@@ -244,12 +244,15 @@ DTE Facturacion
                             <th class='tooltipsC' title='Guia Despacho'>GD</th>
                             <th class='tooltipsC' title='Guia Despacho Cedible'>GDC</th>
                             <th class='tooltipsC' title='Factura'>Factura</th>
+                            <th class='tooltipsC' title='Marcar para mostrar factura en despacho'>V</th>
                             <th class='tooltipsC' title='Comuna'>Comuna</th>
                             <th class="ocultar">dteanul_obs</th>
                             <th class="ocultar">dteanulcreated_at</th>
                             <th class="ocultar">Obs Bloqueo</th>
                             <th class="ocultar">oc_file</th>
+                            <th class="ocultar">foliocontrol_id</th>
                             <th class="ocultar">updated_at</th>
+                            <th class="ocultar">dtefac_updated_at</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -1046,6 +1046,7 @@ Route::post('dtefactura/listardtedet', 'DteFacturaController@listardtedet')->nam
 Route::post('dtefactura/anular', 'DteFacturaController@anular')->name('dtefactura_anular');
 Route::post('dtefactura/buscarfactura', 'DteFacturaController@buscarfactura')->name('dtefactura_buscarfactura');
 Route::post('dtefactura/estadoDTE', 'DteFacturaController@estadoDTE')->name('dtefactura_estadoDTE');
+Route::post('dtefactura/staverfacdesp', 'DteFacturaController@staverfacdesp')->name('dtefactura_staverfacdesp');
 
 /*RUTAS REPORTE DTE FACTURA*/
 Route::get('reportdtefac', 'ReportDTEFacController@index')->name('reportdtefac');

@@ -19,7 +19,7 @@
                             <label for="despachoord_id" class="control-label requerido" data-toggle='tooltip' title="Id Orden Despacho">OD</label>
                             <input type="text" name="despachoord_id" id="despachoord_id" class="form-control" value="{{$data->id}}" required readonly/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-3">
+                        <div class="form-group col-xs-12 col-sm-2">
                             <label for="rut_cliente" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
                             <?php 
                                 $aux_rut = $data->notaventa->cliente->rut;
@@ -27,14 +27,18 @@
                             ?>
                             <input type="text" name="rut_cliente" id="rut_cliente" class="form-control" value="{{old('rut_cliente', $aux_rut ?? '')}}" maxlength="12" required readonly/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-6">
+                        <div class="form-group col-xs-12 col-sm-5">
                             <label for="razonsocial" class="control-label requerido" data-toggle='tooltip' title="Razón Social">Razón Social</label>
-                            <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', isset($dteguiadesp) ? $dteguiadesp->cliente->razonsocial : $data->notaventa->cliente->razonsocial ?? '')}}" readonly/>
+                            <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', isset($dteguiadesp) ? $dteguiadesp->cliente->razonsocial : $data->notaventa->cliente->razonsocial ?? '')}}" readonly required/>
                             <input type="text" name="rznsocrecep" id="rznsocrecep" class="form-control" value="{{old('rznsocrecep', isset($dteguiadesp) ? $dteguiadesp->cliente->razonsocial : $data->notaventa->cliente->razonsocial ?? '')}}" style="display:none;" readonly/>
                             <input type="text" name="girorecep" id="girorecep" class="form-control" value="{{old('girorecep', isset($dteguiadesp) ? $dteguiadesp->cliente->giro : $data->notaventa->cliente->giro ?? '')}}" style="display:none;" readonly/>
                         </div>
+                        <div class="form-group col-xs-12 col-sm-3">
+                            <label for="giro" class="control-label requerido" data-toggle='tooltip' title="Giro">Giro</label>
+                            <input type="text" name="giro" id="giro" class="form-control" value="{{old('giro', isset($dteguiadesp) ? $dteguiadesp->cliente->giro : $data->notaventa->cliente->giro ?? '')}}" readonly required/>
+                        </div>
                     
-                        <div class="form-group col-xs-12 col-sm-2">
+                        <div class="form-group col-xs-12 col-sm-1">
                             <label for="fechahora" class="control-label">Fecha</label>
                             <input type="text" name="fechahora" id="fechahora" class="form-control" value="{{old('fechahora', isset($dteguiadesp) ? date("d/m/Y", strtotime($dteguiadesp->fechahora)) : date("d/m/Y", strtotime($data->fechahora)) ?? '')}}" style="padding-left: 0px;padding-right: 0px;" required readonly/>
                         </div>

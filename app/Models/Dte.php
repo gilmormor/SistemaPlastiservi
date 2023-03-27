@@ -704,7 +704,8 @@ class Dte extends Model
         WHERE dtedte1.dte_id = dte.id
         GROUP BY dtedte1.dte_id) AS nrodocto_guiadesp,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
-        dte.nrodocto,dte.updated_at
+        foliocontrol.tipodocto,foliocontrol.nombrepdf,
+        dte.nrodocto,dte.updated_at,dtefac.updated_at as dtefac_updated_at
         FROM dte INNER JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dteguiadesp
@@ -721,6 +722,10 @@ class Dte extends Model
         ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
         LEFT JOIN dteanul
         ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+        INNER JOIN foliocontrol
+        ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
+        INNER JOIN dtefac
+        ON dtefac.dte_id = dte.id
         WHERE dte.foliocontrol_id=1 
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_conddte_id

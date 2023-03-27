@@ -135,28 +135,28 @@ class DteGuiaDespController extends Controller
         //dd($request);
         $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
         if($request->updated_at != $despachoord->updated_at){
-            return redirect('guiadesp_listarorddesp')->with([
+            return redirect('dteguiadesp/listarorddesp')->with([
                 'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
                 'tipo_alert' => 'alert-error'
             ]);
         }
         if(is_null($despachoord->notaventa->cliente->giro) or empty($despachoord->notaventa->cliente->giro) or $despachoord->notaventa->cliente->giro ==""){
-            return response()->json([
+            return redirect('dteguiadesp/listarorddesp')->with([
                 'id' => 0,
-                'mensaje'=>'Giro de Cliente no puede estar vacio.',
-                'tipo_alert' => 'error'
+                'mensaje'=>'Giro Cliente RUT ' . $despachoord->notaventa->cliente->rut . ' '. $despachoord->notaventa->cliente->razonsocial .' no puede estar vacio.',
+                'tipo_alert' => 'alert-error'
             ]);
         }
 
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
-            return redirect('dteguiadesp')->with([
+            return redirect('dteguiadesp/listarorddesp')->with([
                 'mensaje'=>'Guia Despacho sin items, no se guardó.',
                 'tipo_alert' => 'alert-error'
             ]);
         }
         if(count($despachoord->despachoorddets) != $cont_producto){
-            return redirect('dteguiadesp')->with([
+            return redirect('dteguiadesp/listarorddesp')->with([
                 'mensaje'=>'Cantidad de item diferentes a la Orden de Despacho Original.',
                 'tipo_alert' => 'alert-error'
             ]);
@@ -325,7 +325,7 @@ class DteGuiaDespController extends Controller
         }else{
             $foliocontrol->bloqueo = 0;
             $foliocontrol->save();
-            return redirect('dteguiadesp')->with([
+            return redirect('dteguiadesp/listarorddesp')->with([
                 'mensaje'=>$respuesta->original["mensaje"] ,
                 'tipo_alert' => 'alert-error'
             ]);

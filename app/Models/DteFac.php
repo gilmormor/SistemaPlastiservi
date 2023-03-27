@@ -11,7 +11,8 @@ class DteFac extends Model
         'dte_id',
         'hep',
         'formapago_id',
-        'fchvenc'
+        'fchvenc',
+        'staverfacdesp'
     ];
 
     //RELACION INVERSA Dte

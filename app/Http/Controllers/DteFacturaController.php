@@ -513,6 +513,39 @@ class DteFacturaController extends Controller
         }        
     }
 
+    public function staverfacdesp(Request $request){
+        if($request->ajax()){
+            $dte = Dte::findOrFail($request->dte_id);
+            if($request->updated_at != $dte->updated_at){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            if($request->dtefac_updated_at != $dte->dtefac->updated_at){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            if($dte->dtefac->staverfacdesp == 0){
+                $dte->dtefac->staverfacdesp = 1;
+            }else{
+                $dte->dtefac->staverfacdesp = 0;
+            }
+            if($dte->dtefac->save()){
+                return response()->json([
+                    'error' => 0,
+                    'mensaje'=>'Registro guardado con exito!',
+                    'dtefac_updated_at' => date("Y-m-d H:i:s", strtotime($dte->dtefac->updated_at)),
+                    'tipo_alert' => 'success'
+                ]);
+            }
+        }
+    }
+
 }
 
 
@@ -559,7 +592,7 @@ function consultaindex($dte_id){
     LEFT JOIN clientebloqueado
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
     INNER JOIN foliocontrol
-    ON  foliocontrol.id = dte.foliocontrol_id
+    ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
     WHERE (dte.foliocontrol_id=1)
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.sucursal_id IN ($sucurcadena)
