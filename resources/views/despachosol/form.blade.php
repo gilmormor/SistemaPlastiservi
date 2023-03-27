@@ -457,7 +457,7 @@
                                             <tbody>
                                                 <?php $i=0 ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    @if (true or s$invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)
+                                                    @if (true or $invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)
                                                         <?php
                                                             $request = new Request();
                                                             $request["producto_id"] = $invbodegaproducto->producto_id;
