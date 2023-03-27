@@ -144,7 +144,7 @@ function consultaindex(){
     $sucurcadena = implode(",", $sucurArray);
 
     $sql = "SELECT invmov.id,invmov.desc,invmov.fechahora,invmovmodulo.nombre as invmovmodulo_nombre,
-    idmovmod,invmovmodulo_id,invmov.updated_at
+    idmovmod,invmovmodulo_id,invmov.created_at,invmov.updated_at
     FROM invmov INNER JOIN invmovmodulo
     ON invmov.invmovmodulo_id = invmovmodulo.id AND ISNULL(invmov.deleted_at) and isnull(invmovmodulo.deleted_at)
     WHERE invmov.sucursal_id in ($sucurcadena)

@@ -13,6 +13,7 @@ $(document).ready(function () {
 		"order": [[ 0, "id" ]],
 		'columns'     : [
 			{data: 'id'},
+			{data: 'created_at'},
 			{data: 'fechahora'},
 			{data: 'desc'},
 			{data: 'invmovmodulo_nombre'},
@@ -37,9 +38,13 @@ $(document).ready(function () {
 
 			$(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
-			$('td', row).eq(1).attr('data-order',data.fechahora);
-            aux_fecha = new Date(data.fechahora);
+			$('td', row).eq(1).attr('data-order',data.created_at);
+            aux_fecha = new Date(data.created_at);
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
+			$('td', row).eq(2).attr('data-order',data.fechahora);
+            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
 			switch (data.invmovmodulo_id) {
 				case 1:
 					aux_text = 
@@ -79,7 +84,7 @@ $(document).ready(function () {
 				default:
 					aux_texto = "Falta asignar PDF"
 			}
-			$('td', row).eq(4).html(aux_text);
+			$('td', row).eq(5).html(aux_text);
 		}
 	});
 	
