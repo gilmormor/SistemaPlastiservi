@@ -272,7 +272,7 @@
                                             <tbody>
                                                 <?php $i=0; //dd($invbodegaproductos) ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                                    @if ( true or $invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
                                                         <?php
                                                             //dd($invbodegaproducto);
                                                             $i++;

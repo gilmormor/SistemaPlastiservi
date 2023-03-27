@@ -264,7 +264,7 @@
                                         <table class="table" id="tabla-bod" style="font-size:14px;table-layout: fixed;width: 200px;">
                                             <tbody>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                                    @if (true or $invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
                                                         <?php
                                                             //dd($invbodegaproductos);
                                                             $request = new Request();

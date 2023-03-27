@@ -457,7 +457,7 @@
                                             <tbody>
                                                 <?php $i=0 ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    <!--@if ($invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)-->
+                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)
                                                         <?php
                                                             $request = new Request();
                                                             $request["producto_id"] = $invbodegaproducto->producto_id;
@@ -517,7 +517,7 @@
                                                                 </td>
                                                             </tr>
                                                         @endif
-                                                    <!--@endif-->
+                                                    @endif
                                                 @endforeach
                                                 @if ($i == 0)
                                                     <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada'>
