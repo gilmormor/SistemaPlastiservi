@@ -797,7 +797,7 @@ function consultasoldesp($request){
                 $aux_condsta_picking = " true";
                 break;
             case 1:
-                $aux_condsta_picking = "despachosoldet_invbodegaproducto.cantex == 0";
+                $aux_condsta_picking = "despachosoldet_invbodegaproducto.cantex = 0";
                 break;
             case 2:
                 $aux_condsta_picking = "despachosoldet_invbodegaproducto.cantex != 0";
