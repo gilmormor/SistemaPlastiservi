@@ -25,7 +25,9 @@ $(document).ready(function () {
 	$(".modal-body label").css("margin-bottom", -2);
 	$(".help-block").css("margin-top", -2);
 
-
+	if($("#sucursal_id").val() > 0){
+		llenarpesajescarros($("#sucursal_id").val())
+	}
 	$('.datepicker').datepicker({
 		language: "es",
 		autoclose: true,
@@ -47,6 +49,7 @@ $(".requeridos").change(function(){
 });
 
 function agregarFila() {
+	llenarpesajescarros($("#sucursal_id").val());
 	$("#itemcompletos").val("");
 	//aux_num=parseInt($("#tabla-data >tbody >tr").length);
 	aux_nroitem=parseInt($("#tabla-data >tbody >tr").length) + 1;
@@ -78,17 +81,17 @@ function agregarFila() {
 			<input type="text" name="pesounitnom[]" id="pesounitnom${aux_nfila}" class="form-control" value="" style="text-align:right;padding-left: 0px;padding-right: 2px;" readonly disabled/>
 		</td>
 		<td name="areaproduccionsuclinea_idTD${aux_nfila}" id="areaproduccionsuclinea_idTD${aux_nfila}" valor="" style="padding-left: 3px;padding-right: 3px;">
-			<select name="areaproduccionsuclinea_id[]" id="areaproduccionsuclinea_id${aux_nfila}" class="form-control areaproduccionsuclinea_id itemrequerido" title="Linea de Producción" item="${aux_nfila}">
+			<select name="areaproduccionsuclinea_id[]" id="areaproduccionsuclinea_id${aux_nfila}" class="form-control areaproduccionsuclinea_id itemrequerido" title="Linea de Producción" item="${aux_nfila}" style="padding-left: 2px;">
 			</select>
 		</td>
 
 		<td name="turno_idTD${aux_nfila}" id="turno_idTD${aux_nfila}" valor="" style="padding-left: 3px;padding-right: 3px;">
-			<select name="turno_id[]" id="turno_id${aux_nfila}" class="form-control select2 itemrequerido" title="Turno">
+			<select name="turno_id[]" id="turno_id${aux_nfila}" class="form-control select2 itemrequerido" title="Turno"style="padding-left: 2px;">
 				${aux_turnoselect}
 			</select>
 		</td>
 		<td name="pesajecarro_idTD${aux_nfila}" id="pesajecarro_idTD${aux_nfila}" valor="" style="padding-left: 3px;padding-right: 3px;">
-			<select name="pesajecarro_id[]" id="pesajecarro_id${aux_nfila}" class="form-control select2 pesajecarro_id itemrequerido" title="Carro" item="${aux_nfila}">
+			<select name="pesajecarro_id[]" id="pesajecarro_id${aux_nfila}" class="form-control select2 pesajecarro_id itemrequerido" title="Carro" item="${aux_nfila}"style="padding-left: 2px;">
 				${aux_pesajecarroselect}
 			</select>
 		</td>
@@ -253,24 +256,33 @@ function calsubtotalitem(name){
 }
 
 $("#sucursal_id").change(function(){
-	var data = {
-        id: $(this).val(),
-        _token: $('input[name=_token]').val()
-    };
-    $.ajax({
-        url: '/pesajecarro/listar',
-        type: 'POST',
-        data: data,
-        success: function (pesajecarros) {
-			$("#pesajecarroselect").empty();
-            $("#pesajecarroselect").append("<option value='' tara='0'>Seleccione...</option>");
-			pesajecarros.forEach(function(pesajecarros) {
-				$("#pesajecarroselect").append(`<option value="${pesajecarros.id}" tara="${pesajecarros.tara}">${pesajecarros.nombre}</option>`)
-			});
-        }
-    });
-
+	id = $(this).val();
+	llenarpesajescarros(id)
 });
+
+function llenarpesajescarros(id){
+	if($("#pesajecarroselect option").length == 0){
+		var data = {
+			id: id,
+			_token: $('input[name=_token]').val()
+		};
+		//console.log(data);
+		//return 0;
+		$.ajax({
+			url: '/pesajecarro/listar',
+			type: 'POST',
+			data: data,
+			success: function (pesajecarros) {
+				$("#pesajecarroselect").empty();
+				$("#pesajecarroselect").append("<option value='' tara='0'>Seleccione...</option>");
+				pesajecarros.forEach(function(pesajecarros) {
+					$("#pesajecarroselect").append(`<option value="${pesajecarros.id}" tara="${pesajecarros.tara}">${pesajecarros.nombre}</option>`)
+				});
+			}
+		});	
+	}
+
+}
 
 function cargardatospantprod(){
 

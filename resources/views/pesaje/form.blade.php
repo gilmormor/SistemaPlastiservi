@@ -11,8 +11,8 @@
     @endforeach
 </select>
 <select name="pesajecarroselect" id="pesajecarroselect" class="form-control" style="display: none">
-    <option value="">Seleccione...</option>
     @if (isset($data))
+        <option value="">Seleccione...</option>
         @foreach($tablas['pesajecarros'] as $pesajecarro)
             @if ($data->sucursal_id == $pesajecarro->sucursal_id)
                 <option
@@ -103,7 +103,7 @@
                             <th class="width20 tooltipsC" title="Peso Norma" style="text-align:right;">PN</th>
                             <th class="width50 tooltipsC" title="Linea">Linea</th>
                             <th class="width50 tooltipsC" title="Turno">Turno</th>
-                            <th class="width60 tooltipsC" title="Carro">Carro</th>
+                            <th class="width70 tooltipsC" title="Carro">Carro</th>
                             <th class="width30 tooltipsC" title="Peso Carro">Tara</th>
                             <th class="width60" style="text-align:right;">Cant</th>
                             <th class="width70 tooltipsC" title="Peso Balanza" style="text-align:right;">PBalanza</th>
