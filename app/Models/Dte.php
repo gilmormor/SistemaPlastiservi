@@ -705,7 +705,7 @@ class Dte extends Model
         GROUP BY dtedte1.dte_id) AS nrodocto_guiadesp,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
         foliocontrol.tipodocto,foliocontrol.nombrepdf,
-        dte.nrodocto,dte.updated_at,dtefac.updated_at as dtefac_updated_at
+        dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at
         FROM dte INNER JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dteguiadesp

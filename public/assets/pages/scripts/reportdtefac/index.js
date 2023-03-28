@@ -47,8 +47,9 @@ $(document).ready(function () {
                 {data: 'clientebloqueado_descripcion',className:"ocultar"}, //16
                 {data: 'oc_file',className:"ocultar"}, //17
                 {data: 'nombrepdf',className:"ocultar"}, //18
-                {data: 'updated_at',className:"ocultar"}, //19
-                {data: 'dtefac_updated_at',className:"ocultar"}, //20                
+                {data: 'staverfacdesp',className:"ocultar"}, //19
+                {data: 'updated_at',className:"ocultar"}, //20
+                {data: 'dtefac_updated_at',className:"ocultar"}, //21
                 {defaultContent : ""}
             ],
             "language": {
@@ -188,23 +189,27 @@ $(document).ready(function () {
                     </a>`;
                 }
                 $('td', row).eq(11).html(aux_text);
+                aux_checkstaex = "";
+                if(data.staverfacdesp == 1){
+                    aux_checkstaex = "checked";
+                }
                 aux_text = 
                 `<div class="checkbox">
                     <label style="font-size: 1.2em;padding-left: 0px;">
                         <input type="hidden" id="staverfacdesp${data.id}" name="staverfacdesp${data.id}" value="${data.staverfacdesp}">
-                        <input type="checkbox" class="checkstaex" id="aux_staverfacdesp${data.id}" name="aux_staverfacdesp${data.id}" onchange="clickstaverfacdesp(this)" item=${data.id}>
+                        <input type="checkbox" class="checkstaex" id="aux_staverfacdesp${data.id}" name="aux_staverfacdesp${data.id}" onchange="clickstaverfacdesp(this)" item=${data.id} ${aux_checkstaex}>
                         <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                     </label>
                 </div>`;
                 $('td', row).eq(12).html(aux_text);
 
-                $('td', row).eq(19).addClass('updated_at');
-                $('td', row).eq(19).attr('id','updated_at' + data.id);
-                $('td', row).eq(19).attr('name','updated_at' + data.id);
+                $('td', row).eq(20).addClass('updated_at');
+                $('td', row).eq(20).attr('id','updated_at' + data.id);
+                $('td', row).eq(20).attr('name','updated_at' + data.id);
 
-                $('td', row).eq(20).addClass('dtefac_updated_at');
-                $('td', row).eq(20).attr('id','dtefac_updated_at' + data.id);
-                $('td', row).eq(20).attr('name','dtefac_updated_at' + data.id);
+                $('td', row).eq(21).addClass('dtefac_updated_at');
+                $('td', row).eq(21).attr('id','dtefac_updated_at' + data.id);
+                $('td', row).eq(21).attr('name','dtefac_updated_at' + data.id);
 
             }
         });
@@ -327,7 +332,12 @@ function ajaxRequest(data,url,funcion) {
 				if (respuesta.error == 0) {
                     $("#dtefac_updated_at" + aux_data.dte_id).html(respuesta.dtefac_updated_at);
 				} else {
-                    
+                    estaSeleccionado = $("#aux_staverfacdesp" + aux_data.dte_id).is(":checked");
+                    if(estaSeleccionado){
+                        $("#aux_staverfacdesp" + aux_data.dte_id).prop('checked',false);
+                    }else{
+                        $("#aux_staverfacdesp" + aux_data.dte_id).prop('checked',true);
+                    }
 				}
                 Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
             }
@@ -758,6 +768,7 @@ function clickstaverfacdesp(obj){
         dte_id : item,
         updated_at : $("#updated_at" + item).html(),
         dtefac_updated_at : $("#dtefac_updated_at" + item).html(),
+        staverfacdesp : $(obj).prop('checked'),
         _token : $('input[name=_token]').val()
     };
     var ruta = '/dtefactura/staverfacdesp'; //Guardar Fecha estimada de despacho

@@ -251,8 +251,10 @@ DTE Facturacion
                             <th class="ocultar">Obs Bloqueo</th>
                             <th class="ocultar">oc_file</th>
                             <th class="ocultar">foliocontrol_id</th>
+                            <th class="ocultar">staverfacdesp</th>
                             <th class="ocultar">updated_at</th>
                             <th class="ocultar">dtefac_updated_at</th>
+                            
                         </tr>
                     </thead>
                     <tbody>

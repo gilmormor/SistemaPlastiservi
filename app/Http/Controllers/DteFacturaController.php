@@ -530,11 +530,11 @@ class DteFacturaController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
-            if($dte->dtefac->staverfacdesp == 0){
-                $dte->dtefac->staverfacdesp = 1;
-            }else{
-                $dte->dtefac->staverfacdesp = 0;
+            $staverfacdesp = 0;
+            if($request->staverfacdesp =="true"){
+                $staverfacdesp = 1;
             }
+            $dte->dtefac->staverfacdesp = $staverfacdesp;
             if($dte->dtefac->save()){
                 return response()->json([
                     'error' => 0,
