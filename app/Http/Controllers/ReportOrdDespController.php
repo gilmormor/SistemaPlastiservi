@@ -421,7 +421,7 @@ function consultaorddesp($request){
         $aux_codprod = implode ( ',' , $aux_codprod);
         $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
     }
-
+    $user = Usuario::findOrFail(auth()->id());
     $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
     if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
         //$aux_condsucursal_id = " true ";

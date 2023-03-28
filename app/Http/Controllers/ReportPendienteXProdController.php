@@ -465,7 +465,7 @@ function consulta($request,$aux_sql,$orden){
         }
         $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
     }
-
+/*
     if(empty($request->sucursal_id)){
         $aux_condsucursal_id = " true ";
     }else{
@@ -476,6 +476,21 @@ function consulta($request,$aux_sql,$orden){
         }
         $aux_condsucursal_id = " notaventa.sucursal_id in ($aux_sucursal) ";
     }
+*/
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        //$aux_condsucursal_id = " true ";
+        $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray)";
+    }else{
+        if(is_array($request->sucursal_id)){
+            $aux_sucursal = implode ( ',' , $request->sucursal_id);
+        }else{
+            $aux_sucursal = $request->sucursal_id;
+        }
+        $aux_condsucursal_id = " (notaventa.sucursal_id in ($aux_sucursal) and notaventa.sucursal_id in ($sucurArray))";
+    }
+
 
 /*
     if(empty($request->plazoentrega)){
