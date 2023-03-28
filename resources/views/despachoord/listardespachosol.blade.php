@@ -212,7 +212,7 @@ Pendiente Solicitud Orden Despacho
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Categoria">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Sucursal">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="sucursal_id" class="control-label">Sucursal:</label>
                                     </div>
@@ -226,9 +226,9 @@ Pendiente Solicitud Orden Despacho
                                                     {{$sucursal->nombre}}
                                                 </option>
                                             @endforeach
-                                        </select>            
+                                        </select>
                                     </div>
-                                </div>    
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">

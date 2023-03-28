@@ -55,7 +55,8 @@ function datosOrdDesp(){
         comuna_id         : $("#comuna_id").val(),
         despachosol_id    : $("#despachosol_id").val(),
         producto_id       : $("#producto_idPxP").val(),
-        _token            : $('input[name=_token]').val()
+        sucursal_id       : $("#sucursal_id").val(),
+        _token            : $('input[name=_token]').val(),
     };
 
     var data2 = "?id="+data1.id +
@@ -72,7 +73,8 @@ function datosOrdDesp(){
     "&aprobstatus="+data1.aprobstatus +
     "&comuna_id="+data1.comuna_id +
     "&despachosol_id="+data1.despachosol_id +
-    "&producto_id="+data1.producto_id
+    "&producto_id="+data1.producto_id +
+    "&sucursal_id="+data1.sucursal_id
 
     var data = {
         data1 : data1,

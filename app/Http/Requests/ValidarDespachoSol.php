@@ -25,6 +25,7 @@ class ValidarDespachoSol extends FormRequest
     {
         return [
             'notaventa_id' => 'required',
+            'sucursal_id' => 'required',
             'usuario_id' => 'required',
             'comunaentrega_id' => 'required',
             'tipoentrega_id' => 'required',

@@ -14,6 +14,7 @@ use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -50,7 +51,9 @@ class ReportOrdDespController extends Controller
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
         $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-
+        $user = Usuario::findOrFail(auth()->id());
+        $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         return view('reportorddesp.index', compact('clientes','giros','areaproduccions','tipoentregas','comunas','fechaServ','tablashtml','productos','selecmultprod'));
 
     }
@@ -419,6 +422,20 @@ function consultaorddesp($request){
         $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
     }
 
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        //$aux_condsucursal_id = " true ";
+        $aux_condsucursal_id = " despachosol.sucursal_id in ($sucurArray)";
+    }else{
+        if(is_array($request->sucursal_id)){
+            $aux_sucursal = implode ( ',' , $request->sucursal_id);
+        }else{
+            $aux_sucursal = $request->sucursal_id;
+        }
+        $aux_condsucursal_id = " (despachosol.sucursal_id in ($aux_sucursal) and despachosol.sucursal_id in ($sucurArray))";
+    }
+
+
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
     /*
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
@@ -493,6 +510,8 @@ function consultaorddesp($request){
             ON despachoord.id=despachoordanul.despachoord_id AND isnull(despachoordanul.deleted_at)
             LEFT JOIN despachoordrec
             ON despachoord.id=despachoordrec.despachoord_id AND despachoordrec.aprobstatus=2 AND isnull(despachoordrec.anulada) AND isnull(despachoordrec.deleted_at)
+            INNER JOIN despachosol
+            ON despachoord.despachosol_id = despachosol.id AND isnull(despachosol.deleted_at)
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -508,6 +527,7 @@ function consultaorddesp($request){
             and $aux_conddespachosol_id
             and $aux_condfechaestdesp
             and $aux_condproducto_id
+            and $aux_condsucursal_id
             GROUP BY despachoord.id
             ORDER BY despachoord.id asc,despachoordrec.id asc;";
 

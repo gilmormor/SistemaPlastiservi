@@ -14,7 +14,6 @@
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
-<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $sucurArray[0] ?? '')}}">
 
 
 @if($aux_sta==1)
@@ -239,17 +238,31 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xs-12 col-sm-5">
+                        <div class="form-group col-xs-12 col-sm-4">
                             <label for="contactoemail" class="control-label requerido">Email</label>
                             <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-5">
+                        <div class="form-group col-xs-12 col-sm-4">
                             <label for="observacion" class="control-label">Observaciones</label>
                             <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="fechaestdesp" class="control-label requerido" data-toggle='tooltip' title="Fecha estimada de Despacho">Fec Est Despacho</label>
                             <input type="text" name="fechaestdesp" id="fechaestdesp" class="form-control pull-right" value="{{old('fechaestdesp', $data->fechaestdesp ?? '')}}" required readonly/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label id="lblsucursal_id" name="lblsucursal_id" for="sucursal_id" class="control-label requerido" data-toggle='tooltip' title="Sucursal de despacho">Sucursal Despacho</label>
+                            <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' required>
+                                <option value=''>Seleccione...</option>
+                                    @foreach($tablas['sucursales'] as $sucursal)
+                                        <option
+                                            value="{{$sucursal->id}}"
+                                            @if (isset($data) and ($data->sucursal_id==$sucursal->id))
+                                                {{'selected'}}
+                                            @endif
+                                            >{{$sucursal->nombre}}</option>
+                                    @endforeach                    
+                            </select>
                         </div>
                     </div>
                 </div>

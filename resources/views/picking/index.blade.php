@@ -233,7 +233,7 @@ Pendiente Solicitud Orden Despacho
                                                     {{$sucursal->nombre}}
                                                 </option>
                                             @endforeach
-                                        </select>            
+                                        </select>
                                     </div>
                                 </div>    
                             </div>

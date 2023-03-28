@@ -149,6 +149,25 @@ Pendiente x Producto
                                 </div>
                             </div>
                         </div>
+                        <div class="col-xs-12 col-md-12 col-sm-12">
+                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Sucursal">
+                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                    <label for="sucursal_id" class="control-label">Sucursal:</label>
+                                </div>
+                                <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <select name="sucursal_id[]" id="sucursal_id" multiple class='selectpicker form-control' data-live-search='true' multiple data-actions-box='true'>
+                                        @foreach($tablashtml['sucursales'] as $sucursal)
+                                            <option
+                                                value="{{$sucursal->id}}"
+                                                {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
+                                                >
+                                                {{$sucursal->nombre}}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xs-12 col-md-3 col-sm-12">
                         <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>

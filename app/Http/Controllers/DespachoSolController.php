@@ -189,7 +189,10 @@ class DespachoSolController extends Controller
         $aux_statusPant = 0;
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
-        return view('despachosol.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo'));
+        $user = Usuario::findOrFail(auth()->id());
+        $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
+        return view('despachosol.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','tablas'));
     }
 
     /**
@@ -419,9 +422,12 @@ class DespachoSolController extends Controller
         $aux_statusPant = 0;
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
+        $user = Usuario::findOrFail(auth()->id());
+        $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
 
         //dd($clientedirecs);
-        return view('despachosol.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','invmovmodulo','array_bodegasmodulo'));
+        return view('despachosol.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','invmovmodulo','array_bodegasmodulo','tablas'));
   
     }
 
@@ -462,6 +468,7 @@ class DespachoSolController extends Controller
                 $despachosol->contactotelf = $request->contactotelf;
                 $despachosol->observacion = $request->observacion;
                 $despachosol->fechaestdesp = $request->fechaestdesp;
+                $despachosol->sucursal_id = $request->sucursal_id;
                 //dd($request);
                 if($despachosol->save()){
                     $aux_arraystocks = arraystocks($request);
@@ -477,6 +484,12 @@ class DespachoSolController extends Controller
                                         $despachosoldet->usuariodel_id = auth()->id();
                                         $despachosoldet->save();
                                         DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
+                                        /*
+                                        $despachosoldet_invbodegaproductos = DespachoSolDet_InvBodegaProducto::where('despachosoldet_id', $despachosoldet->id)->get();
+                                        foreach ($despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                                            DespachoSolDet_InvBodegaProducto::destroy($despachosoldet_invbodegaproducto->id);
+                                        }
+                                        */
                                         $despachosoldet->delete();
                                     }else{
                                         $cont_bodegas = count($request->invcant);
@@ -2622,16 +2635,17 @@ function consultasoldesp($request){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
     if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
-        $aux_condsucursal_id = " true ";
+        //$aux_condsucursal_id = " true ";
+        $aux_condsucursal_id = " despachosol.sucursal_id in ($sucurArray)";
     }else{
         if(is_array($request->sucursal_id)){
             $aux_sucursal = implode ( ',' , $request->sucursal_id);
         }else{
             $aux_sucursal = $request->sucursal_id;
         }
-        $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
-        $aux_condsucursal_id = " (notaventa.sucursal_id in ($aux_sucursal) and notaventa.sucursal_id in ($sucurArray))";
+        $aux_condsucursal_id = " (despachosol.sucursal_id in ($aux_sucursal) and despachosol.sucursal_id in ($sucurArray))";
     }
 
     if(empty($request->fechad) or empty($request->fechah)){
@@ -2795,7 +2809,7 @@ function consultasoldesp($request){
             LEFT JOIN vista_despordxdespsoltotales
             ON despachosol.id = vista_despordxdespsoltotales.despachosol_id
             INNER JOIN sucursal
-            ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
+            ON despachosol.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut

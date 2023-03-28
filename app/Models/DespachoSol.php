@@ -13,6 +13,7 @@ class DespachoSol extends Model
     protected $table = "despachosol";
     protected $fillable = [
         'notaventa_id',
+        'sucursal_id',
         'usuario_id',
         'fechahora',
         'comunaentrega_id',
@@ -77,6 +78,11 @@ class DespachoSol extends Model
     public function invmovs()
     {
         return $this->belongsToMany(InvMov::class, 'despachosol_invmov','despachosol_id','invmov_id')->withTimestamps();
+    }
+    //Relacion inversa a Sucursal
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class);
     }
     
 

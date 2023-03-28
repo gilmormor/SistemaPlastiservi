@@ -88,7 +88,7 @@
 
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
-        <h3 class="box-title">Detalle</h3>
+        <h3 class="box-title">Detalle - Sucursal Despacho: {{$data->sucursal->nombre}}</h3>
         <div class="box-body">
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
@@ -272,7 +272,7 @@
                                             <tbody>
                                                 <?php $i=0; //dd($invbodegaproductos) ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    @if ( true or $invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)
                                                         <?php
                                                             //dd($invbodegaproducto);
                                                             $i++;

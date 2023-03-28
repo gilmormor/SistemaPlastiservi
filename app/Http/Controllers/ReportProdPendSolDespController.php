@@ -10,6 +10,7 @@ use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -34,6 +35,9 @@ class ReportProdPendSolDespController extends Controller
         $selecmultprod = 1;
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $user = Usuario::findOrFail(auth()->id());
+        $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         return view('reportprodpendsoldesp.index', compact('giros','areaproduccions','tipoentregas','comunas','fechaAct','selecmultprod','tablashtml'));
     
     }
@@ -255,6 +259,19 @@ function consulta($request,$aux_cons,$auxproducto_id){
         $aux_codprod = implode ( ',' , $aux_codprod);
         $aux_condproducto_id = "vista_soldespconsudespacho.producto_id in ($aux_codprod)";
     }
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        //$aux_condsucursal_id = " true ";
+        $aux_condsucursal_id = " despachosol.sucursal_id in ($sucurArray)";
+    }else{
+        if(is_array($request->sucursal_id)){
+            $aux_sucursal = implode ( ',' , $request->sucursal_id);
+        }else{
+            $aux_sucursal = $request->sucursal_id;
+        }
+        $aux_condsucursal_id = " (despachosol.sucursal_id in ($aux_sucursal) and despachosol.sucursal_id in ($sucurArray))";
+    }
+
 
     if($aux_cons == 1){
         $sql = "SELECT producto_id,producto.nombre,
@@ -276,6 +293,8 @@ function consulta($request,$aux_cons,$auxproducto_id){
         ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
         INNER JOIN claseprod
         ON producto.claseprod_id=claseprod.id
+        INNER JOIN despachosol
+        ON vista_soldespconsudespacho.despachosol_id = despachosol.id  and isnull(despachosol.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -285,6 +304,7 @@ function consulta($request,$aux_cons,$auxproducto_id){
         and $aux_condnotaventa_id
         and $aux_condcomuna_id
         and $aux_condproducto_id
+        and $aux_condsucursal_id
         AND vista_soldespconsudespacho.kgorddesp < vista_soldespconsudespacho.kgsoldesp
         GROUP BY producto_id
         ORDER BY producto_id;";
@@ -305,6 +325,8 @@ function consulta($request,$aux_cons,$auxproducto_id){
         ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
         INNER JOIN claseprod
         ON producto.claseprod_id=claseprod.id
+        INNER JOIN despachosol
+        ON vista_soldespconsudespacho.despachosol_id = despachosol.id  and isnull(despachosol.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -314,6 +336,7 @@ function consulta($request,$aux_cons,$auxproducto_id){
         and $aux_condnotaventa_id
         and $aux_condcomuna_id
         and $aux_condproducto_id
+        and $aux_condsucursal_id
         and producto.id = '$auxproducto_id'
         AND vista_soldespconsudespacho.kgorddesp < vista_soldespconsudespacho.kgsoldesp;";
     }

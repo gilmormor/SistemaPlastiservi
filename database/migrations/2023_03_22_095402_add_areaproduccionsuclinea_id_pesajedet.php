@@ -30,7 +30,6 @@ class AddAreaproduccionsuclineaIdPesajedet extends Migration
         Schema::table('pesajedet', function (Blueprint $table) {
             $table->dropForeign('fk_pesajedet_areaproduccionsuclinea');
             $table->dropColumn('areaproduccionsuclinea_id');
-
         });
     }
 }
