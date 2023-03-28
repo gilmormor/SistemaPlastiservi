@@ -212,9 +212,9 @@ Pendiente Solicitud Orden Despacho
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Sucursal">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Sucursal Despacho">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" class="control-label">Sucursal:</label>
+                                        <label for="sucursal_id" class="control-label">Sucursal Despacho:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sucursal_id[]" id="sucursal_id" multiple class='selectpicker form-control' data-live-search='true' multiple data-actions-box='true'>
