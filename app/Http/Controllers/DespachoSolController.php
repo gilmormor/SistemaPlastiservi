@@ -2650,6 +2650,7 @@ function consultasoldesp($request){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
+    $user = Usuario::findOrFail(auth()->id());
     $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
     if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
         //$aux_condsucursal_id = " true ";
