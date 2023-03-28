@@ -457,7 +457,7 @@ class DespachoSolController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);
             }
-            if($despachosol->updated_at == $request->updated_at){
+            if(true or $despachosol->updated_at == $request->updated_at){
                 $despachosol->updated_at = date("Y-m-d H:i:s");
                 $despachosol->comunaentrega_id = $request->comunaentrega_id;
                 $despachosol->tipoentrega_id = $request->tipoentrega_id;
@@ -484,10 +484,13 @@ class DespachoSolController extends Controller
                                         $despachosoldet->usuariodel_id = auth()->id();
                                         $despachosoldet->save();
                                         DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
-                                        /*
+                                        /* ESTO ES POR SI DA ERROR AL ELIMINAR EN DespachoSolDet_InvBodegaProducto Y HAY REGISTROA ASOCIADOS EN InvMovDet_BodSolDesp
                                         $despachosoldet_invbodegaproductos = DespachoSolDet_InvBodegaProducto::where('despachosoldet_id', $despachosoldet->id)->get();
                                         foreach ($despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
-                                            DespachoSolDet_InvBodegaProducto::destroy($despachosoldet_invbodegaproducto->id);
+                                            InvMovDet_BodSolDesp::where('despachosoldet_invbodegaproducto_id', $despachosoldet_invbodegaproducto->id)->delete();
+                                            DespachoSolDet_InvBodegaProducto::where('id', $despachosoldet_invbodegaproducto->id)->delete();
+                                            //DB::table('despachosoldet_invbodegaproducto')->where('id', $despachosoldet_invbodegaproducto->id)->delete();
+                                            //DespachoSolDet_InvBodegaProducto::destroy($despachosoldet_invbodegaproducto->id);
                                         }
                                         */
                                         $despachosoldet->delete();
@@ -532,6 +535,18 @@ class DespachoSolController extends Controller
                                                             ]
                                                         );
                                                     }else{
+                                                        //AL CAMBIAR EL PICKING A OTRA BODEGA ELIMINO EL MOVIMIENTO EN InvMovDet_BodSolDesp Y LUEGO EN despachosoldet_invbodegaproductos
+                                                        //dd($request->NVdet_id[$i] ."  " . $request->invbodegaproducto_id[$b]);
+                                                        $despachosoldet_invbodegaproductos = DespachoSolDet_InvBodegaProducto::where('despachosoldet_id',"=", $request->NVdet_id[$i])
+                                                                ->where('invbodegaproducto_id',"=", $request->invbodegaproducto_id[$b])
+                                                                ->get();
+                                                        //dd($despachosoldet_invbodegaproductos);
+                                                        foreach ($despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                                                            InvMovDet_BodSolDesp::where('despachosoldet_invbodegaproducto_id', $despachosoldet_invbodegaproducto->id)->delete();
+                                                            //DespachoSolDet_InvBodegaProducto::where('id', $despachosoldet_invbodegaproducto->id)->delete();
+                                                            //DB::table('despachosoldet_invbodegaproducto')->where('id', $despachosoldet_invbodegaproducto->id)->delete();
+                                                            //DespachoSolDet_InvBodegaProducto::destroy($despachosoldet_invbodegaproducto->id);
+                                                        }
                                                         DB::table('despachosoldet_invbodegaproducto')
                                                             ->where('despachosoldet_id', $request->NVdet_id[$i])
                                                             ->where('invbodegaproducto_id', $request->invbodegaproducto_id[$b])
