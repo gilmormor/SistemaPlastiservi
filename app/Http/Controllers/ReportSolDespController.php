@@ -12,6 +12,7 @@ use App\Models\DespachoOrdRec;
 use App\Models\DespachoSolAnul;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -43,7 +44,10 @@ class ReportSolDespController extends Controller
                     'fechaAct' => date("d/m/Y")
                     ];
         $tablashtml['comunas'] = Comuna::selectcomunas();
-        $tablashtml['vendedores'] = Vendedor::selectvendedores();            
+        $tablashtml['vendedores'] = Vendedor::selectvendedores(); 
+        $user = Usuario::findOrFail(auth()->id());
+        $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();          
         return view('reportsoldesp.index', compact('clientes','giros','areaproduccions','tipoentregas','fechaServ','tablashtml'));
 
     }
@@ -350,6 +354,19 @@ function consultasoldesp($request){
         $aux_condfechaestdesp = "despachosol.fechaestdesp='$fechad'";
     }
 
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        //$aux_condsucursal_id = " true ";
+        $aux_condsucursal_id = " despachosol.sucursal_id in ($sucurArray)";
+    }else{
+        if(is_array($request->sucursal_id)){
+            $aux_sucursal = implode ( ',' , $request->sucursal_id);
+        }else{
+            $aux_sucursal = $request->sucursal_id;
+        }
+        $aux_condsucursal_id = " (despachosol.sucursal_id in ($aux_sucursal) and despachosol.sucursal_id in ($sucurArray))";
+    }
  
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
 
@@ -392,6 +409,7 @@ function consultasoldesp($request){
             and $aux_condaprobord
             and $aux_condid
             and $aux_condfechaestdesp
+            and $aux_condsucursal_id
             and despachosol.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachosol.id;";
     //dd($sql);

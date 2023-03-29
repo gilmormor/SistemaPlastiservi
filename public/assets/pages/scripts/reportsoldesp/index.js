@@ -110,6 +110,7 @@ function datosSolDesp(){
         notaventa_id      : $("#notaventa_id").val(),
         status            : $("#status").val(),
         comuna_id         : $("#comuna_id").val(),
+        sucursal_id       : $("#sucursal_id").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
