@@ -32,12 +32,12 @@ Stock Inventario
                     <div class="col-xs-12 col-md-9 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Mes">
+                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Mes Año">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="annomes">Fecha:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="annomes" id="annomes" class="form-control date-picker" value="{{old('annomes', $aux_mesanno ?? '')}}" readonly required>
+                                        <input type="text" name="annomes" id="annomes" class="form-control" value="{{old('annomes', $aux_mesanno ?? '')}}" readonly required>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Sucursal">
