@@ -535,7 +535,24 @@ $("#btnverfoto").click(function(){
 });
 
 
-$('#form-general').submit(function() {
+$('#form-general').submit(function(event) {
+	aux_Sucursal_id = $("#sucursal_id").val();
+	$("#tabla-data tr .invcant").each(function() {
+		valor = $(this).val() ;
+		valorNum = parseFloat(valor);
+		if(((aux_Sucursal_id != "") && aux_Sucursal_id != $(this).attr("sucursal_id")) && (valorNum > 0)){
+			swal({
+				title: 'Bodega incorrecta!',
+				text: "Solo puedes usar Bodegas de Sucursal despacho: " + $("#sucursal_id option:selected").text(),
+				icon: 'warning',
+				buttons: {
+					cancel: "Cerrar"
+				},
+			})
+			event.preventDefault();
+			return false;
+		}
+	});
 	$("#clientedirec_id").prop('disabled', false);
 	$("#plazoentrega").prop('disabled', false);
 	$("#lugarentrega").prop('disabled', false);
