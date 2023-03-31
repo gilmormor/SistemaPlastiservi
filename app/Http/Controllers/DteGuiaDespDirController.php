@@ -4,23 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
-use App\Models\DespachoOrd;
+use App\Models\Comuna;
 use App\Models\Dte;
 use App\Models\DteDet;
-use App\Models\DteDet_DespachoOrdDet;
-use App\Models\DteDte;
-use App\Models\DteFac;
-use App\Models\DteGuiaUsada;
+use App\Models\DteGuiaDesp;
 use App\Models\DteOC;
 use App\Models\Empresa;
 use App\Models\Foliocontrol;
 use App\Models\Seguridad\Usuario;
+use App\Models\TipoEntrega;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class DteFacturaDirController extends Controller
+class DteGuiaDespDirController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -29,11 +27,11 @@ class DteFacturaDirController extends Controller
      */
     public function index()
     {
-        can('listar-dte-factura-directa');
-        return view('dtefacturadir.index');
+        can('listar-dte-guia-desp-directa');
+        return view('dteguiadespdir.index');
     }
 
-    public function dtefacturadirpage($dte_id = ""){
+    public function dteguiadespdirpage($dte_id = ""){
         $datas = consultaindex($dte_id);
         return datatables($datas)->toJson();
     }
@@ -46,16 +44,17 @@ class DteFacturaDirController extends Controller
      */
     public function crear()
     {
-        can('crear-dte-factura-directa');
+        can('crear-dte-guia-desp-directa');
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedidas'] = UnidadMedida::orderBy('id')->get();
         $tablas['foliocontrol'] = Foliocontrol::orderBy('id')->get();
-        $centroeconomicos = CentroEconomico::orderBy('id')->get();
-
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
+        $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
         //dd($tablas);
-        return view('dtefacturadir.crear',compact('tablas','centroeconomicos'));
+        return view('dteguiadespdir.crear',compact('tablas'));
 
     }
 
@@ -67,11 +66,11 @@ class DteFacturaDirController extends Controller
      */
     public function guardar(Request $request)
     {
-        can('guardar-dte-factura-directa');
+        can('guardar-dte-guia-desp-directa');
         //dd($request);
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
-            return redirect('dtefacturadir')->with([
+            return redirect('dteguiadespdir')->with([
                 'mensaje'=>'No hay items, no se guardó.',
                 'tipo_alert' => 'alert-error'
             ]);
@@ -79,13 +78,6 @@ class DteFacturaDirController extends Controller
 
         $cliente = Cliente::findOrFail($request->cliente_id);
         $dte = new Dte();
-        $dtefac = new DteFac();
-        //$dtefac->dte_id = $dte_id;
-        $dtefac->hep = $request->hep;
-        $dtefac->formapago_id = $cliente->formapago_id;
-        $dtefac->fchvenc =  date('Y-m-d', strtotime(date('Y-m-d') ."+ " . $cliente->plazopago->dias . " days"));
-        $dte->dtefac = $dtefac;
-        //$dtefac->save();
         //CREAR REGISTRO DE ORDEN DE COMPRA
         if(!is_null($request->oc_id)){
             $dteoc = new DteOC();
@@ -174,24 +166,19 @@ class DteFacturaDirController extends Controller
             }
         }
         if($Tmntneto <= 0){
-            return redirect('dtefacturadir')->with([
-                'mensaje'=> "Neto total de factura debe ser mayor a cero" ,
+            return redirect('dteguiadespdir')->with([
+                'mensaje'=> "Neto total de Guia debe ser mayor a cero" ,
                 'tipo_alert' => 'alert-error'
             ]);
         }
 
         $empresa = Empresa::findOrFail(1);
-        if($request->foliocontrol_id == 1){
+        if($request->foliocontrol_id == 2){
             $Tiva = round(($empresa->iva/100) * $Tmntneto);
             $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);
             $dte->tasaiva = $empresa->iva;
             $dte->iva = $Tiva;
             $dte->mnttotal = $Tmnttotal;        
-        }
-        if($request->foliocontrol_id == 7){
-            $dte->tasaiva = 0;
-            $dte->iva = 0;
-            $dte->mnttotal = $Tmntneto;
         }
 
         $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
@@ -206,12 +193,21 @@ class DteFacturaDirController extends Controller
         $dte->comuna_id = $cliente->comunap_id;
         $dte->vendedor_id = $request->vendedor_id;
         $dte->obs = $request->obs;
-        $dte->tipodespacho = 2;
-        $dte->indtraslado =  1;
+        $dte->tipodespacho = $request->tipodespacho;
+        $dte->indtraslado =  $request->indtraslado;
         $dte->mntneto = $Tmntneto;
         $dte->kgtotal = $Tkgtotal;
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
+
+        $dteguiadesp = new DteGuiaDesp();
+        $dteguiadesp->tipoentrega_id = $request->tipoentrega_id;
+        $dteguiadesp->comunaentrega_id = $request->comunaentrega_id;
+        $dteguiadesp->lugarentrega = $request->lugarentrega;
+        $dteguiadesp->ot = $request->ot;
+
+        $dte->dteguiadesp = $dteguiadesp;
+
 
         $respuesta = Dte::generardteprueba($dte);
         /*
@@ -222,61 +218,33 @@ class DteFacturaDirController extends Controller
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
-            if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"FC",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
-                $dteoc->dte_id = $dteNew->id;
-                $dteoc->oc_file = $foto;
-                $dteoc->save();
+            if(isset($dteoc)){
+                if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"FC",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                    $dteoc->dte_id = $dteNew->id;
+                    $dteoc->oc_file = $foto;
+                    $dteoc->save();
+                }    
             }
             foreach ($dte->dtedets as $dtedet) {
                 $dtedet->dte_id = $dteNew->id;
-                $despachoorddet_id = $dtedet->despachoorddet_id;
-                $notaventadetalle_id = $dtedet->notaventadetalle_id;
                 $aux_dtedet = $dtedet->toArray();
-                unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
-                unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
                 $dtedetNew = DteDet::create($aux_dtedet);
-                $dtedet_id = $dtedetNew->id;
-                $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
-                $dtedet_despachoorddet->dtedet_id = $dtedet_id;
-                $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
-                $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
-                $dtedet_despachoorddet->save();
             }
 
-            $dtefac->dte_id = $dteNew->id;
-            $dtefac->save();
-
-            foreach ($dte->dtedtes as $dtedte) {
-                $dtedteNew = new DteDte();
-                $dtedteNew->dte_id = $dteNew->id;
-                $dtedteNew->dter_id = $dtedte->dter_id;
-                $dtedteNew->dtefac_id = $dteNew->id; 
-                $dtedteNew->save();
-                //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS 
-                if($dtedte->dter->foliocontrol_id == 2){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2
-                    //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA 
-                    DespachoOrd::guardarfactdesp($dtedteNew);
-                }
-            }
-
-            foreach ($dte->dteguiausadas as $dteguiausada) {
-                $dteguiausadaNew = new DteGuiaUsada();
-                $dteguiausadaNew->dte_id = $dteguiausada->dte_id;
-                $dteguiausadaNew->usuario_id = auth()->id();
-                $dteguiausadaNew->save();    
-            }
+            $dteguiadesp->dte_id = $dteNew->id;
+            $dteguiadesp->save();
 
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
-            return redirect('dtefacturadir')->with([
+            return redirect('dteguiadespdir')->with([
                 'mensaje'=>'Factura creada con exito.',
                 'tipo_alert' => 'alert-success'
             ]);
         }else{
             $foliocontrol->bloqueo = 0;
             $foliocontrol->save();
-            return redirect('dtefacturadir')->with([
+            return redirect('dteguiadespdir')->with([
                 'mensaje'=>$respuesta->original["mensaje"] ,
                 'tipo_alert' => 'alert-error'
             ]);
@@ -336,6 +304,8 @@ function consultaindex($dte_id){
     dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at
     FROM dte LEFT JOIN dteoc
     ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at)
+    INNER JOIN dteguiadesp
+    ON dteguiadesp.dte_id = dte.id AND ISNULL(dteguiadesp.deleted_at)
     INNER JOIN cliente
     ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
     INNER JOIN comuna
@@ -343,10 +313,11 @@ function consultaindex($dte_id){
     LEFT JOIN clientebloqueado
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
     INNER JOIN foliocontrol
-    ON  foliocontrol.id = dte.foliocontrol_id
-    WHERE (dte.foliocontrol_id=1 OR dte.foliocontrol_id=7)
+    ON foliocontrol.id = dte.foliocontrol_id
+    WHERE dte.foliocontrol_id=2
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.id NOT IN (SELECT dtedte.dte_id FROM dtedte WHERE ISNULL(dtedte.deleted_at))
+    AND ISNULL(dteguiadesp.despachoord_id) and ISNULL(dteguiadesp.notaventa_id)
     AND dte.sucursal_id IN ($sucurcadena)
     AND ISNULL(dte.statusgen)
     AND !ISNULL(dte.nrodocto)
@@ -358,7 +329,7 @@ function consultaindex($dte_id){
 }
 
 function mensajeRespuesta($mensaje){
-    return redirect('dtefacturadir')->with([
+    return redirect('dteguiadespdir')->with([
         'mensaje' => $mensaje,
         'tipo_alert' => 'alert-error'
     ]);

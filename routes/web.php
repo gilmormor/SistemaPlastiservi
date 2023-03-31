@@ -1154,3 +1154,30 @@ Route::get('dtefacturaexenta/{id}/{stareport}/exportPdf', 'DteFacturaExentaContr
 Route::post('dtefacturaexenta/validarupdated', 'DteFacturaExentaController@validarupdated')->name('validarupdated');
 Route::post('dtefacturaexenta/listardtedet', 'DteFacturaExentaController@listardtedet')->name('dtefacturaexenta_listardtedet');
 Route::post('dtefacturaexenta/buscarfactura', 'DteFacturaExentaController@buscarfactura')->name('dtefacturaexenta_buscarfactura');
+
+/*RUTAS GUIA DIRECTA*/
+Route::get('dteguiadespdir', 'DteGuiaDespDirController@index')->name('dteguiadespdir');
+Route::get('dteguiadespdirpage', 'DteGuiaDespDirController@dteguiadespdirpage')->name('dteguiadespdirpage');
+Route::get('dteguiadespdir/totalizarindex', 'DteGuiaDespDirController@totalizarindex')->name('dteguiadespdir_totalizarindex');
+Route::get('dteguiadespdir/crear', 'DteGuiaDespDirController@crear')->name('crear_dteguiadespdir');
+Route::post('dteguiadespdir', 'DteGuiaDespDirController@guardar')->name('guardar_dteguiadespdir');
+Route::get('dteguiadespdir/{id}/editar', 'DteGuiaDespDirController@editar')->name('editar_dteguiadespdir');
+Route::put('dteguiadespdir/{id}', 'DteGuiaDespDirController@actualizar')->name('actualizar_dteguiadespdir');
+Route::delete('dteguiadespdir/{id}', 'DteGuiaDespDirController@eliminar')->name('eliminar_dteguiadespdir');
+Route::get('dteguiadespdir/listarguiadesp', 'DteGuiaDespDirController@listarguiadesp')->name('dteguiadespdir_listarguiadesp');
+Route::get('dteguiadespdir/listarguiadesppage', 'DteGuiaDespDirController@listarguiadesppage')->name('dteguiadespdir_listarguiadesppage');
+Route::post('dteguiadespdir/procesar', 'DteGuiaDespDirController@procesar')->name('dteguiadespdir_procesar');
+//Route::get('dteguiadespdir/productobuscarpage', 'DteGuiaDespDirController@productobuscarpage')->name('dteguiadespdir_productobuscarpage');
+Route::get('dteguiadespdir/clientebuscarpage', 'DteGuiaDespDirController@clientebuscarpage')->name('dteguiadespdir_clientebuscarpage');
+//Route::get('dteguiadespdir/{id}/productobuscarpage', 'DteGuiaDespDirController@productobuscarpageid')->name('dteguiadespdir_productobuscarpageid');
+Route::get('dteguiadespdir/{id}/clientebuscarpage', 'DteGuiaDespDirController@clientebuscarpageid')->name('dteguiadespdir_clientebuscarpageid');
+Route::post('dteguiadespdir/dtedteguiadespdir', 'DteGuiaDespDirController@dtedteguiadespdir')->name('dteguiadespdir_dtedteguiadespdir');
+Route::get('dteguiadespdir/{id}/{stareport}/exportPdf', 'DteGuiaDespDirController@exportPdf')->name('exportPdf_dteguiadespdir');
+Route::post('dteguiadespdir/validarupdated', 'DteGuiaDespDirController@validarupdated')->name('validarupdated');
+Route::post('dteguiadespdir/listardtedet', 'DteGuiaDespDirController@listardtedet')->name('dteguiadespdir_listardtedet');
+Route::post('dteguiadespdir/buscarfactura', 'DteGuiaDespDirController@buscarfactura')->name('dteguiadespdir_buscarfactura');
+
+
+/*RUTAS PERMITIR VER FACTURA EN DESPACHO*/
+Route::get('reportverfacdesp', 'ReportVerFacDespController@index')->name('reportverfacdesp');
+Route::get('reportverfacdesppage', 'ReportVerFacDespController@reportverfacdesppage')->name('reportverfacdesppage');

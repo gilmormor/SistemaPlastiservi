@@ -684,6 +684,12 @@ class Dte extends Model
             $aux_conddte_id = "dte.id = $request->dte_id";
         }
 
+        if(empty($request->statusgen)){
+            $aux_condstatusgen = " true";
+        }else{
+            $aux_condstatusgen = "dte.statusgen = $request->statusgen";
+        }
+
 
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -734,6 +740,7 @@ class Dte extends Model
         AND $aux_condrut
         AND $aux_condoc_id
         AND $aux_condnotaventa_id
+        AND $aux_condstatusgen
         GROUP BY dte.id
         ORDER BY dte.id desc;";
 
@@ -833,14 +840,16 @@ class Dte extends Model
                             $dteQueAnula = $dtedetss->dte;
                             //SI EL DTE TIENE UN DTE QUE LO ANULA LO BUSCO
                             //SI TIENE stedter ESE DTE QUE ANULA EL CAMPO nrodocto DEBE SER DIFERENTE A EMPTY O VACIO 
-                            //$dteQueAnula->dtedter->dte->nrodocto= NUMERO DE DOCUMENTO GENERADO POR SII DEL DOCUMENTO QUE ANULA
-                            if($dteQueAnula->dtedter and !empty($dteQueAnula->dtedter->dte->nrodocto)){
-                                //AQUI INCLUSO BUSCO SI ESE DTE QUE ANULA TAMBIEN ES ANULADO POR OTRO DTE
-                                //EJEMPLO: SI LA NC:30 FUE ANULADA POR UNA ND:155, PERO ESTA ND:155 TAMBIEN FUE ANULADA POR NC:31, ESTO QUIERE QUE LA NC :30 VUELVE A ESTAR ACTIVA
-                                do {
-                                    $dteQueAnula = $dteQueAnula->dtedter->dte;
-                                    $contanul++;
-                                } while ($dteQueAnula->dtedter);
+                            //$dteQueAnula->dtedter->dte->statusgen= NUMERO DE DOCUMENTO ACEPTADO POR SII DEL DOCUMENTO QUE ANULA
+                            if($dteQueAnula->dtedter){ 
+                                if(!empty($dteQueAnula->dtedter->dte->statusgen)){
+                                    //AQUI INCLUSO BUSCO SI ESE DTE QUE ANULA TAMBIEN ES ANULADO POR OTRO DTE
+                                    //EJEMPLO: SI LA NC:30 FUE ANULADA POR UNA ND:155, PERO ESTA ND:155 TAMBIEN FUE ANULADA POR NC:31, ESTO QUIERE QUE LA NC :30 VUELVE A ESTAR ACTIVA
+                                    do {
+                                        $dteQueAnula = $dteQueAnula->dtedter->dte;
+                                        $contanul++;
+                                    } while ($dteQueAnula->dtedter);
+                                }
                             }
                             //SI EL VALOR DE $contanul ES 0 EL DOCUMENTO NUNCA FUE ANULADO, AHORA SI ES PAR ESO QUIERE DECIR QUE EL DOCUMENTO QUE EL NUNCA FUE ANULADO POR OTRO.
                             //CUALQUIER A DE ESTAAS 2 OPCIONES QUIERE DECIR QUE EL DOCUMENTO ESTA ACTIVO O VIVO AUN.
@@ -1859,7 +1868,11 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         $DirOrigen = strtoupper(sanear_string(substr(trim($empresa->sucursal->direccion),0,60)));
         $CmnaOrigen = strtoupper(sanear_string(substr(trim($empresa->sucursal->comuna->nombre),0,20)));
         $CiudadOrigen = strtoupper(sanear_string(substr(trim($empresa->sucursal->comuna->provincia->nombre),0,20)));
-        $contacto = strtoupper(sanear_string(substr(trim($dte->dteguiadesp->notaventa->contacto . " Telf:" . $dte->dteguiadesp->notaventa->contactotelf),0,80)));
+        if(isset($dte->dteguiadesp->notaventa)){
+            $contacto = strtoupper(sanear_string(substr(trim($dte->dteguiadesp->notaventa->contacto . " Telf:" . $dte->dteguiadesp->notaventa->contactotelf),0,80)));
+        }else{
+            $contacto = strtoupper(sanear_string(substr(trim($dte->cliente->contactonombre . " Telf:" . $dte->cliente->contactotelef),0,80)));
+        }
         $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
         $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
         $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,42)));
@@ -1867,7 +1880,14 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
         $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
     
-        $FolioRef = $dte->dteguiadesp->notaventa->oc_id;
+        $FolioRef = "";
+        if(isset($dte->dteguiadesp->notaventa->oc_id)){
+            $FolioRef = $dte->dteguiadesp->notaventa->oc_id;
+        }else{
+            if(isset($dte->dteocs[0])){
+                $FolioRef = $dte->dteocs[0]->oc_id;
+            }
+        }
     
         $contenido = "";
     

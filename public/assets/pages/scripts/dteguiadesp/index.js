@@ -107,9 +107,9 @@ $(document).ready(function () {
                 "</a>"+
 */
                 aux_text = 
-                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm tooltipsC' onclick='procesar(" + data.id + "," + data.despachoord_id + ")' title='Enviar a procesados'>"+
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>";
+                `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
+                    <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+                </a> | `;
                 /*
                 "<a href='dteguiadesp' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
                     "<i class='fa fa-fw fa-pencil'></i>"
@@ -121,11 +121,11 @@ $(document).ready(function () {
             $('td', row).eq(15).attr('name','updated_at' + data.id);
 
             aux_text = aux_text +
-            `<a onclick="anularguiafact(${data.id},${data.despachoord_id},'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro y devolver a Orden de Despacho" data-toggle="tooltip">
-                <span class="glyphicon glyphicon-remove text-danger"></span>
-            </a> | 
-            <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
+            `<a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
                 <span class="fa fa-upload text-danger"></span>
+            </a> | 
+            <a onclick="anularguiafact(${data.id},${data.despachoord_id},'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro y devolver a Orden de Despacho" data-toggle="tooltip">
+                <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
             $('td', row).eq(16).html(aux_text);
         }

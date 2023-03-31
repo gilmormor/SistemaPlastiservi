@@ -181,10 +181,10 @@ $(document).ready(function () {
                 aux_text = "";
                 if(data.nrodocto != null){
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="\"genpdfFAC(${id_str}\",\"\")">
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFAC('${id_str}','')">
                         ${data.nrodocto}
                     </a>,
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Cedible" onclick="genpdfFAC(\"${id_str}\",\"_cedible\")">
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
                         ${data.nrodocto}
                     </a>`;
                 }
@@ -364,6 +364,7 @@ function datosFac(){
         producto_id       : $("#producto_idPxP").val(),
         filtro            : 1,
         nrodocto          : $("#nrodocto").val(),
+        statusgen         : 1,
         _token            : $('input[name=_token]').val()
     };
 /*
@@ -400,6 +401,7 @@ function datosFac(){
     "&producto_id="+data1.producto_id +
     "&filtro="+data1.filtro +
     "&nrodocto="+data1.nrodocto +
+    "&statusgen="+data1.statusgen +
     "&_token="+data1._token
 
     var data = {

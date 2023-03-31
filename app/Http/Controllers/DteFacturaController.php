@@ -514,6 +514,7 @@ class DteFacturaController extends Controller
     }
 
     public function staverfacdesp(Request $request){
+        //dd($request);
         if($request->ajax()){
             $dte = Dte::findOrFail($request->dte_id);
             if($request->updated_at != $dte->updated_at){
@@ -541,6 +542,12 @@ class DteFacturaController extends Controller
                     'mensaje'=>'Registro guardado con exito!',
                     'dtefac_updated_at' => date("Y-m-d H:i:s", strtotime($dte->dtefac->updated_at)),
                     'tipo_alert' => 'success'
+                ]);
+            }else{
+                return response()->json([
+                    'error' => 1,
+                    'mensaje'=>'Error al guardar!',
+                    'tipo_alert' => 'error'
                 ]);
             }
         }
