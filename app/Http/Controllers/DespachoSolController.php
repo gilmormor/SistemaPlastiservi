@@ -2338,7 +2338,6 @@ function reportesoldesp1($request){
 
     if($request->ajax()){
         $datas = consultasoldesp($request);
-
         $respuesta['tabla'] .= "<table id='pendientesoldesp' name='pendientesoldesp' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
         <thead>
             <tr>
@@ -2372,6 +2371,7 @@ function reportesoldesp1($request){
             //dd($ruta_nuevoSolDesp);
 
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
+            $nuevoOrdDesp = "";
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
                 $nuevoOrdDesp = "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
@@ -2381,49 +2381,51 @@ function reportesoldesp1($request){
                                 </a>";
             }else{
                 $ruta_nuevoSolDesp = route('crearsol_despachosol', ['id' => $data->id]);
-                $nuevoOrdDesp = "<a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
-                                    <button type='button' class='btn btn-default btn-xs'>
-                                        <i class='fa fa-fw $data->icono'></i>
-                                    </button>
-                                </a>";    
-            }
-
-            $sql = "SELECT COUNT(*) as cont
-            FROM despachoord
-            WHERE despachoord.despachosol_id=$data->id
-            AND despachoord.id 
-            NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at));";
-
-            $contorddesp = DB::select($sql);
-            if($contorddesp[0]->cont == 0){
-                /*****PARA DEVOLVER SOLDESP: EL DETALLE DEBE SER IGUAL A LA SUMA POR ITEM EN LA TABLA $despachosoldet_invbodegaproducto*/
-                $aux_bancDevSolDesp = true;
-                $despachosol = DespachoSol::findOrFail($data->id);
-                foreach ($despachosol->despachosoldets as $despachosoldet) {
-                    $aux_cant = 0;
-                    foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
-                        $aux_cant += $despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex;
-                    }
-                    if($despachosoldet->cantsoldesp != ($aux_cant * -1)){
-                        $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
-                        <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-archive'></i></button>
-                        </a>";
-                        $aux_bancDevSolDesp = false;
-                        break;
-                    }
+                if($request->sololectura == "0"){
+                    $nuevoOrdDesp = "<a href='$ruta_nuevoOrdDesp' class='btn-accion-tabla tooltipsC' title='Hacer orden despacho: $data->tipentnombre'>
+                                        <button type='button' class='btn btn-default btn-xs'>
+                                            <i class='fa fa-fw $data->icono'></i>
+                                        </button>
+                                    </a>";    
                 }
-                if($aux_bancDevSolDesp){
-                    $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' fila='$i' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip'>
-                                        <button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>
+            }
+            if($request->sololectura == "0"){
+                $sql = "SELECT COUNT(*) as cont
+                FROM despachoord
+                WHERE despachoord.despachosol_id=$data->id
+                AND despachoord.id 
+                NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at));";
+    
+                $contorddesp = DB::select($sql);
+                if($contorddesp[0]->cont == 0){
+                    /*****PARA DEVOLVER SOLDESP: EL DETALLE DEBE SER IGUAL A LA SUMA POR ITEM EN LA TABLA $despachosoldet_invbodegaproducto*/
+                    $aux_bancDevSolDesp = true;
+                    $despachosol = DespachoSol::findOrFail($data->id);
+                    foreach ($despachosol->despachosoldets as $despachosoldet) {
+                        $aux_cant = 0;
+                        foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                            $aux_cant += $despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex;
+                        }
+                        if($despachosoldet->cantsoldesp != ($aux_cant * -1)){
+                            $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
+                            <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-archive'></i></button>
+                            </a>";    
+                            $aux_bancDevSolDesp = false;
+                            break;
+                        }
+                    }
+                    if($aux_bancDevSolDesp){
+                        $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' fila='$i' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip'>
+                                            <button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>
+                                        </a>";
+                    }
+    
+                }else{
+                    $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
+                                        <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-archive'></i></button>
                                     </a>";
-                }
-
-            }else{
-                $nuevoOrdDesp .= "<a href='/despachosol/cerrarsoldesp' fila='$i' id='btnanular$i' name='btnanular$i' class='btn-accion-tabla tooltipsC btncerrarsol' title='Cerrar Solicitud Despacho' data-toggle='tooltip'>
-                                    <button type='button' class='btn btn-danger btn-xs'><i class='fa fa-fw fa-archive'></i></button>
-                                </a>";
+                }    
             }
-
             $aux_totalkilos = $data->totalkilos - $data->totalkilosdesp;
             $aux_subtotal = $data->subtotalsoldesp - $data->subtotaldesp;
             $aux_Ttotalkilos += $aux_totalkilos;
@@ -2443,14 +2445,18 @@ function reportesoldesp1($request){
                     "<a id='fechaestdesp$i' name='fechaestdesp$i' class='editfed'>" .
                         date('d/m/Y', strtotime($data->fechaestdesp)) . 
                     "</a>
-                    <input type='text' class='form-control datepickerfed savefed' name='fechaed$i' id='fechaed$i' value='" . date('d/m/Y', strtotime($data->fechaestdesp)) . "' style='display:none; width: 70px; height: 21.6px;padding-left: 0px;padding-right: 0px;' readonly>" .
+                    <input type='text' class='form-control datepickerfed savefed' name='fechaed$i' id='fechaed$i' value='" . date('d/m/Y', strtotime($data->fechaestdesp)) . "' style='display:none; width: 70px; height: 21.6px;padding-left: 0px;padding-right: 0px;' readonly>";
+                    if($request->sololectura == "0"){
+                        $respuesta['tabla'] .= 
+                            "<a name='editfed$i' id='editfed$i' class='tooltipsC editfed' title='Editar Fecha ED' onclick='editfeced($data->id,$i)'>
+                                <i class='fa fa-fw fa-pencil-square-o'></i>
+                            </a>" .
+                            "<a name='savefed$i' id='savefed$i' class='tooltipsC savefed' title='Guardar Fecha ED' onclick='savefeced($data->id,$i)' style='display:none' updated_at='$data->updated_at'>
+                                <i class='fa fa-fw fa-save text-red'></i>
+                            </a>";
+                    }
 
-                    "<a name='editfed$i' id='editfed$i' class='tooltipsC editfed' title='Editar Fecha ED' onclick='editfeced($data->id,$i)'>
-                        <i class='fa fa-fw fa-pencil-square-o'></i>
-                    </a>" .
-                    "<a name='savefed$i' id='savefed$i' class='tooltipsC savefed' title='Guardar Fecha ED' onclick='savefeced($data->id,$i)' style='display:none' updated_at='$data->updated_at'>
-                        <i class='fa fa-fw fa-save text-red'></i>
-                    </a>" .
+                $respuesta['tabla'] .= 
                 "</td>
                 <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
                 <td id='sucursal_nombre$i' name='sucursal_nombre$i'>$data->sucursal_nombre</td>

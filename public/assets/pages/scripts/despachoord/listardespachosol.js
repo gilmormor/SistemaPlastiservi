@@ -177,6 +177,7 @@ function datoslsd(){
         producto_id       : $("#producto_idPxP").val(),
         filtro            : 1,
         sucursal_id       : $("#sucursal_id").val(),
+        sololectura       : $("#sololectura").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;

@@ -957,3 +957,6 @@ Route::get('invbodpesajeabodprodterm/reporte', 'InvBodPesajeaBodProdTermControll
 Route::get('invbodpesajeabodprodterm/exportPdf', 'InvBodPesajeaBodProdTermController@exportPdf')->name('invbodpesajeabodprodterm_exportPdf');
 Route::get('invbodpesajeabodprodterm/totalizarindex', 'InvBodPesajeaBodProdTermController@totalizarindex')->name('invbodpesajeabodprodterm_totalizarindex');
 Route::post('invbodpesajeabodprodterm', 'InvBodPesajeaBodProdTermController@guardar')->name('guardar_invbodpesajeabodprodterm');
+
+/*RUTAS REPORTE SOLICITUD DESPACHO PENDIENTE DESPACHO*/
+Route::get('reportdespachosolpendiente', 'ReportDespachoSolPendienteController@index')->name('reportdespachosolpendiente');
