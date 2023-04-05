@@ -376,7 +376,7 @@ class DespachoOrdController extends Controller
         $detalles = $data->despachoorddets()->get();
         $arrayBodegasPicking = llenarArrayBodegasPickingOrdDesp($detalles);
 
-        //dd($detalles);
+        //dd($arrayBodegasPicking);
 /*
         foreach($detalles as $detalle){
             dd($detalle);
@@ -460,7 +460,6 @@ class DespachoOrdController extends Controller
         $aux_statusPant = 0;
         $invmovmodulo = InvMovModulo::where("cod","=","ORDDESP")->get();
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
-
         return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
   
     }
@@ -1523,6 +1522,13 @@ function llenarArrayBodegasPickingSolDesp($detalles){
             foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
                 $aux_stock += $invmovdet_bodsoldesp->invmovdet["cant"];
             }
+            foreach($detalle->despachoorddets as $despachoorddet){
+                if($despachoorddet->despachoord->despachoordanul == null and $despachoorddet->despachoord->aprguiadesp != 1){
+                    foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                        $aux_stock -= $despachoorddet_invbodegaproducto->cant *-1;
+                    }
+                }
+            }
             $sucursal = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega->sucursal;
             $producto = $despachosoldet_invbodegaproducto->invbodegaproducto->producto;
             $invbodegaproducto = $despachosoldet_invbodegaproducto->invbodegaproducto;
@@ -1558,7 +1564,7 @@ function llenarArrayBodegasPickingSolDesp($detalles){
                     'tipo_alert' => 'alert-error'
                 ]);
             }
-            $arrayBodegasPicking[$invbodegaproductopicking[0]->id] = [
+            $arrayBodegasPicking[($invbodegaproductopicking[0]->id . "-". $detalle->id)] = [
                 "invbodegaproducto_id" => $invbodegaproductopicking[0]->id,
                 "producto_id" => $invbodegaproductopicking[0]->producto_id,
                 "invbodega_id" => $invbodegaproductopicking[0]->invbodega_id,
@@ -1567,6 +1573,7 @@ function llenarArrayBodegasPickingSolDesp($detalles){
             ];
         }
     }
+    //dd($arrayBodegasPicking);
     return $arrayBodegasPicking;
 }
 
@@ -1579,6 +1586,16 @@ function llenarArrayBodegasPickingOrdDesp($detalles){
             foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
                 $aux_stock += $invmovdet_bodsoldesp->invmovdet["cant"];
             }
+            foreach($detalle->despachosoldet->despachoorddets as $despachoorddet){
+                if($despachoorddet->despachoord->despachoordanul == null){
+                    foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                        if($detalle->id != $despachoorddet->id){
+                            $aux_stock -= ($despachoorddet_invbodegaproducto->cant) * -1 ;
+                        }
+                        //$aux_stock += $despachoorddet_invbodegaproducto->cantdesp * -1;
+                    }
+                }
+            }
             $sucursal = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega->sucursal;
             $producto = $despachosoldet_invbodegaproducto->invbodegaproducto->producto;
             $invbodegaproducto = $despachosoldet_invbodegaproducto->invbodegaproducto;
@@ -1614,7 +1631,7 @@ function llenarArrayBodegasPickingOrdDesp($detalles){
                     'tipo_alert' => 'alert-error'
                 ]);
             }
-            $arrayBodegasPicking[$invbodegaproductopicking[0]->id] = [
+            $arrayBodegasPicking[$invbodegaproductopicking[0]->id . "-". $detalle->id] = [
                 "invbodegaproducto_id" => $invbodegaproductopicking[0]->id,
                 "producto_id" => $invbodegaproductopicking[0]->producto_id,
                 "invbodega_id" => $invbodegaproductopicking[0]->invbodega_id,

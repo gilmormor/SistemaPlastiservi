@@ -276,8 +276,8 @@
                                                             //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                             $aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
                                                             $aux_valueStock = ""; 
-                                                            if(array_key_exists($invbodegaproducto->id, $arrayBodegasPicking)){
-                                                                $aux_stock = $arrayBodegasPicking[$invbodegaproducto->id]["stock"];
+                                                            if(array_key_exists($invbodegaproducto->id . "-" . $detalle->id, $arrayBodegasPicking)){
+                                                                $aux_stock = $arrayBodegasPicking[$invbodegaproducto->id . "-" . $detalle->id]["stock"];
                                                                 $aux_valueStock =  $aux_stock == 0 ? "" : $aux_stock;
                                                             }else{
                                                                 //SI NO ESTA EN EL ARRAY DE $arrayBodegasPicking NO TIENE PICKING, ENTONCES LE ASIGNO 0
@@ -316,7 +316,7 @@
                                                                     </div>
                                                                 </td>
                                                                 <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
-                                                                    @if ($existencia["stock"]["cant"] > 0)
+                                                                    @if ($aux_stock > 0)
                                                                         @foreach($detalle->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto)
                                                                             @if ($despachoorddet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)
                                                                                 <?php 
