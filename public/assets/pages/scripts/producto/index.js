@@ -28,10 +28,9 @@ $(document).ready(function () {
         },
         "createdRow": function ( row, data, index ) {
 
-            numero = Number(data.peso.toFixed(2));
             $('td', row).eq(6).attr('data-order',data.peso);
             $('td', row).eq(6).attr('data-search',data.peso);
-            $('td', row).eq(6).html(numero);
+            $('td', row).eq(6).html(MASKLA(data.peso,3));
 
             $('td', row).eq(8).attr('data-order',data.precioneto);
             $('td', row).eq(8).attr('data-search',data.precioneto);
