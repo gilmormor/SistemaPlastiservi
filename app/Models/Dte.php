@@ -592,29 +592,32 @@ class Dte extends Model
     }
 
     public static function reportdtefac($request){
-        if(empty($request->vendedor_id)){
-            $user = Usuario::findOrFail(auth()->id());
-            $sql= 'SELECT COUNT(*) AS contador
-                FROM vendedor INNER JOIN persona
-                ON vendedor.persona_id=persona.id
-                INNER JOIN usuario 
-                ON persona.usuario_id=usuario.id
-                WHERE usuario.id=' . auth()->id();
-            $counts = DB::select($sql);
-            if($counts[0]->contador>0){
-                $vendedor_id=$user->persona->vendedor->id;
-                $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
-                $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $vendedorcond = " true ";
+        if(isset($request->vendedor_id)){
+            if(empty($request->vendedor_id)){
+                $user = Usuario::findOrFail(auth()->id());
+                $sql= 'SELECT COUNT(*) AS contador
+                    FROM vendedor INNER JOIN persona
+                    ON vendedor.persona_id=persona.id
+                    INNER JOIN usuario 
+                    ON persona.usuario_id=usuario.id
+                    WHERE usuario.id=' . auth()->id();
+                $counts = DB::select($sql);
+                if($counts[0]->contador>0){
+                    $vendedor_id=$user->persona->vendedor->id;
+                    $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+                    $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+                    $sucurArray = $user->sucursales->pluck('id')->toArray();
+                }else{
+                    $vendedorcond = " true ";
+                    $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+                }
             }else{
-                $vendedorcond = " true ";
-                $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
-            }
-        }else{
-            $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+                $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+            }    
         }
     
-        if(empty($request->fechad) or empty($request->fechah)){
+        if(!isset($request->fechad) or !isset($request->fechah) or empty($request->fechad) or empty($request->fechah)){
             $aux_condFecha = " true";
         }else{
             $fecha = date_create_from_format('d/m/Y', $request->fechad);
@@ -623,74 +626,78 @@ class Dte extends Model
             $fechah = date_format($fecha, 'Y-m-d');
             $aux_condFecha = "dte.fchemis>='$fechad' and dte.fchemis<='$fechah'";
         }
-        if(empty($request->rut)){
+        if(!isset($request->rut) or empty($request->rut)){
             $aux_condrut = " true";
         }else{
             $aux_condrut = "cliente.rut='$request->rut'";
         }
-        if(empty($request->oc_id)){
+        if(!isset($request->oc_id) or empty($request->oc_id)){
             $aux_condoc_id = " true";
         }else{
             $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
         }
-        if(empty($request->giro_id)){
+        if(!isset($request->giro_id) or empty($request->giro_id)){
             $aux_condgiro_id = " true";
         }else{
             $aux_condgiro_id = "notaventa.giro_id='$request->giro_id'";
         }
-        if(empty($request->tipoentrega_id)){
+        if(!isset($request->tipoentrega_id) or empty($request->tipoentrega_id)){
             $aux_condtipoentrega_id = " true";
         }else{
             $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$request->tipoentrega_id'";
         }
-        if(empty($request->notaventa_id)){
+        if(!isset($request->notaventa_id) or empty($request->notaventa_id)){
             $aux_condnotaventa_id = " true";
         }else{
             $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
         }
     
-        if(empty($request->comuna_id)){
+        if(!isset($request->comuna_id) or empty($request->comuna_id)){
             $aux_condcomuna_id = " true";
         }else{
             $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
         }
     
-        if(empty($request->dtenotnull)){
+        if(!isset($request->dtenotnull) or empty($request->dtenotnull)){
             $aux_conddtenotnull = " true";
         }else{
             $aux_conddtenotnull = "dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))";
         }
 
-        if(empty($request->arrdte_id)){
+        if(!isset($request->arrdte_id) or empty($request->arrdte_id)){
             $aux_conddtenotnull = " true";
         }else{
             $aux_conddtenotnull = "dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))";
         }
-        if(empty($request->strdte_id)){
+        if(!isset($request->arrdte_id) or empty($request->arrdte_id)){
             $aux_conddtedet = " true";
         }else{
             $aux_conddtedet = "dte.id IN ($request->strdte_id)";
         }
 
-        if(empty($request->nrodocto)){
+        if(!isset($request->nrodocto) or empty($request->nrodocto)){
             $aux_condnrodocto = " true";
         }else{
             $aux_condnrodocto = "dte.nrodocto = $request->nrodocto";
         }
-
-        if(empty($request->dte_id)){
+        if(!isset($request->dte_id) or empty($request->dte_id)){
             $aux_conddte_id = " true";
         }else{
             $aux_conddte_id = "dte.id = $request->dte_id";
         }
 
-        if(empty($request->statusgen)){
+        if(!isset($request->statusgen) or empty($request->statusgen)){
             $aux_condstatusgen = " true";
         }else{
             $aux_condstatusgen = "dte.statusgen = $request->statusgen";
         }
-
-
+        //dd($request->foliocontrol_id);
+        if(!isset($request->foliocontrol_id) or empty($request->foliocontrol_id)){
+            $aux_condfoliocontrol_id = " dte.foliocontrol_id=1 ";
+        }else{
+            $aux_condfoliocontrol_id = " dte.foliocontrol_id in $request->foliocontrol_id";
+        }
+        //dd($aux_condfoliocontrol_id);
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
@@ -732,7 +739,7 @@ class Dte extends Model
         ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
         INNER JOIN dtefac
         ON dtefac.dte_id = dte.id
-        WHERE dte.foliocontrol_id=1 
+        WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_conddte_id
         AND $aux_condFecha
@@ -741,10 +748,11 @@ class Dte extends Model
         AND $aux_condoc_id
         AND $aux_condnotaventa_id
         AND $aux_condstatusgen
+        AND NOT ISNULL(dte.nrodocto)
         GROUP BY dte.id
         ORDER BY dte.id desc;";
 
-        //dd($sql);
+        dd($sql);
         
         //AND ISNULL(dte.statusgen)
 

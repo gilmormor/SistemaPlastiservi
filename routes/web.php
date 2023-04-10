@@ -1181,3 +1181,10 @@ Route::post('dteguiadespdir/buscarfactura', 'DteGuiaDespDirController@buscarfact
 /*RUTAS PERMITIR VER FACTURA EN DESPACHO*/
 Route::get('reportverfacdesp', 'ReportVerFacDespController@index')->name('reportverfacdesp');
 Route::get('reportverfacdesppage', 'ReportVerFacDespController@reportverfacdesppage')->name('reportverfacdesppage');
+
+/*RUTAS REPORTE ESTADO CLIENTE*/
+Route::get('reportdteestadocli', 'ReportDTEEstadoCliController@index')->name('reportdteestadocli');
+Route::get('reportdteestadocli/reportdteestadoclipage', 'ReportDTEEstadoCliController@reportdteestadoclipage')->name('reportdteestadoclipage');
+Route::get('reportdteestadocli/reporte', 'ReportDTEEstadoCliController@reporte')->name('reportdteestadocli_reporte');
+Route::get('reportdteestadocli/exportPdf', 'ReportDTEEstadoCliController@exportPdf')->name('reportdteestadocli_exportPdf');
+Route::get('reportdteestadocli/totalizarindex', 'ReportDTEEstadoCliController@totalizarindex')->name('reportdteestadocli_totalizarindex');

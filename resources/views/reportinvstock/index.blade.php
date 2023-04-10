@@ -53,7 +53,7 @@ Stock Inventario
                                             @foreach($tablashtml['sucursales'] as $sucursal)
                                                 <option
                                                     value="{{$sucursal->id}}"
-                                                    @if ( $sucursal->id == $sucursal_id ))
+                                                    @if ( $sucursal->id == $sucursal_id )
                                                         {{'selected'}}
                                                     @endif
                                                 >

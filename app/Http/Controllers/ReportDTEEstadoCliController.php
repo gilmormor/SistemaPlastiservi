@@ -2,9 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AreaProduccion;
+use App\Models\Comuna;
+use App\Models\Dte;
+use App\Models\Giro;
+use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
+use App\Models\Vendedor;
 use Illuminate\Http\Request;
 
-class ReportEstadoClienteController extends Controller
+class ReportDTEEstadoCliController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,8 +20,26 @@ class ReportEstadoClienteController extends Controller
      */
     public function index()
     {
-        //
+        can('listar-dte-estado-cliente');
+        $fechaAct = date("d/m/Y");
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablas['sucursales'] = Sucursal::orderBy('id')
+                        ->whereIn('sucursal.id', $sucurArray)
+                        ->get();
+        return view('reportdteestadocli.index', compact('tablas'));
     }
+
+    public function reportdteestadoclipage(Request $request){
+        //can('reporte-guia_despacho');
+        //dd('entro');
+        //$datas = GuiaDesp::reporteguiadesp($request);
+        $request->foliocontrol_id = "(1,5,6,7)";
+        //$request->request->add(['foliocontrol_id' => "(1,5,6,7)"]);
+        $datas = Dte::reportdtefac($request);
+        return datatables($datas)->toJson();
+    }
+
 
     /**
      * Show the form for creating a new resource.
