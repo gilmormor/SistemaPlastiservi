@@ -46,7 +46,7 @@ $(document).ready(function () {
         arrayBodegas.push(objeto);
     });
     //Lo agregas al array.
-    //$("#invbodega_id").empty();
+    $("#invbodega_id").empty();
     $(".selectpicker").selectpicker('refresh');
     if($("#sucursal_id").val() > 0){
 		llenarbodegas($("#sucursal_id").val())
