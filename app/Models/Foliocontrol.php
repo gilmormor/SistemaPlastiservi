@@ -16,6 +16,7 @@ class Foliocontrol extends Model
         'ultfoliohab',
         'activo',
         'bloqueo',
+        'signo',
         'usuario_id',
         'usuariodel_id'
     ];

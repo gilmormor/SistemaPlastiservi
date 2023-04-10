@@ -115,11 +115,10 @@ DTE Facturacion
                             <th class='tooltipsC' title='Nota de Venta'>NV</th>
                             <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                             <th class='tooltipsC' title='Orden de Despacho'>OD</th>
-                            <th class='tooltipsC' title='Guia Despacho'>GD</th>
-                            <th class='tooltipsC' title='Guia Despacho Cedible'>GDC</th>
+                            <th class='tooltipsC' title='DTE Origen'>DTEOrigen</th>
                             <th class='tooltipsC' title='Factura'>Factura</th>
-                            <th class='tooltipsC' title='Marcar para mostrar factura en despacho'>V</th>
-                            <th class='tooltipsC' title='Comuna'>Comuna</th>
+                            <th class='tooltipsC' title='Tipo DTE'>V</th>
+                            <th class='tooltipsC' title='Monto'>Monto</th>
                             <th class="ocultar">dteanul_obs</th>
                             <th class="ocultar">dteanulcreated_at</th>
                             <th class="ocultar">Obs Bloqueo</th>
@@ -128,25 +127,25 @@ DTE Facturacion
                             <th class="ocultar">staverfacdesp</th>
                             <th class="ocultar">updated_at</th>
                             <th class="ocultar">dtefac_updated_at</th>
-                            
+                            <th class="ocultar">foliocontrol_desc</th>
+                            <th class="ocultar">pdftipodte_origen</th>
+                            <th class="ocultar">foliocontroldesc_origen</th>
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
-                    <!--
                     <tfoot>
                         <tr>
                         </tr>
                         <tr>
-                            <th colspan='11' style='text-align:right'>Total página</th>
-                            <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
+                            <th colspan='12' style='text-align:right'>Total página</th>
+                            <th id='subtotalmonto' name='subtotalmonto' style='text-align:right'>0</th>
                         </tr>
                         <tr>
-                            <th colspan='11' style='text-align:right'>TOTAL GENERAL</th>
-                            <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                            <th colspan='12' style='text-align:right'>TOTAL GENERAL</th>
+                            <th id='totalmonto' name='totalmonto' style='text-align:right'>0</th>
                         </tr>
                     </tfoot>
-                    -->
                 </table>
             </div>
 
