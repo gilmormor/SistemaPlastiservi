@@ -34,6 +34,25 @@ $(document).ready(function () {
         eliminarFormatoRut($(this));
     });
 
+    arrayBodegas = [];
+    $("#invbodega_id option").each(function(){
+        //console.log(this);
+        //console.log('Opcion: '+$(this).text()+' Valor: '+ $(this).attr('value')+' Sucursal: '+ $(this).attr('sucursal_id'));
+        var objeto =   {
+            id: $(this).attr('value'),
+            nombre: $(this).text(),
+            sucursal_id: $(this).attr('sucursal_id')
+        };
+        arrayBodegas.push(objeto);
+    });
+    //Lo agregas al array.
+    //$("#invbodega_id").empty();
+    $(".selectpicker").selectpicker('refresh');
+    if($("#sucursal_id").val() > 0){
+		llenarbodegas($("#sucursal_id").val())
+	}
+
+
 });
 
 
@@ -228,3 +247,19 @@ $("#btnpdf").click(function(event){
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 });
+
+$("#sucursal_id").change(function(){
+	id = $(this).val();
+	llenarbodegas(id)
+});
+
+function llenarbodegas(sucursal_id){
+    $("#invbodega_id").empty();
+    console.log(arrayBodegas);
+    for (let i = 0; i < arrayBodegas.length; i++) {
+        if(sucursal_id == arrayBodegas[i].sucursal_id){
+            $("#invbodega_id").append(`<option value="${arrayBodegas[i].id}" sucursal_id="${arrayBodegas[i].sucursal_id}">${arrayBodegas[i].nombre}</option>`)
+        }
+    }
+    $(".selectpicker").selectpicker('refresh');
+}

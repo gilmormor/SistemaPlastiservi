@@ -126,10 +126,8 @@ Movimiento de Inventario
                                     <select name="invbodega_id" id="invbodega_id" class="selectpicker form-control invbodega_id" data-live-search='true' multiple data-actions-box='true'>
                                         @foreach($tablashtml['invbodegas'] as $invbodega)
                                             <option
-                                                value="{{$invbodega->id}}"
-                                                >
-                                                {{$invbodega->nombre}}
-                                            </option>
+                                                value="{{$invbodega->id}}" sucursal_id="{{$invbodega->sucursal_id}}"
+                                                >{{$invbodega->nombre}}</option>
                                         @endforeach
                                     </select>
                                 </div>
