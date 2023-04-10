@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AreaProduccion;
-use App\Models\Comuna;
 use App\Models\Dte;
 use App\Models\Empresa;
-use App\Models\Giro;
-use App\Models\InvMov;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 
-class ReportDTEEstadoCliController extends Controller
+
+class ReportDTEVentasxVendController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,17 +20,18 @@ class ReportDTEEstadoCliController extends Controller
      */
     public function index()
     {
-        can('listar-dte-estado-cliente');
+        can('listar-dte-ventas-x-vend');
         $fechaAct = date("d/m/Y");
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $tablas['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
-        return view('reportdteestadocli.index', compact('tablas'));
+        $tablas['vendedores'] = Vendedor::selectvendedores();
+        return view('reportdteventasxvend.index', compact('tablas'));
     }
 
-    public function reportdteestadoclipage(Request $request){
+    public function reportdteventasxvendpage(Request $request){
         //can('reporte-guia_despacho');
         //dd('entro');
         //$datas = GuiaDesp::reporteguiadesp($request);
@@ -69,13 +67,13 @@ class ReportDTEEstadoCliController extends Controller
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportdteestadocli.listado', compact('datas','empresa','usuario','request'));
+                return view('reportdteventasxvend.listado', compact('datas','empresa','usuario','request'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             //$pdf = PDF::loadView('reportdteestadocli.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-            $pdf = PDF::loadView('reportdteestadocli.listado', compact('datas','empresa','usuario','request'));
+            $pdf = PDF::loadView('reportdteventasxvend.listado', compact('datas','empresa','usuario','request'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteStockInv.pdf");
@@ -96,5 +94,5 @@ class ReportDTEEstadoCliController extends Controller
         return $respuesta;
     }
 
-    
+     
 }

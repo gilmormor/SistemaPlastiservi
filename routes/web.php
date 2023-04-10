@@ -1188,3 +1188,10 @@ Route::get('reportdteestadocli/reportdteestadoclipage', 'ReportDTEEstadoCliContr
 Route::get('reportdteestadocli/reporte', 'ReportDTEEstadoCliController@reporte')->name('reportdteestadocli_reporte');
 Route::get('reportdteestadocli/exportPdf', 'ReportDTEEstadoCliController@exportPdf')->name('reportdteestadocli_exportPdf');
 Route::get('reportdteestadocli/totalizarindex', 'ReportDTEEstadoCliController@totalizarindex')->name('reportdteestadocli_totalizarindex');
+
+/*RUTAS REPORTE ESTADO CLIENTE*/
+Route::get('reportdteventasxvend', 'ReportDTEVentasxVendController@index')->name('reportdteventasxvend');
+Route::get('reportdteventasxvend/reportdteventasxvendpage', 'ReportDTEVentasxVendController@reportdteventasxvendpage')->name('reportdteventasxvendpage');
+Route::get('reportdteventasxvend/reporte', 'ReportDTEVentasxVendController@reporte')->name('reportdteventasxvend_reporte');
+Route::get('reportdteventasxvend/exportPdf', 'ReportDTEVentasxVendController@exportPdf')->name('reportdteventasxvend_exportPdf');
+Route::get('reportdteventasxvend/totalizarindex', 'ReportDTEVentasxVendController@totalizarindex')->name('reportdteventasxvend_totalizarindex');

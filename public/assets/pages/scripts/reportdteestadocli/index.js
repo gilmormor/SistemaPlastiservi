@@ -261,6 +261,7 @@ function datosFac(){
     var data1 = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
+        sucursal_id       : $("#sucursal_id").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
         filtro            : 1,
         statusgen         : 1,
@@ -272,6 +273,7 @@ function datosFac(){
 
     var data2 = "?fechad="+data1.fechad +
     "&fechah="+data1.fechah +
+    "&sucursal_id="+data1.sucursal_id +
     "&rut="+data1.rut +
     "&filtro="+data1.filtro +
     "&statusgen="+data1.statusgen +

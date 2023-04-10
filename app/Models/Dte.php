@@ -1709,8 +1709,12 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $aux_sucursal_idCond = "true";
+        }else{
+            $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
+        }
 
-        
         if(!isset($request->groupby) or empty($request->groupby)){
             $aux_groupby = "";
         }else{
@@ -1737,6 +1741,11 @@ class Dte extends Model
         ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
         WHERE dtedte1.dte_id = dte.id
         GROUP BY dtedte1.dte_id) AS nrodocto_origen,
+        (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) 
+        FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+        ON dte1.id = dtedte1.dtefac_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+        WHERE dtedte1.dte_id = dte.id
+        GROUP BY dtedte1.dte_id) AS nrodoctofac_origen,
         (SELECT GROUP_CONCAT(DISTINCT foliocontrol.nombrepdf) 
         FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
         ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
@@ -1777,6 +1786,7 @@ class Dte extends Model
         ON dtefac.dte_id = dte.id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
+        AND $aux_sucursal_idCond
         AND $aux_conddte_id
         AND $aux_condFecha
         AND $aux_condnrodocto
@@ -1843,6 +1853,11 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $aux_sucursal_idCond = "true";
+        }else{
+            $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
+        }
     
         $sql = "SELECT sum(dte.mnttotal * foliocontrol.signo) as mnttotal
         FROM dte INNER JOIN cliente
@@ -1851,6 +1866,7 @@ class Dte extends Model
         ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
+        AND $aux_sucursal_idCond
         AND $aux_conddte_id
         AND $aux_condFecha
         AND $aux_condnrodocto
