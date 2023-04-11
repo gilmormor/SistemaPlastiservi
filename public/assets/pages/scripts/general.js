@@ -1313,7 +1313,7 @@ $("#producto_idM").blur(function(){
 						$("#largoM").val(respuesta['long']);
 						$("#largoM").attr('valor',respuesta['long']);	
 					}
-					$("#pesoM").val(Number(respuesta['peso'].toFixed(2)));
+					$("#pesoM").val(Number(respuesta['peso'].toFixed(4)));
 					$("#tipounionM").val(respuesta['tipounion']);
 					$("#precioM").val(respuesta['precio']);
 					$("#precioM").attr('valor',respuesta['precio']);
