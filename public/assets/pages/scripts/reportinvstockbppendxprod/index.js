@@ -37,7 +37,7 @@ $(document).ready(function () {
                 {data: 'stock'},
                 {data: 'cantpend'},
                 {data: 'difcantpend'},
-                {data: 'stockkg'}
+                //{data: 'stockkg'}
             ],
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -76,25 +76,26 @@ $(document).ready(function () {
                 $('td', row).eq(11).attr('style','text-align:center');
 
                 $('td', row).eq(12).attr('style','text-align:center');
-
+/*
                 $('td', row).eq(13).attr('style','text-align:right');
                 $('td', row).eq(13).attr('data-order',stockKg);
                 $('td', row).eq(13).attr('data-search',stockKg);
                 $('td', row).eq(13).html(MASKLA(stockKg,2));
                 $('td', row).eq(13).addClass('subtotalkg');
+*/
                 //console.log(stockKg);
 
             }
         });
     }
 
-    totalizar();
+    //totalizar();
 
     $("#btnconsultar").click(function()
     {
         data = datosstockpicking();
         $('#tabla-data-reporte-stockpicking').DataTable().ajax.url( "reportinvstockbppendxprodpage/" + data.data2 ).load();
-        totalizar();
+        //totalizar();
     });
 
 });

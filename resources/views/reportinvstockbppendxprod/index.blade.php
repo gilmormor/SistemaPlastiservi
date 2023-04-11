@@ -148,11 +148,12 @@ Stock Inventario
                             <th style='text-align:center'>Stock</th>
                             <th style='text-align:center'>Pend</th>
                             <th style='text-align:center'>Dif</th>
-                            <th style='text-align:right'>Kg</th>
+                            <!--<th style='text-align:right'>Kg</th>-->
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
+                    <!--
                     <tfoot>
                         <tr>
                         </tr>
@@ -165,6 +166,7 @@ Stock Inventario
                             <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                         </tr>
                     </tfoot>
+                    -->
                 </table>
             </div>
         </div>

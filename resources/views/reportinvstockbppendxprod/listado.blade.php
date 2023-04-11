@@ -43,7 +43,7 @@
 					<th style='text-align:center' class='width40'>Stock</th>
 					<th style='text-align:center' class='width40'>Pend</th>
 					<th style='text-align:center' class='width40'>Dif</th>
-					<th style='text-align:center' class='width50'>Kg</th>
+					<!--<th style='text-align:center' class='width50'>Kg</th>-->
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -65,19 +65,21 @@
 						<td style='text-align:center'>{{$data->stock}}</td>
 						<td style='text-align:center'>{{$data->cantpend}}</td>
 						<td style='text-align:center'>{{$data->difcantpend}}</td>
-						<td style='text-align:right'>{{number_format($data->stock * $data->peso, 2, ",", ".")}}</td>
+						<!--<td style='text-align:right'>{{number_format($data->stock * $data->peso, 2, ",", ".")}}</td> -->
 					</tr>
 					<?php 
 						$aux_totalstockkg += $data->stock * $data->peso;
 					?>
 				@endforeach
 			</tbody>
+			<!--
 			<tfoot id="detalle_totales">
 				<tr class="headt">
 					<th colspan="13" style='text-align:right'>TOTAL</th>
 					<th class="textright">{{number_format($aux_totalstockkg, 2, ",", ".")}}</th>
 				</tr>
 			</tfoot>
+			-->
 		</table>
 	</div>
 </div>
