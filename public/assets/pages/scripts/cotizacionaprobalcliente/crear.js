@@ -331,7 +331,7 @@ function modificarTabla(i){
 	$("#preciounit"+i).val($("#precionetoM").attr('valor'));
 	$("#precioxkiloTD"+i).html(MASKLA($("#precioM").attr('valor'),0)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").attr('valor'), '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
 	$("#precioxkilo"+i).val($("#precioM").attr('valor'));
-	$("#totalkilosTD"+i).html(MASKLA($("#totalkilosM").attr('valor'),2)); //$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
+	$("#totalkilosTD"+i).html(MASKLA($("#totalkilosM").attr('valor'),4)); //$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
 	$("#totalkilos"+i).val($("#totalkilosM").attr('valor'));
 	$("#subtotalCFTD"+i).html(MASKLA($("#subtotalM").attr('valor'),0)); //$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-#,###,###,##0.00',1));
 	$("#subtotal"+i).val($("#subtotalM").attr('valor'));

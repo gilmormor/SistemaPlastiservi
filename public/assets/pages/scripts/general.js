@@ -586,8 +586,8 @@ function totalizarItem(aux_estprec){
 	//alert(aux_peso);
 	aux_tk = $("#cantM").val() * aux_peso;
 	if($("#pesoM").val()>0){	
-		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
-		$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
+		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(4), '-##,###,##0.0000',4));
+		$("#totalkilosM").attr('valor',aux_tk.toFixed(4));
 	}else{
 		if($("#unidadmedida_idM option:selected").attr('value') == 7){
 			aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
@@ -1313,7 +1313,8 @@ $("#producto_idM").blur(function(){
 						$("#largoM").val(respuesta['long']);
 						$("#largoM").attr('valor',respuesta['long']);	
 					}
-					$("#pesoM").val(Number(respuesta['peso'].toFixed(4)));
+					console.log(respuesta['peso']);
+					$("#pesoM").val(respuesta['peso']);
 					$("#tipounionM").val(respuesta['tipounion']);
 					$("#precioM").val(respuesta['precio']);
 					$("#precioM").attr('valor',respuesta['precio']);

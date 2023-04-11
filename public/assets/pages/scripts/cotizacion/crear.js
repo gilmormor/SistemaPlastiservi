@@ -292,7 +292,7 @@ function insertarTabla(){
 				'<input type="text" name="precioxkiloreal[]" id="precioxkiloreal'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkiloreal +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="totalkilosTD'+ aux_nfila + '" id="totalkilosTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASKLA($("#totalkilosM").attr("valor"),2) + //MASK(0, $("#totalkilosM").attr("valor"), '-##,###,##0.00',1)+
+				MASKLA($("#totalkilosM").attr("valor"),4) + //MASK(0, $("#totalkilosM").attr("valor"), '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ $("#totalkilosM").attr("valor") +'" style="display:none;"/>'+
