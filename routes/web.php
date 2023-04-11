@@ -960,3 +960,10 @@ Route::post('invbodpesajeabodprodterm', 'InvBodPesajeaBodProdTermController@guar
 
 /*RUTAS REPORTE SOLICITUD DESPACHO PENDIENTE DESPACHO*/
 Route::get('reportdespachosolpendiente', 'ReportDespachoSolPendienteController@index')->name('reportdespachosolpendiente');
+
+/*RUTAS INV STOCK BODEGA DE PRODUCTO TERMINADO MAS PIKING MAS PENDIENTE POR PRODUCTO*/
+Route::get('reportinvstockbppendxprod', 'ReportInvStockBPPendxProdController@index')->name('reportinvstockbppendxprod');
+Route::get('reportinvstockbppendxprodpage', 'ReportInvStockBPPendxProdController@reportinvstockbppendxprodpage')->name('reportinvstockbppendxprodpage');
+Route::get('reportinvstockbppendxprod/reporte', 'ReportInvStockBPPendxProdController@reporte')->name('reportinvstockbppendxprod_reporte');
+Route::get('reportinvstockbppendxprod/exportPdf', 'ReportInvStockBPPendxProdController@exportPdf')->name('reportinvstockbppendxprod_exportPdf');
+Route::get('reportinvstockbppendxprod/totalizarindex', 'ReportInvStockBPPendxProdController@totalizarindex')->name('reportinvstockbppendxprod_totalizarindex');

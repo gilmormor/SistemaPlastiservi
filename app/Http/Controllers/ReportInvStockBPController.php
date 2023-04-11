@@ -41,20 +41,6 @@ class ReportInvStockBPController extends Controller
         //dd($request);
         can('reporte-stock-bodegapicking');
         $datas = InvMov::stocksql($request,"producto.id");
-        /*
-        $request->request->add(['groupby' => " group by notaventadetalle.producto_id "]);
-        $request->request->add(['orderby' => " order by notaventadetalle.producto_id "]);
-        //dd($request);
-        foreach ($datas as &$data) {
-            //$request->producto_id = $data->producto_id;
-            $request->request->add(['producto_id' => $data->producto_id]);
-            //dd($request);
-            $pendiente = Producto::pendientexProducto($request,2,1);
-            dd($pendiente[0]);
-            $data["cantpend"] = $pendiente[0]->cant - $pendiente[0]->cant;
-            dd($pendiente);
-        }
-        */
         return datatables($datas)->toJson();
 /*
         return datatables()

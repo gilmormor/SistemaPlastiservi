@@ -260,9 +260,9 @@ class Producto extends Model
         }
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
-        if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or $request->sucursal_id == "x"){
             //$aux_condsucursal_id = " true ";
-            $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray)";
+            $aux_condsucursal_id = " notaventa.sucursal_id in (0)";
         }else{
             if(is_array($request->sucursal_id)){
                 $aux_sucursal = implode ( ',' , $request->sucursal_id);
@@ -377,7 +377,7 @@ class Producto extends Model
     
         if($aux_sql==2){
             $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,
-            notaventadetalle.cant,if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS cantdesp,
+            sum(notaventadetalle.cant) as cant,sum(if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)) AS cantdesp,
             producto.nombre,cliente.razonsocial,notaventadetalle.id,
             notaventadetalle.notaventa_id,oc_file,
             producto.diametro,notaventa.oc_id,
