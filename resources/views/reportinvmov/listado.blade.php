@@ -18,7 +18,7 @@
 			<td class="info_factura">
 				<div class="round">
 					<span class="h3">Movimiento Inventario</span>
-					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
+					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
 					<p>Mes Stock: {{$request->annomes}}</p>
 				</div>
 			</td>
@@ -48,7 +48,7 @@
 					<tr class='btn-accion-tabla tooltipsC'>
 						<td style='text-align:center'>{{$data->id}}</td>
 						<td style='text-align:center'>{{$data->invmovdet_id}}</td>
-						<td style='text-align:center'>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
+						<td style='text-align:center'>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
 						<td>{{$data->desc}}</td>
 						<td style='text-align:center'>{{$data->producto_id}}</td>
 						<td style='text-align:left'>{{$data->producto_nombre}}</td>

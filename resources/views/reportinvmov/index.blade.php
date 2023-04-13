@@ -163,6 +163,7 @@ Movimiento de Inventario
                         <tr>
                             <th class='tooltipsC' title='Id MovInv'>ID</th>
                             <th class='tooltipsC' title='Id Detalle'>IDDet</th>
+                            <th class='tooltipsC' title='Origen'>Origen</th>
                             <th>Fecha</th>
                             <th>Descripción</th>
                             <th>ProdID</th>
@@ -176,7 +177,7 @@ Movimiento de Inventario
                         <tr>
                         </tr>
                         <tr>
-                            <th colspan='8' style='text-align:right'>TOTAL</th>
+                            <th colspan='9' style='text-align:right'>TOTAL</th>
                             <th id='totalcant' name='totalcant' style='text-align:right'>0,00</th>
                         </tr>
                     </tfoot>

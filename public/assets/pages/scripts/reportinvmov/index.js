@@ -150,6 +150,7 @@ function consultarpage(data){
         'columns'     : [
             {data: 'id'},
             {data: 'invmovdet_id'},
+            {data: 'invmovmodulo_id'},
             {data: 'fechahora'},
             {data: 'desc'},
             {data: 'producto_id'},
@@ -178,14 +179,60 @@ function consultarpage(data){
             $('td', row).eq(0).attr('data-search',data.id);
             $('td', row).eq(1).attr('data-search',data.invmovdet_id);
 
-            $('td', row).eq(2).attr('data-order',data.fechahora);
-            aux_fecha = new Date(data.fechahora);
-            $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
+            switch (data.invmovmodulo_id) {
+				case 1:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Entrada Salida de Inv: " + data.idmovmod + "' onclick='genpdfINVENTSAL(" + data.idmovmod + ",1)'>"+
+						data.idmovmod +
+					"</a>";
+					break;
+				case 2:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
+						+ data.idmovmod +
+					"</a>";
+					break;
+				case 3:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
+						+ data.idmovmod +
+					"</a>";
+					break;
+				case 4:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Inicio o cierre de mes: " + data.id + "' onclick='genpdfINVMOV(" + data.id + ",1)'>"+
+						data.id +
+					"</a>";
+					break;
+				case 5:
+					aux_text = 
+					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Solicitud despacho: " + data.idmovmod + "' onclick='genpdfSD(" + data.idmovmod + ",1)'>"+
+						+ data.idmovmod +
+					"</a>";	
+					break;
+				case 6:
+					aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Rechazo Orden despacho: " + data.idmovmod + "' onclick='genpdfODRec(" + data.idmovmod + ",1)'>" +
+						data.idmovmod +
+					"</a>";
+					break;
+				case 7:
+					aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Pesaje: " + data.idmovmod + "' onclick='genpdfPESAJE(" + data.idmovmod + ",1)'>" +
+						data.idmovmod +
+					"</a>";
+					break;
+				default:
+					aux_text = "Falta asignar PDF"
+			}
+			$('td', row).eq(2).html(aux_text);
 
-            $('td', row).eq(8).attr('data-order',data.cant);
-            $('td', row).eq(8).attr('style','text-align:right');
+            $('td', row).eq(3).attr('data-order',data.fechahora);
+            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(3).html(fechaddmmaaaa(aux_fecha));
+
+            $('td', row).eq(9).attr('data-order',data.cant);
+            $('td', row).eq(9).attr('style','text-align:right');
             aux_text = MASKLA(data.cant,2);
-            $('td', row).eq(8).html(aux_text);
+            $('td', row).eq(9).html(aux_text);
         }
       });
 }

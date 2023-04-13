@@ -77,12 +77,17 @@ $(document).ready(function () {
 					"</a>";	
 					break;
 				case 6:
-					aux_texto = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Rechazo Orden despacho: " + data.idmovmod + "' onclick='genpdfODRec(" + data.idmovmod + ",1)'>" +
+					aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Rechazo Orden despacho: " + data.idmovmod + "' onclick='genpdfODRec(" + data.idmovmod + ",1)'>" +
+						data.idmovmod +
+					"</a>";
+					break;
+				case 7:
+					aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Pesaje: " + data.idmovmod + "' onclick='genpdfPESAJE(" + data.idmovmod + ",1)'>" +
 						data.idmovmod +
 					"</a>";
 					break;
 				default:
-					aux_texto = "Falta asignar PDF"
+					aux_text = "Falta asignar PDF"
 			}
 			$('td', row).eq(5).html(aux_text);
 		}
