@@ -20,7 +20,7 @@ class ReportDTEVentasxVendController extends Controller
      */
     public function index()
     {
-        can('listar-dte-ventas-x-vend');
+        can('reporte-ventas-x-vendedor');
         $fechaAct = date("d/m/Y");
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
@@ -32,16 +32,9 @@ class ReportDTEVentasxVendController extends Controller
     }
 
     public function reportdteventasxvendpage(Request $request){
-        //can('reporte-guia_despacho');
-        //dd('entro');
-        //$datas = GuiaDesp::reporteguiadesp($request);
-        //$request->foliocontrol_id = "(1,5,6,7)";
-        //$request->request->add(['foliocontrol_id' => "(1,5,6,7)"]);
-        //$request->request["foliocontrol_id"] = "(1,5,6,7)";
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
         $request->merge(['orderby' => " order by dte.id desc "]);
         $request->merge(['groupby' => " group by dte.id "]);
-        //dd($request->request);
         $datas = Dte::reportestadocli($request);
         return datatables($datas)->toJson();
     }
@@ -49,7 +42,7 @@ class ReportDTEVentasxVendController extends Controller
     public function exportPdf(Request $request)
     {
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
-        $request->merge(['orderby' => " order by cliente.rut asc,dte.id "]);
+        $request->merge(['orderby' => " order by dte.vendedor_id asc,dte.id "]);
         $request->merge(['groupby' => " group by dte.id "]);
         $datas = Dte::reportestadocli($request);
         //dd($datas[0]);

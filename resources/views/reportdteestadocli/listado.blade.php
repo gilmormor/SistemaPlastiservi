@@ -75,7 +75,7 @@
 				<tbody id="detalle_productos">
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td style='text-align:center'>{{$data->id}}</td>
-							<td style='text-align:center'>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
+							<td style='text-align:center'>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
 							<td style='text-align:center'>{{$data->oc_id}}</td>
 							<td style='text-align:center'>{{$data->nrodocto}}</td>
 							<td style='text-align:center'>{{$data->foliocontrol_doc}}</td>

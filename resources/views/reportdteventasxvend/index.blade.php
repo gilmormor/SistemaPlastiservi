@@ -11,6 +11,7 @@ DTE Ventas x Vendedor
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportdteventasxvend/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
 @section('contenido')
@@ -77,6 +78,21 @@ DTE Ventas x Vendedor
                                         ?>
                                     </div>
                                 </div>                        
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="RUT">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="rut">RUT:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <div class="input-group">
+                                            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut')}}" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12" data-toggle='tooltip'/>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
@@ -148,7 +164,7 @@ DTE Ventas x Vendedor
     </div>
 </div>
 
-
+@include('generales.buscarclientebd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @endsection

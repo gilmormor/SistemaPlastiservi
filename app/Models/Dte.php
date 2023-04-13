@@ -1623,6 +1623,7 @@ class Dte extends Model
     }
 
     public static function reportestadocli($request){
+        /*
         $vendedorcond = " true ";
         if(isset($request->vendedor_id)){
             if(empty($request->vendedor_id)){
@@ -1647,6 +1648,7 @@ class Dte extends Model
                 $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
             }    
         }
+        */
     
         if(!isset($request->fechad) or !isset($request->fechah) or empty($request->fechad) or empty($request->fechah)){
             $aux_condFecha = " true";
@@ -1725,10 +1727,16 @@ class Dte extends Model
         }else{
             $aux_orderby = $request->orderby;
         }
+        if(!isset($request->vendedor_id) or empty($request->vendedor_id)){
+            $aux_condvendedor_id = " true";
+        }else{
+            $aux_condvendedor_id = "dte.vendedor_id in ($request->vendedor_id)";
+        }
+
 
     
         $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
-        clientebloqueado.descripcion as clientebloqueado_descripcion,
+        clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
         GROUP_CONCAT(DISTINCT notaventa.oc_id) AS oc_id,
@@ -1794,6 +1802,7 @@ class Dte extends Model
         AND $aux_condoc_id
         AND $aux_condnotaventa_id
         AND $aux_condstatusgen
+        AND $aux_condvendedor_id
         AND NOT ISNULL(dte.nrodocto)
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
         $aux_groupby
