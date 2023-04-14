@@ -22,7 +22,7 @@
 				<div class="round" style="padding-bottom: 3px;">
 					<span class="h3">Pesaje</span>
 					<p>Nro: <strong> {{ str_pad($datas->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
-					<p>Fecha: {{date('d-m-Y', strtotime($datas->fechahora))}}</p>
+					<p>Fecha: {{date('d/m/Y', strtotime($datas->fechahora))}}</p>
 					<p>Estado: 
 						@switch($datas->staaprob)
 							@case(0)
@@ -123,7 +123,7 @@
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$pesajedet->invbodegaproducto->producto_id}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}</td>
-						<td class="textcenter">{{number_format($pesajedet->peso, 2, ",", ".")}}</td>
+						<td class="textcenter">{{number_format($pesajedet->peso, 3, ",", ".")}}</td>
 						<td class="textcenter">{{$pesajedet->areaproduccionsuclinea->nombre}}</td>
 						<td class="textcenter">{{$pesajedet->turno->nombre}}</td>
 						<td class="textcenter">{{$pesajedet->pesajecarro->nombre}}</td>
@@ -132,7 +132,7 @@
 						<td class="textright">{{number_format($pesajedet->pesobaltotal, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($pesobalprodunit, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($pesobalprodtotal, 2, ",", ".")}}</td>
-						<td class="textright">{{number_format($PesoTotNorma, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($PesoTotNorma, 3, ",", ".")}}</td>
 						<td class="textright">{{number_format($DiferenciaKg, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($DiferenciaPorc, 2, ",", ".")}}</td>
 					</tr>
@@ -144,7 +144,7 @@
 					<td class="textright"><span><strong>{{number_format($total_pesobaltotal, 2, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong></strong></span></td>
 					<td class="textright"><span><strong>{{number_format($total_pesobalprodtotal, 2, ",", ".")}}</strong></span></td>
-					<td class="textright"><span><strong>{{number_format($total_PesoTotNorma, 2, ",", ".")}}</strong></span></td>
+					<td class="textright"><span><strong>{{number_format($total_PesoTotNorma, 3, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($total_DiferenciaKg, 2, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(($total_DiferenciaKg / $total_PesoTotNorma) * 100, 2, ",", ".")}}</strong></span></td>
 				</tr>

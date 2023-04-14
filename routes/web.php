@@ -967,3 +967,10 @@ Route::get('reportinvstockbppendxprodpage', 'ReportInvStockBPPendxProdController
 Route::get('reportinvstockbppendxprod/reporte', 'ReportInvStockBPPendxProdController@reporte')->name('reportinvstockbppendxprod_reporte');
 Route::get('reportinvstockbppendxprod/exportPdf', 'ReportInvStockBPPendxProdController@exportPdf')->name('reportinvstockbppendxprod_exportPdf');
 Route::get('reportinvstockbppendxprod/totalizarindex', 'ReportInvStockBPPendxProdController@totalizarindex')->name('reportinvstockbppendxprod_totalizarindex');
+
+/*RUTAS REPORTE PESAJE*/
+Route::get('reportpesaje', 'ReportPesajeController@index')->name('reportpesaje');
+Route::get('reportpesajepage', 'ReportPesajeController@reportpesajepage')->name('reportpesajepage');
+Route::get('reportpesaje/reporte', 'ReportPesajeController@reporte')->name('reportpesaje_reporte');
+Route::get('reportpesaje/exportPdf', 'ReportPesajeController@exportPdf')->name('reportpesaje_exportPdf');
+Route::get('reportpesaje/totalizarindex', 'ReportPesajeController@totalizarindex')->name('reportpesaje_totalizarindex');

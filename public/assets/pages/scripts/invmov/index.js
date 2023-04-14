@@ -45,6 +45,7 @@ $(document).ready(function () {
 			$('td', row).eq(2).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
+			aux_text = "";
 			switch (data.invmovmodulo_id) {
 				case 1:
 					aux_text = 
@@ -53,16 +54,20 @@ $(document).ready(function () {
 					"</a>";
 					break;
 				case 2:
-					aux_text = 
-					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
-						+ data.idmovmod +
-					"</a>";
+					if(data.idmovmod !== null){
+						aux_text = 
+						"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
+							+ data.idmovmod +
+						"</a>";	
+					}
 					break;
 				case 3:
-					aux_text = 
-					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
-						+ data.idmovmod +
-					"</a>";
+					if(data.idmovmod !== null){
+						aux_text = 
+						"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
+							+ data.idmovmod +
+						"</a>";
+					}
 					break;
 				case 4:
 					aux_text = 
@@ -82,12 +87,14 @@ $(document).ready(function () {
 					"</a>";
 					break;
 				case 7:
-					aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Pesaje: " + data.idmovmod + "' onclick='genpdfPESAJE(" + data.idmovmod + ",1)'>" +
-						data.idmovmod +
-					"</a>";
+					if(data.idmovmod !== null){
+						aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Pesaje: " + data.idmovmod + "' onclick='genpdfPESAJE(" + data.idmovmod + ",1)'>" +
+							data.idmovmod +
+						"</a>";
+					}
 					break;
 				default:
-					aux_text = "Falta asignar PDF"
+					//aux_text = "Falta asignar PDF"
 			}
 			$('td', row).eq(5).html(aux_text);
 		}

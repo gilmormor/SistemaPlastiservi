@@ -127,7 +127,6 @@ function consultarpage(data){
         url: '/reportinvmov/totalizarRep/' + data.data2,
         type: 'GET',
         success: function (datos) {
-            console.log(datos);
             $("#totalcant").html(MASKLA(datos.aux_totalcant,2));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
@@ -178,7 +177,7 @@ function consultarpage(data){
 
             $('td', row).eq(0).attr('data-search',data.id);
             $('td', row).eq(1).attr('data-search',data.invmovdet_id);
-
+            aux_text = "";
             switch (data.invmovmodulo_id) {
 				case 1:
 					aux_text = 
@@ -187,18 +186,22 @@ function consultarpage(data){
 					"</a>";
 					break;
 				case 2:
-					aux_text = 
-					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
-						+ data.idmovmod +
-					"</a>";
-					break;
-				case 3:
-					aux_text = 
-					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
-						+ data.idmovmod +
-					"</a>";
-					break;
-				case 4:
+                    if(data.idmovmod !== null){
+                        aux_text = 
+                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
+                            + data.idmovmod +
+                        "</a>";
+                    }
+                    break;    
+                case 3:
+                    if(data.idmovmod !== null){
+                        aux_text = 
+                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Orden despacho: " + data.idmovmod + "' onclick='genpdfOD(" + data.idmovmod + ",1)'>"+
+                            + data.idmovmod +
+                        "</a>";
+                    }
+                    break;
+                case 4:
 					aux_text = 
 					"<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Inicio o cierre de mes: " + data.id + "' onclick='genpdfINVMOV(" + data.id + ",1)'>"+
 						data.id +
@@ -216,12 +219,14 @@ function consultarpage(data){
 					"</a>";
 					break;
 				case 7:
-					aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Pesaje: " + data.idmovmod + "' onclick='genpdfPESAJE(" + data.idmovmod + ",1)'>" +
-						data.idmovmod +
-					"</a>";
-					break;
-				default:
-					aux_text = "Falta asignar PDF"
+                    if(data.idmovmod !== null){
+                        aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Pesaje: " + data.idmovmod + "' onclick='genpdfPESAJE(" + data.idmovmod + ",1)'>" +
+                            data.idmovmod +
+                        "</a>";
+                    }
+                    break;
+                default:
+					//aux_text = "Falta asignar PDF"
 			}
 			$('td', row).eq(2).html(aux_text);
 
@@ -302,7 +307,6 @@ $("#sucursal_id").change(function(){
 
 function llenarbodegas(sucursal_id){
     $("#invbodega_id").empty();
-    console.log(arrayBodegas);
     for (let i = 0; i < arrayBodegas.length; i++) {
         if(sucursal_id == arrayBodegas[i].sucursal_id){
             $("#invbodega_id").append(`<option value="${arrayBodegas[i].id}" sucursal_id="${arrayBodegas[i].sucursal_id}">${arrayBodegas[i].nombre}</option>`)
