@@ -118,7 +118,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label for="categoriaprodgrupo_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Area Producción">Grupo</label>
+    <label for="categoriaprodgrupo_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Grupo Categoria">Grupo</label>
     <div class="col-lg-8">
         <select name="categoriaprodgrupo_id" id="categoriaprodgrupo_id" class="form-control select2 categoriaprodgrupo_id" required>
             <option value="">Seleccione...</option>
