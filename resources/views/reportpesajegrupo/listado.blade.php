@@ -68,7 +68,7 @@
 						<td class="textright">{{number_format($pesajedet->pesototalprodbal, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($pesajedet->pesototalnorma, 3, ",", ".")}}</td>
 						<td class="textright">{{number_format($pesajedet->difkg, 2, ",", ".")}}</td>
-						<td width="60px" class="textright">{{number_format((($pesajedet->difkg / $pesajedet->pesototalnorma) * 100), 6, ",", ".")}}</td>
+						<td width="70px" class="textcenter">{{number_format((($pesajedet->difkg / $pesajedet->pesototalnorma) * 100), 6, ",", ".")}}</td>
 					</tr>
 				@endforeach
 			</tbody>
@@ -82,7 +82,7 @@
 					<th style='text-align:right'>{{number_format($total_pesototalprodbal, 2, ",", ".")}}</th>
 					<th style='text-align:right'>{{number_format($total_pesototalnorma, 2, ",", ".")}}</th>
 					<th style='text-align:right'>{{number_format($total_difkg, 2, ",", ".")}}</th>
-					<th style='text-align:right'>{{number_format((($total_difkg / $total_pesototalnorma) * 100), 6, ",", ".")}}</th>
+					<th style='text-align:center'>{{number_format((($total_difkg / $total_pesototalnorma) * 100), 6, ",", ".")}}</th>
 				</tr>
 			</tfoot>
 
