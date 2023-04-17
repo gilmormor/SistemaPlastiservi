@@ -68,8 +68,6 @@ class Pesaje extends Model
             }
 
         }
-
-
         if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "x")){
             $aux_sucursal_idCond = "false";
         }else{
@@ -81,14 +79,29 @@ class Pesaje extends Model
         }else{
             $aux_producto_idCodn = " pesajedet.producto_id in ($request->producto_id) ";
         }
+        $aux_groupby = "GROUP BY pesajedet.id";
+        $aux_orderby = "ORDER BY turno.nombre ASC, pesajedet.producto_id ASC";
+        if(!isset($request->agrurep_id) or empty($request->agrurep_id)){
+        }else{
+            if($request->agrurep_id == 2){
+                $aux_groupby = "GROUP BY pesajedet.producto_id";
+            }
+            if($request->agrurep_id == 3){
+                $aux_groupby = "GROUP BY categoriaprodgrupo.id";
+                $aux_orderby = "ORDER BY categoriaprodgrupo.id ASC";
+            }
+        }
 
         $sql = "SELECT pesaje.*,pesajedet.*,producto.nombre AS producto_nombre,producto.diametro,claseprod.cla_nombre,
         producto.long,producto.tipounion,pesajecarro.nombre AS pesajecarro_nombre,
         areaproduccionsuclinea.nombre AS areaproduccionsuclinea_nombre,turno.nombre AS turno_nombre,
-        ((pesajedet.pesobaltotal - pesajedet.tara) / pesajedet.cant) pesopromunibal,
-        ((pesajedet.pesobaltotal - pesajedet.tara)) pesototalprodbal,
-        (pesajedet.cant * pesajedet.pesounitnom) as pesototalnorma,
-        ((pesajedet.pesobaltotal - pesajedet.tara)) - (pesajedet.cant * pesajedet.pesounitnom) AS difkg
+        categoriaprodgrupo.nombre as categoriaprodgrupo_nombre, 
+        sum(pesajedet.tara) as sumtara,
+        sum(pesajedet.pesobaltotal) as sumpesobaltotal,
+        sum((pesajedet.pesobaltotal - pesajedet.tara) / pesajedet.cant) pesopromunibal,
+        sum(pesajedet.pesobaltotal - pesajedet.tara) pesototalprodbal,
+        sum(pesajedet.cant * pesajedet.pesounitnom) as pesototalnorma,
+        sum(((pesajedet.pesobaltotal - pesajedet.tara)) - (pesajedet.cant * pesajedet.pesounitnom)) AS difkg
         FROM pesaje INNER JOIN pesajedet
         ON pesaje.id = pesajedet.pesaje_id AND ISNULL(pesaje.deleted_at) AND ISNULL(pesajedet.deleted_at)
         INNER JOIN producto
@@ -101,12 +114,18 @@ class Pesaje extends Model
         ON areaproduccionsuclinea.id = pesajedet.areaproduccionsuclinea_id
         INNER JOIN turno
         ON turno.id = pesajedet.turno_id AND ISNULL(turno.deleted_at)
+        INNER JOIN categoriaprod
+        ON categoriaprod.id = producto.categoriaprod_id
+        LEFT JOIN categoriaprodgrupo
+        ON categoriaprodgrupo.id = categoriaprod.categoriaprodgrupo_id
         WHERE $aux_sucursal_idCond
         AND $aux_producto_idCodn
         AND $aux_condFecha
-        ORDER BY turno.nombre ASC, pesajedet.producto_id ASC;";
+        $aux_groupby
+        $aux_orderby;";
         //dd($sql);
         $datas = DB::select($sql);
         return $datas;
     }
+
 }

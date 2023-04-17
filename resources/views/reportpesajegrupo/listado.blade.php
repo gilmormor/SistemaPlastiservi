@@ -20,7 +20,7 @@
 			</td>
 			<td class="info_factura">
 				<div class="round" style="padding-bottom: 3px;">
-					<span class="h3">Pesaje</span>
+					<span class="h3">Pesaje Grupo</span>
 					<p>Fecha emision: {{date("d-m-Y h:i:s A")}}</p>
 					<p>Sucursal: {{$sucursal->nombre}}</p>
 					<p>Período: {{$request->fechad}} al {{$request->fechah}}</p>
@@ -32,12 +32,7 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
-					<th width="20px">Cod</th>
 					<th width="90px">Producto</th>
-					<th width="30px">PNorm</th>
-					<th width="30px">Linea</th>
-					<th class="textcenter" width="20px">Turn</th>
-					<th class="textcenter" width="30px">Carro</th>
 					<th class="textcenter" width="20px">Tara</th>
 					<th class="textcenter" width="20px">Cant</th>
 					<th class="textcenter" width="40px">PesoBal</th>
@@ -65,12 +60,7 @@
 						$total_difkg += $pesajedet->difkg;
 					?>
 					<tr class="headt" style="height:150%;">
-						<td class="textcenter">{{$pesajedet->producto_id}}</td>
-						<td class="textleft">{{$pesajedet->producto_nombre}}</td>
-						<td class="textcenter">{{number_format($pesajedet->pesounitnom, 3, ",", ".")}}</td>
-						<td class="textcenter">{{$pesajedet->areaproduccionsuclinea_nombre}}</td>
-						<td class="textcenter">{{$pesajedet->turno_nombre}}</td>
-						<td class="textcenter">{{substr($pesajedet->pesajecarro_nombre, 6, 4)}}</td>
+						<td class="textleft">{{$pesajedet->categoriaprodgrupo_nombre}}</td>
 						<td class="textright">{{number_format($pesajedet->sumtara, 2, ",", ".")}}</td>
 						<td class="textcenter">{{number_format($pesajedet->cant, 0, ",", ".")}}</td>
 						<td class="textright">{{number_format($pesajedet->sumpesobaltotal, 2, ",", ".")}}</td>
@@ -84,8 +74,7 @@
 			</tbody>
 			<tfoot id="detalle_totales">
 				<tr>
-					<th colspan='5' style='text-align:right'>Total: {{$request->fechah}}</th>
-					<th></th>
+					<th style='text-align:right'>Total</th>
 					<th style='text-align:right'>{{number_format($total_tara, 2, ",", ".")}}</th>
 					<th></th>
 					<th style='text-align:right'>{{number_format($total_pesobaltotal, 2, ",", ".")}}</th>
@@ -94,18 +83,6 @@
 					<th style='text-align:right'>{{number_format($total_pesototalnorma, 2, ",", ".")}}</th>
 					<th style='text-align:right'>{{number_format($total_difkg, 2, ",", ".")}}</th>
 					<th style='text-align:right'>{{number_format((($total_difkg / $total_pesototalnorma) * 100), 6, ",", ".")}}</th>
-				</tr>
-				<tr>
-					<th colspan='5' style='text-align:right'>Total período: {{$request->fechad}} al {{$request->fechah}}</th>
-					<th></th>
-					<th style='text-align:right'>{{number_format($totalesPeriodo["subtotalTara"], 2, ",", ".")}}</th>
-					<th></th>
-					<th style='text-align:right'>{{number_format($totalesPeriodo["subtotalPesoBal"], 2, ",", ".")}}</th>
-					<th></th>
-					<th style='text-align:right'>{{number_format($totalesPeriodo["subtotalPesoTotalProdBal"], 2, ",", ".")}}</th>
-					<th style='text-align:right'>{{number_format($totalesPeriodo["subtotalPesoTotalNorma"], 2, ",", ".")}}</th>
-					<th style='text-align:right'>{{number_format($totalesPeriodo["subtotalDifKg"], 2, ",", ".")}}</th>
-					<th style='text-align:right'>{{number_format((($totalesPeriodo["subtotalDifKg"] / $totalesPeriodo["subtotalPesoTotalNorma"]) * 100), 6, ",", ".")}}</th>
 				</tr>
 			</tfoot>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarCategoriaProd;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
+use App\Models\CategoriaProdGrupo;
 use App\Models\CategoriaProdSuc;
 use App\Models\ClaseProd;
 use App\Models\GrupoProd;
@@ -83,10 +84,11 @@ class CategoriaProdController extends Controller
         $sucursales = Sucursal::orderBy('id')->pluck('nombre', 'id')->toArray();
         $areaproduccions = AreaProduccion::orderBy('id')->pluck('nombre', 'id')->toArray();
         $unidadmedidas = UnidadMedida::orderBy('id')->pluck('descripcion', 'id')->toArray();
+        $categoriaprodgrupo = CategoriaProdGrupo::orderBy('id')->pluck('nombre', 'id')->toArray();
         $aux_sta=1;
         $aux_cont=0;
         $aux_contG=0;
-        return view('categoriaprod.crear',compact('sucursales','aux_sta','aux_cont','areaproduccions','unidadmedidas','aux_contG'));
+        return view('categoriaprod.crear',compact('sucursales','aux_sta','aux_cont','areaproduccions','unidadmedidas','aux_contG','categoriaprodgrupo'));
     }
 
     /**
@@ -156,8 +158,9 @@ class CategoriaProdController extends Controller
         $aux_contG=(count($grupoprods));
         $areaproduccions = AreaProduccion::orderBy('id')->pluck('nombre', 'id')->toArray();
         $unidadmedidas = UnidadMedida::orderBy('id')->pluck('descripcion', 'id')->toArray();
+        $categoriaprodgrupos = CategoriaProdGrupo::orderBy('id')->pluck('nombre', 'id')->toArray();
         $aux_sta=2;
-        return view('categoriaprod.editar', compact('data','sucursales','claseprods','aux_sta','aux_cont','areaproduccions','grupoprods','aux_contG','unidadmedidas'));
+        return view('categoriaprod.editar', compact('data','sucursales','claseprods','aux_sta','aux_cont','areaproduccions','grupoprods','aux_contG','unidadmedidas','categoriaprodgrupos'));
     }
 
     /**

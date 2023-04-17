@@ -1,20 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\AreaProduccion;
-use App\Models\CategoriaProd;
 use App\Models\Empresa;
-use App\Models\InvBodega;
-use App\Models\InvMov;
 use App\Models\Pesaje;
-use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 
-class ReportPesajeController extends Controller
+class ReportPesajeGrupoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,7 +17,7 @@ class ReportPesajeController extends Controller
      */
     public function index()
     {
-        can('listar-reporte-pesaje');
+        can('listar-reporte-pesaje-grupo');
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
@@ -35,13 +29,13 @@ class ReportPesajeController extends Controller
             ];
         //dd($tablashtml);
         $selecmultprod = 1;
-        return view('reportpesaje.index', compact('tablashtml','selecmultprod'));
+        return view('reportpesajegrupo.index', compact('tablashtml','selecmultprod'));
 
     }
-    public function reportpesajepage(Request $request){
+    public function reportpesajegrupopage(Request $request){
         //dd($request);
-        can('listar-reporte-pesaje');
-
+        can('listar-reporte-pesaje-grupo');
+        $request->statusSumPeriodo = 1;
         $datas = Pesaje::pesajeDet($request);
 
         //dd($datas);
@@ -54,12 +48,12 @@ class ReportPesajeController extends Controller
 
     public function exportPdf(Request $request)
     {
-        can('listar-reporte-pesaje');
+        can('listar-reporte-pesaje-grupo');
+        $request->statusSumPeriodo = 1;
         $datas = Pesaje::pesajeDet($request);
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
-        $request->statusSumPeriodo = 1;
         $totalesPeriodo = totalizarindexpub($request);
         //dd($totalesPeriodo);
 
@@ -68,13 +62,13 @@ class ReportPesajeController extends Controller
             $sucursal = Sucursal::findOrFail($request->sucursal_id);
             $request->request->add(['sucursal_nombre' => $sucursal->nombre]);
             if(env('APP_DEBUG')){
-                return view('reportpesaje.listado', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
+                return view('reportpesajegrupo.listado', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-            $pdf = PDF::loadView('reportpesaje.listado', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
+            $pdf = PDF::loadView('reportpesajegrupo.listado', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteStockBodegaPicking.pdf");
@@ -82,7 +76,6 @@ class ReportPesajeController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         } 
     }
-
     public function totalizarindex(Request $request){
         /*
         $respuesta = array();
@@ -112,8 +105,9 @@ class ReportPesajeController extends Controller
         */
         return totalizarindexpub($request);
     }
-     
+
 }
+
 
 function totalizarindexpub($request){
     $respuesta = array();

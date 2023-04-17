@@ -117,6 +117,24 @@
         </select>
     </div>
 </div>
+<div class="form-group">
+    <label for="categoriaprodgrupo_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Area Producción">Grupo</label>
+    <div class="col-lg-8">
+        <select name="categoriaprodgrupo_id" id="categoriaprodgrupo_id" class="form-control select2 categoriaprodgrupo_id" required>
+            <option value="">Seleccione...</option>
+            @foreach($categoriaprodgrupos as $id => $nombre)
+                <option
+                    value="{{$id}}"
+                    @if (($aux_sta==2) and ($data->categoriaprodgrupo_id==$id))
+                        {{'selected'}}
+                    @endif
+                    >
+                    {{$nombre}}
+                </option>
+            @endforeach
+        </select>
+    </div>
+</div>
 
 <div class="form-group">
     <div class="checkbox">

@@ -974,3 +974,19 @@ Route::get('reportpesajepage', 'ReportPesajeController@reportpesajepage')->name(
 Route::get('reportpesaje/reporte', 'ReportPesajeController@reporte')->name('reportpesaje_reporte');
 Route::get('reportpesaje/exportPdf', 'ReportPesajeController@exportPdf')->name('reportpesaje_exportPdf');
 Route::get('reportpesaje/totalizarindex', 'ReportPesajeController@totalizarindex')->name('reportpesaje_totalizarindex');
+
+/*RUTAS CATEGORIAPROD GRUPO*/
+Route::get('categoriaprodgrupo', 'CategoriaProdGrupoController@index')->name('categoriaprodgrupo');
+Route::get('categoriaprodgrupopage', 'CategoriaProdGrupoController@categoriaprodgrupopage')->name('categoriaprodgrupopage');
+Route::get('categoriaprodgrupo/crear', 'CategoriaProdGrupoController@crear')->name('crear_categoriaprodgrupo');
+Route::post('categoriaprodgrupo', 'CategoriaProdGrupoController@guardar')->name('guardar_categoriaprodgrupo');
+Route::get('categoriaprodgrupo/{id}/editar', 'CategoriaProdGrupoController@editar')->name('editar_categoriaprodgrupo');
+Route::put('categoriaprodgrupo/{id}', 'CategoriaProdGrupoController@actualizar')->name('actualizar_categoriaprodgrupo');
+Route::delete('categoriaprodgrupo/{id}', 'CategoriaProdGrupoController@eliminar')->name('eliminar_categoriaprodgrupo');
+
+/*RUTAS REPORTE PESAJE GRUPO*/
+Route::get('reportpesajegrupo', 'ReportPesajeGrupoController@index')->name('reportpesajegrupo');
+Route::get('reportpesajegrupopage', 'ReportPesajeGrupoController@reportpesajegrupopage')->name('reportpesajegrupopage');
+Route::get('reportpesajegrupo/reporte', 'ReportPesajeGrupoController@reporte')->name('reportpesajegrupo_reporte');
+Route::get('reportpesajegrupo/exportPdf', 'ReportPesajeGrupoController@exportPdf')->name('reportpesajegrupo_exportPdf');
+Route::get('reportpesajegrupo/totalizarindex', 'ReportPesajeGrupoController@totalizarindex')->name('reportpesajegrupo_totalizarindex');
