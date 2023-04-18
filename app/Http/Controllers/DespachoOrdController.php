@@ -1603,11 +1603,14 @@ function llenarArrayBodegasPickingOrdDesp($detalles){
             foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
                 $aux_stock += $invmovdet_bodsoldesp->invmovdet["cant"];
             }
+            //dd($aux_stock);
             foreach($detalle->despachosoldet->despachoorddets as $despachoorddet){
                 if($despachoorddet->despachoord->despachoordanul == null){
                     foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
                         if($detalle->id != $despachoorddet->id){
-                            $aux_stock -= ($despachoorddet_invbodegaproducto->cant) * -1 ;
+                            if($despachoorddet_invbodegaproducto->invbodegaproducto->invbodega->tipo == 1){
+                                $aux_stock -= ($despachoorddet_invbodegaproducto->cant) * -1 ;
+                            }
                         }
                         //$aux_stock += $despachoorddet_invbodegaproducto->cantdesp * -1;
                     }
