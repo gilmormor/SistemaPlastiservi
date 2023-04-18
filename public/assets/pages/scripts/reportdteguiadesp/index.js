@@ -571,7 +571,7 @@ $("#btnpdf2").click(function()
             "&filtro=" + data.filtro +
             "&producto_id=" + data.producto_id +
             "&aux_titulo=" + aux_titulo;
-    $('#contpdf').attr('src', '/despachosol/pdfpendientesoldesp/'+cadena);
+    $('#contpdf').attr('src', '/reportdteguiadesp/exportPdf/' + data.data2);
     $("#myModalpdf").modal('show'); 
 });
 

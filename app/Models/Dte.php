@@ -151,7 +151,7 @@ class Dte extends Model
     }
     
     public static function reportguiadesppage($request){
-        //dd($request->tipobodega);
+        //dd($request);
         if(empty($request->vendedor_id)){
             $user = Usuario::findOrFail(auth()->id());
             $sql= 'SELECT COUNT(*) AS contador
@@ -248,6 +248,13 @@ class Dte extends Model
                 case 2:
                     $aux_aprobstatus = " not isnull(dteanul.obs)";
                     break;
+                case 3:
+                    $aux_aprobstatus = " dte.id in (SELECT dter_id from dtedte where isnull(dtedte.deleted_at))";
+                    break;
+                case 4:
+                    $aux_aprobstatus = " dte.id not in (SELECT dter_id from dtedte where isnull(dtedte.deleted_at)) and isnull(dteanul.obs)";
+                    break;
+        
             }
         }
     
@@ -257,10 +264,10 @@ class Dte extends Model
             $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
         }
     
-        $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,
-        notaventa.oc_id as nvoc_id,notaventa.oc_file as nvoc_file,dte.centroeconomico_id,
+        $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,dte.mnttotal,
+        notaventa.oc_id as nvoc_id,notaventa.oc_file as nvoc_file,dte.centroeconomico_id,dte.indtraslado,
         dteoc.oc_id,dteoc.oc_file,comuna.nombre as comunanombre,
-        tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
+        tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,dtedte.dter_id,
         dteguiadesp.notaventa_id,despachoord.fechaestdesp,dteguiadesp.despachoord_id,despachoord.despachosol_id,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
         FROM dte INNER JOIN dtedet
@@ -293,6 +300,8 @@ class Dte extends Model
         ON dteanul.dte_id=dte.id and isnull(dteanul.deleted_at)
         LEFT JOIN dteoc
         ON dteoc.dte_id=dte.id and isnull(dteoc.deleted_at)
+        LEFT JOIN dtedte
+        ON dtedte.dter_id = dte.id
         WHERE $aux_condproducto_id
         and $aux_condguiadesp_id
         and $vendedorcond

@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\AreaProduccion;
 use App\Models\Comuna;
 use App\Models\Dte;
+use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\GuiaDesp;
+use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 
 class ReportDTEGuiaDespController extends Controller
@@ -28,7 +32,11 @@ class ReportDTEGuiaDespController extends Controller
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')
+                                    ->whereIn('sucursal.id', $sucurArray)
+                                    ->get();
         return view('reportdteguiadesp.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -40,70 +48,30 @@ class ReportDTEGuiaDespController extends Controller
         return datatables($datas)->toJson();
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function exportPdf(Request $request)
     {
-        //
-    }
+        $datas = Dte::reportguiadesppage($request);
+        //dd($datas);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        if($datas){
+            
+            if(env('APP_DEBUG')){
+                return view('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'));
+            }
+            
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            
+            //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
+            $pdf = PDF::loadView('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'));
+            //return $pdf->download('cotizacion.pdf');
+            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+            return $pdf->stream("ReporteStockInv.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        } 
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+    
 }
