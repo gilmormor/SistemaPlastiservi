@@ -1522,13 +1522,30 @@ function llenarArrayBodegasPickingSolDesp($detalles){
             foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
                 $aux_stock += $invmovdet_bodsoldesp->invmovdet["cant"];
             }
+            //dd($detalle->despachoorddets);
             foreach($detalle->despachoorddets as $despachoorddet){
-                if($despachoorddet->despachoord->despachoordanul == null and $despachoorddet->despachoord->aprguiadesp != 1){
+                //dd($despachoorddet);
+
+                if($despachoorddet->despachoord->despachoordanul == null){
                     foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
-                        $aux_stock -= $despachoorddet_invbodegaproducto->cant *-1;
+                        if($despachoorddet_invbodegaproducto->invbodegaproducto->invbodega->tipo == 1){
+                                $aux_stock -= $despachoorddet_invbodegaproducto->cant *-1;
+                        }
                     }
                 }
+
+/*
+                if($despachoorddet->despachoord->despachoordanul == null and $despachoorddet->despachoord->aprguiadesp != 1){
+                    foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                        if($despachosoldet_invbodegaproducto->invbodegaproducto_id == $despachoorddet_invbodegaproducto->invbodegaproducto_id){
+                            $aux_stock -= $despachoorddet_invbodegaproducto->cant *-1;
+                        }
+
+                        //$aux_stock -= $despachoorddet_invbodegaproducto->cant *-1;
+                    }
+                }*/
             }
+            //dd($aux_stock);
             $sucursal = $despachosoldet_invbodegaproducto->invbodegaproducto->invbodega->sucursal;
             $producto = $despachosoldet_invbodegaproducto->invbodegaproducto->producto;
             $invbodegaproducto = $despachosoldet_invbodegaproducto->invbodegaproducto;
