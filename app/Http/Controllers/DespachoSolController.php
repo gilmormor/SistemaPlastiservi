@@ -951,7 +951,7 @@ class DespachoSolController extends Controller
             /*****************PRUEBA PARA DEVOLVER SOLICITUD CUANDO HAY YA ORDENES DE UNA SOLICITUD DE DESPACHO */
             /***** 15/07/2022 */
             /***** ESTO DEBO ACTIVARLO CUANDO PASE POR LO MENOS 1 SEMANA PARA QUE TODAS SOLDESP Y ORDDESP HAYAN SIDO PROCESADAS */
-            /*
+            
             $aux_stacrearmovinv = 0;
             foreach ($despachosol->despachosoldets as $despachosoldet) {
                 $aux_cant = 0;
@@ -1068,10 +1068,11 @@ class DespachoSolController extends Controller
                 }
 
             }
-            */
+            
             /*****************PRUEBA PARA DEVOLVER SOLICITUD CUANDO HAY YA ORDENES DE UNA SOLICITUD DE DESPACHO */
             /***** 15/07/2022 */
 
+            /*
             $aux_stacrearmovinv = 0;
             $cantkg  = 0;
             foreach ($despachosol->despachosoldets as $despachosoldet) {
@@ -1098,16 +1099,6 @@ class DespachoSolController extends Controller
                     $DespachoOrd = DespachoOrd::findOrFail($despachoorddet->despachoord_id);
                     if(!$DespachoOrd->despachoordanul ){
                         foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
-                            /* SOLO DEBO BUSCAR EL MOVIMIENTO DE PICKING DEL PRODUCTO ENTRADAS Y SALIDAS
-                            $despachoorddet_invbodegaproducto_id = $despachoorddet_invbodegaproducto->id;
-                            foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
-                                //SUMO SOLO EL MOVIMIENTO DE LA BODEGA DE SOL DESPACHO
-                                if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->nomabre == "SolDe"){
-                                    $aux_cantBodSD += $invmovdet_bodorddesp->invmovdet->cant;
-                                    $DespachoOrd_id = $DespachoOrd->id;
-                                }
-                            }
-                            */
                             //SI AUN NO HAY MOVIMIENTO DE INVENTARIO RESTA LOS QUE ESTA EN despachoorddet_invbodegaproducto 
                             //ESTO ES POR SI ACASO HAY UNA ORDEN DE DESPACHO SIN GUARDAR EN LA PANTALLA INDEX DE ORDEN DE DESPACHO
                             if(is_null($DespachoOrd->aprguiadesp)){
@@ -1115,9 +1106,6 @@ class DespachoSolController extends Controller
                                 $cantkg += ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $despachoorddet_invbodegaproducto->cant;
                                 $DespachoOrd_id = $DespachoOrd->id;
                             }
-                            /*
-                            if (sizeof($despachoorddet_invbodegaproducto->invmovdet_bodorddesps) == 0){
-                            }*/
                         }
                     }
                 }
@@ -1180,14 +1168,6 @@ class DespachoSolController extends Controller
                     $array_invmovdet["cantkg"] = $cantkg;
                     $array_invmovdet["invmov_id"] = $invmovEntDesp->id;
                     $invmovdet = InvMovDet::create($array_invmovdet);
-                    /*
-                    if(count($despachosoldet->despachoorddets)>0 and isset($despachoorddet_invbodegaproducto_id)){
-                        $invmovdet_bodorddesp = InvMovDet_BodOrdDesp::create([
-                            'invmovdet_id' => $invmovdet->id,
-                            'despachoorddet_invbodegaproducto_id' => $despachoorddet_invbodegaproducto_id
-                        ]);
-    
-                    }*/
 
                     $array_invmovdet = array();
                     $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto_idSalida;
@@ -1209,7 +1189,7 @@ class DespachoSolController extends Controller
                     ]);
                 }
             }
-
+            */
             
             /************************************* */
             foreach($despachosol->despachosoldets as $despchosoldet){
