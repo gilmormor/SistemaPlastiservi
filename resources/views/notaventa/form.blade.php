@@ -376,7 +376,7 @@
         <h3 class="box-title">Detalle</h3>
         @if(($aux_sta==1 or $aux_sta==2) and $aux_concot == false) <!--Estatus en 0 si puede incluir -->
             <div class="box-tools pull-right">
-                <a id="botonNewProd" name="botonNewProd" href="#" class="btn btn-block btn-success btn-sm">
+                <a id="botonNewProd" name="botonNewProd" class="btn btn-block btn-success btn-sm">
                     <i class="fa fa-fw fa-plus-circle"></i> Nuevo Producto
                 </a>
             </div>                    

@@ -17,6 +17,7 @@ use App\Models\DteDet_DespachoOrdDet;
 use App\Models\DteDte;
 use App\Models\DteFac;
 use App\Models\DteGuiaUsada;
+use App\Models\DteOC;
 use App\Models\Empresa;
 use App\Models\Foliocontrol;
 use App\Models\Giro;
@@ -85,12 +86,13 @@ class DteFacturaController extends Controller
         foreach ($aux_arrayselgd as &$valor) {
             $indice = array_search($valor,$request->dte_idGD,false);
             $dteguiadesp = Dte::findOrFail($valor);
+            /*
             if($request->updated_atGD[$indice] != $dteguiadesp->updated_at){
                 return redirect('dtefactura')->with([
                     'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
                     'tipo_alert' => 'alert-error'
                 ]);
-            }
+            }*/
             $dteguiadesp->updated_at = date("Y-m-d H:i:s");
             $dteguiadesp->save();
         }
@@ -128,6 +130,15 @@ class DteFacturaController extends Controller
             //$dtedte->save();
 
             $dteguiadesp = Dte::findOrFail($dter_id); //BUSCO LA GUIA ORIGEN
+            if($dteguiadesp->dteoc){
+                $dteoc = new DteOC();
+                $dteoc->dte_id = "";
+                $dteoc->oc_id = $dteguiadesp->dteoc->oc_id;
+                $dteoc->oc_folder = $dteguiadesp->dteoc->oc_folder;
+                $dteoc->oc_file = $dteguiadesp->dteoc->oc_file;
+                $dte->dteocs[] = $dteoc;
+                //$dteoc->save();
+            }
             foreach($dteguiadesp->dtedets as $dtedetguia){ //RECORRO EL DETALLE DE LA GUIA ORIGEN
                 $aux_nrolindet++;
                 $dtedet = new DteDet();
@@ -145,9 +156,10 @@ class DteFacturaController extends Controller
                 $dtedet->montoitem = $dtedetguia->montoitem;
                 $dtedet->obsdet = $dtedetguia->obsdet;
                 $dtedet->itemkg = $dtedetguia->itemkg;
-
-                $dtedet->despachoorddet_id = $dtedetguia->dtedet_despachoorddet->despachoorddet_id;
-                $dtedet->notaventadetalle_id = $dtedetguia->dtedet_despachoorddet->notaventadetalle_id;
+                if($dtedetguia->dtedet_despachoorddet){
+                    $dtedet->despachoorddet_id = $dtedetguia->dtedet_despachoorddet->despachoorddet_id;
+                    $dtedet->notaventadetalle_id = $dtedetguia->dtedet_despachoorddet->notaventadetalle_id;    
+                }
                 $dte->dtedets[] = $dtedet;
                 //$dtedet->save();
 
@@ -219,19 +231,25 @@ class DteFacturaController extends Controller
             $dteNew = Dte::create($dte->toArray());
             foreach ($dte->dtedets as $dtedet) {
                 $dtedet->dte_id = $dteNew->id;
-                $despachoorddet_id = $dtedet->despachoorddet_id;
-                $notaventadetalle_id = $dtedet->notaventadetalle_id;
+                if($dtedet->despachoorddet_id){
+                    $despachoorddet_id = $dtedet->despachoorddet_id;
+                    $notaventadetalle_id = $dtedet->notaventadetalle_id;    
+                }
                 $aux_dtedet = $dtedet->toArray();
-                unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
-                unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
+                if($dtedet->despachoorddet_id){
+                    unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INSERTAR A DteDet
+                    unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INSERTAR A DteDet    
+                }
     
                 $dtedetNew = DteDet::create($aux_dtedet);
                 $dtedet_id = $dtedetNew->id;
-                $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
-                $dtedet_despachoorddet->dtedet_id = $dtedet_id;
-                $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
-                $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
-                $dtedet_despachoorddet->save();
+                if($dtedet->despachoorddet_id){
+                    $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
+                    $dtedet_despachoorddet->dtedet_id = $dtedet_id;
+                    $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
+                    $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
+                    $dtedet_despachoorddet->save();    
+                }
             }
 
             $dtefac->dte_id = $dteNew->id;
@@ -244,7 +262,7 @@ class DteFacturaController extends Controller
                 $dtedteNew->dtefac_id = $dteNew->id; 
                 $dtedteNew->save();
                 //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS 
-                if($dtedte->dter->foliocontrol_id == 2){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2
+                if($dtedte->dter->foliocontrol_id == 2 and $dtedte->dteguiadesp->despachoord_id){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2 Y LA GUIA DESP TENGA ORDEN DE DESPACHO
                     //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA 
                     DespachoOrd::guardarfactdesp($dtedteNew);
                 }
@@ -588,9 +606,9 @@ function consultaindex($dte_id){
     ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
     INNER JOIN dteguiadesp
     ON dtedte.dter_id = dteguiadesp.dte_id
-    INNER JOIN despachoord
+    LEFT JOIN despachoord
     ON despachoord.id = dteguiadesp.despachoord_id
-    INNER JOIN notaventa
+    LEFT JOIN notaventa
     ON notaventa.id = despachoord.notaventa_id
     INNER JOIN cliente
     ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)

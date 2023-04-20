@@ -68,6 +68,12 @@ class Dte extends Model
         return $this->hasMany(DteOC::class,'dte_id');
     }
 
+    //RELACION DE UNO A UNO DteOC
+    public function dteoc()
+    {
+        return $this->hasOne(DteOC::class,'dte_id');
+    }
+    
     
     //Relacion inversa a Usuario
     public function usuario()
@@ -383,7 +389,7 @@ class Dte extends Model
         if(empty($request->comuna_id)){
             $aux_condcomuna_id = " true";
         }else{
-            $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
+            $aux_condcomuna_id = "dte.comuna_id='$request->comuna_id'";
         }
         /*
         if(empty($request->dtenotnull)){
@@ -397,7 +403,11 @@ class Dte extends Model
         }else{
             $aux_conddteguiausada = "dte.id NOT IN (SELECT dteguiausada.dte_id FROM dteguiausada WHERE ISNULL(dteguiausada.deleted_at))";
         }
-
+        if(!isset($request->indtraslado) or empty($request->indtraslado)){
+            $aux_condindtraslado = " true";
+        }else{
+            $aux_condindtraslado = "dte.indtraslado = $request->indtraslado";
+        }
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
@@ -412,15 +422,15 @@ class Dte extends Model
         dte.updated_at,'' as rutacrear
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
-        INNER JOIN despachoord
-        ON dteguiadesp.despachoord_id = despachoord.id AND ISNULL(dte.deleted_at) AND ISNULL(despachoord.deleted_at)
-        INNER JOIN notaventa
+        LEFT JOIN despachoord
+        ON dteguiadesp.despachoord_id = despachoord.id AND ISNULL(despachoord.deleted_at)
+        LEFT JOIN notaventa
         ON notaventa.id = dteguiadesp.notaventa_id and isnull(notaventa.deleted_at)
         INNER JOIN cliente
-        ON cliente.id = notaventa.cliente_id AND isnull(cliente.deleted_at)
-        INNER JOIN comuna
-        ON comuna.id = despachoord.comunaentrega_id AND isnull(comuna.deleted_at)
-        INNER JOIN tipoentrega
+        ON cliente.id = dte.cliente_id AND isnull(cliente.deleted_at)
+        LEFT JOIN comuna
+        ON comuna.id = dte.comuna_id AND isnull(comuna.deleted_at)
+        LEFT JOIN tipoentrega
         ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
         LEFT JOIN clientebloqueado
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
@@ -438,9 +448,10 @@ class Dte extends Model
         AND $aux_conddteguiausada
         AND dte.foliocontrol_id = 2
         AND dte.statusgen = 1
+        AND $aux_condindtraslado
         AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
         order BY dte.nrodocto;";
-
+        //dd($sql);
         //AND $aux_conddtenotnull
 
 
@@ -554,21 +565,21 @@ class Dte extends Model
         dte.vendedor_id
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
-        INNER JOIN despachoord
+        LEFT JOIN despachoord
         ON dteguiadesp.despachoord_id = despachoord.id AND ISNULL(despachoord.deleted_at)
-        INNER JOIN notaventa
+        LEFT JOIN notaventa
         ON notaventa.id = dteguiadesp.notaventa_id and isnull(notaventa.deleted_at)
         INNER JOIN cliente
-        ON cliente.id = notaventa.cliente_id AND isnull(cliente.deleted_at)
+        ON cliente.id = dte.cliente_id AND isnull(cliente.deleted_at)
         INNER JOIN comuna
-        ON comuna.id = despachoord.comunaentrega_id AND isnull(comuna.deleted_at)
-        INNER JOIN tipoentrega
+        ON comuna.id = dte.comuna_id AND isnull(comuna.deleted_at)
+        LEFT JOIN tipoentrega
         ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
         INNER JOIN dtedet
         ON dtedet.dte_id = dte.id AND ISNULL(dtedet.deleted_at)
-        INNER JOIN dtedet_despachoorddet
+        LEFT JOIN dtedet_despachoorddet
         ON dtedet_despachoorddet.dtedet_id = dtedet.id AND ISNULL(dtedet_despachoorddet.deleted_at)
-        INNER JOIN notaventadetalle
+        LEFT JOIN notaventadetalle
         ON notaventadetalle.id = dtedet_despachoorddet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
         LEFT JOIN clientebloqueado
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
@@ -2399,12 +2410,14 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             $array_ocs = []; //ARRAY ORDENES DE COMPPRA
             $array_GDs = []; //ARRAY GUIAS DE DESPACHO
             foreach ($dte->dtedtes as $dtedte) {
-                $oc_id = $dtedte->dteguiadesp->notaventa->oc_id;
-                $array_ocs [$oc_id] = [
-                    "oc_id" => $oc_id,
-                    "fecha" => date("Y-m-d", strtotime($dtedte->dteguiadesp->notaventa->fechahora))
-                    
-                ];
+                if($dtedte->dteguiadesp->notaventa){
+                    $oc_id = $dtedte->dteguiadesp->notaventa->oc_id;
+                    $array_ocs [$oc_id] = [
+                        "oc_id" => $oc_id,
+                        "fecha" => date("Y-m-d", strtotime($dtedte->dteguiadesp->notaventa->fechahora))
+                        
+                    ];
+                }
                 $array_GDs[] = [
                     "nrodocto" => $dtedte->dter->nrodocto,
                     "fchemis" => date("Y-m-d", strtotime($dtedte->dter->fchemis))

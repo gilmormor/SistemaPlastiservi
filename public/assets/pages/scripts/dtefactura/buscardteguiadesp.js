@@ -90,21 +90,32 @@ function configTablaDteGuiaDesp(){
                     "</a>";
                 $('td', row).eq(3).html(aux_text);
             }
-            aux_text = 
+            if(data.notaventa_id === null){
+                aux_text = "";
+            }else{
+                aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1," + aux_venmodant + ")'>" +
                     data.notaventa_id +
                 "</a>";
+            }
             $('td', row).eq(4).html(aux_text);
-            aux_text = 
+            if(data.despachosol_id === null){
+                aux_text = "";
+            }else{
+                aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1," + aux_venmodant + ")'>" + 
                     data.despachosol_id + 
                 "</a>";
+            }
             $('td', row).eq(5).html(aux_text);
-
-            aux_text = 
+            if(data.despachoord_id === null){
+                aux_text = "";
+            }else{
+                aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden despacho: " + data.despachoord_id + "' onclick='genpdfOD(" + data.despachoord_id + ",1," + aux_venmodant + ")'>"+
                     + data.despachoord_id +
                 "</a>";
+            }
             $('td', row).eq(6).html(aux_text);
 
             aux_text = 
@@ -184,6 +195,7 @@ function datosdteguiadesp(dteguiausada = ""){
         sucursal_id : $("#sucursal_id").val(),
         dtenotnull  : 1, //Estatus que se envia a la consulta para mostrar o no los dte anulados (1=no se trae los anulados ""=empty se trae todo sin importar que esta anulado)
         dteguiausada : dteguiausada,
+        indtraslado  : 1,
         _token      : $('input[name=_token]').val()
     };
 
@@ -191,7 +203,8 @@ function datosdteguiadesp(dteguiausada = ""){
     "&cliente_id="+data1.cliente_id +
     "&sucursal_id="+data1.sucursal_id +
     "&dtenotnull="+data1.dtenotnull +
-    "&dteguiausada="+data1.dteguiausada
+    "&dteguiausada="+data1.dteguiausada +
+    "&indtraslado="+data1.indtraslado
 
     var data = {
         data1 : data1,
