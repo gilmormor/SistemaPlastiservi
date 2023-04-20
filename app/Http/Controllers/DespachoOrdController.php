@@ -1519,17 +1519,21 @@ function llenarArrayBodegasPickingSolDesp($detalles){
     foreach ($detalles as $detalle) {
         foreach ($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
             $aux_stock = 0;
+            //dd($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps);
             foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
                 $aux_stock += $invmovdet_bodsoldesp->invmovdet["cant"];
             }
+            //dd($aux_stock);
             //dd($detalle->despachoorddets);
             foreach($detalle->despachoorddets as $despachoorddet){
-                //dd($despachoorddet);
+                //dd($despachoorddet->despachoorddet_invbodegaproductos);
 
                 if($despachoorddet->despachoord->despachoordanul == null){
                     foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
                         if($despachoorddet_invbodegaproducto->invbodegaproducto->invbodega->tipo == 1){
+                            if($despachoorddet_invbodegaproducto->cant > 0){
                                 $aux_stock -= $despachoorddet_invbodegaproducto->cant *-1;
+                            }
                         }
                     }
                 }
