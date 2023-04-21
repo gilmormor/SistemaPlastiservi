@@ -54,6 +54,7 @@ class Pesaje extends Model
     }
 
     public static function pesajeDet($request){
+        //dd($request);
         //$aux_annomes = CategoriaGrupoValMes::annomes($request->mesanno);
         if(!isset($request->fechah) or empty($request->fechah)){
             $aux_condFecha = "true";
@@ -73,6 +74,11 @@ class Pesaje extends Model
         }else{
             $aux_sucursal_idCond = "pesaje.sucursal_id = $request->sucursal_id";
         }
+        if(!isset($request->categoriaprodgrupo_id) or empty($request->categoriaprodgrupo_id) or ($request->categoriaprodgrupo_id == "")){
+            $aux_categoriaprodgrupo_idCond = "true";
+        }else{
+            $aux_categoriaprodgrupo_idCond = "categoriaprod.categoriaprodgrupo_id = $request->categoriaprodgrupo_id";
+        }
 
         if(!isset($request->producto_id) or empty($request->producto_id)){
             $aux_producto_idCodn = "true";
@@ -90,6 +96,10 @@ class Pesaje extends Model
                 $aux_groupby = "GROUP BY categoriaprodgrupo.id";
                 $aux_orderby = "ORDER BY categoriaprodgrupo.id ASC";
             }
+        }
+        if($request->agruFecha == 1){
+            $aux_groupby = "GROUP BY pesaje.fechahora";
+            $aux_orderby = "ORDER BY pesaje.fechahora ASC";
         }
 
         $sql = "SELECT pesaje.*,pesajedet.*,producto.nombre AS producto_nombre,producto.diametro,claseprod.cla_nombre,
@@ -121,6 +131,7 @@ class Pesaje extends Model
         WHERE $aux_sucursal_idCond
         AND $aux_producto_idCodn
         AND $aux_condFecha
+        AND $aux_categoriaprodgrupo_idCond
         $aux_groupby
         $aux_orderby;";
         //dd($sql);

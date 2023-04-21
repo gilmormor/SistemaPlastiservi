@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
+use App\Models\CategoriaProdGrupo;
 use App\Models\Empresa;
 use App\Models\InvBodega;
 use App\Models\InvMov;
@@ -29,6 +30,8 @@ class ReportPesajeController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
+        $tablashtml['categoriaprodgrupos'] = CategoriaProdGrupo::orderBy('id')->get();
+        //dd($tablashtml['categoriaprodgrupo']);
         $tablashtml['fechaServ'] = [
             'fecha1erDiaMes' => date("01/m/Y"),
             'fechaAct' => date("d/m/Y"),
@@ -55,7 +58,9 @@ class ReportPesajeController extends Controller
     public function exportPdf(Request $request)
     {
         can('listar-reporte-pesaje');
+        //dd($request->agruFecha);
         $datas = Pesaje::pesajeDet($request);
+        //dd($datas);
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
@@ -67,17 +72,34 @@ class ReportPesajeController extends Controller
         if($datas){
             $sucursal = Sucursal::findOrFail($request->sucursal_id);
             $request->request->add(['sucursal_nombre' => $sucursal->nombre]);
+            
+            if(!isset($request->categoriaprodgrupo_id) or empty($request->categoriaprodgrupo_id) or ($request->categoriaprodgrupo_id == "")){
+                $request->merge(['categoriaprodgrupo_nombre' => "Todos"]);
+            }else{
+                $categoriaprodgrupo = CategoriaProdGrupo::findOrFail($request->categoriaprodgrupo_id);
+                $request->merge(['categoriaprodgrupo_nombre' => $categoriaprodgrupo->nombre]);
+            }
+            //dd($request);
             if(env('APP_DEBUG')){
-                return view('reportpesaje.listado', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
+                if($request->agruFecha == "0"){
+                    return view('reportpesaje.listado', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
+                }else{
+                    return view('reportpesaje.listadofecha', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
+                }
+
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-            $pdf = PDF::loadView('reportpesaje.listado', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
+            if($request->agruFecha == "0"){
+                $pdf = PDF::loadView('reportpesaje.listado', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
+            }else{
+                $pdf = PDF::loadView('reportpesaje.listadofecha', compact('datas','empresa','usuario','request','sucursal','totalesPeriodo'));
+            }
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("ReporteStockBodegaPicking.pdf");
+            return $pdf->stream("Reportepesaje.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 

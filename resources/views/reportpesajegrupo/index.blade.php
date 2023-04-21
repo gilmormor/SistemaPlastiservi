@@ -21,7 +21,7 @@ Pesaje
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Pesaje</h3>
+                <h3 class="box-title">Pesaje total por Grupo</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>
@@ -111,12 +111,8 @@ Pesaje
                     <thead>
                         <tr>
                             <th>Grupo</th>
-                            <th class="width30 tooltipsC" title="Peso Carro">Tara</th>
-                            <th class="width60" style="text-align:right;">Cant</th>
-                            <th class="width70 tooltipsC" title="Peso Balanza" style="text-align:right;">PesoBal</th>
-                            <th class="width20 tooltipsC" title="Peso promedio Unitario Balanza" style="text-align:right;">PUB</th>
-                            <th class="width70 tooltipsC" title="Peso Total Producto en Balanza" style="text-align:right;">PProducto</th>
-                            <th class="width70 tooltipsC" title="Peso Total Norma" style="text-align:right;">PTNor</th>
+                            <th class="width70 tooltipsC" title="Peso Total Norma" style="text-align:right;">Nominal</th>
+                            <th class="width70 tooltipsC" title="Peso Total Producto en Balanza" style="text-align:right;">Peso Tubo</th>
                             <th class="width70 tooltipsC" title="Diferencia Kg" style="text-align:right;">DifKg</th>
                             <th class="width70 tooltipsC" title="Var %" style="text-align:right;">Var%</th>
                         </tr>
@@ -128,12 +124,8 @@ Pesaje
                         </tr>
                         <tr>
                             <th style='text-align:right' id='Total' name='Total'>Total</th>
-                            <th id='subtotalTara' name='subtotalTara' style='text-align:right'>0</th>
-                            <th></th>
-                            <th id='subtotalPesoBal' name='subtotalPesoBal' style='text-align:right'>0</th>
-                            <th></th>
-                            <th id='subtotalPesoTotalProdBal' name='subtotalPesoTotalProdBal' style='text-align:right'>0</th>
                             <th id='subtotalPesoTotalNorma' name='subtotalPesoTotalNorma' style='text-align:right'>0</th>
+                            <th id='subtotalPesoTotalProdBal' name='subtotalPesoTotalProdBal' style='text-align:right'>0</th>
                             <th id='subtotalDifKg' name='subtotalDifKg' style='text-align:right'>0</th>
                             <th id='subtotalVar' name='subtotalVar' style='text-align:right'>0</th>                    
                         </tr>

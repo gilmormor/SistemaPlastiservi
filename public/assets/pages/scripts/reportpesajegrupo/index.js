@@ -36,12 +36,8 @@ $(document).ready(function () {
             ],
             'columns'     : [
                 {data: 'categoriaprodgrupo_nombre'},
-                {data: 'sumtara'},
-                {data: 'cant'},
-                {data: 'sumpesobaltotal'},
-                {data: 'pesopromunibal'},
-                {data: 'pesototalprodbal'},
                 {data: 'pesototalnorma'},
+                {data: 'pesototalprodbal'},
                 {data: 'difkg'},
                 {data: 'difkg'}
             ],
@@ -52,46 +48,25 @@ $(document).ready(function () {
                 $('td', row).eq(0).attr('style','text-align:left');
 
                 $('td', row).eq(1).attr('style','text-align:right');
-                $('td', row).eq(1).attr('data-search',data.sumtara);
-                $('td', row).eq(1).attr('data-order',data.sumtara);
-                $('td', row).eq(1).html(MASKLA(data.sumtara,2));
+                $('td', row).eq(1).attr('data-search',data.pesototalprodbal);
+                $('td', row).eq(1).attr('data-order',data.pesototalprodbal);
+                $('td', row).eq(1).html(MASKLA(data.pesototalprodbal,2));
 
                 $('td', row).eq(2).attr('style','text-align:right');
-                $('td', row).eq(2).attr('data-search',data.cant);
-                $('td', row).eq(2).attr('data-order',data.cant);
-                $('td', row).eq(2).html(data.cant,2);
-
+                $('td', row).eq(2).attr('data-search',data.pesototalnorma);
+                $('td', row).eq(2).attr('data-order',data.pesototalnorma);
+                $('td', row).eq(2).html(MASKLA(data.pesototalnorma,2));
 
                 $('td', row).eq(3).attr('style','text-align:right');
-                $('td', row).eq(3).attr('data-search',data.sumpesobaltotal);
-                $('td', row).eq(3).attr('data-order',data.sumpesobaltotal);
-                $('td', row).eq(3).html(MASKLA(data.sumpesobaltotal,2));
-
-                $('td', row).eq(4).attr('style','text-align:right');
-                $('td', row).eq(4).attr('data-search',data.pesopromunibal);
-                $('td', row).eq(4).attr('data-order',data.pesopromunibal);
-                $('td', row).eq(4).html(MASKLA(data.pesopromunibal,2));
-
-                $('td', row).eq(5).attr('style','text-align:right');
-                $('td', row).eq(5).attr('data-search',data.pesototalprodbal);
-                $('td', row).eq(5).attr('data-order',data.pesototalprodbal);
-                $('td', row).eq(5).html(MASKLA(data.pesototalprodbal,2));
-
-                $('td', row).eq(6).attr('style','text-align:right');
-                $('td', row).eq(6).attr('data-search',data.pesototalnorma);
-                $('td', row).eq(6).attr('data-order',data.pesototalnorma);
-                $('td', row).eq(6).html(MASKLA(data.pesototalnorma,2));
-
-                $('td', row).eq(7).attr('style','text-align:right');
-                $('td', row).eq(7).attr('data-search',data.difkg);
-                $('td', row).eq(7).attr('data-order',data.difkg);
-                $('td', row).eq(7).html(MASKLA(data.difkg,2));
+                $('td', row).eq(3).attr('data-search',data.difkg);
+                $('td', row).eq(3).attr('data-order',data.difkg);
+                $('td', row).eq(3).html(MASKLA(data.difkg,2));
 
                 aux_var = (data.difkg / data.pesototalnorma) * 100;
-                $('td', row).eq(8).attr('style','text-align:right');
-                $('td', row).eq(8).attr('data-search',aux_var);
-                $('td', row).eq(8).attr('data-order',aux_var);
-                $('td', row).eq(8).html(MASKLA(aux_var.toFixed(5),5));
+                $('td', row).eq(4).attr('style','text-align:right');
+                $('td', row).eq(4).attr('data-search',aux_var);
+                $('td', row).eq(4).attr('data-order',aux_var);
+                $('td', row).eq(4).html(MASKLA(aux_var.toFixed(5),5));
             }
         });
     }
