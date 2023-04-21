@@ -84,11 +84,11 @@ class CategoriaProdController extends Controller
         $sucursales = Sucursal::orderBy('id')->pluck('nombre', 'id')->toArray();
         $areaproduccions = AreaProduccion::orderBy('id')->pluck('nombre', 'id')->toArray();
         $unidadmedidas = UnidadMedida::orderBy('id')->pluck('descripcion', 'id')->toArray();
-        $categoriaprodgrupo = CategoriaProdGrupo::orderBy('id')->pluck('nombre', 'id')->toArray();
+        $categoriaprodgrupos = CategoriaProdGrupo::orderBy('id')->pluck('nombre', 'id')->toArray();
         $aux_sta=1;
         $aux_cont=0;
         $aux_contG=0;
-        return view('categoriaprod.crear',compact('sucursales','aux_sta','aux_cont','areaproduccions','unidadmedidas','aux_contG','categoriaprodgrupo'));
+        return view('categoriaprod.crear',compact('sucursales','aux_sta','aux_cont','areaproduccions','unidadmedidas','aux_contG','categoriaprodgrupos'));
     }
 
     /**
