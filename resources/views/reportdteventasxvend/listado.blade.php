@@ -23,7 +23,7 @@
 				<div class="round">
 					<span class="h3">Ventas por Vendedor</span>
 					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
-					<p>Centro Economico: {{$request->sucursal_nombre}}</p>
+					<p>Sucursal: {{$request->sucursal_nombre}}</p>
 					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
 				</div>
 			</td>

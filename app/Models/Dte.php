@@ -275,6 +275,11 @@ class Dte extends Model
         dteoc.oc_id,dteoc.oc_file,comuna.nombre as comunanombre,
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,dtedte.dter_id,
         dteguiadesp.notaventa_id,despachoord.fechaestdesp,dteguiadesp.despachoord_id,despachoord.despachosol_id,
+        (SELECT dte1.nrodocto
+        FROM dtedte as dtedte1 INNER JOIN dte as dte1
+        ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+        WHERE dtedte1.dter_id = dte.id
+        AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
         FROM dte INNER JOIN dtedet
         ON dte.id=dtedet.dte_id and isnull(dte.deleted_at) and isnull(dtedet.deleted_at)
@@ -282,13 +287,13 @@ class Dte extends Model
         ON dte.id = dteguiadesp.dte_id and isnull(dteguiadesp.deleted_at)
         LEFT JOIN notaventa
         ON notaventa.id=dteguiadesp.notaventa_id and isnull(notaventa.deleted_at)
-        INNER JOIN dtedet_despachoorddet
+        LEFT JOIN dtedet_despachoorddet
         ON dtedet_despachoorddet.dtedet_id = dtedet.id and isnull(dtedet_despachoorddet.deleted_at)
-        INNER JOIN notaventadetalle
+        LEFT JOIN notaventadetalle
         ON notaventadetalle.id=dtedet_despachoorddet.notaventadetalle_id and isnull(notaventadetalle.deleted_at)
-        INNER JOIN despachoord
+        LEFT JOIN despachoord
         ON despachoord.id=dteguiadesp.despachoord_id and isnull(despachoord.deleted_at)
-        INNER JOIN despachoorddet
+        LEFT JOIN despachoorddet
         ON despachoord.id=despachoorddet.despachoord_id and isnull(despachoorddet.deleted_at)
         INNER JOIN producto
         ON dtedet.producto_id=producto.id and isnull(producto.deleted_at)
@@ -297,7 +302,7 @@ class Dte extends Model
         INNER JOIN areaproduccion
         ON areaproduccion.id=categoriaprod.areaproduccion_id and isnull(areaproduccion.deleted_at)
         INNER JOIN cliente
-        ON cliente.id=notaventa.cliente_id and isnull(cliente.deleted_at)
+        ON cliente.id=dte.cliente_id and isnull(cliente.deleted_at)
         INNER JOIN comuna
         ON comuna.id=dteguiadesp.comunaentrega_id and isnull(comuna.deleted_at)
         INNER JOIN tipoentrega
@@ -323,7 +328,7 @@ class Dte extends Model
         and $aux_condsucurArray
         GROUP BY dte.id
         ORDER BY dte.id desc;";
-
+        //dd($sql);
         $datas = DB::select($sql);
         return $datas;
     }

@@ -50,7 +50,7 @@ class ReportDTEVentasxVendController extends Controller
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
         if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
-            $request->merge(['sucursal_nombre' => "Todas"]);
+            $request->merge(['sucursal_nombre' => "Todos"]);
         }else{
             $sucursal = Sucursal::findOrFail($request->sucursal_id);
             $aux_sucursalNombre = $sucursal->nombre;
