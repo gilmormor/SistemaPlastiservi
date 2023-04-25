@@ -902,7 +902,7 @@ function llenarArrayBodegasPickingSolDesp($detalles){
                 if($despachoorddet->despachoord->despachoordanul == null){
                     foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
                         if($despachoorddet_invbodegaproducto->invbodegaproducto->invbodega->tipo == 1){
-                            if($despachoorddet_invbodegaproducto->cant > 0){
+                            if(($despachoorddet_invbodegaproducto->cant *-1) > 0){
                                 $aux_stock -= $despachoorddet_invbodegaproducto->cant *-1;
                             }
                         }

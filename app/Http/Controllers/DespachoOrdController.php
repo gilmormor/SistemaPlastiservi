@@ -1517,6 +1517,7 @@ function updatenumguia($despachoord,$request){
 function llenarArrayBodegasPickingSolDesp($detalles){
     $arrayBodegasPicking = [];
     foreach ($detalles as $detalle) {
+        //dd($detalle);
         foreach ($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
             $aux_stock = 0;
             //dd($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps);
@@ -1526,13 +1527,15 @@ function llenarArrayBodegasPickingSolDesp($detalles){
             //dd($aux_stock);
             //dd($detalle->despachoorddets);
             foreach($detalle->despachoorddets as $despachoorddet){
-                //dd($despachoorddet->despachoorddet_invbodegaproductos);
+                //dd($despachoorddet);
 
                 if($despachoorddet->despachoord->despachoordanul == null){
+                    //dd($despachoorddet->despachoorddet_invbodegaproductos);
                     foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
                         if($despachoorddet_invbodegaproducto->invbodegaproducto->invbodega->tipo == 1){
-                            if($despachoorddet_invbodegaproducto->cant > 0){
-                                $aux_stock -= $despachoorddet_invbodegaproducto->cant *-1;
+                            //dd($despachoorddet_invbodegaproducto);
+                            if(($despachoorddet_invbodegaproducto->cant * -1) > 0){
+                                $aux_stock -= $despachoorddet_invbodegaproducto->cant * -1;
                             }
                         }
                     }
