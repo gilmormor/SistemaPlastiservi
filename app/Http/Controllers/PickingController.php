@@ -901,11 +901,18 @@ function llenarArrayBodegasPickingSolDesp($detalles){
 
                 if($despachoorddet->despachoord->despachoordanul == null){
                     foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){
+                        foreach($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp){
+                            if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->tipo == 1){
+                                $aux_stock += $invmovdet_bodorddesp->invmovdet->cant;
+                            }
+                        }
+                        /*
                         if($despachoorddet_invbodegaproducto->invbodegaproducto->invbodega->tipo == 1){
                             if(($despachoorddet_invbodegaproducto->cant *-1) > 0){
                                 $aux_stock -= $despachoorddet_invbodegaproducto->cant *-1;
                             }
                         }
+                        */
                     }
                 }
 
