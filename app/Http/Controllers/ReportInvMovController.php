@@ -101,6 +101,7 @@ function consultainvmov($request){
         $fecha = date_create_from_format('d/m/Y', $request->fechah);
         $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
         $aux_condFecha = "invmov.fechahora>='$fechad' and invmov.fechahora<='$fechah'";
+        $aux_condannomes = " true "; //SI LAS FECHAS CONTIENEN VALOR ELIMINO LA VALIDACION DE BUSQUEDA POR MES AÑO
     }
     $aux_condareaproduccion_id = " true";
     if(!empty($request->areaproduccion_id)){
