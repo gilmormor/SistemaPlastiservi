@@ -1648,8 +1648,8 @@ function llenarArrayBodegasPickingOrdDesp($detalles){
                             if($despachoorddet_invbodegaproducto->invbodegaproducto->invbodega->tipo == 1){
                                 $aux_stock -= ($despachoorddet_invbodegaproducto->cant) * -1 ;
                             }
-                        }
                         */
+                        }
                         //$aux_stock += $despachoorddet_invbodegaproducto->cantdesp * -1;
                     }
                 }
