@@ -63,8 +63,8 @@ class InvEntSalController extends Controller
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
-
-        return view('inventsal.crear',compact('invmovtipos','productos','tablas'));
+        $selecmultprod = 0;
+        return view('inventsal.crear',compact('invmovtipos','productos','tablas','selecmultprod'));
     }
 
     /**
@@ -152,7 +152,8 @@ class InvEntSalController extends Controller
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
-        return view('inventsal.editar', compact('data','invmovtipos','productos','tablas'));
+        $selecmultprod = 0;
+        return view('inventsal.editar', compact('data','invmovtipos','productos','tablas','selecmultprod'));
     }
 
     /**

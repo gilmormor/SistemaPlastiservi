@@ -227,4 +227,4 @@
 -->
 
 @include('generales.inventsalprod')
-@include('generales.buscarproducto')
+@include('generales.buscarproductobdtemp')
