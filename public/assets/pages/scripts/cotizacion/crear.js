@@ -694,7 +694,7 @@ $("#rut").blur(function(){
 												swal({
 													title: 'Cliente no existe.',
 													text: "Aceptar para crear cliente temporal",
-													icon: 'error',
+													icon: 'warning',
 													buttons: {
 														confirm: "Aceptar",
 														cancel: "Cancelar"

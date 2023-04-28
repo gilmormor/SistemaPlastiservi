@@ -69,7 +69,7 @@ $("#rut").blur(function(){
                     swal({
                         title: 'Cliente no existe.',
                         text: "Presione F2 para buscar",
-                        icon: 'error',
+                        icon: 'warning',
                         buttons: {
                             confirm: "Aceptar"
                         },

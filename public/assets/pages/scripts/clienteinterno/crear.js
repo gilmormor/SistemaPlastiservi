@@ -296,7 +296,7 @@ $("#rut").blur(function(){
 			swal({
 				title: 'Dígito verificador no es Válido.',
 				text: "",
-				icon: 'error',
+				icon: 'warning',
 				buttons: {
 					confirm: "Aceptar"
 				},
