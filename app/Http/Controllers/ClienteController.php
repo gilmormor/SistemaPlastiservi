@@ -401,13 +401,16 @@ class ClienteController extends Controller
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
             //dd($sucurArray);
-            $clientedirecs = Cliente::where('rut', $request->rut)
+            $clientedirecs = Cliente::where('cliente.rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
                     ->leftjoin('clientebloqueado', function ($join) {
                         $join->on('cliente.id', '=', 'clientebloqueado.cliente_id')
                         ->whereNull('clientebloqueado.deleted_at');
                     })
+                    ->leftjoin("cliente_vendedor","cliente.id","cliente_vendedor.cliente_id")
+                    ->leftjoin("vendedor","cliente_vendedor.vendedor_id","vendedor.id")
+                    ->leftjoin("persona","vendedor.persona_id","persona.id")
                     ->whereNull('clientebloqueado.deleted_at')
                     ->select([
                                 'cliente.id',
@@ -426,8 +429,10 @@ class ClienteController extends Controller
                                 'cliente.comunap_id',
                                 'clientedirec.id as direc_id',
                                 'clientedirec.direcciondetalle',
-                                'clientebloqueado.descripcion'
-                            ]);
+                                'clientebloqueado.descripcion',
+                                DB::raw('GROUP_CONCAT(DISTINCT concat(persona.nombre, " " ,persona.apellido)) AS vendedor_nombre')
+                            ])
+                    ->groupBy('cliente.id');
             //dd($clientedirecs->clientebloqueado->cliente_id);
             return response()->json($clientedirecs->get());
         }

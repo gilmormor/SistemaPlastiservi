@@ -1313,7 +1313,7 @@ $("#producto_idM").blur(function(){
 						$("#largoM").val(respuesta['long']);
 						$("#largoM").attr('valor',respuesta['long']);	
 					}
-					console.log(respuesta['peso']);
+					//console.log(respuesta['peso']);
 					$("#pesoM").val(respuesta['peso']);
 					$("#tipounionM").val(respuesta['tipounion']);
 					$("#precioM").val(respuesta['precio']);
@@ -2180,3 +2180,60 @@ function zfill(number, width) {
         }
     }
 }
+
+function validarRut(rut) {
+	// Eliminar cualquier caracter que no sea número o K
+	rut = rut.replace(/[^0-9kK]/g, '');
+	
+	// Verificar que el rut tenga 9 dígitos
+	if (rut.length !== 9) {
+	  return false;
+	}
+	
+	// Extraer el dígito verificador del rut
+	var dv = rut.charAt(8);
+	
+	// Verificar que el dígito verificador sea numérico o K
+	if (!/^[0-9kK]{1}$/.test(dv)) {
+	  return false;
+	}
+	
+	// Verificar que los 8 primeros dígitos sean numéricos
+	var rutNumerico = parseInt(rut.substring(0, 8));
+	if (isNaN(rutNumerico)) {
+	  return false;
+	}
+	
+	// Calcular el dígito verificador esperado
+	var suma = 0;
+	var factor = 2;
+	for (var i = 7; i >= 0; i--) {
+	  suma += parseInt(rut.charAt(i)) * factor;
+	  factor = factor === 7 ? 2 : factor + 1;
+	}
+	var dvEsperado = 11 - (suma % 11);
+	if (dvEsperado === 11) {
+	  dvEsperado = 0;
+	} else if (dvEsperado === 10) {
+	  dvEsperado = 'K';
+	}
+	
+	// Comparar el dígito verificador calculado con el dígito verificador del rut
+	return dv.toString().toLowerCase() === dvEsperado.toString().toLowerCase();
+  }
+
+  function validarInputRut(event) {
+	// Obtener el input del usuario
+	var rutInput = event.target.value;
+	
+	// Eliminar cualquier caracter que no sea número o K
+	rutInput = rutInput.replace(/[^0-9kK]/g, '');
+	
+	// Si el input tiene más de 9 caracteres, recortarlo a 9
+	if (rutInput.length > 9) {
+	  rutInput = rutInput.substring(0, 9);
+	}
+	
+	// Asignar el input validado al input del usuario
+	event.target.value = rutInput;
+  }

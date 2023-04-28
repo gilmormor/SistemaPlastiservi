@@ -88,6 +88,8 @@ class ClienteTempController extends Controller
         if($request->ajax()){
             //dd($request);
             $clientetemp = ClienteTemp::join('cotizacion', 'clientetemp.id', '=', 'cotizacion.clientetemp_id')
+                            ->join('vendedor', 'clientetemp.vendedor_id', '=', 'vendedor.id')
+                            ->join('persona', 'vendedor.persona_id', '=', 'persona.id')
                             ->where('clientetemp.rut', $request->rut)
                             ->whereNull("clientetemp.deleted_at")
                             ->whereNull("cotizacion.deleted_at")
@@ -113,7 +115,9 @@ class ClienteTempController extends Controller
                                 'clientetemp.finanzastelefono',
                                 'clientetemp.sucursal_id',
                                 'clientetemp.observaciones',
-                                'clientetemp.usuariodel_id'                        
+                                'clientetemp.usuariodel_id',
+                                'persona.nombre as vendedor_nombre',
+                                'persona.apellido as vendedor_apellido'
                             ]);
             return response()->json($clientetemp->get());
         }

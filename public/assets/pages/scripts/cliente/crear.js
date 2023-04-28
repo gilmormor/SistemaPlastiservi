@@ -516,7 +516,7 @@ $("#rut").blur(function(){
 			swal({
 				title: 'Dígito verificador no es Válido.',
 				text: "",
-				icon: 'error',
+				icon: 'warning',
 				buttons: {
 					confirm: "Aceptar"
 				},
@@ -528,6 +528,22 @@ $("#rut").blur(function(){
 			});
 			//$(this).val('');
 		}else{
+			if(!validarRut($("#rut").val())){
+				swal({
+					title: 'RUT no es Válido.',
+					text: "",
+					icon: 'warning',
+					buttons: {
+						confirm: "Aceptar"
+					},
+				}).then((value) => {
+					if (value) {
+						//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+						$("#rut").focus();
+					}
+				});	
+				return 0;
+			}
 			codigo = $("#rut").val();
 			//limpiarCampos();
 			if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
@@ -546,7 +562,7 @@ $("#rut").blur(function(){
 							swal({
 								title: 'Cliente ya existe.',
 								text: "Razón Social: " + respuesta[0]['razonsocial'],
-								icon: 'error',
+								icon: 'warning',
 								buttons: {
 									confirm: "Aceptar"
 								},
@@ -571,7 +587,7 @@ $("#rut").blur(function(){
 										swal({
 											title: "Cliente temporal",
 											text: "Cliente temporal debe ser validado en el Menú: Archivos Maestros->Clientes->Validar Cliente. Tomar en cuenta que para validar un cliente temporal la cotizacion debe estar aprobada." + "\nCotizacion Nro: " + aux_contiz,
-											icon: 'error',
+											icon: 'warning',
 											buttons: {
 												confirm: "Aceptar"
 											},

@@ -667,7 +667,7 @@ $("#rut").blur(function(){
 			swal({
 				title: 'Dígito verificador no es Válido.',
 				text: "",
-				icon: 'error',
+				icon: 'warning',
 				buttons: {
 					confirm: "Aceptar"
 				},
@@ -679,6 +679,22 @@ $("#rut").blur(function(){
 			});
 			//$(this).val('');
 		}else{
+			if(!validarRut($("#rut").val())){
+				swal({
+					title: 'RUT no es Válido.',
+					text: "",
+					icon: 'warning',
+					buttons: {
+						confirm: "Aceptar"
+					},
+				}).then((value) => {
+					if (value) {
+						//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+						$("#rut").focus();
+					}
+				});	
+				return 0;
+			}
 			var data = {
 				rut: codigo,
 				_token: $('input[name=_token]').val()
@@ -750,7 +766,7 @@ $("#rut").blur(function(){
 							swal({
 								title: 'Cliente Bloqueado.',
 								text: respuesta.cliente[0].descripcion,
-								icon: 'error',
+								icon: 'warning',
 								buttons: {
 									confirm: "Aceptar"
 								},
@@ -772,8 +788,8 @@ $("#rut").blur(function(){
 								if(respuesta.length>0){
 									swal({
 										title: 'Cliente pertenece a otro Vendedor',
-										text: respuesta.razonsocial,
-										icon: 'error',
+										text: "Cliente: " + respuesta[0].razonsocial + "\nVendedor: " + respuesta[0].vendedor_nombre,
+										icon: 'warning',
 										buttons: {
 											confirm: "Aceptar"
 										},
@@ -788,7 +804,7 @@ $("#rut").blur(function(){
 									swal({
 										title: 'Cliente no existe.',
 										text: "Presione F2 para buscar",
-										icon: 'error',
+										icon: 'warning',
 										buttons: {
 											confirm: "Aceptar"
 										},

@@ -56,9 +56,9 @@
                 </span>
             </div>
             -->
-            <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
+            <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT sin puntos ni guión">RUT</label>
             <div class="input-group">
-                <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" title="F2 Buscar" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12" required {{$disabledReadOnly}}/>
+                <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" title="F2 Buscar" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="9" oninput="validarInputRut(event)" required {{$disabledReadOnly}}/>
                 <span class="input-group-btn">
                     @if (session('aux_aprocot')=='0')
                         <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
@@ -436,10 +436,10 @@
 
 
     <!-- Modal -->
+    <!-- FORMULARIO DE CLIENTE TEMPORAL CON TODOS LOS CAMPOS 
     <div class="modal fade" id="myModalClienteTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
         
-            <!-- Modal content-->
             <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -629,5 +629,118 @@
             </div>
             </div>
             
+        </div>
+    </div>
+    -->
+    <!-- NUEVO FORMULARIO DE CLIENTE TEMPORAL SOLO ALGUNOS DATOS SOLICITADO POR CGORIGOITIA 27/04/2023 -->
+    <div class="modal fade" id="myModalClienteTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+        
+            <!-- Modal content-->
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title">Cliente Temporal</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="razonsocialCTM" class="control-label" data-toggle='tooltip' title="Razón Social">Razón Social</label>
+                        <input type="text" name="razonsocialCTM" id="razonsocialCTM" class="form-control requeridos" tipoval="texto" value="{{old('razonsocialCTM')}}" placeholder="Razón Social"/>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="direccionCTM" class="control-label" data-toggle='tooltip' title="Dirección">Dirección</label>
+                        <input type="text" name="direccionCTM" id="direccionCTM" class="form-control requeridos" tipoval="texto"  maxlength="200" value="{{old('direccionCTM')}}" placeholder="Dirección"/>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="telefonoCTM" class="control-label" data-toggle='tooltip' title="Teléfono">Teléfono</label>
+                        <input type="text" name="telefonoCTM" id="telefonoCTM" class="form-control requeridos" tipoval="numerico" maxlength="50" value="{{old('telefonoCTM')}}" placeholder="Teléfono"/>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="contactonombreCTM" class="control-label" data-toggle='tooltip' title="Nombre Contacto">Nombre Contacto</label>
+                        <input type="text" name="contactonombreCTM" id="contactonombreCTM" class="form-control requeridos" tipoval="texto" placeholder="Nombre Contacto" value="{{old('contactonombreCTM')}}"/>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="comunap_idCTM" class="control-label">Comuna</label>
+                        <select name="comunap_idCTM" id="comunap_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" data-live-search='true' title='Seleccione...' value="{{old('comunap_idCTM')}}">
+                            <option value="">Seleccione...</option>
+                            @foreach($tablas['comunas'] as $comuna)
+                                <option
+                                    value="{{$comuna->id}}"
+                                    region_id="{{$comuna->provincia->region_id}}"
+                                    provincia_id="{{$comuna->provincia_id}}"
+                                    >
+                                    {{$comuna->nombre}}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
+                        <label for="provinciap_idCTM" class="control-label">Provincia</label>
+                        <select name="provinciap_idCTM" id="provinciap_idCTM" class="selectpicker form-control provinciap_id" tipoval="combobox" title='Seleccione...' disabled readonly value="{{old('provinciap_idCTM')}}">
+                            @foreach($tablas['provincias'] as $provincia)
+                                <option
+                                    value="{{$provincia->id}}"
+                                    >
+                                    {{$provincia->nombre}}
+                                </option>
+                            @endforeach  
+                        </select>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
+                        <label for="regionp_idCTM" class="control-label">Región</label>
+                        <select name="regionp_idCTM" id="regionp_idCTM" class="selectpicker form-control regionp_id" tipoval="combobox" title='Seleccione...' disabled readonly value="{{old('regionp_idCTM')}}">
+                            @foreach($tablas['regiones'] as $region)
+                                <option
+                                    value="{{$region->id}}"
+                                    >
+                                    {{$region->nombre}}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="help-block"></span>
+                    </div>
+                </div>             
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="emailCTM" class="control-label" data-toggle='tooltip' title="email">Email</label>
+                        <input type="text" name="emailCTM" id="emailCTM" class="form-control requeridos" tipoval="email" maxlength="50" value="{{old('emailCTM')}}" placeholder="Email"/>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="sucursal_idCTM" class="control-label">Sucursal</label>
+                        <select name="sucursal_idCTM" id="sucursal_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" title='Seleccione...'>
+                            @foreach($tablas['sucursales'] as $sucursal)
+                                <option
+                                    value="{{$sucursal->id}}"
+                                    >
+                                    {{$sucursal->nombre}}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                        <label for="observacionesCTM" class="control-label" data-toggle='tooltip' title="Observaciones">Observación</label>
+                        <textarea class="form-control requeridos" name="observacionesCTM" id="observacionesCTM" placeholder="Observación" value="{{old('contactotelefCTM')}}"></textarea>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarCTM" name="btnGuardarCTM" title="Guardar">Guardar</button>
+            </div>
+            </div>
         </div>
     </div>

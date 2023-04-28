@@ -5,8 +5,8 @@
 <input type='hidden' id="aux_observaciones" name="aux_observaciones" value="{{old('observaciones', $data->observaciones ?? '')}}">
 <div class="row">
     <div class="form-group col-xs-12 col-sm-2">
-        <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
-        <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $data->rut ?? '')}}" required onblur="formato_rut(this)" onfocus="eliminarFormatoRut(this);" placeholder="Ingrese RUT" maxlength="9"/>
+        <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT sin puntos ni guión">RUT</label>
+        <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $data->rut ?? '')}}" required onblur="formato_rut(this)" onfocus="eliminarFormatoRut(this);" placeholder="Ingrese RUT" maxlength="9" oninput="validarInputRut(event)" onkeyup="llevarMayus(this);"/>
     </div>
 
 <!--

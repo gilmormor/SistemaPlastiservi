@@ -1302,6 +1302,7 @@ function verificarclientetemp()
 	v9=validacion('comunap_idCTM','combobox');
 	v8=validacion('plazopago_idCTM','combobox');
 	v7=validacion('formapago_idCTM','combobox');
+	v16=validacion('giroCTM','texto');
 	v6=validacion('giro_idCTM','combobox');
 	v5=validacion('emailCTM','email');
 	v4=validacion('telefonoCTM','numerico');
@@ -1309,7 +1310,7 @@ function verificarclientetemp()
 	v2=validacion('razonsocialCTM','texto');
 	v1=validacion('rutCTM','texto');
 
-	if (v1===false || v2===false || v3===false || v4===false || v5===false || v6===false || v7===false || v8===false || v9===false || v10===false || v11===false || v12===false || v13===false || v14===false || v15===false)
+	if (v1===false || v2===false || v3===false || v4===false || v5===false || v6===false || v7===false || v8===false || v9===false || v10===false || v11===false || v12===false || v13===false || v14===false || v15===false || v16===false)
 	{
 		//$("#exito").hide();
 		//$("#error").show();
@@ -1346,6 +1347,7 @@ function guardarclientenuevo(){
 		direccion : $("#direccionCTM").val(),
 		telefono : $("#telefonoCTM").val(),
 		email : $("#emailCTM").val(),
+		giro : $("#giroCTM").val(),
 		giro_id : $("#giro_idCTM").val(),
 		formapago_id : $("#formapago_idCTM").val(),
 		plazopago_id : $("#plazopago_idCTM").val(),
