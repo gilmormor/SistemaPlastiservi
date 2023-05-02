@@ -2220,9 +2220,9 @@ function validarRut(rut) {
 	
 	// Comparar el dígito verificador calculado con el dígito verificador del rut
 	return dv.toString().toLowerCase() === dvEsperado.toString().toLowerCase();
-  }
+}
 
-  function validarInputRut(event) {
+function validarInputRut(event) {
 	// Obtener el input del usuario
 	var rutInput = event.target.value;
 	
@@ -2236,4 +2236,4 @@ function validarRut(rut) {
 	
 	// Asignar el input validado al input del usuario
 	event.target.value = rutInput;
-  }
+}

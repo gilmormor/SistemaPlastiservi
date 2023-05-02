@@ -528,6 +528,7 @@ $("#rut").blur(function(){
 			});
 			//$(this).val('');
 		}else{
+			/*
 			if(!validarRut($("#rut").val())){
 				swal({
 					title: 'RUT no es Válido.',
@@ -544,6 +545,7 @@ $("#rut").blur(function(){
 				});	
 				return 0;
 			}
+			*/
 			codigo = $("#rut").val();
 			//limpiarCampos();
 			if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))

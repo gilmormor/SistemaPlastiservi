@@ -492,6 +492,7 @@ $("#rut").blur(function(){
 			});
 			//$(this).val('');
 		}else{
+			/*
 			if(!validarRut($("#rut").val())){
 				swal({
 					title: 'RUT no es Válido.',
@@ -508,6 +509,7 @@ $("#rut").blur(function(){
 				});	
 				return 0;
 			}
+			*/
 			var data = {
 				rut: $("#rut").val(),
 				_token: $('input[name=_token]').val()
