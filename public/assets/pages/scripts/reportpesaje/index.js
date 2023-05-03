@@ -54,6 +54,13 @@ $(document).ready(function () {
             $('td', row).eq(3).attr('style','text-align:center');
             $('td', row).eq(4).attr('style','text-align:center');
 
+            $aux_nombreprod = data.producto_nombre + " D:" + data.diametro + " C:" + data.cla_nombre + " L:" + data.long + " TU:" + data.tipounion;
+            $('td', row).eq(1).attr('style','text-align:left');
+            $('td', row).eq(1).attr('data-search',$aux_nombreprod);
+            $('td', row).eq(1).attr('data-order',$aux_nombreprod);
+            $('td', row).eq(1).html($aux_nombreprod);
+
+            console.log($aux_nombreprod);
             aux_carro = data.pesajecarro_nombre;
             aux_carro = aux_carro.substring(6);
             $('td', row).eq(5).attr('style','text-align:center');

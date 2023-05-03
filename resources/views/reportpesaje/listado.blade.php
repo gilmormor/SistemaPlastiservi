@@ -64,10 +64,11 @@
 						$total_pesototalprodbal += $pesajedet->pesototalprodbal;
 						$total_pesototalnorma += $pesajedet->pesototalnorma;
 						$total_difkg += $pesajedet->difkg;
+						$aux_nombreprod = $pesajedet->producto_nombre . " D:" . $pesajedet->diametro . " C:" . $pesajedet->cla_nombre . " L:" . $pesajedet->long . " TU:" . $pesajedet->tipounion
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$pesajedet->producto_id}}</td>
-						<td class="textleft">{{$pesajedet->producto_nombre}}</td>
+						<td class="textleft">{{$aux_nombreprod}}</td>
 						<td class="textcenter">{{number_format($pesajedet->pesounitnom, 3, ",", ".")}}</td>
 						<td class="textcenter">{{$pesajedet->areaproduccionsuclinea_nombre}}</td>
 						<td class="textcenter">{{$pesajedet->turno_nombre}}</td>
