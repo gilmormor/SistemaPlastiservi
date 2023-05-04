@@ -260,7 +260,9 @@ class Dte extends Model
                 case 4:
                     $aux_aprobstatus = " dte.id not in (SELECT dter_id from dtedte where isnull(dtedte.deleted_at)) and isnull(dteanul.obs)";
                     break;
-        
+                case 5:
+                    $aux_aprobstatus = " dte.indtraslado = 6";
+                    break;
             }
         }
     
@@ -275,6 +277,18 @@ class Dte extends Model
         dteoc.oc_id,dteoc.oc_file,comuna.nombre as comunanombre,
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,dtedte.dter_id,
         dteguiadesp.notaventa_id,despachoord.fechaestdesp,dteguiadesp.despachoord_id,despachoord.despachosol_id,
+        (SELECT dte1.nrodocto
+        FROM dtedte as dtedte1 INNER JOIN dte as dte1
+        ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+        WHERE dtedte1.dter_id = dte.id
+        AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
+        (SELECT foliocontrol.nombrepdf
+        FROM dtedte as dtedte1 INNER JOIN dte as dte1
+        ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+        INNER JOIN foliocontrol
+        ON foliocontrol.id = dte1.foliocontrol_id
+        WHERE dtedte1.dter_id = dte.id
+        AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nombrepdf,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
         FROM dte INNER JOIN dtedet
         ON dte.id=dtedet.dte_id and isnull(dte.deleted_at) and isnull(dtedet.deleted_at)
@@ -282,13 +296,13 @@ class Dte extends Model
         ON dte.id = dteguiadesp.dte_id and isnull(dteguiadesp.deleted_at)
         LEFT JOIN notaventa
         ON notaventa.id=dteguiadesp.notaventa_id and isnull(notaventa.deleted_at)
-        INNER JOIN dtedet_despachoorddet
+        LEFT JOIN dtedet_despachoorddet
         ON dtedet_despachoorddet.dtedet_id = dtedet.id and isnull(dtedet_despachoorddet.deleted_at)
-        INNER JOIN notaventadetalle
+        LEFT JOIN notaventadetalle
         ON notaventadetalle.id=dtedet_despachoorddet.notaventadetalle_id and isnull(notaventadetalle.deleted_at)
-        INNER JOIN despachoord
+        LEFT JOIN despachoord
         ON despachoord.id=dteguiadesp.despachoord_id and isnull(despachoord.deleted_at)
-        INNER JOIN despachoorddet
+        LEFT JOIN despachoorddet
         ON despachoord.id=despachoorddet.despachoord_id and isnull(despachoorddet.deleted_at)
         INNER JOIN producto
         ON dtedet.producto_id=producto.id and isnull(producto.deleted_at)
@@ -297,7 +311,7 @@ class Dte extends Model
         INNER JOIN areaproduccion
         ON areaproduccion.id=categoriaprod.areaproduccion_id and isnull(areaproduccion.deleted_at)
         INNER JOIN cliente
-        ON cliente.id=notaventa.cliente_id and isnull(cliente.deleted_at)
+        ON cliente.id=dte.cliente_id and isnull(cliente.deleted_at)
         INNER JOIN comuna
         ON comuna.id=dteguiadesp.comunaentrega_id and isnull(comuna.deleted_at)
         INNER JOIN tipoentrega
@@ -323,7 +337,7 @@ class Dte extends Model
         and $aux_condsucurArray
         GROUP BY dte.id
         ORDER BY dte.id desc;";
-
+        //dd($sql);
         $datas = DB::select($sql);
         return $datas;
     }
@@ -723,7 +737,7 @@ class Dte extends Model
         $sucurcadena = implode(",", $sucurArray);
     
         $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
-        clientebloqueado.descripcion as clientebloqueado_descripcion,
+        clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
         GROUP_CONCAT(DISTINCT notaventa.oc_id) AS oc_id,
@@ -1909,6 +1923,207 @@ class Dte extends Model
         $arrays = DB::select($sql);
         return $arrays;
     }
+
+    public static function reportcomisionxvend($request){
+        /*
+        $vendedorcond = " true ";
+        if(isset($request->vendedor_id)){
+            if(empty($request->vendedor_id)){
+                $user = Usuario::findOrFail(auth()->id());
+                $sql= 'SELECT COUNT(*) AS contador
+                    FROM vendedor INNER JOIN persona
+                    ON vendedor.persona_id=persona.id
+                    INNER JOIN usuario 
+                    ON persona.usuario_id=usuario.id
+                    WHERE usuario.id=' . auth()->id();
+                $counts = DB::select($sql);
+                if($counts[0]->contador>0){
+                    $vendedor_id=$user->persona->vendedor->id;
+                    $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+                    $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+                    $sucurArray = $user->sucursales->pluck('id')->toArray();
+                }else{
+                    $vendedorcond = " true ";
+                    $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+                }
+            }else{
+                $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+            }    
+        }
+        */
+    
+        if(!isset($request->fechad) or !isset($request->fechah) or empty($request->fechad) or empty($request->fechah)){
+            $aux_condFecha = " true";
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d');
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d');
+            $aux_condFecha = "dte.fchemis>='$fechad' and dte.fchemis<='$fechah'";
+        }
+        if(!isset($request->rut) or empty($request->rut)){
+            $aux_condrut = " true";
+        }else{
+            $aux_condrut = "cliente.rut='$request->rut'";
+        }
+        if(!isset($request->oc_id) or empty($request->oc_id)){
+            $aux_condoc_id = " true";
+        }else{
+            $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
+        }
+        if(!isset($request->giro_id) or empty($request->giro_id)){
+            $aux_condgiro_id = " true";
+        }else{
+            $aux_condgiro_id = "notaventa.giro_id='$request->giro_id'";
+        }
+        if(!isset($request->tipoentrega_id) or empty($request->tipoentrega_id)){
+            $aux_condtipoentrega_id = " true";
+        }else{
+            $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$request->tipoentrega_id'";
+        }
+        if(!isset($request->notaventa_id) or empty($request->notaventa_id)){
+            $aux_condnotaventa_id = " true";
+        }else{
+            $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
+        }
+    
+        if(!isset($request->nrodocto) or empty($request->nrodocto)){
+            $aux_condnrodocto = " true";
+        }else{
+            $aux_condnrodocto = "dte.nrodocto = $request->nrodocto";
+        }
+        if(!isset($request->dte_id) or empty($request->dte_id)){
+            $aux_conddte_id = " true";
+        }else{
+            $aux_conddte_id = "dte.id = $request->dte_id";
+        }
+
+        if(!isset($request->statusgen) or empty($request->statusgen)){
+            $aux_condstatusgen = " true";
+        }else{
+            $aux_condstatusgen = "dte.statusgen = $request->statusgen";
+        }
+        //dd($request->foliocontrol_id);
+        if(!isset($request->foliocontrol_id) or empty($request->foliocontrol_id)){
+            $aux_condfoliocontrol_id = " dte.foliocontrol_id=1 ";
+        }else{
+            $aux_condfoliocontrol_id = " dte.foliocontrol_id in $request->foliocontrol_id";
+        }
+        //dd($aux_condfoliocontrol_id);
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $aux_sucursal_idCond = "true";
+        }else{
+            $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
+        }
+
+        if(!isset($request->groupby) or empty($request->groupby)){
+            $aux_groupby = "";
+        }else{
+            $aux_groupby = $request->groupby;
+        }
+        if(!isset($request->orderby) or empty($request->orderby)){
+            $aux_orderby = "";
+        }else{
+            $aux_orderby = $request->orderby;
+        }
+        if(!isset($request->vendedor_id) or empty($request->vendedor_id)){
+            $aux_condvendedor_id = " true";
+        }else{
+            $aux_condvendedor_id = "dte.vendedor_id in ($request->vendedor_id)";
+        }
+
+
+    
+        $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
+        clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
+        GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
+        GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
+        GROUP_CONCAT(DISTINCT notaventa.oc_id) AS oc_id,
+        GROUP_CONCAT(DISTINCT notaventa.oc_file) AS oc_file,
+        GROUP_CONCAT(DISTINCT dteguiadesp.notaventa_id) AS notaventa_id,
+        GROUP_CONCAT(DISTINCT despachoord.despachosol_id) AS despachosol_id,
+        GROUP_CONCAT(DISTINCT dteguiadesp.despachoord_id) AS despachoord_id,
+        (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) 
+        FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+        ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+        WHERE dtedte1.dte_id = dte.id
+        GROUP BY dtedte1.dte_id) AS nrodocto_origen,
+        (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) 
+        FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+        ON dte1.id = dtedte1.dtefac_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+        WHERE dtedte1.dte_id = dte.id
+        GROUP BY dtedte1.dte_id) AS nrodoctofac_origen,
+        (SELECT GROUP_CONCAT(DISTINCT foliocontrol.nombrepdf) 
+        FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+        ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+        INNER JOIN foliocontrol
+        ON foliocontrol.id = dte1.foliocontrol_id
+        WHERE dtedte1.dte_id = dte.id
+        GROUP BY dtedte1.dte_id) AS pdftipodte_origen,
+        (SELECT GROUP_CONCAT(DISTINCT foliocontrol.desc) 
+        FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+        ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+        INNER JOIN foliocontrol
+        ON foliocontrol.id = dte1.foliocontrol_id
+        WHERE dtedte1.dte_id = dte.id
+        GROUP BY dtedte1.dte_id) AS foliocontroldesc_origen,
+        dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
+        foliocontrol.doc as foliocontrol_doc,foliocontrol.desc as foliocontrol_desc,foliocontrol.tipodocto,foliocontrol.nombrepdf,
+        dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at,
+        dtedet.producto_id,producto.diametro,claseprod.cla_nombre,producto.long,nmbitem,producto.tipounion,nmbitem,
+        (dte.mnttotal * foliocontrol.signo) as mnttotal,
+        sum((dtedet.montoitem * foliocontrol.signo)) as montoitem,
+        3 as porc_comision,ROUND(sum((dtedet.montoitem * foliocontrol.signo)) * 0.03) as comision
+        FROM dte LEFT JOIN dtedte
+        ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
+        INNER JOIN dtedet
+        ON dtedet.dte_id = dte.id
+        LEFT JOIN dteguiadesp
+        ON dtedte.dter_id = dteguiadesp.dte_id and isnull(dteguiadesp.deleted_at)
+        LEFT JOIN despachoord
+        ON despachoord.id = dteguiadesp.despachoord_id and isnull(despachoord.deleted_at)
+        LEFT JOIN notaventa
+        ON notaventa.id = despachoord.notaventa_id and isnull(notaventa.deleted_at)
+        INNER JOIN cliente
+        ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
+        INNER JOIN comuna
+        ON comuna.id = cliente.comunap_id AND ISNULL(comuna.deleted_at)
+        LEFT JOIN clientebloqueado
+        ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+        LEFT JOIN dteanul
+        ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+        INNER JOIN foliocontrol
+        ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
+        LEFT JOIN dtefac
+        ON dtefac.dte_id = dte.id
+        LEFT JOIN producto
+        ON dtedet.producto_id = producto.id
+        LEFT JOIN claseprod
+        ON producto.claseprod_id = claseprod.id
+        WHERE $aux_condfoliocontrol_id
+        AND dte.sucursal_id IN ($sucurcadena)
+        AND $aux_sucursal_idCond
+        AND $aux_conddte_id
+        AND $aux_condFecha
+        AND $aux_condnrodocto
+        AND $aux_condrut
+        AND $aux_condoc_id
+        AND $aux_condnotaventa_id
+        AND $aux_condstatusgen
+        AND $aux_condvendedor_id
+        AND NOT ISNULL(dte.nrodocto)
+        AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+        $aux_groupby
+        $aux_orderby;";
+
+        //dd($sql);
+        $arrays = DB::select($sql);
+        return $arrays;
+    }
+
 }
 
 function dtefactura($id,$Folio,$tipoArch,$request){

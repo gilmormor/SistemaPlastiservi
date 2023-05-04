@@ -671,22 +671,7 @@ $("#btnpdf2").click(function()
 {
     aux_titulo = 'Pendientes Solicitud Despacho';
     data = datosFac();
-    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
-            "&fechaestdesp=" + data.fechaestdesp +
-            "&rut=" + data.rut +
-            "&vendedor_id=" + data.vendedor_id +
-            "&oc_id=" + data.oc_id +
-            "&giro_id=" + data.giro_id + 
-            "&areaproduccion_id=" + data.areaproduccion_id +
-            "&tipoentrega_id=" + data.tipoentrega_id +
-            "&notaventa_id=" + data.notaventa_id +
-            "&aprobstatus=" + data.aprobstatus +
-            "&comuna_id=" + data.comuna_id +
-            "&id=" + data.id +
-            "&filtro=" + data.filtro +
-            "&producto_id=" + data.producto_id +
-            "&aux_titulo=" + aux_titulo;
-    $('#contpdf').attr('src', '/despachosol/pdfpendientesoldesp/'+cadena);
+    $('#contpdf').attr('src', '/reportdtefac/exportPdf/' + data.data2);
     $("#myModalpdf").modal('show'); 
 });
 

@@ -1195,3 +1195,10 @@ Route::get('reportdteventasxvend/reportdteventasxvendpage', 'ReportDTEVentasxVen
 Route::get('reportdteventasxvend/reporte', 'ReportDTEVentasxVendController@reporte')->name('reportdteventasxvend_reporte');
 Route::get('reportdteventasxvend/exportPdf', 'ReportDTEVentasxVendController@exportPdf')->name('reportdteventasxvend_exportPdf');
 Route::get('reportdteventasxvend/totalizarindex', 'ReportDTEVentasxVendController@totalizarindex')->name('reportdteventasxvend_totalizarindex');
+
+/*RUTAS REPORTE COMISION POR VENDEDOR*/
+Route::get('reportdtecomisionxvend', 'ReportDTEComisionxVendController@index')->name('reportdtecomisionxvend');
+Route::get('reportdtecomisionxvend/reportdtecomisionxvendpage', 'ReportDTEComisionxVendController@reportdtecomisionxvendpage')->name('reportdtecomisionxvendpage');
+Route::get('reportdtecomisionxvend/reporte', 'ReportDTEComisionxVendController@reporte')->name('reportdtecomisionxvend_reporte');
+Route::get('reportdtecomisionxvend/exportPdf', 'ReportDTEComisionxVendController@exportPdf')->name('reportdtecomisionxvend_exportPdf');
+Route::get('reportdtecomisionxvend/totalizarindex', 'ReportDTEComisionxVendController@totalizarindex')->name('reportdtecomisionxvend_totalizarindex');

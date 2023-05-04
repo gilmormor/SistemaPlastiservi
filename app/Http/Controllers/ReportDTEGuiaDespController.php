@@ -55,7 +55,13 @@ class ReportDTEGuiaDespController extends Controller
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
-
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $request->merge(['sucursal_nombre' => "Todos"]);
+        }else{
+            $sucursal = Sucursal::findOrFail($request->sucursal_id);
+            $aux_sucursalNombre = $sucursal->nombre;
+            $request->merge(['sucursal_nombre' => $sucursal->nombre]);
+        }
         if($datas){
             
             if(env('APP_DEBUG')){
@@ -65,10 +71,12 @@ class ReportDTEGuiaDespController extends Controller
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-            $pdf = PDF::loadView('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'));
+            //$pdf = PDF::loadView('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'));
+            $pdf = PDF::loadView('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
+
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("ReporteStockInv.pdf");
+            return $pdf->stream("reportdteguiadesp.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 

@@ -30,19 +30,18 @@ $(document).ready(function () {
                 {data: 'id'},
                 {data: 'fechahora'},
                 {data: 'razonsocial'},
+                {data: 'comunanombre'},
                 {data: 'nvoc_id'},
                 {data: 'notaventa_id'},
                 {data: 'despachosol_id'},
                 {data: 'despachoord_id'},
                 {data: 'nrodocto'},
-                {data: 'nrodocto'},
-                {data: 'nrodocto'},
-                {data: 'comunanombre'},
-                {data: 'tipoentrega_nombre'},
+                {data: 'fact_nrodocto'},
                 {data: 'nvoc_file',className:"ocultar"},
                 {data: 'icono',className:"ocultar"},
                 {data: 'dteanul_obs',className:"ocultar"},
                 {data: 'dteanulcreated_at',className:"ocultar"},
+                {data: 'fact_nombrepdf',className:"ocultar"},
             ],
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -50,6 +49,7 @@ $(document).ready(function () {
             "createdRow": function ( row, data, index ) {
                 $(row).attr('id','fila' + data.id);
                 $(row).attr('name','fila' + data.id);
+    
                 if (data.dteanul_obs != null) {
                     aux_fecha = new Date(data.dteanulcreated_at);
                     aux_text = data.id +
@@ -63,56 +63,65 @@ $(document).ready(function () {
                 $('td', row).eq(1).attr('data-order',data.fechahora);
                 aux_fecha = new Date(data.fechahora);
                 $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
                 if(data.nvoc_file != "" && data.nvoc_file != null){
                     aux_text = 
                         "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.nvoc_file + "\",2)'>" + 
                             data.nvoc_id + 
                         "</a>";
-                    $('td', row).eq(3).html(aux_text);
+                    $('td', row).eq(4).html(aux_text);
                 }
-                aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
-                        data.notaventa_id +
-                    "</a>";
-                $('td', row).eq(4).html(aux_text);
-                aux_text = 
+                aux_text = "";
+                if(data.notaventa_id != "" && data.notaventa_id != null){
+                    aux_text = 
+                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
+                            data.notaventa_id +
+                        "</a>";
+                }
+                $('td', row).eq(5).html(aux_text);
+                aux_text = "";
+                if(data.despachosol_id != "" && data.despachosol_id != null){
+                    aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" + 
                         data.despachosol_id + 
                     "</a>";
-                $('td', row).eq(5).html(aux_text);
-                aux_text = 
+                }
+                $('td', row).eq(6).html(aux_text);
+                aux_text = "";
+                if(data.despachoord_id != "" && data.despachoord_id != null){
+                    aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden Despacho' onclick='genpdfOD(" + data.despachoord_id + ",1)'>" + 
                         data.despachoord_id + 
                     "</a>";
-                $('td', row).eq(6).html(aux_text);
-                aux_text = "";
-                if(data.nrodocto){
-                    aux_text = 
-                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
-                            + data.nrodocto +
-                        "</a>";
                 }
                 $('td', row).eq(7).html(aux_text);
                 aux_text = "";
                 if(data.nrodocto){
                     aux_text = 
-                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho Cedible: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")'>"+
-                            + data.nrodocto +
-                        "</a>";
+                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','')">
+                            ${data.nrodocto}
+                        </a>:
+                        <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','_cedible')" style="padding-left: 0px;">
+                            ${data.nrodocto}
+                        </a>`;
                 }
                 $('td', row).eq(8).html(aux_text);
                 aux_text = "";
-                if(data.nrodocto){
+                if(data.fact_nrodocto != null){
+                    let id_str = data.fact_nrodocto.toString();
+                    id_str = data.fact_nombrepdf + id_str.padStart(8, "0");
+    
                     aux_text = 
-                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho Unidas: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"_U\")'>"+
-                            + data.nrodocto +
-                        "</a>";
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFAC('${id_str}','')">
+                        ${data.fact_nrodocto}
+                    </a>:
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
+                        ${data.fact_nrodocto}
+                    </a>`;
                 }
                 $('td', row).eq(9).html(aux_text);
-                
-                aux_text = 
-                    "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
-                $('td', row).eq(11).html(aux_text);
+
+
             }
         });
     }

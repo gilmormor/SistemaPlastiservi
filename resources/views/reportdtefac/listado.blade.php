@@ -34,11 +34,10 @@
 				<thead>
 					<tr>
 						<th style='text-align:center;width: 5% !important;'>DTE</th>
-						<th style='text-align:center;width: 8% !important;'>Fecha Emisión</th>
+						<th style='text-align:center;width: 6% !important;'>Fecha Emisión</th>
 						<th style='text-align:center;width: 7% !important;'>RUT</th>
 						<th style='text-align:left;width: 25% !important;'>Razón Social</th>
 						<th style='text-align:right;width: 7% !important;'>Monto DTE</th>
-						<th style='text-align:center;width: 12% !important;'>Estado</th>
 						<th style='text-align:center;width: 6% !important;'>OC</th>
 					</tr>
 				</thead>
@@ -46,25 +45,10 @@
 					@foreach($datas as $data)
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td style='text-align:center;width: 5% !important;'>{{$data->nrodocto}}</td>
-							<td style='text-align:center;width: 8% !important;'>{{date("d/m/Y", strtotime($data->fechahora))}}</td>
+							<td style='text-align:center;width: 6% !important;'>{{date("d/m/Y", strtotime($data->fechahora))}}</td>
 							<td style='text-align:center;width: 7% !important;'>{{$data->rut}}</td>
 							<td style='text-align:left;width: 25% !important;'>{{$data->razonsocial}}</td>
 							<td style='text-align:right;width: 7% !important;'>{{number_format($data->mnttotal, 0, ",", ".")}}&nbsp;&nbsp;</td>
-							<?php 
-								$aux_estado = "";
-								if($data->indtraslado == 6){
-									$aux_estado = "Guia solo traslado";
-								}
-								if($data->indtraslado == 1){
-									if(is_null($data->dter_id)){
-										$aux_estado = "Pendiente de Facturar";
-									}else{
-										$aux_estado = "Guia facturada ($data->fact_nrodocto)";
-									}
-								}
-								//$dtedte = 
-							?>
-							<td style='width: 12% !important;'>&nbsp;&nbsp;{{$aux_estado}}</td>
 							<td style='text-align:center;width: 6% !important;'>{{$data->oc_id}}</td>
 						</tr>
 					@endforeach

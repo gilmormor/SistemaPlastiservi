@@ -10,8 +10,7 @@ use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 
-
-class ReportDTEVentasxVendController extends Controller
+class ReportDTEComisionxVendController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,7 +19,7 @@ class ReportDTEVentasxVendController extends Controller
      */
     public function index()
     {
-        can('reporte-ventas-x-vendedor');
+        can('reporte-comision-x-vendedor');
         $fechaAct = date("d/m/Y");
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
@@ -28,14 +27,14 @@ class ReportDTEVentasxVendController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablas['vendedores'] = Vendedor::selectvendedores();
-        return view('reportdteventasxvend.index', compact('tablas'));
+        return view('reportdtecomisionxvend.index', compact('tablas'));
     }
 
-    public function reportdteventasxvendpage(Request $request){
+    public function reportdtecomisionxvendpage(Request $request){
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
         $request->merge(['orderby' => " order by dte.id desc "]);
-        $request->merge(['groupby' => " group by dte.id "]);
-        $datas = Dte::reportestadocli($request);
+        $request->merge(['groupby' => " group by dtedet.id "]);
+        $datas = Dte::reportcomisionxvend($request);
         return datatables($datas)->toJson();
     }
 
@@ -60,13 +59,13 @@ class ReportDTEVentasxVendController extends Controller
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportdteventasxvend.listado', compact('datas','empresa','usuario','request'));
+                return view('reportdtecomisionxvend.listado', compact('datas','empresa','usuario','request'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             //$pdf = PDF::loadView('reportdteestadocli.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-            $pdf = PDF::loadView('reportdteventasxvend.listado', compact('datas','empresa','usuario','request'));
+            $pdf = PDF::loadView('reportdtecomisionxvend.listado', compact('datas','empresa','usuario','request'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteStockInv.pdf");
@@ -78,14 +77,17 @@ class ReportDTEVentasxVendController extends Controller
     public function totalizarindex(Request $request){
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
         $respuesta = array();
-        $datas = Dte::totalreportestadocli($request);
+        $request->merge(['orderby' => " order by dte.id desc "]);
+        $request->merge(['groupby' => " group by dtedet.id "]);
+        $datas = Dte::reportcomisionxvend($request);
         $aux_total = 0;
+        $aux_totalcomision = 0;
         foreach ($datas as $data) {
-            $aux_total += $data->mnttotal;
+            $aux_total += $data->montoitem;
+            $aux_totalcomision += $data->comision;
         }
         $respuesta['aux_total'] = $aux_total;
+        $respuesta['aux_totalcomision'] = $aux_totalcomision;
         return $respuesta;
     }
-
-     
 }
