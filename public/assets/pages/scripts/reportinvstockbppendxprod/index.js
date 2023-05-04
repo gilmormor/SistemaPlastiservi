@@ -74,6 +74,7 @@ $(document).ready(function () {
                 $('td', row).eq(10).attr('data-search',data.stockPiking);
 
                 $('td', row).eq(11).attr('style','text-align:center');
+                $('td', row).eq(11).html(NUM(data.cantpend, 0));
 
                 $('td', row).eq(12).attr('style','text-align:center');
 /*

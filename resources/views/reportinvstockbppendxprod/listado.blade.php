@@ -63,7 +63,7 @@
 						<td style='text-align:center'>{{$data->stockBodProdTerm}}</td>
 						<td style='text-align:center'>{{$data->stockPiking}}</td>
 						<td style='text-align:center'>{{$data->stock}}</td>
-						<td style='text-align:center'>{{$data->cantpend}}</td>
+						<td style='text-align:center'>{{number_format($data->cantpend, 0, ",", "")}}</td>
 						<td style='text-align:center'>{{$data->difcantpend}}</td>
 						<!--<td style='text-align:right'>{{number_format($data->stock * $data->peso, 2, ",", ".")}}</td> -->
 					</tr>
