@@ -52,13 +52,16 @@ class ReportInvStockBPPendxProdController extends Controller
         }
         //dd($arrego_pendientexprod);
         $producto_id = implode(",", $arrego_producto_id);
-        $request->request->add(['producto_id' => $producto_id]);
+        //$request->request->add(['producto_id' => $producto_id]);
         //dd($producto_id);
+        //dd($arrego_pendientexprod);
 
         $datas = InvMov::stocksql($request,"producto.id");
         foreach ($datas as &$data) {
-            $data->cantpend = $arrego_pendientexprod[$data->producto_id]->cant - $arrego_pendientexprod[$data->producto_id]->cantdesp;
-            $data->difcantpend = $data->stock - $data->cantpend; //DIFERENCIA ENTRE STOCK Y CANTPEND=CANTIDAD PENDIENTE
+            if(isset($arrego_pendientexprod[$data->producto_id])){ //SIE EL ELEMENTO EXISTE EL ARREGLO ENTRA.
+                $data->cantpend = $arrego_pendientexprod[$data->producto_id]->cant - $arrego_pendientexprod[$data->producto_id]->cantdesp;
+                $data->difcantpend = $data->stock - $data->cantpend; //DIFERENCIA ENTRE STOCK Y CANTPEND=CANTIDAD PENDIENTE    
+            }
         }
         //dd($datas);
         return datatables($datas)->toJson();
