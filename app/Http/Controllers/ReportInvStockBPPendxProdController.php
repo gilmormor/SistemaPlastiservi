@@ -61,6 +61,8 @@ class ReportInvStockBPPendxProdController extends Controller
             if(isset($arrego_pendientexprod[$data->producto_id])){ //SIE EL ELEMENTO EXISTE EL ARREGLO ENTRA.
                 $data->cantpend = $arrego_pendientexprod[$data->producto_id]->cant - $arrego_pendientexprod[$data->producto_id]->cantdesp;
                 $data->difcantpend = $data->stock - $data->cantpend; //DIFERENCIA ENTRE STOCK Y CANTPEND=CANTIDAD PENDIENTE    
+            }else{
+                $data->difcantpend = $data->stock;
             }
         }
         //dd($datas);
