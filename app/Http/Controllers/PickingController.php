@@ -405,7 +405,7 @@ class PickingController extends Controller
                 $invmovdet = InvMovDet::create($array_invmovdet);
 
                 $despachosoldet_invbodegaproducto = DespachoSolDet_InvBodegaProducto::findOrFail($request->despachosoldet_invbodegaproducto_id[$j]);
-                $despachosoldet_invbodegaproducto->cant = $despachosoldet_invbodegaproducto->cant - ($request->invcant[$j] * -1);
+                $despachosoldet_invbodegaproducto->cant = $despachosoldet_invbodegaproducto->cant - $request->invcant[$j];
                 $despachosoldet_invbodegaproducto->cantex = $despachosoldet_invbodegaproducto->cantex + $aux_cant;
                 $despachosoldet_invbodegaproducto->save();
                 $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
