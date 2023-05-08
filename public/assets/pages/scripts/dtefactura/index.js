@@ -139,7 +139,7 @@ $(document).ready(function () {
                 }
             }
             //$('td', row).eq(9).html(aux_text1);
-
+/*
             aux_text2 = "";
             let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
             for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
@@ -151,6 +151,19 @@ $(document).ready(function () {
                     aux_text2 += ",";
                 }
             }
+*/
+            aux_text2 = "";
+            let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
+            for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
+                aux_text2 += 
+                "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + arr_nrodocto_guiadespced[i] + ",\"\")'>" +
+                    arr_nrodocto_guiadespced[i] +
+                "</a>";
+                if((i+1) < arr_nrodocto_guiadespced.length){
+                    aux_text2 += ",";
+                }
+            }
+
             $('td', row).eq(9).html(aux_text1 + ":" + aux_text2);
             //$('td', row).eq(10).html(aux_text2);
 
