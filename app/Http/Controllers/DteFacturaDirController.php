@@ -351,6 +351,7 @@ function consultaindex($dte_id){
     AND ISNULL(dte.statusgen)
     AND !ISNULL(dte.nrodocto)
     AND $aux_conddte_id
+    AND ISNULL(dte.deleted_at)
     GROUP BY dte.id
     ORDER BY dte.id desc;";
 
