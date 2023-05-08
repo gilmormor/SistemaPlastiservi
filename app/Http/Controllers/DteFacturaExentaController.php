@@ -306,7 +306,7 @@ function consultaindex($dte_id){
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at
     FROM dte LEFT JOIN dteoc
-    ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at)
+    ON dteoc.dte_id = dte.id AND ISNULL(dte.deleted_at) AND ISNULL(dteoc.deleted_at)
     INNER JOIN cliente
     ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
     INNER JOIN comuna
