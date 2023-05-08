@@ -77,6 +77,9 @@ $(document).ready(function () {
             aux_text = 
                     "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>" +
                         data.nrodocto +
+                    "</a>:" +
+                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")'>" +
+                        data.nrodocto +
                     "</a>";
             $('td', row).eq(8).html(aux_text);
             $('td', row).eq(8).attr('style','text-align:center');

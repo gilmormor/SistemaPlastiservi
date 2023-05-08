@@ -23,7 +23,6 @@ $(document).ready(function () {
             {data: 'despachosol_id'}, // 7
             {data: 'despachoord_id'}, // 8
             {data: 'nrodocto_guiadesp'}, // 9
-            {data: 'nrodocto_guiadesp'}, // 10
             {data: 'nrodocto_factura'}, // 11
             {data: 'nombre_comuna'}, // 12
             {data: 'clientebloqueado_descripcion',className:"ocultar"}, //13
@@ -128,41 +127,42 @@ $(document).ready(function () {
             $('td', row).eq(8).html(aux_text);
 
 
-            aux_text = "";
+            aux_text1 = "";
             let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
             for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
-                aux_text += 
+                aux_text1 += 
                 "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"\")'>" +
                     arr_nrodocto_guiadesp[i] +
                 "</a>";
                 if((i+1) < arr_nrodocto_guiadesp.length){
-                    aux_text += ",";
+                    aux_text1 += ",";
                 }
             }
-            $('td', row).eq(9).html(aux_text);
+            //$('td', row).eq(9).html(aux_text1);
 
-            aux_text = "";
+            aux_text2 = "";
             let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
             for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
-                aux_text += 
+                aux_text2 += 
                 "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + arr_nrodocto_guiadespced[i] + ",\"_cedible\")'>" +
                     arr_nrodocto_guiadespced[i] +
                 "</a>";
                 if((i+1) < arr_nrodocto_guiadespced.length){
-                    aux_text += ",";
+                    aux_text2 += ",";
                 }
             }
-            $('td', row).eq(10).html(aux_text);
+            $('td', row).eq(9).html(aux_text1 + ":" + aux_text2);
+            //$('td', row).eq(10).html(aux_text2);
+
 
             aux_text = 
             "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
                 data.nrodocto_factura +
-            "</a>," +
+            "</a>:" +
             "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
                 data.nrodocto_factura +
             "</a>";
-            $('td', row).eq(11).html(aux_text);
-
+            $('td', row).eq(10).html(aux_text);
 
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
@@ -188,9 +188,9 @@ $(document).ready(function () {
                 "</a>";
             }
 
-            $('td', row).eq(16).addClass('updated_at');
-            $('td', row).eq(16).attr('id','updated_at' + data.id);
-            $('td', row).eq(16).attr('name','updated_at' + data.id);
+            $('td', row).eq(15).addClass('updated_at');
+            $('td', row).eq(15).attr('id','updated_at' + data.id);
+            $('td', row).eq(15).attr('name','updated_at' + data.id);
 
             aux_text = 
             `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
@@ -202,7 +202,7 @@ $(document).ready(function () {
             <a onclick="anulardte(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro" data-toggle="tooltip">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
-            $('td', row).eq(17).html(aux_text);
+            $('td', row).eq(16).html(aux_text);
         }
     });
 

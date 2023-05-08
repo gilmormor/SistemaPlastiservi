@@ -47,7 +47,6 @@ Factura
                                 <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                                 <th class='tooltipsC' title='Orden de Despacho'>OD</th>
                                 <th class='tooltipsC' title='Guia Despacho'>GD</th>
-                                <th class='tooltipsC' title='Guia Despacho Cedible'>GDC</th>
                                 <th class='tooltipsC' title='Factura'>Factura</th>
                                 <th class='tooltipsC' title='Comuna'>Comuna</th>
                                 <th class="ocultar">Obs Bloqueo</th>
