@@ -609,7 +609,7 @@ class GuiaDespController extends Controller
                             Storage::disk('public')->put('/facturacion/dte/procesados/ge' . $aux_folio . '.xml', $Carga_TXTDTE->XML);
                             Storage::disk('public')->put('/facturacion/dte/procesados/ge' . $aux_folio . '.pdf', $Carga_TXTDTE->PDF);
                             Storage::disk('public')->put('/facturacion/dte/procesados/ge' . $aux_folio . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
-
+                            /*
                             $pdf = new Fpdi();
                             $files = array("storage/facturacion/dte/procesados/ge" . $aux_folio . ".pdf","storage/facturacion/dte/procesados/ge" . $aux_folio . "_cedible.pdf");
                             foreach ($files as $file) {
@@ -622,6 +622,7 @@ class GuiaDespController extends Controller
                                 }
                             }
                             $pdf->Output("F","storage/facturacion/dte/procesados/ge" . $aux_folio . "_U.pdf");
+                            */
 
                             //dd($Carga_TXTDTE);
                         }else{

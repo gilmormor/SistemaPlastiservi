@@ -1151,7 +1151,7 @@ class Dte extends Model
                     Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.xml', $Carga_TXTDTE->XML);
                     Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.pdf', $Carga_TXTDTE->PDF);
                     Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
-
+                    /*
                     $pdf = new Fpdi();
                     $files = array("storage/facturacion/dte/procesados/" . $nombreArchPDF . ".pdf","storage/facturacion/dte/procesados/" . $nombreArchPDF . "_cedible.pdf");
                     foreach ($files as $file) {
@@ -1164,6 +1164,7 @@ class Dte extends Model
                         }
                     }
                     $pdf->Output("F","storage/facturacion/dte/procesados/" . $nombreArchPDF . "_U.pdf");
+                    */
 
                     //dd($Carga_TXTDTE);
                 }else{
@@ -1291,7 +1292,7 @@ class Dte extends Model
                 Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.xml', $Carga_TXTDTE->XML);
                 Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.pdf', $Carga_TXTDTE->PDF);
                 Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
-
+/*
                 $pdf = new Fpdi();
                 $files = array("storage/facturacion/dte/procesados/" . $nombreArchPDF . ".pdf","storage/facturacion/dte/procesados/" . $nombreArchPDF . "_cedible.pdf");
                 foreach ($files as $file) {
@@ -1304,6 +1305,7 @@ class Dte extends Model
                     }
                 }
                 $pdf->Output("F","storage/facturacion/dte/procesados/" . $nombreArchPDF . "_U.pdf");
+                */
                 return response()->json([
                     'id' => 1
                 ]);    
