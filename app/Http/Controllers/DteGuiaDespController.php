@@ -1102,7 +1102,8 @@ function consultalistarorddesppage($request){
     AND despachoord.id NOT IN (SELECT dteguiadesp.despachoord_id
         FROM dte INNER JOIN dteguiadesp
         ON dte.id=dteguiadesp.dte_id AND ISNULL(dte.deleted_at) AND ISNULL(dteguiadesp.deleted_at)
-        WHERE dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at)))
+        WHERE dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+        AND NOT ISNULL(dteguiadesp.despachoord_id))
     GROUP BY despachoorddet.despachoord_id
     ORDER BY despachoorddet.despachoord_id DESC";
     $arrays = DB::select($sql);
