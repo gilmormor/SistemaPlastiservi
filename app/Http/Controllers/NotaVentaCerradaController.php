@@ -9,6 +9,8 @@ use App\Models\Cliente;
 use App\Models\ClienteBloqueado;
 use App\Models\ClienteSucursal;
 use App\Models\Comuna;
+use App\Models\DespachoOrd;
+use App\Models\DespachoSol;
 use App\Models\Giro;
 use App\Models\NotaVentaCerrada;
 use App\Models\Producto;
@@ -91,6 +93,30 @@ class NotaVentaCerradaController extends Controller
     public function guardar(Request $request)
     {
         can('guardar-cerrar-nota-venta');
+        $despachosolcontroller = New DespachoSolController();
+        $cont_soldesp = count($despachosolcontroller->consultarSolDesp($request));
+        if($cont_soldesp > 0){
+            return redirect('notaventacerrada')->with([
+                'mensaje'=>'NV No fue cerrada, existen solicitudes activas, debe cerrarlas.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+        $despachoordAGD = DespachoOrd::consultaOrdDespxAsigGuiaDesp($request);
+        $cont_orddesp = count($despachoordAGD);
+        if($cont_orddesp > 0){
+            return redirect('notaventacerrada')->with([
+                'mensaje'=>'NV No fue cerrada, existen Ordenes de Despacho por asignar Guia de despacho.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+        $despachoordAF = DespachoOrd::consultaOrdDespxAsigFact($request);
+        $cont_orddesp = count($despachoordAF);
+        if($cont_orddesp > 0){
+            return redirect('notaventacerrada')->with([
+                'mensaje'=>'NV No fue cerrada, existen Ordenes de Despacho por asignar Factura.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $sql = "SELECT COUNT(*) as cont
         FROM notaventa
         where id = $request->notaventa_id

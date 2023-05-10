@@ -1788,7 +1788,9 @@ class DespachoSolController extends Controller
         }
 
     }
-
+    public function consultarSolDesp($request){
+        return consultasoldesp($request);
+    }
 }
 
 
