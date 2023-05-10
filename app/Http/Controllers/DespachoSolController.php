@@ -951,7 +951,7 @@ class DespachoSolController extends Controller
             /*****************PRUEBA PARA DEVOLVER SOLICITUD CUANDO HAY YA ORDENES DE UNA SOLICITUD DE DESPACHO */
             /***** 15/07/2022 */
             /***** ESTO DEBO ACTIVARLO CUANDO PASE POR LO MENOS 1 SEMANA PARA QUE TODAS SOLDESP Y ORDDESP HAYAN SIDO PROCESADAS */
-            
+            /*
             $aux_stacrearmovinv = 0;
             foreach ($despachosol->despachosoldets as $despachosoldet) {
                 $aux_cant = 0;
@@ -1068,11 +1068,10 @@ class DespachoSolController extends Controller
                 }
 
             }
-            
+            */
             /*****************PRUEBA PARA DEVOLVER SOLICITUD CUANDO HAY YA ORDENES DE UNA SOLICITUD DE DESPACHO */
             /***** 15/07/2022 */
 
-            /*
             $aux_stacrearmovinv = 0;
             $cantkg  = 0;
             foreach ($despachosol->despachosoldets as $despachosoldet) {
@@ -1189,7 +1188,6 @@ class DespachoSolController extends Controller
                     ]);
                 }
             }
-            */
             
             /************************************* */
             foreach($despachosol->despachosoldets as $despchosoldet){
