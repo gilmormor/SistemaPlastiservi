@@ -2587,6 +2587,7 @@ function reportesoldespcerrarNV1($request){
 }
 
 function consultasoldesp($request){
+    dd($request);
     if(empty($request->vendedor_id)){
         $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador

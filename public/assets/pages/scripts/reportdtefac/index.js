@@ -151,28 +151,32 @@ $(document).ready(function () {
     
     
                 aux_text = "";
-                let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
-                for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
-                    aux_text += 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"\")'>" +
-                        arr_nrodocto_guiadesp[i] +
-                    "</a>";
-                    if((i+1) < arr_nrodocto_guiadesp.length){
-                        aux_text += ",";
-                    }
+                if(data.nrodocto_guiadesp != null){
+                    let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
+                    for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"\")'>" +
+                            arr_nrodocto_guiadesp[i] +
+                        "</a>";
+                        if((i+1) < arr_nrodocto_guiadesp.length){
+                            aux_text += ",";
+                        }
+                    }    
                 }
                 $('td', row).eq(9).html(aux_text);
     
                 aux_text = "";
-                let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
-                for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
-                    aux_text += 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + arr_nrodocto_guiadespced[i] + ",\"_cedible\")'>" +
-                        arr_nrodocto_guiadespced[i] +
-                    "</a>";
-                    if((i+1) < arr_nrodocto_guiadespced.length){
-                        aux_text += ",";
-                    }
+                if(data.nrodocto_guiadesp != null){
+                    let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
+                    for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + arr_nrodocto_guiadespced[i] + ",\"_cedible\")'>" +
+                            arr_nrodocto_guiadespced[i] +
+                        "</a>";
+                        if((i+1) < arr_nrodocto_guiadespced.length){
+                            aux_text += ",";
+                        }
+                    }    
                 }
                 $('td', row).eq(10).html(aux_text);
 

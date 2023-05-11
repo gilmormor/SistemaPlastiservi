@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\AreaProduccion;
 use App\Models\Comuna;
 use App\Models\Dte;
+use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class ReportDTENcController extends Controller
 {
@@ -39,70 +43,38 @@ class ReportDTENcController extends Controller
         $datas = Dte::reportdtencnd($request);
         return datatables($datas)->toJson();
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function exportPdf(Request $request)
     {
-        //
+        $request->request->add(['foliocontrol_id' => 5]);
+        $datas = Dte::reportdtencnd($request);
+        //dd($datas);
+
+        $empresa = Empresa::orderBy('id')->get();
+        $usuario = Usuario::findOrFail(auth()->id());
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $request->merge(['sucursal_nombre' => "Todos"]);
+        }else{
+            $sucursal = Sucursal::findOrFail($request->sucursal_id);
+            $aux_sucursalNombre = $sucursal->nombre;
+            $request->merge(['sucursal_nombre' => $sucursal->nombre]);
+        }
+        if($datas){
+            
+            if(env('APP_DEBUG')){
+                return view('reportdtenc.listado', compact('datas','empresa','usuario','request'));
+            }
+            
+            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+            
+            //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
+            $pdf = PDF::loadView('reportdtenc.listado', compact('datas','empresa','usuario','request'));
+            //$pdf = PDF::loadView('reportdtenc.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
+
+            return $pdf->stream("reportdtenc.pdf");
+        }else{
+            dd('Ningún dato disponible en esta consulta.');
+        } 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+    
 }

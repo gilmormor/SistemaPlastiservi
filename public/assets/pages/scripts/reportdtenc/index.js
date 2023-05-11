@@ -65,7 +65,7 @@ $(document).ready(function () {
                 if(data.dteorigen_nrodocto != null){
                     aux_text = 
                     "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='PDF Origen' onclick='genpdfFAC(" + data.dteorigen_nrodocto + ",\"\")'>" +
-                        data.dteorigen_nrodocto +
+                        data.doc + " " + data.dteorigen_nrodocto +
                     "</a>";
                 }
                 $('td', row).eq(5).html(aux_text);
@@ -539,7 +539,7 @@ $("#btnpdf2").click(function()
             "&filtro=" + data.filtro +
             "&producto_id=" + data.producto_id +
             "&aux_titulo=" + aux_titulo;
-    $('#contpdf').attr('src', '/despachosol/pdfpendientesoldesp/'+cadena);
+    $('#contpdf').attr('src', '/reportdtenc/exportPdf/' + data.data2);
     $("#myModalpdf").modal('show'); 
 });
 

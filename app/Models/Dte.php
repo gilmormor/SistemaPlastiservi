@@ -1535,16 +1535,18 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
-    
+
         $sql = "SELECT dte.id,dte.fechahora,dte.nrodocto,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,
-        dteorigen.id as dteorigen_id,dteorigen.nrodocto as dteorigen_nrodocto,
-        dte.updated_at, dteorigen.updated_at as dteorigen_updated_at,
+        dteorigen.id as dteorigen_id,dteorigen.nrodocto as dteorigen_nrodocto,foliocontrol.doc,
+        dte.updated_at, dteorigen.updated_at as dteorigen_updated_at,dte.mnttotal,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
         FROM dte INNER JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         LEFT JOIN dte as dteorigen
         ON dtedte.dter_id = dteorigen.id and isnull(dteorigen.deleted_at)
+        LEFT JOIN foliocontrol
+        ON foliocontrol.id = dteorigen.foliocontrol_id
         INNER JOIN cliente
         ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
         INNER JOIN comuna
