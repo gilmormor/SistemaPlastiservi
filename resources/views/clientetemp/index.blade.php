@@ -30,6 +30,7 @@ Cliente Temporal
                             <th class="width70">ID</th>
                             <th>RUT</th>
                             <th>Razon Social</th>
+                            <th>Vendedor</th>
                             <th class="width70">Acción</th>
                         </tr>
                     </thead>

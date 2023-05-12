@@ -83,8 +83,11 @@ class ClienteTemp extends Model
         $aux_condsucursal_id = " (clientetemp.sucursal_id in ($aux_sucursal))";
 
 
-        $sql = "SELECT *
-        FROM clientetemp
+        $sql = "SELECT clientetemp.*,persona.nombre as vendedor_nombre,persona.apellido as vendedor_apellido
+        FROM clientetemp INNER JOIN vendedor
+        ON clientetemp.vendedor_id = vendedor.id
+        INNER JOIN persona
+        ON persona.id = vendedor.persona_id
         WHERE clientetemp.rut not in (SELECT cliente.rut from cliente where ISNULL(cliente.deleted_at))
         AND $aux_condsucursal_id;";
         //dd($sql);
