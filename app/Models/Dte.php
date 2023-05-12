@@ -1636,27 +1636,31 @@ class Dte extends Model
             ]);
         }
         $empresa = Empresa::findOrFail(1);
-        $soap = new SoapController();
-        $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
-        //$Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,"200");
-        //dd($Estado_DTE);
-        if($Estado_DTE->Estatus == 3){
-            return response()->json([
-                'id' => 0,
-                'title' => "DTE aun no ha sido acetado por SII",
-                'mensaje' => "Estado: " . $Estado_DTE->MsgEstatus . "\n DTE Nro: " . $dte->nrodocto,
-                'tipo_alert' => 'warning'
-            ]);
-        }
-        if($Estado_DTE->EstadoDTE == 16){
+        if($dte->foliocontrol_id == 2){
             return Dte::updateStatusGen($dte,$request);
         }else{
-            return response()->json([
-                'id' => 0,
-                'title' => "DTE aun no ha sido acetado por SII",
-                'mensaje' => "Estado: " . $Estado_DTE->DescEstado . "\n DTE Nro: " . $dte->nrodocto,
-                'tipo_alert' => 'warning'
-            ]);
+            $soap = new SoapController();
+            $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
+            //$Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,"200");
+            //dd($Estado_DTE);
+            if($Estado_DTE->Estatus == 3){
+                return response()->json([
+                    'id' => 0,
+                    'title' => "DTE aun no ha sido acetado por SII",
+                    'mensaje' => "Estado: " . $Estado_DTE->MsgEstatus . "\n DTE Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'warning'
+                ]);
+            }
+            if($Estado_DTE->EstadoDTE == 16){
+                return Dte::updateStatusGen($dte,$request);
+            }else{
+                return response()->json([
+                    'id' => 0,
+                    'title' => "DTE aun no ha sido acetado por SII",
+                    'mensaje' => "Estado: " . $Estado_DTE->DescEstado . "\n DTE Nro: " . $dte->nrodocto,
+                    'tipo_alert' => 'warning'
+                ]);
+            }    
         }
     }
 
