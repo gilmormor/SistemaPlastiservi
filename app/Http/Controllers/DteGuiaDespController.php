@@ -541,8 +541,10 @@ class DteGuiaDespController extends Controller
             $empresa = Empresa::findOrFail(1);
             $soap = new SoapController();
             $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
-            //VALLIDAR QUE DOCUMENTO FUE ACEPTAFO POR SII
+            //VALIDAR QUE DOCUMENTO FUE ACEPTAFO POR SII
             //SI NO EXISTE DOCUMENTO EN SII
+            /*
+            //EN COMENTARIO: A PETICION DE ERIKA BUSTOS PARA EVITAR RETRASOS EN ENVIO DE GUIAS DE DESPACHO
             if($Estado_DTE->Estatus == 3){
                 return response()->json([
                     'id' => 0,
@@ -558,6 +560,9 @@ class DteGuiaDespController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
+            //FIN EN COMENTARIO: A PETICION DE ERIKA BUSTOS PARA EVITAR RETRASOS EN ENVIO DE GUIAS DE DESPACHO
+            */
+
             /*
             if(!is_null($dte->statusgen)){
                 return response()->json([
