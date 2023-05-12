@@ -265,8 +265,7 @@ class DteGuiaDespDirController extends Controller
             $empresa = Empresa::findOrFail(1);
             $soap = new SoapController();
             $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
-            //$Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,"200");
-            //dd($Estado_DTE);
+            /*EN COMENTARIO: A PETICION DE ERIKA BUSTOS PARA EVITAR RETRASOS EN ENVIO DE GUIAS DE DESPACHO
             if($Estado_DTE->Estatus == 3){
                 return response()->json([
                     'id' => 0,
@@ -283,6 +282,8 @@ class DteGuiaDespDirController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
+            */
+            return Dte::updateStatusGen($dte,$request);
         }
     }
 }

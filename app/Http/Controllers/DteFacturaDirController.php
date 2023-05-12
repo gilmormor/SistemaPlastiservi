@@ -222,10 +222,12 @@ class DteFacturaDirController extends Controller
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
-            if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
-                $dteoc->dte_id = $dteNew->id;
-                $dteoc->oc_file = $foto;
-                $dteoc->save();
+            if(isset($dteoc)){
+                if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                    $dteoc->dte_id = $dteNew->id;
+                    $dteoc->oc_file = $foto;
+                    $dteoc->save();
+                }
             }
             foreach ($dte->dtedets as $dtedet) {
                 $dtedet->dte_id = $dteNew->id;
