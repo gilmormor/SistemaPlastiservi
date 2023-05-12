@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ValidarPesajeCarro extends FormRequest
+class ValidarClienteTemp extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,8 @@ class ValidarPesajeCarro extends FormRequest
     public function rules()
     {
         return [
-            'nombre' => 'required|max:50|unique:pesajecarro,nombre,' . $this->route('id'),
-            'sucursal_id' => 'required',
-            'tara' => 'required',
-            'activo' => 'required'
+            'rut' => 'required|max:12|unique:clientetemp,rut,' . $this->route('id'),
+            'razonsocial' => 'required'
         ];
     }
 }

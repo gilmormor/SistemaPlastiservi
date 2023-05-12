@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidarClienteTemp;
 use App\Models\ClienteTemp;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
+use App\Models\Vendedor;
 use Illuminate\Http\Request;
 
 class ClienteTempController extends Controller
@@ -15,7 +18,22 @@ class ClienteTempController extends Controller
      */
     public function index()
     {
-        //
+        can('listar-cliente-temporal');
+        $datas = ClienteTemp::orderBy('id')->get();
+        return view('clientetemp.index', compact('datas'));
+    }
+
+    public function clientetemppage(){
+        /*
+        return datatables()
+            ->eloquent(ClienteTemp::query())
+            ->toJson();
+        */
+        $datas = ClienteTemp::consulta();
+
+        //dd($datas);
+        return datatables($datas)->toJson();
+    
     }
 
     /**
@@ -23,9 +41,14 @@ class ClienteTempController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function crear()
     {
-        //
+        can('crear-cliente-temporal');
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $tablas = array();
+        //$tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
+        return view('clientetemp.crear', compact('tablas'));
     }
 
     /**
@@ -34,31 +57,31 @@ class ClienteTempController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function guardar(ValidarClienteTemp $request)
     {
-        //
+        can('guardar-cliente-temporal');
+        ClienteTemp::create($request->all());
+        return redirect('clientetemp')->with('mensaje','ClienteTemp creado con exito');
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editar($id)
     {
-        //
+        can('editar-cliente-temporal');
+        $data = ClienteTemp::findOrFail($id);
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $tablas = array();
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
+        //$tablas['vendedores'] = Vendedor::orderBy('id')->get();
+        $vendedor = Vendedor::vendedores();
+        $tablas['vendedores'] = $vendedor['vendedores'];
+
+        return view('clientetemp.editar', compact('data','tablas'));
     }
 
     /**
@@ -68,9 +91,11 @@ class ClienteTempController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function actualizar(ValidarClienteTemp $request, $id)
     {
-        //
+        can('guardar-cliente-temporal');
+        ClienteTemp::findOrFail($id)->update($request->all());
+        return redirect('clientetemp')->with('mensaje','ClienteTemp actualizado con exito');
     }
 
     /**
@@ -79,9 +104,18 @@ class ClienteTempController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function eliminar(Request $request, $id)
     {
-        //
+        can('eliminar-cliente-temporal');
+        if ($request->ajax()) {
+            if (ClienteTemp::destroy($id)) {
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
+        } else {
+            abort(404);
+        }
     }
     
     public function buscarCliTemp(Request $request){

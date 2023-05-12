@@ -404,6 +404,7 @@ Route::get('cotizaciontrans/{id}/editar', 'CotizacionTransController@editar')->n
 
 /*RUTAS CLIENTE TEMPORAL*/
 Route::get('clientetemp', 'ClienteTempController@index')->name('clientetemp');
+Route::get('clientetemppage', 'ClienteTempController@clientetemppage')->name('clientetemppage');
 Route::get('clientetemp/crear', 'ClienteTempController@crear')->name('crear_clientetemp');
 Route::post('clientetemp', 'ClienteTempController@guardar')->name('guardar_clientetemp');
 Route::get('clientetemp/{id}/editar', 'ClienteTempController@editar')->name('editar_clientetemp');
