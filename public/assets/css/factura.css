@@ -89,6 +89,13 @@ p, label, span, table{
 	overflow: hidden;
 	padding-bottom: 15px;
 }
+.round2{
+	width:100% !important;
+	border-radius: 10px;
+	border: 1px solid #0a4661;
+	overflow: hidden;
+	padding-bottom: 15px;
+}
 
 #factura_detalle{
 	border-collapse: collapse;

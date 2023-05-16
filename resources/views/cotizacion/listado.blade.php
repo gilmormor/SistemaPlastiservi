@@ -135,39 +135,57 @@
 	<div class="round" style="margin-bottom: 3px;">
 		<p class="nota"><strong>Observaciones: {{$cotizacion->observacion}}</strong></p>
 	</div>
-	<div class="round1" style="padding-bottom: 0px;">
-		<span class="h3">Información</span>
-		<table>
-			<!--<tr class="headt">-->
-			<!--
-			<tr>
-				<td colspan="8" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($cotizacion->plazoentrega))}}</span></td>
-			</tr>
-			-->
-			@if ($cotizacion->plaentdias > 0)
-				<tr>
-					<td colspan="8" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
-					<td class="textleft" width="50%"><span>{{$cotizacion->plaentdias}} días hábiles</span></td>
-				</tr>				
-			@endif
-			<tr>
-				<td colspan="8" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$cotizacion->lugarentrega}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="8" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$cotizacion->plazopago->descripcion}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="8" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$cotizacion->tipoentrega->nombre}}</span></td>
-			</tr>
-		</table>
-	</div>
-	<br>
 	<div>
-		<p class="nota">Si usted tiene preguntas sobre esta cotización, <br>pongase en contacto con nombre, teléfono y Email</p>
+		<table width="100%">
+			<tr>
+				<td width="30%">
+					<div class="round2" style="padding-bottom: 0px;">
+						<span class="h3">Información</span>
+						<table>
+							@if ($cotizacion->plaentdias > 0)
+								<tr>
+									<td colspan="8" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
+									<td class="textleft" width="50%"><span>{{$cotizacion->plaentdias}} días hábiles</span></td>
+								</tr>				
+							@endif
+							<tr>
+								<td colspan="8" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
+								<td class="textleft" width="50%"><span>{{$cotizacion->lugarentrega}}</span></td>
+							</tr>
+							<tr>
+								<td colspan="8" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
+								<td class="textleft" width="50%"><span>{{$cotizacion->plazopago->descripcion}}</span></td>
+							</tr>
+							<tr>
+								<td colspan="8" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
+								<td class="textleft" width="50%"><span>{{$cotizacion->tipoentrega->nombre}}</span></td>
+							</tr>
+						</table>
+					</div>			
+				</td>
+				<td>
+					<div style="padding-left: 20px;padding-right: 10px;">
+						<p style="font-size: 9px;">
+							<b> Según las políticas de devoluciones de productos, PLASTISERVI establece:</b>
+						</p>
+						<ol style="font-size: 10px;text-align: justify;">
+							<li>No se aceptarán devoluciones por equivocaciones que cometió el cliente al momento de realizar la OC. Por ejemplo: No le sirvió para el propósito, no tiene espacio suficiente para almacenar, las medidas o material o el color no le sirvieron, etc.</li>
+							<li>Sólo se recibirá el producto en buen estado, libre de contaminación física, química o biológica, con etiqueta y embalaje original y en condiciones como fue entregado al cliente.</li>
+							<li>Sólo se recibirá con guía de despacho, indicando las unidades, dimensiones del producto y motivo de la devolución.</li>
+							<li>La recepción de los productos no asegura la reposición, cambio o nota de crédito.</li>
+							<li>En caso de que Control de Calidad determine que una parte de la mercadería no está en buen estado, esta no se aceptará y no se realizará nota de crédito por la mercadería defectuosa.</li>
+							<li>El periodo para realizar la devolución es de 90 días posterior a la fecha de facturación.</li>
+						</ol>
+						
+					</div>
+				</td>
+			</tr>
+		</table>		
+	</div>
+	<div>
+		<p class="nota">
+			<br><br>Si usted tiene preguntas sobre esta cotización, pongase en contacto con nombre, teléfono y Email
+		</p>
 		<!--<h4 class="label_gracias">¡Gracias por su compra!</h4>-->
 	</div>
 </div>
