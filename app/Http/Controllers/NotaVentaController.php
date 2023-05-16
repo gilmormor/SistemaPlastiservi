@@ -303,7 +303,12 @@ class NotaVentaController extends Controller
     {
         can('crear-notaventa');
         $data = Cotizacion::findOrFail($id);
-        //dd($data);
+        if(count($data->notaventa) > 0){
+            return redirect('notaventa')->with([
+                'mensaje'=>"Cotizacion $id fue usada en Nota de Venta " . $data->notaventa[0]->id,
+                'tipo_alert' => 'alert-error'
+            ]);    
+        }
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
         $detalles = $data->cotizaciondetalles()->get();
         /*$detalles = $data->cotizaciondetalles()
