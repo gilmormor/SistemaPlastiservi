@@ -21,7 +21,7 @@
 			</td>
 			<td class="info_factura">
 				<div class="round">
-					<span class="h3">Ventas por Vendedor</span>
+					<span class="h3">Comisión Ventas</span>
 					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
 					<p>Sucursal: {{$request->sucursal_nombre}}</p>
 					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
@@ -52,8 +52,8 @@
 				<br>
 			@endif
 			<?php
-				$aux_totalmnttotal = 0;
-				$aux_totalmnttotalpend = 0;
+				$aux_totalmontoitem = 0;
+				$aux_totalcomision = 0;
 				$vendedor = Vendedor::findOrFail($data->vendedor_id);
 			?>
 			<div class="round">
@@ -65,14 +65,15 @@
 						<th colspan="7" style='text-align:left'>Nombre: {{$vendedor->persona->nombre . " " . $vendedor->persona->apellido}}</th>
 					</tr>
 					<tr>
-						<th style='text-align:center'>DTE Doc</th>
+						<th style='text-align:center'>Doc</th>
 						<th style='text-align:center'>Tipo</th>
 						<th>Fecha</th>
 						<th>RUT</th>
 						<th style='text-align:left'>Razon Social</th>
+						<th style='text-align:left'>Producto</th>
 						<th style='text-align:right'>Monto</th>
-						<th style='text-align:right'>Pagado</th>
-						<th style='text-align:right'>Pendiente</th>
+						<th style='text-align:right'>%</th>
+						<th style='text-align:right'>Comisión</th>
 					</tr>
 				</thead>
 		@endif
@@ -83,9 +84,10 @@
 							<td style='text-align:center'>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
 							<td style='text-align:center'>{{$data->rut}}</td>
 							<td style='text-align:left'>{{$data->razonsocial}}</td>
-							<td style='text-align:right'>{{number_format($data->mnttotal, 0, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format(0, 0, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format($data->mnttotal, 0, ",", ".")}}</td>
+							<td style='text-align:left'>{{$data->nmbitem}}</td>
+							<td style='text-align:right'>{{number_format($data->montoitem, 0, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format(3, 1, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format(round($data->montoitem * 0.03, 0), 0, ",", ".")}}</td>
 						</tr>
 						<?php 
 							$aux_vendedor_id = $datas[0]->vendedor_id;
@@ -93,18 +95,18 @@
 				
 				</tbody>
 				<?php
-					$aux_totalmnttotal += round($data->mnttotal, 2);
-					$aux_totalmnttotalpend += round($data->mnttotal, 2);
+					$aux_totalmontoitem += round($data->montoitem, 0);
+					$aux_totalcomision += round($data->montoitem * 0.03, 0);
 					$aux_vendedor_id = $data->vendedor_id;
 					$count++;
 				?>
 	@endforeach
 			<tfoot id="detalle_totales">
 				<tr class="headt">
-					<th colspan="5" style='text-align:right'>TOTAL</th>
-					<th class="textright">{{number_format($aux_totalmnttotal, 0, ",", ".")}}</th>
-					<th class="textright">{{number_format(0, 0, ",", ".")}}</th>
-					<th class="textright">{{number_format($aux_totalmnttotalpend, 0, ",", ".")}}</th>
+					<th colspan="6" style='text-align:right'>TOTAL</th>
+					<th class="textright">{{number_format($aux_totalmontoitem, 0, ",", ".")}}</th>
+					<th class="textright"></th>
+					<th class="textright">{{number_format($aux_totalcomision, 0, ",", ".")}}</th>
 				</tr>
 			</tfoot>
 		</table>

@@ -7,19 +7,24 @@
 <input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
 <input type="hidden" name="dtefoliocontrol_id" id="dtefoliocontrol_id" value="1">
 <input type="hidden" name="foliocontrol_id" id="foliocontrol_id" value="1">
+<input type="hidden" name="imagen" id="imagen" value="">
+<input type="hidden" name="notaventa_id" id="notaventa_id" value="">
 
 <?php 
     $aux_rut = "";
     if(isset($data)){
         $aux_rut = number_format( substr ( $data->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $data->cliente->rut, strlen($data->cliente->rut) -1 , 1 );
     }
+    $aux_labelRequerido = "";
+    $aux_inputRequerido = "";
+    $enableCamposCot = ""; //Este campo lo cambio a disbles si llegara a necesitar desactivar los campos marcados con esta variable
 ?>
 
 
 <div class="row">
-    <div class="col-xs-12 col-sm-12">
+    <div class="col-xs-12 col-sm-9">
         <div class="row">
-            <div class="form-group col-xs-12 col-sm-2">
+            <div class="form-group col-xs-12 col-sm-3">
                 <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
                 @if (isset($data))
                     <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $aux_rut ?? '')}}" readonly disabled/>
@@ -37,7 +42,7 @@
                 <label for="razonsocial" class="control-label requerido" data-toggle='tooltip' title="Razón Social">Razón Social</label>
                 <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', $data->cliente->razonsocial ?? '')}}" readonly/>
             </div>
-            <div class="form-group col-xs-12 col-sm-4">
+            <div class="form-group col-xs-12 col-sm-3">
                 <label for="direccion" class="control-label">Dirección Princ</label>
                 <input type="text" name="direccion" id="direccion" class="form-control" value="{{old('direccion', $data->cliente->direccion ?? '')}}" required placeholder="Dirección principal" readonly/>
             </div>
@@ -64,7 +69,7 @@
                 <input type="text" name="formapago_desc" id="formapago_desc" class="form-control" value="{{old('formapago_desc', $data->cliente->formapago->descripcion ?? '')}}" required readonly/>
             </div>
             <div class="form-group col-xs-12 col-sm-1">
-                <label for="plazopago" class="control-label requerido">Plazo Pago</label>
+                <label for="plazopago" class="control-label requerido" data-toggle='tooltip' title="Plazo de pago">Pl Pago</label>
                 <input type="text" name="plazopago" id="plazopago" class="form-control" value="{{old('plazopago', $data->cliente->plazopago->descripcion ?? '')}}" required readonly/>
             </div>
             <div class="form-group col-xs-12 col-sm-2">
@@ -110,6 +115,10 @@
             <div class="form-group col-xs-12 col-sm-3">
                 <label for="hep" class="control-label" data-toggle='tooltip' title="Numero de Atencion o HEP">Hep</label>
                 <input type="text" name="hep" id="hep" class="form-control" value="{{old('hep', $data->dtefac->hep ?? '')}}" maxlength="12"/>
+            </div>
+            <div class="form-group col-xs-12 col-sm-2">
+                <label id="lblocnv_id" for="ocnv_id" class="control-label" data-toggle='tooltip' title="Orden de compra Nota de venta">OC</label>
+                <input type="text" name="ocnv_id" id="ocnv_id" class="form-control" value="" maxlength="12" disabled/>
             </div>
 
             <div class="form-group col-xs-12 col-sm-4" style="display:none;">
@@ -160,12 +169,35 @@
                         >Otros traslados no venta</option>
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-5">
+            <div class="form-group col-xs-12 col-sm-3">
                 <label for="obs" class="control-label">Observaciones</label>
                 <textarea class="form-control" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
             </div>
         </div>
-    </div>    
+    </div>
+    <div class="col-xs-12 col-sm-3">
+        <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
+            <div class="box-header with-border">
+                <div class="box-body">
+                    <div class="row">
+                        <div id="group_oc_id" class="form-group col-xs-12 col-sm-12">
+                            <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label {{$aux_labelRequerido}}">Nro OrdenCompra</label>
+                            <div class="input-group">
+                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="" placeholder="Nro Orden de Compra" maxlength="15" disabled/>
+                            </div>
+                        </div>
+                        <div id="group_oc_file" class="form-group col-xs-12 col-sm-12">
+                            <label id="lboc_oc_file" name="lboc_oc_file" for="oc_file" class="control-label">Adjuntar OC</label>
+                            <div class="input-group">
+                                <input type="file" name="oc_file" id="oc_file" class="form-control" accept="*"/>
+                            </div>
+                            <span id="oc_file-error" style="color:#dd4b39;display: none;">Este campo es obligatorio.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
@@ -173,7 +205,7 @@
 </div>
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
-        <h3 class="box-title">Detalle</h3>
+        <h3 class="box-title" id="titulo-detalle">Detalle</h3>
         <div class="box-tools pull-right">
             <a id="botonNewGuia" name="botonNewGuia" href="#" class="btn btn-block btn-success btn-sm" style="{{isset($data) ? "" : "display:none;" }}">
                 <i class="fa fa-fw fa-plus-circle"></i> Seleccionar Guia

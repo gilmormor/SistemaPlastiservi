@@ -53,10 +53,47 @@ $(document).ready(function () {
 		$("#fechahora").val($("#aux_fechaphp").val());
 	}
 
+	iniciarFileinput();
+
 	totalizar();
 
 });
 
+function iniciarFileinput(){
+	$('#oc_file').fileinput({
+		language: 'es',
+		allowedFileExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+		maxFileSize: 1000,
+		/*
+		initialPreview: [
+			// PDF DATA
+			'/storage/imagenes/notaventa/'+$("#imagen").val(),
+		],*/
+		initialPreviewShowDelete: false,
+		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
+		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
+		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
+		initialPreviewConfig: [
+			{type: "pdf", size: 8000, caption: $("#imagen").val(), url: "/file-upload-batch/2", key: 10, downloadUrl: false}, // disable download
+		],
+		showUpload: false,
+		showClose: false,
+		initialPreviewAsData: true,
+		dropZoneEnabled: false,
+		maxFileCount: 5,
+		theme: "fa",
+	}).on('fileclear', function(event) {
+		//console.log("fileclear");
+		$('#oc_file').attr("data-initial-preview","");
+		$("#imagen").val("");
+		//alert('entro');
+	}).on('fileimageloaded', function(e, params) {
+		//console.log('Paso');
+		//console.log('File uploaded params', params);
+		//console.log($('#oc_file').val());
+		$("#imagen").val($('#oc_file').val());
+	});
+}
 function ajaxRequest(data,url,funcion) {
 	$.ajax({
 		url: url,
@@ -101,9 +138,46 @@ function ajaxRequest(data,url,funcion) {
 				//console.log(respuesta.length);
 				console.log(respuesta);
 				if(respuesta.length>0){
+					aux_oc_id = respuesta[0].oc_id;
+					for (i = 0; i < respuesta.length; i++) {
+						if(respuesta[i].oc_id != aux_oc_id){
+							swal({
+								title: 'Orden de compra.',
+								text: "Solo se puede facturar una orden de compra.",
+								icon: 'error',
+								buttons: {
+									confirm: "Aceptar"
+								},				
+							})
+							$('#centroeconomico_id').val(""); // Select the option with a value of '1'
+							$('#vendedor_id').val(""); // Select the option with a value of '1'		
+							$('#tabla-data tbody').html("");
+							totalizar();
+							$('.select2').trigger('change'); // Notify any JS components that the value changed
+							return 0;
+						}
+					}
+					if(aux_oc_id == "" || aux_oc_id == null){
+						$("#ocnv_id").val("");
+						$("#lblocnv_id").html("OC");
+						$("#ocnv_id").attr("disabled",true)
+
+						$("#oc_id").attr("disabled", false);
+						$('#group_oc_file').show()
+					}else{
+						$("#ocnv_id").val(aux_oc_id);
+						aux_href = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' onclick='verpdf2(\"" + respuesta[0].oc_file + "\",2)'>" + 
+										aux_oc_id + 
+									"</a>";
+						$("#ocnv_id").attr("disabled",false)
+						$("#lblocnv_id").html("OC: " + aux_href);
+						$("#oc_id").attr("disabled", true);
+						$('#group_oc_file').hide();
+
+					}
 					$('#centroeconomico_id').val(respuesta[0].centroeconomico_id); // Select the option with a value of '1'
 					$('#vendedor_id').val(respuesta[0].vendedor_id); // Select the option with a value of '1'
-					
+					$("#notaventa_id").val(respuesta[0].notaventa_id);
 					$('.select2').trigger('change'); // Notify any JS components that the value changed
 					//$("#centroeconomico_id option[value='"+ respuesta[0].centroeconomico_id +"']").attr("selected",true);
 					//$(".selectpicker").selectpicker('refresh');
@@ -460,5 +534,59 @@ function blanquearDatos(){
 	$("#obs").val("");
 	$('.select2').trigger('change');
 	$('#tabla-data tbody').html("");
+	$("#lblocnv_id").html("OC");
+	$("#ocnv_id").val("");
+	$("#ocnv_id").attr("disabled", true);
+	$("#oc_id").attr("disabled", true);
+	$("#notaventa_id").val("");
+	$('#group_oc_file').hide()
 	totalizar();
 }
+
+$(".form-horizontal").on("submit", function(event){
+	/*
+	validarItemVacios();
+	event.preventDefault();
+	swal({
+		title: '¿ Seguro desea continuar ?',
+		text: "Esta acción no se puede deshacer!",
+			icon: 'warning',
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+			return true;
+		}else{
+			event.preventDefault();
+		}
+	});			
+	*/
+
+	if($("#imagen").val() ==""){
+		$("#imagen").val($('#oc_file').val());
+	}
+	$('#group_oc_id').removeClass('has-error');
+	$('#group_oc_file').removeClass('has-error');
+	if($("#sucursal_id option:selected").attr('value') == 3){
+		$('#oc_id').prop('required', false);
+	}
+	$("#oc_file-error").hide();
+	aux_ocarchivo = $.trim($('#oc_file').val()) + $.trim($('#oc_file').attr("data-initial-preview"));
+	//if (($('#oc_id').val().length == 0) && (($('#oc_file').val().length != 0) || ($('#oc_file').attr("data-initial-preview").length != 0))) {
+	if ( (aux_ocarchivo.length != 0) && ($('#oc_id').val().length == 0) ) {
+		alertify.error("El campo Nro OrdenCompra es requerido cuando Adjuntar OC está presente.");
+		//$("#oc_id").addClass('has-error');
+		$('#oc_id').prop('required', true);
+		return false;
+	}
+	//if (($('#oc_id').val().length != 0) && (($('#oc_file').val().length == 0) && ($('#oc_file').attr("data-initial-preview").length == 0))) {
+	if (($('#oc_id').val().length != 0) && (aux_ocarchivo.length == 0)) {
+		alertify.error("El campo Adjuntar OC es requerido cuando Nro OrdenCompra está presente.");
+		$("#oc_file-error").show();
+		$("#group_oc_file").addClass('has-error');
+		//$('#oc_file').prop('required', true);
+		return false;
+	}
+});

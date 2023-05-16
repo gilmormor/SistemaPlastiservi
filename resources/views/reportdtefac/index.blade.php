@@ -158,9 +158,6 @@ DTE Facturacion
                                             <option value="0">Todos</option>
                                             <option value="1">Activas</option>
                                             <option value="2">Anuladas</option>
-                                            <option value="3">Facturadas</option>
-                                            <option value="4">Pend Facturar</option>
-                                            <option value="5">Traslado</option>
                                         </select>
                                     </div>
                                 </div>

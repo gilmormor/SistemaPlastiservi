@@ -21,6 +21,7 @@ use App\Models\DteOC;
 use App\Models\Empresa;
 use App\Models\Foliocontrol;
 use App\Models\Giro;
+use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
@@ -80,19 +81,27 @@ class DteFacturaController extends Controller
     {        
         can('guardar-dte-factura-gd');
         $aux_arrayselgd = explode(",", $request->selectguiadesp);
+        $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+        if(!empty($notaventa->oc_id)){
+            if(empty($request->ocnv_id) or $request->ocnv_id == null or $request->ocnv_id == ""){
+                return redirect('dtefactura')->with([
+                    'mensaje'=>'Orden de compra no puede quedar en blanco!',
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }
         //dd($request);
         //BUSCO SI HUBO MODIFICACION EN LAS GUIAS DE DESPACHO 
         //SI LA FECHA UPDATE_AT ES DIFERENTE A LA QUE VIENE DE LAS GUIAS SELECCIONADAS DETIENE LA EJECUCION Y RETORNA AL INDEX dtefactura
         foreach ($aux_arrayselgd as &$valor) {
             $indice = array_search($valor,$request->dte_idGD,false);
             $dteguiadesp = Dte::findOrFail($valor);
-            /*
             if($request->updated_atGD[$indice] != $dteguiadesp->updated_at){
                 return redirect('dtefactura')->with([
                     'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
                     'tipo_alert' => 'alert-error'
                 ]);
-            }*/
+            }
             $dteguiadesp->updated_at = date("Y-m-d H:i:s");
             $dteguiadesp->save();
         }
@@ -133,12 +142,22 @@ class DteFacturaController extends Controller
             if($dteguiadesp->dteoc){
                 $dteoc = new DteOC();
                 $dteoc->dte_id = "";
-                $dteoc->oc_id = $dteguiadesp->dteoc->oc_id;
+                $dteoc->oc_id = $request->ocnv_id;
                 $dteoc->oc_folder = $dteguiadesp->dteoc->oc_folder;
                 $dteoc->oc_file = $dteguiadesp->dteoc->oc_file;
                 $dte->dteocs[] = $dteoc;
                 //$dteoc->save();
             }
+            if(isset($request->oc_id) and !is_null($request->oc_id)){
+                $dteoc = new DteOC();
+                $dteoc->dte_id = "";
+                $dteoc->oc_id = $request->oc_id;
+                $dteoc->oc_folder = "oc";
+                $dteoc->oc_file = $request->oc_file;
+                $dte->dteocs[] = $dteoc;
+                //$dteoc->save();
+            }
+    
             foreach($dteguiadesp->dtedets as $dtedetguia){ //RECORRO EL DETALLE DE LA GUIA ORIGEN
                 $aux_nrolindet++;
                 $dtedet = new DteDet();
@@ -225,7 +244,6 @@ class DteFacturaController extends Controller
             'id' => 1
         ]);
         */
-
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
@@ -278,6 +296,25 @@ class DteFacturaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
+            if(isset($request->ocnv_id)){
+                $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+                $notaventa->oc_id = $request->ocnv_id;
+                $notaventa->save();
+            }
+            if($dteguiadesp->dteoc){
+                $dteoc->dte_id = $dteNew->id;
+                $dteoc->save();
+            }else{
+                if(isset($request->oc_id) and !is_null($request->oc_id)){
+                    if(isset($dteoc)){
+                        if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                            $dteoc->dte_id = $dteNew->id;
+                            $dteoc->oc_file = $foto;
+                            $dteoc->save();
+                        }
+                    }
+                }    
+            }
             return redirect('dtefactura')->with([
                 'mensaje'=>'Factura creada con exito.',
                 'tipo_alert' => 'alert-success'
@@ -601,7 +638,9 @@ function consultaindex($dte_id){
     ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
     WHERE dtedte1.dte_id = dte.id
     GROUP BY dtedte1.dte_id) AS nrodocto_guiadesp,
-    foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at
+    foliocontrol.tipodocto,foliocontrol.nombrepdf,
+    dteoc.oc_id as dteoc_oc_id,dteoc.oc_folder as dteoc_oc_folder,dteoc.oc_file as dteoc_oc_file,
+    dte.updated_at
     FROM dte INNER JOIN dtedte
     ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
     INNER JOIN dteguiadesp
@@ -618,6 +657,8 @@ function consultaindex($dte_id){
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
     INNER JOIN foliocontrol
     ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
+    LEFT JOIN dteoc
+    ON dteoc.dte_id = dte.id AND ISNULL(dte.deleted_at) AND ISNULL(dteoc.deleted_at)
     WHERE (dte.foliocontrol_id=1)
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.sucursal_id IN ($sucurcadena)

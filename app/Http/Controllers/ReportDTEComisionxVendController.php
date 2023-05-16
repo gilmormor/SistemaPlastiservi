@@ -32,7 +32,7 @@ class ReportDTEComisionxVendController extends Controller
 
     public function reportdtecomisionxvendpage(Request $request){
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
-        $request->merge(['orderby' => " order by dte.id desc "]);
+        $request->merge(['orderby' => " order by foliocontrol.doc,dte.id desc "]);
         $request->merge(['groupby' => " group by dtedet.id "]);
         $datas = Dte::reportcomisionxvend($request);
         return datatables($datas)->toJson();
@@ -41,9 +41,9 @@ class ReportDTEComisionxVendController extends Controller
     public function exportPdf(Request $request)
     {
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
-        $request->merge(['orderby' => " order by dte.vendedor_id asc,dte.id "]);
-        $request->merge(['groupby' => " group by dte.id "]);
-        $datas = Dte::reportestadocli($request);
+        $request->merge(['orderby' => " order by dte.vendedor_id asc,foliocontrol.doc,dte.id "]);
+        $request->merge(['groupby' => " group by dtedet.id "]);
+        $datas = Dte::reportcomisionxvend($request);
         //dd($datas[0]);
 
         $empresa = Empresa::orderBy('id')->get();

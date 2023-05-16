@@ -312,6 +312,7 @@ class DteGuiaDespController extends Controller
             $dteoc = new DteOC();
             $dteoc->dte_id = $dteNew->id;
             $dteoc->oc_id = $despachoord->notaventa->oc_id;
+            $dteoc->oc_folder = "notaventa";
             $dteoc->oc_file = $despachoord->notaventa->oc_file;
             $dteoc->save();
 

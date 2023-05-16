@@ -20,8 +20,7 @@ $(document).ready(function () {
     {
         btnpdf(datosFac());
     });
-
-
+    consultarpage(datosFac());
 });
 
 function consultarpage(aux_data){

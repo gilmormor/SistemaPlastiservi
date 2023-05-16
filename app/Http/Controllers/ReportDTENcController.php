@@ -58,6 +58,18 @@ class ReportDTENcController extends Controller
             $aux_sucursalNombre = $sucursal->nombre;
             $request->merge(['sucursal_nombre' => $sucursal->nombre]);
         }
+        switch ($request->aprobstatus) {
+            case 0:
+                $aux_status = "Todos";
+                break;
+            case 1:
+                $aux_status = "Activas";
+                break;    
+            case 2:
+                $aux_status = "Anuladas";
+                break;
+        }
+        $request->merge(['status' => $aux_status]);
         if($datas){
             
             if(env('APP_DEBUG')){

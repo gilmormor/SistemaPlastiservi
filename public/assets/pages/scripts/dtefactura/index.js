@@ -79,8 +79,15 @@ $(document).ready(function () {
                         aux_text += ",";
                     }
                 }
-                $('td', row).eq(5).html(aux_text);
+            }else{
+                if(data.dteoc_oc_file != "" && data.dteoc_oc_file != null){
+                    aux_text = 
+                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf3(\"" + data.dteoc_oc_file + "\",2,\"" + data.dteoc_oc_folder + "\")'>" + 
+                        data.dteoc_oc_id + 
+                    "</a>";    
+                }
             }
+            $('td', row).eq(5).html(aux_text);
             aux_text = "";
             if(!(data.notaventa_id === null)){
                 let arr_notaventa_id = data.notaventa_id.split(','); 

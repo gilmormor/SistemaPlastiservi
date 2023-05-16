@@ -731,11 +731,26 @@ class Dte extends Model
         }else{
             $aux_condfoliocontrol_id = " dte.foliocontrol_id in $request->foliocontrol_id";
         }
+        if(!isset($request->aprobstatus) or empty($request->aprobstatus)){
+            $aux_aprobstatus = " true";
+        }else{
+            switch ($request->aprobstatus) {
+                case 0:
+                    $aux_aprobstatus = " true";
+                    break;
+                case 1:
+                    $aux_aprobstatus = " isnull(dteanul.obs)";
+                    break;    
+                case 2:
+                    $aux_aprobstatus = " not isnull(dteanul.obs)";
+                    break;
+            }
+        }
         //dd($aux_condfoliocontrol_id);
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
-    
+
         $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -782,6 +797,7 @@ class Dte extends Model
         AND $aux_condoc_id
         AND $aux_condnotaventa_id
         AND $aux_condstatusgen
+        AND $aux_aprobstatus
         AND NOT ISNULL(dte.nrodocto)
         GROUP BY dte.id
         ORDER BY dte.id desc;";
@@ -1530,6 +1546,21 @@ class Dte extends Model
         }else{
             $aux_conddte_id = "dte.id = $request->dte_id";
         }
+        if(!isset($request->aprobstatus) or empty($request->aprobstatus)){
+            $aux_aprobstatus = " true";
+        }else{
+            switch ($request->aprobstatus) {
+                case 0:
+                    $aux_aprobstatus = " true";
+                    break;
+                case 1:
+                    $aux_aprobstatus = " isnull(dteanul.obs)";
+                    break;    
+                case 2:
+                    $aux_aprobstatus = " not isnull(dteanul.obs)";
+                    break;
+            }
+        }
 
 
         $user = Usuario::findOrFail(auth()->id());
@@ -1563,6 +1594,7 @@ class Dte extends Model
         AND $aux_condrut
         AND $aux_condoc_id
         AND $aux_condnotaventa_id
+        AND $aux_aprobstatus
         GROUP BY dte.id
         ORDER BY dte.id desc;";
         //dd($sql);

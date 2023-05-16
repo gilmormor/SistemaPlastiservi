@@ -33,7 +33,7 @@ class ReportDTEVentasxVendController extends Controller
 
     public function reportdteventasxvendpage(Request $request){
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
-        $request->merge(['orderby' => " order by dte.id desc "]);
+        $request->merge(['orderby' => " order by foliocontrol.doc,dte.id desc "]);
         $request->merge(['groupby' => " group by dte.id "]);
         $datas = Dte::reportestadocli($request);
         return datatables($datas)->toJson();
@@ -42,7 +42,7 @@ class ReportDTEVentasxVendController extends Controller
     public function exportPdf(Request $request)
     {
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
-        $request->merge(['orderby' => " order by dte.vendedor_id asc,dte.id "]);
+        $request->merge(['orderby' => " order by dte.vendedor_id asc,foliocontrol.doc,dte.id "]);
         $request->merge(['groupby' => " group by dte.id "]);
         $datas = Dte::reportestadocli($request);
         //dd($datas[0]);

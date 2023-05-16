@@ -437,10 +437,16 @@
                                     $acuerdotecnico = null;
                                     if ($detalle->producto->tipoprod == 1){
                                         //SI 
-                                        if($detalle->acuerdotecnicotempunoauno){
-                                            $acuerdotecnico = $detalle->acuerdotecnicotempunoauno;
+                                        //dd(isset($detalle->acuerdotecnico));
+                                        if(isset($detalle->acuerdotecnico) and $detalle->acuerdotecnico){
+                                            $acuerdotecnico = $detalle->acuerdotecnico;
                                         }else{
-                                            $acuerdotecnico = $detalle->cotizaciondetalle->acuerdotecnicotempunoauno;
+                                            if(isset($detalle->acuerdotecnicotempunoauno) and $detalle->acuerdotecnicotempunoauno){
+                                                $acuerdotecnico = $detalle->acuerdotecnicotempunoauno;
+                                            }else{
+                                                $acuerdotecnico = $detalle->cotizaciondetalle->acuerdotecnicotempunoauno;
+                                            }
+                                            //dd($acuerdotecnico);
                                         }
                                     }
                                 ?>

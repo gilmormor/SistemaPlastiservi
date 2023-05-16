@@ -84,7 +84,7 @@ class NotaVentaDetalle extends Model
     //RELACION de uno a uno acuerdotecnicotemp
     public function acuerdotecnicotempunoauno()
     {
-        return $this->hasOne(AcuerdoTecnicoTemp::class,"at_notaventadetalle_id");
+        return $this->hasOne(AcuerdoTecnicoTemp::class,"at_cotizaciondetalle_id","cotizaciondetalle_id");
     }
     
     
