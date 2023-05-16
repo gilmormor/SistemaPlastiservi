@@ -143,7 +143,7 @@ function ajaxRequest(data,url,funcion) {
 						if(respuesta[i].oc_id != aux_oc_id){
 							swal({
 								title: 'Orden de compra.',
-								text: "Solo se puede facturar una orden de compra.",
+								text: "Solo puede facturar una orden de compra.",
 								icon: 'error',
 								buttons: {
 									confirm: "Aceptar"
