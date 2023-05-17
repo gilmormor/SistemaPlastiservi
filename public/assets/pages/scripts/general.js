@@ -1173,7 +1173,10 @@ function verpdf2(nameFile,stareport){
 			success: function (respuesta) {
 				//console.log(respuesta);
 				if(respuesta.resp){
-					$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile);
+					// Genera una cadena de consulta única utilizando la marca de tiempo actual
+					let queryString = '?timestamp=' + new Date().getTime();
+					// Concatena la cadena queryString de consulta al atributo src del iframe
+					$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile + queryString);
 					if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
 						$("#myModalpdf").modal('show');
 					}	
