@@ -37,7 +37,7 @@ $(document).ready(function () {
 	$('#oc_file').fileinput({
 		language: 'es',
 		allowedFileExtensions: ['jpg', 'jpeg', 'png', "pdf"],
-		maxFileSize: 4000,
+		maxFileSize: 400,
 		initialPreview: [
 			// PDF DATA
 			'/storage/imagenes/notaventa/'+$("#imagen").val(),

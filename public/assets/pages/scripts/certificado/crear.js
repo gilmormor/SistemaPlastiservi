@@ -5,7 +5,7 @@ $(document).ready(function () {
     $('#foto').fileinput({
         language: 'es',
         allowedFileExtensions: ['jpg', 'jpeg', 'png'],
-        maxFileSize: 4000,
+        maxFileSize: 400,
         showUpload: false,
         showClose: false,
         initialPreviewAsData: true,
