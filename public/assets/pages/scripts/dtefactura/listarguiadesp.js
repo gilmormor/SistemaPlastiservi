@@ -94,10 +94,10 @@ $(document).ready(function () {
             aux_text = "";
             if(data.nrodocto != "" && data.nrodocto != null){
                 aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho" + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
                     + data.nrodocto +
                 "</a>:" +
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cedible" + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")' style='padding-left: 0px;'>"+
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cedible' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")' style='padding-left: 0px;'>"+
                     + data.nrodocto +
                 "</a>";
             }
