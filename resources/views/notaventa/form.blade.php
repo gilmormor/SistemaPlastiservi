@@ -32,6 +32,10 @@
     $selecmultprod = false;
 ?>
 <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
+<div class="form-group col-xs-4 col-sm-4" style="display:none;">
+    <label for="oc_fileaux" class="control-label requerido" data-toggle='tooltip' title="Adjuntar Orden de compra">Adjuntar Orden de compra</label>
+    <input type="hidden" name="oc_fileaux" id="oc_fileaux" value="" class="form-control" style="text-align:right;">
+</div>
 
 
 <?php
@@ -634,7 +638,6 @@
         
     </div>
 </div>
-
 @if ($aux_sta==2 or $aux_sta==3)
     @if ($data->oc_file)
         <?php 

@@ -995,11 +995,11 @@ $('#form-general').submit(function(event) {
 	if($("#imagen").val() ==""){
 		$("#imagen").val($('#oc_file').val());
 	}
-	console.log($("#imagen").val());
 	$('#group_oc_id').removeClass('has-error');
 	$('#group_oc_file').removeClass('has-error');
 	$('#oc_id').prop('required', false);
 	$("#oc_file-error").hide();
+	$('#oc_fileaux').prop('required', false);
 	aux_ocarchivo = $.trim($('#oc_file').val()) + $.trim($('#oc_file').attr("data-initial-preview"));
 	//if (($('#oc_id').val().length == 0) && (($('#oc_file').val().length != 0) || ($('#oc_file').attr("data-initial-preview").length != 0))) {
 	if ( (aux_ocarchivo.length != 0) && ($('#oc_id').val().length == 0) ) {
@@ -1013,7 +1013,7 @@ $('#form-general').submit(function(event) {
 		alertify.error("El campo Adjuntar OC es requerido cuando Nro OrdenCompra está presente.");
 		$("#oc_file-error").show();
 		$("#group_oc_file").addClass('has-error');
-		//$('#oc_file').prop('required', true);
+		$('#oc_fileaux').prop('required', true);
 		return false;
 	}
 	$("#cotizacion_id").prop('disabled', false);
@@ -1033,6 +1033,7 @@ $(document).on('click','.fileinput-remove-button', function(){
 
  });
 */
+
 $("#botonNewProd").click(function(event)
 {
 	clientedirec_id = $("#clientedirec_id").val();
