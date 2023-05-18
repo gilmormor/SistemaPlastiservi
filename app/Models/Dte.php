@@ -2668,6 +2668,9 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             $array_ocs = []; //ARRAY ORDENES DE COMPPRA
             $array_GDs = []; //ARRAY GUIAS DE DESPACHO
             foreach ($dte->dtedtes as $dtedte) {
+                /* EN COMENTARIO PORQUE ESTOY GUARDANDO EL NUMERO DE ORDEN DE COMPRA EN DTEOC DE TODAS LAS FACTURAS
+                //TAMBIEN RECORDAR QUE SOLO SE PUEDE FACTURAR UNA UNICA ORDEN DE COMPRA POR FACTURA
+                //NO SE PUEDEN FACTURAR MAS DE 1 ORDEN DE COMPRA POR FACTURA
                 if($dtedte->dteguiadesp->notaventa){
                     $oc_id = $dtedte->dteguiadesp->notaventa->oc_id;
                     $array_ocs [$oc_id] = [
@@ -2676,6 +2679,8 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                         
                     ];
                 }
+                //FIN EN COMENTARIO PORQUE ESTOY GUARDANDO EL NUMERO DE ORDEN DE COMPRA EN DTEOC DE TODAS LAS FACTURAS
+                */
                 $array_GDs[] = [
                     "nrodocto" => $dtedte->dter->nrodocto,
                     "fchemis" => date("Y-m-d", strtotime($dtedte->dter->fchemis))
