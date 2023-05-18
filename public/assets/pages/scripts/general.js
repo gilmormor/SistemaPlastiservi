@@ -2808,7 +2808,7 @@ function procesarDTE(id){
     var ruta = '/dtefactura/procesar';
     //var ruta = '/guiadesp/dteguiadesp';
     swal({
-        title: '¿ Procesar DTE Factura ?',
+        title: '¿ Procesar DTE ?',
         text: "Esta acción no se puede deshacer!",
         icon: 'warning',
         buttons: {

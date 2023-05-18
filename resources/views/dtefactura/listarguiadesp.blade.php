@@ -4,7 +4,7 @@ Guia Despacho por Facturar
 @endsection
 <?php 
     $selecmultprod = true;
-    $aux_vista = "G";
+    $aux_vista = "F";
 ?>
 
 
@@ -212,8 +212,9 @@ Guia Despacho por Facturar
                                 <th class="ocultar">Icono</th>
                                 <th class="ocultar">Obs Bloqueo</th>
                                 <th class="ocultar">oc_file</th>
-                                <th class="ocultar">updated_at</th>
                                 <th class="ocultar">rutacrear</th>
+                                <th class="ocultar">updated_at</th>
+                                <th class="ocultar">despordupdated_at</th>
                                 <th class="width80">Acción</th>
                             </tr>
                         </thead>

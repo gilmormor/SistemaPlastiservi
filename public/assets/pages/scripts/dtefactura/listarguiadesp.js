@@ -30,7 +30,8 @@ $(document).ready(function () {
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
             {data: 'rutacrear',className:"ocultar"},
-            {data: 'updated_at',className:"ocultar"},            
+            {data: 'updated_at',className:"ocultar"},  
+            {data: 'despordupdated_at',className:"ocultar"},  
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -66,27 +67,37 @@ $(document).ready(function () {
                     "</a>";
                 $('td', row).eq(4).html(aux_text);
             }
-            aux_text = 
+            aux_text = "";
+            if(data.notaventa_id != "" && data.notaventa_id != null){
+                aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
                     data.notaventa_id +
                 "</a>";
+            }
             $('td', row).eq(5).html(aux_text);
-            aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" + 
-                    data.despachosol_id + 
-                "</a>";
+            aux_text = "";
+            if(data.despachosol_id != "" && data.despachosol_id != null){
+                aux_text = 
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" + 
+                        data.despachosol_id + 
+                    "</a>";
+            }
             $('td', row).eq(6).html(aux_text);
-
-            aux_text = 
+            aux_text = "";
+            if(data.despachoord_id != "" && data.despachoord_id != null){
+                aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden despacho: " + data.despachoord_id + "' onclick='genpdfOD(" + data.despachoord_id + ",1)'>"+
                     + data.despachoord_id +
                 "</a>";
+            }
             $('td', row).eq(7).html(aux_text);
-
-            aux_text = 
+            aux_text = "";
+            if(data.nrodocto != "" && data.nrodocto != null){
+                aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
                     + data.nrodocto +
                 "</a>";
+            }
             $('td', row).eq(8).html(aux_text);
 
 
@@ -128,19 +139,22 @@ $(document).ready(function () {
             $('td', row).eq(16).addClass('updated_at');
             $('td', row).eq(16).attr('id','updated_at' + data.id);
             $('td', row).eq(16).attr('name','updated_at' + data.id);
-            /*
-            aux_text = "<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Factura: " + data.tipoentrega_nombre + "'>" +
+
+            $('td', row).eq(17).addClass('updated_at');
+            $('td', row).eq(17).attr('id','despordupdated_at' + data.id);
+            $('td', row).eq(17).attr('name','despordupdated_at' + data.id);
+            aux_text = /*"<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Factura: " + data.tipoentrega_nombre + "'>" +
                             "<button type='button' class='btn btn-default btn-xs'>" +
                                 "<i class='fa fa-fw " + data.icono + "'></i>"+
                             "</button>" +
                         "</a>|" +
-                        "<a onclick='anularguiafact(" + data.id + "," + data.despachoord_id + ")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Anular Guia Despacho' data-toggle='tooltip'>" +
-                            "<button type='button' class='btn btn-default btn-xs'>" +
-                                "<i class='fa fa-fw fa-remove text-red'></i>"+
+                        */
+                        "<a onclick='anularguiafact(" + data.id + "," + data.despachoord_id + ")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Devolver Guia Despacho' data-toggle='tooltip'>" +
+                            "<button type='button' class='btn btn-warning btn-xs'>" +
+                                "<i class='fa fa-fw fa-reply'></i>"+
                             "</button>" +
                         "</a>";
-            $('td', row).eq(17).html(aux_text);
-            */
+            $('td', row).eq(18).html(aux_text);
         }
     });
 
@@ -290,26 +304,6 @@ function ajaxRequest(data,url,funcion) {
                     $("#savefed" + datatemp.i).attr('updated_at',respuesta.updated_at);
                 }
             }
-            if(funcion=='consultaranularguiafact'){
-				if (respuesta.mensaje == "ok") {
-                    console.log(respuesta);
-					//alert(respuesta.despachoord.guiadespacho);
-                    $("#id1").html("Id Guia");
-                    $("#id2").html("Guia Despacho SII");
-					$("#guiadespachoanul").val(respuesta.dte.nrodocto);
-                    $("#guiadespachoanul").attr("despachoord_id",respuesta.despachoord_id)
-                    $("#guiadespachoanul").attr("updated_at",datatemp.updated_at)
-                    
-					//$(".requeridos").keyup();
-					quitarvalidacioneach();
-                    $("#tituloAGFAC").html("Anular Guia Despacho");
-                    $("#statusM").val('2');
-                    $(".selectpicker").selectpicker('refresh');
-					$("#myModalanularguiafact").modal('show');
-				} else {
-					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
-				}
-			}
 
             if(funcion=='buscarTipoBodegaOrdDesp'){
                 if(respuesta.datas.length > 0){
@@ -414,16 +408,26 @@ function ajaxRequest(data,url,funcion) {
                 }
             }
             if(funcion=='guardaranularguia'){
-				if (respuesta.mensaje == "ok") {
-                    console.log(datatemp);
-                    console.log("#fila" + datatemp.guiadesp_id);
-					$("#fila" + datatemp.guiadesp_id).remove();
-					$("#myModalanularguiafact").modal('hide');
+				if (respuesta.status == "1") {
+					$("#fila" + datatemp['nfila']).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
-					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
-                    //redirigirARuta(datatemp.rutarecarga); //Muestra el mensaje de registro modificado y luego espera 2.5 seg y recarga pagina
-
+					swal({
+                        title: respuesta.title,
+                        text: respuesta.mensaje,
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            cancel: "Cerrar",
+                        },
+                    });
+				}
+				$("#myModalanularguiafact").modal('hide');
+			}
+            if(funcion=='consultaranularguiafact'){
+				if (respuesta.mensaje == "ok") {
+                    consultaranularguiafact(respuesta.despachoord.guiadespacho);
+				} else {
+					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
 				}
 			}
 		},
@@ -816,7 +820,7 @@ function restbotoneditfeced(i){
     $(".datepicker").datepicker("refresh");
 }
 
-function anularguiafact(id,despachoord_id){
+function anularguiafact1(id,despachoord_id){
 	$("#idanul").val(id);
 	$("#guiadespachoanul").val('');
 	$("#nfilaanul").val(id);
@@ -838,7 +842,7 @@ function anularguiafact(id,despachoord_id){
 }
 
 
-$("#btnGuardarGanul").click(function(event)
+$("#btnGuardarGanul1").click(function(event)
 {
 	event.preventDefault();
 	if(verificarAnulGuia())
@@ -870,4 +874,64 @@ function verificarAnulGuia()
 	}else{
 		return true;
 	}
+}
+
+
+function anularguiafact(nfila,id){
+	$("#idanul").val(id);
+	$("#guiadespachoanul").val('');
+	$("#nfilaanul").val(nfila);
+    if(id == null){
+        consultaranularguiafact("")
+    }else{
+        var data = {
+            id    : id,
+            nfila : nfila,
+            _token: $('input[name=_token]').val()
+        };
+        var ruta = '/despachoord/consultarod';
+        ajaxRequest(data,ruta,'consultaranularguiafact');    
+    }
+}
+
+$("#btnGuardarGanul").click(function(event)
+{
+	event.preventDefault();
+	if(verificarAnulGuia())
+	{
+		var data = {
+			id     : $("#idanul").val(),
+			nfila  : $("#nfilaanul").val(),
+            dte_id : $("#nfilaanul").val(),
+			observacion : $("#observacionanul").val(),
+			statusM : $("#statusM").val(),
+			//invbodega_id : respuesta.datas[0].id,
+			pantalla_origen  : 2, //Para saber de donde viene la anulacion en este caso de la pantalla Asignar factura
+			updated_at : $("#updated_at" + $("#nfilaanul").val()).html(),
+            despordupdated_at : $("#despordupdated_at" + $("#nfilaanul").val()).html(),
+			_token: $('input[name=_token]').val()
+		};
+		var ruta = '/dtefactura/devolverguiadesp';
+		swal({
+			title: '¿ Seguro desea continuar ?',
+			text: "Esta acción no se puede deshacer!",
+				icon: 'warning',
+			buttons: {
+				cancel: "Cancelar",
+				confirm: "Aceptar"
+			},
+		}).then((value) => {
+			if (value) {
+				ajaxRequest(data,ruta,'guardaranularguia');
+			}
+		});	
+    }	
+});
+
+function consultaranularguiafact(guiadespacho){
+    //alert(respuesta.despachoord.guiadespacho);
+    $("#guiadespachoanul").val(guiadespacho);
+    //$(".requeridos").keyup();
+    quitarvalidacioneach();
+    $("#myModalanularguiafact").modal('show');
 }

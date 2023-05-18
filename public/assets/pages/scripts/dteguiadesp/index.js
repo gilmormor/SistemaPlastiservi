@@ -29,6 +29,7 @@ $(document).ready(function () {
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
             {data: 'updated_at',className:"ocultar"},
+            {data: 'despordupdated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
         ],
@@ -83,6 +84,7 @@ $(document).ready(function () {
                     "</a>";
             $('td', row).eq(8).html(aux_text);
             $('td', row).eq(8).attr('style','text-align:center');
+            
             $('td', row).eq(10).attr('data-order',data.kgtotal);
             $('td', row).eq(10).attr('style','text-align:right');
             aux_text = MASKLA(data.kgtotal,2);
@@ -94,34 +96,25 @@ $(document).ready(function () {
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
             $('td', row).eq(12).html(aux_text);
 
+            $('td', row).eq(15).addClass('updated_at');
+            $('td', row).eq(15).attr('id','updated_at' + data.id);
+            $('td', row).eq(15).attr('name','updated_at' + data.id);
+
+            $('td', row).eq(16).addClass('updated_at');
+            $('td', row).eq(16).attr('id','despordupdated_at' + data.id);
+            $('td', row).eq(16).attr('name','despordupdated_at' + data.id);
+
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
                         "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
                     "</a>";
             }else{
-                /*
-                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarsol(" + i + "," + data.id + ")' title='Aprobar Orden Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+*/
-/*
-                "<a href='/despachoord/aproborddesp' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar Orden Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+
-*/
                 aux_text = 
-                `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
+                `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTEGuiaDesp(${data.id})" title="Enviar a procesados">
                     <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
                 </a> | `;
-                /*
-                "<a href='dteguiadesp' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-                    "<i class='fa fa-fw fa-pencil'></i>"
-                "</a>";
-                */
             }
-            $('td', row).eq(15).addClass('updated_at');
-            $('td', row).eq(15).attr('id','updated_at' + data.id);
-            $('td', row).eq(15).attr('name','updated_at' + data.id);
 
             aux_text = aux_text +
             `<a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
@@ -130,7 +123,7 @@ $(document).ready(function () {
             <a onclick="anularguiafact(${data.id},${data.despachoord_id},'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro y devolver a Orden de Despacho" data-toggle="tooltip">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
-            $('td', row).eq(16).html(aux_text);
+            $('td', row).eq(17).html(aux_text);
         }
     });
 
@@ -190,42 +183,42 @@ function ajaxRequest(data,url,funcion) {
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			
 			if(funcion=='guardarguiadesp'){
-				if (respuesta.mensaje == "ok") {
-                    /*
-					swal({
-						title: '¿ Desea ver Guia Despacho ?',
-						text: "",
-						icon: 'success',
-						buttons: {
-							cancel: "Cancelar",
-							confirm: "Aceptar"
-						},
-					}).then((value) => {
-						if (value) {
-							genpdfGD(respuesta.nrodocto,"_U");
-						}
-						$("#fila"+datatemp.nfila).remove();
-					});
-                    */
+				if (respuesta.id != 0) {
+                    //genpdfFAC(respuesta.nrodocto,"_U");
                     $("#fila"+datatemp.nfila).remove();
-                    totalizarpagina();
-                    totalizarTabla();
-                    //genpdfGD(respuesta.nrodocto,"_U");
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
                     swal({
-						//title: 'Error',
+						title: respuesta.title,
 						text: respuesta.mensaje,
-						icon: 'error',
+						icon: respuesta.tipo_alert,
 						buttons: {
-							confirm: "Cerrar"
+							confirm: "Aceptar"
 						},
+					}).then((value) => {
 					});
-
 					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
 				}
+                /*
+                if(respuesta.status == "1"){
+					if(aux_datas['status']=='1'){
+						$("#fila" + aux_datas['nfila']).remove();
+					}else{
+						$("#guiadespacho" + aux_datas['nfila']).html(respuesta.despachoord.guiadespacho);
+						$("#fechaguia" + aux_datas['nfila']).html(respuesta.guiadespachofec);	
+					}
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				}else{
+                    swal({
+                        title: respuesta.title,
+                        text: respuesta.mensaje,
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            cancel: "Cerrar",
+                        },
+                    });
+                }*/
 			}
             if(funcion=='buscarBodegaDespachoAsignarGuia'){
                 if(respuesta.datas.length > 0){
@@ -522,3 +515,32 @@ $("#btnGuardarGanul").click(function(event)
 		alertify.error("Falta incluir informacion");
 	}
 });
+
+
+function procesarDTEGuiaDesp(id){
+    var data = {
+        id         : id,
+        dte_id     : id,
+        nfila      : id,
+        updated_at : $("#updated_at" + id).html(),
+        despordupdated_at : $("#despordupdated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dteguiadesp/procesar';
+    swal({
+        title: '¿ Seguro desea continuar ?',
+        text: "Esta acción no se puede deshacer!",
+            icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequest(data,ruta,'guardarguiadesp');
+        }
+    });
+    
+
+
+}

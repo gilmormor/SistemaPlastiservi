@@ -30,7 +30,7 @@
                             @endif
                             @if ($aux_vista=="F")
                                 <option value="1">Guia</option>
-                                <option value="2">Orden Despacho</option>                            
+                                <!--<option value="2">Orden Despacho</option>-->
                             @endif
                         </select>
                         <span class="help-block"></span>

@@ -1014,6 +1014,7 @@ Route::post('dteguiadesp/validarupdated', 'DteGuiaDespController@validarupdated'
 Route::post('dteguiadesp/consultardteguiadesp', 'DteGuiaDespController@consultarDteGuiaDesp')->name('consultarDteGuiaDesp_dteguiadesp');
 Route::post('dteguiadesp/guiadespanul', 'DteGuiaDespController@guiadespanul')->name('guiadespanul_dteguiadesp');
 Route::post('dteguiadesp/volverGenDTE', 'DteGuiaDespController@volverGenDTE')->name('volverGenDTE_dteguiadesp');
+Route::post('dteguiadesp/procesar', 'DteGuiaDespController@procesar')->name('procesar_dteguiadesp');
 
 /*RUTAS REPORTE DTE GUIA DESPACHO*/
 Route::get('reportdteguiadesp', 'ReportDTEGuiaDespController@index')->name('reportdteguiadesp');
@@ -1047,6 +1048,7 @@ Route::post('dtefactura/anular', 'DteFacturaController@anular')->name('dtefactur
 Route::post('dtefactura/buscarfactura', 'DteFacturaController@buscarfactura')->name('dtefactura_buscarfactura');
 Route::post('dtefactura/estadoDTE', 'DteFacturaController@estadoDTE')->name('dtefactura_estadoDTE');
 Route::post('dtefactura/staverfacdesp', 'DteFacturaController@staverfacdesp')->name('dtefactura_staverfacdesp');
+Route::post('dtefactura/devolverguiadesp', 'DteFacturaController@devolverguiadesp')->name('dtefactura_devolverguiadesp');
 
 /*RUTAS REPORTE DTE FACTURA*/
 Route::get('reportdtefac', 'ReportDTEFacController@index')->name('reportdtefac');

@@ -433,7 +433,7 @@ class Dte extends Model
         tipoentrega.nombre as tipoentrega_nombre,'  ' as te,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
         dte.kgtotal as aux_totalkg,
         dte.mnttotal as subtotal,
-        dte.updated_at,'' as rutacrear,
+        dte.updated_at,despachoord.updated_at as despordupdated_at,'' as rutacrear,
         dteoc.oc_id as dteoc_oc_id,dteoc.oc_file as dteoc_oc_file
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
