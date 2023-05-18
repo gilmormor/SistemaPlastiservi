@@ -43,6 +43,7 @@ var Biblioteca = function(){
 
                 },
                 submitHandler: function(form){
+                    $("#btnguardargen").prop("disabled", true);
                     return true;
                 }
             });

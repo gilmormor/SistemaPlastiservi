@@ -9,7 +9,10 @@
 <input type="hidden" name="foliocontrol_id" id="foliocontrol_id" value="1">
 <input type="hidden" name="imagen" id="imagen" value="">
 <input type="hidden" name="notaventa_id" id="notaventa_id" value="">
-
+<div class="form-group col-xs-4 col-sm-4" style="display:none;">
+    <label for="oc_fileaux" class="control-label requerido" data-toggle='tooltip' title="Adjuntar Orden de compra">Adjuntar Orden de compra</label>
+    <input type="hidden" name="oc_fileaux" id="oc_fileaux" value="" class="form-control" style="text-align:right;">
+</div>
 <?php 
     $aux_rut = "";
     if(isset($data)){

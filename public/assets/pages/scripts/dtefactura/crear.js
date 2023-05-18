@@ -573,6 +573,7 @@ $(".form-horizontal").on("submit", function(event){
 		$('#oc_id').prop('required', false);
 	}
 	$("#oc_file-error").hide();
+	$('#oc_fileaux').prop('required', false);
 	aux_ocarchivo = $.trim($('#oc_file').val()) + $.trim($('#oc_file').attr("data-initial-preview"));
 	//if (($('#oc_id').val().length == 0) && (($('#oc_file').val().length != 0) || ($('#oc_file').attr("data-initial-preview").length != 0))) {
 	if ( (aux_ocarchivo.length != 0) && ($('#oc_id').val().length == 0) ) {
@@ -586,6 +587,7 @@ $(".form-horizontal").on("submit", function(event){
 		alertify.error("El campo Adjuntar OC es requerido cuando Nro OrdenCompra está presente.");
 		$("#oc_file-error").show();
 		$("#group_oc_file").addClass('has-error');
+		$('#oc_fileaux').prop('required', true);
 		//$('#oc_file').prop('required', true);
 		return false;
 	}
