@@ -34,7 +34,7 @@
 		<table id="factura_detalle" style="table-layout:fixed;width: 100%;">
 				<thead>
 					<tr>
-						<th style='text-align:center;width: 5% !important;'>NC</th>
+						<th style='text-align:center;width: 5% !important;'>ND</th>
 						<th style='text-align:center;width: 6% !important;'>Doc Origen</th>
 						<th style='text-align:center;width: 6% !important;'>Fecha Emisión</th>
 						<th style='text-align:center;width: 7% !important;'>RUT</th>
