@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Nota Crédito
+Nota Dédito
 @endsection
 
 <?php
@@ -10,7 +10,7 @@ Nota Crédito
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/reportdtenc/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/reportdtend/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
@@ -21,7 +21,7 @@ Nota Crédito
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Reporte Nota Crédito</h3>
+                <h3 class="box-title">Reporte Nota Dédito</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>

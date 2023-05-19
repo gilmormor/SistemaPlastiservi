@@ -38,7 +38,7 @@
 						<th style='text-align:center;width: 6% !important;'>Fecha Emisión</th>
 						<th style='text-align:center;width: 7% !important;'>RUT</th>
 						<th style='text-align:left;width: 25% !important;'>Razón Social</th>
-						<th style='text-align:right;width: 7% !important;'>Monto DTE</th>
+						<th style='text-align:right;width: 7% !important;'>Monto</th>
 						<th style='text-align:center;width: 6% !important;'>OC</th>
 					</tr>
 				</thead>

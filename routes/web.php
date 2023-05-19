@@ -1112,6 +1112,12 @@ Route::get('reportdtenc/reporte', 'ReportDTENcController@reporte')->name('report
 Route::get('reportdtenc/exportPdf', 'ReportDTENcController@exportPdf')->name('reportdtenc_exportPdf');
 Route::get('reportdtenc/totalizarindex', 'ReportDTENcController@totalizarindex')->name('reportdtenc_totalizarindex');
 
+/*RUTAS REPORTE DTE NOTA DEBITO*/
+Route::get('reportdtend', 'ReportDTENdController@index')->name('reportdtend');
+Route::get('reportdtend/reportdtendpage', 'ReportDTENdController@reportdtendpage')->name('reportdtendpage');
+Route::get('reportdtend/reporte', 'ReportDTENdController@reporte')->name('reportdtend_reporte');
+Route::get('reportdtend/exportPdf', 'ReportDTENdController@exportPdf')->name('reportdtend_exportPdf');
+Route::get('reportdtend/totalizarindex', 'ReportDTENdController@totalizarindex')->name('reportdtend_totalizarindex');
 
 /*RUTAS FACTURA DIRECTA*/
 Route::get('dtefacturadir', 'DteFacturaDirController@index')->name('dtefacturadir');
