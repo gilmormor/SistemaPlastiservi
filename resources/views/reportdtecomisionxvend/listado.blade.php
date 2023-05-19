@@ -31,7 +31,6 @@
 	</table>
 
 	<?php
-		$aux_totalmnttotal = 0;
 		$aux_vendedor_id = "";
 		$count = 0;
 	?>
@@ -41,10 +40,10 @@
 			@if ($count > 0)
 						<tfoot id="detalle_totales">
 							<tr class="headt">
-								<th colspan="5" style='text-align:right'>TOTAL</th>
-								<th class="textright">{{number_format($aux_totalmnttotal, 0, ",", ".")}}</th>
-								<th class="textright">{{number_format(0, 0, ",", ".")}}</th>
-								<th class="textright">{{number_format($aux_totalmnttotalpend, 0, ",", ".")}}</th>
+								<th colspan="6" style='text-align:right'>TOTAL</th>
+								<th class="textright">{{number_format($aux_totalmontoitem, 0, ",", ".")}}</th>
+								<th class="textright"></th>
+								<th class="textright">{{number_format($aux_totalcomision, 0, ",", ".")}}&nbsp;&nbsp;</th>
 							</tr>
 						</tfoot>
 					</table>
@@ -87,7 +86,7 @@
 							<td style='text-align:left'>{{$data->nmbitem}}</td>
 							<td style='text-align:right'>{{number_format($data->montoitem, 0, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format(3, 1, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format(round($data->montoitem * 0.03, 0), 0, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format(round($data->montoitem * 0.03, 0), 0, ",", ".")}}&nbsp;&nbsp;</td>
 						</tr>
 						<?php 
 							$aux_vendedor_id = $datas[0]->vendedor_id;
@@ -106,7 +105,7 @@
 					<th colspan="6" style='text-align:right'>TOTAL</th>
 					<th class="textright">{{number_format($aux_totalmontoitem, 0, ",", ".")}}</th>
 					<th class="textright"></th>
-					<th class="textright">{{number_format($aux_totalcomision, 0, ",", ".")}}</th>
+					<th class="textright">{{number_format($aux_totalcomision, 0, ",", ".")}}&nbsp;&nbsp;</th>
 				</tr>
 			</tfoot>
 		</table>
