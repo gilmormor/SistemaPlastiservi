@@ -134,6 +134,7 @@ class ReportOrdDespGuiaFactController extends Controller
                     <th class='tooltipsC' title='Monto Documento'>Monto<br>Documento</th>
                     $encabezadoGF
                     $encabezadoeditarguiafac
+                    <th class='ocultar'>updated_at</th>
                 </tr>
             </thead>
             <tbody>";
@@ -230,6 +231,9 @@ class ReportOrdDespGuiaFactController extends Controller
                     "</td>
                     $detalleGF
                     $detalleeditarguiafac
+                    <td  class='ocultar' id='updated_at$data->id' name ='updated_at$data->id'>".
+                        $data->updated_at.
+                    "</td>
                 </tr>";
                 $i++;
                 $aux_totalkilos += $data->totalkilos;
@@ -610,7 +614,7 @@ function consultaorddesp($request){
             round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS subtotal,
             despachoord.aprguiadesp,despachoord.aprguiadespfh,
             despachoord.guiadespacho,despachoord.guiadespachofec,despachoord.numfactura,despachoord.fechafactura,
-            despachoordanul.id as despachoordanul_id
+            despachoordanul.id as despachoordanul_id,despachoord.updated_at
             FROM despachoord INNER JOIN despachoorddet
             ON despachoord.id=despachoorddet.despachoord_id
             INNER JOIN notaventa
