@@ -2285,7 +2285,7 @@ function crearEditarAcuTec(i){
 	});
 	var acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
 	for (const property in acuerdotecnico) {
-		if(property != 'id'){ //Para evitar que cambie el valor del campo id del formulario aprobar cotizacion
+		if((property != 'id') && (property != 'updated_at')){ //Para evitar que cambie el valor del campo id o updated_at del formulario aprobar cotizacion
 			if( property == 'at_certificados'){
 				let str = acuerdotecnico[property];
 				let arr = str.split(','); 
