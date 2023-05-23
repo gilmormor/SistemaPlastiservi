@@ -959,6 +959,7 @@ $("#btnaprobarM").click(function(event)
 		},
 	}).then((value) => {
 		if (value) {
+			$("#myModalaprobcot").modal('hide');
 			ajaxRequest(data,ruta,'aprobarcotsup');
 		}
 	});
@@ -986,6 +987,7 @@ $("#btnrechazarM").click(function(event)
 			},
 		}).then((value) => {
 			if (value) {
+				$("#myModalaprobcot").modal('hide');
 				ajaxRequest(data,ruta,'aprobarcotsup');
 			}
 		});
