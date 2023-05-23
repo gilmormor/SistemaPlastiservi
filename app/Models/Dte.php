@@ -1671,6 +1671,10 @@ class Dte extends Model
             ]);
         }
         $empresa = Empresa::findOrFail(1);
+        return Dte::updateStatusGen($dte,$request);
+        //ESTA VALIDACION LA DESACTIVE A PETICION DE ERIKA BUSTOS
+        //LE PARECE MUCHO TIEMPO DE ESPERA POR LA APROBACION DE UN DTE POR PARTE DE BES Y SII
+        /*
         if($dte->foliocontrol_id == 2){
             return Dte::updateStatusGen($dte,$request);
         }else{
@@ -1697,6 +1701,7 @@ class Dte extends Model
                 ]);
             }    
         }
+        */
     }
 
     public static function reportestadocli($request){
