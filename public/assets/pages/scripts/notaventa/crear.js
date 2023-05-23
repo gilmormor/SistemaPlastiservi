@@ -892,6 +892,7 @@ $("#btnaprobarM").click(function(event)
 		},
 	}).then((value) => {
 		if (value) {
+			$("#myModalaprobcot").modal('hide');
 			ajaxRequest(data,ruta,'aprobarnvsup');
 		}
 	});
@@ -919,6 +920,7 @@ $("#btnrechazarM").click(function(event)
 			},
 		}).then((value) => {
 			if (value) {
+				$("#myModalaprobcot").modal('hide');
 				ajaxRequest(data,ruta,'aprobarnvsup');
 			}
 		});
