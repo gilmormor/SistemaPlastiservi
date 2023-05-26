@@ -1060,6 +1060,7 @@ Route::get('reportdtefac/totalizarindex', 'ReportDTEFacController@totalizarindex
 
 /*RUTAS ACUERDO TECNICO*/
 Route::post('acuerdotecnico/buscaratxcampos', 'AcuerdoTecnicoController@buscaratxcampos')->name('acuerdotecnico_buscaratxcampos');
+Route::get('acuerdotecnico/exportPdf', 'AcuerdoTecnicoController@exportPdf')->name('acuerdotecnico_exportPdf');
 
 /*RUTAS ACUERDO TECNICO TEMPORAL*/
 Route::get('acuerdotecnicotemp/exportPdf', 'AcuerdoTecnicoTempController@exportPdf')->name('acuerdotecnicotemp_exportPdf');

@@ -77,8 +77,9 @@ class CotizacionController extends Controller
                     cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador,
                     (SELECT COUNT(*) 
                     FROM cotizaciondetalle 
-                    WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and 
-                    not isnull(acuerdotecnicotemp_id)) AS contacutec,
+                    WHERE cotizaciondetalle.cotizacion_id=cotizacion.id 
+                    and not isnull(acuerdotecnicotemp_id)
+                    and isnull(cotizaciondetalle.deleted_at)) AS contacutec,
                     cotizacion.fechahora as fechahora_aaaammdd,cotizacion.updated_at
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id

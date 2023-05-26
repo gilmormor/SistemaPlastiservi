@@ -346,10 +346,20 @@ function insertarTabla(){
 		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>';
 	}
 	//aux_botonAcuTec = $("#tipoprodM").attr('valor') == '1' ? 'x' : '';
+	let aux_productoId = $("#producto_idM").val();
+	let aux_acuerdotecnicoId = $("#acuerdotecnico_id").val();
+	let aux_clienteId = $("#cliente_id").val();
+	if(aux_acuerdotecnicoId > 0){
+		aux_productoId = `<a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec(${aux_acuerdotecnicoId},${aux_clienteId},1)" data-original-title="Acuerdo Técnico PDF" aria-describedby="tooltip895039">
+							${aux_productoId}
+						</a>`;
+	}
+	$("#producto_idTDT"+i).html(aux_productoId + aux_botonAcuTec);
+
 
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
 			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;" categoriaprod_id="' + $("#categoriaprod_id").val() + '">'+ 
-				$("#producto_idM").val() + aux_botonAcuTec +
+					aux_productoId + aux_botonAcuTec +
 			'</td>'+
 			'<td style="display:none;" name="cotdet_idTD'+ aux_nfila + '" id="cotdet_idTD'+ aux_nfila + '">'+ 
 				'0'+
@@ -547,6 +557,7 @@ function eliminarRegistro(i){
 
 
 function ajaxRequest(data,url,funcion) {
+	datatemp = data;
 	$.ajax({
 		url: url,
 		type: 'POST',
@@ -591,6 +602,46 @@ function ajaxRequest(data,url,funcion) {
 			}
 			if(funcion=='buscardetcot'){
 				//console.log(respuesta);
+			}
+			if(funcion=='buscaratxcampos'){
+				if(respuesta.length > 0){
+					//console.log(respuesta);
+					/*
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: 'Something went wrong!',
+						footer: '<a href="">Why do I have this issue?</a>'
+					  })*/
+					swal({
+						title: 'Acuerdo técnico ya existe',
+						text: 'Producto Cod: ' + respuesta[0].producto_id + ', ' + respuesta[0].producto_nombre,
+						icon: 'warning',
+						buttons: {
+							cancel: "Cerrar",
+							confirm: "Ver AT"
+						},
+						}).then((value) => {
+							genpdfAcuTec(respuesta[0].id,$("#cliente_id").val(),1);
+							/*
+							fila = $(this).closest("tr");
+							form = $(this);
+							id = fila.find('td:eq(0)').text();
+							//alert(id);
+							var data = {
+								_token  : $('input[name=_token]').val(),
+								id      : id
+							};
+							if (value) {
+								ajaxRequest(data,form.attr('href')+'/'+id+'/anular','anular',form);
+							}*/
+						});
+				}else{
+					$("#myModalAcuerdoTecnico").modal('hide');
+					$("#acuerdotecnico" + datatemp.nfila).val(datatemp.objtxt); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
+					//alert($("#acuerdotecnico" + i).val());
+					$("#icoat" + datatemp.nfila).attr('class','fa fa-cog text-aqua');	
+				}
 			}
 		},
 		error: function () {
@@ -1137,11 +1188,15 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 		localStorage.setItem('datos', JSON.stringify(data));
 		var guardado = localStorage.getItem('datos');
 		aux_nfila = $("#aux_numfilaAT").val();
-		//console.log(guardado)
 		//console.log(data);
 		data.objtxt = guardado;
+		data.nfila = aux_nfila;
 		data._token = $('input[name=_token]').val();
 
+
+		var ruta = '/acuerdotecnico/buscaratxcampos';
+		ajaxRequest(data,ruta,'buscaratxcampos');
+		return 0;
 		$.ajax({
 			url: '/acuerdotecnico/buscaratxcampos',
 			type: 'POST',
@@ -1161,7 +1216,7 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 						icon: 'warning',
 						buttons: {
 							cancel: "Cerrar",
-							confirm: "Ver AT"
+							//confirm: "Ver AT"
 						},
 						}).then((value) => {
 							/*

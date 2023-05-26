@@ -23,7 +23,12 @@
 				<div>
 					<span class="h3">Acuerdo Tecnico {{$aux_tituloreporte}}</span>
 					<p><strong>Categoria: </strong>{{$categoria_nombre}}</p>
-					<p><strong>Cod AT: </strong>{{ str_pad($acuerdotecnico->id, 5, "0", STR_PAD_LEFT) }}</p>
+					@if ($acuerdotecnico->producto)
+						<p><strong>Cod Prod: </strong>{{$acuerdotecnico->producto->id}}</p>	
+					@else
+						<p><strong>Cod Prod: </strong>Sin Asignar</p>
+					@endif
+					<p><strong>Cod AT: </strong>{{$acuerdotecnico->id}}</p>
 					<p><strong>Fecha: </strong>{{date('d/m/Y h:i:s A')}}</p>
 				</div>
 			</td>
@@ -64,18 +69,25 @@
 						<tr class="headtarial">
 							<td style="width: 16% !important;"><strong>Materia Prima:</strong></td>
 							<td style="width: 20% !important;"><p>{{$acuerdotecnico->materiaprima->nombre}}</td>
-							<td style="width: 6% !important;"><strong>Color:</strong></td>
-							<td style="width: 5% !important;">{{$acuerdotecnico->color->nombre}}</td>
-							<td style="width: 6% !important;"><strong>Pigmento:</strong></td>
-							<td style="width: 4% !important;">{{$acuerdotecnico->at_pigmentacion}}</td>
+							<td style="width: 6% !important;"><strong>Color:</strong> {{$acuerdotecnico->color->nombre}}</td>
+							<td style="width: 6% !important;"><strong>Pigmento:</strong> {{$acuerdotecnico->at_pigmentacion}}</td>
+							<td style="width: 4% !important;"><strong>Nro Pantone:</strong> {{$acuerdotecnico->at_npantone}}</td>
 						</tr>
 						<tr class="headtarial">
-							<td style="width: 5% !important;"><strong>Nro Pantone:</strong></td>
-							<td style="width: 5% !important;"><p>{{$acuerdotecnico->at_npantone}}</p></td>
-						</tr>
-						<tr class="headtarial">
-							<td><strong>Translucidez:</strong></td>
-							<td><p>{{$acuerdotecnico->at_translucidez == '1' ? 'No translucido' : $acuerdotecnico->at_translucidez == '2' ? 'Opaco semi translucido' : $acuerdotecnico->at_translucidez == '3' ? 'Alta Transparencia' :''}}</p></td>
+							<td><strong>Translucidez: </strong></td>
+							<td>
+								<p>
+								@if ($acuerdotecnico->at_translucidez == '1')
+									No translucido
+								@endif
+								@if ($acuerdotecnico->at_translucidez == '2')
+									Opaco semi translucido
+								@endif
+								@if ($acuerdotecnico->at_translucidez == '3')
+									Alta Transparencia
+								@endif
+								</p>
+							</td>
 							<td><strong>Observación:</strong></td>
 							<td><p>{{$acuerdotecnico->at_materiaprimaobs}}</p></td>
 							<td><strong>Uso Previsto:</strong></td>

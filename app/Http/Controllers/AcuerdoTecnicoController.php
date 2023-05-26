@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AcuerdoTecnico;
 use App\Models\AcuerdoTecnicoTemp;
+use App\Models\Cliente;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -108,8 +109,8 @@ class AcuerdoTecnicoController extends Controller
             and at_antiblock = $request->at_antiblock
             and at_aditivootro = $request->at_aditivootro
             and at_ancho = $request->at_ancho
-            and if(isnull(at_fuelle),'',at_fuelle) = '$request->at_fuelle'
-            and if(isnull(at_largo),'',at_largo) = '$request->at_largo'
+            and if(isnull(at_fuelle),'',at_fuelle) = $request->at_fuelle
+            and if(isnull(at_largo),'',at_largo) = $request->at_largo
             and at_espesor = $request->at_espesor
             and at_impreso = $request->at_impreso
             and at_tiposello_id = $request->at_tiposello_id
@@ -128,7 +129,7 @@ class AcuerdoTecnicoController extends Controller
             //return response()->json($productos->get());
         }
     }
-
+/*
     public function exportPdf($id,$stareport = '1')
     {
         if(can('ver-pdf-acuerdo-tecnico',false)){
@@ -139,10 +140,6 @@ class AcuerdoTecnicoController extends Controller
                 $acuerdotecnico = AcuerdoTecnicoTemp::findOrFail($id);
                 $aux_tituloreportte = "Temporal";
             }
-            /*
-            $notaventa = NotaVenta::findOrFail($id);
-            $notaventaDetalles = $notaventa->notaventadetalles()->get();
-            */
             $empresa = Empresa::orderBy('id')->get();
             $rut = number_format( substr ( $acuerdotecnico->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 );
 
@@ -153,6 +150,40 @@ class AcuerdoTecnicoController extends Controller
             $pdf = PDF::loadView('general.acuerdotecnicopdf', compact('notaventa','notaventaDetalles','empresa'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+        }else{
+            //return false;            
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
+        }
+        
+        
+    }
+*/
+    public function exportPdf(Request $request)
+    {
+        if(can('ver-pdf-acuerdo-tecnico',false)){
+            //dd($request);
+            $aux_tituloreportte = "";
+            $cliente = Cliente::findOrFail($request->cliente_id);
+            $acuerdotecnico = AcuerdoTecnico::findOrFail($request->id);
+            $categoria_nombre = $acuerdotecnico->producto->categoriaprod->nombre;
+            //dd($categoria_nombre);
+            $aux_tituloreporte = "";
+            /*
+            $notaventa = NotaVenta::findOrFail($id);
+            $notaventaDetalles = $notaventa->notaventadetalles()->get();
+            */
+            $empresa = Empresa::orderBy('id')->get();
+            $rut = number_format( substr ( $cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cliente->rut, strlen($cliente->rut) -1 , 1 );
+
+            //dd($empresa[0]['iva']);
+            //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa'));
+            if(env('APP_DEBUG')){
+                return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre'));
+            }
+            $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre'));
+            //return $pdf->download('cotizacion.pdf');
+            return $pdf->stream(str_pad($acuerdotecnico->id, 5, "0", STR_PAD_LEFT) .' - '. $cliente->razonsocial . '.pdf');
         }else{
             //return false;            
             $pdf = PDF::loadView('generales.pdfmensajesinacceso');

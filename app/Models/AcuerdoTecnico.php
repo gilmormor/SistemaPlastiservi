@@ -22,6 +22,7 @@ class AcuerdoTecnico extends Model
         'at_materiaprima_id',
         'at_materiaprimaobs',
         'at_usoprevisto',
+        'at_pigmentacion',
         'at_uv',
         'at_uvobs',
         'at_antideslizante',
@@ -80,6 +81,12 @@ class AcuerdoTecnico extends Model
     {
         return $this->belongsTo(Color::class,'at_color_id');
     }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function materiaprima()
+    {
+        return $this->belongsTo(MateriaPrima::class,'at_materiaprima_id');
+    }
+    
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function tiposello()
     {

@@ -21,6 +21,7 @@ class AcuerdoTecnicoTemp extends Model
         'at_materiaprima_id',
         'at_materiaprimaobs',
         'at_usoprevisto',
+        'at_pigmentacion',
         'at_uv',
         'at_uvobs',
         'at_antideslizante',

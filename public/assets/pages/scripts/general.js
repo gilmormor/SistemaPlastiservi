@@ -764,7 +764,15 @@ function modificarTabla(i){
 		$("#tipoprod"+i).val("");
 	}
 	if($("#producto_idM").val() != $("#producto_id" + $("#aux_numfila").val()).val()){
-		$("#producto_idTDT"+i).html($("#producto_idM").val() + aux_botonAcuTec);
+		let aux_productoId = $("#producto_idM").val();
+		let aux_acuerdotecnicoId = $("#acuerdotecnico_id").val();
+		let aux_clienteId = $("#cliente_id").val();
+		if(aux_acuerdotecnicoId > 0){
+			aux_productoId = `<a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec(${aux_acuerdotecnicoId},${aux_clienteId},1)" data-original-title="Acuerdo Técnico PDF" aria-describedby="tooltip895039">
+								${aux_productoId}
+							</a>`;
+		}
+		$("#producto_idTDT"+i).html(aux_productoId + aux_botonAcuTec);
 	}
 
 	$("#producto_id"+i).val($("#producto_idM").val());
@@ -1032,6 +1040,7 @@ function limpiarInputOT(){
 	$("#stakilos").val('0');
 	$("#tipoprodM").val('');
 	$("#categoriaprod_id").val('');
+	$("#acuerdotecnico_id").val('');
 	
 	if($("#invbodega_idM")){
 		$("#invbodega_idM").empty();
@@ -1648,6 +1657,7 @@ $("#producto_idM").blur(function(){
 					$("#tipoprodM").attr('valor',respuesta['tipoprod']);
 					$("#stakilos").val(respuesta['stakilos']);
 					$("#categoriaprod_id").val(respuesta['categoriaprod_id']);
+					$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id'])
 					mostrardatosadUniMed(respuesta);
 					llenarselectbodega(respuesta);
 					$(".selectpicker").selectpicker('refresh');					
@@ -2457,6 +2467,13 @@ function cargardatospantprod(){
 		$("#lbltipoprod").html("Productos Base para crear Acuerdo Técnico");
 		$("#lblVerAcuTec").attr("data-original-title","Ver Productos existentes");		
 	}
+	$("#staprodxcli").css({'display':'none'});
+	if(data.data1.sucursal_id){
+		let posicion = data.data1.sucursal_id.indexOf('1');
+		if(posicion >= 0){
+			$("#staprodxcli").css({'display':'block'});
+		}
+	}
 	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
 }
 
@@ -2512,6 +2529,24 @@ function genpdfAcuTecTemp(id,cliente_id,aux_venmodant = ""){ //GENERAR PDF Acuer
 	$("#myModalpdf").modal('show')
 	//$("#modal-bodymymodadpdf").attr("style","height: 75%");
 }
+
+function genpdfAcuTec(id,cliente_id,aux_venmodant = ""){ //GENERAR PDF Acuerdo Tecnico Temporar y final
+	//console.log(id);
+	//console.log(cliente_id);
+	let data = "?id="+id +
+    "&cliente_id="+cliente_id
+
+	$("#venmodant").val(""); //Ventana Modal Anterior
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	$('#contpdf').attr('src', '/acuerdotecnico/exportPdf/' + data);
+
+	$("#myModalpdf").modal('show')
+	//$("#modal-bodymymodadpdf").attr("style","height: 75%");
+}
+
 
 $("#totalkilosM").blur(function(e){
 	if($(this).attr('valor') != undefined){

@@ -460,23 +460,32 @@
                                                 {{$detalle->producto_id}}
                                             </a>
                                         @else
-                                            {{$detalle->producto_id}}
+                                            @if ($detalle->producto->acuerdotecnico)
+                                                <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec({{$detalle->producto->acuerdotecnico->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                    {{$detalle->producto_id}}
+                                                </a>
+                                            @else
+                                                {{$detalle->producto_id}}
+                                            @endif
+
                                         @endif
 
-
-                                        @if ($detalle->producto->tipoprod == 1)
-                                            <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
-                                                @if ($acuerdotecnico == null)
-                                                    <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
-                                                @else
+                                        @if (false)
+                                            @if ($detalle->producto->tipoprod == 1)
+                                                <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
+                                                    @if ($acuerdotecnico == null)
+                                                        <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
+                                                    @else
+                                                        <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
+                                                    @endif
+                                                </a>
+                                            @endif
+                                            @if ($detalle->producto->acuerdotecnico)
+                                                <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="genpdfAcuTec({{$detalle->producto_id}})">
                                                     <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
-                                                @endif
-                                            </a>
-                                        @endif
-                                        @if ($detalle->producto->acuerdotecnico)
-                                            <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="genpdfAcuTec({{$detalle->producto_id}})">
-                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
-                                            </a>
+                                                </a>
+                                            @endif
+                                            
                                         @endif
                                     </td>
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">

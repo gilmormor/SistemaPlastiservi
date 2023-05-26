@@ -184,8 +184,13 @@ class Producto extends Model
             $tipoprodCond = "producto.tipoprod = " . $request->tipoprod;
         }
         $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
-                producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
-                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
+                if(isnull(at_ancho),CAST(producto.diametro AS SIGNED),at_ancho) as diametro,
+                if(isnull(at_espesor),producto.espesor,at_espesor) as espesor,
+                if(isnull(at_largo),producto.long,at_largo) as long1,producto.long,
+                if(isnull(at_espesor),producto.peso,at_espesor) as peso,
+                producto.tipounion,producto.precioneto,categoriaprod.precio,
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,
+                acuerdotecnico.id as acuerdotecnico_id,at_ancho,at_largo,at_espesor
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod

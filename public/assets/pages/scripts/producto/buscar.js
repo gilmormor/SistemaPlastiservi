@@ -124,10 +124,10 @@ function configTablaProd(){
         'ajax'        : "productobuscarpage/" + data.data2 + "&producto_id=",
         'columns'     : [
             {data: 'id'},
-            {data: 'nombre'},
-            {data: 'diametro'},
+            {data: 'nombre',"width": "250px"},
             {data: 'cla_nombre'},
-            {data: 'long'},
+            {data: 'diametro'},
+            {data: 'long1'},
             {data: 'peso'},
             {data: 'tipounion'},
             {data: 'precioneto'},
@@ -147,14 +147,37 @@ function configTablaProd(){
                 aux_onclick = "copiar_codprod(" + data.id + ",'')";
                 //aux_onclick = "insertarTabla(" + data.id + ",'" + data.nombre + "'," + data.acuerdotecnico_id + ")";
             }
-
             $(row).attr('name', 'fila' + aux_nfila);
             $(row).attr('id', 'fila' + aux_nfila);
             $(row).attr('prodid', 'tooltip');
             $(row).attr('class', "btn-accion-tabla copiar_id");
-            $(row).attr('data-toggle', data.id);
-            $(row).attr('title', "Click para seleccionar producto");
-            $(row).attr('onClick', aux_onclick + ';');
+            //$(row).attr('data-toggle', data.id);
+            //$(row).attr('title', "Click para seleccionar producto");
+            //$(row).attr('onClick', aux_onclick + ';');
+            for(i=1; i<=10; i++){
+                $('td', row).eq(i).attr('onClick',  aux_onclick + ';');
+                //$('td', row).eq(i).attr('data-toggle', data.id);
+                $('td', row).eq(i).addClass('tooltipsC');
+                $('td', row).eq(i).attr('title', "Click para seleccionar producto");    
+            }
+
+            if(data.acuerdotecnico_id != null){
+                aux_text = 
+                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico">
+                    ${data.id}
+                </a>`;
+                $('td', row).eq(0).html(aux_text);
+                $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',1,"myModalBuscarProd");');
+            }
+            if(data.tipoprod == 1){
+                $('td', row).eq(0).addClass('tooltipsC');
+                $('td', row).eq(0).attr('title', "Producto base para crear acuerdo técnico");    
+                aux_text = 
+                    data.id +
+                " <i id='icoat1' class='fa fa-cog text-red girarimagen'></i>";
+                $('td', row).eq(0).html(aux_text);
+
+            }
 
             //$(row).attr('id','fila' + data.id);
 
@@ -166,10 +189,33 @@ function configTablaProd(){
                 $('td', row).eq(1).html(aux_text);
             }
 */
-            $('td', row).eq(5).attr('data-order',data.peso);
-            $('td', row).eq(5).attr('data-search',data.peso);
-            $('td', row).eq(5).html(MASKLA(data.peso,3));
-
+            if(data.cla_nombre == 0 || data.cla_nombre == "" || data.cla_nombre == null){
+                $('td', row).eq(2).html("");
+                $('td', row).eq(2).attr('data-order',"");
+                $('td', row).eq(2).attr('data-search',"");    
+            }
+            if(data.diametro == 0 || data.diametro == "" || data.diametro == null){
+                $('td', row).eq(3).html("");
+                $('td', row).eq(3).attr('data-order',"");
+                $('td', row).eq(3).attr('data-search',"");    
+            }
+            $('td', row).eq(3).attr('style','text-align:center');
+            if(data.long1 == 0 || data.long1 == "" || data.long1 == null){
+                $('td', row).eq(4).html("");
+                $('td', row).eq(4).attr('data-order',"");
+                $('td', row).eq(4).attr('data-search',"");    
+            }
+            $('td', row).eq(4).attr('style','text-align:center');
+            if(data.peso == 0 || data.peso == "" || data.peso == null){
+                $('td', row).eq(5).html("");
+                $('td', row).eq(5).attr('data-order',"");
+                $('td', row).eq(5).attr('data-search',"");    
+            }else{
+                $('td', row).eq(5).attr('data-order',data.peso);
+                $('td', row).eq(5).attr('data-search',data.peso);
+                $('td', row).eq(5).html(MASKLA(data.peso,3));
+            }
+            $('td', row).eq(5).attr('style','text-align:center');
             $('td', row).eq(7).attr('data-order',data.precioneto);
             $('td', row).eq(7).attr('data-search',data.precioneto);
             $('td', row).eq(7).attr('style','text-align:right');

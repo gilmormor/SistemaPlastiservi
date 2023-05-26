@@ -302,7 +302,13 @@
                                                 {{$CotizacionDetalle->producto_id}}
                                             </a>
                                         @else
-                                            {{$CotizacionDetalle->producto_id}}
+                                            @if ($CotizacionDetalle->producto->acuerdotecnico)
+                                                <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec({{$CotizacionDetalle->producto->acuerdotecnico->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                    {{$CotizacionDetalle->producto_id}}
+                                                </a>
+                                            @else
+                                                {{$CotizacionDetalle->producto_id}}
+                                            @endif
                                         @endif
 
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
@@ -468,7 +474,7 @@
     @include('generales.buscarproductobd')
 @endif
 @include('generales.acuerdotecnico')
-
+@include('generales.modalpdf')
 
     <!-- Modal -->
     <div class="modal fade" id="myModalClienteTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
