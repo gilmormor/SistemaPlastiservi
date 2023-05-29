@@ -265,6 +265,7 @@ $("#btnGuardarF").click(function(event)
 			fechafactura : $("#fechafacturam").val(),
 			nfila : $("#nfilaf").val(),
 			status : $("#status").val(),
+			updated_at : $("#updated_at" + $("#idf").val()).html(),
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/despachoord/guardarfactdesp';
