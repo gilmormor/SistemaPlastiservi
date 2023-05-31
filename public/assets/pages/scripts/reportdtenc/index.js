@@ -207,6 +207,7 @@ function datosFac(){
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
+        sucursal_id       : $("#sucursal_id").val(),
         vendedor_id       : $("#vendedor_id").val(),
         oc_id             : $("#oc_id").val(),
         giro_id           : $("#giro_id").val(),
@@ -243,6 +244,7 @@ function datosFac(){
     var data2 = "?fechad="+data1.fechad +
     "&fechah="+data1.fechah +
     "&rut="+data1.rut +
+    "&sucursal_id="+data1.sucursal_id +
     "&vendedor_id="+data1.vendedor_id +
     "&oc_id="+data1.oc_id +
     "&giro_id="+data1.giro_id +

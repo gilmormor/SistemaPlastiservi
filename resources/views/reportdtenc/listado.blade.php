@@ -21,7 +21,7 @@
 			<td class="info_factura">
 				<div class="round">
 					<span class="h3">Nota de Crédito</span>
-					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
+					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
 					<p>Sucursal: {{$request->sucursal_nombre}}</p>
 					<p>Estatus: {{$request->status}}</p>
 					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>

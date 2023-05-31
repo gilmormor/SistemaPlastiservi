@@ -33,10 +33,9 @@ class ReportDTEFacController extends Controller
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
-        $tablas['sucursales'] = Sucursal::orderBy('id')
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
-
         return view('reportdtefac.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 

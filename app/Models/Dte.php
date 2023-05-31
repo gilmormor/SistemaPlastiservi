@@ -183,7 +183,11 @@ class Dte extends Model
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
         $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
-
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $aux_sucursal_idCond = "true";
+        }else{
+            $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
+        }
         if(!isset($request->fechad) or empty($request->fechad) or empty($request->fechah)){
             $aux_condFecha = " true";
         }else{
@@ -335,6 +339,7 @@ class Dte extends Model
         and $aux_condcomuna_id
         and $aux_aprobstatus
         and $aux_condsucurArray
+        and $aux_sucursal_idCond
         GROUP BY dte.id
         ORDER BY dte.id desc;";
         //dd($sql);
@@ -754,6 +759,11 @@ class Dte extends Model
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
 
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $aux_sucursal_idCond = "true";
+        }else{
+            $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
+        }
         $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -793,6 +803,7 @@ class Dte extends Model
         ON dtefac.dte_id = dte.id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
+        AND $aux_sucursal_idCond
         AND $aux_conddte_id
         AND $aux_condFecha
         AND $aux_condnrodocto
@@ -1569,7 +1580,11 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
-
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $aux_sucursal_idCond = "true";
+        }else{
+            $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
+        }
         $sql = "SELECT dte.id,dte.fechahora,dte.nrodocto,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,
         dteorigen.id as dteorigen_id,dteorigen.nrodocto as dteorigen_nrodocto,foliocontrol.doc,
@@ -1591,6 +1606,7 @@ class Dte extends Model
         ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
         WHERE dte.foliocontrol_id = $request->foliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
+        AND $aux_sucursal_idCond
         AND $aux_conddte_id
         AND $aux_condFecha
         AND $aux_condnrodocto
