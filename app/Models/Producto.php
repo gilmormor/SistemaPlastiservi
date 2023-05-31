@@ -146,7 +146,11 @@ class Producto extends Model
         $sucurcadena = implode(",", $sucurArray);
 
         $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
-                producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
+                if(isnull(at_ancho),CAST(producto.diametro AS SIGNED),at_ancho) as diametro,
+                if(isnull(at_espesor),producto.espesor,at_espesor) as espesor,
+                if(isnull(at_largo),producto.long,at_largo) as long1,producto.long,
+                if(isnull(at_espesor),producto.peso,at_espesor) as peso,
+                producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
                 categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,'' as acuerdotecnico_id
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
@@ -156,6 +160,8 @@ class Producto extends Model
                 on categoriaprod.id = categoriaprodsuc.categoriaprod_id
                 INNER JOIN sucursal
                 ON categoriaprodsuc.sucursal_id = sucursal.id
+                LEFT JOIN acuerdotecnico
+                ON producto.id = acuerdotecnico.producto_id
                 WHERE sucursal.id in ($sucurcadena)
                 GROUP BY producto.id
                 ORDER BY producto.id asc;";
