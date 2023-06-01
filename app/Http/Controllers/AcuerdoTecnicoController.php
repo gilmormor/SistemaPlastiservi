@@ -92,7 +92,14 @@ class AcuerdoTecnicoController extends Controller
     public function buscaratxcampos(Request $request)
     {
         if($request->ajax()){
-            //dd($request);
+            $aux_ta_fuelleCond = " true ";
+            if(!is_null($request->at_fuelle)){
+                $aux_ta_fuelleCond = "if(isnull(at_fuelle),'',at_fuelle) = $request->at_fuelle";
+            }
+            $aux_ta_largoCond = " true ";
+            if(!is_null($request->at_fuelle)){
+                $aux_ta_largoCond = "if(isnull(at_largo),'',at_largo) = $request->at_largo";
+            }
             $json = json_decode($request->objtxt);
             //dd($json);
             $sql = "SELECT acuerdotecnico.*, producto.nombre as producto_nombre
@@ -109,8 +116,8 @@ class AcuerdoTecnicoController extends Controller
             and at_antiblock = $request->at_antiblock
             and at_aditivootro = $request->at_aditivootro
             and at_ancho = $request->at_ancho
-            and if(isnull(at_fuelle),'',at_fuelle) = $request->at_fuelle
-            and if(isnull(at_largo),'',at_largo) = $request->at_largo
+            and $aux_ta_fuelleCond
+            and $aux_ta_largoCond
             and at_espesor = $request->at_espesor
             and at_impreso = $request->at_impreso
             and at_tiposello_id = $request->at_tiposello_id
