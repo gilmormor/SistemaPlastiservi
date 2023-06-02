@@ -87,25 +87,46 @@
 					<th width="50px">Cant.</th>
 					<th class="textcenter" width="50px">Unidad</th>
 					<th class="textleft" width="190px">Descripción</th>
-					<th class="textleft" width="60px">Clase</th>
+					<th class="textleft" width="60px">Clase/sello</th>
 					<th class="textcenter" width="35px">Diamet</th>
-					<th class="textright">Largo</th>
+					<th class="textcenter">Largo</th>
+					<th class="textcenter">Esp</th>
 					<th class="textright" width="70px">Precio Neto</th>
 					<th class="textright" width="90px">Total Neto</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
 				@foreach($cotizacionDetalles as $CotizacionDetalle)
+					<?php 
+						$aux_producto_nombre = $CotizacionDetalle->producto->nombre;
+						$aux_ancho = $CotizacionDetalle->producto->diametro;
+						$aux_espesor = $CotizacionDetalle->espesor;
+						$aux_largo = $CotizacionDetalle->producto->long . " mts";
+						$aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod->cla_nombre;
+						if ($CotizacionDetalle->acuerdotecnicotemp != null){
+							$aux_producto_nombre = $CotizacionDetalle->acuerdotecnicotemp->at_desc;
+							$aux_ancho = $CotizacionDetalle->acuerdotecnicotemp->at_ancho . " " . $CotizacionDetalle->acuerdotecnicotemp->anchounidadmedida->nombre;
+							$aux_espesor = $CotizacionDetalle->acuerdotecnicotemp->at_espesor;
+							$aux_largo = $CotizacionDetalle->acuerdotecnicotemp->at_ancho . " " . $CotizacionDetalle->acuerdotecnicotemp->anchounidadmedida->nombre;
+							$aux_cla_sello_nombre = $CotizacionDetalle->acuerdotecnicotemp->tiposello->desc;
+						}
+						if ($CotizacionDetalle->producto->acuerdotecnico != null){
+							$aux_producto_nombre = $CotizacionDetalle->producto->acuerdotecnico->at_desc;
+							$aux_ancho = $CotizacionDetalle->producto->acuerdotecnico->at_ancho . " " . $CotizacionDetalle->producto->acuerdotecnico->anchounidadmedida->nombre;
+							$aux_espesor = $CotizacionDetalle->producto->acuerdotecnico->at_espesor;
+							$aux_largo = $CotizacionDetalle->producto->acuerdotecnico->at_ancho . " " . $CotizacionDetalle->producto->acuerdotecnico->anchounidadmedida->nombre;
+							$aux_cla_sello_nombre = $CotizacionDetalle->producto->acuerdotecnico->tiposello->desc;
+						}
+					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$CotizacionDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($CotizacionDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$CotizacionDetalle->unidadmedida->nombre}}</td>
-						<td class="textleft">{{$CotizacionDetalle->producto->nombre}}</td>
-						<td class="textleft">{{$CotizacionDetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textcenter">
-							{{$CotizacionDetalle->producto->diametro}}
-						</td>
-						<td class="textright">{{$CotizacionDetalle->producto->long}} mts</td>
+						<td class="textleft">{{$aux_producto_nombre}}</td>
+						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
+						<td class="textcenter">{{$aux_ancho}}</td>
+						<td class="textcenter">{{$aux_largo}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 0, ",", ".")}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 0, ",", ".")}}</td>
 					</tr>
@@ -145,20 +166,20 @@
 			-->
 			@if ($cotizacion->plaentdias > 0)
 				<tr>
-					<td colspan="8" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
+					<td colspan="9" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
 					<td class="textleft" width="50%"><span>{{$cotizacion->plaentdias}} días hábiles</span></td>
 				</tr>				
 			@endif
 			<tr>
-				<td colspan="8" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
+				<td colspan="9" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$cotizacion->lugarentrega}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="8" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
+				<td colspan="9" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$cotizacion->plazopago->descripcion}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="8" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
+				<td colspan="9" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$cotizacion->tipoentrega->nombre}}</span></td>
 			</tr>
 		</table>

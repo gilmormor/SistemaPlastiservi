@@ -92,6 +92,7 @@ class AcuerdoTecnicoController extends Controller
     public function buscaratxcampos(Request $request)
     {
         if($request->ajax()){
+            //dd($request);
             $aux_ta_fuelleCond = " true ";
             if(!is_null($request->at_fuelle)){
                 $aux_ta_fuelleCond = "if(isnull(at_fuelle),'',at_fuelle) = $request->at_fuelle";

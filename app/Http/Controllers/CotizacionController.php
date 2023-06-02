@@ -496,6 +496,8 @@ class CotizacionController extends Controller
                         unset($objetAT->created_at);
                         unset($objetAT->updated_at);
                         unset($objetAT->usuariodel_id);
+                        unset($objetAT->tiposello);
+                        
                         
                         //dd($objetAT);
                         $arrayAT = (array) $objetAT;
@@ -621,6 +623,7 @@ class CotizacionController extends Controller
                             $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
     
                         }else{
+                            //dd($arrayAT);
                             AcuerdoTecnicoTemp::where("id","=",$cotizaciondetalle->acuerdotecnicotemp_id)
                             ->update($arrayAT);
                         }

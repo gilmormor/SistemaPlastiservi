@@ -80,17 +80,38 @@
 			</thead>
 			<tbody id="detalle_productos">
 				@foreach($notaventaDetalles as $notaventaDetalle)
+					<?php 
+						$aux_producto_nombre = $notaventaDetalle->producto->nombre;
+						$aux_ancho = $notaventaDetalle->producto->diametro;
+						$aux_espesor = $notaventaDetalle->producto->tipounion;
+						$aux_largo = $notaventaDetalle->producto->long;
+						$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
+						if ($notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp != null){
+							$aux_producto_nombre = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp->at_desc;
+							$aux_ancho = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp->at_ancho . " " . $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp->anchounidadmedida->nombre;
+							$aux_espesor = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp->at_espesor;
+							$aux_largo = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp->at_ancho . " " . $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp->anchounidadmedida->nombre;
+							$aux_cla_sello_nombre = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp->tiposello->desc;
+						}
+						if ($notaventaDetalle->producto->acuerdotecnico != null){
+							$aux_producto_nombre = $notaventaDetalle->producto->acuerdotecnico->at_desc;
+							$aux_ancho = $notaventaDetalle->producto->acuerdotecnico->at_ancho . " " . $notaventaDetalle->producto->acuerdotecnico->anchounidadmedida->nombre;
+							$aux_espesor = $notaventaDetalle->producto->acuerdotecnico->at_espesor;
+							$aux_largo = $notaventaDetalle->producto->acuerdotecnico->at_ancho . " " . $notaventaDetalle->producto->acuerdotecnico->anchounidadmedida->nombre;
+							$aux_cla_sello_nombre = $notaventaDetalle->producto->acuerdotecnico->tiposello->desc;
+						}
+					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$notaventaDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
-						<td class="textleft">{{$notaventaDetalle->producto->nombre}}</td>
+						<td class="textleft">{{$aux_producto_nombre}}</td>
 						<td class="textleft">
-							{{$notaventaDetalle->producto->diametro}}
+							{{$aux_ancho}}
 						</td>
-						<td class="textleft">{{$notaventaDetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textcenter">{{$notaventaDetalle->producto->long}} mts</td>
-						<td class="textcenter">{{$notaventaDetalle->producto->tipounion}}</td>
+						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
+						<td class="textcenter">{{$aux_largo}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textright">{{number_format($notaventaDetalle->preciounit, 0, ",", ".")}}</td>
 						<td class="textright">{{number_format($notaventaDetalle->subtotal, 0, ",", ".")}}</td>
 					</tr>

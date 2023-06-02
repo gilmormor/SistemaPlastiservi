@@ -399,9 +399,7 @@
                                                 @foreach($tablas['tipoSello'] as $tiposello)
                                                     <option
                                                         value="{{$tiposello->id}}"
-                                                        >
-                                                        {{$tiposello->desc}}
-                                                    </option>
+                                                        >{{$tiposello->desc}}</option>
                                                 @endforeach            
                                             </select>
                                             <span class="help-block"></span>

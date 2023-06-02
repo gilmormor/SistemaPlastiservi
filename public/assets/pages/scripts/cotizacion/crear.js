@@ -640,7 +640,12 @@ function ajaxRequest(data,url,funcion) {
 					$("#myModalAcuerdoTecnico").modal('hide');
 					$("#acuerdotecnico" + datatemp.nfila).val(datatemp.objtxt); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
 					//alert($("#acuerdotecnico" + i).val());
-					$("#icoat" + datatemp.nfila).attr('class','fa fa-cog text-aqua');	
+					$("#icoat" + datatemp.nfila).attr('class','fa fa-cog text-aqua');
+					$("#nombreProdTD" + datatemp.nfila).html($("#at_desc").val());
+					$("#diamextmmTD" + datatemp.nfila).html($("#at_ancho").val());
+					$("#longTD" + datatemp.nfila).html($("#at_largo").val());
+					$("#espesorTD" + datatemp.nfila).html($("#at_espesor").val());
+					$("#cla_nombreTD" + datatemp.nfila).html($("#at_tiposello_id option:selected").html());
 				}
 			}
 		},
@@ -1188,7 +1193,6 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 		localStorage.setItem('datos', JSON.stringify(data));
 		var guardado = localStorage.getItem('datos');
 		aux_nfila = $("#aux_numfilaAT").val();
-		//console.log(data);
 		data.objtxt = guardado;
 		data.nfila = aux_nfila;
 		data._token = $('input[name=_token]').val();
