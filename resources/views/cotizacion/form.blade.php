@@ -24,10 +24,6 @@
 <input type="hidden" name="neto" id="neto" value="{{old('neto', $data->neto ?? '')}}">
 <input type="hidden" name="piva" id="piva" value="{{old('piva', $tablas['empresa']->iva ?? '')}}">
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
-<div class="form-group col-xs-4 col-sm-4" style="display:none;">
-    <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
-    <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
-</div>
 
 <?php
     $disabledReadOnly = "";
@@ -464,6 +460,14 @@
             </div>
         </div>
     </div>
+</div>
+<div class="form-group col-xs-4 col-sm-4" style="display:none;">
+    <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
+    <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
+</div>
+<div class="form-group col-xs-4 col-sm-4" style="display:none;">
+    <label name="lblitemcompletos" id="lblitemcompletos" for="itemcompletos" class="control-label requerido" data-toggle='tooltip' title="Complete valores item">Complete valores item 1</label>
+    <input type="hidden" name="itemcompletos" id="itemcompletos" value="" class="form-control" style="text-align:right;" readonly required>
 </div>
 
 @include('generales.calcprecioprodsn')

@@ -1307,14 +1307,23 @@ $(".valorrequerido").change(function(){
 $(".form-horizontal").on("submit", function(event){
 	var aux_nfila = $("#tabla-data tbody tr").length - 3;
 	//aux_nfila++;
+	$("#itemcompletos").val("1");
+	let j=0;
 	for (i = 1; i <= aux_nfila; i++) {
 		//alert($("#acuerdotecnico" + i).val());
 		//console.log($("#acuerdotecnico" + i).val());
+
+		if($("#tipoprod" + i).val() != undefined){
+			j++;
+		}
 		if($("#tipoprod" + i).val() == 1){
 			if($("#acuerdotecnico" + i).val() == 0 || $("#acuerdotecnico" + i).val() == "null"  || $("#acuerdotecnico" + i).val() == ""){
 				event.preventDefault();
-				alertify.error("Falta acuerdo tecnico Item N°: " + i);
+				//alertify.error("Falta acuerdo tecnico Item N°: " + i);
 				i = aux_nfila+1;
+				$("#lblitemcompletos").html("Acuerdo técnico item:" + j);
+				$("#itemcompletos").val("");
+				break;
 			}	
 		}
 	}
