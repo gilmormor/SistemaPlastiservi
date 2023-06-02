@@ -107,14 +107,14 @@
 							$aux_producto_nombre = $CotizacionDetalle->acuerdotecnicotemp->at_desc;
 							$aux_ancho = $CotizacionDetalle->acuerdotecnicotemp->at_ancho . " " . $CotizacionDetalle->acuerdotecnicotemp->anchounidadmedida->nombre;
 							$aux_espesor = $CotizacionDetalle->acuerdotecnicotemp->at_espesor;
-							$aux_largo = $CotizacionDetalle->acuerdotecnicotemp->at_ancho . " " . $CotizacionDetalle->acuerdotecnicotemp->anchounidadmedida->nombre;
+							$aux_largo = $CotizacionDetalle->acuerdotecnicotemp->at_largo . " " . $CotizacionDetalle->acuerdotecnicotemp->largounidadmedida->nombre;
 							$aux_cla_sello_nombre = $CotizacionDetalle->acuerdotecnicotemp->tiposello->desc;
 						}
 						if ($CotizacionDetalle->producto->acuerdotecnico != null){
 							$aux_producto_nombre = $CotizacionDetalle->producto->acuerdotecnico->at_desc;
 							$aux_ancho = $CotizacionDetalle->producto->acuerdotecnico->at_ancho . " " . $CotizacionDetalle->producto->acuerdotecnico->anchounidadmedida->nombre;
 							$aux_espesor = $CotizacionDetalle->producto->acuerdotecnico->at_espesor;
-							$aux_largo = $CotizacionDetalle->producto->acuerdotecnico->at_ancho . " " . $CotizacionDetalle->producto->acuerdotecnico->anchounidadmedida->nombre;
+							$aux_largo = $CotizacionDetalle->producto->acuerdotecnico->at_largo . " " . $CotizacionDetalle->producto->acuerdotecnico->largounidadmedida->nombre;
 							$aux_cla_sello_nombre = $CotizacionDetalle->producto->acuerdotecnico->tiposello->desc;
 						}
 					?>

@@ -1597,7 +1597,7 @@ $("#producto_idM").blur(function(){
 				/*
 				console.log(respuesta['cont']);
 				*/
-				//console.log(respuesta);
+				console.log(respuesta);
 				//return 0;
 				if(respuesta['cont']>0){
 					if(respuesta['estado'] == 0){
@@ -1653,6 +1653,7 @@ $("#producto_idM").blur(function(){
 					$("#unidadmedida_idM").val(respuesta['unidadmedidafact_id']);
 					$("#anchoM").val('');
 					$("#anchoM").attr('valor','');
+					//if(respuesta['at_ancho'])
 					$("#obsM").val('');
 					$("#tipoprodM").attr('valor',respuesta['tipoprod']);
 					$("#stakilos").val(respuesta['stakilos']);

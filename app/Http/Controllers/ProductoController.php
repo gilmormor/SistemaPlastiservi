@@ -282,7 +282,11 @@ class ProductoController extends Controller
                     'categoriaprod.mostunimed',
                     'categoriaprod.stakilos',
                     'unidadmedida.nombre as unidadmedidanombre',
-                    'acuerdotecnico.id as acuerdotecnico_id'
+                    'acuerdotecnico.id as acuerdotecnico_id',
+                    'acuerdotecnico.at_ancho',
+                    'acuerdotecnico.at_largo',
+                    'acuerdotecnico.at_espesor',
+                    'acuerdotecnico.at_fuelle'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                     ->where('producto.deleted_at','=',null)
