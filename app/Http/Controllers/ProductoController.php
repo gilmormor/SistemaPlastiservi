@@ -258,6 +258,7 @@ class ProductoController extends Controller
             ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
             ->leftJoin('unidadmedida', 'categoriaprod.unidadmedidafact_id', '=', 'unidadmedida.id')
             ->leftJoin('acuerdotecnico', 'producto.id', '=', 'acuerdotecnico.producto_id')
+            ->leftJoin('tiposello', 'acuerdotecnico.at_tiposello_id', '=', 'tiposello.id')
             ->select([
                     'producto.id',
                     'producto.nombre',
@@ -286,7 +287,8 @@ class ProductoController extends Controller
                     'acuerdotecnico.at_ancho',
                     'acuerdotecnico.at_largo',
                     'acuerdotecnico.at_espesor',
-                    'acuerdotecnico.at_fuelle'
+                    'acuerdotecnico.at_fuelle',
+                    'tiposello.desc as at_tiposello_desc'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                     ->where('producto.deleted_at','=',null)

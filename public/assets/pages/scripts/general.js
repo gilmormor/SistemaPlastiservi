@@ -1653,7 +1653,28 @@ $("#producto_idM").blur(function(){
 					$("#unidadmedida_idM").val(respuesta['unidadmedidafact_id']);
 					$("#anchoM").val('');
 					$("#anchoM").attr('valor','');
-					//if(respuesta['at_ancho'])
+					if(respuesta['at_ancho'] != null){
+						$("#anchoM").val(respuesta['at_ancho']);
+						$("#anchoM").attr('valor',respuesta['at_ancho']);	
+						$("#diamextmmM").val(respuesta['at_ancho']);
+						$("#diamextmmM").attr('valor',respuesta['at_ancho']);	
+					}
+					if(respuesta['at_largo'] != null){
+						$("#longM").val(respuesta['at_largo']);
+						$("#longM").attr('valor',respuesta['at_largo']);	
+						$("#largoM").val(respuesta['at_largo']);
+						$("#largoM").attr('valor',respuesta['at_largo']);
+					}
+					if(respuesta['at_espesor'] != null){
+						$("#espesorM").val(respuesta['at_espesor']);
+						$("#espesorM").attr('valor',respuesta['at_espesor']);	
+						$("#espesor1M").val(respuesta['at_espesor']);
+						$("#espesor1M").attr('valor',respuesta['at_espesor']);
+					}
+					if(respuesta['at_tiposello_desc'] != null){
+						$("#cla_nombreM").val(respuesta['at_tiposello_desc']);
+						$("#cla_nombreM").attr('valor',respuesta['at_tiposello_desc']);	
+					}
 					$("#obsM").val('');
 					$("#tipoprodM").attr('valor',respuesta['tipoprod']);
 					$("#stakilos").val(respuesta['stakilos']);
