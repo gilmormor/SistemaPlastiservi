@@ -2295,7 +2295,9 @@ function crearEditarAcuTec(i){
             for (i = 0; i < claseprod.length; i++) {
                 $("#at_claseprod_id").append("<option value='" + claseprod[i].id + "'>" + claseprod[i].cla_nombre + "</option>");
             }
-			$("#at_claseprod_id").val(acuerdotecnico["at_claseprod_id"]);
+			if(acuerdotecnico){
+				$("#at_claseprod_id").val(acuerdotecnico["at_claseprod_id"]);
+			}
 			$(".selectpicker").selectpicker('refresh');
             /*
             $.each(claseprod, function(index,value){

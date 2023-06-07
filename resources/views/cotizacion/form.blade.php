@@ -25,6 +25,7 @@
 <input type="hidden" name="piva" id="piva" value="{{old('piva', $tablas['empresa']->iva ?? '')}}">
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
 
+<input type="hidden" name="aux_aprocot" id="aux_aprocot" value="{{old('aux_aprocot', session('aux_aprocot') ?? '')}}">
 <?php
     $disabledReadOnly = "";
     //Si la pantalla es de aprobacion de Cotizacion desactiva todos input
@@ -299,16 +300,17 @@
                                         $aux_producto_nombre = $CotizacionDetalle->acuerdotecnicotemp->at_desc;
                                         $aux_ancho = $CotizacionDetalle->acuerdotecnicotemp->at_ancho;
                                         $aux_espesor = $CotizacionDetalle->acuerdotecnicotemp->at_espesor;
-                                        $aux_largo = $CotizacionDetalle->acuerdotecnicotemp->at_ancho;
+                                        $aux_largo = $CotizacionDetalle->acuerdotecnicotemp->at_largo;
                                         $aux_cla_sello_nombre = $CotizacionDetalle->acuerdotecnicotemp->tiposello->desc;
                                     }
                                     if ($CotizacionDetalle->producto->acuerdotecnico != null){
                                         $aux_producto_nombre = $CotizacionDetalle->producto->acuerdotecnico->at_desc;
                                         $aux_ancho = $CotizacionDetalle->producto->acuerdotecnico->at_ancho;
                                         $aux_espesor = $CotizacionDetalle->producto->acuerdotecnico->at_espesor;
-                                        $aux_largo = $CotizacionDetalle->producto->acuerdotecnico->at_ancho;
+                                        $aux_largo = $CotizacionDetalle->producto->acuerdotecnico->at_largo;
                                         $aux_cla_sello_nombre = $CotizacionDetalle->producto->acuerdotecnico->tiposello->desc;
                                     }
+                                    $aux_mostrarimagenat = "display:none;";
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$CotizacionDetalle->producto->categoriaprod_id}}">
@@ -332,7 +334,29 @@
                                                 <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
                                             @else
                                                 <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
+                                                <?php 
+                                                    if($CotizacionDetalle->acuerdotecnicotemp->at_impreso==1){
+                                                        $aux_mostrarimagenat = "display:inline;";
+                                                    }
+                                                ?>
                                             @endif
+                                            <div id="divMostrarImagenat{{$aux_nfila}}" name="divMostrarImagenat{{$aux_nfila}}" style={{$aux_mostrarimagenat}}>
+                                                <a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
+                                                    <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
+                                                </a>
+                                                <?php 
+                                                    if($CotizacionDetalle->acuerdotecnicotemp == null){
+                                                        $aux_imagen = "";
+                                                    }else{
+                                                        $aux_at_impresofoto = $CotizacionDetalle->acuerdotecnicotemp->at_impresofoto;
+                                                        $data_initial_preview=isset($aux_at_impresofoto) ? Storage::url("imagenes/attemp/$aux_at_impresofoto") : "";
+                                                    }
+                                                ?>
+                                                <div id="div_at_imagen{{$aux_nfila}}" name="div_at_imagen{{$aux_nfila}}" style="display: none;">
+                                                    <input type="file" name="at_imagen{{$aux_nfila}}" id="at_imagen{{$aux_nfila}}" class="form-control at_imagen" data-initial-preview='{{$data_initial_preview}}' accept="*"/>
+                                                    <input type="hidden" name="imagen{{$aux_nfila}}" id="imagen{{$aux_nfila}}" value="{{old("imagen$aux_nfila", $aux_at_impresofoto ?? '')}}">
+                                                </div>
+                                            </div>
                                         @endif
                                     </td>
                                     <td style="display:none;" name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">

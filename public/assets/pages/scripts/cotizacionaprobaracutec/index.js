@@ -16,6 +16,7 @@ $(document).ready(function () {
             {data: 'id'},
             {data: 'fechahora'},
             {data: 'razonsocial'},
+            {data: 'vendedor_nombre'},
             {data: 'pdfcot'},
             {data: 'aprobstatus',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
@@ -31,7 +32,7 @@ $(document).ready(function () {
             aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
                             "<i class='fa fa-fw fa-file-pdf-o'></i>"+
                         "</a>"
-            $('td', row).eq(3).html(aux_text);
+            $('td', row).eq(4).html(aux_text);
         }
     });
 });

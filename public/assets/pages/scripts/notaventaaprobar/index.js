@@ -17,6 +17,7 @@ $(document).ready(function () {
             {data: 'cotizacion_id'},
             {data: 'fechahora'},
             {data: 'razonsocial'},
+            {data: 'vendedor_nombre'},
             {data: 'contador',className:"ocultar"},
             {data: 'aprobstatus',className:"ocultar"},
             {data: 'aprobobs',className:"ocultar"},
@@ -68,7 +69,7 @@ $(document).ready(function () {
 				"onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + 
 				"</a>";
             }
-            $('td', row).eq(8).html(aux_text);
+            $('td', row).eq(9).html(aux_text);
 
 			aux_text = 
 				"<a class='btn-accion-tabla btn-sm btngenpdfNV1 tooltipsC' title='Nota de venta: " + data.id + "'>" +
@@ -77,7 +78,7 @@ $(document).ready(function () {
 				"<a class='btn-accion-tabla btn-sm btngenpdfNV2 tooltipsC' title='Precio x Kg: " + data.id + "'>" +
 					"<i class='fa fa-fw fa-file-pdf-o'></i>" +
 				"</a>";
-			$('td', row).eq(9).html(aux_text);
+			$('td', row).eq(10).html(aux_text);
 
             if ( data.contador * 1 > 0 ) {
                 //console.log(row);
@@ -98,7 +99,7 @@ $(document).ready(function () {
                     $('td', row).eq(2).html()+
                     "</a>"
                 );
-                $('td', row).eq(3).html(
+                $('td', row).eq(4).html(
                     "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='Precio menor al valor en tabla'>"+
                     $('td', row).eq(3).html()+
                     "</a>"

@@ -273,6 +273,8 @@ class CotizacionController extends Controller
                     $cotizaciondetalle_id = $cotizaciondetalle->id;
                     
                     if($cotizaciondetalle->save()){
+                        $at_imagen = "at_imagen" . ($i+1);
+                        $imagen = "imagen" . ($i+1);        
                         // Quede aqui para mañana 14/09/2021
                         if($producto->tipoprod == 1){
                             $acuerdotecnicotemp = new AcuerdoTecnicoTemp();
@@ -289,6 +291,14 @@ class CotizacionController extends Controller
                                 "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
                                 "cliente_id" => $request->cliente_id,
                             ]);
+                            if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
+                                if($foto=="del"){
+                                    $foto = null;
+                                }
+                                $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
+                                $data->at_impresofoto = $foto;
+                                $data->save();
+                            }
                             $acuerdotecnicotemp_id = $acuerdotecnicotemp->id;
                             $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp_id]);
                         }
@@ -466,12 +476,17 @@ class CotizacionController extends Controller
                 foreach($acuerdotecnicotemp_clientes as $acuerdotecnicotemp_cliente) {
                     AcuerdoTecnicoTemp_Cliente::destroy($acuerdotecnicotemp_cliente->id);
                 }
+                $acuerdotecnicoTemp_id = $cotizaciondetalle->acuerdotecnicotempunoauno->id;
+                AcuerdoTecnicoTemp::setImagen(false,0,0,0,"attemp".$acuerdotecnicoTemp_id); //Eliminar imagen de disco
                 AcuerdoTecnicoTemp::destroy($cotizaciondetalle->acuerdotecnicotempunoauno->id);
+
             }
             CotizacionDetalle::destroy($auxCotDet[$i]);
         }
         if($cont_cotdet>0){
             for ($i=0; $i < count($request->cotdet_id) ; $i++){
+                $at_imagen = "at_imagen" . ($i+1);
+                $imagen = "imagen" . ($i+1);
                 $idcotizaciondet = $request->cotdet_id[$i]; 
                 $producto = Producto::findOrFail($request->producto_id[$i]);
                 //$acuerdotecnico_id = null;
@@ -577,6 +592,14 @@ class CotizacionController extends Controller
                         if($request->acuerdotecnico[$i] != "null"){
                             $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                            if($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
+                                $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
+                                if($foto=="del"){
+                                    $foto = null;
+                                }
+                                $data->at_impresofoto = $foto;
+                                $data->save();
+                            }
                             $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
                                 "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
                                 "cliente_id" => $cotizacion->cliente_id,
@@ -620,12 +643,28 @@ class CotizacionController extends Controller
                         $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                         if($cotizaciondetalle->acuerdotecnicotemp_id == null){
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                            if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
+                                if($foto=="del"){
+                                    $foto = null;
+                                }
+                                $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
+                                $data->at_impresofoto = $foto;
+                                $data->save();
+                            }
                             $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
-    
                         }else{
                             //dd($arrayAT);
                             AcuerdoTecnicoTemp::where("id","=",$cotizaciondetalle->acuerdotecnicotemp_id)
                             ->update($arrayAT);
+                            $data = AcuerdoTecnicoTemp::findOrFail($cotizaciondetalle->acuerdotecnicotemp_id);
+                            //dd($data->at_impresofoto);
+                            if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$cotizaciondetalle->acuerdotecnicotemp_id,$request,$at_imagen,$request->$imagen,$data->at_impresofoto)){
+                                if($foto=="del"){
+                                    $foto = null;
+                                }
+                                $data->at_impresofoto = $foto;
+                                $data->save();
+                            }
                         }
                     }else{
                         $cotizaciondetalle->update(['acuerdotecnicotemp_id' => null]);

@@ -222,8 +222,6 @@ $(document).ready(function () {
 		});
 	});
 	//configTablaProd();
-
-
 });
 
 //CAPTURE DE PANTALLA Y GENERAR PDF
@@ -343,7 +341,16 @@ function insertarTabla(){
 	aux_botonAcuTec = '';
 	if($("#tipoprodM").attr('valor') == 1) {
 		aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
-		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>';
+		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>' +
+		'<div id="divMostrarImagenat'+ aux_nfila + '" name="divMostrarImagenat'+ aux_nfila + '" style="display:none;">' +
+			'<a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro('+ aux_nfila + ')">' +
+				'<i id="btnmostrarocultar'+ aux_nfila + '" class="fa fa-plus"></i>' +
+			'</a>' +
+			'<div id="div_at_imagen'+ aux_nfila + '" name="div_at_imagen'+ aux_nfila + '" style="display: none;">' +
+				'<input type="file" name="at_imagen'+ aux_nfila + '" id="at_imagen'+ aux_nfila + '" class="form-control at_imagen" accept="*"/>' +
+				'<input type="hidden" name="imagen'+ aux_nfila + '" id="imagen'+ aux_nfila + '" value="">' +
+			'</div>' +
+		'</div>';
 	}
 	//aux_botonAcuTec = $("#tipoprodM").attr('valor') == '1' ? 'x' : '';
 	let aux_productoId = $("#producto_idM").val();
@@ -490,6 +497,7 @@ function insertarTabla(){
 		'</tr>';
 	
 	$('#tabla-data tbody').append(htmlTags);
+	activarClases(aux_nfila);
 	totalizar();
 }
 
@@ -646,6 +654,14 @@ function ajaxRequest(data,url,funcion) {
 					$("#longTD" + datatemp.nfila).html($("#at_largo").val());
 					$("#espesorTD" + datatemp.nfila).html($("#at_espesor").val());
 					$("#cla_nombreTD" + datatemp.nfila).html($("#at_tiposello_id option:selected").html());
+					console.log($("#at_impreso").val());
+					if($("#at_impreso").val() == 1){
+						$("#divMostrarImagenat" + datatemp.nfila).css({'display':'inline'});
+					}else{
+						$("#divMostrarImagenat" + datatemp.nfila).css({'display':'none'});
+						$("#at_imagen" + datatemp.nfila).val("");
+						$("#imagen" + datatemp.nfila).val("");
+					}
 				}
 			}
 		},
@@ -1328,7 +1344,18 @@ $(".form-horizontal").on("submit", function(event){
 				$("#lblitemcompletos").html("Acuerdo técnico item:" + j);
 				$("#itemcompletos").val("");
 				break;
-			}	
+			}
+			let acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
+			if(acuerdotecnico.at_impreso == 1){
+				let at_imagen = $("#at_imagen" + i).val();
+				if($("#imagen" + i).val() == ""){
+					if(at_imagen == 0 || at_imagen == "null" || at_imagen == null || at_imagen == ""){
+						$("#lblitemcompletos").html("Arte Acuerdo técnico item:" + j);
+						$("#itemcompletos").val("");
+						break;
+					}	
+				}
+			}
 		}
 	}
 	//console.log($("#acuerdotecnico").val());
@@ -1461,4 +1488,62 @@ function desvEspesor(aux_valor,aux_desc){
 	}
 	return aux_desv;
 
+}
+
+function iniciarFileinput(aux_nfila){
+	$('#at_imagen' + aux_nfila).fileinput({
+		language: 'es',
+		allowedFileExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+		maxFileSize: 400,
+		initialPreview: [
+			// PDF DATA
+			//'/storage/imagenes/notaventa/'+$("#imagen").val(),
+		],
+		initialPreviewShowDelete: false,
+		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
+		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
+		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
+		initialPreviewConfig: [
+			{type: "pdf", size: 8000, caption: $("#imagen").val(), url: "/file-upload-batch/2", key: 10, downloadUrl: false}, // disable download
+		],
+		showUpload: false,
+		showClose: false,
+		initialPreviewAsData: true,
+		dropZoneEnabled: false,
+		maxFileCount: 5,
+		theme: "fa",
+	}).on('fileclear', function(event) {
+		//console.log("fileclear");
+		$('#at_imagen' + aux_nfila).attr("data-initial-preview","");
+		$("#imagen" + aux_nfila).val("");
+		//alert('entro');
+	}).on('fileimageloaded', function(e, params) {
+		//console.log('Paso');
+		//console.log('File uploaded params', params);
+		//console.log($('#at_imagen' + aux_nfila).val());
+		$("#imagen" + aux_nfila).val($('#at_imagen' + aux_nfila).val());
+	});
+}
+
+function activarClases(aux_nfila){
+	iniciarFileinput(aux_nfila);
+}
+
+
+function ocultarMostrarFiltro(aux_nfila){
+	if($('#div_at_imagen'+ aux_nfila).css('display') == 'none'){
+		//$('#botonD').attr("class", "glyphicon glyphicon-chevron-up");
+		$('#botonD').attr("title", "Ocultar Filtros");
+		$('#btnmostrarocultar' + aux_nfila).removeClass('fa-plus').addClass('fa-minus')
+		iniciarFileinput(aux_nfila);
+	}else{
+		//$('#botonD').attr("class", "glyphicon glyphicon-chevron-down");
+		$('#botonD').attr("title", "Mostrar Filtros");
+		$('#btnmostrarocultar' + aux_nfila).removeClass('fa-minus').addClass('fa-plus')
+	}
+	$('#div_at_imagen'+ aux_nfila).slideToggle(500);
+	if($("#aux_aprocot").val() != "0"){
+		$(".file-caption-main").hide();		
+	}
+	$(".kv-file-remove").hide();
 }

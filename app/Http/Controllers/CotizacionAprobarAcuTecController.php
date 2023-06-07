@@ -30,11 +30,16 @@ class CotizacionAprobarAcuTecController extends Controller
         session(['aux_aprocot' => '5']);
         $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
+                    concat(persona.nombre, ' ' ,persona.apellido) as vendedor_nombre,
                     aprobstatus,'1' as pdfcot
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
+                INNER JOIN vendedor
+                ON cotizacion.vendedor_id = vendedor.id
+                INNER JOIN persona
+                ON vendedor.persona_id = persona.id
                 where aprobstatus=5
                 and cotizacion.deleted_at is null
                 AND cotizacion.sucursal_id in ($sucurcadena);";

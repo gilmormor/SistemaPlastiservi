@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
+use SplFileInfo;
 
 class AcuerdoTecnicoTemp extends Model
 {
@@ -141,5 +143,39 @@ class AcuerdoTecnicoTemp extends Model
         return $this->belongsTo(UnidadMedida::class,"at_espesorum_id");
     }
     
+    public static function setImagen($foto,$id,$request,$at_imagen,$imagen, $actual = false){
+        //dd($foto);
+        if ($foto) {
+            if ($actual) {
+                Storage::disk('public')->delete("imagenes/attemp/$actual");
+            }
+            //dd($at_imagen);
+            $file = $request->file($at_imagen);
+            $nombre = $file->getClientOriginalName();
+            $info = new SplFileInfo($nombre);
+            $ext = strtolower($info->getExtension()); //Obtener extencion de un archivo
+            //$imageName = Str::random(10) . '.jpg';
+            $imageName = 'attemp' . $id . '.' . $ext;
+            //dd($imageName);
+            //      $imagen = Image::make($foto)->encode('jpg', 75);
+            //$imagen->fit(530, 470); //Fit() SUpuestamente mantiene la proporcion de la imagen
+            /*$imagen->resize(530, 470, function ($constraint) {
+                $constraint->upsize();
+            });*/
+            //Storage::disk('public')->put("imagenes/attemp/$imageName", $imagen->stream());
+            //Storage::disk('public')->put("imagenes/attemp/$imageName", $file);
+            $file->move(public_path() . "/storage/imagenes/attemp/" , $imageName);
+            //$request->file('')
+            return $imageName;
+        } else {
+            if ($actual and ($imagen == "" or is_null($imagen))) {
+                Storage::disk('public')->delete("imagenes/attemp/$actual");
+                return "del";
+            }else{
+                return false;
+            }
+        }
+    }
+
     
 }

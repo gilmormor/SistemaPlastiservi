@@ -43,7 +43,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use SplFileInfo;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\File;
 use PhpParser\Node\Stmt\Foreach_;
+use Illuminate\Support\Facades\Storage;
 
 class NotaVentaController extends Controller
 {
@@ -983,6 +985,17 @@ class NotaVentaController extends Controller
                         $array_acuerdotecnicotemp["producto_id"] = $productonew->id;
                         $array_acuerdotecnicotemp["at_notaventadetalle_id"] = $notaventadetalle->id;
                         $acuerdotecnico = AcuerdoTecnico::create($array_acuerdotecnicotemp);
+                        //SI EL ACUERDOTECNICOTEMP TIENE ARCHIVO ADJUNTO LO COPIO AL ACUERDOTECNICO DEFINITIVO Y COPIO EL ARCHIVO
+                        if($array_acuerdotecnicotemp["at_impreso"] == 1 and $array_acuerdotecnicotemp["at_impresofoto"] != null){
+                            $fileOrigen = 'imagenes/attemp/' . $array_acuerdotecnicotemp["at_impresofoto"];
+                            $extension = File::extension($fileOrigen);
+                            $fileDestino = 'at' . $acuerdotecnico->id . '.' . $extension;
+                            $newName = 'imagenes/at/' . $fileDestino;
+                            Storage::disk('public')->copy($fileOrigen, $newName);
+                            $acuerdotecnico->at_impresofoto = $fileDestino;
+                            $acuerdotecnico->save();
+                        }
+                        //dd($array_acuerdotecnicotemp);
                         //SE RELACIONA EL ACUERDO TECNICO CON EL CLIENTE
                         //SOLO EXISTE 1 ACUERDO TECNICO, PERO PUEDEN HABER VARIOS ACUERDO TECNICO POR CADA CLIENTE QUE COMPARTEN EL MISMO ACUERDO TECNICO 
                         //COMO POR EJEMPLO: LA FORMA DE EMPAQUE, ES EL MISNMO PRODUCTO PERO CAMBIA LA FORMA DE EMPAQUETAR.

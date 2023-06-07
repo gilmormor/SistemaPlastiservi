@@ -115,12 +115,17 @@ class NotaventaAprobarController extends Controller
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
         $sql = "SELECT notaventa.id,DATE_FORMAT(notaventa.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_file,oc_id,'' as pdfnv, 
+                    concat(persona.nombre, ' ' ,persona.apellido) as vendedor_nombre,
                     (SELECT COUNT(*) 
                     FROM notaventadetalle 
                     WHERE notaventadetalle.notaventa_id=notaventa.id and 
                     notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
                 FROM notaventa inner join cliente
                 on notaventa.cliente_id = cliente.id
+                INNER JOIN vendedor
+                ON notaventa.vendedor_id = vendedor.id
+                INNER JOIN persona
+                ON vendedor.persona_id = persona.id
                 where $aux_condvend
                 and anulada is null
                 and aprobstatus=2

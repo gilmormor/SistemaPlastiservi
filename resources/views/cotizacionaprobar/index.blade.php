@@ -26,6 +26,7 @@ Cotización
                                 <th class="width70">ID</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
+                                <th>Vendedor</th>
                                 <th class="width30">PDF</th>
                                 <th class="ocultar">aprobstatus</th>
                                 <th class="ocultar">contador</th>
