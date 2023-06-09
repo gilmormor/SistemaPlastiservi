@@ -99,8 +99,8 @@ class NotaVentaAnularController extends Controller
             //dd(count($datas));
 
             $notaventa = NotaVenta::findOrFail($request->id);
-            $notaventa->anulada = date("Y-m-d H:i:s");;
-            
+            $notaventa->anulada = date("Y-m-d H:i:s");
+            $notaventa->cotizacion_id = null;
             if(count($datas) > 0){
                 if ($notaventa->save()) {
                     return response()->json(['mensaje' => 'ok']);
