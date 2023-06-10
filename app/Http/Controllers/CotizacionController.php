@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AcuTecAprobarRechazar;
 use App\Http\Requests\ValidarCotizacion;
 use App\Models\AcuerdoTecnicoTemp;
 use App\Models\AcuerdoTecnicoTemp_Cliente;
@@ -780,6 +781,7 @@ class CotizacionController extends Controller
 
     public function aprobarcotsup(Request $request)
     {
+        dd(urlRaiz());
         //dd($request);
         can('guardar-cotizacion');
         if ($request->ajax()) {
@@ -800,10 +802,12 @@ class CotizacionController extends Controller
                     }
                 }
             }
+            //dd($cotizacion);
             $cotizacion->aprobusu_id = auth()->id();
             $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
             
             if ($cotizacion->save()) {
+                Event(new AcuTecAprobarRechazar($cotizacion));
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);

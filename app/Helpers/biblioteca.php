@@ -160,4 +160,17 @@ if (!function_exists('cadVacia')) { //VALIDAR CADENA VACIA O NULL
     }
 }
 
+if (!function_exists('urlRaiz')) {
+    function urlRaiz(){
+        $ruta = url()->current();
+        $currentUrl = url()->current();
+
+        $parsedUrl = parse_url($currentUrl);
+        // Obtener el dominio
+        $domain = $parsedUrl['host'];
+        // Construir la URL deseada
+        $desiredUrl = 'https://pl.' . $domain;
+        return $desiredUrl;
+    }
+}
 ?>
