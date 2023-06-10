@@ -6,6 +6,7 @@ use App\Mail\MailAcuTecAprobarRechazar;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Models\Notificaciones;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 
@@ -47,12 +48,24 @@ class NotifyMailAcuTecAprobarRechazar
         $aux_rutadest = "";
         switch ($cotizacion->aprobstatus) {
             case 2:
-                $aux_mensaje = "Acuerdo Técnico APROBADO Cotización: " . $cotizacion->id;
+                $aux_mensaje = "Acu Téc APROBADO Cotización: " . $cotizacion->id;
                 $aux_icono = "fa fa-fw fa-thumbs-o-up text-primary";
+                $aux_rutadest = "cotizaciontrans";
+                $cuerpo = $aux_mensaje . " A la espera de Validación Financiera" ;
+                break;
+            case 3:
+                $aux_mensaje = "Cotización APROBADA (Info Financiera) Cotización: " . $cotizacion->id;
+                $aux_icono = "fa fa-fw fa-thumbs-o-up text-primary";
+                $aux_rutadest = "cotizaciontrans";
+                $cuerpo = $aux_mensaje . ". Cotizacion eta habilitada para realizar Nota de Venta" ;
+                break;
+            case 4:
+                $aux_mensaje = "Cotización RECHAZADA (Info Financiera) Cotización: " . $cotizacion->id;
+                $aux_icono = "fa fa-fw fa-thumbs-o-down text-red";
                 $aux_rutadest = "cotizaciontrans";
                 break;
             case 7:
-                $aux_mensaje = "Acuerdo Técnico RECHAZADO Cotización: " . $cotizacion->id;
+                $aux_mensaje = "Acu Téc RECHAZADO Cotización: " . $cotizacion->id;
                 $aux_icono = "fa fa-fw fa-thumbs-o-down text-red";
                 $aux_rutadest = "cotizaciontrans";
                 break;
@@ -69,9 +82,11 @@ class NotifyMailAcuTecAprobarRechazar
         //$usuario = Usuario::findOrFail(auth()->id());
         $asunto = $notificaciones->mensaje;
         $cuerpo = $notificaciones->mensaje;
-
         Mail::to($aux_email)->send(new MailAcuTecAprobarRechazar($notificaciones,$asunto,$cuerpo,$cotizacion));
         if($cotizacion->aprobstatus == 2){
+            $notificaciones->mensaje .= " Esperando por aprobación financiera";
+            $asunto = $notificaciones->mensaje;
+            $cuerpo = $notificaciones->mensaje;
             $aux_email = "lmartinez@plastiservi.cl";
             Mail::to($aux_email)->send(new MailAcuTecAprobarRechazar($notificaciones,$asunto,$cuerpo,$cotizacion));    
         }

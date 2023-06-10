@@ -11,7 +11,7 @@
     <p><b>Fecha:</b> {{ date("d-m-Y h:i:s A", strtotime($msg->updated_at)) }}.</p>
     <p>{{ $cuerpo }}</p>
     @if ($tabla->aprobobs != "" or $tabla->aprobobs != null)
-        <p>{{ 'Observación:' . $tabla->aprobobs }}</p>
+        <p>{{ 'Observación: ' . $tabla->aprobobs }}</p>
     @endif
     
     <p>Datos usuario que generó el correo:</p>

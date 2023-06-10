@@ -781,7 +781,6 @@ class CotizacionController extends Controller
 
     public function aprobarcotsup(Request $request)
     {
-        dd(urlRaiz());
         //dd($request);
         can('guardar-cotizacion');
         if ($request->ajax()) {
@@ -796,7 +795,7 @@ class CotizacionController extends Controller
                     if($request->valor == "3"){
                         //$cotizacion->aprobstatus = "6"; Este estatus era para acuerdo tecnico aprobado, pero ahora todas las cotizaciones deben pasar por aprobacion de Luisa Martinez
                         $cotizacion->aprobstatus = "2";
-                        $cotizacion->aprobobs = "Cotizacion requiere Aprobacion (Santa Ester)";
+                        $cotizacion->aprobobs = "Cotizacion requiere Aprobacion Financiera (Santa Ester)";
                     }else{
                         $cotizacion->aprobstatus = "7";
                     }
