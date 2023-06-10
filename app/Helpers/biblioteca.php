@@ -169,7 +169,7 @@ if (!function_exists('urlRaiz')) {
         // Obtener el dominio
         $domain = $parsedUrl['host'];
         // Construir la URL deseada
-        $desiredUrl = 'https://pl.' . $domain;
+        $desiredUrl = 'https://' . $domain;
         return $desiredUrl;
     }
 }
