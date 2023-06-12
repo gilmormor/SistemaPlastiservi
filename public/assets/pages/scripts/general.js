@@ -2493,8 +2493,9 @@ function cargardatospantprod(){
 	}
 	$("#staprodxcli").css({'display':'none'});
 	if(data.data1.sucursal_id){
-		let posicion = data.data1.sucursal_id.indexOf('1');
-		if(posicion >= 0){
+		let posicion1 = data.data1.sucursal_id.indexOf('1');//Para visualizar el status de Productos base para acuerdo tecnico Santa Ester
+		let posicion3 = data.data1.sucursal_id.indexOf('3');//Para visualizar el status de Productos base para acuerdo tecnico Puerto Montt
+		if(posicion1 >= 0 || posicion3 >= 0){
 			$("#staprodxcli").css({'display':'block'});
 		}
 	}
