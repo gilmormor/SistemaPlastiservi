@@ -2024,7 +2024,7 @@ function consulta($request){
     $respuesta['totales'] = $datas;
     //dd($respuesta['totales']);
 
-    $sql = "SELECT producto.id as producto_id,categoriaprod.nombre,claseprod.cla_nombre,
+    $sql = "SELECT producto.id as producto_id,CONCAT(categoriaprod.nombre,'/',producto.nombre) as nombre,claseprod.cla_nombre,
     producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,
@@ -2488,7 +2488,7 @@ function consultaODcerrada($request){
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY producto.id;";
 */
-    $sql = "SELECT producto.id as producto_id,categoriaprod.nombre,claseprod.cla_nombre,
+    $sql = "SELECT producto.id as producto_id,CONCAT(categoriaprod.nombre,'/',producto.nombre) as nombre,claseprod.cla_nombre,
     producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,
