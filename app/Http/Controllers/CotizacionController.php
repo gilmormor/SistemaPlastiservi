@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\AcuTecAprobarRechazar;
+use App\Events\AvisoRevisionAcuTec;
 use App\Http\Requests\ValidarCotizacion;
 use App\Models\AcuerdoTecnicoTemp;
 use App\Models\AcuerdoTecnicoTemp_Cliente;
@@ -756,6 +757,14 @@ class CotizacionController extends Controller
         if ($request->ajax()) {
             $cotizacion = Cotizacion::findOrFail($request->id);
             $cotizacion->aprobstatus = $request->aprobstatus;
+            //dd($cotizacion->cotizaciondetalles);
+            $aux_statusAcuTec = false;
+            foreach ($cotizacion->cotizaciondetalles as $cotdet) {
+                if($cotdet->acuerdotecnicotempunoauno){
+                    $aux_statusAcuTec = true;
+                    break;
+                }
+            }
             if($request->aprobstatus=='1'){
                 if($cotizacion->sucursal_id == 1){ //TODAS LAS COTIZACIONES DE SANTA ESTER NECESITAN APROBACION DE LUISA MARTINEZ
                     $cotizacion->aprobstatus = 2;
@@ -767,8 +776,11 @@ class CotizacionController extends Controller
                     $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
                     $cotizacion->aprobobs = 'Aprobado por el mismo vendedor';    
                 }
-            }    
+            }
             if ($cotizacion->save()) {
+                if($aux_statusAcuTec){
+                    Event(new AvisoRevisionAcuTec($cotizacion));
+                }    
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);

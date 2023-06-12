@@ -10,9 +10,6 @@
 
     <p><b>Fecha:</b> {{ date("d-m-Y h:i:s A", strtotime($msg->updated_at)) }}.</p>
     <p>{{ $cuerpo }}</p>
-    @if ($tabla->aprobobs != "" or $tabla->aprobobs != null)
-        <p>{{ 'Observación: ' . $tabla->aprobobs }}</p>
-    @endif
     
     <p>Datos usuario que generó el correo:</p>
     <ul>
@@ -29,14 +26,8 @@
         <li><b>Vendedor:</b> {{ $tabla->vendedor->persona->nombre . " " . $tabla->vendedor->persona->apellido}}</li>
     </ul>
     <p>
-        <b>Ingresar al Sistema:</b>
-        <?php
-            $rutaValFinanciera = "";
-            if($tabla->aprobstatus == 2){
-                $rutaValFinanciera = "/cotizacionaprobar";
-            }
-        ?>
-        <a href="{{urlRaiz().$rutaValFinanciera}}">
+        <b>Ingresar al Sistema:</b> 
+        <a href="{{urlRaiz()."/cotizacionaprobaracutec"}}">
             {{urlRaiz()}}
         </a>
     </p>

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Events\AcuTecAprobarRechazar;
+use App\Events\AvisoRevisionAcuTec;
 use App\Events\CerrarSolDesp;
 use App\Events\DevolverSolDesp;
 use App\Events\FinSesionUsuario;
@@ -16,6 +17,7 @@ use App\Listeners\CerrarSolDespNotificacion;
 use App\Listeners\CrearNotificacion;
 use App\Listeners\DevolverSolDespNotificacion;
 use App\Listeners\NotifyMailAcuTecAprobarRechazar;
+use App\Listeners\NotifyMailAvisoRevisionAcuTec;
 use App\Listeners\NotifyMailGuardarFacturaDespacho;
 use App\Listeners\NotifyMailGuardarGuiaDespacho;
 use Illuminate\Support\Facades\Event;
@@ -59,6 +61,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         AcuTecAprobarRechazar::class => [
             NotifyMailAcuTecAprobarRechazar::class,
+        ],
+        AvisoRevisionAcuTec::class => [
+            NotifyMailAvisoRevisionAcuTec::class,
         ]
     ];
 
