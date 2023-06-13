@@ -2345,7 +2345,7 @@ function crearEditarAcuTec(i){
 		$("#lbltitAT1").html(aux_tituloAT);
 		//$("#lbltitAT2").html(aux_tituloAT);
 	}
-
+	$("#at_tiposello_id").val(1);
 	$(".selectpicker").selectpicker('refresh');
 
     $("#myModalAcuerdoTecnico").modal('show');

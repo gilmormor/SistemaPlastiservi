@@ -36,14 +36,6 @@
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                                            <label for="at_claseprod_id" class="control-label requerido" data-toggle='tooltip' title="Clase">Tipo/Clase</label>
-                                            <select name="at_claseprod_id" id="at_claseprod_id" class="selectpicker form-control at_claseprod_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
-                                            </select>
-                                            <span class="help-block"></span>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -382,29 +374,37 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Sellado y Embalaje</h3>
-                        </div>
                         <div class="row">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Tipo de Sello</h3>
                                 </div>
                                 <div class="box-body">
+
                                     <div class="row">
-                                        <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
+                                        <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                            <label for="at_claseprod_id" class="control-label requerido" data-toggle='tooltip' title="Clase">Tipo Sello</label>
+                                            <select name="at_claseprod_id" id="at_claseprod_id" class="selectpicker form-control at_claseprod_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                            </select>
+                                            <span class="help-block"></span>
+                                        </div>
+    
+                                        <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3" style="display: none;">
                                             <label for="at_tiposello_id" class="control-label requerido" data-toggle='tooltip' title="Tipo de Sello">Tipo Sello</label>
                                             <select name="at_tiposello_id" id="at_tiposello_id" class="selectpicker form-control tiposello_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
                                                 <option value="">Seleccione...</option>
                                                 @foreach($tablas['tipoSello'] as $tiposello)
                                                     <option
                                                         value="{{$tiposello->id}}"
+                                                        @if ($tiposello->id == 1)
+                                                            {{'selected'}}
+                                                        @endif
                                                         >{{$tiposello->desc}}</option>
                                                 @endforeach            
                                             </select>
                                             <span class="help-block"></span>
                                         </div>
-                                        <div class="col-xs-12 col-sm-9">
+                                        <div class="col-xs-12 col-sm-8">
                                             <label for="at_tiposelloobs" class="control-label" data-toggle='tooltip' title="Observación fondo">Observación</label>
                                             <input type="text" name="at_tiposelloobs" id="at_tiposelloobs" class="form-control form_acutec" placeholder="Observación"/>
                                             <span class="help-block"></span>

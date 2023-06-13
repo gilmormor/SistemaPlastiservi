@@ -53,8 +53,7 @@
 							<td style="width: 25% !important;"><p>{{$acuerdotecnico->at_desc}}</p></td>
 							<td style="width: 10% !important;"><strong>Ent. Muestra:</strong></td>
 							<td style="width: 15% !important;"><p>{{$acuerdotecnico->at_entmuestra == '1' ? 'Si' : 'No' }}</p></td>
-							<td style="width: 6% !important;"><strong>Tipo:</strong></td>
-							<td style="width: 10% !important;"><p>{{$acuerdotecnico->claseprod->cla_nombre}}</p></td>
+							<td style="width: 20% !important;"><strong>Tipo Sello:</strong> {{$acuerdotecnico->claseprod->cla_nombre}}</td>
 						</tr>
 					</table>
 				</div>
