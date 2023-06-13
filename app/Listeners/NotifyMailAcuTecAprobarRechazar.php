@@ -58,9 +58,9 @@ class NotifyMailAcuTecAprobarRechazar
                 $aux_icono = "fa fa-fw fa-thumbs-o-up text-primary";
                 $aux_rutadest = "cotizaciontrans";
                 $cuerpo = nl2br($aux_mensaje . "\nCotización está habilitada para realizar Nota de Venta. \nDebes indicar número de Orden de Compra y adjuntar la imagen de la Orden de Compra, estos campos son obligatorios" .
-                    "\nPuedes ingresar al siguiente enlace: (Previamente debes ingresar al sistema con usuario y clave)".
+                    "\nPara procesar la Nota de Venta puedes ingresar al siguiente enlace: (Previamente debes ingresar al sistema con usuario y clave)".
                     "\n<a href='" . urlRaiz() ."/notaventa/crearcot/" . $cotizacion->id .  "'>" .
-                        urlRaiz() .
+                        "Clic aqui." .
                     "</a>") ;
                 break;
             case 4:

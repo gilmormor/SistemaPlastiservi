@@ -514,8 +514,7 @@ class CotizacionController extends Controller
                         unset($objetAT->tiposello);
                         unset($objetAT->materiaprima);
                         unset($objetAT->largounidadmedida);
-                        
-                        
+                        unset($objetAT->claseprod);                      
                         //dd($objetAT);
                         $arrayAT = (array) $objetAT;
                         /*

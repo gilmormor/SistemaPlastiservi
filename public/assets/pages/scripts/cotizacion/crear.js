@@ -653,7 +653,7 @@ function ajaxRequest(data,url,funcion) {
 					$("#diamextmmTD" + datatemp.nfila).html($("#at_ancho").val());
 					$("#longTD" + datatemp.nfila).html($("#at_largo").val());
 					$("#espesorTD" + datatemp.nfila).html($("#at_espesor").val());
-					$("#cla_nombreTD" + datatemp.nfila).html($("#at_tiposello_id option:selected").html());
+					$("#cla_nombreTD" + datatemp.nfila).html($("#at_claseprod_id option:selected").html());
 					console.log($("#at_impreso").val());
 					if($("#at_impreso").val() == 1){
 						$("#divMostrarImagenat" + datatemp.nfila).css({'display':'inline'});
