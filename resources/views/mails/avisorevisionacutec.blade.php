@@ -9,7 +9,7 @@
 <body>
 
     <p><b>Fecha:</b> {{ date("d-m-Y h:i:s A", strtotime($msg->updated_at)) }}.</p>
-    <p>{{ $cuerpo }}</p>
+    <p>{!! $cuerpo !!}</p>
     
     <p>Datos usuario que generó el correo:</p>
     <ul>

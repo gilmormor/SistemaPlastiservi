@@ -57,7 +57,11 @@ class NotifyMailAcuTecAprobarRechazar
                 $aux_mensaje = "Cotización APROBADA (Info Financiera).";
                 $aux_icono = "fa fa-fw fa-thumbs-o-up text-primary";
                 $aux_rutadest = "cotizaciontrans";
-                $cuerpo = $aux_mensaje . ". Cotizacion eta habilitada para realizar Nota de Venta" ;
+                $cuerpo = nl2br($aux_mensaje . "\nCotización está habilitada para realizar Nota de Venta. \nDebes indicar número de Orden de Compra y adjuntar la imagen de la Orden de Compra, estos campos son obligatorios" .
+                    "\nPuedes ingresar al siguiente enlace: (Previamente debes ingresar al sistema con usuario y clave)".
+                    "\n<a href='" . urlRaiz() ."/notaventa/crearcot/" . $cotizacion->id .  "'>" .
+                        urlRaiz() .
+                    "</a>") ;
                 break;
             case 4:
                 $aux_mensaje = "Cotización RECHAZADA (Info Financiera).";

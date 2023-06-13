@@ -104,31 +104,33 @@
 						$aux_largo = $CotizacionDetalle->producto->long . " mts";
 						$aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod->cla_nombre;
 						if ($CotizacionDetalle->acuerdotecnicotemp != null){
-							$aux_producto_nombre = $CotizacionDetalle->acuerdotecnicotemp->at_desc;
-							$aux_ancho = $CotizacionDetalle->acuerdotecnicotemp->at_ancho . " " . $CotizacionDetalle->acuerdotecnicotemp->anchounidadmedida->nombre;
-							$aux_espesor = $CotizacionDetalle->acuerdotecnicotemp->at_espesor;
-							$aux_largo = $CotizacionDetalle->acuerdotecnicotemp->at_largo . " " . $CotizacionDetalle->acuerdotecnicotemp->largounidadmedida->nombre;
-							$aux_cla_sello_nombre = $CotizacionDetalle->acuerdotecnicotemp->tiposello->desc;
+							$AcuTecTemp = $CotizacionDetalle->acuerdotecnicotemp;
+							$aux_producto_nombre = nl2br($AcuTecTemp->at_desc . "\n" . $AcuTecTemp->materiaprima->nombre . " " . $AcuTecTemp->materiaprima->desc . "\n". $AcuTecTemp->at_tiposelloobs);
+							$aux_ancho = $AcuTecTemp->at_ancho . " " . $AcuTecTemp->anchounidadmedida->nombre;
+							$aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "") ;
+							$aux_espesor = $AcuTecTemp->at_espesor;
+							$aux_cla_sello_nombre = $AcuTecTemp->tiposello->desc;
 						}
 						if ($CotizacionDetalle->producto->acuerdotecnico != null){
-							$aux_producto_nombre = $CotizacionDetalle->producto->acuerdotecnico->at_desc;
-							$aux_ancho = $CotizacionDetalle->producto->acuerdotecnico->at_ancho . " " . $CotizacionDetalle->producto->acuerdotecnico->anchounidadmedida->nombre;
-							$aux_espesor = $CotizacionDetalle->producto->acuerdotecnico->at_espesor;
-							$aux_largo = $CotizacionDetalle->producto->acuerdotecnico->at_largo . " " . $CotizacionDetalle->producto->acuerdotecnico->largounidadmedida->nombre;
-							$aux_cla_sello_nombre = $CotizacionDetalle->producto->acuerdotecnico->tiposello->desc;
+							$AcuTec = $CotizacionDetalle->producto->acuerdotecnico;
+							$aux_producto_nombre = nl2br($AcuTec->at_desc . "\n" . $AcuTec->materiaprima->nombre . " " . $AcuTec->materiaprima->desc . "\n". $AcuTec->at_tiposelloobs);
+							$aux_ancho = $AcuTec->at_ancho . " " . $AcuTec->anchounidadmedida->nombre;
+							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+							$aux_espesor = $AcuTec->at_espesor;
+							$aux_cla_sello_nombre = $AcuTec->tiposello->desc;
 						}
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$CotizacionDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($CotizacionDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$CotizacionDetalle->unidadmedida->nombre}}</td>
-						<td class="textleft">{{$aux_producto_nombre}}</td>
+						<td class="textleft">{!!$aux_producto_nombre!!}</td>
 						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 0, ",", ".")}}</td>
-						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 0, ",", ".")}}</td>
+						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 0, ",", ".")}}&nbsp;</td>
 					</tr>
 				@endforeach
 			</tbody>
@@ -139,15 +141,15 @@
 		<table id="factura_detalle">
 			<tr>
 				<td colspan="8" class="textright" width="85%"><span><strong>NETO</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->neto, 0, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->neto, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 			<tr>
 				<td colspan="8" class="textright" width="85%"><span><strong>IVA {{$cotizacion->piva}}%</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->iva, 0, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->iva, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 			<tr>
 				<td colspan="8" class="textright" width="85%"><span><strong>TOTAL</strong></span></td>
-				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->total, 0, ",", ".")}}</strong></span></td>
+				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->total, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 		</table>
 	</div>

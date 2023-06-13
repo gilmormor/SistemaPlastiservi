@@ -404,7 +404,6 @@ class CotizacionController extends Controller
     //ValidarCotizacion
     public function actualizar(ValidarCotizacion $request, $id)
     {
-        //dd($request);
         can('guardar-cotizacion');
         $cotizacion = Cotizacion::findOrFail($id);
         if($cotizacion->updated_at != $request->updated_at){
@@ -420,7 +419,6 @@ class CotizacionController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
-
         $aux_rut=str_replace('.','',$request->rut);
         $request->rut = str_replace('-','',$aux_rut);
         //dd($request);
@@ -514,6 +512,8 @@ class CotizacionController extends Controller
                         unset($objetAT->updated_at);
                         unset($objetAT->usuariodel_id);
                         unset($objetAT->tiposello);
+                        unset($objetAT->materiaprima);
+                        unset($objetAT->largounidadmedida);
                         
                         
                         //dd($objetAT);
@@ -560,8 +560,6 @@ class CotizacionController extends Controller
                         'acuerdotecnicotemp_id' => $acuerdotecnico_id
                     ]
                 );*/
-
-                
                 if( $request->cotdet_id[$i] == '0' ){
                     $cotizaciondetalle = new CotizacionDetalle();
                     $cotizaciondetalle->cotizacion_id = $id;
@@ -655,7 +653,6 @@ class CotizacionController extends Controller
                             }
                             $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
                         }else{
-                            //dd($arrayAT);
                             AcuerdoTecnicoTemp::where("id","=",$cotizaciondetalle->acuerdotecnicotemp_id)
                             ->update($arrayAT);
                             $data = AcuerdoTecnicoTemp::findOrFail($cotizaciondetalle->acuerdotecnicotemp_id);

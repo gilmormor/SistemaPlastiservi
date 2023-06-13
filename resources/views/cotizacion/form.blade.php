@@ -256,12 +256,12 @@
                             <th>Nombre</th>
                             <th style="display:none;">UnidadMedida</th>
                             <th>Clase/Sello</th>
-                            <th>Diam</th>
+                            <th>Diam<br>Ancho</th>
                             <th style="display:none;">Diametro</th>
-                            <th>Esp</th>
-                            <th style="display:none;">Espesor</th>
                             <th>Largo</th>
                             <th style="display:none;">Largo</th>
+                            <th>Esp</th>
+                            <th style="display:none;">Espesor</th>
                             <th>Peso</th>
                             <th style="display:none;">Peso</th>
                             <th>TU</th>
@@ -297,18 +297,20 @@
                                     $aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod->cla_nombre;
                                     $aux_producto_nombre = $CotizacionDetalle->producto->nombre;
                                     if ($CotizacionDetalle->acuerdotecnicotemp != null){
-                                        $aux_producto_nombre = $CotizacionDetalle->acuerdotecnicotemp->at_desc;
-                                        $aux_ancho = $CotizacionDetalle->acuerdotecnicotemp->at_ancho;
-                                        $aux_espesor = $CotizacionDetalle->acuerdotecnicotemp->at_espesor;
-                                        $aux_largo = $CotizacionDetalle->acuerdotecnicotemp->at_largo;
-                                        $aux_cla_sello_nombre = $CotizacionDetalle->acuerdotecnicotemp->tiposello->desc;
+                                        $AcuTecTemp = $CotizacionDetalle->acuerdotecnicotemp;
+                                        $aux_producto_nombre = nl2br($AcuTecTemp->at_desc . "\n" . $AcuTecTemp->materiaprima->nombre . " " . $AcuTecTemp->materiaprima->desc . "\n". $AcuTecTemp->at_tiposelloobs);
+                                        $aux_ancho = $AcuTecTemp->at_ancho;
+                                        $aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "") ;
+                                        $aux_espesor = $AcuTecTemp->at_espesor;
+                                        $aux_cla_sello_nombre = $AcuTecTemp->tiposello->desc;
                                     }
                                     if ($CotizacionDetalle->producto->acuerdotecnico != null){
-                                        $aux_producto_nombre = $CotizacionDetalle->producto->acuerdotecnico->at_desc;
-                                        $aux_ancho = $CotizacionDetalle->producto->acuerdotecnico->at_ancho;
-                                        $aux_espesor = $CotizacionDetalle->producto->acuerdotecnico->at_espesor;
-                                        $aux_largo = $CotizacionDetalle->producto->acuerdotecnico->at_largo;
-                                        $aux_cla_sello_nombre = $CotizacionDetalle->producto->acuerdotecnico->tiposello->desc;
+                                        $AcuTec = $CotizacionDetalle->producto->acuerdotecnico;
+                                        $aux_producto_nombre = nl2br($AcuTec->at_desc . "\n" . $AcuTecTemp->materiaprima->nombre . " " . $AcuTecTemp->materiaprima->desc . "\n". $AcuTec->at_tiposelloobs);
+                                        $aux_ancho = $AcuTec->at_ancho;
+                                        $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+                                        $aux_espesor = $AcuTec->at_espesor;
+                                        $aux_cla_sello_nombre = $AcuTec->tiposello->desc;
                                     }
                                     $aux_mostrarimagenat = "display:none;";
                                 ?>
@@ -381,7 +383,7 @@
                                         <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->cant}}" style="display:none;"/>
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                        {{$aux_producto_nombre}}
+                                        {!!$aux_producto_nombre!!}
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->unidadmedida_id}}" style="display:none;"/>
@@ -395,6 +397,12 @@
                                     <td style="display:none;">
                                         <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$aux_ancho}}" style="display:none;"/>
                                     </td>
+                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
+                                        {{$aux_largo}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$aux_largo}}" style="display:none;"/>
+                                    </td>
                                     <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
                                         {{$aux_espesor}}
                                     </td>
@@ -402,12 +410,6 @@
                                         <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$aux_espesor}}" style="display:none;"/>
                                         <input type="text" name="ancho[]" id="ancho{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->ancho}}" style="display:none;"/>
                                         <input type="text" name="obs[]" id="obs{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->obs}}" style="display:none;"/>
-                                    </td>
-                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$aux_largo}}
-                                    </td>
-                                    <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$aux_largo}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
                                         {{$CotizacionDetalle->peso}}
