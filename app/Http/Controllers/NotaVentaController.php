@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AvisoRevisionNotaVenta;
 use App\Events\Notificacion;
 use App\Http\Requests\ValidarCotizacion;
 use App\Http\Requests\ValidarNotaVenta;
@@ -877,59 +878,64 @@ class NotaVentaController extends Controller
                 $notaventa->aprobfechahora = date("Y-m-d H:i:s");
                 $notaventa->aprobobs = 'Aprobado por el vendedor';
             }
-            if(($notaventa->sucursal_id == 1) or ($notaventa->sucursal_id == 3)){
-            //TODAS LAS NV DE SANTA ESTER Y PUERTO MONTT DEBEN SER APROBADAS POR SUPERVISOR 
-            //ESTO PARA VALIDAR LA LAS ORDEN DE COMPRA ANTES DE QUE LA NOTA DE VENTA 
+            if($notaventa->sucursal->staaprobnv=="1"){ //SE VERIFICA SI EL ESTATUS QUE ESTA EN SUCURSAL SE DEBE VALIDAR SIEMPRE LA NOTA DE VENTA
+                //LAS SUCURSALES QUE EL ESTATUS ES 1 DEBEN SER APROBADAS POR SUPERVISOR 
+                //ESTO PARA VALIDAR LA LAS ORDEN DE COMPRA ANTES DE QUE LA NOTA DE VENTA 
                 $notaventa->aprobstatus = 2;
             }
             if ($notaventa->save()) {
-                $sql = "SELECT COUNT(*) as cont
+                Event(new AvisoRevisionNotaVenta($notaventa)); //NOTIFICACION PARA LOS USUARIO QUE TIENEN ACCESO AL MENU DE APROBAR NOTA DE VENTA, EN ESTE CASO LUISA MARTINEZ, SI HAY MAS USUARIO QUE TIENEN ACCESO A ESTA PANTALLA EL SISTEMA ENVIA LA NOTIFICACION Y EL CORREO.
+                if($notaventa->sucursal->staaprobnv == "2"){ //SI ES 2 EL ESTATUS SE ENVIA LA NOTIFICACION 
+                    //ESTA NOTIFICACION ES SOLO PARA LOS PINOS Y 
+                    $sql = "SELECT COUNT(*) as cont
                     FROM notaventadetalle 
                     WHERE notaventadetalle.notaventa_id=$notaventa->id 
                     and notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal
                     and isnull(notaventadetalle.deleted_at);";
-                //where usuario_id='.auth()->id();
-                //dd($sql);
-                $datas = DB::select($sql);
-                if($datas[0]->cont > 0){
-                    //Notificaciones cuando el precio esta por debajo de lo establecido en tabla de productos
-                    //Notificacion para Cristian
-                    $notificacion = [
-                        'usuarioorigen_id' => auth()->id(),
-                        'usuariodestino_id' => 2,
-                        'vendedor_id' => $notaventa->vendedor_id,
-                        'status' => 1,
-                        'nombretabla' => 'notaventa',
-                        'mensaje' => 'Precio menor NV: '. $notaventa->id,
-                        'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
-                        'nombrepantalla' => 'notaventa.index',
-                        'rutaorigen' => 'notaventa',
-                        'rutadestino' => 'notaventaaprobar',
-                        'tabla_id' => $notaventa->id,
-                        'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
-                        'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
-                        'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
-                    ];
-                    event(new Notificacion($notificacion));
-                    //Notificacion para el usuario que aprobo la Nota Venta
-                    $notificacion = [
-                        'usuarioorigen_id' => auth()->id(),
-                        'usuariodestino_id' => auth()->id(),
-                        'vendedor_id' => $notaventa->vendedor_id,
-                        'status' => 1,
-                        'nombretabla' => 'notaventa',
-                        'mensaje' => 'Precio menor NV: '. $notaventa->id,
-                        'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
-                        'nombrepantalla' => 'notaventa.index',
-                        'rutaorigen' => 'notaventa',
-                        'rutadestino' => 'notaventaconsulta',
-                        'tabla_id' => $notaventa->id,
-                        'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
-                        'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
-                        'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
-                    ];
-                    event(new Notificacion($notificacion));
+                    //where usuario_id='.auth()->id();
+                    //dd($sql);
+                    $datas = DB::select($sql);
+                    if($datas[0]->cont > 0){
+                        //Notificaciones cuando el precio esta por debajo de lo establecido en tabla de productos
+                        //Notificacion para Cristian
+                        $notificacion = [
+                            'usuarioorigen_id' => auth()->id(),
+                            'usuariodestino_id' => 2,
+                            'vendedor_id' => $notaventa->vendedor_id,
+                            'status' => 1,
+                            'nombretabla' => 'notaventa',
+                            'mensaje' => 'Precio menor NV: '. $notaventa->id,
+                            'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
+                            'nombrepantalla' => 'notaventa.index',
+                            'rutaorigen' => 'notaventa',
+                            'rutadestino' => 'notaventaaprobar',
+                            'tabla_id' => $notaventa->id,
+                            'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
+                            'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
+                            'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
+                        ];
+                        event(new Notificacion($notificacion));
+                        //Notificacion para el usuario que aprobo la Nota Venta
+                        $notificacion = [
+                            'usuarioorigen_id' => auth()->id(),
+                            'usuariodestino_id' => auth()->id(),
+                            'vendedor_id' => $notaventa->vendedor_id,
+                            'status' => 1,
+                            'nombretabla' => 'notaventa',
+                            'mensaje' => 'Precio menor NV: '. $notaventa->id,
+                            'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
+                            'nombrepantalla' => 'notaventa.index',
+                            'rutaorigen' => 'notaventa',
+                            'rutadestino' => 'notaventaconsulta',
+                            'tabla_id' => $notaventa->id,
+                            'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
+                            'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
+                            'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
+                        ];
+                        event(new Notificacion($notificacion));
+                    }
                 }
+
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);

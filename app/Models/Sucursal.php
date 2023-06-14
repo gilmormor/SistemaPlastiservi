@@ -21,6 +21,7 @@ class Sucursal extends Model
             'telefono2',
             'telefono3',
             'email',
+            'staaprobnv',
             'usuariodel_id'
         ];
 
