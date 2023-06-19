@@ -30,6 +30,7 @@ $(document).ready(function () {
                 {data: 'diametro'},
                 {data: 'cla_nombre'},
                 {data: 'long'},
+                {data: 'espesor'},
                 {data: 'peso'},
                 {data: 'tipounion'},
                 {data: 'precioneto'},
@@ -45,11 +46,15 @@ $(document).ready(function () {
                 $('td', row).eq(0).attr('style','text-align:center');
                 $('td', row).eq(3).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');
-                $('td', row).eq(6).attr('data-order',data.peso);
-                $('td', row).eq(6).attr('data-search',data.peso);
-                $('td', row).eq(6).html(MASKLA(data.peso,3));
+                $('td', row).eq(6).attr('data-order',data.espesor);
+                $('td', row).eq(6).attr('data-search',data.espesor);
+                $('td', row).eq(6).html(MASKLA(data.espesor,3));
                 $('td', row).eq(6).attr('style','text-align:right');
-                $('td', row).eq(8).attr('style','text-align:right');
+                $('td', row).eq(7).attr('data-order',data.peso);
+                $('td', row).eq(7).attr('data-search',data.peso);
+                $('td', row).eq(7).html(MASKLA(data.peso,3));
+                $('td', row).eq(7).attr('style','text-align:right');
+                $('td', row).eq(9).attr('style','text-align:right');
             }
         });
     }
@@ -201,6 +206,7 @@ function exportarExcel() {
             registro.diametro,
             registro.cla_nombre,
             registro.long,
+            registro.espesor,
             registro.peso,
             registro.tipounion,
             registro.precioneto

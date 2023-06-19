@@ -131,6 +131,7 @@ Reporte Productos
                             <th>Diametro</th>
                             <th>Clase</th>
                             <th>Largo</th>
+                            <th>Espesor</th>
                             <th>Peso</th>
                             <th class="tooltipsC" title="Tipo de Union">TU</th>
                             <th>Precio Neto</th>
