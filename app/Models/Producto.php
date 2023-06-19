@@ -425,5 +425,76 @@ class Producto extends Model
         
     }
 
+    public static function productosxUsuarioRep($request){
+        $users = Usuario::findOrFail(auth()->id());
+        if($request->sucursal_id){
+            $sucurArray = [$request->sucursal_id];
+        }else{
+            $sucurArray = $users->sucursales->pluck('id')->toArray();
+        }
+        $sucurArray = implode ( ',' , $sucurArray);
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or $request->sucursal_id == "x"){
+            //$aux_condsucursal_id = " true ";
+            $aux_condsucursal_id = " categoriaprodsuc.sucursal_id in (0)";
+        }else{
+            if(is_array($request->sucursal_id)){
+                $aux_sucursal = implode ( ',' , $request->sucursal_id);
+            }else{
+                $aux_sucursal = $request->sucursal_id;
+            }
+            $aux_condsucursal_id = " (categoriaprodsuc.sucursal_id in ($aux_sucursal) and categoriaprodsuc.sucursal_id in ($sucurArray))";
+        }
+
+        if(!isset($request->producto_id) or empty($request->producto_id)){
+            $aux_producto_idCodn = "true";
+        }else{
+            $aux_producto_idCodn = " producto.id in ($request->producto_id) ";
+        }
+
+        if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
+            $aux_categoriaprod_idCond = "true";
+        }else{
+            $aux_categoriaprodid = $request->categoriaprod_id;
+            if(is_array($request->categoriaprod_id)){
+                $aux_categoriaprodid = implode(",", $request->categoriaprod_id);
+            }
+            $aux_categoriaprod_idCond = " producto.categoriaprod_id in ($aux_categoriaprodid) ";
+        }
+        if(!isset($request->areaproduccion_id) or empty($request->areaproduccion_id)){
+            $aux_areaproduccion_idCond = "true";
+        }else{
+            $aux_areaproduccionid = $request->areaproduccion_id;
+            if(is_array($request->areaproduccion_id)){
+                $aux_areaproduccionid = implode(",", $request->areaproduccion_id);
+            }
+            $aux_areaproduccion_idCond = " categoriaprod.areaproduccion_id in ($aux_areaproduccionid) ";
+        }
+
+
+
+
+        $sql = "SELECT producto.id as producto_id,producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
+            producto.diamextmm,producto.diamextpg,
+            producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,
+            categoriaprod.nombre as categoria_nombre,categoriaprod.precio,categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,
+            producto.precioneto
+            FROM producto INNER JOIN claseprod
+            ON producto.claseprod_id=claseprod.id AND isnull(producto.deleted_at) AND isnull(claseprod.deleted_at)
+            INNER JOIN categoriaprod
+            ON producto.categoriaprod_id=categoriaprod.id AND isnull(categoriaprod.deleted_at)
+            INNER JOIN categoriaprodsuc
+            ON categoriaprod.id = categoriaprodsuc.categoriaprod_id AND isnull(categoriaprodsuc.deleted_at)
+            INNER JOIN sucursal
+            ON categoriaprodsuc.sucursal_id = sucursal.id AND isnull(sucursal.deleted_at)
+            WHERE $aux_areaproduccion_idCond
+            and $aux_producto_idCodn
+            and $aux_categoriaprod_idCond
+            and $aux_condsucursal_id
+            ORDER BY producto.id;";
+            
+        $datas = DB::select($sql);
+        return $datas;
+        
+    }
 
 }

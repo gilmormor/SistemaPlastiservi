@@ -993,3 +993,10 @@ Route::get('reportpesajegrupopage', 'ReportPesajeGrupoController@reportpesajegru
 Route::get('reportpesajegrupo/reporte', 'ReportPesajeGrupoController@reporte')->name('reportpesajegrupo_reporte');
 Route::get('reportpesajegrupo/exportPdf', 'ReportPesajeGrupoController@exportPdf')->name('reportpesajegrupo_exportPdf');
 Route::get('reportpesajegrupo/totalizarindex', 'ReportPesajeGrupoController@totalizarindex')->name('reportpesajegrupo_totalizarindex');
+
+/*RUTAS REPORTPRODUCTO*/
+Route::get('reportproducto', 'ReportProductoController@index')->name('reportproducto');
+Route::get('reportproductopage', 'ReportProductoController@reportproductopage')->name('reportproductopage');
+Route::get('reportproducto/reporte', 'ReportProductoController@reporte')->name('reportproducto_reporte');
+Route::get('reportproducto/exportPdf', 'ReportProductoController@exportPdf')->name('reportproducto_exportPdf');
+Route::get('reportproducto/totalizarindex', 'ReportProductoController@totalizarindex')->name('reportproducto_totalizarindex');
