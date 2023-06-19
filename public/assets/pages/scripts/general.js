@@ -2340,8 +2340,8 @@ function crearEditarAcuTec(i){
 	});
 	$("#lbltitAT1").html("Acuerdo Tecnico: " + $("#nombreProdTD" + i).html())
 	//$("#lbltitAT2").html("Acuerdo Tecnico: " + $("#nombreProdTD" + i).html())
-	if($("#tipoprod"+i).val() == 1){
-		aux_tituloAT = "<FONT SIZE=3 style='color:red;'>Nuevo</font> Acuerdo Tecnico: " + $("#nombreProdTD" + i).html();
+	if($("#tipoprod"+i).val() == 1){		 
+		aux_tituloAT = "<FONT SIZE=3 style='color:red;'>Nuevo</font> Acuerdo Tecnico: " + $("#nombreProdTD" + i).attr("categoriaprod_nombre");
 		$("#lbltitAT1").html(aux_tituloAT);
 		//$("#lbltitAT2").html(aux_tituloAT);
 	}

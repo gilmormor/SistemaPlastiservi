@@ -85,10 +85,10 @@
 				<tr>
 					<th width="30px">Cod</th>
 					<th width="50px">Cant.</th>
-					<th class="textcenter" width="50px">Unidad</th>
+					<th class="textcenter" width="50px">Unid</th>
 					<th class="textleft" width="190px">Descripción</th>
-					<th class="textleft" width="60px">Clase/sello</th>
-					<th class="textcenter" width="35px">Diamet</th>
+					<th class="textleft" width="60px">Clase<br>Sello</th>
+					<th class="textcenter" width="35px">Diamet<br>Ancho</th>
 					<th class="textcenter">Largo</th>
 					<th class="textcenter">Esp</th>
 					<th class="textright" width="70px">Precio Neto</th>
@@ -105,7 +105,8 @@
 						$aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod->cla_nombre;
 						if ($CotizacionDetalle->acuerdotecnicotemp != null){
 							$AcuTecTemp = $CotizacionDetalle->acuerdotecnicotemp;
-							$aux_producto_nombre = nl2br($AcuTecTemp->at_desc . "\n" . $AcuTecTemp->materiaprima->nombre . " " . $AcuTecTemp->materiaprima->desc . "\n". $AcuTecTemp->at_tiposelloobs);
+							$aux_producto_nombre = nl2br($CotizacionDetalle->producto->categoriaprod->nombre . ", " . $AcuTecTemp->at_desc);
+							//$aux_producto_nombre = nl2br($AcuTecTemp->at_desc . "\n" . $AcuTecTemp->materiaprima->nombre . " " . $AcuTecTemp->materiaprima->desc . "\n". $AcuTecTemp->at_tiposelloobs);
 							$aux_ancho = $AcuTecTemp->at_ancho . " " . $AcuTecTemp->anchounidadmedida->nombre;
 							$aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "") ;
 							$aux_espesor = $AcuTecTemp->at_espesor;
@@ -113,7 +114,8 @@
 						}
 						if ($CotizacionDetalle->producto->acuerdotecnico != null){
 							$AcuTec = $CotizacionDetalle->producto->acuerdotecnico;
-							$aux_producto_nombre = nl2br($AcuTec->at_desc . "\n" . $AcuTec->materiaprima->nombre . " " . $AcuTec->materiaprima->desc . "\n". $AcuTec->at_tiposelloobs);
+							$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+							//$aux_producto_nombre = nl2br($AcuTec->at_desc . "\n" . $AcuTec->materiaprima->nombre . " " . $AcuTec->materiaprima->desc . "\n". $AcuTec->at_tiposelloobs);
 							$aux_ancho = $AcuTec->at_ancho . " " . $AcuTec->anchounidadmedida->nombre;
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = $AcuTec->at_espesor;
@@ -128,7 +130,7 @@
 						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
-						<td class="textcenter">{{$aux_espesor}}</td>
+						<td class="textcenter">{{number_format($aux_espesor, 3, ',', '.')}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 0, ",", ".")}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 0, ",", ".")}}&nbsp;</td>
 					</tr>

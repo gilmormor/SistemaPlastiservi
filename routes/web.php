@@ -359,8 +359,9 @@ Route::post('notaventa/findespacho/{id}', 'NotaVentaController@findespacho')->na
 Route::post('notaventa/buscaroc_id', 'NotaVentaController@buscaroc_id')->name('buscaroc_id_notaventa');
 Route::get('notaventa/cerrartodasNV', 'NotaVentaController@cerrartodasNV')->name('cerrartodasNV_notaventa');
 Route::post('notaventa/buscarNV', 'NotaVentaController@buscarNV')->name('buscarNV_notaventa');
-
 Route::get('notaventa/cambiarUnidadMedida', 'NotaVentaController@cambiarUnidadMedida')->name('cambiarUnidadMedida');
+Route::get('notaventa/{id}/productobuscarpage', 'NotaVentaController@productobuscarpageid')->name('productobuscarpageid_notaventa');
+Route::get('notaventa/{id}/clientebuscarpage', 'NotaVentaController@clientebuscarpageid')->name('clientebuscarpageid_notaventa');
 
 /*RUTAS CONSULTAR NOTA DE VENTA*/
 Route::get('notaventaconsulta', 'NotaVentaConsultaController@index')->name('notaventaconsulta');

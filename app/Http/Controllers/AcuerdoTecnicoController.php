@@ -174,6 +174,7 @@ class AcuerdoTecnicoController extends Controller
             $aux_tituloreportte = "";
             $cliente = Cliente::findOrFail($request->cliente_id);
             $acuerdotecnico = AcuerdoTecnico::findOrFail($request->id);
+            //dd($acuerdotecnico);
             $categoria_nombre = $acuerdotecnico->producto->categoriaprod->nombre;
             //dd($categoria_nombre);
             $aux_tituloreporte = "";

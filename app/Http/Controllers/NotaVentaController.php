@@ -217,6 +217,17 @@ class NotaVentaController extends Controller
         //dd($datas);       
         return datatables($datas)->toJson();  
     }
+
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
+    public function clientebuscarpageid($id){
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -5,6 +5,7 @@
 <!--<img class="anulada" src="img/anulado.png" alt="Anulada">-->
 <?php 
 	//$at = $producto->acuerdotecnico;
+	//dd($acuerdotecnico->producto);
 ?>
 <br>
 <br>
@@ -47,6 +48,14 @@
 							<td style="width: 15% !important;"><p></p></td>
 							<td style="width: 6% !important;"></td>
 							<td style="width: 10% !important;"><p></p></td>
+						</tr>
+						<tr class="headtarial">
+							<td style="width: 16% !important;"><strong>Producto:</strong></td>
+							@if ($acuerdotecnico->cotizaciondetalle)
+								<td style="width: 25% !important;"><p>{{$acuerdotecnico->cotizaciondetalle->producto->categoriaprod->nombre}}</p></td>
+							@else
+								<td style="width: 25% !important;"><p>{{$acuerdotecnico->producto->categoriaprod->nombre}}</p></td>
+							@endif
 						</tr>
 						<tr class="headtarial">
 							<td style="width: 16% !important;"><strong>Descripción:</strong></td>
@@ -152,7 +161,7 @@
 							<td style="width: 5% !important;text-align:center;">{{$acuerdotecnico->at_largo}} {{$acuerdotecnico->at_largo ? $acuerdotecnico->largounidadmedida->nombre : ""}}</td>
 							<td style="width: 5% !important;"><p>{{$acuerdotecnico->at_largodesv}}</p></td>
 							<td style="width: 5% !important;"><strong>Espesor</strong></td>
-							<td style="width: 5% !important;text-align:center;">{{$acuerdotecnico->at_espesor}} {{$acuerdotecnico->at_espesor ? $acuerdotecnico->espesorunidadmedida->nombre : ""}}</td>
+							<td style="width: 5% !important;text-align:center;">{{number_format($acuerdotecnico->at_espesor, 3, ',', '.')}} {{$acuerdotecnico->at_espesor ? $acuerdotecnico->espesorunidadmedida->nombre : ""}}</td>
 							<td style="width: 5% !important;"><p>{{$acuerdotecnico->at_espesordesv}}</p></td>
 						</tr>
 					</table>
