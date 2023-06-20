@@ -93,7 +93,7 @@
 							$aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "");
 							$aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "");
 							$aux_espesor = $AcuTecTemp->at_espesor;
-							$aux_cla_sello_nombre = $AcuTecTemp->tiposello->desc;
+							$aux_cla_sello_nombre = $AcuTecTemp->claseprod->cla_nombre;
 						}
 						if ($notaventaDetalle->producto->acuerdotecnico != null){
 							$AcuTec = $notaventaDetalle->producto->acuerdotecnico;
@@ -101,7 +101,7 @@
 							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = $AcuTec->at_espesor;
-							$aux_cla_sello_nombre = $AcuTec->tiposello->desc;
+							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 						}
 					?>
 					<tr class="headt" style="height:150%;">
