@@ -31,9 +31,14 @@ class NotifyMailAvisoRevisionNotaVenta
     {
         $rutaPantalla = urlPrevio();
         $rutaOrigen = urlActual();
-        $menu = Menu::where("url","=","notaventaaprobar")->get();
-        $menu = Menu::findOrFail($menu[0]->id);
-        $arrayUsuarios = [];
+        $notaventa = $event->notaventa;
+        $arrayUsuarios = usuariosConAccesoMenuURL($notaventa,"notaventaaprobar");
+        /* ESTO LO MANDE A LA FUNCION usuariosConAccesoMenuURL
+        $menu = Menu::where("url","=","notaventaaprobar")->get(); //BUSCO EN LA TABLA MENU EL REGISTRO QUE CONTIENE EL URL notaventaaprobar
+        $menu = Menu::findOrFail($menu[0]->id); //LUEGO BUSCO EL ID EN MENU PARA TENER EL OBJETO COMPLETO CON SUS TABLAS HIJAS
+        $arrayUsuarios = []; //ARRAY PARA ALMACENAR LOS USUARIOS
+        //LUEGO RECORRO Y BUSCO TODOS LOS USUARIO QUE TIENEN ACCESO A ESTE URL PARA ENVIARLES EL CORREO
+        //PERO SOLO LOS USUARIOS TIENEN ACCESO A LA MISMA SUCURSAL DE LA NOTA DE VENTA, PUEDEN SER VARIOS USUARIOS UE TENGAN ACCESO A APROBAR NOTAS DE VENTA
         foreach ($menu->menuroles as $menurol) {
             if($menurol->rol_id != 1){
                 foreach ($menurol->usuarioroles as $usuariorol){
@@ -49,9 +54,9 @@ class NotifyMailAvisoRevisionNotaVenta
                 }
             }
         }
+        */
         foreach ($arrayUsuarios as $arrayUsuario) {
             //dd($arrayUsuario);
-            $notaventa = $event->notaventa;
             $notificaciones = new Notificaciones();
             $notificaciones->usuarioorigen_id = auth()->id();
             $aux_email = $arrayUsuario["email"];
@@ -59,7 +64,7 @@ class NotifyMailAvisoRevisionNotaVenta
             $notificaciones->vendedor_id = $notaventa->vendedor_id;
             $notificaciones->status = 1;
             $notificaciones->nombretabla = 'notaventa';
-            $aux_mensaje = "Tienes una nueva Nota de Venta en tu bandeja";
+            $aux_mensaje = "Tienes una nueva Nota de Venta $notaventa->id para ser validada en tu bandeja.";
             $aux_icono = "fa fa-fw fa-warning text-primary";
             $aux_rutadest = "notaventaaprobar";
             $notificaciones->nombrepantalla = $rutaPantalla; //'notaventa.indexguiafact';

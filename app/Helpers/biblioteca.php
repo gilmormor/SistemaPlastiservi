@@ -1,4 +1,6 @@
 <?php
+
+use App\Models\Admin\Menu;
 use App\Models\Admin\Permiso;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -173,4 +175,31 @@ if (!function_exists('urlRaiz')) {
         return $desiredUrl;
     }
 }
+
+if (!function_exists('usuariosConAccesoMenuURL')) {
+    function usuariosConAccesoMenuURL($tabla,$url){
+        $menu = Menu::where("url","=",$url)->get(); //BUSCO EN LA TABLA MENU EL REGISTRO QUE CONTIENE EL URL notaventaaprobar
+        $menu = Menu::findOrFail($menu[0]->id); //LUEGO BUSCO EL ID EN MENU PARA TENER EL OBJETO COMPLETO CON SUS TABLAS HIJAS
+        $arrayUsuarios = []; //ARRAY PARA ALMACENAR LOS USUARIOS
+        //LUEGO RECORRO Y BUSCO TODOS LOS USUARIO QUE TIENEN ACCESO A ESTE URL PARA ENVIARLES EL CORREO
+        //PERO SOLO LOS USUARIOS TIENEN ACCESO A LA MISMA SUCURSAL DE LA NOTA DE VENTA, PUEDEN SER VARIOS USUARIOS UE TENGAN ACCESO A APROBAR NOTAS DE VENTA
+        foreach ($menu->menuroles as $menurol) {
+            if($menurol->rol_id != 1){
+                foreach ($menurol->usuarioroles as $usuariorol){
+                    foreach ($usuariorol->usuario->sucursales as $sucursal) {
+                        if($tabla->sucursal_id == $sucursal->id){
+                            $arrayUsuarios[] = [
+                                "usuario_id" =>$usuariorol->usuario->id,
+                                "nombre" => $usuariorol->usuario->nombre,
+                                "email" => $usuariorol->usuario->email
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        return $arrayUsuarios;
+    }
+}
+
 ?>

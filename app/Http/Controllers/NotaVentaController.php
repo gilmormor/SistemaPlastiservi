@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AprobarRechazoNotaVenta;
 use App\Events\AvisoRevisionNotaVenta;
 use App\Events\Notificacion;
 use App\Http\Requests\ValidarCotizacion;
@@ -967,7 +968,6 @@ class NotaVentaController extends Controller
             $notaventa->aprobusu_id = auth()->id();
             $notaventa->aprobfechahora = date("Y-m-d H:i:s");
             $notaventa->aprobobs = $request->obs;
-            
             if ($notaventa->save()) { //($notaventa->save()) {
                 foreach ($notaventa->notaventadetalles as $notaventadetalle) {
                     if(isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
@@ -1025,6 +1025,8 @@ class NotaVentaController extends Controller
                         ]);
                     }
                 }
+                Event(new AprobarRechazoNotaVenta($notaventa)); //NOTIFICACION A VENDEDOR SOBRE APROBACION O RECHAZO DE NOTA DE VENTA
+                //dd("romper");
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
