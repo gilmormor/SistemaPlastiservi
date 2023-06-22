@@ -383,6 +383,20 @@
                                             ]
                                         );
                                     }
+                                    $aux_ancho = $detalle->notaventadetalle->producto->diametro;
+                                    $aux_espesor = $detalle->notaventadetalle->producto->espesor;
+                                    $aux_largo = $detalle->notaventadetalle->producto->long;
+                                    $aux_cla_sello_nombre = $detalle->notaventadetalle->producto->claseprod->cla_nombre;
+                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->nombre;
+                                    $aux_categoria_nombre = $detalle->notaventadetalle->producto->categoriaprod->nombre;
+                                    if ($detalle->notaventadetalle->producto->acuerdotecnico != null){
+                                        $AcuTec = $detalle->notaventadetalle->producto->acuerdotecnico;
+                                        $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $detalle->notaventadetalle->unidadmedida->nombre . ", " . $AcuTec->at_desc);
+                                        $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+                                        $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+                                        $aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
+                                        $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+                                    }
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -407,7 +421,13 @@
                                         @endif
                                     </td>
                                     <td style="text-align:center" name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}">
-                                        {{$detalle->notaventadetalle->producto_id}}
+                                        @if ($detalle->notaventadetalle->producto->acuerdotecnico)
+                                            <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec({{$detalle->notaventadetalle->producto->acuerdotecnico->id}},{{$data->notaventa->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                {{$detalle->notaventadetalle->producto_id}}
+                                            </a>
+                                        @else
+                                            {{$detalle->notaventadetalle->producto_id}}
+                                        @endif
                                         <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
                                     </td>
                                     <td style="display:none;">
@@ -520,28 +540,28 @@
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="4" style="display:none;"/>
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                        {{$detalle->notaventadetalle->producto->nombre}}
+                                        {{$aux_producto_nombre}}
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->notaventadetalle->producto->diametro}}
+                                        {{$aux_ancho}}
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
-                                        {{$detalle->notaventadetalle->producto->claseprod->cla_nombre}}
+                                        {{$aux_cla_sello_nombre}}
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->diametro}}" style="display:none;"/>
                                     </td>
                                     <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->notaventadetalle->producto->espesor}}
+                                        {{$aux_espesor}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->espesor}}" style="display:none;"/>
+                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$aux_espesor}}" style="display:none;"/>
                                     </td>
                                     <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->notaventadetalle->producto->long}}
+                                        {{$aux_largo}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto->long}}" style="display:none;"/>
+                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$aux_largo}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
                                         {{$peso}}
