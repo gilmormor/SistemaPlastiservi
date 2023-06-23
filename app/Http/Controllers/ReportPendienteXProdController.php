@@ -221,11 +221,11 @@ function reporte1($request){
                 <th>Razón Social</th>
                 <th>Comuna</th>
                 <th class='tooltipsC' title='Código Producto'>Cod</th>
-                <th>Descripción</th>
-                <th>Diametro</th>
-                <th>Clase</th>
+                <th>Producto</th>
+                <th>Clase<br>Sello</th>
+                <th>Diametro<br>Ancho</th>
                 <th>Largo</th>
-                <th>Peso</th>
+                <th>Peso<br>Espesor</th>
                 <th>TU</th>
                 <th style='text-align:right'>Cant</th>
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
@@ -290,6 +290,29 @@ function reporte1($request){
             $aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
 
             //$aux_peso = $data->peso == 0 ? $data->totalkilos/ :
+            $aux_producto_id = $data->producto_id;
+            $aux_ancho = $producto->diametro;
+            $aux_espesor = $data->peso;
+            $aux_largo = $data->long;
+            $aux_cla_sello_nombre = $data->cla_nombre;
+            $aux_producto_nombre = $data->nombre;
+            //$aux_categoria_nombre = $data->producto->categoriaprod->nombre;
+            if ($producto->acuerdotecnico != null){
+                $AcuTec = $producto->acuerdotecnico;
+                $aux_producto_id = "<a class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfAcuTec($AcuTec->id,$data->cliente_id,1)' data-original-title='Acuerdo Técnico PDF'>
+                        $data->producto_id
+                    </a>";
+                $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+                $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+                $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+                $aux_espesor = $AcuTec->at_espesor;
+                if($AcuTec->claseprod){
+                    $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+                }else{
+                    $aux_cla_sello_nombre = "";
+                }
+            }
+
             $respuesta['tabla3'] .= "
             <tr>
                 <td>
@@ -302,12 +325,12 @@ function reporte1($request){
                 <td data-order='$data->plazoentrega'>" . date('d-m-Y', strtotime($data->plazoentrega)) . "</td>
                 <td>$data->razonsocial</td>
                 <td>$comuna->nombre</td>
-                <td>$data->producto_id</td>
-                <td>$data->nombre</td>
-                <td>$producto->diametro</td>
-                <td>$data->cla_nombre</td>
-                <td>$data->long</td>
-                <td>$data->peso</td>
+                <td>$aux_producto_id</td>
+                <td>$aux_producto_nombre</td>
+                <td>$aux_cla_sello_nombre</td>
+                <td>$aux_ancho</td>
+                <td>$aux_largo</td>
+                <td>$aux_espesor</td>
                 <td>$data->tipounion</td>
                 <td style='text-align:right' data-order='" . $data->cant . "'>". number_format($data->cant, 0, ",", ".") ."</td>
                 <td style='text-align:right' data-order='$sumacantdesp'>
@@ -590,7 +613,7 @@ function consulta($request,$aux_sql,$orden){
     }
 
     if($aux_sql==2){
-        $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,
+        $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,notaventa.cliente_id,
         notaventadetalle.cant,if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS cantdesp,
         producto.nombre,cliente.razonsocial,notaventadetalle.id,
         notaventadetalle.notaventa_id,oc_file,

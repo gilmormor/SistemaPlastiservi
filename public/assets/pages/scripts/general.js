@@ -2503,7 +2503,7 @@ function cargardatospantprod(){
 }
 
 function primerfiltrobuscarprod(){
-	$('#DivchVerAcuTec').show()
+	//$('#DivchVerAcuTec').show()
 	$(this).val("");
 	$(".input-sm").val('');
 	data = datos();

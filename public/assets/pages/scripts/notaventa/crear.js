@@ -132,7 +132,7 @@ $(document).ready(function () {
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
 		cargardatospantprod();
-
+		$("#DivchVerAcuTec").hide();
 		$('#myModal')
 			.modal('hide')
 			.on('hidden.bs.modal', function (e) {
