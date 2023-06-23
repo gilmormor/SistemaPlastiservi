@@ -6,7 +6,7 @@
     <span class="logo-mini"><img src="{{asset("assets/$theme/dist/img/logoShor.png")}}" style="max-width:90%;width:auto;height:auto;"></span>
     <!-- logo for regular state and mobile devices -->
     
-    <span class="logo-lg"><img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png")}}" style="max-width:90%;width:auto;height:auto;"></span>
+    <span class="logo-lg"><img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI1.png")}}" style="max-width:90%;width:auto;height:auto;"></span>
   </a>
   <!-- Header Navbar: style can be found in header.less -->
   <nav class="navbar navbar-static-top">
