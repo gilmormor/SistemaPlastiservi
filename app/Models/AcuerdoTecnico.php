@@ -125,7 +125,7 @@ class AcuerdoTecnico extends Model
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function largounidadmedida()
     {
-        return $this->belongsTo(UnidadMedida::class,"at_anchoum_id");
+        return $this->belongsTo(UnidadMedida::class,"at_largoum_id");
     }
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function fuelleunidadmedida()

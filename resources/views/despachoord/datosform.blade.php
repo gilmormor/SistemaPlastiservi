@@ -183,7 +183,7 @@
 </div>
 <div class="row">
     <div class="form-group col-xs-12 col-sm-4">
-        <label for="contactoemail" class="control-label requerido">Email</label>
+        <label for="contactoemail" class="control-label requerido">Contacto Email</label>
         <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
     </div>
     <div class="form-group col-xs-12 col-sm-4">
