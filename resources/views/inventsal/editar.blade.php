@@ -3,11 +3,10 @@
     Entrada, Salida Inventario
 @endsection
 
-@routes
-
 @section('scripts')
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/inventsal/crear.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')

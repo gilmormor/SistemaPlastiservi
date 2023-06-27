@@ -186,22 +186,28 @@
 				<div>
 					<span class="h3" style="margin-bottom: 0px;">Forma de Embalaje</span>
 					<table class="datos_cliente" style="padding-top: 0px;">
-						<tr class="headtarial">
-							<td style="width: 50% !important;"><strong>Unid x empaque:</strong> {{$acuerdotecnico->at_feunidxpaq}}</td>
-							<td style="width: 50% !important;"><strong>Obs:</strong> {{$acuerdotecnico->at_feunidxpaqobs}}</td>
-						</tr>
-						<tr class="headtarial">
-							<td style="width: 50% !important;"><strong>Unid x contenedor:</strong> {{$acuerdotecnico->at_feunidxcont}}</td>
-							<td style="width: 50% !important;"><strong>Obs:</strong> {{$acuerdotecnico->at_feunidxcontobs}}</td>
-						</tr>
-						<tr class="headtarial">
-							<td style="width: 50% !important;"><strong>Color contenedor:</strong> {{$acuerdotecnico->at_fecolorcont}}</td>
-							<td style="width: 50% !important;"><strong>Obs:</strong> {{$acuerdotecnico->at_fecolorcontobs}}</td>
-						</tr>
-						<tr class="headtarial">
-							<td style="width: 50% !important;"><strong>Unid x palet:</strong> {{$acuerdotecnico->at_feunitxpalet}}</td>
-							<td style="width: 50% !important;"><strong>Obs:</strong> {{$acuerdotecnico->at_feunitxpaletobs}}</td>
-						</tr>
+						@if ($acuerdotecnico->at_embalajeplastservi == 1)
+							<tr class="headtarial">
+								<td style="width: 50% !important;"><strong>Embalaje Plastiservi</td>
+							</tr>
+						@else
+							<tr class="headtarial">
+								<td style="width: 50% !important;"><strong>Unid x empaque:</strong> {{$acuerdotecnico->at_feunidxpaq}}</td>
+								<td style="width: 50% !important;"><strong>Obs:</strong> {{$acuerdotecnico->at_feunidxpaqobs}}</td>
+							</tr>
+							<tr class="headtarial">
+								<td style="width: 50% !important;"><strong>Unid x contenedor:</strong> {{$acuerdotecnico->at_feunidxcont}}</td>
+								<td style="width: 50% !important;"><strong>Obs:</strong> {{$acuerdotecnico->at_feunidxcontobs}}</td>
+							</tr>
+							<tr class="headtarial">
+								<td style="width: 50% !important;"><strong>Color contenedor:</strong> {{$acuerdotecnico->at_fecolorcont}}</td>
+								<td style="width: 50% !important;"><strong>Obs:</strong> {{$acuerdotecnico->at_fecolorcontobs}}</td>
+							</tr>
+							<tr class="headtarial">
+								<td style="width: 50% !important;"><strong>Unid x palet:</strong> {{$acuerdotecnico->at_feunitxpalet}}</td>
+								<td style="width: 50% !important;"><strong>Obs:</strong> {{$acuerdotecnico->at_feunitxpaletobs}}</td>
+							</tr>							
+						@endif
 					</table>
 				</div>
 			</td>

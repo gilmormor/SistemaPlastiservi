@@ -95,8 +95,8 @@
                             <th style="display:none;">Cód Int</th>
                             <th>Nombre</th>
                             <th style="display:none;">UnidadMedida</th>
-                            <th>Clase</th>
-                            <th>Diam</th>
+                            <th>Clase/Sello</th>
+                            <th>Diam/Ancho</th>
                             <th style="display:none;">Diametro</th>
                             <th>Largo</th>
                             <th style="display:none;">Largo</th>

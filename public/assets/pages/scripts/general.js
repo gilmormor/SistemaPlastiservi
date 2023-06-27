@@ -2347,7 +2347,7 @@ function crearEditarAcuTec(i){
 	}
 	$("#at_tiposello_id").val(1);
 	$(".selectpicker").selectpicker('refresh');
-
+	embalajePlastiservi();
     $("#myModalAcuerdoTecnico").modal('show');
 }
 

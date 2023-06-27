@@ -60,6 +60,7 @@ class AcuerdoTecnicoTemp extends Model
         'at_slaminaobs',
         'at_sfunda',
         'at_sfundaobs',
+        'at_embalajeplastservi',
         'at_feunidxpaq',
         'at_feunidxpaqobs',
         'at_feunidxcont',

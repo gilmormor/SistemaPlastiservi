@@ -501,44 +501,55 @@
                                     <h3 class="box-title">Forma de Embalaje</h3>
                                 </div>
                                 <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                            <label for="at_embalajeplastservi" class="control-label requerido" data-toggle='tooltip' title="Embalaje Plastiservi">Embalaje Plastiservi</label>
+                                            <select name="at_embalajeplastservi" id="at_embalajeplastservi"  class="selectpicker form-control impreso form_acutec valorrequerido" tipoval="combobox"  onchange="embalajePlastiservi()">
+                                                <option value="">Seleccione...</option>
+                                                <option value="1">Si</option>
+                                                <option value="0">No</option>
+                                            </select>
+                                            <span class="help-block"></span>
+                                        </div>            
+                                    </div>
                                     <div class="col-xs-12 col-sm-4">
                                         <label for="at_feunidxpaq" class="control-label" data-toggle='tooltip' title="Unidades por empaque">Unid x empaque</label>
-                                        <input type="text" name="at_feunidxpaq" id="at_feunidxpaq" class="form-control form_acutec numerico" placeholder="Unidades por empaque"/>
+                                        <input type="text" name="at_feunidxpaq" id="at_feunidxpaq" class="form-control form_acutec numerico embalaje" placeholder="Unidades por empaque" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-8">
                                         <label for="at_feunidxpaqobs" class="control-label" data-toggle='tooltip' title="Observacion Unidades por empaque">Observación</label>
-                                        <input type="text" name="at_feunidxpaqobs" id="at_feunidxpaqobs" class="form-control form_acutec" placeholder="Observación Unidades por empaque"/>
+                                        <input type="text" name="at_feunidxpaqobs" id="at_feunidxpaqobs" class="form-control form_acutec embalaje" placeholder="Observación Unidades por empaque" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-4">
                                         <label for="at_feunidxcont" class="control-label" data-toggle='tooltip' title="Unidades por contenedor">Unid x contenedor</label>
-                                        <input type="text" name="at_feunidxcont" id="at_feunidxcont" class="form-control form_acutec numerico" placeholder="Unidades por contenedor"/>
+                                        <input type="text" name="at_feunidxcont" id="at_feunidxcont" class="form-control form_acutec numerico embalaje" placeholder="Unidades por contenedor" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-8">
                                         <label for="at_feunidxcontobs" class="control-label" data-toggle='tooltip' title="Observacion Unidades por contenedor">Observación</label>
-                                        <input type="text" name="at_feunidxcontobs" id="at_feunidxcontobs" class="form-control form_acutec" placeholder="Observación Unidades por contenedor"/>
+                                        <input type="text" name="at_feunidxcontobs" id="at_feunidxcontobs" class="form-control form_acutec embalaje" placeholder="Observación Unidades por contenedor" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-4">
                                         <label for="at_fecolorcont" class="control-label" data-toggle='tooltip' title="Color contenedor">Color contenedor</label>
-                                        <input type="text" name="at_fecolorcont" id="at_fecolorcont" class="form-control form_acutec" placeholder="Color contenedor"/>
+                                        <input type="text" name="at_fecolorcont" id="at_fecolorcont" class="form-control form_acutec embalaje" placeholder="Color contenedor" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-8">
                                         <label for="at_fecolorcontobs" class="control-label" data-toggle='tooltip' title="Observacion Color contenedor">Observación</label>
-                                        <input type="text" name="at_fecolorcontobs" id="at_fecolorcontobs" class="form-control form_acutec" placeholder="Observación Color contenedor"/>
+                                        <input type="text" name="at_fecolorcontobs" id="at_fecolorcontobs" class="form-control form_acutec embalaje" placeholder="Observación Color contenedor" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-4">
                                         <label for="at_feunitxpalet" class="control-label" data-toggle='tooltip' title="Unidades por palet">Unid x palet</label>
-                                        <input type="text" name="at_feunitxpalet" id="at_feunitxpalet" class="form-control form_acutec numerico" placeholder="Unidades por palet"/>
+                                        <input type="text" name="at_feunitxpalet" id="at_feunitxpalet" class="form-control form_acutec numerico embalaje" placeholder="Unidades por palet" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-8">
                                         <label for="at_feunitxpaletobs" class="control-label" data-toggle='tooltip' title="Observacion Unidades por palet">Observación</label>
-                                        <input type="text" name="at_feunitxpaletobs" id="at_feunitxpaletobs" class="form-control form_acutec" placeholder="Observación Unidades por palet"/>
+                                        <input type="text" name="at_feunitxpaletobs" id="at_feunitxpaletobs" class="form-control form_acutec embalaje" placeholder="Observación Unidades por palet" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                 </div>

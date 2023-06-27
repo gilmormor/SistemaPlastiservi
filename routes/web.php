@@ -824,6 +824,7 @@ Route::delete('inventsal/{id}', 'InvEntSalController@eliminar')->name('eliminar_
 Route::post('inventsal/enviaraprobarinventsal/{id}', 'InvEntSalController@enviaraprobarinventsal')->name('enviaraprobarinventsal_inventsal');
 Route::post('inventsal/aprobinventsal/{id}', 'InvEntSalController@aprobinventsal')->name('aprobinventsal_inventsal');
 Route::get('inventsal/exportPdf', 'InvEntSalController@exportPdf')->name('exportPdf_inventsal');
+Route::get('inventsal/{id}/productobuscarpage', 'InvEntSalController@productobuscarpage')->name('productobuscarpage_inventsal');
 
 
 /*RUTAS InvBodegaProductoController*/

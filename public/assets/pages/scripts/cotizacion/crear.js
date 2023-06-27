@@ -1550,3 +1550,13 @@ function ocultarMostrarFiltro(aux_nfila){
 	}
 	$(".kv-file-remove").hide();
 }
+
+function embalajePlastiservi(){
+	let aux_val = $("#at_embalajeplastservi").val();
+	if(aux_val == "1" || aux_val == ""){
+		$(".embalaje").prop("disabled", true);
+		$(".embalaje").val("")
+	}else{
+		$(".embalaje").prop("disabled", false);
+	}
+}

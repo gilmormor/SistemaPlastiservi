@@ -77,21 +77,26 @@
 				<tr>
 					<th width="30px">Cod</th>
 					<th width="100px">Nombre Producto</th>
-					<th width="100px">Categoria</th>
+					<th width="50px">Categoria</th>
 					<th width="100px">Bodega</th>
 					<th class="textleft" width="60px">Clase<br>Sello</th>
-					<th class="textleft">Diamet</th>
+					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textcenter">Largo</th>
 					<th class="textcenter">TU/Esp</th>
-					<th class="textcenter" width="70px">UniMed</th>
+					<th class="textcenter" width="40px">Uni</th>
 					<th class="textcenter" width="70px">Cant</th>
+					<th class="textcenter" width="70px">Kg</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
-				<?php $aux_totalcant = 0; ?>
+				<?php
+					$aux_totalcant = 0;
+					$aux_totalcantkg = 0;
+				?>
 				@foreach($datas->inventsaldets as $inventsaldet)
 					<?php 
-						$aux_totalcant += $inventsaldet->cant; 
+						$aux_totalcant += $inventsaldet->cant;
+						$aux_totalcantkg += $inventsaldet->cantkg;
 						$aux_ancho = $inventsaldet->invbodegaproducto->producto->diametro;
 						$aux_largo = $inventsaldet->invbodegaproducto->producto->long;
 						$aux_espesor = $inventsaldet->invbodegaproducto->producto->tipounion;
@@ -118,6 +123,7 @@
 						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textcenter">{{$inventsaldet->unidadmedida->nombre}}</td>
 						<td class="textcenter">{{number_format($inventsaldet->cant, 0, ",", ".")}}</td>
+						<td class="textcenter">{{number_format($inventsaldet->cantkg, 0, ",", ".")}}</td>
 					</tr>
 				@endforeach
 			</tbody>
@@ -126,8 +132,9 @@
 	<div class="round" style="padding-bottom: 0px;padding-top: 8px;margin-bottom: 3px;">
 		<table id="factura_detalle">
 			<tr>
-				<td colspan="9" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
+				<td colspan="9" class="textright" width="75%"><span><strong>TOTAL</strong></span></td>
 				<td class="textcenter" width="10%"><span><strong>{{number_format($aux_totalcant, 0, ",", ".")}}</strong></span></td>
+				<td class="textcenter" width="10%"><span><strong>{{number_format($aux_totalcantkg, 0, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
 	</div>
