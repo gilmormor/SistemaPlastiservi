@@ -347,6 +347,12 @@
                                 <?php 
                                     $aux_nfila++;
                                     $cantsolTotal = $cantsolTotal + $detalle->cantsoldesp;
+                                    $aux_cant = $detalle->notaventadetalle->cant;
+                                    $notaventadetalleext = null;
+                                    if($detalle->notaventadetalle->notaventadetalleext){
+                                        $notaventadetalleext = $detalle->notaventadetalle->notaventadetalleext;
+                                        $aux_cant = $detalle->notaventadetalle->cant + $notaventadetalleext->cantext;
+                                    }
                                     $sql = "SELECT cantsoldesp
                                             FROM vista_sumsoldespdet
                                             WHERE notaventadetalle_id=$detalle->notaventadetalle_id";
@@ -369,10 +375,10 @@
                                     }
                                     /*************************/
 
-                                    $aux_saldo = $detalle->notaventadetalle->cant - $sumacantsoldesp;
+                                    $aux_saldo = $aux_cant - $sumacantsoldesp;
                                     $sumacantsoldesp = $sumacantsoldesp - $detalle->cantsoldesp;
                                     $subtotalItem = $detalle->cantsoldesp * $detalle->notaventadetalle->preciounit;
-                                    $peso = $detalle->notaventadetalle->totalkilos/$detalle->notaventadetalle->cant;
+                                    $peso = $detalle->notaventadetalle->totalkilos/$aux_cant;
                                     $totalkilos = $peso * $detalle->cantsoldesp;
                                     $invbodegaproductos = $detalle->notaventadetalle->producto->invbodegaproductos;
                                     foreach ($detalle->notaventadetalle->producto->categoriaprod->invbodegas as $invbodega) {
@@ -435,16 +441,34 @@
                                     </td>
                                     <td style="text-align:right;display:none;">
                                         @if ($aux_sta==2)
-                                            <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->cant}}" style="display:none;"/>
+                                            <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$aux_cant}}" style="display:none;"/>
                                         @else 
-                                            <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->cant - $detalle->notaventadetalle->cantusada}}" style="display:none;"/>
+                                            <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$aux_cant - $detalle->notaventadetalle->cantusada}}" style="display:none;"/>
                                         @endif
                                     </td>
-                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
-                                        @if ($aux_sta==2)
-                                            {{$detalle->notaventadetalle->cant}}
-                                        @else 
-                                            {{$detalle->notaventadetalle->cant - $detalle->notaventadetalle->cantusada}}
+                                    <td style="text-align: center; white-space: nowrap;">
+                                        <?php
+                                            if($aux_sta==2){
+                                                //$aux_cant = $detalle->notaventadetalle->cant;
+                                            }else{
+                                                $aux_cant -= $detalle->notaventadetalle->cantusada;
+                                                $detalle->notaventadetalle->cant -= $detalle->notaventadetalle->cantusada;
+                                            }
+                                        ?>
+                                        <input type="text" name="cantext[]" id="cantext{{$aux_nfila}}" class="form-control" value="{{$notaventadetalleext ? $notaventadetalleext->cantext : 0}}" style="display:none;"/>
+                                        @if ($detalle->notaventadetalle->producto->acuerdotecnico)
+                                            <a id="canttitle{{$aux_nfila}}" name="canttitle{{$aux_nfila}}" class="btn-accion-tabla btn-sm" title="Valor:{{$detalle->notaventadetalle->cant}} Ext:{{$notaventadetalleext ? $notaventadetalleext->cantext : 0}}" data-toggle="tooltip" style="padding-left: 0px; display: inline;">
+                                                <div name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" cantorig="{{$detalle->notaventadetalle->cant}}" style="display: inline;">
+                                                    {{$aux_cant}}
+                                                </div>
+                                            </a>
+                                            <a id="cantextA{{$aux_nfila}}" name="cantextA{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar valor sobre despacho" data-toggle="tooltip" valor="{{$notaventadetalleext ? $notaventadetalleext->cantext : 0}}" fila="{{$aux_nfila}}" nomcampo="cantext" style="padding-left: 0px;display: inline;">
+                                                <i class="fa fa-fw fa-pencil-square-o"></i>
+                                            </a>
+                                        @else
+                                            <div name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" cantorig="{{$detalle->notaventadetalle->cant}}">
+                                                {{$aux_cant}}
+                                            </div>
                                         @endif
                                     </td>
                                     <td name="cantorddespF{{$aux_nfila}}" id="cantorddespF{{$aux_nfila}}" style="text-align:right">
@@ -468,7 +492,7 @@
                                         </div>
                                     </td>
                                     <td name="cantsolF{{$aux_nfila}}" id="cantsolF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control numerico cantsolsum" onkeyup="actSaldo({{$detalle->notaventadetalle->cant - $detalle->cantsoldesp}},{{$aux_nfila}})" value="{{$detalle->cantsoldesp}}" style="text-align:right;" readonly/>
+                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control numerico cantsolsum" onkeyup="actSaldo({{$aux_cant - $detalle->cantsoldesp}},{{$aux_nfila}})" value="{{$detalle->cantsoldesp}}" style="text-align:right;" readonly/>
                                     </td>
                                     <td name="cantsoldespinputF{{$aux_nfila}}" id="cantsoldespinputF{{$aux_nfila}}" style="text-align:right;display:none;">
                                         <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantsoldesp}}" style="text-align:right;"/>

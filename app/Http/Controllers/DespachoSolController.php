@@ -34,6 +34,7 @@ use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\NotaVentaDetalle;
+use App\Models\NotaVentaDetalleExt;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
@@ -232,6 +233,19 @@ class DespachoSolController extends Controller
                             $despachosoldet->notaventadetalle_id = $request->NVdet_id[$i];
                             $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
                             if($despachosoldet->save()){
+                                if($request->cantext[$i]>0){
+                                    NotaVentaDetalleExt::updateOrCreate(
+                                        ['notaventadetalle_id' => $despachosoldet->notaventadetalle_id],
+                                        [
+                                            'cantext' => $request->cantext[$i]
+                                        ]
+                                    );    
+                                }else{
+                                    $notaventadetalleext = $despachosoldet->notaventadetalle->notaventadetalleext;
+                                    if($notaventadetalleext){
+                                        $notaventadetalleext->delete();
+                                    }
+                                }
                                 $cont_bodegas = count($request->invcant);
                                 if($cont_bodegas>0){
                                     for ($b=0; $b < $cont_bodegas ; $b++){
@@ -453,6 +467,19 @@ class DespachoSolController extends Controller
                                         DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
                                         $despachosoldet->delete();
                                     }else{
+                                        if($request->cantext[$i]>0){
+                                            NotaVentaDetalleExt::updateOrCreate(
+                                                ['notaventadetalle_id' => $despachosoldet->notaventadetalle_id],
+                                                [
+                                                    'cantext' => $request->cantext[$i]
+                                                ]
+                                            );    
+                                        }else{
+                                            $notaventadetalleext = $despachosoldet->notaventadetalle->notaventadetalleext;
+                                            if($notaventadetalleext){
+                                                $notaventadetalleext->delete();
+                                            }
+                                        }
                                         $cont_bodegas = count($request->invcant);
                                         if($cont_bodegas>0){
                                             for ($b=0; $b < $cont_bodegas ; $b++){

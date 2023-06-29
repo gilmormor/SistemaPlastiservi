@@ -212,12 +212,12 @@ class InvEntSalController extends Controller
                     );
                 }
             }
-            return redirect('inventsal/'.$id.'/editar')->with([
+            return redirect('inventsal')->with([
                                                                 'mensaje'=>'Registro Actualizado con exito.',
                                                                 'tipo_alert' => 'alert-success'
                                                             ]);
         }else{
-            return redirect('inventsal/'.$id.'/editar')->with([
+            return redirect('inventsal')->with([
                                                                 'mensaje'=>'Registro no fue modificado. Registro fue Editado por otro usuario. Fecha Hora: '.$inventsal->updated_at,
                                                                 'tipo_alert' => 'alert-error'
                                                             ]);

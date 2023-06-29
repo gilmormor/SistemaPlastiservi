@@ -86,6 +86,9 @@ class NotaVentaDetalle extends Model
     {
         return $this->hasOne(AcuerdoTecnicoTemp::class,"at_cotizaciondetalle_id","cotizaciondetalle_id");
     }
-    
-    
+    //Relacion uno a uno con notaventadetalleext
+    public function notaventadetalleext()
+    {
+        return $this->hasOne(NotaVentaDetalleExt::class,"notaventadetalle_id");
+    }
 }

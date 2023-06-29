@@ -128,6 +128,14 @@ $(document).ready(function () {
 		$("#vendedor_id").val($("#vendedor_idD").val());
 	});
 
+	$("#auxeditcampoN").numeric(
+		{
+			decimalPlaces: 2,
+			negative: false
+		},
+	);
+	$("#auxeditcampoN").removeClass("requeridos");
+	//$("#auxeditcampoN").removeClass("valorrequerido");
 });
 
 function insertarTabla(){
@@ -660,4 +668,65 @@ function clickstaex(id){
     if(estaSeleccionado){
         $("#staex" + id).val('1');
     }
+}
+
+$(".editarcampoNum").click(function()
+{
+	quitarvalidacioneach();
+	id = $(this).attr('fila');
+	aux_valor = $(this).attr('valor');
+	$("#auxeditcampoN").attr('aux_nomcampon',$(this).attr('nomcampo'));
+	$("#auxeditcampoN").attr('fila_id',id);
+	$("#auxeditcampoN").val(aux_valor.trim());
+	$("#myModalEditarCampoNum").modal('show');
+});
+
+$(".valorrequerido").keyup(function(){
+	//alert($(this).parent().attr('class'));
+	validacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+
+$(".valorrequerido").change(function(){
+	//alert($(this).parent().attr('class'));
+	validacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+
+$("#btnaceptarMN").click(function(event){
+	event.preventDefault();
+	$("#auxeditcampoT").val('1');
+	let auxeditcampoN = $("#auxeditcampoN").val();
+	auxeditcampoN = parseInt(auxeditcampoN);
+	if(isNaN(auxeditcampoN))
+	{
+		alertify.error("Falta incluir informacion");
+	}else{
+		let aux_valororig = parseInt($("#cantTD" + id).attr("cantorig"));
+		let aux_resultado = aux_valororig + auxeditcampoN;
+		id = $("#auxeditcampoN").attr('fila_id');
+		$("#canttitle" + id).attr("data-original-title","Valor:" + $("#cantTD" + id).attr("cantorig") + " Ext:"  + auxeditcampoN)
+		$("#cantextA" + id).attr("valor",auxeditcampoN)
+		$("#cantext" + id).val(auxeditcampoN);
+		$("#cant" + id).val(aux_resultado);
+		$("#saldocantOrigF" + id).html(aux_resultado);
+		$("#cantTD" + id).html(aux_resultado);
+		$(".bod" + id).trigger("keyup");
+		$("#myModalEditarCampoNum").modal('hide');
+	}
+});
+
+function verificarDato(aux_nomclass)
+{
+	let aux_resultado = true;
+	$(aux_nomclass).serializeArray().map(function(x){
+		aux_tipoval = $("#" + x.name).attr('tipoval');
+		if (validacion(x.name,aux_tipoval) == false)
+		{
+			//return false;
+			aux_resultado = false;
+
+		}else{
+			//return true;
+		}
+	});
+	return aux_resultado;
 }

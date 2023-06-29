@@ -341,6 +341,13 @@
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($detalles as $detalle)
                                 <?php 
+                                    $aux_cant = $detalle->cant;
+                                    $notaventadetalleext = null;
+                                    if($detalle->notaventadetalleext){
+                                        $notaventadetalleext = $detalle->notaventadetalleext;
+                                        $aux_cant = $detalle->cant + $notaventadetalleext->cantext;
+                                    }
+
                                     /*************************/
                                     //SUMA TOTAL SOLICITADO
                                     /*************************/
@@ -366,7 +373,7 @@
                                         $sumacantdesp= $datasumadesp[0]->cantdesp;
                                     }
                                     /*************************/
-                                    $peso = $detalle->totalkilos/$detalle->cant;
+                                    $peso = $detalle->totalkilos/$aux_cant;
 
                                     $aux_ancho = $detalle->producto->diametro;
                                     $aux_espesor = $detalle->espesor;
@@ -383,9 +390,9 @@
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
                                     }
 
-                                    if($detalle->cant > $sumacantsoldesp){
+                                    if($aux_cant > $sumacantsoldesp){
                                         $aux_nfila++;
-                                        $aux_saldo = $detalle->cant - $sumacantsoldesp;
+                                        $aux_saldo = $aux_cant - $sumacantsoldesp;
                                         foreach ($detalle->producto->categoriaprod->invbodegas as $invbodega) {
                                             InvBodegaProducto::firstOrCreate(
                                                 ['producto_id' => $detalle->producto_id, 'invbodega_id' => $invbodega->id],
@@ -440,11 +447,29 @@
                                             <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->cant - $detalle->cantusada}}" style="display:none;"/>
                                         @endif
                                     </td>
-                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:center">
-                                        @if ($aux_sta==2)
-                                            {{$detalle->cant}}
-                                        @else 
-                                            {{$detalle->cant - $detalle->cantusada}}
+                                    <td style="text-align: center; white-space: nowrap;">
+                                        <?php
+                                            if($aux_sta==2){
+                                                //$aux_cant = $detalle->cant;
+                                            }else{
+                                                $aux_cant -= $detalle->cantusada;
+                                                $detalle->cant -= $detalle->cantusada;
+                                            }
+                                        ?>
+                                        <input type="text" name="cantext[]" id="cantext{{$aux_nfila}}" class="form-control" value="{{$notaventadetalleext ? $notaventadetalleext->cantext : 0}}" style="display:none;"/>
+                                        @if ($detalle->producto->acuerdotecnico)
+                                            <a id="canttitle{{$aux_nfila}}" name="canttitle{{$aux_nfila}}" class="btn-accion-tabla btn-sm" title="Valor:{{$detalle->cant}} Ext:{{$notaventadetalleext ? $notaventadetalleext->cantext : 0}}" data-toggle="tooltip" style="padding-left: 0px; display: inline;">
+                                                <div name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" cantorig="{{$detalle->cant}}" style="display: inline;">
+                                                    {{$aux_cant}}
+                                                </div>
+                                            </a>
+                                            <a id="cantextA{{$aux_nfila}}" name="cantextA{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar valor sobre despacho" data-toggle="tooltip" valor="{{$notaventadetalleext ? $notaventadetalleext->cantext : 0}}" fila="{{$aux_nfila}}" nomcampo="cantext" style="padding-left: 0px; display: inline;">
+                                                <i class="fa fa-fw fa-pencil-square-o"></i>
+                                            </a>
+                                        @else
+                                            <div name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" cantorig="{{$detalle->cant}}">
+                                                {{$aux_cant}}
+                                            </div>
                                         @endif
                                     </td>
                                     <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:center">
