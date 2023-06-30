@@ -50,18 +50,18 @@ class ProducxNotaVentaController extends Controller
             $respuesta['tabla'] .= "<table id='tablacotizacion' name='tablacotizacion' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
 			<thead>
 				<tr>
-					<th>Descripción</th>
-					<th>Diametro</th>
-                    <th>Clase</th>
-					<th>Long</th>
-                    <th style='text-align:right' class='tooltipsC' title='Peso x Unidad'>Peso x Unidad</th>
-                    <th style='text-align:right' class='tooltipsC' title='Tipo de Unión'>U</th>
-                    <th style='text-align:right' class='tooltipsC' title='Precio $'>$</th>
-                    <th style='text-align:right' class='tooltipsC' title='Precio promedio por Unidad'>Precio Prom Unit</th>
-                    <th style='text-align:right' class='tooltipsC' title='Precio promedio por Kg'>Precio Prom Kilo</th>
-                    <th style='text-align:right' class='tooltipsC' title='Unidades'>Unid</th>
-                    <th style='text-align:right' class='tooltipsC' title='Total Kg'>Total KG</th>
-                    <th style='text-align:right' class='tooltipsC' title='%'>%</th>
+					<th nombrecampo='nombre'>Descripción</th>
+					<th nombrecampo='diametro'>Diametro</th>
+                    <th nombrecampo='cla_nombre'>Clase</th>
+					<th nombrecampo='long'>Long</th>
+                    <th style='text-align:right' class='tooltipsC' nombrecampo='peso' title='Peso x Unidad'>Peso x Unidad</th>
+                    <th style='text-align:right' class='tooltipsC' nombrecampo='tipounion' title='Tipo de Unión'>U</th>
+                    <th style='text-align:right' class='tooltipsC' nombrecampo='sumsubtotal' title='Precio $'>$</th>
+                    <th style='text-align:right' class='tooltipsC' nombrecampo='prompreciounit' title='Precio promedio por Unidad'>Precio Prom Unit</th>
+                    <th style='text-align:right' class='tooltipsC' nombrecampo='promprecioxkilo' title='Precio promedio por Kg'>Precio Prom Kilo</th>
+                    <th style='text-align:right' class='tooltipsC' nombrecampo='sumcant' title='Unidades'>Unid</th>
+                    <th style='text-align:right' class='tooltipsC' nombrecampo='sumtotalkilos' title='Total Kg'>Total KG</th>
+                    <th style='text-align:right' class='tooltipsC' nombrecampo='sumcant' title='%'>%</th>
 				</tr>
 			</thead>
             <tbody>";
@@ -184,7 +184,7 @@ class ProducxNotaVentaController extends Controller
         
             $pdf = PDF::loadView('prodxnotaventa.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreCategoria','nombreAreaproduccion','nombreGiro'));
             //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream("prueba");
+            return $pdf->stream("prodxnotaventa");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         }
@@ -253,7 +253,7 @@ function consulta($request){
     }else{
         $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$request->areaproduccion_id'";
     }
-
+    $aux_orden = str_getcsv($request->orden);
 
     $sql = "SELECT notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,
@@ -287,7 +287,8 @@ function consulta($request){
     and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
     GROUP BY notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,producto.diamextmm,producto.diametro,claseprod.cla_nombre,
-    producto.long,producto.peso,producto.tipounion;";
+    producto.long,producto.peso,producto.tipounion
+    ORDER BY $aux_orden[2] $aux_orden[1];";
 
     //" and " . $aux_condrut .
     $datas = DB::select($sql);

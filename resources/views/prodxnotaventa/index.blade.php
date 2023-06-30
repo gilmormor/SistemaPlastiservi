@@ -23,8 +23,9 @@ Productos Notas de Venta
             </div>
             <div class="box-body">
                 <div class="row">
-                    <form action="{{route('prodxnotaventa_exportPdf')}}" class="d-inline form-eliminar" method="get" target="_blank">
+                    <form id="form-general" action="{{route('prodxnotaventa_exportPdf')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
+                        <input type="hidden" name="orden" id="orden">
                         <div class="col-xs-12 col-md-8 col-sm-8">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">

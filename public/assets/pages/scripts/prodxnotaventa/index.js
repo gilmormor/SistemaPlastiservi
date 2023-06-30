@@ -41,6 +41,7 @@ $(document).ready(function () {
 });
 
 function datosProdxNV(){
+    ordentabla();
     var data = {
         fechad: $("#fechad").val(),
         fechah: $("#fechah").val(),
@@ -49,6 +50,7 @@ function datosProdxNV(){
         rut: eliminarFormatoRutret($("#rut").val()),
         vendedor_id: $("#vendedor_id").val(),
         areaproduccion_id : $("#areaproduccion_id").val(),
+        orden : $("#orden").val(),
         _token: $('input[name=_token]').val()
     };
     return data;
@@ -195,3 +197,24 @@ $("#rut").blur(function(){
 		}
 	}
 });
+
+$('#form-general').submit(function(event) {
+    ordentabla();
+})
+
+function ordentabla(){
+    var tabla = $('#tablacotizacion').DataTable();
+    var ordenActual = tabla.order(); //obtengo el array del orden actual de la tabla
+    if(ordenActual == undefined){
+        $("#orden").val("0,'1','asc'");
+    }else{
+        var encabezado = tabla.column(ordenActual[0][0]).header(); //en la posicion [0][0] esta el num de columna
+        var nombreCampo = encabezado.getAttribute('nombrecampo'); //a traves del atributo nombrecampo que asigne en php al crear la tabla en los encabezados
+        if(ordenActual[0][2]){
+            ordenActual[0][2] = nombreCampo;
+        }else{
+            ordenActual[0].push(nombreCampo); //inserto a array el nombre de campo por el cual quiero ordenar en la consulta SQL en php
+        }
+        $("#orden").val(ordenActual[0]); //Actualizo el valor del elemento orden para que lo envie a php    
+    }
+}
