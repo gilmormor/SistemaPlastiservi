@@ -91,12 +91,12 @@ class ProducxNotaVentaController extends Controller
                     <td id='long$i' name='long$i'>$data->long</td>
                     <td id='peso$i' name='peso$i' style='text-align:right'>".number_format($data->peso, 2, ",", ".") ."</td>
                     <td id='tipounion$i' name='tipounion$i' style='text-align:right'>$data->tipounion</td>
-                    <td id='subtotal$i' name='subtotal$i' style='text-align:right'>".number_format($data->sumsubtotal, 2, ",", ".") ."</td>
-                    <td id='prompreciounit$i' name='prompreciounit$i' style='text-align:right'>".number_format($data->prompreciounit, 2, ",", ".") ."</td>
-                    <td id='promprecioxkilo$i' name='promprecioxkilo$i' style='text-align:right'>".number_format($data->promprecioxkilo, 2, ",", ".") ."</td>
-                    <td id='sumcant$i' name='sumcant$i' style='text-align:right'>".number_format($data->sumcant, 0, ",", ".") ."</td>
-                    <td id='sumtotalkilos$i' name='sumtotalkilos$i' style='text-align:right'>".number_format($data->sumtotalkilos, 2, ",", ".") ."</td>
-                    <td id='aux_procent$i' name='aux_procent$i' style='text-align:right'>".number_format($porcentajeKg, 2, ",", ".") ."</td>
+                    <td id='subtotal$i' name='subtotal$i' style='text-align:right' data-order='$data->sumsubtotal'>".number_format($data->sumsubtotal, 2, ",", ".") ."</td>
+                    <td id='prompreciounit$i' name='prompreciounit$i' style='text-align:right' data-order='$data->prompreciounit'>".number_format($data->prompreciounit, 2, ",", ".") ."</td>
+                    <td id='promprecioxkilo$i' name='promprecioxkilo$i' style='text-align:right' data-order='$data->promprecioxkilo'>".number_format($data->promprecioxkilo, 2, ",", ".") ."</td>
+                    <td id='sumcant$i' name='sumcant$i' style='text-align:right' data-order='$data->sumcant'>".number_format($data->sumcant, 0, ",", ".") ."</td>
+                    <td id='sumtotalkilos$i' name='sumtotalkilos$i' style='text-align:right' data-order='$data->sumtotalkilos'>".number_format($data->sumtotalkilos, 2, ",", ".") ."</td>
+                    <td id='aux_procent$i' name='aux_procent$i' style='text-align:right' data-order='$porcentajeKg'>".number_format($porcentajeKg, 2, ",", ".") ."</td>
                 </tr>";
 
                 //dd($data->contacto);
