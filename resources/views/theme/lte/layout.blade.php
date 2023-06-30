@@ -57,7 +57,7 @@
 
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-    <link rel="shortcut icon" href="{{asset("assets/$theme/dist/img/logoShor.png")}}">
+    <link rel="shortcut icon" href="{{asset("assets/$theme/dist/img/logoShor.png?timestamp=" . time())}}">
     </head>
     <body class="sidebar-mini wysihtml5-supported skin-black fixed"> <!--con esta clase el menu permanece completo abierto-->
                  

@@ -186,7 +186,7 @@ tfoot input {
 }
 
 #loading-screen {
-    background-color: rgba(25,25,25,0.7);
+    /*background-color: rgba(25,25,25,0.7);*/
     height: 100%;
     width: 100%;
     position: fixed;
