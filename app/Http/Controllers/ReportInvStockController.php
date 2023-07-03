@@ -29,9 +29,8 @@ class ReportInvStockController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-        return view('reportinvstock.index', compact('tablashtml','productos','selecmultprod'));
+        return view('reportinvstock.index', compact('tablashtml','selecmultprod'));
     }
 
     public function reportinvstockpage(Request $request){

@@ -12,7 +12,7 @@ $(document).ready(function () {
     configurarTabla('#tabla-data-consulta');
 
     function configurarTabla(aux_tabla){
-        data = datos();
+        data = datosinvstock();
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
@@ -97,7 +97,7 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
-        data = datos();
+        data = datosinvstock();
         $('#tabla-data-consulta').DataTable().ajax.url( "invcontrolpage/" + data.data2 ).load();
         totalizar();
     });
@@ -113,7 +113,7 @@ function totalizar(){
         .on('draw', function () {
             eventFired( 'Page' );
         });
-    data = datos();
+    data = datosinvstock();
     $.ajax({
         url: '/reportinvstock/totalizarindex/' + data.data2,
         type: 'GET',
@@ -134,7 +134,7 @@ var eventFired = function ( type ) {
     $("#subtotalkg").html(MASKLA(total,2))
 }
 
-function datos(){
+function datosinvstock(){
     var data1 = {
         mesanno           : $("#annomes").val(),
         sucursal_id       : $("#sucursal_id").val(),
@@ -191,7 +191,7 @@ function copiar_codprod(id,codintprod){
 }
 
 $("#btnpdf").click(function(event){
-    data = datos();
+    data = datosinvstock();
     //alert(cadena);
     $('#contpdf').attr('src', '/reportinvstock/exportPdf/'+data.data2);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');

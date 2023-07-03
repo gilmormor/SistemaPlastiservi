@@ -32,9 +32,10 @@ class ReportInvStockBPController extends Controller
                                     ->where("tipo","=",2)
                                     ->get();
         $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
+        //$productos = Producto::productosxUsuario();
         $selecmultprod = 1;
-        return view('reportinvstockbp.index', compact('tablashtml','productos','selecmultprod'));
+        return view('reportinvstockbp.index', compact('tablashtml','selecmultprod'));
+        //return view('reportinvstockbp.index', compact('tablashtml','productos','selecmultprod'));
 
     }
     public function reportinvstockbppage(Request $request){

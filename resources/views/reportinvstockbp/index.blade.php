@@ -7,6 +7,7 @@ Stock Inventario
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportinvstockbp/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
 @endsection
 <?php
     use App\Models\CategoriaGrupoValMes;
@@ -162,6 +163,5 @@ Stock Inventario
 </div>
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproducto')
-
+@include('generales.buscarproductobdtemp')
 @endsection

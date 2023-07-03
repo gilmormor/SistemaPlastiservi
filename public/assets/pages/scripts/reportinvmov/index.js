@@ -13,13 +13,13 @@ $(document).ready(function () {
 
     $("#btnconsultarpage").click(function()
     {
-        consultarpage(datos());
+        consultarpage(datosinvmov());
     });
 
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf(datos());
+        consultarpdf(datosinvmov());
     });
 
     //alert(aux_nfila);
@@ -75,7 +75,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datos(){
+function datosinvmov(){
     var data1 = {
         annomes           : $("#annomes").val(),
         sucursal_id       : $("#sucursal_id").val(),
@@ -218,7 +218,7 @@ function copiar_codprod(id,codintprod){
 }
 
 $("#btnpdf").click(function(event){
-    data = datos();
+    data = datosinvmov();
     //alert(cadena);
     $('#contpdf').attr('src', '/reportinvmov/exportPdf/'+data.data2);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
