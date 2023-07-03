@@ -33,10 +33,10 @@
 					<th style='text-align:center' class='width10'>Cod</th>
 					<th style='text-align:left' class='width90'>Producto</th>
 					<th style='text-align:left' class='width90'>Categoria</th>
-					<th style='text-align:center' class='width30'>Diam</th>
-					<th style='text-align:center' class='width40'>Clase</th>
+					<th style='text-align:center' class='width40'>Clase<br>Sello</th>
+					<th style='text-align:center' class='width30'>Diam<br>Ancho</th>
 					<th style='text-align:center' class='width10'>L</th>
-					<th style='text-align:center' class='width30'>Peso</th>
+					<th style='text-align:center' class='width30'>Peso<br>Esp</th>
 					<th style='text-align:center' class='width10'>TU</th>
 					<th style='text-align:center' class='width40'>Bodega</th>
 					<th style='text-align:center' class='width40'>Picking</th>
@@ -55,10 +55,16 @@
 						<td style='text-align:center'>{{$data->producto_id}}</td>
 						<td>{{$data->producto_nombre}}</td>
 						<td>{{$data->categoria_nombre}}</td>
-						<td style='text-align:center'>{{$data->diametro}}</td>
 						<td style='text-align:center'>{{$data->cla_nombre}}</td>
-						<td style='text-align:center'>{{$data->long}}</td>
-						<td style='text-align:center'>{{$data->peso}}</td>
+						@if ($data->acuerdotecnico_id)
+							<td style='text-align:center'>{{number_format($data->diametro, 0, ",", ".")}}</td>
+							<td style='text-align:center'>{{number_format($data->largo, 0, ",", ".")}}</td>
+							<td style='text-align:center'>{{number_format($data->peso, 3, ",", ".")}}</td>
+						@else
+							<td style='text-align:center'>{{$data->diametro}}</td>
+							<td style='text-align:center'>{{$data->largo}}</td>
+							<td style='text-align:center'>{{number_format($data->peso, 3, ",", ".")}}</td>
+						@endif
 						<td style='text-align:center'>{{$data->tipounion}}</td>
 						<td style='text-align:center'>{{$data->stockBodProdTerm}}</td>
 						<td style='text-align:center'>{{$data->stockPiking}}</td>

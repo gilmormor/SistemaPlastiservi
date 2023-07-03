@@ -1,6 +1,6 @@
 <header class="main-header">
   <!-- Logo -->
-  <a href="/" class="logo" style="background-color: #f5f5f5;">
+  <a href="/" class="logo" style="background-color: #fbfbfb;">
     <!-- mini logo for sidebar mini 50x50 pixels -->
     
     <span class="logo-mini"><img src="{{asset("assets/$theme/dist/img/logoShor.png")}}" style="max-width:90%;width:auto;height:auto;"></span>

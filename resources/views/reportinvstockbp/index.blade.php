@@ -130,10 +130,10 @@ Stock Inventario
                             <th class="width70 tooltipsC" title="Codigo Producto" style='text-align:center'>Cod</th>
                             <th>Producto</th>
                             <th>Categoria</th>
-                            <th>Diametro</th>
-                            <th>Clase</th>
+                            <th>Clase<br>Sello</th>
+                            <th>Diam<br>Ancho</th>
                             <th>Largo</th>
-                            <th>Peso</th>
+                            <th>Peso<br>Esp</th>
                             <th class="tooltipsC" title="Tipo de Union">TU</th>
                             <th style='text-align:center'>Bodega</th>
                             <th style='text-align:center'>Picking</th>

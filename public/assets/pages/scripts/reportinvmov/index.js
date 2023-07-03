@@ -108,7 +108,6 @@ function consultarpage(data){
         url: '/reportinvmov/totalizarRep/' + data.data2,
         type: 'GET',
         success: function (datos) {
-            console.log(datos);
             $("#totalcant").html(MASKLA(datos.aux_totalcant,2));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }

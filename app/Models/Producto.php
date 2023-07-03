@@ -486,11 +486,16 @@ class Producto extends Model
             sum(notaventadetalle.cant) as cant,sum(if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)) AS cantdesp,
             producto.nombre,cliente.razonsocial,notaventadetalle.id,
             notaventadetalle.notaventa_id,oc_file,
-            producto.diametro,notaventa.oc_id,
-            claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
+            if(isnull(acuerdotecnico.id),producto.diametro,at_ancho) as diametro,
+            if(isnull(acuerdotecnico.id),producto.long,at_largo) as largo,
+            if(isnull(acuerdotecnico.id),producto.peso,at_espesor) as peso,
+            producto.long,
+            notaventa.oc_id,
+            claseprod.cla_nombre,producto.tipounion,
             notaventadetalle.totalkilos,
             subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
-            notaventadetalle.precioxkilo
+            notaventadetalle.precioxkilo,
+            acuerdotecnico.id as acuerdotecnico_id,at_ancho,at_largo,at_espesor
             FROM notaventadetalle INNER JOIN notaventa
             ON notaventadetalle.notaventa_id=notaventa.id
             INNER JOIN producto
@@ -503,6 +508,8 @@ class Producto extends Model
             ON cliente.id=notaventa.cliente_id
             LEFT JOIN vista_sumorddespxnvdetid
             ON notaventadetalle.id=vista_sumorddespxnvdetid.notaventadetalle_id
+            LEFT JOIN acuerdotecnico
+            ON producto.id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut

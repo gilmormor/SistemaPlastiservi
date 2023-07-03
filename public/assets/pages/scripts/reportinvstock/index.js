@@ -27,8 +27,8 @@ $(document).ready(function () {
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
                 {data: 'categoria_nombre'},
-                {data: 'diametro'},
                 {data: 'cla_nombre'},
+                {data: 'diametro'},
                 {data: 'long'},
                 {data: 'peso'},
                 {data: 'tipounion'},
@@ -49,9 +49,17 @@ $(document).ready(function () {
                 }*/
                 $('td', row).eq(0).attr('style','text-align:center');
                 $('td', row).eq(3).attr('style','text-align:center');
+
+                $('td', row).eq(4).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');
-                $('td', row).eq(6).html(NUM(data.peso, 2));
-                $('td', row).eq(6).attr('style','text-align:right');
+                $('td', row).eq(6).attr('style','text-align:center');
+                if(data.acuerdotecnico_id){
+                    $('td', row).eq(4).html(NUM(data.at_ancho, 2));
+                    $('td', row).eq(5).html(NUM(data.at_largo, 2));
+                    $('td', row).eq(6).html(MASKLA(data.at_espesor, 3));    
+                }else{
+                    $('td', row).eq(6).html(NUM(data.peso, 2));
+                }
                 $('td', row).eq(9).attr('style','text-align:center');
                 $('td', row).eq(10).attr('style','text-align:center');
                 $('td', row).eq(11).attr('style','text-align:center');
