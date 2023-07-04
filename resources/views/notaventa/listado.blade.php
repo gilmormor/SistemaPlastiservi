@@ -71,7 +71,7 @@
 					<th class="textcenter" width="50px">Unid</th>
 					<th class="textleft" width="190px">Descripción</th>
 					<th class="textleft" width="60px">Clase<br>Sello</th>
-					<th class="textleft">Ancho</th>
+					<th class="textcenter">Ancho</th>
 					<th class="textcenter">Largo</th>
 					<th class="textcenter">Espesor</th>
 					<th class="textcenter">TU</th>
@@ -110,9 +110,7 @@
 						<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}</td>
 						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
-						<td class="textleft">
-							{{$aux_ancho}}
-						</td>
+						<td class="textleft">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{number_format($aux_espesor, 3, ',', '.')}}</td>
 						<td class="textcenter">{{$notaventaDetalle->producto->tipounion}}</td>
