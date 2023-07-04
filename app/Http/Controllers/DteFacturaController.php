@@ -15,6 +15,7 @@ use App\Models\Dte;
 use App\Models\DteAnul;
 use App\Models\DteDet;
 use App\Models\DteDet_DespachoOrdDet;
+use App\Models\DteDev;
 use App\Models\DteDte;
 use App\Models\DteFac;
 use App\Models\DteGuiaUsada;
@@ -958,7 +959,13 @@ class DteFacturaController extends Controller
                 $despachoordanulguiafact->usuario_id = auth()->id();
                 $despachoordanulguiafact->status = $request->statusM;
                 $despachoordanulguiafact->save();
-    
+
+                $dtedev = new DteDev();
+                $dtedev->dte_id = $request->dte_id;
+                $dtedev->obs = $request->observacion;
+                $dtedev->usuario_id = auth()->id();
+                $dtedev->save();
+
                 $despachoord->guiadespacho = NULL;
                 $despachoord->guiadespachofec = NULL;
                 if($request->statusM == '2'){ //Si status es = 1 solo borra la guia de despacho si es = 2 borra guia y factura

@@ -1086,7 +1086,8 @@ function consultaindex(){
         despachoord.notaventa_id,
         despachoord.despachosol_id,dteguiadesp.despachoord_id,despachoord.fechaestdesp,comuna.nombre as cmnarecep,dte.kgtotal,
         dteguiadesp.tipoentrega_id,tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
-        clientebloqueado.descripcion as clientebloqueado_descripcion,dte.updated_at,despachoord.updated_at as despordupdated_at
+        clientebloqueado.descripcion as clientebloqueado_descripcion,dte.updated_at,despachoord.updated_at as despordupdated_at,
+        dtedev.obs as dtedev_obs,usuario.nombre as dtedevusuario_nombre
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
         INNER JOIN despachoord
@@ -1101,6 +1102,10 @@ function consultaindex(){
         ON cliente.comunap_id  = comuna.id AND ISNULL(comuna.deleted_at)
         LEFT JOIN clientebloqueado
         ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+        LEFT JOIN dtedev
+        ON dte.id = dtedev.dte_id AND ISNULL(dtedev.deleted_at)
+        LEFT JOIN usuario
+        ON dtedev.usuario_id = usuario.id AND ISNULL(usuario.deleted_at)
         WHERE despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
         AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))

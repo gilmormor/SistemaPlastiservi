@@ -155,6 +155,12 @@ class Dte extends Model
     {
         return $this->hasMany(DteGuiaUsada::class,'dte_id');
     }
+
+    //RELACION de uno a uno dtedev
+    public function dtedev()
+    {
+        return $this->hasOne(DteDev::class);
+    }
     
     public static function reportguiadesppage($request){
         //dd($request);

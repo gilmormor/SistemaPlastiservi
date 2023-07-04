@@ -58,10 +58,10 @@
 					<th width="100px">Nombre Producto</th>
 					<th width="100px">Categoria</th>
 					<th width="100px">Bodega</th>
-					<th class="textleft">Diamet</th>
-					<th class="textleft" width="60px">Clase</th>
+					<th class="textleft" width="60px">Clase<br>Sello</th>
+					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textcenter">Largo</th>
-					<th class="textcenter">TU</th>
+					<th class="textcenter">TU<br>Esp</th>
 					<th class="textcenter" width="70px">UniMed</th>
 					<th class="textcenter" width="70px">Cant</th>
 				</tr>
@@ -69,15 +69,31 @@
 			<tbody id="detalle_productos">
 				<?php $aux_totalcant = 0; ?>
 				@foreach($datas->invmovdets as $invmovdet)
+					<?php 
+						$aux_ancho = $invmovdet->invbodegaproducto->producto->diametro;
+						$aux_largo = $invmovdet->invbodegaproducto->producto->long;
+						$aux_espesor = $invmovdet->invbodegaproducto->producto->tipounion;
+						$aux_cla_sello_nombre = $invmovdet->invbodegaproducto->producto->claseprod->cla_nombre;
+						$aux_producto_nombre = $invmovdet->invbodegaproducto->producto->nombre;
+						//$aux_categoria_nombre = $invmovdet->invbodegaproducto->producto->categoriaprod->nombre;
+						if ($invmovdet->invbodegaproducto->producto->acuerdotecnico != null){
+							$AcuTec = $invmovdet->invbodegaproducto->producto->acuerdotecnico;
+							$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
+							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+						}
+					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto_id}}</td>
 						<td class="textleft">{{$invmovdet->invbodegaproducto->producto->nombre}}</td>
 						<td class="textleft">{{$invmovdet->invbodegaproducto->producto->categoriaprod->nombre}}</td>
 						<td class="textleft">{{$invmovdet->invbodegaproducto->invbodega->nombre}}</td>
-						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto->diametro}}</td>
 						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto->claseprod->cla_nombre}}</td>
-						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto->long}} mts</td>
-						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto->tipounion}}</td>
+						<td class="textcenter">{{$aux_ancho}}</td>
+						<td class="textcenter">{{$aux_largo}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textcenter">{{$invmovdet->unidadmedida->nombre}}</td>
 						<td class="textcenter">{{number_format($invmovdet->cant, 0, ",", ".")}}</td>
 					</tr>

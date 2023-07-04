@@ -45,6 +45,18 @@ $(document).ready(function () {
                     + data.id +
                 "</a>";
             $('td', row).eq(0).html(aux_text);
+            if(data.dtedev_obs != null){
+
+                aux_title = data.dtedev_obs + " Usuario:" + data.dtedevusuario_nombre;
+                colorinfo = 'text-red';
+                aux_text =
+                    "<a class='btn-sm tooltipsC' title='" + aux_title + "'>" +
+                        "<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
+                    "</a>";
+                $('td', row).eq(0).html($('td', row).eq(0).html() + aux_text);
+    
+            }
+    
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
