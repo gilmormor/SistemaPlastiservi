@@ -15,15 +15,15 @@ $(document).ready(function () {
 	});
 */
 
-    consultar(datos());
+    consultar(datoslnv());
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datoslnv());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf(datos());
+        consultarpdf(datoslnv());
     });
 
     //alert(aux_nfila);
@@ -127,7 +127,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datos(){
+function datoslnv(){
     var data = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -161,7 +161,6 @@ function consultar(data){
 
                 configurarTabla('#tabla-data-listar1');
                 let  table = $('#tabla-data-listar1').DataTable();
-                console.log(table);
                 table
                     .on('draw', function () {
                         eventFired( 'Page' );
@@ -275,7 +274,7 @@ function visto(id,visto){
 $("#btnpdf21").click(function()
 {
     aux_titulo = 'Nota de Venta Pendientes';
-    data = datos();
+    data = datoslnv();
     cadena = "?fechad="+data.fechad+
             "&fechah="+data.fechah +
             "&rut=" + data.rut +
@@ -296,7 +295,7 @@ $("#btnpdf21").click(function()
 });
 
 function btnpdf(numrep){
-    data = datos();
+    data = datoslnv();
     cadena = "?fechad="+data.fechad+
             "&fechah="+data.fechah +
             "&rut=" + data.rut +

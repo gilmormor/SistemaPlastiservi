@@ -2,15 +2,17 @@
 @section('titulo')
 Pendiente Solicitud Orden Despacho
 @endsection
-<?php 
-    $selecmultprod = 1;
-?>
 
+<?php
+    $selecmultprod = true;
+?>
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/despachoord/listardespachosol.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
 @section('contenido')
@@ -31,9 +33,11 @@ Pendiente Solicitud Orden Despacho
             </div>
             @csrf
             <div class="box-body">
+                <input type="hidden" name="sololectura" id="sololectura" value="{{old('sololectura', $tablashtml["sololectura"] ?? '0')}}">
                 <div class="row">
                     <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
+                        <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
@@ -209,6 +213,23 @@ Pendiente Solicitud Orden Despacho
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Sucursal Despacho">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="sucursal_id" class="control-label">Sucursal Despacho:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="sucursal_id[]" id="sucursal_id" multiple class='selectpicker form-control' data-live-search='true' multiple data-actions-box='true'>
+                                            @foreach($tablashtml['sucursales'] as $sucursal)
+                                                <option
+                                                    value="{{$sucursal->id}}"
+                                                    {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
+                                                    >
+                                                    {{$sucursal->nombre}}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
@@ -270,9 +291,8 @@ Pendiente Solicitud Orden Despacho
         
     </div>
 </div>
-
-@include('generales.buscarcliente')
+@include('generales.buscarclientebd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproducto')
+@include('generales.buscarproductobd')
 @endsection

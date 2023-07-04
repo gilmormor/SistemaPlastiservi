@@ -94,7 +94,8 @@
 						<?php
 							if($aux_sumtotalkilos > 0){
 								$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
-
+								
+								$aux_producto_nombre = $notaventaDetalle->producto->nombre;
 								$aux_ancho = $notaventaDetalle->producto->diametro;
 								$aux_largo = $notaventaDetalle->producto->long;
 								$aux_espesor = $notaventaDetalle->producto->tipounion;
@@ -104,7 +105,7 @@
 									$aux_producto_nombre = $AcuTecTemp->at_desc;
 									$aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "");
 									$aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "");
-									$aux_espesor = $AcuTecTemp->at_espesor;
+									$aux_espesor = number_format($AcuTecTemp->at_espesor, 3, ',', '.');
 									$aux_cla_sello_nombre = $AcuTecTemp->claseprod->cla_nombre;
 								}
 								if ($notaventaDetalle->producto->acuerdotecnico != null){
@@ -112,7 +113,7 @@
 									$aux_producto_nombre = $AcuTec->at_desc;
 									$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
 									$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
-									$aux_espesor = $AcuTec->at_espesor;
+									$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 									$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 								}
 							}
@@ -125,7 +126,7 @@
 							<td class="textleft">{{$aux_cla_sello_nombre}}</td>
 							<td class="textcenter">{{$aux_ancho}}</td>
 							<td class="textcenter">{{$aux_largo}}</td>
-							<td class="textcenter">{{number_format($aux_espesor, 3, ',', '.')}}</td>
+							<td class="textcenter">{{$aux_espesor}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 0, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->totalkilos, 2, ",", ".")}}</td>
