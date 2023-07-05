@@ -63,10 +63,10 @@
 					<th width="30px">Saldo</th>
 					<th class="textcenter">Unidad</th>
 					<th class="textleft">Descripción</th>
-					<th class="textleft">Diam</th>
-					<th class="textleft">Clase</th>
+					<th class="textleft">Clase<br>Sello</th>
+					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textright">Largo</th>
-					<th class="textcenter">TU</th>
+					<th class="textcenter">TU<br>Esp</th>
 					<th class="textright">Peso</th>
 					<!--<th class="textright">$ x Kg</th>-->
 					<th class="textright">Total Kg</th>
@@ -100,6 +100,20 @@
 						}else{
 							$sumacantorddesp= $datasuma[0]->cantdesp;
 						}
+						$aux_ancho = $despachosoldet->notaventadetalle->producto->diametro;
+						$aux_largo = $despachosoldet->notaventadetalle->producto->long;
+						$aux_espesor = $despachosoldet->notaventadetalle->producto->tipounion;
+						$aux_cla_sello_nombre = $despachosoldet->notaventadetalle->producto->claseprod->cla_nombre;
+						$aux_producto_nombre = $despachosoldet->notaventadetalle->producto->nombre;
+						//$aux_categoria_nombre = $despachosoldet->notaventadetalle->producto->categoriaprod->nombre;
+						if ($despachosoldet->notaventadetalle->producto->acuerdotecnico != null){
+							$AcuTec = $despachosoldet->notaventadetalle->producto->acuerdotecnico;
+							$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
+							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+						}
 						if($despachosoldet->cantsoldesp > $sumacantorddesp){
 							$aux_nfila++;
 							$aux_saldo = $despachosoldet->cantsoldesp - $sumacantorddesp;
@@ -115,20 +129,14 @@
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
-						<td class="textcenter">
-							{{number_format($sumacantorddesp, 0, ",", ".")}}
-						</td>
-						<td class="textcenter">
-							{{number_format($aux_saldo, 0, ",", ".")}}
-						</td>
+						<td class="textcenter">{{number_format($sumacantorddesp, 0, ",", ".")}}</td>
+						<td class="textcenter">{{number_format($aux_saldo, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
-						<td class="textleft">{{$despachosoldet->notaventadetalle->producto->nombre}}</td>
-						<td class="textcenter">
-							{{$despachosoldet->notaventadetalle->producto->diametro}}
-						</td>
-						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textright">{{$despachosoldet->notaventadetalle->producto->long}} mts</td>
-						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->tipounion}}</td>
+						<td class="textleft">{{$aux_producto_nombre}}</td>
+						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
+						<td class="textcenter">{{$aux_ancho}}</td>
+						<td class="textcenter">{{$aux_largo}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textright">{{number_format($despachosoldet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
 						<!--<td class="textright">{{number_format($despachosoldet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>-->
 						<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>

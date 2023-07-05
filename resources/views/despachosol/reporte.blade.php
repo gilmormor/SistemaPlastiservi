@@ -78,7 +78,7 @@
 					<th class="textleft">Clase<br>Sello</th>
 					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textright">Largo</th>
-					<th class="textcenter">TU</th>
+					<th class="textcenter">TU<br>Esp</th>
 					<th class="textright">Peso</th>
 					<!--<th class="textright">$ x Kg</th>-->
 					<th class="textright">Total Kg</th>
@@ -127,8 +127,8 @@
 						<td class="textcenter">{{number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
-						<td class="textleft">{{$despachosoldet->notaventadetalle->producto->nombre}}</td>
-						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
+						<td class="textleft">{{$aux_producto_nombre}}</td>
+						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{$aux_espesor}}</td>

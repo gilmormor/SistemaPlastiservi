@@ -75,10 +75,10 @@
 					<th width="30px">Desp</th>
 					<th class="textcenter">Unidad</th>
 					<th width="120px" class="textleft">Descripción</th>
-					<th class="textleft">Clase</th>
-					<th class="textleft">Diam</th>
+					<th class="textleft">Clase<br>Sello</th>
+					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textright">Largo</th>
-					<th class="textcenter">TU/Esp</th>
+					<th class="textcenter">TU<br>Esp</th>
 					<th class="textright">Peso</th>
 					<!--<th class="textright">$ x Kg</th>-->
 					<th class="textright">Total Kg</th>
