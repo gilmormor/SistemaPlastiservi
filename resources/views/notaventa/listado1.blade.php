@@ -94,30 +94,29 @@
 						<?php
 							if($aux_sumtotalkilos > 0){
 								$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
-								
-								$aux_producto_nombre = $notaventaDetalle->producto->nombre;
-								$aux_ancho = $notaventaDetalle->producto->diametro;
-								$aux_largo = $notaventaDetalle->producto->long;
-								$aux_espesor = $notaventaDetalle->producto->tipounion;
-								$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
-								if ($notaventaDetalle->cotizaciondetalle and $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp != null){
-									$AcuTecTemp = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp;
-									$aux_producto_nombre = $AcuTecTemp->at_desc;
-									$aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "");
-									$aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "");
-									$aux_espesor = number_format($AcuTecTemp->at_espesor, 3, ',', '.');
-									$aux_cla_sello_nombre = $AcuTecTemp->claseprod->cla_nombre;
-								}
-								if ($notaventaDetalle->producto->acuerdotecnico != null){
-									$AcuTec = $notaventaDetalle->producto->acuerdotecnico;
-									$aux_producto_nombre = $AcuTec->at_desc;
-									$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
-									$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
-									$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
-									$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-								}
 							}
 							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
+							$aux_producto_nombre = $notaventaDetalle->producto->nombre;
+							$aux_ancho = $notaventaDetalle->producto->diametro;
+							$aux_largo = $notaventaDetalle->producto->long;
+							$aux_espesor = $notaventaDetalle->producto->tipounion;
+							$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
+							if ($notaventaDetalle->cotizaciondetalle and $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp != null){
+								$AcuTecTemp = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp;
+								$aux_producto_nombre = $AcuTecTemp->at_desc;
+								$aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "");
+								$aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "");
+								$aux_espesor = number_format($AcuTecTemp->at_espesor, 3, ',', '.');
+								$aux_cla_sello_nombre = $AcuTecTemp->claseprod->cla_nombre;
+							}
+							if ($notaventaDetalle->producto->acuerdotecnico != null){
+								$AcuTec = $notaventaDetalle->producto->acuerdotecnico;
+								$aux_producto_nombre = $AcuTec->at_desc;
+								$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+								$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+								$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
+								$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+							}
 						?>
 						<tr class="headt" style="height:150%;">
 							<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
