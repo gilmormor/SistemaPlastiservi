@@ -46,6 +46,7 @@ class AcuerdoTecnicoTemp extends Model
         'at_espesor',
         'at_espesorum_id',
         'at_espesordesv',
+        'at_unidadmedida',
         'at_impreso',
         'at_impresoobs',
         'at_tiposello_id',

@@ -302,7 +302,6 @@
                                                                         >
                                                                         {{$unidadmedida->nombre}}
                                                                     </option>
-4                                                            
                                                                 @endif
                                                             @endforeach
                                                         </select>
@@ -342,6 +341,28 @@
                                                         <label for="at_espesordesv" class="control-label requerido" data-toggle='tooltip' title="Desviación Espesor">Desv</label>
                                                         <input type="text" name="at_espesordesv" id="at_espesordesv" class="form-control form_acutec valorrequerido" placeholder="Desviación" tipoval="texto" style="padding-right: 0px;padding-left: 2px;" readonly/>
                                                         <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="box box-default">
+                                            <div class="box-body">
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-12" classorig="col-xs-12 col-sm-12">
+                                                        <label for="at_unidadmedida_id" class="control-label at_unidadmedida_id requerido" data-toggle='tooltip' title="Unidad Medida Base">Unid Medida Base</label>
+                                                        <a class="btn-sm tooltipsC" data-original-title="Unidad de medida como va ser vendido el producto" aria-describedby="tooltip202998"><i class="fa fa-fw fa-question-circle text-aqua"></i></a>
+                                                        <select name="at_unidadmedida_id" id="at_unidadmedida_id" class="selectpicker form-control at_unidadmedida_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                                            <option value="">Seleccione...</option>
+                                                            @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
+                                                                <option
+                                                                    value="{{$unidadmedida->id}}"
+                                                                    >
+                                                                    {{$unidadmedida->nombre}}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
