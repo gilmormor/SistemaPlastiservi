@@ -1112,6 +1112,7 @@ function consultaindex(){
         AND notaventa.sucursal_id in ($sucurcadena)
         AND ISNULL(dte.statusgen)
         AND dte.foliocontrol_id=2
+        GROUP BY dte.id
         ORDER BY dte.id desc;";
 
     return DB::select($sql);
