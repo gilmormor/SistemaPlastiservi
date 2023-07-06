@@ -11,6 +11,7 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
         'ajax'        : "notaventadevolvervenpage",
+        "order": [[ 0, "desc" ]],
         'columns'     : [
             {data: 'id'},
             {data: 'cotizacion_id'},

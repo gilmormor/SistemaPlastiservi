@@ -169,6 +169,9 @@ function consulta($id){
     }
     //Consultar registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
 
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+    $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray)";
     $sql = "SELECT notaventa.id,DATE_FORMAT(notaventa.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
             notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_id,oc_file,
             CONCAT(persona.nombre, ' ', persona.apellido) as nombrevendedor,
@@ -186,6 +189,7 @@ function consulta($id){
             and isnull(notaventa.findespacho)
             and isnull(anulada)
             and (aprobstatus=1 or aprobstatus=3)
+            and $aux_condsucursal_id
             and notaventa.id not in (SELECT notaventa_id 
                                     FROM despachosol 
                                     where isnull(despachosol.deleted_at) and despachosol.id 
