@@ -23,7 +23,7 @@
 					<span class="h3">Facturas</span>
 					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
 					<p>Sucursal: {{$request->sucursal_nombre}}</p>
-					<p>Estatus: {{$request->status}}</p>
+					<p>Estatus: {{$request->aprobstatusdesc}}</p>
 					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
 				</div>
 			</td>

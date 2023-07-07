@@ -325,6 +325,10 @@ class InvEntSalController extends Controller
                 //if($inventsal->despachoords->count() == 0){
                 if($cont[0]->cont == 1){
                     $aux_respuesta = InvBodegaProducto::validarExistenciaStock($inventsal->inventsaldets);
+                    if($request->staaprob == 3){ //Cuando es rechazo no es necesario validar stock
+                        //Se asigna true a la bandera para que haga el rechazo sin importar el stock
+                        $aux_respuesta["bandera"] = true;
+                    }
                     if($aux_respuesta["bandera"]){
                         if($inventsal->invmovtipo->stacieinimes == 1 and $request->staaprob == 2){
                             $mesAnterior = date("Ym",strtotime($inventsal->fechahora . "- 1 month"));

@@ -258,6 +258,7 @@ function datosGD(){
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
+        aprobstatusdesc   : $("#aprobstatus option:selected").html(),
         comuna_id         : $("#comuna_id").val(),
         guiadesp_id       : $("#guiadesp_id").val(),
         producto_id       : $("#producto_idPxP").val(),
@@ -294,6 +295,7 @@ function datosGD(){
     "&tipoentrega_id="+data1.tipoentrega_id +
     "&notaventa_id="+data1.notaventa_id +
     "&aprobstatus="+data1.aprobstatus +
+    "&aprobstatusdesc="+data1.aprobstatusdesc +
     "&comuna_id="+data1.comuna_id +
     "&guiadesp_id="+data1.guiadesp_id +
     "&producto_id="+data1.producto_id +
@@ -567,21 +569,6 @@ $("#btnpdf2").click(function()
 {
     aux_titulo = 'Pendientes Solicitud Despacho';
     data = datosGD();
-    cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
-            "&fechaestdesp=" + data.fechaestdesp +
-            "&rut=" + data.rut +
-            "&vendedor_id=" + data.vendedor_id +
-            "&oc_id=" + data.oc_id +
-            "&giro_id=" + data.giro_id + 
-            "&areaproduccion_id=" + data.areaproduccion_id +
-            "&tipoentrega_id=" + data.tipoentrega_id +
-            "&notaventa_id=" + data.notaventa_id +
-            "&aprobstatus=" + data.aprobstatus +
-            "&comuna_id=" + data.comuna_id +
-            "&id=" + data.id +
-            "&filtro=" + data.filtro +
-            "&producto_id=" + data.producto_id +
-            "&aux_titulo=" + aux_titulo;
     $('#contpdf').attr('src', '/reportdteguiadesp/exportPdf/' + data.data2);
     $("#myModalpdf").modal('show'); 
 });

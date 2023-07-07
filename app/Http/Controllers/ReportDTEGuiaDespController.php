@@ -51,6 +51,7 @@ class ReportDTEGuiaDespController extends Controller
     public function exportPdf(Request $request)
     {
         $datas = Dte::reportguiadesppage($request);
+        //dd($request);
         //dd($datas);
 
         $empresa = Empresa::orderBy('id')->get();

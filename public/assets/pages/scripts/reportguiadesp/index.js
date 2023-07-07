@@ -239,6 +239,7 @@ function datosGD(){
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
+        aprobstatusdesc   : $("#aprobstatus option:selected").html(),
         comuna_id         : $("#comuna_id").val(),
         guiadesp_id       : $("#guiadesp_id").val(),
         producto_id       : $("#producto_idPxP").val(),
@@ -274,6 +275,7 @@ function datosGD(){
     "&tipoentrega_id="+data1.tipoentrega_id +
     "&notaventa_id="+data1.notaventa_id +
     "&aprobstatus="+data1.aprobstatus +
+    "&aprobstatusdesc="+data1.aprobstatus +
     "&comuna_id="+data1.comuna_id +
     "&guiadesp_id="+data1.guiadesp_id +
     "&producto_id="+data1.producto_id +

@@ -23,6 +23,7 @@
 					<span class="h3">Guia Despacho</span>
 					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
 					<p>Sucursal: {{$request->sucursal_nombre}}</p>
+					<p>Estatus: {{$request->aprobstatusdesc}}</p>
 					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
 				</div>
 			</td>
@@ -61,6 +62,9 @@
 									}else{
 										$aux_estado = "Guia facturada ($data->fact_nrodocto)";
 									}
+								}
+								if($data->dteanul_obs){
+									$aux_estado = "Anulada";
 								}
 								//$dtedte = 
 							?>

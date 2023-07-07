@@ -364,6 +364,7 @@ function datosFac(){
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
+        aprobstatusdesc   : $("#aprobstatus option:selected").html(),
         comuna_id         : $("#comuna_id").val(),
         dte_id            : $("#dte_id").val(),
         producto_id       : $("#producto_idPxP").val(),
@@ -402,6 +403,7 @@ function datosFac(){
     "&tipoentrega_id="+data1.tipoentrega_id +
     "&notaventa_id="+data1.notaventa_id +
     "&aprobstatus="+data1.aprobstatus +
+    "&aprobstatusdesc="+data1.aprobstatusdesc +
     "&comuna_id="+data1.comuna_id +
     "&dte_id="+data1.dte_id +
     "&producto_id="+data1.producto_id +
