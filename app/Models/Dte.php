@@ -347,7 +347,7 @@ class Dte extends Model
         and $aux_condsucurArray
         and $aux_sucursal_idCond
         GROUP BY dte.id
-        ORDER BY dte.id desc;";
+        ORDER BY dte.id asc;";
         //dd($sql);
         $datas = DB::select($sql);
         return $datas;
@@ -787,13 +787,13 @@ class Dte extends Model
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
         foliocontrol.tipodocto,foliocontrol.nombrepdf,
         dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at
-        FROM dte INNER JOIN dtedte
+        FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
-        INNER JOIN dteguiadesp
+        LEFT JOIN dteguiadesp
         ON dtedte.dter_id = dteguiadesp.dte_id and isnull(dteguiadesp.deleted_at)
-        INNER JOIN despachoord
+        LEFT JOIN despachoord
         ON despachoord.id = dteguiadesp.despachoord_id and isnull(despachoord.deleted_at)
-        INNER JOIN notaventa
+        LEFT JOIN notaventa
         ON notaventa.id = despachoord.notaventa_id and isnull(notaventa.deleted_at)
         INNER JOIN cliente
         ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
@@ -820,7 +820,7 @@ class Dte extends Model
         AND $aux_aprobstatus
         AND NOT ISNULL(dte.nrodocto)
         GROUP BY dte.id
-        ORDER BY dte.id desc;";
+        ORDER BY dte.id asc;";
 
         //dd($sql);
         
@@ -1621,7 +1621,7 @@ class Dte extends Model
         AND $aux_condnotaventa_id
         AND $aux_aprobstatus
         GROUP BY dte.id
-        ORDER BY dte.id desc;";
+        ORDER BY dte.id asc;";
         //dd($sql);
 
         $arrays = DB::select($sql);

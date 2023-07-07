@@ -25,7 +25,7 @@ $(document).ready(function () {
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
-            "order"       : [[ 0, "desc" ]],
+            "order"       : [[ 0, "asc" ]],
             'ajax'        : "/reportdtend/reportdtendpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             'columns'     : [
                 {data: 'id'}, // 0

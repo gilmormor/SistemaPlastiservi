@@ -25,7 +25,7 @@ $(document).ready(function () {
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
-            "order"       : [[ 0, "desc" ]],
+            "order"       : [[ 0, "asc" ]],
             'ajax'        : "/reportdtefac/reportdtefacpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             'columns'     : [
                 {data: 'id'}, // 0
@@ -108,44 +108,50 @@ $(document).ready(function () {
                             aux_text += ",";
                         }
                     }
-                    $('td', row).eq(5).html(aux_text);
                 }
+                $('td', row).eq(5).html(aux_text);
                 aux_text = "";
-                let arr_notaventa_id = data.notaventa_id.split(','); 
-                for (let i = 0; i < arr_notaventa_id.length; i++){
-                    aux_text += 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + arr_notaventa_id[i] + ",1)'>" +
-                        arr_notaventa_id[i] +
-                    "</a>";
-                    if((i+1) < arr_notaventa_id.length){
-                        aux_text += ",";
-                    }
+                if(data.notaventa_id != "" && data.notaventa_id != null){
+                    let arr_notaventa_id = data.notaventa_id.split(','); 
+                    for (let i = 0; i < arr_notaventa_id.length; i++){
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + arr_notaventa_id[i] + ",1)'>" +
+                            arr_notaventa_id[i] +
+                        "</a>";
+                        if((i+1) < arr_notaventa_id.length){
+                            aux_text += ",";
+                        }
+                    }    
                 }
                 $('td', row).eq(6).html(aux_text);
     
                 aux_text = "";
-                let arr_despachosol_id = data.despachosol_id.split(','); 
-                for (let i = 0; i < arr_despachosol_id.length; i++){
-                    aux_text += 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud Despacho' onclick='genpdfSD(" + arr_despachosol_id[i] + ",1)'>" +
-                        arr_despachosol_id[i] +
-                    "</a>";
-                    if((i+1) < arr_despachosol_id.length){
-                        aux_text += ",";
+                if(data.despachosol_id != "" && data.despachosol_id != null){
+                    let arr_despachosol_id = data.despachosol_id.split(','); 
+                    for (let i = 0; i < arr_despachosol_id.length; i++){
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud Despacho' onclick='genpdfSD(" + arr_despachosol_id[i] + ",1)'>" +
+                            arr_despachosol_id[i] +
+                        "</a>";
+                        if((i+1) < arr_despachosol_id.length){
+                            aux_text += ",";
+                        }
                     }
                 }
                 $('td', row).eq(7).html(aux_text);
     
                 aux_text = "";
-                let arr_despachoord_id = data.despachoord_id.split(','); 
-                for (let i = 0; i < arr_despachoord_id.length; i++){
-                    aux_text += 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Orden Despacho' onclick='genpdfOD(" + arr_despachoord_id[i] + ",1)'>" +
-                        arr_despachoord_id[i] +
-                    "</a>";
-                    if((i+1) < arr_despachoord_id.length){
-                        aux_text += ",";
-                    }
+                if(data.despachoord_id != "" && data.despachoord_id != null){
+                    let arr_despachoord_id = data.despachoord_id.split(','); 
+                    for (let i = 0; i < arr_despachoord_id.length; i++){
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Orden Despacho' onclick='genpdfOD(" + arr_despachoord_id[i] + ",1)'>" +
+                            arr_despachoord_id[i] +
+                        "</a>";
+                        if((i+1) < arr_despachoord_id.length){
+                            aux_text += ",";
+                        }
+                    }    
                 }
                 $('td', row).eq(8).html(aux_text);
     

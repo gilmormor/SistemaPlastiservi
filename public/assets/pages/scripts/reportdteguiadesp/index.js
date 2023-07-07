@@ -25,7 +25,7 @@ $(document).ready(function () {
             'processing'  : true,
             'serverSide'  : true,
             'ajax'        : "/reportdteguiadesp/reportdteguiadesppage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
-            "order": [[ 0, "desc" ]],
+            "order": [[ 0, "asc" ]],
             'columns'     : [
                 {data: 'id'},
                 {data: 'fechahora'},
