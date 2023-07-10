@@ -26,6 +26,7 @@
 					<p>Area Producción: {{$nombreAreaproduccion}}</p>
 					<p>Vendedor: {{$nomvendedor}} </p>
 					<p>Giro: {{$nombreGiro}} </p>
+					<p>Estatus NV: {{$request->aprobstatusdesc}}</p>
 					<p>Nota Venta Desde: {{$aux_fdesde}} Hasta: {{$aux_fhasta}}</p>
 					<p>Plazo Entrega Desde: {{$aux_plazoentregad}} Hasta: {{$aux_plazoentregah}}</p>
 				</div>

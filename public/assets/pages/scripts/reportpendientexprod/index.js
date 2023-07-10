@@ -1,14 +1,14 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-    //consultar(datos());
+    //consultar(datosPentxProd());
     $("#btnconsultar").click(function()
     {
-        consultar(datos());
+        consultar(datosPentxProd());
     });
 
     $("#btnpdf1").click(function()
     {
-        consultarpdf(datos());
+        consultarpdf(datosPentxProd());
     });
 
     //alert(aux_nfila);
@@ -100,7 +100,7 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datos(){
+function datosPentxProd(){
     var data = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -114,6 +114,7 @@ function datos(){
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
+        aprobstatusdesc   : $("#aprobstatus option:selected").html(),
         comuna_id         : $("#comuna_id").val(),
         producto_id       : $("#producto_idPxP").val(),
         categoriaprod_id  : $("#categoriaprod_id").val(),
@@ -272,7 +273,7 @@ function copiar_codprod(id,codintprod){
 }
 
 $("#btnpdf").click(function(event){
-    data = datos();
+    data = datosPentxProd();
     cadena = "?fechad="+data.fechad+
             "&fechah="+data.fechah+
             "&plazoentregad="+data.plazoentregad+
@@ -285,6 +286,7 @@ $("#btnpdf").click(function(event){
             "&tipoentrega_id="+data.tipoentrega_id + 
             "&notaventa_id="+data.notaventa_id + 
             "&aprobstatus="+data.aprobstatus +
+            "&aprobstatusdesc=" + $("#aprobstatus option:selected").html() +
             "&comuna_id="+data.comuna_id + 
             "&producto_id="+data.producto_id +
             "&categoriaprod_id="+data.categoriaprod_id

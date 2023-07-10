@@ -20,6 +20,7 @@
 					<span class="h3">Stock Productos/Pendiente Desp</span>
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
 					<p>Sucursal: {{$request->sucursal_nombre}}</p>
+					<p>Estatus NV: {{$request->aprobstatusdesc}}</p>
 					<p>Mes Stock: {{$request->mesanno}}</p>
 				</div>
 			</td>

@@ -32,17 +32,17 @@ Stock Inventario
                     <div class="col-xs-12 col-md-9 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Mes">
+                                <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="annomes">Fecha:</label>
+                                        <label for="annomes" data-toggle='tooltip' title="Mes">Fecha:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" name="annomes" id="annomes" class="form-control date-picker" value="{{old('annomes', $aux_mesanno ?? '')}}" readonly required>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Sucursal">
+                                <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" >Sucursal</label>
+                                        <label for="sucursal_id" data-toggle='tooltip' title="Sucursal">Sucursal</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <?php
@@ -68,9 +68,9 @@ Stock Inventario
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Categoria">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="categoriaprod_id" class="control-label">Categoria:</label>
+                                        <label for="categoriaprod_id" class="control-label" data-toggle='tooltip' title="Categoria">Categoria:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name='categoriaprod_id' id='categoriaprod_id' class='selectpicker form-control categoriaprod_id' data-live-search='true' multiple data-actions-box='true'>
@@ -82,9 +82,9 @@ Stock Inventario
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label >Area Prod:</label>
+                                        <label data-toggle='tooltip' title="Area de Producción">Area Prod:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="areaproduccion_id" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id" data-live-search='true' multiple data-actions-box='true'>
@@ -100,9 +100,9 @@ Stock Inventario
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="producto_idPxP" class="control-label">Producto</label>
+                                        <label for="producto_idPxP" class="control-label" data-toggle='tooltip' title="Código Producto">Producto</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
@@ -113,6 +113,20 @@ Stock Inventario
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label data-toggle='tooltip' title="Estatus Nota de Venta">Estatus NV:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus">
+                                            <option value="0">Todos</option>
+                                            <option value="1">Emitidas sin aprobar</option>
+                                            <option value="2">Por debajo precio en tabla</option>
+                                            <option value="3" selected>Aprobadas</option>
+                                            <option value="4">Rechazadas</option>
+                                        </select>
+                                    </div>
+                                </div>    
                             </div>
                         </div>
                     </div>

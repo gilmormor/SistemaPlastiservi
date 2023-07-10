@@ -143,6 +143,7 @@ class ReportPendienteXProdController extends Controller
         $request->comuna_id = $_GET["comuna_id"];
         $request->producto_id = $_GET["producto_id"];
         $request->categoriaprod_id = $_GET["categoriaprod_id"];
+        $request->aprobstatusdesc = $_GET["aprobstatusdesc"];
         $datas = consulta($request,2,1);
 
         $aux_fdesde= $request->fechad;
@@ -185,12 +186,12 @@ class ReportPendienteXProdController extends Controller
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportpendientexprod.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'));
+                return view('reportpendientexprod.listado', compact('request','datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
-            $pdf = PDF::loadView('reportpendientexprod.listado', compact('datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'))->setPaper('a4', 'landscape');
+            $pdf = PDF::loadView('reportpendientexprod.listado', compact('request','datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'))->setPaper('a4', 'landscape');
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReportePendienteXProducto.pdf");
