@@ -213,7 +213,7 @@ class InvMov extends Model
         SUM(if(invmovtipo.stacieinimes=0 AND invmovdet.cant>0,cant,0)) AS mov_in, 
         SUM(if(invmovtipo.stacieinimes=0 AND invmovdet.cant < -1,cant,0)) AS mov_out, SUM(cant) as stock, 
         SUM(if(invbodega.tipo=2,cant,0)) as stockBodProdTerm, SUM(if(invbodega.tipo=1,cant,0)) as stockPiking, 
-        SUM(cantkg) as stockkg,
+        SUM(cantkg) as stockkg, 0000000.000 as cantpend, 0000000.000 as difcantpend,
         acuerdotecnico.id as acuerdotecnico_id,at_ancho,at_largo,at_espesor
         from invmovdet inner join invmov 
         on invmovdet.invmov_id = invmov.id and isnull(invmovdet.deleted_at) and isnull(invmov.deleted_at)
