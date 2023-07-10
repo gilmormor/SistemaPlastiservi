@@ -139,6 +139,7 @@ function datosstockpicking(){
         areaproduccion_id : $("#areaproduccion_id").val(),
         tipobodega        : $("#tipobodega").val(),
         aprobstatus       : $("#aprobstatus").val(),
+        aprobstatusdesc   : $("#aprobstatus option:selected").html(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -148,7 +149,8 @@ function datosstockpicking(){
     "&categoriaprod_id="+data1.categoriaprod_id +
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&tipobodega="+data1.tipobodega +
-    "&aprobstatus="+data1.aprobstatus
+    "&aprobstatus="+data1.aprobstatus +
+    "&aprobstatusdesc="+data1.aprobstatusdesc
 
 
     var data = {

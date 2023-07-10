@@ -114,6 +114,7 @@ function datosPentxProd(){
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
+        aprobstatusdesc   : $("#aprobstatus option:selected").html(),
         comuna_id         : $("#comuna_id").val(),
         producto_id       : $("#producto_idPxP").val(),
         categoriaprod_id  : $("#categoriaprod_id").val(),
@@ -291,10 +292,11 @@ $("#btnpdf").click(function(event){
             "&tipoentrega_id="+data.tipoentrega_id + 
             "&notaventa_id="+data.notaventa_id + 
             "&aprobstatus="+data.aprobstatus +
+            "&aprobstatusdesc=" + $("#aprobstatus option:selected").html() +
             "&comuna_id="+data.comuna_id + 
             "&producto_id="+data.producto_id +
             "&categoriaprod_id="+data.categoriaprod_id
-    //alert(cadena);
+    console.log(cadena);
     $('#contpdf').attr('src', '/reportpendientexprod/exportPdf/'+cadena);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
