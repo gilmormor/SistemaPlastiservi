@@ -1220,3 +1220,10 @@ Route::get('reportinvstockbppendxprodpage', 'ReportInvStockBPPendxProdController
 Route::get('reportinvstockbppendxprod/reporte', 'ReportInvStockBPPendxProdController@reporte')->name('reportinvstockbppendxprod_reporte');
 Route::get('reportinvstockbppendxprod/exportPdf', 'ReportInvStockBPPendxProdController@exportPdf')->name('reportinvstockbppendxprod_exportPdf');
 Route::get('reportinvstockbppendxprod/totalizarindex', 'ReportInvStockBPPendxProdController@totalizarindex')->name('reportinvstockbppendxprod_totalizarindex');
+
+/*RUTAS REPORTE LIBRO VENTAS*/
+Route::get('reportdtelibroventas', 'ReportDTELibroVentasController@index')->name('reportdtelibroventas');
+Route::get('reportdtelibroventas/reportdtelibroventaspage', 'ReportDTELibroVentasController@reportdtelibroventaspage')->name('reportdtelibroventaspage');
+Route::get('reportdtelibroventas/reporte', 'ReportDTELibroVentasController@reporte')->name('reportdtelibroventas_reporte');
+Route::get('reportdtelibroventas/exportPdf', 'ReportDTELibroVentasController@exportPdf')->name('reportdtelibroventas_exportPdf');
+Route::get('reportdtelibroventas/totalizarindex', 'ReportDTELibroVentasController@totalizarindex')->name('reportdtelibroventas_totalizarindex');
