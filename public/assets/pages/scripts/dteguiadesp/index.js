@@ -87,12 +87,16 @@ $(document).ready(function () {
                     data.despachoord_id + 
                 "</a>";
             $('td', row).eq(7).html(aux_text);
+            aux_indtrasladodesc = "V";
+            if(data.indtraslado == 6){
+                aux_indtrasladodesc = "T";
+            }
             aux_text = 
                     "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>" +
                         data.nrodocto +
                     "</a>:" +
                     "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")'>" +
-                        data.nrodocto +
+                        data.nrodocto + " " + aux_indtrasladodesc
                     "</a>";
             $('td', row).eq(8).html(aux_text);
             $('td', row).eq(8).attr('style','text-align:center');

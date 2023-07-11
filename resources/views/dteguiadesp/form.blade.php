@@ -188,14 +188,13 @@
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="indtraslado" class="control-label requerido">Tipo Traslado</label>
                             <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' value="{{old('indtraslado', isset($dteguiadesp) ? $dteguiadesp->indtraslado : ($data->indtraslado ?? ''))}}" required>
+                                <option value="">Seleccione...</option>
                                 <option 
                                     value="1" 
                                     @if(isset($dteguiadesp)) 
                                         @if($dteguiadesp->indtraslado =="1")
                                             {{'selected'}}
                                         @endif
-                                    @else
-                                        {{'selected'}}
                                     @endif
                                     >Operación constituye venta</option>
                                 <option 
