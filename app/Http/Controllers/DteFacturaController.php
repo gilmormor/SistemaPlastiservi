@@ -89,14 +89,16 @@ class DteFacturaController extends Controller
     {        
         can('guardar-dte-factura-gd');
         $aux_arrayselgd = explode(",", $request->selectguiadesp);
-        $notaventa = NotaVenta::findOrFail($request->notaventa_id);
-        if(!empty($notaventa->oc_id)){
-            if(empty($request->ocnv_id) or $request->ocnv_id == null or $request->ocnv_id == ""){
-                return redirect('dtefactura')->with([
-                    'mensaje'=>'Orden de compra no puede quedar en blanco!',
-                    'tipo_alert' => 'alert-error'
-                ]);
-            }
+        if($request->notaventa_id){
+            $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+            if(!empty($notaventa->oc_id)){
+                if(empty($request->ocnv_id) or $request->ocnv_id == null or $request->ocnv_id == ""){
+                    return redirect('dtefactura')->with([
+                        'mensaje'=>'Orden de compra no puede quedar en blanco!',
+                        'tipo_alert' => 'alert-error'
+                    ]);
+                }
+            }    
         }
         //dd($request);
         //BUSCO SI HUBO MODIFICACION EN LAS GUIAS DE DESPACHO 
@@ -304,7 +306,7 @@ class DteFacturaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
-            if(isset($request->ocnv_id)){
+            if(isset($request->ocnv_id) and $request->notaventa_id){
                 $notaventa = NotaVenta::findOrFail($request->notaventa_id);
                 $notaventa->oc_id = $request->ocnv_id;
                 $notaventa->save();

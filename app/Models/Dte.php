@@ -439,7 +439,10 @@ class Dte extends Model
     
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,
-        cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,dteguiadesp.notaventa_id,
+        cliente.razonsocial,
+        if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as oc_id,
+        if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as oc_file,
+        dteguiadesp.notaventa_id,
         '' as notaventaxk,comuna.nombre as comuna_nombre,
         tipoentrega.nombre as tipoentrega_nombre,'  ' as te,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
         dte.kgtotal as aux_totalkg,
@@ -478,6 +481,7 @@ class Dte extends Model
         AND dte.statusgen = 1
         AND $aux_condindtraslado
         AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
+        AND indtraslado != 6
         order BY dte.nrodocto;";
         //dd($sql);
         //AND $aux_conddtenotnull
@@ -580,7 +584,10 @@ class Dte extends Model
     
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.centroeconomico_id,
-        cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,dteguiadesp.notaventa_id,
+        cliente.razonsocial,
+        if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as oc_id,
+        if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as oc_file,
+        dteguiadesp.notaventa_id,
         '' as notaventaxk,comuna.nombre as comuna_nombre,
         tipoentrega.nombre as tipoentrega_nombre,'  ' as te,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
         dte.kgtotal as aux_totalkg,
@@ -611,6 +618,8 @@ class Dte extends Model
         ON notaventadetalle.id = dtedet_despachoorddet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
         LEFT JOIN clientebloqueado
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+        LEFT JOIN dteoc
+        ON dteoc.dte_id=dte.id and isnull(dteoc.deleted_at)
         WHERE $vendedorcond
         AND $aux_condFecha
         AND $aux_condrut
@@ -774,8 +783,8 @@ class Dte extends Model
         clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
-        GROUP_CONCAT(DISTINCT notaventa.oc_id) AS oc_id,
-        GROUP_CONCAT(DISTINCT notaventa.oc_file) AS oc_file,
+        GROUP_CONCAT(DISTINCT if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id)) AS oc_id,
+        GROUP_CONCAT(DISTINCT if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file)) AS oc_file,
         GROUP_CONCAT(DISTINCT dteguiadesp.notaventa_id) AS notaventa_id,
         GROUP_CONCAT(DISTINCT despachoord.despachosol_id) AS despachosol_id,
         GROUP_CONCAT(DISTINCT dteguiadesp.despachoord_id) AS despachoord_id,
@@ -807,6 +816,8 @@ class Dte extends Model
         ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
         INNER JOIN dtefac
         ON dtefac.dte_id = dte.id
+        LEFT JOIN dteoc
+        ON dteoc.dte_id=dte.id and isnull(dteoc.deleted_at)
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond

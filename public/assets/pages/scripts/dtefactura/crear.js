@@ -136,7 +136,7 @@ function ajaxRequest(data,url,funcion) {
 			}
 			if(funcion=="listardtedet"){
 				//console.log(respuesta.length);
-				console.log(respuesta);
+				//console.log(respuesta);
 				if(respuesta.length>0){
 					aux_oc_id = respuesta[0].oc_id;
 					for (i = 0; i < respuesta.length; i++) {

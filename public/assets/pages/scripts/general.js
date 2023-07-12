@@ -1434,8 +1434,17 @@ function verpdf2(nameFile,stareport,aux_venmodant = ""){
 					// Genera una cadena de consulta única utilizando la marca de tiempo actual
 					let queryString = '?timestamp=' + new Date().getTime();
 					// Concatena la cadena queryString de consulta al atributo src del iframe
-					$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile + queryString);
-					if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
+					let aux_nameFile = "";
+					let aux_folder = "";
+					if(nameFile.includes("/")){
+						aux_folder = nameFile.split("/")[0];
+						aux_nameFile = nameFile.split("/")[1];
+					}else{
+						aux_nameFile = nameFile;
+						aux_folder = "notaventa";	
+					}
+					$('#contpdf').attr('src', '/storage/imagenes/' + aux_folder + '/'+aux_nameFile + queryString);
+					if((aux_nameFile.indexOf(".pdf") > -1) || (aux_nameFile.indexOf(".PDF") > -1) || (aux_nameFile.indexOf(".jpg") > -1) || (aux_nameFile.indexOf(".bmp") > -1) || (aux_nameFile.indexOf(".png") > -1)){
 						$("#venmodant").val("");
 						if(aux_venmodant!=""){
 							$("#" + aux_venmodant).modal('hide');
@@ -2491,7 +2500,12 @@ function cargardatospantprod(){
 		$("#lbltipoprod").html("Productos Base para crear Acuerdo Técnico");
 		$("#lblVerAcuTec").attr("data-original-title","Ver Productos existentes");		
 	}
-	$("#staprodxcli").css({'display':'none'});
+	if($("#VerTodosProd").prop("checked")){
+		aux_tipoprod = "0";
+		$("#VerAcuTec").prop("checked",false);
+		$("#lbltipoprod").html("Productos");
+		$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");		
+	}
 	if(data.data1.sucursal_id){
 		let posicion1 = data.data1.sucursal_id.indexOf('1');//Para visualizar el status de Productos base para acuerdo tecnico Santa Ester
 		let posicion3 = data.data1.sucursal_id.indexOf('3');//Para visualizar el status de Productos base para acuerdo tecnico Puerto Montt
@@ -2499,6 +2513,18 @@ function cargardatospantprod(){
 			$("#staprodxcli").css({'display':'block'});
 		}
 	}
+	if(typeof aux_staprodxcli !== 'undefined' && aux_staprodxcli){
+		$("#staprodxcli").css({'display':'block'});
+		$("#DivVerTodosProd").css({'display':'none'});
+		$("#DivchVerAcuTec").css({'display':'none'});
+		if(aux_DivVerTodosProd){
+			$("#DivVerTodosProd").css({'display':'block'});
+		}
+		if(aux_DivchVerAcuTec){
+			$("#DivchVerAcuTec").css({'display':'block'});
+		}
+	}
+	console.log(aux_tipoprod);
 	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
 }
 

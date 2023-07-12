@@ -115,16 +115,10 @@
             </div>
     
 
-            <div class="form-group col-xs-12 col-sm-1">
+            <div class="form-group col-xs-12 col-sm-2">
                 <label for="ot" class="control-label" data-toggle='tooltip' title="Orden de trabajo">OT</label>
                 <input type="text" name="ot" id="ot" class="form-control pull-right numerico" value="{{old('ot', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->ot : '')}}" maxlength="5"/>
             </div>
-
-            <div class="form-group col-xs-12 col-sm-1">
-                <label for="fchemis" class="control-label requerido" data-toggle="tooltip" title="Fecha Emisión">F Emision</label>
-                <input type="text" name="fchemis" id="fchemis" class="form-control pull-right datepicker"  value="{{old('fchemis', isset($dteguiadesp) ? date("d/m/Y", strtotime($dteguiadesp->fchemis)) : date("d/m/Y"))}}" readonly required>
-            </div>
-
             <div class="form-group col-xs-12 col-sm-5">
                 <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Desp</label>
                 <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($dteguiadesp) ? $dteguiadesp->tipodespacho : ($data->tipodespacho ?? ''))}}" required>

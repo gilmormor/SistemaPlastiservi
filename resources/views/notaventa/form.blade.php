@@ -459,9 +459,10 @@
                                     $aux_cla_sello_nombre = $detalle->producto->claseprod->cla_nombre;
                                     $aux_producto_nombre = $detalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
-                                    if ($detalle->cotizaciondetalle and $detalle->cotizaciondetalle->acuerdotecnicotemp){
-                                        $AcuTecTemp = $detalle->cotizaciondetalle->acuerdotecnicotemp;
-                                        $aux_producto_nombre = nl2br($detalle->cotizaciondetalle->producto->categoriaprod->nombre . ", " . $AcuTecTemp->at_desc);
+                                    //dd($detalle);
+                                    if ($detalle->acuerdotecnicotempunoauno){
+                                        $AcuTecTemp = $detalle->acuerdotecnicotempunoauno;
+                                        $aux_producto_nombre = nl2br($detalle->producto->categoriaprod->nombre . ", " . $AcuTecTemp->at_desc);
                                         $aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "") ;
                                         $aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "") ;
                                         $aux_espesor = $AcuTecTemp->at_espesor;
