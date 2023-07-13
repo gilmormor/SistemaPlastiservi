@@ -30,6 +30,7 @@ class DespachoOrd extends Model
         'fechafactura',
         'numfacturafec',
         'despachoobs_id',
+        'bloquearhacerguia',
         'usuariodel_id'
     ];
 

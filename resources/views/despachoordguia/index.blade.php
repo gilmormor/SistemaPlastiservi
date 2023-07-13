@@ -38,7 +38,7 @@ Asignar Guia Despacho
                                 <th class="ocultar">Icono</th>
                                 <th class="ocultar">clientebloqueado_descripcion</th>
                                 <th class="ocultar">oc_file</th>
-                                <th class="width100">Accion</th>
+                                <th class="width120">Accion</th>
                             </tr>
                         </thead>
                         <tfoot>

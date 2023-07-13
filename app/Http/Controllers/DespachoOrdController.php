@@ -985,11 +985,31 @@ class DespachoOrdController extends Controller
                             "
                         ]
                     ));
+                    $aux_oc_id = $despachoord->notaventa->oc_id;
+                    $aux_cliente_id = $despachoord->notaventa->cliente_id;
+                    $sql = "SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+                        FROM dteoc INNER JOIN dte
+                        ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+                        INNER JOIN dteguiadesp
+                        ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+                        WHERE dteoc.oc_id = $aux_oc_id
+                        AND isnull(dteguiadesp.notaventa_id)
+                        AND dte.cliente_id= $aux_cliente_id;";
+                    
+                    $sql_oc = DB::select($sql);
+                    if(count($sql_oc) > 0){
+                        $despachoord->bloquearhacerguia = 1;
+                        $despachoord->save();
+                        $ruta_crear_guiadesp = route('dteguiadesp_listarorddesp');
+                    }else{
+                        $ruta_crear_guiadesp = route('crear_dteguiadesp', ['id' => $request->id, 'updated_at' => $despachoord->updated_at]);
+                    }
                     return response()->json([
                                             'mensaje' => 'ok',
+                                            'bloquearhacerguia' => $despachoord->bloquearhacerguia,
                                             'id' => $request->id,
                                             'nfila' => $request->nfila,
-                                            'ruta_crear_guiadesp' => route('crear_dteguiadesp', ['id' => $request->id, 'updated_at' => $despachoord->updated_at])
+                                            'ruta_crear_guiadesp' => $ruta_crear_guiadesp
                                         ]);
                 } else {
                     return response()->json(['mensaje' => 'ng']);
@@ -1234,8 +1254,6 @@ class DespachoOrdController extends Controller
         $tablashtml['sololectura'] = 0;
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
-
-
 }
 
 
@@ -1406,6 +1424,14 @@ function consultaindex(){
     '' as notaventaxk,comuna.nombre as comuna_nombre,
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
     SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
+    (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+    FROM dteoc INNER JOIN dte
+    ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+    INNER JOIN dteguiadesp
+    ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+    WHERE dteoc.oc_id = notaventa.oc_id
+    AND isnull(dteguiadesp.notaventa_id)
+    AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
     despachoord.updated_at
     FROM despachoord INNER JOIN notaventa
     ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)

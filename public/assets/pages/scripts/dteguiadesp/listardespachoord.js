@@ -61,6 +61,34 @@ $(document).ready(function () {
                         data.oc_id + 
                     "</a>";
                 $('td', row).eq(4).html(aux_text);
+                if(data.dte_nrodocto != null){
+                    let cadena = data.dte_nrodocto
+					if(cadena.includes(";")){
+                        aux_nroguia = cadena.split(";")[0]; 
+                        aux_ocid = cadena.split(";")[1]; 
+						aux_folderNamefile = cadena.split(";")[2];
+					}
+                    aux_title = `Orden de Compra ${data.oc_id}, tiene Guia de despacho generada previamente: ${aux_nroguia}`;
+                    colorinfo = `text-red`;
+                    aux_text +=
+                        `<br>(<a class="btn-sm tooltipsC" title="${aux_title}" style="padding-left: 0px;padding-right: 0px;">
+                            <i class="fa fa-fw fa-question-circle ${colorinfo}"></i>
+                        </a>`;
+
+                    aux_text += 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" onclick="genpdfGD('${aux_nroguia}','')" data-original-title="Guia despacho:${aux_nroguia}" style='color:#bc3c3c'>
+                        ${aux_nroguia}
+                    </a>,`;
+
+                    aux_text += 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra" onclick="verpdf2('${aux_folderNamefile}',2)" style='color:#bc3c3c'>
+                        ${aux_ocid}
+                    </a>)`;
+
+                    $('td', row).eq(4).html(aux_text);
+
+                    //$('td', row).eq(4).html($('td', row).eq(4).html() + aux_text);
+                }
             }
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
@@ -112,12 +140,19 @@ $(document).ready(function () {
             $('td', row).eq(14).addClass('updated_at');
             $('td', row).eq(14).attr('id','updated_at' + data.id);
             $('td', row).eq(14).attr('name','updated_at' + data.id);
-            aux_text = "<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Guia Despacho: " + data.tipoentrega_nombre + "'>" +
-                            "<button type='button' class='btn btn-default btn-xs'>" +
-                                "<i class='fa fa-fw " + data.icono + "'></i>"+
-                            "</button>" +
-                        "</a>|" +
-                        "<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Devolver Orden Despacho' data-toggle='tooltip'>" +
+            if(data.bloquearhacerguia == 1){
+                aux_text = 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de despacho bloqueda para hacer guia.'>"+
+                    "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
+                "</a>|";
+            }else{
+                aux_text = "<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Guia Despacho: " + data.tipoentrega_nombre + "'>" +
+                "<button type='button' class='btn btn-default btn-xs'>" +
+                    "<i class='fa fa-fw " + data.icono + "'></i>"+
+                "</button>" +
+            "</a>|";
+            }
+            aux_text += "<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Devolver Orden Despacho' data-toggle='tooltip'>" +
                             "<button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>" +
                         "</a>";
             $('td', row).eq(15).html(aux_text);
@@ -352,7 +387,7 @@ function ajaxRequest(data,url,funcion) {
 					$("#myModalanularguiafact").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
-					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
+					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
 				}
 			}
 		},

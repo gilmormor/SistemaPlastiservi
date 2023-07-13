@@ -283,7 +283,9 @@ class Dte extends Model
         }
     
         $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,dte.mnttotal,
-        notaventa.oc_id as nvoc_id,notaventa.oc_file as nvoc_file,dte.centroeconomico_id,dte.indtraslado,
+        if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as nvoc_id,
+        if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as nvoc_file,
+        dte.centroeconomico_id,dte.indtraslado,
         dteoc.oc_id,dteoc.oc_file,comuna.nombre as comunanombre,
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,dtedte.dter_id,
         dteguiadesp.notaventa_id,despachoord.fechaestdesp,dteguiadesp.despachoord_id,despachoord.despachosol_id,

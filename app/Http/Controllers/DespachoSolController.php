@@ -1871,7 +1871,15 @@ function consulta($request,$aux_sql,$orden){
                 FROM vista_sumsoldespdet
                 WHERE notaventa_id=notaventa.id) as totalsubtotalsoldesp,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
-        tipoentrega.nombre as tipentnombre,tipoentrega.icono
+        tipoentrega.nombre as tipentnombre,tipoentrega.icono,
+        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+            FROM dteoc INNER JOIN dte
+            ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+            INNER JOIN dteguiadesp
+            ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            WHERE dteoc.oc_id = notaventa.oc_id
+            AND isnull(dteguiadesp.notaventa_id)
+            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -1925,7 +1933,15 @@ function consulta($request,$aux_sql,$orden){
         kgsoldesp,subtotalsoldesp,
         sum(cant-if(isnull(cantsoldesp),0,cantsoldesp)) as saldocant,
         sum(totalkilos-if(isnull(kgsoldesp),0,kgsoldesp)) as saldokg,
-        sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldoplata
+        sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldoplata,
+        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+            FROM dteoc INNER JOIN dte
+            ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+            INNER JOIN dteguiadesp
+            ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            WHERE dteoc.oc_id = notaventa.oc_id
+            AND isnull(dteguiadesp.notaventa_id)
+            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
@@ -2120,6 +2136,32 @@ function reporte1($request){
                 $aux_enlaceoc = $data->oc_id;
             }else{
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
+            }
+            if(!is_null($data->dte_nrodocto)){
+                $cadena = $data->dte_nrodocto;
+                if(strpos($cadena, ';')){
+                    $aux_arraynrodocto = explode(";", $cadena);
+                    //dd($aux_arraynrodocto);
+                    $aux_nroguia = $aux_arraynrodocto[0]; 
+                    $aux_ocid = $aux_arraynrodocto[1]; 
+                    $aux_folderNamefile = $aux_arraynrodocto[2];
+                }
+                $aux_title = "Orden de Compra $data->oc_id, tiene Guia de despacho generada previamente: $aux_nroguia";
+                $colorinfo = "text-red";
+                $aux_text =
+                    "<br>(<a class='btn-sm tooltipsC' title='$aux_title' style='padding-left: 0px;padding-right: 0px;'>
+                        <i class='fa fa-fw fa-question-circle $colorinfo'></i>
+                    </a>";
+                $aux_text .= 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfGD(\"$aux_nroguia\",\"\")' data-original-title='Guia despacho:$aux_nroguia' style='color:#bc3c3c'>
+                     $aux_nroguia
+                </a>,";
+                $aux_text .= 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"$aux_folderNamefile\",2)' style='color:#bc3c3c'>
+                    $aux_ocid
+                </a>)";
+
+                $aux_enlaceoc .= $aux_text;
             }
             $nuevoSolDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->id,2)'>
                                 <i class='fa fa-fw fa-file-pdf-o'></i>                                    
@@ -2358,6 +2400,32 @@ function reportesoldesp1($request){
                 $aux_enlaceoc = $data->oc_id;
             }else{
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)' class='tooltipsC' title='Orden de Compra'>$data->oc_id</a>";
+            }
+            if(!is_null($data->dte_nrodocto)){
+                $cadena = $data->dte_nrodocto;
+                if(strpos($cadena, ';')){
+                    $aux_arraynrodocto = explode(";", $cadena);
+                    //dd($aux_arraynrodocto);
+                    $aux_nroguia = $aux_arraynrodocto[0]; 
+                    $aux_ocid = $aux_arraynrodocto[1]; 
+                    $aux_folderNamefile = $aux_arraynrodocto[2];
+                }
+                $aux_title = "Orden de Compra $data->oc_id, tiene Guia de despacho generada previamente: $aux_nroguia";
+                $colorinfo = "text-red";
+                $aux_text =
+                    "<br>(<a class='btn-sm tooltipsC' title='$aux_title' style='padding-left: 0px;padding-right: 0px;'>
+                        <i class='fa fa-fw fa-question-circle $colorinfo'></i>
+                    </a>";
+                $aux_text .= 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfGD(\"$aux_nroguia\",\"\")' data-original-title='Guia despacho:$aux_nroguia' style='color:#bc3c3c'>
+                     $aux_nroguia
+                </a>,";
+                $aux_text .= 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"$aux_folderNamefile\",2)' style='color:#bc3c3c'>
+                    $aux_ocid
+                </a>)";
+
+                $aux_enlaceoc .= $aux_text;
             }
             $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
             //dd($ruta_nuevoSolDesp);
@@ -2772,7 +2840,15 @@ function consultasoldesp($request){
             IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
             IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
             vista_despsoltotales.totalkilos,
-            vista_despsoltotales.subtotalsoldesp,despachosol.updated_at
+            vista_despsoltotales.subtotalsoldesp,despachosol.updated_at,
+            (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+            FROM dteoc INNER JOIN dte
+            ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+            INNER JOIN dteguiadesp
+            ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            WHERE dteoc.oc_id = notaventa.oc_id
+            AND isnull(dteguiadesp.notaventa_id)
+            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
@@ -2844,7 +2920,15 @@ function consultaindex(){
 		FROM despachosoldev
 		WHERE despachosol_id = despachosol.id
 		ORDER by id DESC LIMIT 1) AS obsdev,
-    despachosol.updated_at
+    despachosol.updated_at,
+    (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+        FROM dteoc INNER JOIN dte
+        ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+        INNER JOIN dteguiadesp
+        ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+        WHERE dteoc.oc_id = notaventa.oc_id
+        AND isnull(dteguiadesp.notaventa_id)
+        AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
     FROM despachosol INNER JOIN notaventa
     ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente

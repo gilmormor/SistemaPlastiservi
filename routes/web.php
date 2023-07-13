@@ -628,6 +628,7 @@ Route::get('despachoord/listarsoldesp', 'DespachoOrdController@listarsoldesp')->
 Route::get('despachoordguia', 'DespachoOrdGuiaController@index')->name('despachoordguia');
 Route::get('despachoordguiapage', 'DespachoOrdGuiaController@despachoordguiapage')->name('despachoordguiapage');
 Route::get('despachoordguia/totalizarindex', 'DespachoOrdGuiaController@totalizarindex')->name('despachoordguia_totalizarindex');
+Route::post('despachoordguia/bloquearhacerguia', 'DespachoOrdGuiaController@bloquearhacerguia')->name('despachoordguia_bloquearhacerguia');
 
 Route::get('despachoordfact', 'DespachoOrdFactController@index')->name('despachoordfact');
 Route::get('despachoordfactpage', 'DespachoOrdFactController@despachoordfactpage')->name('despachoordfactpage');

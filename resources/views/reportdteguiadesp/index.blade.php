@@ -242,7 +242,7 @@ DTE Guia Despacho
                             <th>Fecha</th>
                             <th>Razón Social</th>
                             <th>Comuna</th>
-                            <th class='tooltipsC' title='Orden de Compra Nota de Venta'>OCNV</th>
+                            <th class='tooltipsC' title='Orden de Compra'>OC</th>
                             <th class='tooltipsC' title='Nota de Venta'>NV</th>
                             <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                             <th class='tooltipsC' title='Orden Despacho'>OD</th>

@@ -10,6 +10,7 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
+		"order"       : [[ 0, "desc" ]],
         'ajax'        : "despachoordguiapage",
         'columns'     : [
             {data: 'id'},
@@ -70,6 +71,32 @@ $(document).ready(function () {
                         data.oc_id + 
                     "</a>";
                 $('td', row).eq(6).html(aux_text);
+				if(data.dte_nrodocto != null){
+                    let cadena = data.dte_nrodocto
+					if(cadena.includes(";")){
+                        aux_nroguia = cadena.split(";")[0]; 
+                        aux_ocid = cadena.split(";")[1]; 
+						aux_folderNamefile = cadena.split(";")[2];
+					}
+                    aux_title = `Orden de Compra ${data.oc_id}, tiene Guia de despacho generada previamente: ${aux_nroguia}`;
+                    colorinfo = `text-red`;
+                    aux_text +=
+                        `<br><a class="btn-sm tooltipsC" title="${aux_title}" style="padding-left: 0px;padding-right: 0px;">
+                            <i class="fa fa-fw fa-question-circle ${colorinfo}"></i>
+                        </a>`;
+
+                    aux_text += 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" onclick="genpdfGD('${aux_nroguia}','')" data-original-title="Guia despacho:${aux_nroguia}" style='color:#bc3c3c'>
+                        ${aux_nroguia}
+                    </a>,`;
+
+                    aux_text += 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra" onclick="verpdf2('${aux_folderNamefile}',2)" style='color:#bc3c3c'>
+                        ${aux_ocid}
+                    </a>`;
+
+                    $('td', row).eq(6).html(aux_text);
+                }
             }
 
 			aux_text = 
@@ -100,13 +127,27 @@ $(document).ready(function () {
 			"</a>"+
 			"|" +
 			"<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn btn-danger btn-xs' title='Anular Guia' data-toggle='tooltip'>Anular"+
-			"</a>";
+			"</a>|";
 			/*
 			aux_text = aux_text +
             "<a href='despachoord' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Orden Despacho' data-toggle='tooltip'>"+
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
             */
+			aux_checkstaex = "";
+			if(data.bloquearhacerguia == 1){
+				aux_checkstaex = "checked";
+			}
+
+			aux_text += 
+			`<div class="checkbox tooltipsC" title='Bloquear desbloquear Hacer Guia Despacho'>
+				<label style="font-size: 1.2em;padding-left: 0px;">
+					<input type="hidden" id="staverfacdesp${data.id}" name="staverfacdesp${data.id}" value="${data.id}">
+					<input type="checkbox" class="checkstaex" id="aux_staverfacdesp${data.id}" name="aux_staverfacdesp${data.id}" onchange="clickbloquearhacerguia(this)" item=${data.id} ${aux_checkstaex}>
+					<span class='cr'><i class='cr-icon fa fa-check'></i></span>
+				</label>
+			</div>`;
+
             $('td', row).eq(15).html(aux_text);
         }
     });
@@ -366,6 +407,20 @@ function ajaxRequest(datas,url,funcion) {
                 }
                 return respuesta;
 			}
+			if(funcion=='staverfacdesp'){
+				if (respuesta.error == 0) {
+                    //$("#dtefac_updated_at" + aux_data.dte_id).html(respuesta.dtefac_updated_at);
+				} else {
+                    estaSeleccionado = $("#aux_staverfacdesp" + aux_data.dte_id).is(":checked");
+                    if(estaSeleccionado){
+                        $("#aux_staverfacdesp" + aux_data.dte_id).prop('checked',false);
+                    }else{
+                        $("#aux_staverfacdesp" + aux_data.dte_id).prop('checked',true);
+                    }
+				}
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+            }
+
 
 		},
 		error: function () {
@@ -621,4 +676,18 @@ function verificarAnulGuia()
 	}else{
 		return true;
 	}
+}
+
+function clickbloquearhacerguia(obj){
+    let item = $(obj).attr("item");
+    var data = {
+        dte_id : item,
+        updated_at : $("#updated_at" + item).html(),
+        dtefac_updated_at : $("#dtefac_updated_at" + item).html(),
+        staverfacdesp : $(obj).prop('checked'),
+        _token : $('input[name=_token]').val()
+    };
+    var ruta = '/despachoordguia/bloquearhacerguia'; //Guardar Fecha estimada de despacho
+    ajaxRequest(data,ruta,'staverfacdesp');
+
 }

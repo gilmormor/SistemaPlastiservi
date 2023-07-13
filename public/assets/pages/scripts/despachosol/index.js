@@ -63,6 +63,34 @@ $(document).ready(function () {
                         data.oc_id + 
                     "</a>";
                 $('td', row).eq(3).html(aux_text);
+                if(data.dte_nrodocto != null){
+                    let cadena = data.dte_nrodocto
+					if(cadena.includes(";")){
+                        aux_nroguia = cadena.split(";")[0]; 
+                        aux_ocid = cadena.split(";")[1]; 
+						aux_folderNamefile = cadena.split(";")[2];
+					}
+                    aux_title = `Orden de Compra ${data.oc_id}, tiene Guia de despacho generada previamente: ${aux_nroguia}`;
+                    colorinfo = `text-red`;
+                    aux_text +=
+                        `<br>(<a class="btn-sm tooltipsC" title="${aux_title}" style="padding-left: 0px;padding-right: 0px;">
+                            <i class="fa fa-fw fa-question-circle ${colorinfo}"></i>
+                        </a>`;
+
+                    aux_text += 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" onclick="genpdfGD('${aux_nroguia}','')" data-original-title="Guia despacho:${aux_nroguia}" style='color:#bc3c3c'>
+                        ${aux_nroguia}
+                    </a>,`;
+
+                    aux_text += 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra" onclick="verpdf2('${aux_folderNamefile}',2)" style='color:#bc3c3c'>
+                        ${aux_ocid}
+                    </a>)`;
+
+                    $('td', row).eq(3).html(aux_text);
+
+                    //$('td', row).eq(4).html($('td', row).eq(4).html() + aux_text);
+                }
             }
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +

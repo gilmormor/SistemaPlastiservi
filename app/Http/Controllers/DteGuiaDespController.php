@@ -1066,7 +1066,16 @@ function consultalistarorddesppage($request){
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
     SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
     sum(round((despachoorddet.cantdesp * notaventadetalle.preciounit) * ((notaventa.piva+100)/100))) as subtotal,
-    despachoord.updated_at,'' as rutacrear
+    despachoord.updated_at,'' as rutacrear,
+    (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+    FROM dteoc INNER JOIN dte
+    ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+    INNER JOIN dteguiadesp
+    ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+    WHERE dteoc.oc_id = notaventa.oc_id
+    AND isnull(dteguiadesp.notaventa_id)
+    AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+    bloquearhacerguia
     FROM despachoord INNER JOIN notaventa
     ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente
