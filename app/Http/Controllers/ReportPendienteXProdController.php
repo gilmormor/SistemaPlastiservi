@@ -30,11 +30,6 @@ class ReportPendienteXProdController extends Controller
     public function index()
     {
         can('reporte-pendiente-por-producto');
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
-
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
         $vendedores1 = $arrayvend['vendedores'];
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
@@ -45,12 +40,11 @@ class ReportPendienteXProdController extends Controller
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
-        $productos = Producto::productosxUsuario();
         $selecmultprod = 1;
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
-        return view('reportpendientexprod.index', compact('clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','productos','selecmultprod','tablashtml'));
+        return view('reportpendientexprod.index', compact('vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','selecmultprod','tablashtml'));
     
     }
 

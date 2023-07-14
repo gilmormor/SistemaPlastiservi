@@ -151,7 +151,7 @@ class Producto extends Model
                 if(isnull(at_largo),producto.long,at_largo) as long1,producto.long,
                 if(isnull(at_espesor),producto.peso,at_espesor) as peso,
                 producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
-                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,'' as acuerdotecnico_id
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod

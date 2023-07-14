@@ -6,6 +6,8 @@ Pendiente x Producto
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportpendientexprod/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
 
@@ -278,9 +280,9 @@ Pendiente x Producto
         </div>
     </div>
 </div>
-@include('generales.buscarcliente')
+@include('generales.buscarclientebd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproducto')
+@include('generales.buscarproductobd')
 @include('generales.listarorddesp')
 @endsection
