@@ -27,7 +27,6 @@ class ValidarDTE extends FormRequest
             'nrodocto' => 'max:20',
             'obs' => 'max:200',
             'tipodespacho' => 'required|max:1',
-            'indtraslado' => 'required|max:1',
             'tipoentrega_id' => 'required|max:20',
             'comunaentrega_id' => 'required',
             'lugarentrega' => 'required',

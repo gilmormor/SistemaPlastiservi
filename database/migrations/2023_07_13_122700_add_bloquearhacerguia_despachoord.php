@@ -14,7 +14,7 @@ class AddBloquearhacerguiaDespachoord extends Migration
     public function up()
     {
         Schema::table('despachoord', function (Blueprint $table) {
-            $table->tinyInteger('bloquearhacerguia')->comment('Estatus que permite bloquera hacer una guia de despacho No=0, Si=1')->default(0)->after('aprguiadespfh');
+            $table->tinyInteger('bloquearhacerguia')->comment('Estatus que permite bloquera para hacer una guia de despacho No=0, Si=1')->default(0)->after('aprguiadespfh');
         });
     }
 
@@ -26,7 +26,7 @@ class AddBloquearhacerguiaDespachoord extends Migration
     public function down()
     {
         Schema::table('despachoord', function (Blueprint $table) {
-            $table->dropColumn('at_unidadmedida_id');
+            $table->dropColumn('bloquearhacerguia');
         });
     }
 }

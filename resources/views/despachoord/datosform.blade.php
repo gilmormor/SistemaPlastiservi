@@ -182,11 +182,11 @@
     </div>
 </div>
 <div class="row">
-    <div class="form-group col-xs-12 col-sm-4">
+    <div class="form-group col-xs-12 col-sm-3">
         <label for="contactoemail" class="control-label requerido">Contacto Email</label>
         <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
     </div>
-    <div class="form-group col-xs-12 col-sm-4">
+    <div class="form-group col-xs-12 col-sm-3">
         <label for="observacion" class="control-label">Observaciones</label>
         <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
     </div>
@@ -209,5 +209,27 @@
                 </option>
             @endforeach
         </select>
+    </div>
+    <div class="form-group col-xs-12 col-sm-2">
+        <?php
+            $aux_tipoguiadesp = "";
+            if($data->tipoguiadesp){
+                $tipoguiadesp = $data->tipoguiadesp;
+            }else{
+                $tipoguiadesp = $data->despachosol->tipoguiadesp;
+            }
+            if($tipoguiadesp == "1"){
+                $aux_tipoguiadesp = "Precio";
+            }
+            if($tipoguiadesp == "6"){
+                $aux_tipoguiadesp = "Traslado";
+            }
+            if($tipoguiadesp == "20"){
+                $aux_tipoguiadesp = "Traslado + Precio";
+            }
+
+        ?>
+        <label for="tipoguiadesp" class="control-label requerido">Tipo Guia</label>
+        <input type="text" name="tipoguiadesp" id="tipoguiadesp" class="form-control" value="{{old('tipoguiadesp', $aux_tipoguiadesp ?? '')}}" required readonly/>
     </div>
 </div>

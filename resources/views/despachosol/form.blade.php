@@ -238,17 +238,41 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xs-12 col-sm-5">
+                        <div class="form-group col-xs-12 col-sm-4">
                             <label for="contactoemail" class="control-label requerido">Email</label>
                             <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-5">
+                        <div class="form-group col-xs-12 col-sm-4">
                             <label for="observacion" class="control-label">Observaciones</label>
                             <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="fechaestdesp" class="control-label requerido" data-toggle='tooltip' title="Fecha estimada de Despacho">Fec Est Despacho</label>
                             <input type="text" name="fechaestdesp" id="fechaestdesp" class="form-control pull-right" value="{{old('fechaestdesp', $data->fechaestdesp ?? '')}}" required readonly/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="tipoguiadesp" class="control-label requerido" data-toggle='tooltip' title="Tipo Guia Despacho">Tipo Guia Despacho</label>
+                            <select name="tipoguiadesp" id="tipoguiadesp" class="form-control select2  tipoguiadesp" data-live-search='true' value="{{old('tipoguiadesp', isset($data) ? $data->tipoguiadesp : '')}}" required>
+                                <option value="">Seleccione...</option>
+                                <option 
+                                    value="1" 
+                                    @if(isset($data) and $data->tipoguiadesp =="1")
+                                        {{'selected'}}
+                                    @endif
+                                    >Precio</option>
+                                <option 
+                                    value="6"
+                                    @if(isset($data) and $data->tipoguiadesp =="6")
+                                        {{'selected'}}
+                                    @endif
+                                    >Traslado</option>
+                                <option 
+                                    value="20"
+                                    @if(isset($data) and $data->tipoguiadesp =="9")
+                                        {{'selected'}}
+                                    @endif
+                                    >Traslado + Precio</option>
+                            </select>
                         </div>
                     </div>
                 </div>

@@ -7,6 +7,7 @@
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
 <input type='hidden' id="aux_obs" name="aux_obs" value="{{old('aux_obs', isset($dteguiadesp) ? $dteguiadesp->obs : ($data->observacion ?? '') ?? '')}}">
+<input type="hidden" id="tipoguiadesp" name="tipoguiadesp" value="{{old('tipoguiadesp', $data->despachosol->tipoguiadesp ?? '')}}"/>
 
 
 <div class="row">
@@ -158,7 +159,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-4">
+                        <div class="form-group col-xs-12 col-sm-5">
                             <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Desp</label>
                             <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($dteguiadesp) ? $dteguiadesp->tipodespacho : ($data->tipodespacho ?? ''))}}" required>
                                 <option 
@@ -185,6 +186,7 @@
                                     >Despacho por cuenta del emisor a otras instalaciones (Ejemplo: entrega en Obra)</option>
                             </select>
                         </div>
+                        <!--
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="indtraslado" class="control-label requerido">Tipo Traslado</label>
                             <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' value="{{old('indtraslado', isset($dteguiadesp) ? $dteguiadesp->indtraslado : ($data->indtraslado ?? ''))}}" required>
@@ -204,6 +206,23 @@
                                     @endif
                                     >Otros traslados no venta</option>
                             </select>
+                        </div>
+                        -->
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <?php
+                                $tipoguiadesp = $data->despachosol->tipoguiadesp;
+                                if($tipoguiadesp == "1"){
+                                    $aux_tipoguiadesp = "Precio";
+                                }
+                                if($tipoguiadesp == "6"){
+                                    $aux_tipoguiadesp = "Traslado";
+                                }
+                                if($tipoguiadesp == "20"){
+                                    $aux_tipoguiadesp = "Traslado + Precio";
+                                }
+                            ?>
+                            <label for="txttipoguiadesp" class="control-label requerido">Tipo Guia</label>
+                            <input type="text" name="txttipoguiadesp" id="txttipoguiadesp" class="form-control" value="{{old('txttipoguiadesp', $aux_tipoguiadesp ?? '')}}" required readonly/>
                         </div>
                         <!--
                         <div class="form-group col-xs-12 col-sm-3">

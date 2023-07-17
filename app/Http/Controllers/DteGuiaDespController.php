@@ -132,6 +132,7 @@ class DteGuiaDespController extends Controller
     public function guardar(ValidarDTE $request)
     {
         can('guardar-dte-guia-despacho');
+        //dd($request);
         $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
         if($request->updated_at != $despachoord->updated_at){
             return redirect('dteguiadesp/listarorddesp')->with([
@@ -161,11 +162,14 @@ class DteGuiaDespController extends Controller
             ]);
         }
     
-        $aux_indtraslado = $request->indtraslado;
+        $aux_indtraslado = $request->tipoguiadesp;
         //dd($request);
-        if($request->indtraslado == 6){
-            guardarDTE($request,$aux_indtraslado,$cont_producto);
-            $aux_indtraslado = 1;
+        if($request->tipoguiadesp == 20){ 
+            //SI $request->tipoguiadesp = 20, GENERO DE FORMA AUTOMATICA LA GUIA DE TRASLADO, LUEGO SE GENERA LA GUIA DE VENTA
+            //PASO EL VALOR DE 6 A LA FUNCION PARA IDENTIFICAR QUE VOY A GENERAR LA GUIA DE TRASLADO
+            guardarDTE($request,6,$cont_producto);
+            //AL SER $request->tipoguiadesp = 9 Y HABERSE GENERADO LA GUI DE TRASLADO, DEBO CAMBIAR $aux_indtraslado A 1, PARA QUE LUEGO SE GENERE LA GUIA DE VENTA
+            $aux_indtraslado = 1; 
         }
         guardarDTE($request,$aux_indtraslado,$cont_producto);
         return redirect('dteguiadesp')->with([
@@ -1453,12 +1457,10 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     $dteguiadesp->ot = $request->ot;
 
     $dte->dteguiadesp = $dteguiadesp;
-    $respuesta = Dte::generardteprueba($dte);
-    /*
+    //$respuesta = Dte::generardteprueba($dte);
     $respuesta = response()->json([
         'id' => 1
     ]);
-    */
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
     if($respuesta->original["id"] == 1){
         $dteNew = Dte::create($dte->toArray());

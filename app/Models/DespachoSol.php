@@ -24,6 +24,7 @@ class DespachoSol extends Model
         'contactotelf',
         'observacion',
         'fechaestdesp',
+        'tipoguiadesp',
         'usuariodel_id'
     ];
 
