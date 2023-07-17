@@ -213,7 +213,7 @@
     <div class="form-group col-xs-12 col-sm-2">
         <?php
             $aux_tipoguiadesp = "";
-            if($data->tipoguiadesp){
+            if(isset($data->tipoguiadesp)){
                 $tipoguiadesp = $data->tipoguiadesp;
             }else{
                 $tipoguiadesp = $data->despachosol->tipoguiadesp;
