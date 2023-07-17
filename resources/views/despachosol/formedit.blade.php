@@ -14,14 +14,10 @@
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
-<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $sucurArray[0] ?? '')}}">
+<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $data->sucursal_id ? $data->sucursal_id : $data->notaventa->sucursal_id)}}">
 
 
-@if($aux_sta==1)
-    <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $vendedor_id ?? '')}}">
-@else
-    <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $data->vendedor_id ?? '')}}">
-@endif
+<input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $data->vendedor_id ? $data->vendedor_id : $data->notaventa->vendedor_id)}}">
 <input type="hidden" name="region_id" id="region_id" value="{{old('region_id', $data->region_id ?? '')}}">
 <input type="hidden" name="provincia_id" id="provincia_id" value="{{old('provincia_id', $data->provincia_id ?? '')}}">
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
@@ -239,17 +235,40 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xs-12 col-sm-5">
+                        <div class="form-group col-xs-12 col-sm-4">
                             <label for="contactoemail" class="control-label requerido">Email</label>
                             <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-5">
+                        <div class="form-group col-xs-12 col-sm-4">
                             <label for="observacion" class="control-label">Observaciones</label>
                             <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="fechaestdesp" class="control-label requerido" data-toggle='tooltip' title="Fecha estimada de Despacho">Fec Est Despacho</label>
                             <input type="text" name="fechaestdesp" id="fechaestdesp" class="form-control pull-right" value="{{old('fechaestdesp', $data->fechaestdesp ?? '')}}" required readonly/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="tipoguiadesp" class="control-label requerido" data-toggle='tooltip' title="Tipo Guia Despacho">Tipo Guia Despacho</label>
+                            <select name="tipoguiadesp" id="tipoguiadesp" class="form-control select2  tipoguiadesp" data-live-search='true' value="{{old('tipoguiadesp', isset($data) ? $data->tipoguiadesp : '')}}" required>
+                                <option 
+                                    value="1" 
+                                    @if(isset($data) and $data->tipoguiadesp =="1")
+                                        {{'selected'}}
+                                    @endif
+                                    >Precio</option>
+                                <option 
+                                    value="6"
+                                    @if(isset($data) and $data->tipoguiadesp =="6")
+                                        {{'selected'}}
+                                    @endif
+                                    >Traslado</option>
+                                <option 
+                                    value="20"
+                                    @if(isset($data) and $data->tipoguiadesp =="20")
+                                        {{'selected'}}
+                                    @endif
+                                    >Traslado + Precio</option>
+                            </select>
                         </div>
                     </div>
                 </div>

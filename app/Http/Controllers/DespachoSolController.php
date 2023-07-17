@@ -109,42 +109,14 @@ class DespachoSolController extends Controller
         $data = NotaVenta::findOrFail($id);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $detalles = $data->notaventadetalles()->get();
-        $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
 
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
-
-
-        //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
-        //******************* */
-        $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
-        ->join('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
-        ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
-        ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->select([
-                    'cliente.id as cliente_id',
-                    'cliente.razonsocial',
-                    'cliente.telefono',
-                    'cliente.email',
-                    'cliente.regionp_id',
-                    'cliente.provinciap_id',
-                    'cliente.comunap_id',
-                    'cliente.contactonombre',
-                    'cliente.direccion',
-                    'clientedirec.id',
-                    'clientedirec.direcciondetalle'
-                ])->get();
-        //dd($clientedirecs);
         $clienteDirec = $data->clientedirec()->get();
         $fecha = date("d/m/Y", strtotime($data->fechahora));
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
 
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
@@ -171,7 +143,7 @@ class DespachoSolController extends Controller
         $aux_statusPant = 0;
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
-        return view('despachosol.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo'));
+        return view('despachosol.crear', compact('data','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','array_bodegasmodulo'));
     }
 
     /**
@@ -217,6 +189,7 @@ class DespachoSolController extends Controller
                 $comuna = Comuna::findOrFail($request->comuna_id);
                 $request->request->add(['provincia_id' => $comuna->provincia_id]);
                 $request->request->add(['region_id' => $comuna->provincia->region_id]);
+                //dd($request);
                 $despachosol = DespachoSol::create($request->all());
                 $despachosolid = $despachosol->id;
                 //$cont_producto = count($request->producto_id);
@@ -325,60 +298,14 @@ class DespachoSolController extends Controller
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
-/*
-        foreach($detalles as $detalle){
-            dd($detalle);
-            $sql = "SELECT cantsoldesp
-                    FROM vista_sumsoldespdet
-                    WHERE notaventadetalle_id=$detalle->notaventadetalle_id";
-            $datasuma = DB::select($sql);
-            if(empty($datasuma)){
-                $sumacantsoldesp= 0;
-            }else{
-                $sumacantsoldesp= $datasuma[0]->cantsoldesp;
-            }
-            //if($detalle->cant > $sumacantsoldesp);
-            
-        }*/
-        $vendedor_id=$data->notaventa->vendedor_id;
         $clienteselec = $data->notaventa->cliente()->get();
-        //session(['aux_aprocot' => '0']);
-        //dd($clienteselec[0]->rut);
-
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
 
 
-        //dd($sucurArray);
-        //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
-        //******************* */
-        $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
-        ->join('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
-        ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
-        ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->select([
-                    'cliente.id as cliente_id',
-                    'cliente.razonsocial',
-                    'cliente.telefono',
-                    'cliente.email',
-                    'cliente.regionp_id',
-                    'cliente.provinciap_id',
-                    'cliente.comunap_id',
-                    'cliente.contactonombre',
-                    'cliente.direccion',
-                    'clientedirec.id',
-                    'clientedirec.direcciondetalle'
-                ])->get();
-        //dd($clientedirecs);
-        $clienteDirec = $data->notaventa->clientedirec()->get();
         $fecha = date("d/m/Y", strtotime($data->fechahora));
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
 
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
@@ -407,7 +334,7 @@ class DespachoSolController extends Controller
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
 
         //dd($clientedirecs);
-        return view('despachosol.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','invmovmodulo','array_bodegasmodulo'));
+        return view('despachosol.editar', compact('data','clienteselec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','invmovmodulo','array_bodegasmodulo'));
   
     }
 
@@ -448,6 +375,8 @@ class DespachoSolController extends Controller
                 $despachosol->contactotelf = $request->contactotelf;
                 $despachosol->observacion = $request->observacion;
                 $despachosol->fechaestdesp = $request->fechaestdesp;
+                $despachosol->tipoguiadesp = $request->tipoguiadesp;
+                $despachosol->sucursal_id = $request->sucursal_id;
                 //dd($request);
                 if($despachosol->save()){
                     $cont_producto = count($request->producto_id);
@@ -578,6 +507,29 @@ class DespachoSolController extends Controller
 
     public function reportesoldespcerrarNV(Request $request){
         $respuesta = reportesoldespcerrarNV1($request);
+        return $respuesta;
+    }
+
+    public function listarnvpage(Request $request){
+        $datas = consulta($request,1,1);
+        foreach($datas as &$data){
+            $data->rutanuevasoldesp = route('crearsol_despachosol', ['id' => $data->id]);
+        }
+        return datatables($datas)->toJson();
+    }
+    public function totalizarlistarnvpage(Request $request){
+        $respuesta = array();
+        $datas = consulta($request,1,1);
+        $aux_kgpend = 0;
+        $aux_dinpend = 0;
+        //$aux_totaldinero = 0;
+        foreach ($datas as $data) {
+            $aux_kgpend += $data->totalkilos - $data->totalkgsoldesp;
+            $aux_dinpend += $data->subtotal - $data->totalsubtotalsoldesp;
+        }
+        $respuesta['aux_kgpend'] = $aux_kgpend;
+        $respuesta['aux_dinpend'] = $aux_dinpend;
+        //$respuesta['aux_totaldinero'] = $aux_totaldinero;
         return $respuesta;
     }
 
@@ -1849,7 +1801,6 @@ function consulta($request,$aux_sql,$orden){
         $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
     }
 
-
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){
         $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
@@ -1879,7 +1830,8 @@ function consulta($request,$aux_sql,$orden){
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
             AND isnull(dteguiadesp.notaventa_id)
-            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
+            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -1900,6 +1852,8 @@ function consulta($request,$aux_sql,$orden){
         ON tipoentrega.id=notaventa.tipoentrega_id
         INNER JOIN vista_notaventatotales
         ON notaventa.id=vista_notaventatotales.id
+        LEFT JOIN clientebloqueado
+        ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -1941,7 +1895,8 @@ function consulta($request,$aux_sql,$orden){
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
             AND isnull(dteguiadesp.notaventa_id)
-            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
+            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
@@ -1954,6 +1909,8 @@ function consulta($request,$aux_sql,$orden){
         ON cliente.id=notaventa.cliente_id
         LEFT JOIN vista_sumsoldespdet
         ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
+        LEFT JOIN clientebloqueado
+        ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -1996,7 +1953,8 @@ function consulta($request,$aux_sql,$orden){
                 FROM vista_sumsoldespdet
                 WHERE notaventa_id=notaventa.id)) as totalsubtotalsoldesp,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
-        tipoentrega.nombre as tipentnombre,tipoentrega.icono
+        tipoentrega.nombre as tipentnombre,tipoentrega.icono,
+        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -2017,6 +1975,8 @@ function consulta($request,$aux_sql,$orden){
         ON tipoentrega.id=notaventa.tipoentrega_id
         INNER JOIN vista_notaventatotales
         ON notaventa.id=vista_notaventatotales.id
+        LEFT JOIN clientebloqueado
+        ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -2036,10 +1996,9 @@ function consulta($request,$aux_sql,$orden){
         AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventa.cliente_id
         ORDER BY $aux_orden;";
-}
+    }
     //dd($sql);
     $datas = DB::select($sql);
-    //dd($datas);
     return $datas;
 }
 

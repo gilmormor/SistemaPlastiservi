@@ -13,14 +13,10 @@
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
-<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $sucurArray[0] ?? '')}}">
+<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $data->sucursal_id ? $data->sucursal_id : $data->notaventa->sucursal_id)}}">
 
 
-@if($aux_sta==1)
-    <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $vendedor_id ?? '')}}">
-@else
-    <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $data->vendedor_id ?? '')}}">
-@endif
+<input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $data->vendedor_id ? $data->vendedor_id : $data->notaventa->vendedor_id)}}">
 <input type="hidden" name="region_id" id="region_id" value="{{old('region_id', $data->region_id ?? '')}}">
 <input type="hidden" name="provincia_id" id="provincia_id" value="{{old('provincia_id', $data->provincia_id ?? '')}}">
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
@@ -268,7 +264,7 @@
                                     >Traslado</option>
                                 <option 
                                     value="20"
-                                    @if(isset($data) and $data->tipoguiadesp =="9")
+                                    @if(isset($data) and $data->tipoguiadesp =="20")
                                         {{'selected'}}
                                     @endif
                                     >Traslado + Precio</option>

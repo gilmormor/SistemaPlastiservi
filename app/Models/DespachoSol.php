@@ -14,6 +14,7 @@ class DespachoSol extends Model
     protected $fillable = [
         'notaventa_id',
         'usuario_id',
+        'sucursal_id',
         'fechahora',
         'comunaentrega_id',
         'tipoentrega_id',

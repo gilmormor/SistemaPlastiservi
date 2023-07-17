@@ -542,6 +542,9 @@ Route::put('noconformidadvalidar/actvalAI/{id}', 'NoConformidadValidarController
 Route::get('despachosol', 'DespachoSolController@index')->name('despachosol');
 Route::get('despachosolpage', 'DespachoSolController@despachosolpage')->name('despachosolpage');
 Route::get('despachosol/listarnv', 'DespachoSolController@listarnv')->name('listarnv_despachosol');
+Route::get('despachosol/listarnvpage', 'DespachoSolController@listarnvpage')->name('listarnvpage_despachosol');
+Route::get('despachosol/totalizarlistarnvpage', 'DespachoSolController@totalizarlistarnvpage')->name('despachosol_totalizarlistarnvpage');
+
 Route::get('despachosol/crear', 'DespachoSolController@crear')->name('crear_despachosol');
 Route::get('despachosol/{id}/crearsol', 'DespachoSolController@crearsol')->name('crearsol_despachosol');
 Route::post('despachosol', 'DespachoSolController@guardar')->name('guardar_despachosol');

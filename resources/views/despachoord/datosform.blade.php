@@ -229,7 +229,7 @@
             }
 
         ?>
-        <label for="tipoguiadesp" class="control-label requerido">Tipo Guia</label>
+        <label for="tipoguiadesp" class="control-label requerido"  data-toggle='tooltip' title="Tipo Guia Despacho">Tipo Guia Despacho</label>
         <input type="text" name="tipoguiadesp" id="tipoguiadesp" class="form-control" value="{{old('tipoguiadesp', $aux_tipoguiadesp ?? '')}}" required readonly/>
     </div>
 </div>
