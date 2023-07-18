@@ -43,7 +43,7 @@
 				<div class="round">
 					<span class="h3">Cliente</span>
 					<table class="datos_cliente" style="border-collapse: collapse;">
-						@if (empty($cotizacion->clientetemp_id))
+						@if (!empty($cotizacion->cliente_id))
 							<!--<tr class="headt">-->
 							<tr class="headt">
 								<td style="width:10%"><label>Rut: </label></td><td style="width:50%"><p>{{number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 )}}</p></td>
