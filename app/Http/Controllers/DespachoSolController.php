@@ -514,6 +514,7 @@ class DespachoSolController extends Controller
         $datas = consulta($request,1,1);
         foreach($datas as &$data){
             $data->rutanuevasoldesp = route('crearsol_despachosol', ['id' => $data->id]);
+            $data->rutanuevaguiadespnv = route('crear_dteguiadespnv', ['id' => $data->id]);
         }
         return datatables($datas)->toJson();
     }

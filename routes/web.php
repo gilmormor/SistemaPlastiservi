@@ -1231,3 +1231,17 @@ Route::get('reportdtelibroventas/reportdtelibroventaspage', 'ReportDTELibroVenta
 Route::get('reportdtelibroventas/reporte', 'ReportDTELibroVentasController@reporte')->name('reportdtelibroventas_reporte');
 Route::get('reportdtelibroventas/exportPdf', 'ReportDTELibroVentasController@exportPdf')->name('reportdtelibroventas_exportPdf');
 Route::get('reportdtelibroventas/totalizarindex', 'ReportDTELibroVentasController@totalizarindex')->name('reportdtelibroventas_totalizarindex');
+
+/*RUTAS DTE GUIA DESPACHO CON ORIGEN NOTA DE VENTA*/
+Route::get('dteguiadespnv', 'DteGuiaDespNVController@index')->name('dteguiadespnv');
+Route::get('dteguiadespnvpage', 'DteGuiaDespNVController@dteguiadespnvpage')->name('dteguiadespnvpage');
+Route::get('dteguiadespnv/totalizarindex', 'DteGuiaDespNVController@totalizarindex')->name('dteguiadespnv_totalizarindex');
+//Route::get('dteguiadespnv/crear', 'DteGuiaDespNVController@crear')->name('crear_dteguiadespnv');
+Route::get('dteguiadespnv/{id}/crear', 'DteGuiaDespNVController@crear')->name('crear_dteguiadespnv');
+Route::post('dteguiadespnv', 'DteGuiaDespNVController@guardar')->name('guardar_dteguiadespnv');
+Route::get('dteguiadespnv/{id}/editar', 'DteGuiaDespNVController@editar')->name('editar_dteguiadespnv');
+Route::put('dteguiadespnv/{id}', 'DteGuiaDespNVController@actualizar')->name('actualizar_dteguiadespnv');
+Route::delete('dteguiadespnv/{id}', 'DteGuiaDespNVController@eliminar')->name('eliminar_dteguiadespnv');
+Route::get('dteguiadespnv/listarnv', 'DteGuiaDespNVController@listarnv')->name('listarnv_dteguiadespnv');
+Route::get('dteguiadespnv/listarnvpage', 'DespachoSolController@listarnvpage')->name('listarnvpage_dteguiadespnv'); //ESTOY USANDO DespachoSolController
+Route::get('dteguiadespnv/totalizarlistarnvpage', 'DespachoSolController@totalizarlistarnvpage')->name('dteguiadespnv_totalizarlistarnvpage'); //ESTOY USANDO DespachoSolController

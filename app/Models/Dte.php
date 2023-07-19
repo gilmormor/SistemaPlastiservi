@@ -161,6 +161,12 @@ class Dte extends Model
     {
         return $this->hasOne(DteDev::class);
     }
+
+    //RELACION de uno a uno dteguiadespnv
+    public function dteguiadespnv()
+    {
+        return $this->hasOne(DteGuiaDespNV::class);
+    }
     
     public static function reportguiadesppage($request){
         //dd($request);

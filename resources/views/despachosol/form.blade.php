@@ -271,6 +271,33 @@
                             </select>
                         </div>
                     </div>
+                    @if (isset($data->dteguiadespnvs))
+                        <div class="row">
+                            <div class="form-group col-xs-12 col-sm-4">
+                                <label for="auxguiadespvista" class="control-label requerido" data-toggle='tooltip' title="Guia Despacho Previa">Guia Despacho Previa</label>
+                                <?php 
+                                    $j = 0;
+                                ?>
+                                @foreach($data->dteguiadespnvs as $dteguiadespnv)
+                                    <?php 
+                                        $j++;
+                                    ?>
+                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Guia despacho: {{$dteguiadespnv->dte->nrodocto}}" onclick="genpdfGD('{{$dteguiadespnv->dte->nrodocto}}','')">
+                                        {{$dteguiadespnv->dte->nrodocto}}
+                                        @if ($j < count($data->dteguiadespnvs))
+                                            ,
+                                        @endif
+                                    </a>
+                                @endforeach
+                                <select name="auxguiadespvista" id="auxguiadespvista" class="form-control select2  auxguiadespvista" required>
+                                    <option value="">Seleccione...</option>
+                                    <option 
+                                        value="1" 
+                                        >Guia Despacho Vista</option>
+                                </select>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

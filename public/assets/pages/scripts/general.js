@@ -1236,7 +1236,8 @@ function genpdfNV(id,stareport,aux_venmodant = ""){ //GENERAR PDF NOTA DE VENTA
 }
 
 function genpdfGDI(id,stareport){ //GENERAR PDF GUIA DESPACHO INTERNA
-	$('#contpdf').attr('src', '/guiadespint/'+id+'/'+stareport+'/exportPdf');
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/guiadespint/'+id+'/'+stareport+'/exportPdf' + queryString);
 	$("#myModalpdf").modal('show')
 }
 
@@ -1349,7 +1350,8 @@ function genpdfGD(id,nombre,aux_venmodant = ""){ //GENERAR PDF Guia Despacho
 	}
 	let id_str = id.toString();
 	id_str = id_str.padStart(8, "0");
-	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T52FE'+id_str+nombre+'.pdf');
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T52FE'+id_str+nombre+'.pdf' + queryString);
 	$("#myModalpdf").modal('show');
 }
 
