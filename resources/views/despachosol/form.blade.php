@@ -420,7 +420,7 @@
                                         $sumacantdesp= $datasumadesp[0]->cantdesp;
                                     }
                                     /*************************/
-                                    $peso = $detalle->totalkilos/$aux_cant;
+                                    $peso = round($detalle->totalkilos/$aux_cant,3);
 
                                     $aux_ancho = $detalle->producto->diametro;
                                     $aux_espesor = $detalle->espesor;
