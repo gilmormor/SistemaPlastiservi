@@ -140,6 +140,7 @@ $(document).ready(function () {
             $('td', row).eq(14).addClass('updated_at');
             $('td', row).eq(14).attr('id','updated_at' + data.id);
             $('td', row).eq(14).attr('name','updated_at' + data.id);
+            /*
             if(data.bloquearhacerguia == 1){
                 aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de despacho bloqueda para hacer guia.'>"+
@@ -152,9 +153,15 @@ $(document).ready(function () {
                 "</button>" +
             "</a>|";
             }
-            aux_text += "<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Devolver Orden Despacho' data-toggle='tooltip'>" +
-                            "<button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>" +
-                        "</a>";
+            */
+            aux_text = "<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Guia Despacho: " + data.tipoentrega_nombre + "'>" +
+                    "<button type='button' class='btn btn-default btn-xs'>" +
+                        "<i class='fa fa-fw " + data.icono + "'></i>"+
+                    "</button>" +
+                    "</a>|" +
+                    "<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Devolver Orden Despacho' data-toggle='tooltip'>" +
+                                    "<button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>" +
+                    "</a>";
             $('td', row).eq(15).html(aux_text);
         }
     });
