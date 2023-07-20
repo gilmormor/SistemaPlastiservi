@@ -167,6 +167,12 @@ class Dte extends Model
     {
         return $this->hasOne(DteGuiaDespNV::class);
     }
+
+    //RELACION DE UNO A MUCHOS despachosoldte
+    public function despachosoldtes()
+    {
+        return $this->hasMany(DespachoSolDTE::class,'dte_id');
+    }
     
     public static function reportguiadesppage($request){
         //dd($request);
@@ -299,6 +305,7 @@ class Dte extends Model
         FROM dtedte as dtedte1 INNER JOIN dte as dte1
         ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
         WHERE dtedte1.dter_id = dte.id
+        AND (dte1.foliocontrol_id = 1) 
         AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
         (SELECT foliocontrol.nombrepdf
         FROM dtedte as dtedte1 INNER JOIN dte as dte1
@@ -306,8 +313,10 @@ class Dte extends Model
         INNER JOIN foliocontrol
         ON foliocontrol.id = dte1.foliocontrol_id
         WHERE dtedte1.dter_id = dte.id
+        AND (dte1.foliocontrol_id = 1) 
         AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nombrepdf,
-        dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
+        dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
+        dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto
         FROM dte INNER JOIN dtedet
         ON dte.id=dtedet.dte_id and isnull(dte.deleted_at) and isnull(dtedet.deleted_at)
         INNER JOIN dteguiadesp
@@ -339,7 +348,11 @@ class Dte extends Model
         LEFT JOIN dteoc
         ON dteoc.dte_id=dte.id and isnull(dteoc.deleted_at)
         LEFT JOIN dtedte
-        ON dtedte.dter_id = dte.id
+        ON dtedte.dter_id = dte.id AND isnull(dtedte.deleted_at)
+        LEFT JOIN dtedte as dtedte_rel_guia
+        ON dtedte_rel_guia.dte_id = dte.id AND isnull(dtedte_rel_guia.deleted_at)
+        LEFT JOIN dte as dte_rel_guia
+        ON dtedte_rel_guia.dter_id = dte_rel_guia.id AND (dte_rel_guia.foliocontrol_id = 2)  AND isnull(dte_rel_guia.deleted_at)
         WHERE $aux_condproducto_id
         and $aux_condguiadesp_id
         and $vendedorcond

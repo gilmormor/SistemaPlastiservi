@@ -730,3 +730,20 @@ function verificarDato(aux_nomclass)
 	});
 	return aux_resultado;
 }
+
+$("#dte_id").change(function(){
+	let aux_val = $(this).val();
+	$("#tipoguiadesp").empty();
+	$("#tipoguiadesp").append("<option value=''>Seleccione...</option>")
+	if(aux_val == 1){
+		$("#tipoguiadesp").append("<option value='1'>Precio</option>")
+		$("#tipoguiadesp").append("<option value='20'>Traslado + Precio</option>")
+		$("#tipoguiadesp").val("");
+	}else{
+		if(aux_val> 0){
+			$("#tipoguiadesp").append("<option value='6'>Traslado</option>")
+			$("#tipoguiadesp").val("6");
+		}
+	}
+	$('#tipoguiadesp').trigger('change'); // Actualizar select2
+});

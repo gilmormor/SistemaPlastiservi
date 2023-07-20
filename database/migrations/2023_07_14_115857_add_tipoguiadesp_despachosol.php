@@ -14,7 +14,7 @@ class AddTipoguiadespDespachosol extends Migration
     public function up()
     {
         Schema::table('despachosol', function (Blueprint $table) {
-            $table->tinyInteger('tipoguiadesp')->comment('Tipo Guia despacho para emitir guia SII en despacho 1=Precio, 2=Traslado, 9=Traslado + Precio')->after('aprorddespfh');
+            $table->tinyInteger('tipoguiadesp')->default("0")->comment('Tipo Guia despacho para emitir guia SII en despacho 1=Precio, 2=Traslado, 20=Traslado + Precio')->after('aprorddespfh');
         });
     }
 

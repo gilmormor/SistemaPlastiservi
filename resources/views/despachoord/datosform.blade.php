@@ -210,6 +210,25 @@
             @endforeach
         </select>
     </div>
+    <?php 
+        if(isset($data->despachosol)){
+            $despachosol = $data->despachosol;
+        }else{
+            $despachosol = $data;
+        }
+        if(isset($despachosol->despachosoldte)){
+            
+        }
+    ?>
+    @if (count($despachosol->notaventa->dteguiadespnvs) > 0)
+        <div class="form-group col-xs-12 col-sm-4">
+            <label for="dte_id" class="control-label requerido" data-toggle='tooltip' title="Origen Solicitud Desp">Origen Solicitud Desp</label>
+            <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Guia despacho: {{$despachosol->despachosoldte->dte->nrodocto}}" onclick="genpdfGD('{{$despachosol->despachosoldte->dte->nrodocto}}','')">
+                {{$despachosol->despachosoldte->dte->nrodocto}}
+            </a>
+            <input type="text" name="dte_id" id="dte_id" class="form-control" value="{{old('dte_id', "Guia Despacho: " . $despachosol->despachosoldte->dte->nrodocto ?? '')}}" required readonly/>    
+        </div>
+    @endif
     <div class="form-group col-xs-12 col-sm-2">
         <?php
             $aux_tipoguiadesp = "";

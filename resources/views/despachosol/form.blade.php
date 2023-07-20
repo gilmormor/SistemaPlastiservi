@@ -246,35 +246,9 @@
                             <label for="fechaestdesp" class="control-label requerido" data-toggle='tooltip' title="Fecha estimada de Despacho">Fec Est Despacho</label>
                             <input type="text" name="fechaestdesp" id="fechaestdesp" class="form-control pull-right" value="{{old('fechaestdesp', $data->fechaestdesp ?? '')}}" required readonly/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-2">
-                            <label for="tipoguiadesp" class="control-label requerido" data-toggle='tooltip' title="Tipo Guia Despacho">Tipo Guia Despacho</label>
-                            <select name="tipoguiadesp" id="tipoguiadesp" class="form-control select2  tipoguiadesp" data-live-search='true' value="{{old('tipoguiadesp', isset($data) ? $data->tipoguiadesp : '')}}" required>
-                                <option value="">Seleccione...</option>
-                                <option 
-                                    value="1" 
-                                    @if(isset($data) and $data->tipoguiadesp =="1")
-                                        {{'selected'}}
-                                    @endif
-                                    >Precio</option>
-                                <option 
-                                    value="6"
-                                    @if(isset($data) and $data->tipoguiadesp =="6")
-                                        {{'selected'}}
-                                    @endif
-                                    >Traslado</option>
-                                <option 
-                                    value="20"
-                                    @if(isset($data) and $data->tipoguiadesp =="20")
-                                        {{'selected'}}
-                                    @endif
-                                    >Traslado + Precio</option>
-                            </select>
-                        </div>
-                    </div>
-                    @if (isset($data->dteguiadespnvs))
-                        <div class="row">
+                        @if (count($data->dteguiadespnvs) > 0)
                             <div class="form-group col-xs-12 col-sm-4">
-                                <label for="auxguiadespvista" class="control-label requerido" data-toggle='tooltip' title="Guia Despacho Previa">Guia Despacho Previa</label>
+                                <label for="dte_id" class="control-label requerido" data-toggle='tooltip' title="Origen Solicitud Desp">Origen Solicitud Desp</label>
                                 <?php 
                                     $j = 0;
                                 ?>
@@ -289,15 +263,46 @@
                                         @endif
                                     </a>
                                 @endforeach
-                                <select name="auxguiadespvista" id="auxguiadespvista" class="form-control select2  auxguiadespvista" required>
+                                <select name="dte_id" id="dte_id" class="form-control select2  dte_id" required>
                                     <option value="">Seleccione...</option>
-                                    <option 
-                                        value="1" 
-                                        >Guia Despacho Vista</option>
+                                    <option value="1">Nota de Venta</option>
+                                    @foreach($data->dteguiadespnvs as $dteguiadespnv)
+                                        <option 
+                                            value="{{$dteguiadespnv->dte_id}}" 
+                                            >Guia Despacho: {{$dteguiadespnv->dte->nrodocto}}</option>
+                                    @endforeach
                                 </select>
                             </div>
+                        @endif
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="tipoguiadesp" class="control-label requerido" data-toggle='tooltip' title="Tipo Guia Despacho">Tipo Guia Despacho</label>
+                            <select name="tipoguiadesp" id="tipoguiadesp" class="form-control select2  tipoguiadesp" data-live-search='true' value="{{old('tipoguiadesp', isset($data) ? $data->tipoguiadesp : '')}}" required>
+                                <option value="">Seleccione...</option>
+                                @if (count($data->dteguiadespnvs) == 0)
+                                    <option
+                                        value="1" 
+                                        @if(isset($data) and $data->tipoguiadesp =="1")
+                                            {{'selected'}}
+                                        @endif
+                                        >Precio</option>
+                                    @if (false)
+                                        <option {{count($data->dteguiadespnvs) == 0 ? "disabled='disabled'" : ""}}
+                                            value="6"
+                                            @if(isset($data) and $data->tipoguiadesp =="6")
+                                                {{'selected'}}
+                                            @endif
+                                        >Traslado</option>                                    
+                                    @endif
+                                    <option
+                                        value="20"
+                                        @if(isset($data) and $data->tipoguiadesp =="20")
+                                            {{'selected'}}
+                                        @endif
+                                        >Traslado + Precio</option>                                    
+                                @endif
+                            </select>
                         </div>
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>

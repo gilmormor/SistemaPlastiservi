@@ -15,6 +15,7 @@ use App\Models\DteAnul;
 use App\Models\DteDespachoOrd;
 use App\Models\DteDet;
 use App\Models\DteDet_DespachoOrdDet;
+use App\Models\DteDte;
 use App\Models\DteGuiaDesp;
 use App\Models\DteOC;
 use App\Models\Empresa;
@@ -1432,6 +1433,9 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     $dte->comuna_id = $despachoord->notaventa->comuna_id;
     $dte->vendedor_id = $despachoord->notaventa->vendedor_id;
     $dte->obs = $request->obs;
+    if(isset($despachoord->despachosol->despachosoldte)){
+        $dte->obs = "Guia: " . $despachoord->despachosol->despachosoldte->dte->nrodocto . " " . $request->obs;
+    }
     $dte->tipodespacho = $request->tipodespacho;
     $dte->indtraslado = $aux_indtraslado;
     $dte->mntneto = $Tmntneto;
@@ -1457,10 +1461,12 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     $dteguiadesp->ot = $request->ot;
 
     $dte->dteguiadesp = $dteguiadesp;
-    //$respuesta = Dte::generardteprueba($dte);
+    $respuesta = Dte::generardteprueba($dte);
+    /*
     $respuesta = response()->json([
         'id' => 1
     ]);
+    */
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
     if($respuesta->original["id"] == 1){
         $dteNew = Dte::create($dte->toArray());
@@ -1497,6 +1503,13 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
         $dteoc->oc_file = $despachoord->notaventa->oc_file;
         $dteoc->save();
 
+        if(isset($despachoord->despachosol->despachosoldte)){
+            $dtedte = new DteDte();
+            $dtedte->dte_id = $dteNew->id;
+            $dtedte->dter_id = $despachoord->despachosol->despachosoldte->dte_id;
+            //$dtedte->dtefac_id = "";
+            $dtedte->save();
+        }
         $foliocontrol->bloqueo = 0;
         $foliocontrol->ultfoliouti = $dteNew->nrodocto;
         $foliocontrol->save();

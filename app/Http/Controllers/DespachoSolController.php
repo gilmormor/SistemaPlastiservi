@@ -21,6 +21,7 @@ use App\Models\DespachoSol_InvMov;
 use App\Models\DespachoSolAnul;
 use App\Models\DespachoSolDet;
 use App\Models\DespachoSolDet_InvBodegaProducto;
+use App\Models\DespachoSolDTE;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
@@ -253,6 +254,17 @@ class DespachoSolController extends Controller
                         }
                     }
                 }
+                //SI TIPO DE GUIA ES TRASLADO ENTONCES LA SOLICITUD SE ORIGINA DE UNA GUIA DE PRECIO PREVIEMENTE REALIZADA
+                //GUARDO EN LA TABLA despachosoldte PARA USAR LA REFERENCIA EN EL MODULO DE EMITIR GUIAS DE DESPACHO
+                //PARA IDENTIFICAR A ESTA GUIA DE TRASLADO QUE ESTA RELACIONADA A UNA GUIA DE PRECIO PREVIA MENTE HECHA
+                //LA GUIA DE PRECIO PREVIEMENTE HECHA NO GENERO DESPACHO NI MOVIMIENTO DE INVENTARIO
+                //POR ESTA RAZON HAY QUE HACER SOLO LA GUIA DE TRASLADO PARA QUE EL SISTEMA HAGA LA SALIDA DEL INVENTARIO
+                if($request->tipoguiadesp == 6){
+                    $despachosoldte = new DespachoSolDTE();
+                    $despachosoldte->despachosol_id = $despachosolid;
+                    $despachosoldte->dte_id = $request->dte_id;
+                    $despachosoldte->save();
+                }
                 return redirect('despachosol')->with([
                     'mensaje'=>'Registro creado con exito.',
                     'tipo_alert' => 'alert-success'
@@ -465,6 +477,21 @@ class DespachoSolController extends Controller
                         }
                     }
                 }
+                if($request->tipoguiadesp == "6"){
+                    if($despachosol->despachosoldte){
+                        $despachosol->despachosoldte->dte_id = $request->dte_id;
+                        $despachosol->despachosoldte->save();
+                    }else{
+                        $despachosoldte = new DespachoSolDTE();
+                        $despachosoldte->despachosol_id = $despachosol->id;
+                        $despachosoldte->dte_id = $request->dte_id;
+                        $despachosoldte->save();
+                    }
+                }else{
+                    if($despachosol->despachosoldte){
+                        $despachosol->despachosoldte->delete();
+                    }
+                }        
                 return redirect('despachosol')->with([
                                                             'mensaje'=>'Registro actualizado con exito.',
                                                             'tipo_alert' => 'alert-success'

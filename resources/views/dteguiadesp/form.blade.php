@@ -208,6 +208,18 @@
                             </select>
                         </div>
                         -->
+                        <?php 
+                            $despachosol = $data->despachosol;
+                        ?>
+                        @if (count($despachosol->notaventa->dteguiadespnvs) > 0)
+                            <div class="form-group col-xs-12 col-sm-4">
+                                <label for="dte_id" class="control-label requerido" data-toggle='tooltip' title="Origen">Origen</label>
+                                <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Guia despacho: {{$despachosol->despachosoldte->dte->nrodocto}}" onclick="genpdfGD('{{$despachosol->despachosoldte->dte->nrodocto}}','')">
+                                    {{$despachosol->despachosoldte->dte->nrodocto}}
+                                </a>
+                                <input type="text" name="dte_id" id="dte_id" class="form-control" value="{{old('dte_id', "Guia Despacho: " . $despachosol->despachosoldte->dte->nrodocto ?? '')}}" required readonly/>    
+                            </div>
+                        @endif
                         <div class="form-group col-xs-12 col-sm-2">
                             <?php
                                 $tipoguiadesp = $data->despachosol->tipoguiadesp;
@@ -258,7 +270,7 @@
                             <!--<input type='text' name="obs" id="obs" class="form-control" value="{{old('obs', isset($dteguiadesp) ? $dteguiadesp->obs : ($data->observacion ?? ''))}}" placeholder="Observaciones" maxlength="90"/>-->
                             <textarea class="form-control" name="obs" id="obs" value="{{old('obs', isset($dteguiadesp) ? $dteguiadesp->obs : ($data->observacion ?? ''))}}" placeholder="Observación" maxlength="90"></textarea>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
             </div>
         </div>

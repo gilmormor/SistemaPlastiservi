@@ -81,5 +81,10 @@ class DespachoSol extends Model
         return $this->belongsToMany(InvMov::class, 'despachosol_invmov','despachosol_id','invmov_id')->withTimestamps();
     }
     
+    //RELACION de uno a uno despachosoldte
+    public function despachosoldte()
+    {
+        return $this->hasOne(DespachoSolDTE::class,"despachosol_id");
+    }
 
 }

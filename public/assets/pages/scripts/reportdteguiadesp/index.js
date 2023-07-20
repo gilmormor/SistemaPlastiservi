@@ -103,6 +103,9 @@ $(document).ready(function () {
                         </a>:
                         <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','_cedible')" style="padding-left: 0px;">
                             ${data.nrodocto}
+                        </a>
+                        <a class="btn-accion-tabla btn-sm tooltipsC" title="" data-original-title="Guia Despacho origen: ${data.guiaorigenprecio_nrodocto}" onclick="genpdfGD('${data.guiaorigenprecio_nrodocto}','')">
+                            <i class="fa fa-fw fa-question-circle text-aqua"></i>
                         </a>`;
                 }
                 $('td', row).eq(8).html(aux_text);
