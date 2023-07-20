@@ -1457,10 +1457,12 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     $dteguiadesp->ot = $request->ot;
 
     $dte->dteguiadesp = $dteguiadesp;
-    //$respuesta = Dte::generardteprueba($dte);
+    $respuesta = Dte::generardteprueba($dte);
+    /*
     $respuesta = response()->json([
         'id' => 1
     ]);
+    */
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
     if($respuesta->original["id"] == 1){
         $dteNew = Dte::create($dte->toArray());
