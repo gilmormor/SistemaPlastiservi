@@ -175,7 +175,6 @@ class Dte extends Model
     }
     
     public static function reportguiadesppage($request){
-        dd($request);
         if(empty($request->vendedor_id)){
             $user = Usuario::findOrFail(auth()->id());
             $sql= 'SELECT COUNT(*) AS contador
