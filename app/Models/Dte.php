@@ -175,7 +175,7 @@ class Dte extends Model
     }
     
     public static function reportguiadesppage($request){
-        //dd($request);
+        dd($request);
         if(empty($request->vendedor_id)){
             $user = Usuario::findOrFail(auth()->id());
             $sql= 'SELECT COUNT(*) AS contador
@@ -280,7 +280,7 @@ class Dte extends Model
                     $aux_aprobstatus = " dte.id in (SELECT dter_id from dtedte where isnull(dtedte.deleted_at))";
                     break;
                 case 4:
-                    $aux_aprobstatus = " dte.id not in (SELECT dter_id from dtedte where isnull(dtedte.deleted_at)) and isnull(dteanul.obs)";
+                    $aux_aprobstatus = " dte.indtraslado = 1 AND dte.id not in (SELECT dter_id from dtedte where isnull(dtedte.deleted_at)) and isnull(dteanul.obs)";
                     break;
                 case 5:
                     $aux_aprobstatus = " dte.indtraslado = 6";
