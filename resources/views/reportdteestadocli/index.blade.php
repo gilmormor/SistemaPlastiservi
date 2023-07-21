@@ -39,7 +39,7 @@ DTE Facturacion
                                         <label for="fecha">Fecha Ini:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad"  value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" value="{{old('fechad', date("01/m/Y") ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final">
@@ -52,9 +52,9 @@ DTE Facturacion
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Sucursal">
+                                <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" >Sucursal</label>
+                                        <label for="sucursal_id" data-toggle='tooltip' title="Sucursal">Sucursal</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
@@ -69,9 +69,9 @@ DTE Facturacion
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="RUT">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="rut">RUT:</label>
+                                        <label for="rut" data-toggle='tooltip' title="RUT">RUT:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
@@ -85,10 +85,10 @@ DTE Facturacion
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
-                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                                <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
-                                    <i class='glyphicon glyphicon-print'></i> Reporte
-                                </button>
+                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                            <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                                <i class='glyphicon glyphicon-print'></i> Reporte
+                            </button>
                         </div>
                     </form>
                 </div>

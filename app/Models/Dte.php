@@ -794,7 +794,7 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
-
+        $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
         if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
             $aux_sucursal_idCond = "true";
         }else{
@@ -850,6 +850,7 @@ class Dte extends Model
         AND $aux_condnotaventa_id
         AND $aux_condstatusgen
         AND $aux_aprobstatus
+        AND $aux_condsucurArray
         AND NOT ISNULL(dte.nrodocto)
         GROUP BY dte.id
         ORDER BY dte.id asc;";
@@ -1618,6 +1619,7 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
+        $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
         if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
             $aux_sucursal_idCond = "true";
         }else{
@@ -1652,6 +1654,7 @@ class Dte extends Model
         AND $aux_condoc_id
         AND $aux_condnotaventa_id
         AND $aux_aprobstatus
+        AND $aux_condsucurArray
         GROUP BY dte.id
         ORDER BY dte.id asc;";
         //dd($sql);
@@ -1847,6 +1850,7 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
+        $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
         if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
             $aux_sucursal_idCond = "true";
         }else{
@@ -1939,6 +1943,7 @@ class Dte extends Model
         AND $aux_condnotaventa_id
         AND $aux_condstatusgen
         AND $aux_condvendedor_id
+        AND $aux_condsucurArray
         AND NOT ISNULL(dte.nrodocto)
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
         $aux_groupby
@@ -2115,6 +2120,7 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
+        $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
         if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
             $aux_sucursal_idCond = "true";
         }else{
@@ -2216,6 +2222,7 @@ class Dte extends Model
         AND $aux_condnotaventa_id
         AND $aux_condstatusgen
         AND $aux_condvendedor_id
+        AND $aux_condsucurArray
         AND NOT ISNULL(dte.nrodocto)
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
         $aux_groupby

@@ -35,27 +35,27 @@ DTE Guia Despacho
                         <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
+                                <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="fecha">Fecha Ini:</label>
+                                        <label for="fecha" data-toggle='tooltip' title="Fecha Inicial">Fecha Ini:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad"  value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" value="{{old('fechad', date("01/m/Y") ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final">
+                                <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="dep_fecha">Fecha Fin:</label>
+                                        <label for="dep_fecha" data-toggle='tooltip' title="Fecha Final">Fecha Fin:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" value="{{old('fechah', $fechaServ['fechaAct'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" class="form-control datepicker" name="fechah" id="fechah" value="{{old('fechah', date("d/m/Y") ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="RUT">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="rut">RUT:</label>
+                                        <label for="rut" data-toggle='tooltip' title="RUT">RUT:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
@@ -66,9 +66,9 @@ DTE Guia Despacho
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Vendedor">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label>Vendedor:</label>
+                                        <label data-toggle='tooltip' title="Vendedor">Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <?php
@@ -78,17 +78,17 @@ DTE Guia Despacho
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Nota de Venta">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="notaventa_id">NotaVenta:</label>
+                                        <label for="notaventa_id" data-toggle='tooltip' title="Número Nota de Venta">NotaVenta:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{old('notaventa_id')}}" maxlength="12"/>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Orden de Compra">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="oc_id">OC:</label>
+                                        <label for="oc_id" data-toggle='tooltip' title="Orden de Compra">OC:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id')}}" maxlength="12"/>
@@ -96,9 +96,9 @@ DTE Guia Despacho
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label >Area Prod:</label>
+                                        <label data-toggle='tooltip' title="Area de Producción">Area Prod:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="areaproduccion_id" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id">
@@ -113,9 +113,9 @@ DTE Guia Despacho
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Tipo de Entrega">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label >T Entrega:</label>
+                                        <label data-toggle='tooltip' title="Tipo de Entrega">T Entrega:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="tipoentrega_id" id="tipoentrega_id" class="selectpicker form-control tipoentrega_id">
@@ -132,9 +132,9 @@ DTE Guia Despacho
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Giro">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label>Giro:</label>
+                                        <label data-toggle='tooltip' title="Giro">Giro:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="giro_id" id="giro_id" class="selectpicker form-control giro_id">
@@ -149,9 +149,9 @@ DTE Guia Despacho
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Nota de Venta">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label>Estatus:</label>
+                                        <label data-toggle='tooltip' title="Estatus Nota de Venta">Estatus:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus">
@@ -166,9 +166,9 @@ DTE Guia Despacho
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Comuna">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label>Comuna:</label>
+                                        <label data-toggle='tooltip' title="Comuna">Comuna:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <?php
@@ -176,9 +176,9 @@ DTE Guia Despacho
                                         ?>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="ID">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="id">ID Guia Desp:</label>
+                                        <label for="id" data-toggle='tooltip' title="ID">ID Guia Desp:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" name="guiadesp_id" id="guiadesp_id" class="form-control" maxlength="10"/>
@@ -186,9 +186,9 @@ DTE Guia Despacho
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="producto_idPxP" class="control-label">Producto</label>
+                                        <label for="producto_idPxP" class="control-label" data-toggle='tooltip' title="Código Producto">Producto</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
@@ -199,9 +199,9 @@ DTE Guia Despacho
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Sucursal">
+                                <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" >Sucursal</label>
+                                        <label for="sucursal_id" data-toggle='tooltip' title="Sucursal">Sucursal</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
@@ -217,10 +217,10 @@ DTE Guia Despacho
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
-                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                                <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
-                                    <i class='glyphicon glyphicon-print'></i> Reporte
-                                </button>
+                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                            <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                                <i class='glyphicon glyphicon-print'></i> Reporte
+                            </button>
                         </div>
                     </form>
                 </div>
