@@ -19,13 +19,17 @@ class NotaVentaDetalle extends Model
         'cantgrupo',
         'cantxgrupo',
         'unidadmedida_id',
+        'descuento',
         'preciounit',
         'peso',
         'precioneto',
         'iva',
         'total',
         'usuariodel_id',
+        'precioxkilo',
         'precioxkiloreal',
+        'totalkilos',
+        'subtotal',
         'producto_nombre',
         'ancho',
         'largo',
@@ -35,7 +39,8 @@ class NotaVentaDetalle extends Model
         'claseprod_id',
         'grupoprod_id',
         'color_id',
-        'obs'
+        'obs',
+        'usuariodel_id'
     ];
     
     //RELACION INVERSA NotaVenta
@@ -68,5 +73,22 @@ class NotaVentaDetalle extends Model
     public function despachoorddets()
     {
         return $this->hasMany(DespachoOrdDet::class);
+    }
+
+    //RELACION de uno a uno acuerdotecnico
+    public function acuerdotecnico()
+    {
+        return $this->hasOne(AcuerdoTecnico::class,"at_notaventadetalle_id");
+    }
+
+    //RELACION de uno a uno acuerdotecnicotemp
+    public function acuerdotecnicotempunoauno()
+    {
+        return $this->hasOne(AcuerdoTecnicoTemp::class,"at_cotizaciondetalle_id","cotizaciondetalle_id");
+    }
+    //Relacion uno a uno con notaventadetalleext
+    public function notaventadetalleext()
+    {
+        return $this->hasOne(NotaVentaDetalleExt::class,"notaventadetalle_id");
     }
 }

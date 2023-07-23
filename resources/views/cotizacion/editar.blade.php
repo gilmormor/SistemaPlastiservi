@@ -3,6 +3,16 @@
     Cotización
 @endsection
 
+@section("styles")
+    <link rel="stylesheet" href="{{autoVer("assets/js/bootstrap-fileinput/css/fileinput.min.css")}}">
+@endsection
+
+@section("scriptsPlugins")
+    <script src="{{autoVer("assets/js/bootstrap-fileinput/js/fileinput.min.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/js/bootstrap-fileinput/js/locales/es.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/js/bootstrap-fileinput/themes/fas/theme.min.js")}}" type="text/javascript"></script>
+@endsection
+
 @section('scripts')
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/cotizacion/crear.js")}}" type="text/javascript"></script>
@@ -26,7 +36,7 @@
                     </div>
                 @endif
             </div>
-            <form action="{{route('actualizar_cotizacion', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
+            <form action="{{route('actualizar_cotizacion', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
                 @csrf @method("put")
                 <div class="box-body">
                     @include('cotizacion.form')
@@ -39,7 +49,7 @@
                         @endif
                     @else
                         <button type="reset" class="btn btn-default">Cancel</button>
-                        <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Actualizar</button>
+                        <button type="button" id="btnguardaraprob" name="btnguardaraprob" class="btn btn-success">Aprobar/Rechazar</button>
                     @endif
                     <!--
                     <a href="{{route('exportPdf_cotizacion', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="PDF" target="_blank">

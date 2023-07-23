@@ -28,7 +28,6 @@ class ReportInvStockController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
-        $tablashtml['invbodegas'] = InvBodega::orderBy('id')->get();
         $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $selecmultprod = 1;
@@ -83,7 +82,11 @@ class ReportInvStockController extends Controller
         $aux_totalkg = 0;
         foreach ($datas as $data) {
             //$aux_totalkg += $data->stockkg;
-            $aux_totalkg += $data->stock * $data->peso;
+            if($data->peso <= 0){
+                $aux_totalkg += $data->stockkg;
+            }else{
+                $aux_totalkg += $data->stock * $data->peso;
+            }
         }
         $respuesta['aux_totalkg'] = $aux_totalkg;
         return $respuesta;

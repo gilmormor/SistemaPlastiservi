@@ -313,4 +313,34 @@ function llenarbodegas(sucursal_id){
         }
     }
     $(".selectpicker").selectpicker('refresh');
+/*San Bernardo, busqueda en tiempo real, lo cambie
+//Ahora lleno un array en php y luego lo recorro en JS
+    tablascolsultainv($("#sucursal_id").val());
+*/
+}
+
+//Esta funcion ya no la estoy usando porque lleno una array en php y luego recorro para llenar el select
+function tablascolsultainv(id){
+    $("#invbodega_id").empty();
+    if((id == "" || id == "0" || id == "x") == false){
+        var data = {
+            id: id,
+            _token: $('input[name=_token]').val()
+        };
+        //console.log(data);
+        
+        $.ajax({
+            url: '/sucursal/tablascolsultainv',
+            type: 'POST',
+            data: data,
+            success: function (respuesta) {
+                $.each(respuesta.invbodegas, function(index,value){
+                    $("#invbodega_id").append("<option value='" + value.id + "'>" + value.nombre + "</option>")
+                });
+                $(".selectpicker").selectpicker('refresh');
+            }
+        });    
+    }else{
+        $(".selectpicker").selectpicker('refresh');
+    }
 }

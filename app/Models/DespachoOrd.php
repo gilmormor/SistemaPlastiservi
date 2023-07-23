@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\GuardarFacturaDespacho;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,7 @@ class DespachoOrd extends Model
         'fechafactura',
         'numfacturafec',
         'despachoobs_id',
+        'bloquearhacerguia',
         'usuariodel_id'
     ];
 
@@ -125,6 +127,42 @@ class DespachoOrd extends Model
         GROUP BY despachoorddet.despachoord_id;";
         return DB::select($sql);
     }
+    //Relacion uno a Muchos con guiadesp
+    public function guiadesp()
+    {
+        return $this->hasMany(GuiaDesp::class,"despachoord_id");
+    }
+    
+    //RELACION DE UNO A MUCHOS despachoordanulguiafact
+    public function despachoordanulguiafacts()
+    {
+        return $this->hasMany(DespachoOrdAnulGuiaFact::class,'despachoord_id');
+    }
+
+    public static function guardarfactdesp($dtedte)
+    {
+        $dte = $dtedte->dte;
+        $despachoord = DespachoOrd::findOrFail($dtedte->dteguiadesp->despachoord_id);
+        $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$despachoord->notaventa_id)->get();
+        if(count($notaventacerrada) == 0){
+            $despachoord->numfactura = $dte->nrodocto;
+            $despachoord->fechafactura = $dte->fchemis;
+            $despachoord->numfacturafec = $dte->fchemisgen;
+            if ($despachoord->save()) {
+                Event(new GuardarFacturaDespacho($despachoord));
+                return response()->json([
+                                        'mensaje' => 'ok',
+                                        'despachoord' => $despachoord
+                                        ]);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }    
+        }else{
+            $mensaje = 'Nota Venta fue cerrada: Observ: ' . $notaventacerrada[0]->observacion . ' Fecha: ' . date("d/m/Y h:i:s A", strtotime($notaventacerrada[0]->created_at));
+            return response()->json(['mensaje' => $mensaje]);
+        }
+    }
+
 
     public static function consultaOrdDespxAsigFact($request){
         if(!isset($request->notaventa_id) or empty($request->notaventa_id)){

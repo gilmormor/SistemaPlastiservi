@@ -104,6 +104,7 @@ Route::delete('sucursal/{id}', 'SucursalController@eliminar')->name('eliminar_su
 Route::post('sucursal/obtProvincias', 'SucursalController@obtProvincias')->name('obtProvincias');
 Route::post('sucursal/obtComunas', 'SucursalController@obtComunas')->name('obtComunas');
 Route::post('sucursal/obtsucursalescategoriaprod', 'SucursalController@obtsucursalescategoriaprod')->name('obtsucursalescategoriaprod');
+Route::post('sucursal/tablascolsultainv', 'SucursalController@tablasColsultaInv')->name('tablascolsultainv_sucursal');
 
 
 /*RUTAS EMPRESA*/
@@ -162,10 +163,12 @@ Route::post('producto/obtClaseProd', 'ProductoController@obtClaseProd')->name('o
 Route::post('producto/buscarUnProducto', 'ProductoController@buscarUnProducto')->name('buscarUnProducto');
 Route::get('producto/{id}/listar', 'ProductoController@listar')->name('listar_producto');
 Route::post('producto/obtGrupoProd', 'ProductoController@obtGrupoProd')->name('obtGrupoProd');
+Route::get('producto/{id}/acutecexportPdf', 'ProductoController@AcuTecExportPdf')->name('AcuTecExportPdf_producto');
 Route::get('producto/productobuscarpage', 'ProductoController@productobuscarpage')->name('productobuscarpage_producto');
-Route::get('producto/{id}/productobuscarpage', 'ProductoController@productobuscarpageid')->name('productobuscarpageid_producto');
 Route::get('productobuscarpage', 'ProductoController@productobuscarpage')->name('productobuscarpage');
 Route::get('{id}/productobuscarpage', 'ProductoController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('producto/{id}/productobuscarpage', 'ProductoController@productobuscarpageid')->name('productobuscarpageid_producto');
+
 
 
 /*RUTAS CLIENTES*/
@@ -184,11 +187,10 @@ Route::post('cliente/buscarClisinsuc', 'ClienteController@buscarClisinsuc')->nam
 Route::post('cliente/guardarclientetemp', 'ClienteController@guardarclientetemp')->name('guardarclientetemp');
 Route::post('cliente/buscarCliRut', 'ClienteController@buscarCliRut')->name('buscarCliRut');
 Route::post('cliente/buscarClixVenRut', 'ClienteController@buscarClixVenRut')->name('buscarClixVenRut_cliente');
-
+Route::get('clientebuscarpage', 'ClienteController@clientebuscarpage')->name('clientebuscarpage_cliente');
 Route::get('cliente/clientebuscarpage', 'ClienteController@clientebuscarpage')->name('clientebuscarpage_cliente');
 Route::get('cliente/{id}/clientebuscarpage', 'ClienteController@clientebuscarpageid')->name('clientebuscarpageid_cliente');
-Route::get('clientebuscarpage', 'ClienteController@clientebuscarpage')->name('clientebuscarpage_cliente');
-
+Route::get('{id}/clientebuscarpage', 'ClienteController@clientebuscarpageid')->name('clientebuscarpageid');
 
 //Ruta para actualizar el campo giro_id en la tabla clientes
 Route::get('cliente/clientegiro', 'ClienteController@clientegiro')->name('clientegiro');
@@ -356,7 +358,6 @@ Route::post('notaventa/findespacho/{id}', 'NotaVentaController@findespacho')->na
 Route::post('notaventa/buscaroc_id', 'NotaVentaController@buscaroc_id')->name('buscaroc_id_notaventa');
 Route::get('notaventa/cerrartodasNV', 'NotaVentaController@cerrartodasNV')->name('cerrartodasNV_notaventa');
 Route::post('notaventa/buscarNV', 'NotaVentaController@buscarNV')->name('buscarNV_notaventa');
-
 Route::get('notaventa/cambiarUnidadMedida', 'NotaVentaController@cambiarUnidadMedida')->name('cambiarUnidadMedida');
 Route::get('notaventa/productobuscarpage', 'NotaVentaController@productobuscarpage')->name('productobuscarpage_notaventa');
 Route::get('notaventa/clientebuscarpage', 'NotaVentaController@clientebuscarpage')->name('clientebuscarpage_notaventa');
@@ -544,6 +545,9 @@ Route::put('noconformidadvalidar/actvalAI/{id}', 'NoConformidadValidarController
 Route::get('despachosol', 'DespachoSolController@index')->name('despachosol');
 Route::get('despachosolpage', 'DespachoSolController@despachosolpage')->name('despachosolpage');
 Route::get('despachosol/listarnv', 'DespachoSolController@listarnv')->name('listarnv_despachosol');
+Route::get('despachosol/listarnvpage', 'DespachoSolController@listarnvpage')->name('listarnvpage_despachosol');
+Route::get('despachosol/totalizarlistarnvpage', 'DespachoSolController@totalizarlistarnvpage')->name('despachosol_totalizarlistarnvpage');
+
 Route::get('despachosol/crear', 'DespachoSolController@crear')->name('crear_despachosol');
 Route::get('despachosol/{id}/crearsol', 'DespachoSolController@crearsol')->name('crearsol_despachosol');
 Route::post('despachosol', 'DespachoSolController@guardar')->name('guardar_despachosol');
@@ -636,6 +640,7 @@ Route::get('despachoord/listarsoldesp', 'DespachoOrdController@listarsoldesp')->
 Route::get('despachoordguia', 'DespachoOrdGuiaController@index')->name('despachoordguia');
 Route::get('despachoordguiapage', 'DespachoOrdGuiaController@despachoordguiapage')->name('despachoordguiapage');
 Route::get('despachoordguia/totalizarindex', 'DespachoOrdGuiaController@totalizarindex')->name('despachoordguia_totalizarindex');
+Route::post('despachoordguia/bloquearhacerguia', 'DespachoOrdGuiaController@bloquearhacerguia')->name('despachoordguia_bloquearhacerguia');
 
 Route::get('despachoord/productobuscarpage', 'DespachoOrdController@productobuscarpage')->name('productobuscarpage');
 Route::get('despachoord/clientebuscarpage', 'DespachoOrdController@clientebuscarpage')->name('clientebuscarpage');
@@ -747,6 +752,14 @@ Route::put('clienteinterno/{id}', 'ClienteInternoController@actualizar')->name('
 Route::delete('clienteinterno/{id}', 'ClienteInternoController@eliminar')->name('eliminar_clienteinterno');
 Route::post('clienteinterno/buscarCli', 'ClienteInternoController@buscarCli')->name('buscarCli');
 
+/*RUTAS MATERIA PRIMA*/
+Route::get('materiaprima', 'MateriaPrimaController@index')->name('materiaprima');
+Route::get('materiaprimapage', 'MateriaPrimaController@materiaprimapage')->name('materiaprimapage');
+Route::get('materiaprima/crear', 'MateriaPrimaController@crear')->name('crear_materiaprima');
+Route::post('materiaprima', 'MateriaPrimaController@guardar')->name('guardar_materiaprima');
+Route::get('materiaprima/{id}/editar', 'MateriaPrimaController@editar')->name('editar_materiaprima');
+Route::put('materiaprima/{id}', 'MateriaPrimaController@actualizar')->name('actualizar_materiaprima');
+Route::delete('materiaprima/{id}', 'MateriaPrimaController@eliminar')->name('eliminar_materiaprima');
 
 
 /*RUTAS NOTAS DE VENTA EN TRANSITO*/
@@ -833,6 +846,7 @@ Route::post('inventsal/aprobinventsal/{id}', 'InvEntSalController@aprobinventsal
 Route::get('inventsal/exportPdf', 'InvEntSalController@exportPdf')->name('exportPdf_inventsal');
 Route::get('inventsal/producto/productobuscarpage', 'ProductoController@productobuscarpage')->name('productobuscarpage_producto_inventsal');
 Route::get('inventsal/{id}/producto/productobuscarpage', 'ProductoController@productobuscarpageid')->name('productobuscarpageid_producto_inventsal');
+Route::get('inventsal/{id}/productobuscarpage', 'InvEntSalController@productobuscarpage')->name('productobuscarpage_inventsal');
 
 
 /*RUTAS InvBodegaProductoController*/
@@ -887,6 +901,40 @@ Route::post('invmovmodulo', 'InvMovModuloController@guardar')->name('guardar_inv
 Route::get('invmovmodulo/{id}/editar', 'InvMovModuloController@editar')->name('editar_invmovmodulo');
 Route::put('invmovmodulo/{id}', 'InvMovModuloController@actualizar')->name('actualizar_invmovmodulo');
 Route::delete('invmovmodulo/{id}', 'InvMovModuloController@eliminar')->name('eliminar_invmovmodulo');
+/*RUTAS APROBAR ACUERDO TECNICO COTIZACION */
+Route::get('cotizacionaprobaracutec', 'CotizacionAprobarAcuTecController@index')->name('cotizacionaprobaracutec');
+Route::get('cotizacionaprobaracutecpage', 'CotizacionAprobarAcuTecController@cotizacionaprobaracutecpage')->name('cotizacionaprobaracutecpage');
+Route::get('cotizacionaprobaracutec/{id}/editar', 'CotizacionAprobarAcuTecController@editar')->name('editar_cotizacionaprobaracutec');
+Route::get('cotizacionaprobaracutec/{id}/productobuscarpage', 'CotizacionAprobarAcuTecController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('cotizacionaprobaracutec/{id}/clientebuscarpage', 'CotizacionAprobarAcuTecController@clientebuscarpageid')->name('clientebuscarpageid');
+
+/*RUTAS GUIA DESPACHO*/
+Route::get('guiadesp', 'GuiaDespController@index')->name('guiadesp');
+Route::get('guiadesppage', 'GuiaDespController@guiadesppage')->name('guiadesppage');
+Route::get('guiadesp/totalizarindex', 'GuiaDespController@totalizarindex')->name('guiadesp_totalizarindex');
+Route::get('guiadesp/{id}/crear', 'GuiaDespController@crear')->name('crear_guiadesp');
+Route::post('guiadesp', 'GuiaDespController@guardar')->name('guardar_guiadesp');
+Route::get('guiadesp/{id}/editar', 'GuiaDespController@editar')->name('editar_guiadesp');
+Route::put('guiadesp/{id}', 'GuiaDespController@actualizar')->name('actualizar_guiadesp');
+Route::delete('guiadesp/{id}', 'GuiaDespController@eliminar')->name('eliminar_guiadesp');
+Route::get('guiadesp/listarorddesp', 'GuiaDespController@listarorddesp')->name('guiadesp_listarorddesp');
+Route::get('guiadesp/listarorddesppage', 'GuiaDespController@listarorddesppage')->name('guiadesp_listarorddesppage');
+Route::get('guiadesp/totalizarindex', 'GuiaDespController@totalizarindex')->name('guiadesp_listarorddesp_totalizarindex');
+Route::post('guiadesp/guardarguiadesp', 'GuiaDespController@guardarguiadesp')->name('guiadesp_guardarguiadesp');
+Route::get('guiadesp/productobuscarpage', 'GuiaDespController@productobuscarpage')->name('guiadesp_productobuscarpage');
+Route::get('guiadesp/clientebuscarpage', 'GuiaDespController@clientebuscarpage')->name('guiadesp_clientebuscarpage');
+Route::get('guiadesp/{id}/productobuscarpage', 'GuiaDespController@productobuscarpageid')->name('guiadesp_productobuscarpageid');
+Route::get('guiadesp/{id}/clientebuscarpage', 'GuiaDespController@clientebuscarpageid')->name('guiadesp_clientebuscarpageid');
+Route::post('guiadesp/dteguiadesp', 'GuiaDespController@dteguiadesp')->name('guiadesp_dteguiadesp');
+Route::get('guiadesp/{id}/{stareport}/exportPdf', 'GuiaDespController@exportPdf')->name('exportPdf_guiadesp');
+Route::post('guiadesp/validarupdated', 'GuiaDespController@validarupdated')->name('validarupdated');
+Route::post('guiadesp/consultarguiadesp', 'GuiaDespController@consultarGuiaDesp')->name('consultarGuiaDesp_guiadesp');
+
+/*RUTAS LISTAR ORDEN DESPACHO*/
+Route::get('listarorddesp', 'ListarorddespController@index')->name('listarorddesp');
+Route::get('listarorddesppage', 'ListarorddespController@listarorddesppage')->name('listarorddesppage');
+Route::get('listarorddesp/totalizarindex', 'ListarorddespController@totalizarindex')->name('listarorddesp_totalizarindex');
+Route::post('listarorddesp/guardarguiadesp', 'ListarorddespController@guardarguiadesp')->name('guardarguiadesp_listarorddesp');
 
 
 /*RUTAS INV STOCK BODEGA DE PRODUCTO TERMINADO MAS PIKING*/
@@ -963,6 +1011,297 @@ Route::post('invbodpesajeabodprodterm', 'InvBodPesajeaBodProdTermController@guar
 
 /*RUTAS REPORTE SOLICITUD DESPACHO PENDIENTE DESPACHO*/
 Route::get('reportdespachosolpendiente', 'ReportDespachoSolPendienteController@index')->name('reportdespachosolpendiente');
+/*RUTAS ASIGNAR PRODUCTO A CLIENTE*/
+Route::get('clienteproducto', 'ClienteProductoController@index')->name('clienteproducto');
+Route::get('clienteproductopage', 'ClienteProductoController@clienteproductopage')->name('clienteproductopage');
+Route::get('clienteproducto/{id}/editar', 'ClienteProductoController@editar')->name('editar_clienteproducto');
+Route::put('clienteproducto/{id}', 'ClienteProductoController@actualizar')->name('actualizar_clienteproducto');
+Route::get('clienteproducto/productobuscarpage', 'ClienteProductoController@productobuscarpage')->name('productobuscarpage');
+Route::get('clienteproducto/{id}/productobuscarpage', 'ClienteProductoController@productobuscarpageid')->name('productobuscarpageid');
+
+
+/*RUTAS FORMA DE PAGO*/
+Route::get('centroeconomico', 'CentroEconomicoController@index')->name('centroeconomico');
+Route::get('centroeconomicopage', 'CentroEconomicoController@centroeconomicopage')->name('centroeconomicopage');
+Route::get('centroeconomico/crear', 'CentroEconomicoController@crear')->name('crear_centroeconomico');
+Route::post('centroeconomico', 'CentroEconomicoController@guardar')->name('guardar_centroeconomico');
+Route::get('centroeconomico/{id}/editar', 'CentroEconomicoController@editar')->name('editar_centroeconomico');
+Route::put('centroeconomico/{id}', 'CentroEconomicoController@actualizar')->name('actualizar_centroeconomico');
+Route::delete('centroeconomico/{id}', 'CentroEconomicoController@eliminar')->name('eliminar_centroeconomico');
+
+/*RUTAS FORMA DE PAGO*/
+Route::get('foliocontrol', 'FoliocontrolController@index')->name('foliocontrol');
+Route::get('foliocontrolpage', 'FoliocontrolController@foliocontrolpage')->name('foliocontrolpage');
+Route::get('foliocontrol/crear', 'FoliocontrolController@crear')->name('crear_foliocontrol');
+Route::post('foliocontrol', 'FoliocontrolController@guardar')->name('guardar_foliocontrol');
+Route::get('foliocontrol/{id}/editar', 'FoliocontrolController@editar')->name('editar_foliocontrol');
+Route::put('foliocontrol/{id}', 'FoliocontrolController@actualizar')->name('actualizar_foliocontrol');
+Route::delete('foliocontrol/{id}', 'FoliocontrolController@eliminar')->name('eliminar_foliocontrol');
+
+/*RUTAS REPORTE GUIA DESPACHO*/
+Route::get('reportguiadesp', 'ReportGuiaDespController@index')->name('reportguiadesp');
+Route::get('reportguiadesp/reportguiadesppage', 'ReportGuiaDespController@reportguiadesppage')->name('reportguiadesppage');
+Route::get('reportguiadesp/reporte', 'ReportGuiaDespController@reporte')->name('reportguiadesp_reporte');
+Route::get('reportguiadesp/exportPdf', 'ReportGuiaDespController@exportPdf')->name('reportguiadesp_exportPdf');
+Route::get('reportguiadesp/totalizarindex', 'ReportGuiaDespController@totalizarindex')->name('reportguiadesp_totalizarindex');
+
+/*RUTAS PRUEBA SOAP*/
+Route::get('soap', 'SoapController@index')->name('soap');
+Route::get('soap/Reimprimir_DoctoDTE', 'SoapController@Reimprimir_DoctoDTE')->name('Reimprimir_DoctoDTE_soap');
+
+Route::get('guiadespanul', 'GuiaDespAnulController@index')->name('guiadespanul');
+Route::get('guiadespanulpage', 'GuiaDespAnulController@guiadespanulpage')->name('guiadespanulpage');
+Route::get('guiadespanul/totalizarindex', 'GuiaDespAnulController@totalizarindex')->name('guiadespanul_totalizarindex');
+Route::get('guiadespanul/{id}/crear', 'GuiaDespAnulController@crear')->name('crear_guiadespanul');
+Route::post('guiadespanul', 'GuiaDespAnulController@guardar')->name('guardar_guiadespanul');
+Route::get('guiadespanul/{id}/editar', 'GuiaDespAnulController@editar')->name('editar_guiadespanul');
+Route::put('guiadespanul/{id}', 'GuiaDespAnulController@actualizar')->name('actualizar_guiadespanul');
+Route::delete('guiadespanul/{id}', 'GuiaDespAnulController@eliminar')->name('eliminar_guiadespanul');
+Route::post('guiadespanul/store', 'GuiaDespAnulController@store')->name('store_guiadespanul');
+
+
+/*RUTAS FACTURA*/
+Route::get('factura', 'FacturaController@index')->name('factura');
+Route::get('facturapage', 'FacturaController@facturapage')->name('facturapage');
+Route::get('factura/totalizarindex', 'FacturaController@totalizarindex')->name('factura_totalizarindex');
+Route::get('factura/crear', 'FacturaController@crear')->name('crear_factura');
+Route::post('factura', 'FacturaController@guardar')->name('guardar_factura');
+Route::get('factura/{id}/editar', 'FacturaController@editar')->name('editar_factura');
+Route::put('factura/{id}', 'FacturaController@actualizar')->name('actualizar_factura');
+Route::delete('factura/{id}', 'FacturaController@eliminar')->name('eliminar_factura');
+Route::get('factura/listarguiadesp', 'FacturaController@listarguiadesp')->name('factura_listarguiadesp');
+Route::get('factura/listarguiadesppage', 'FacturaController@listarguiadesppage')->name('factura_listarguiadesppage');
+Route::post('factura/guardarfactura', 'FacturaController@guardarfactura')->name('factura_guardarfactura');
+Route::get('factura/productobuscarpage', 'FacturaController@productobuscarpage')->name('factura_productobuscarpage');
+Route::get('factura/clientebuscarpage', 'FacturaController@clientebuscarpage')->name('factura_clientebuscarpage');
+Route::get('factura/{id}/productobuscarpage', 'FacturaController@productobuscarpageid')->name('factura_productobuscarpageid');
+Route::get('factura/{id}/clientebuscarpage', 'FacturaController@clientebuscarpageid')->name('factura_clientebuscarpageid');
+Route::post('factura/dtefactura', 'FacturaController@dtefactura')->name('factura_dtefactura');
+Route::get('factura/{id}/{stareport}/exportPdf', 'FacturaController@exportPdf')->name('exportPdf_factura');
+Route::post('factura/validarupdated', 'FacturaController@validarupdated')->name('validarupdated');
+
+
+/*RUTAS DTE GUIA DESPACHO*/
+Route::get('dteguiadesp', 'DteGuiaDespController@index')->name('dteguiadesp');
+Route::get('dteguiadesppage', 'DteGuiaDespController@dteguiadesppage')->name('dteguiadesppage');
+Route::get('dteguiadesp/totalizarindex', 'DteGuiaDespController@totalizarindex')->name('dteguiadesp_totalizarindex');
+//Route::get('dteguiadesp/{id}/crear', 'DteGuiaDespController@crear')->name('crear_dteguiadesp');
+Route::get('dteguiadesp/{id}/{updated_at}/crear', 'DteGuiaDespController@crear')->name('crear_dteguiadesp');
+Route::post('dteguiadesp', 'DteGuiaDespController@guardar')->name('guardar_dteguiadesp');
+Route::get('dteguiadesp/{id}/editar', 'DteGuiaDespController@editar')->name('editar_dteguiadesp');
+Route::put('dteguiadesp/{id}', 'DteGuiaDespController@actualizar')->name('actualizar_dteguiadesp');
+Route::delete('dteguiadesp/{id}', 'DteGuiaDespController@eliminar')->name('eliminar_dteguiadesp');
+Route::get('dteguiadesp/listarorddesp', 'DteGuiaDespController@listarorddesp')->name('dteguiadesp_listarorddesp');
+Route::get('dteguiadesp/listarorddesppage', 'DteGuiaDespController@listarorddesppage')->name('dteguiadesp_listarorddesppage');
+//Route::get('dteguiadesp/totalizarindex', 'DteGuiaDespController@totalizarindex')->name('dteguiadesp_listarorddesp_totalizarindex');
+Route::post('dteguiadesp/guardardteguiadesp', 'DteGuiaDespController@guardardteguiadesp')->name('dteguiadesp_guardardteguiadesp');
+Route::get('dteguiadesp/productobuscarpage', 'DteGuiaDespController@productobuscarpage')->name('dteguiadesp_productobuscarpage');
+Route::get('dteguiadesp/clientebuscarpage', 'DteGuiaDespController@clientebuscarpage')->name('dteguiadesp_clientebuscarpage');
+Route::get('dteguiadesp/{id}/productobuscarpage', 'DteGuiaDespController@productobuscarpageid')->name('dteguiadesp_productobuscarpageid');
+Route::get('dteguiadesp/{id}/clientebuscarpage', 'DteGuiaDespController@clientebuscarpageid')->name('dteguiadesp_clientebuscarpageid');
+Route::post('dteguiadesp/dtedteguiadesp', 'DteGuiaDespController@dtedteguiadesp')->name('dteguiadesp_dtedteguiadesp');
+Route::get('dteguiadesp/{id}/{stareport}/exportPdf', 'DteGuiaDespController@exportPdf')->name('exportPdf_dteguiadesp');
+Route::post('dteguiadesp/validarupdated', 'DteGuiaDespController@validarupdated')->name('validarupdated');
+Route::post('dteguiadesp/consultardteguiadesp', 'DteGuiaDespController@consultarDteGuiaDesp')->name('consultarDteGuiaDesp_dteguiadesp');
+Route::post('dteguiadesp/guiadespanul', 'DteGuiaDespController@guiadespanul')->name('guiadespanul_dteguiadesp');
+Route::post('dteguiadesp/volverGenDTE', 'DteGuiaDespController@volverGenDTE')->name('volverGenDTE_dteguiadesp');
+Route::post('dteguiadesp/procesar', 'DteGuiaDespController@procesar')->name('procesar_dteguiadesp');
+
+/*RUTAS REPORTE DTE GUIA DESPACHO*/
+Route::get('reportdteguiadesp', 'ReportDTEGuiaDespController@index')->name('reportdteguiadesp');
+Route::get('reportdteguiadesp/reportdteguiadesppage', 'ReportDTEGuiaDespController@reportdteguiadesppage')->name('reportdteguiadesppage');
+Route::get('reportdteguiadesp/reporte', 'ReportDTEGuiaDespController@reporte')->name('reportdteguiadesp_reporte');
+Route::get('reportdteguiadesp/exportPdf', 'ReportDTEGuiaDespController@exportPdf')->name('reportdteguiadesp_exportPdf');
+Route::get('reportdteguiadesp/totalizarindex', 'ReportDTEGuiaDespController@totalizarindex')->name('reportdteguiadesp_totalizarindex');
+
+
+/*RUTAS FACTURA*/
+Route::get('dtefactura', 'DteFacturaController@index')->name('dtefactura');
+Route::get('dtefacturapage', 'DteFacturaController@dtefacturapage')->name('dtefacturapage');
+Route::get('dtefactura/totalizarindex', 'DteFacturaController@totalizarindex')->name('dtefactura_totalizarindex');
+Route::get('dtefactura/crear', 'DteFacturaController@crear')->name('crear_dtefactura');
+Route::post('dtefactura', 'DteFacturaController@guardar')->name('guardar_dtefactura');
+Route::get('dtefactura/{id}/editar', 'DteFacturaController@editar')->name('editar_dtefactura');
+Route::put('dtefactura/{id}', 'DteFacturaController@actualizar')->name('actualizar_dtefactura');
+Route::delete('dtefactura/{id}', 'DteFacturaController@eliminar')->name('eliminar_dtefactura');
+Route::get('dtefactura/listarguiadesp', 'DteFacturaController@listarguiadesp')->name('dtefactura_listarguiadesp');
+Route::get('dtefactura/listarguiadesppage', 'DteFacturaController@listarguiadesppage')->name('dtefactura_listarguiadesppage');
+Route::post('dtefactura/procesar', 'DteFacturaController@procesar')->name('dtefactura_procesar');
+Route::get('dtefactura/productobuscarpage', 'DteFacturaController@productobuscarpage')->name('dtefactura_productobuscarpage');
+Route::get('dtefactura/clientebuscarpage', 'DteFacturaController@clientebuscarpage')->name('dtefactura_clientebuscarpage');
+Route::get('dtefactura/{id}/productobuscarpage', 'DteFacturaController@productobuscarpageid')->name('dtefactura_productobuscarpageid');
+Route::get('dtefactura/{id}/clientebuscarpage', 'DteFacturaController@clientebuscarpageid')->name('dtefactura_clientebuscarpageid');
+Route::post('dtefactura/dtedtefactura', 'DteFacturaController@dtedtefactura')->name('dtefactura_dtedtefactura');
+Route::get('dtefactura/{id}/{stareport}/exportPdf', 'DteFacturaController@exportPdf')->name('exportPdf_dtefactura');
+Route::post('dtefactura/validarupdated', 'DteFacturaController@validarupdated')->name('validarupdated');
+Route::post('dtefactura/listardtedet', 'DteFacturaController@listardtedet')->name('dtefactura_listardtedet');
+Route::post('dtefactura/anular', 'DteFacturaController@anular')->name('dtefactura_anular');
+Route::post('dtefactura/buscarfactura', 'DteFacturaController@buscarfactura')->name('dtefactura_buscarfactura');
+Route::post('dtefactura/estadoDTE', 'DteFacturaController@estadoDTE')->name('dtefactura_estadoDTE');
+Route::post('dtefactura/staverfacdesp', 'DteFacturaController@staverfacdesp')->name('dtefactura_staverfacdesp');
+Route::post('dtefactura/devolverguiadesp', 'DteFacturaController@devolverguiadesp')->name('dtefactura_devolverguiadesp');
+
+/*RUTAS REPORTE DTE FACTURA*/
+Route::get('reportdtefac', 'ReportDTEFacController@index')->name('reportdtefac');
+Route::get('reportdtefac/reportdtefacpage', 'ReportDTEFacController@reportdtefacpage')->name('reportdtefacpage');
+Route::get('reportdtefac/reporte', 'ReportDTEFacController@reporte')->name('reportdtefac_reporte');
+Route::get('reportdtefac/exportPdf', 'ReportDTEFacController@exportPdf')->name('reportdtefac_exportPdf');
+Route::get('reportdtefac/totalizarindex', 'ReportDTEFacController@totalizarindex')->name('reportdtefac_totalizarindex');
+
+
+/*RUTAS ACUERDO TECNICO*/
+Route::post('acuerdotecnico/buscaratxcampos', 'AcuerdoTecnicoController@buscaratxcampos')->name('acuerdotecnico_buscaratxcampos');
+Route::get('acuerdotecnico/exportPdf', 'AcuerdoTecnicoController@exportPdf')->name('acuerdotecnico_exportPdf');
+
+/*RUTAS ACUERDO TECNICO TEMPORAL*/
+Route::get('acuerdotecnicotemp/exportPdf', 'AcuerdoTecnicoTempController@exportPdf')->name('acuerdotecnicotemp_exportPdf');
+
+
+/*RUTAS DTE GUIA DESPACHO ANULAR*/
+Route::get('dteguiadespanular', 'DteGuiaDespAnularController@index')->name('dteguiadespanular');
+Route::get('dteguiadespanularpage', 'DteGuiaDespAnularController@dteguiadespanularpage')->name('dteguiadespanularpage');
+Route::get('dteguiadespanular/totalizarindex', 'DteGuiaDespAnularController@totalizarindex')->name('dteguiadespanular_totalizarindex');
+//Route::get('dteguiadespanular/{id}/crear', 'DteGuiaDespAnularController@crear')->name('crear_dteguiadespanular');
+Route::get('dteguiadespanular/listarguiadesp', 'DteGuiaDespAnularController@listarguiadesp')->name('dteguiadespanular_listarguiadesp');
+Route::get('dteguiadespanular/listarguiadesppage', 'DteGuiaDespAnularController@listarguiadesppage')->name('dteguiadespanular_listarguiadesppage');
+Route::post('dteguiadespanular/dteguiadespanular', 'DteGuiaDespAnularController@dteguiadespanular')->name('dteguiadespanular_dteguiadespanular');
+
+/*RUTAS NOTA CREDITO FACTURA*/
+Route::get('dtencfactura', 'DteNCFacturaController@index')->name('dtencfactura');
+Route::get('dtencfacturapage', 'DteNCFacturaController@dtencfacturapage')->name('dtencfacturapage');
+Route::get('dtencfactura/totalizarindex', 'DteNCFacturaController@totalizarindex')->name('dtencfactura_totalizarindex');
+Route::get('dtencfactura/crear', 'DteNCFacturaController@crear')->name('crear_dtencfactura');
+Route::post('dtencfactura', 'DteNCFacturaController@guardar')->name('guardar_dtencfactura');
+Route::get('dtencfactura/{id}/editar', 'DteNCFacturaController@editar')->name('editar_dtencfactura');
+Route::put('dtencfactura/{id}', 'DteNCFacturaController@actualizar')->name('actualizar_dtencfactura');
+Route::delete('dtencfactura/{id}', 'DteNCFacturaController@eliminar')->name('eliminar_dtencfactura');
+Route::get('dtencfactura/listarguiadesp', 'DteNCFacturaController@listarguiadesp')->name('dtencfactura_listarguiadesp');
+Route::get('dtencfactura/listarguiadesppage', 'DteNCFacturaController@listarguiadesppage')->name('dtencfactura_listarguiadesppage');
+Route::post('dtencfactura/procesar', 'DteNCFacturaController@procesar')->name('dtencfactura_procesar');
+Route::post('dtencfactura/consdte_dtedet', 'DteNCFacturaController@consdte_dtedet')->name('dtencfactura_consdte_dtedet');
+Route::post('dtencfactura/anular', 'DteNCFacturaController@anular')->name('dtencfactura_anular');
+
+/*RUTAS NOTA DEBITO FACTURA*/
+Route::get('dtendfactura', 'DteNDFacturaController@index')->name('dtendfactura');
+Route::get('dtendfacturapage', 'DteNDFacturaController@dtendfacturapage')->name('dtendfacturapage');
+Route::get('dtendfactura/totalizarindex', 'DteNDFacturaController@totalizarindex')->name('dtendfactura_totalizarindex');
+Route::get('dtendfactura/crear', 'DteNDFacturaController@crear')->name('crear_dtendfactura');
+Route::post('dtendfactura', 'DteNDFacturaController@guardar')->name('guardar_dtendfactura');
+Route::get('dtendfactura/{id}/editar', 'DteNDFacturaController@editar')->name('editar_dtendfactura');
+Route::put('dtendfactura/{id}', 'DteNDFacturaController@actualizar')->name('actualizar_dtendfactura');
+Route::delete('dtendfactura/{id}', 'DteNDFacturaController@eliminar')->name('eliminar_dtendfactura');
+Route::get('dtendfactura/listarguiadesp', 'DteNDFacturaController@listarguiadesp')->name('dtendfactura_listarguiadesp');
+Route::get('dtendfactura/listarguiadesppage', 'DteNDFacturaController@listarguiadesppage')->name('dtendfactura_listarguiadesppage');
+Route::post('dtendfactura/procesar', 'DteNDFacturaController@procesar')->name('dtendfactura_procesar');
+Route::post('dtendfactura/consdte_dtedet', 'DteNDFacturaController@consdte_dtedet')->name('dtendfactura_consdte_dtedet');
+Route::post('dtendfactura/anular', 'DteNDFacturaController@anular')->name('dtendfactura_anular');
+
+
+/*RUTAS REPORTE DTE NOTA CREDITO*/
+Route::get('reportdtenc', 'ReportDTENcController@index')->name('reportdtenc');
+Route::get('reportdtenc/reportdtencpage', 'ReportDTENcController@reportdtencpage')->name('reportdtencpage');
+Route::get('reportdtenc/reporte', 'ReportDTENcController@reporte')->name('reportdtenc_reporte');
+Route::get('reportdtenc/exportPdf', 'ReportDTENcController@exportPdf')->name('reportdtenc_exportPdf');
+Route::get('reportdtenc/totalizarindex', 'ReportDTENcController@totalizarindex')->name('reportdtenc_totalizarindex');
+
+/*RUTAS REPORTE DTE NOTA DEBITO*/
+Route::get('reportdtend', 'ReportDTENdController@index')->name('reportdtend');
+Route::get('reportdtend/reportdtendpage', 'ReportDTENdController@reportdtendpage')->name('reportdtendpage');
+Route::get('reportdtend/reporte', 'ReportDTENdController@reporte')->name('reportdtend_reporte');
+Route::get('reportdtend/exportPdf', 'ReportDTENdController@exportPdf')->name('reportdtend_exportPdf');
+Route::get('reportdtend/totalizarindex', 'ReportDTENdController@totalizarindex')->name('reportdtend_totalizarindex');
+
+/*RUTAS FACTURA DIRECTA*/
+Route::get('dtefacturadir', 'DteFacturaDirController@index')->name('dtefacturadir');
+Route::get('dtefacturadirpage', 'DteFacturaDirController@dtefacturadirpage')->name('dtefacturadirpage');
+Route::get('dtefacturadir/totalizarindex', 'DteFacturaDirController@totalizarindex')->name('dtefacturadir_totalizarindex');
+Route::get('dtefacturadir/crear', 'DteFacturaDirController@crear')->name('crear_dtefacturadir');
+Route::post('dtefacturadir', 'DteFacturaDirController@guardar')->name('guardar_dtefacturadir');
+Route::get('dtefacturadir/{id}/editar', 'DteFacturaDirController@editar')->name('editar_dtefacturadir');
+Route::put('dtefacturadir/{id}', 'DteFacturaDirController@actualizar')->name('actualizar_dtefacturadir');
+Route::delete('dtefacturadir/{id}', 'DteFacturaDirController@eliminar')->name('eliminar_dtefacturadir');
+Route::get('dtefacturadir/listarguiadesp', 'DteFacturaDirController@listarguiadesp')->name('dtefacturadir_listarguiadesp');
+Route::get('dtefacturadir/listarguiadesppage', 'DteFacturaDirController@listarguiadesppage')->name('dtefacturadir_listarguiadesppage');
+Route::post('dtefacturadir/procesar', 'DteFacturaDirController@procesar')->name('dtefacturadir_procesar');
+//Route::get('dtefacturadir/productobuscarpage', 'DteFacturaDirController@productobuscarpage')->name('dtefacturadir_productobuscarpage');
+Route::get('dtefacturadir/clientebuscarpage', 'DteFacturaDirController@clientebuscarpage')->name('dtefacturadir_clientebuscarpage');
+//Route::get('dtefacturadir/{id}/productobuscarpage', 'DteFacturaDirController@productobuscarpageid')->name('dtefacturadir_productobuscarpageid');
+Route::get('dtefacturadir/{id}/clientebuscarpage', 'DteFacturaDirController@clientebuscarpageid')->name('dtefacturadir_clientebuscarpageid');
+Route::post('dtefacturadir/dtedtefacturadir', 'DteFacturaDirController@dtedtefacturadir')->name('dtefacturadir_dtedtefacturadir');
+Route::get('dtefacturadir/{id}/{stareport}/exportPdf', 'DteFacturaDirController@exportPdf')->name('exportPdf_dtefacturadir');
+Route::post('dtefacturadir/validarupdated', 'DteFacturaDirController@validarupdated')->name('validarupdated');
+Route::post('dtefacturadir/listardtedet', 'DteFacturaDirController@listardtedet')->name('dtefacturadir_listardtedet');
+Route::post('dtefacturadir/buscarfactura', 'DteFacturaDirController@buscarfactura')->name('dtefacturadir_buscarfactura');
+
+/*RUTAS FACTURA EXENTA*/
+Route::get('dtefacturaexenta', 'DteFacturaExentaController@index')->name('dtefacturaexenta');
+Route::get('dtefacturaexentapage', 'DteFacturaExentaController@dtefacturaexentapage')->name('dtefacturaexentapage');
+Route::get('dtefacturaexenta/totalizarindex', 'DteFacturaExentaController@totalizarindex')->name('dtefacturaexenta_totalizarindex');
+Route::get('dtefacturaexenta/crear', 'DteFacturaExentaController@crear')->name('crear_dtefacturaexenta');
+Route::post('dtefacturaexenta', 'DteFacturaExentaController@guardar')->name('guardar_dtefacturaexenta');
+Route::get('dtefacturaexenta/{id}/editar', 'DteFacturaExentaController@editar')->name('editar_dtefacturaexenta');
+Route::put('dtefacturaexenta/{id}', 'DteFacturaExentaController@actualizar')->name('actualizar_dtefacturaexenta');
+Route::delete('dtefacturaexenta/{id}', 'DteFacturaExentaController@eliminar')->name('eliminar_dtefacturaexenta');
+Route::get('dtefacturaexenta/listarguiadesp', 'DteFacturaExentaController@listarguiadesp')->name('dtefacturaexenta_listarguiadesp');
+Route::get('dtefacturaexenta/listarguiadesppage', 'DteFacturaExentaController@listarguiadesppage')->name('dtefacturaexenta_listarguiadesppage');
+Route::post('dtefacturaexenta/procesar', 'DteFacturaExentaController@procesar')->name('dtefacturaexenta_procesar');
+//Route::get('dtefacturaexenta/productobuscarpage', 'DteFacturaExentaController@productobuscarpage')->name('dtefacturaexenta_productobuscarpage');
+Route::get('dtefacturaexenta/clientebuscarpage', 'DteFacturaExentaController@clientebuscarpage')->name('dtefacturaexenta_clientebuscarpage');
+//Route::get('dtefacturaexenta/{id}/productobuscarpage', 'DteFacturaExentaController@productobuscarpageid')->name('dtefacturaexenta_productobuscarpageid');
+Route::get('dtefacturaexenta/{id}/clientebuscarpage', 'DteFacturaExentaController@clientebuscarpageid')->name('dtefacturaexenta_clientebuscarpageid');
+Route::post('dtefacturaexenta/dtedtefacturaexenta', 'DteFacturaExentaController@dtedtefacturaexenta')->name('dtefacturaexenta_dtedtefacturaexenta');
+Route::get('dtefacturaexenta/{id}/{stareport}/exportPdf', 'DteFacturaExentaController@exportPdf')->name('exportPdf_dtefacturaexenta');
+Route::post('dtefacturaexenta/validarupdated', 'DteFacturaExentaController@validarupdated')->name('validarupdated');
+Route::post('dtefacturaexenta/listardtedet', 'DteFacturaExentaController@listardtedet')->name('dtefacturaexenta_listardtedet');
+Route::post('dtefacturaexenta/buscarfactura', 'DteFacturaExentaController@buscarfactura')->name('dtefacturaexenta_buscarfactura');
+
+/*RUTAS GUIA DIRECTA*/
+Route::get('dteguiadespdir', 'DteGuiaDespDirController@index')->name('dteguiadespdir');
+Route::get('dteguiadespdirpage', 'DteGuiaDespDirController@dteguiadespdirpage')->name('dteguiadespdirpage');
+Route::get('dteguiadespdir/totalizarindex', 'DteGuiaDespDirController@totalizarindex')->name('dteguiadespdir_totalizarindex');
+Route::get('dteguiadespdir/crear', 'DteGuiaDespDirController@crear')->name('crear_dteguiadespdir');
+Route::post('dteguiadespdir', 'DteGuiaDespDirController@guardar')->name('guardar_dteguiadespdir');
+Route::get('dteguiadespdir/{id}/editar', 'DteGuiaDespDirController@editar')->name('editar_dteguiadespdir');
+Route::put('dteguiadespdir/{id}', 'DteGuiaDespDirController@actualizar')->name('actualizar_dteguiadespdir');
+Route::delete('dteguiadespdir/{id}', 'DteGuiaDespDirController@eliminar')->name('eliminar_dteguiadespdir');
+Route::get('dteguiadespdir/listarguiadesp', 'DteGuiaDespDirController@listarguiadesp')->name('dteguiadespdir_listarguiadesp');
+Route::get('dteguiadespdir/listarguiadesppage', 'DteGuiaDespDirController@listarguiadesppage')->name('dteguiadespdir_listarguiadesppage');
+Route::post('dteguiadespdir/procesar', 'DteGuiaDespDirController@procesar')->name('dteguiadespdir_procesar');
+//Route::get('dteguiadespdir/productobuscarpage', 'DteGuiaDespDirController@productobuscarpage')->name('dteguiadespdir_productobuscarpage');
+Route::get('dteguiadespdir/clientebuscarpage', 'DteGuiaDespDirController@clientebuscarpage')->name('dteguiadespdir_clientebuscarpage');
+//Route::get('dteguiadespdir/{id}/productobuscarpage', 'DteGuiaDespDirController@productobuscarpageid')->name('dteguiadespdir_productobuscarpageid');
+Route::get('dteguiadespdir/{id}/clientebuscarpage', 'DteGuiaDespDirController@clientebuscarpageid')->name('dteguiadespdir_clientebuscarpageid');
+Route::post('dteguiadespdir/dtedteguiadespdir', 'DteGuiaDespDirController@dtedteguiadespdir')->name('dteguiadespdir_dtedteguiadespdir');
+Route::get('dteguiadespdir/{id}/{stareport}/exportPdf', 'DteGuiaDespDirController@exportPdf')->name('exportPdf_dteguiadespdir');
+Route::post('dteguiadespdir/validarupdated', 'DteGuiaDespDirController@validarupdated')->name('validarupdated');
+Route::post('dteguiadespdir/listardtedet', 'DteGuiaDespDirController@listardtedet')->name('dteguiadespdir_listardtedet');
+Route::post('dteguiadespdir/buscarfactura', 'DteGuiaDespDirController@buscarfactura')->name('dteguiadespdir_buscarfactura');
+
+
+/*RUTAS PERMITIR VER FACTURA EN DESPACHO*/
+Route::get('reportverfacdesp', 'ReportVerFacDespController@index')->name('reportverfacdesp');
+Route::get('reportverfacdesppage', 'ReportVerFacDespController@reportverfacdesppage')->name('reportverfacdesppage');
+
+/*RUTAS REPORTE ESTADO CLIENTE*/
+Route::get('reportdteestadocli', 'ReportDTEEstadoCliController@index')->name('reportdteestadocli');
+Route::get('reportdteestadocli/reportdteestadoclipage', 'ReportDTEEstadoCliController@reportdteestadoclipage')->name('reportdteestadoclipage');
+Route::get('reportdteestadocli/reporte', 'ReportDTEEstadoCliController@reporte')->name('reportdteestadocli_reporte');
+Route::get('reportdteestadocli/exportPdf', 'ReportDTEEstadoCliController@exportPdf')->name('reportdteestadocli_exportPdf');
+Route::get('reportdteestadocli/totalizarindex', 'ReportDTEEstadoCliController@totalizarindex')->name('reportdteestadocli_totalizarindex');
+
+/*RUTAS REPORTE VENTAS POR VENDEDOR*/
+Route::get('reportdteventasxvend', 'ReportDTEVentasxVendController@index')->name('reportdteventasxvend');
+Route::get('reportdteventasxvend/reportdteventasxvendpage', 'ReportDTEVentasxVendController@reportdteventasxvendpage')->name('reportdteventasxvendpage');
+Route::get('reportdteventasxvend/reporte', 'ReportDTEVentasxVendController@reporte')->name('reportdteventasxvend_reporte');
+Route::get('reportdteventasxvend/exportPdf', 'ReportDTEVentasxVendController@exportPdf')->name('reportdteventasxvend_exportPdf');
+Route::get('reportdteventasxvend/totalizarindex', 'ReportDTEVentasxVendController@totalizarindex')->name('reportdteventasxvend_totalizarindex');
+
+/*RUTAS REPORTE COMISION POR VENDEDOR*/
+Route::get('reportdtecomisionxvend', 'ReportDTEComisionxVendController@index')->name('reportdtecomisionxvend');
+Route::get('reportdtecomisionxvend/reportdtecomisionxvendpage', 'ReportDTEComisionxVendController@reportdtecomisionxvendpage')->name('reportdtecomisionxvendpage');
+Route::get('reportdtecomisionxvend/reporte', 'ReportDTEComisionxVendController@reporte')->name('reportdtecomisionxvend_reporte');
+Route::get('reportdtecomisionxvend/exportPdf', 'ReportDTEComisionxVendController@exportPdf')->name('reportdtecomisionxvend_exportPdf');
+Route::get('reportdtecomisionxvend/totalizarindex', 'ReportDTEComisionxVendController@totalizarindex')->name('reportdtecomisionxvend_totalizarindex');
 
 /*RUTAS INV STOCK BODEGA DE PRODUCTO TERMINADO MAS PIKING MAS PENDIENTE POR PRODUCTO*/
 Route::get('reportinvstockbppendxprod', 'ReportInvStockBPPendxProdController@index')->name('reportinvstockbppendxprod');
@@ -1000,3 +1339,23 @@ Route::get('reportproductopage', 'ReportProductoController@reportproductopage')-
 Route::get('reportproducto/reporte', 'ReportProductoController@reporte')->name('reportproducto_reporte');
 Route::get('reportproducto/exportPdf', 'ReportProductoController@exportPdf')->name('reportproducto_exportPdf');
 Route::get('reportproducto/totalizarindex', 'ReportProductoController@totalizarindex')->name('reportproducto_totalizarindex');
+/*RUTAS REPORTE LIBRO VENTAS*/
+Route::get('reportdtelibroventas', 'ReportDTELibroVentasController@index')->name('reportdtelibroventas');
+Route::get('reportdtelibroventas/reportdtelibroventaspage', 'ReportDTELibroVentasController@reportdtelibroventaspage')->name('reportdtelibroventaspage');
+Route::get('reportdtelibroventas/reporte', 'ReportDTELibroVentasController@reporte')->name('reportdtelibroventas_reporte');
+Route::get('reportdtelibroventas/exportPdf', 'ReportDTELibroVentasController@exportPdf')->name('reportdtelibroventas_exportPdf');
+Route::get('reportdtelibroventas/totalizarindex', 'ReportDTELibroVentasController@totalizarindex')->name('reportdtelibroventas_totalizarindex');
+
+/*RUTAS DTE GUIA DESPACHO CON ORIGEN NOTA DE VENTA*/
+Route::get('dteguiadespnv', 'DteGuiaDespNVController@index')->name('dteguiadespnv');
+Route::get('dteguiadespnvpage', 'DteGuiaDespNVController@dteguiadespnvpage')->name('dteguiadespnvpage');
+Route::get('dteguiadespnv/totalizarindex', 'DteGuiaDespNVController@totalizarindex')->name('dteguiadespnv_totalizarindex');
+//Route::get('dteguiadespnv/crear', 'DteGuiaDespNVController@crear')->name('crear_dteguiadespnv');
+Route::get('dteguiadespnv/{id}/crear', 'DteGuiaDespNVController@crear')->name('crear_dteguiadespnv');
+Route::post('dteguiadespnv', 'DteGuiaDespNVController@guardar')->name('guardar_dteguiadespnv');
+Route::get('dteguiadespnv/{id}/editar', 'DteGuiaDespNVController@editar')->name('editar_dteguiadespnv');
+Route::put('dteguiadespnv/{id}', 'DteGuiaDespNVController@actualizar')->name('actualizar_dteguiadespnv');
+Route::delete('dteguiadespnv/{id}', 'DteGuiaDespNVController@eliminar')->name('eliminar_dteguiadespnv');
+Route::get('dteguiadespnv/listarnv', 'DteGuiaDespNVController@listarnv')->name('listarnv_dteguiadespnv');
+Route::get('dteguiadespnv/listarnvpage', 'DespachoSolController@listarnvpage')->name('listarnvpage_dteguiadespnv'); //ESTOY USANDO DespachoSolController
+Route::get('dteguiadespnv/totalizarlistarnvpage', 'DespachoSolController@totalizarlistarnvpage')->name('dteguiadespnv_totalizarlistarnvpage'); //ESTOY USANDO DespachoSolController

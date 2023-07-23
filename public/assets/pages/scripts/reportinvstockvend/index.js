@@ -55,7 +55,11 @@ $(document).ready(function () {
                 $('td', row).eq(5).html(MASK(0, data.metacomerkg, '-###,###,###,##0.00',1));
                 */
                 $('td', row).eq(0).attr('style','text-align:center');
-                stockKg = data.stock * data.peso
+                if(data.peso <= 0){
+                    stockKg = data.stockkg;
+                }else{
+                    stockKg = data.stock * data.peso
+                }
                 $('td', row).eq(6).html(NUM(data.peso, 2));
                 $('td', row).eq(6).attr('style','text-align:right');
                 $('td', row).eq(9).attr('style','text-align:right');
@@ -76,6 +80,7 @@ $(document).ready(function () {
         $('#tabla-data-invstockvend').DataTable().ajax.url( "reportinvstockvendpage/" + data.data2 ).load();
         totalizar();
     });
+    tablascolsultainv($("#sucursal_id").val());
 
 });
 
@@ -91,7 +96,6 @@ function totalizar(){
         url: '/reportinvstock/totalizarindex/' + data.data2,
         type: 'GET',
         success: function (datos) {
-            console.log(datos);
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
@@ -173,3 +177,33 @@ $("#btnpdf").click(function(event){
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 });
+
+$("#sucursal_id").change(function(){
+    tablascolsultainv($("#sucursal_id").val());
+});
+
+
+function tablascolsultainv(id){
+    $("#categoriaprod_id").empty();
+    if((id == "" || id == "x") == false){
+        var data = {
+            id: id,
+            _token: $('input[name=_token]').val()
+        };
+        //console.log(data);
+        
+        $.ajax({
+            url: '/sucursal/tablascolsultainv',
+            type: 'POST',
+            data: data,
+            success: function (respuesta) {
+                $.each(respuesta.categoria, function(index,value){
+                    $("#categoriaprod_id").append("<option value='" + value.id + "'>" + value.nombre + "</option>")
+                });
+                $(".selectpicker").selectpicker('refresh');
+            }
+        });    
+    }else{
+        $(".selectpicker").selectpicker('refresh');
+    }
+}

@@ -291,8 +291,8 @@ Pendiente Solicitud Orden Despacho
         
     </div>
 </div>
-@include('generales.buscarclientebdtemp')
+@include('generales.buscarclientebd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproductobdtemp')
+@include('generales.buscarproductobd')
 @endsection

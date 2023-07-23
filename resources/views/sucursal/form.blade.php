@@ -17,10 +17,7 @@
             <select name="region_id" id="region_id" class="form-control select2 region_id" required>
                 <option value="">Seleccione...</option>
                 @foreach($regiones as $region)
-                    <option
-                        value="{{$region->id}}">
-                        {{$region->nombre}}
-                    </option>
+                    <option value="{{$region->id}}">{{trim($region->nombre)}}</option>
                 @endforeach
             </select>
         </div>
@@ -55,9 +52,7 @@
                         @if ($data->region_id==$region->id)
                             {{'selected'}}
                         @endif
-                        >
-                        {{$region->nombre}}
-                    </option>
+                        >{{$region->nombre}}</option>
                 @endforeach
             </select>
         </div>
@@ -72,9 +67,7 @@
                         @if ($data->provincia_id==$provincia->id)
                             {{'selected'}}
                         @endif
-                        >
-                        {{$provincia->nombre}}
-                    </option>
+                        >{{$provincia->nombre}}</option>
                 @endforeach
             </select>
         </div>
@@ -91,9 +84,7 @@
                         @if ($data->comuna_id==$comuna->id)
                             {{'selected'}}
                         @endif
-                        >
-                        {{$comuna->nombre}}
-                    </option>
+                        >{{$comuna->nombre}}</option>
                 @endforeach>
             </select>
         </div>
@@ -142,6 +133,26 @@
                     {{$nombre}}
                 </option>
             @endforeach
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label for="staaprobnv" class="col-lg-3 control-label requerido" title="Estatus Aprovar Nota Venta" data-toggle='tooltip'>Status Aprob Nota Venta</label>
+    <div class="col-lg-8">
+        <select name="staaprobnv" id="staaprobnv" class="form-control select2 staaprobnv" required>
+            <option value="">Seleccione...</option>
+            <option value="0"
+                @if ($data->staaprobnv == 0)
+                    {{'selected'}}
+                @endif>No es necesario Validar</option>
+            <option value="1"
+            @if ($data->staaprobnv == 1)
+                {{'selected'}}
+            @endif>Todas deben ser Validadas</option>
+            <option value="2"
+            @if ($data->staaprobnv == 2)
+                {{'selected'}}
+            @endif>Solo validar las que esten por debajo de precio en tabla</option>
         </select>
     </div>
 </div>

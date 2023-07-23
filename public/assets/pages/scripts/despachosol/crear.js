@@ -128,6 +128,14 @@ $(document).ready(function () {
 		$("#vendedor_id").val($("#vendedor_idD").val());
 	});
 
+	$("#auxeditcampoN").numeric(
+		{
+			decimalPlaces: 2,
+			negative: false
+		},
+	);
+	$("#auxeditcampoN").removeClass("requeridos");
+	//$("#auxeditcampoN").removeClass("valorrequerido");
 });
 
 function insertarTabla(){
@@ -250,10 +258,10 @@ function insertarTabla(){
 				$("#subtotalM").attr("valor")+
 			'</td>'+
 			'<td>' + 
-				'<a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
-				'<a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
 		'</tr>'+
@@ -678,3 +686,81 @@ function clickstaex(id){
         $("#staex" + id).val('1');
     }
 }
+
+$(".editarcampoNum").click(function()
+{
+	quitarvalidacioneach();
+	id = $(this).attr('fila');
+	aux_valor = $(this).attr('valor');
+	$("#auxeditcampoN").attr('aux_nomcampon',$(this).attr('nomcampo'));
+	$("#auxeditcampoN").attr('fila_id',id);
+	$("#auxeditcampoN").val(aux_valor.trim());
+	$("#myModalEditarCampoNum").modal('show');
+});
+
+$(".valorrequerido").keyup(function(){
+	//alert($(this).parent().attr('class'));
+	validacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+
+$(".valorrequerido").change(function(){
+	//alert($(this).parent().attr('class'));
+	validacion($(this).prop('name'),$(this).attr('tipoval'));
+});
+
+$("#btnaceptarMN").click(function(event){
+	event.preventDefault();
+	$("#auxeditcampoT").val('1');
+	let auxeditcampoN = $("#auxeditcampoN").val();
+	auxeditcampoN = parseInt(auxeditcampoN);
+	if(isNaN(auxeditcampoN))
+	{
+		alertify.error("Falta incluir informacion");
+	}else{
+		let aux_valororig = parseInt($("#cantTD" + id).attr("cantorig"));
+		let aux_resultado = aux_valororig + auxeditcampoN;
+		id = $("#auxeditcampoN").attr('fila_id');
+		$("#canttitle" + id).attr("data-original-title","Valor:" + $("#cantTD" + id).attr("cantorig") + " Ext:"  + auxeditcampoN)
+		$("#cantextA" + id).attr("valor",auxeditcampoN)
+		$("#cantext" + id).val(auxeditcampoN);
+		$("#cant" + id).val(aux_resultado);
+		$("#saldocantOrigF" + id).html(aux_resultado);
+		$("#cantTD" + id).html(aux_resultado);
+		$(".bod" + id).trigger("keyup");
+		$("#myModalEditarCampoNum").modal('hide');
+	}
+});
+
+function verificarDato(aux_nomclass)
+{
+	let aux_resultado = true;
+	$(aux_nomclass).serializeArray().map(function(x){
+		aux_tipoval = $("#" + x.name).attr('tipoval');
+		if (validacion(x.name,aux_tipoval) == false)
+		{
+			//return false;
+			aux_resultado = false;
+
+		}else{
+			//return true;
+		}
+	});
+	return aux_resultado;
+}
+
+$("#dte_id").change(function(){
+	let aux_val = $(this).val();
+	$("#tipoguiadesp").empty();
+	$("#tipoguiadesp").append("<option value=''>Seleccione...</option>")
+	if(aux_val == 1){
+		$("#tipoguiadesp").append("<option value='1'>Precio</option>")
+		$("#tipoguiadesp").append("<option value='20'>Traslado + Precio</option>")
+		$("#tipoguiadesp").val("");
+	}else{
+		if(aux_val> 0){
+			$("#tipoguiadesp").append("<option value='6'>Traslado</option>")
+			$("#tipoguiadesp").val("6");
+		}
+	}
+	$('#tipoguiadesp').trigger('change'); // Actualizar select2
+});

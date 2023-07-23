@@ -57,6 +57,8 @@ class ProductoController extends Controller
         */
     }
 
+    /*
+    //SAN BERNARDO
     public function productobuscarpage(Request $request){
         $datas = Producto::productosxClienteTemp($request);
         return datatables($datas)->toJson();
@@ -65,6 +67,18 @@ class ProductoController extends Controller
         $datas = Producto::productosxClienteTemp($request);
         return datatables($datas)->toJson();
     }
+    */
+
+    public function productobuscarpage(){
+        $datas = Producto::productosxUsuarioSQL();
+        return datatables($datas)->toJson();
+
+    }
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxCliente($request);
+        return datatables($datas)->toJson();
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -257,6 +271,8 @@ class ProductoController extends Controller
             ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
             ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
             ->leftJoin('unidadmedida', 'categoriaprod.unidadmedidafact_id', '=', 'unidadmedida.id')
+            ->leftJoin('acuerdotecnico', 'producto.id', '=', 'acuerdotecnico.producto_id')
+            ->leftJoin('tiposello', 'acuerdotecnico.at_tiposello_id', '=', 'tiposello.id')
             ->select([
                     'producto.id',
                     'producto.nombre',
@@ -271,13 +287,22 @@ class ProductoController extends Controller
                     'producto.tipounion',
                     'producto.precioneto',
                     'producto.estado',
+                    'producto.tipoprod',
+                    'producto.categoriaprod_id',
                     'categoriaprod.precio',
                     'categoriaprodsuc.sucursal_id',
                     'categoriaprod.unidadmedida_id',
                     'categoriaprod.unidadmedidafact_id',
                     'categoriaprod.mostdatosad',
                     'categoriaprod.mostunimed',
-                    'unidadmedida.nombre as unidadmedidanombre'
+                    'categoriaprod.stakilos',
+                    'unidadmedida.nombre as unidadmedidanombre',
+                    'acuerdotecnico.id as acuerdotecnico_id',
+                    'acuerdotecnico.at_ancho',
+                    'acuerdotecnico.at_largo',
+                    'acuerdotecnico.at_espesor',
+                    'acuerdotecnico.at_fuelle',
+                    'tiposello.desc as at_tiposello_desc'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                     ->where('producto.deleted_at','=',null)
@@ -342,6 +367,19 @@ class ProductoController extends Controller
             //dd($claseprods);
             return response()->json($grupoprods);
         }
+    }
+
+    public function AcuTecExportPdf($id)
+    {
+        $producto = Producto::findOrFail($id);
+        $empresa = Empresa::orderBy('id')->get();
+        //dd($empresa[0]['iva']);
+        if(env('APP_DEBUG')){
+            return view('generales.acuerdotecnicopdf', compact('producto','empresa'));
+        }   
+        $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('producto','empresa'));
+        //return $pdf->download('cotizacion.pdf');
+        return $pdf->stream("AcuTecProd_" . str_pad($producto->id, 5, "0", STR_PAD_LEFT) . '.pdf');
     }
 
 }

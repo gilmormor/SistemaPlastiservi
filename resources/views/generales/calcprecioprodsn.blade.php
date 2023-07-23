@@ -1,3 +1,4 @@
+<input type="hidden" name="tipoprodM" id="tipoprodM">
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
     
@@ -12,6 +13,9 @@
         <div class="modal-body">
             <input type="hidden" name="aux_numfila" id="aux_numfila" value="0">
             <input type="hidden" name="precioxkilorealM" id="precioxkilorealM" value="0">
+            <input type="hidden" name="stakilos" id="stakilos" value="0">
+            <input type="hidden" name="categoriaprod_id" id="categoriaprod_id">
+            <input type="hidden" name="acuerdotecnico_id" id="acuerdotecnico_id">
             <div class="row">
                 <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
                     <label for="producto_idM" class="control-label" title="F2 Buscar">Producto</label>
@@ -96,12 +100,12 @@
                 </div>
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="precionetoM" class="control-label" data-toggle='tooltip'>PrecioUnit</label>
-                    <input type="text" name="precionetoM" style="text-align:right" id="precionetoM" class="form-control numerico requeridos" tipoval="texto" value="{{old('precionetoM', $data->precioneto ?? '')}}" placeholder="PrecioUnit" valor="0.00"/>
+                    <input type="text" name="precionetoM" style="text-align:right" id="precionetoM" class="form-control numericoblanco requeridos" tipoval="texto" value="{{old('precionetoM', $data->precioneto ?? '')}}" placeholder="PrecioUnit" valor="0.00"/>
                     <span class="help-block"></span>
                 </div>
-                <div class="col-xs-12 col-sm-2">
+                <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="totalkilosM" class="control-label" data-toggle='tooltip'>Total Kg</label>
-                    <input type="text" name="totalkilosM" style="text-align:right" id="totalkilosM" class="form-control" value="{{old('totalkilosM', $data->totalkilosM ?? '')}}" valor="0.00" placeholder="Total Kilos" readonly Disabled/>
+                    <input type="text" name="totalkilosM" style="text-align:right" id="totalkilosM" class="form-control numericoblanco" value="{{old('totalkilosM', $data->totalkilosM ?? '')}}" valor="0.00" tipoval="texto" placeholder="Total Kilos" readonly Disabled/>
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">
@@ -112,7 +116,7 @@
             </div>
             <div class="row mostdatosad0" style="display:none;">
                 <div class="col-xs-12 col-sm-2">
-                    <label for="diamextmmM" class="control-label" data-toggle='tooltip'>Diametro</label>
+                    <label for="diamextmmM" class="control-label" data-toggle='tooltip'>Diam/Ancho</label>
                     <input type="text" name="diamextmmM" id="diamextmmM" class="form-control" value="{{old('diamextmmM', $data->diametro ?? '')}}" placeholder="Diametro" readonly Disabled/>
                     <span class="help-block"></span>
                 </div>
@@ -122,7 +126,12 @@
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2">
-                    <label for="cla_nombreM" class="control-label" data-toggle='tooltip'>Clase</label>
+                    <label for="espesorM" class="control-label" data-toggle='tooltip'>Espesor</label>
+                    <input type="text" name="espesorM" id="espesorM" class="form-control" value="{{old('espesorM', $data->espesorM ?? '')}}" placeholder="Espesor" readonly Disabled/>
+                    <span class="help-block"></span>
+                </div>
+                <div class="col-xs-12 col-sm-2">
+                    <label for="cla_nombreM" class="control-label" data-toggle='tooltip'>Clase/Sello</label>
                     <input type="text" name="cla_nombreM" id="cla_nombreM" class="form-control" value="{{old('cla_nombreM', $data->cla_nombreM ?? '')}}" placeholder="Clase" readonly Disabled/>
                     <span class="help-block"></span>
                 </div>
@@ -134,11 +143,6 @@
                 <div class="col-xs-12 col-sm-2">
                     <label for="pesoM" class="control-label" data-toggle='tooltip'>Peso</label>
                     <input type="text" name="pesoM" id="pesoM" class="form-control" value="{{old('pesoM', $data->pesoM ?? '')}}" placeholder="Peso" readonly Disabled/>
-                    <span class="help-block"></span>
-                </div>
-                <div class="col-xs-12 col-sm-2">
-                    <label for="espesorM" class="control-label" data-toggle='tooltip'>Espesor</label>
-                    <input type="text" name="espesorM" id="espesorM" class="form-control" value="{{old('espesorM', $data->espesorM ?? '')}}" placeholder="Espesor" readonly Disabled/>
                     <span class="help-block"></span>
                 </div>
             </div>

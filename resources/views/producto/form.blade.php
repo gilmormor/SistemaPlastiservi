@@ -278,6 +278,11 @@
                         {{'selected'}}
                     @endif
                 >Transicional (Para Hacer Acuerdo Técnico)</option>
+                <option value="2"
+                @if (isset($data) and ($data->tipoprod=='2'))
+                    {{'selected'}}
+                @endif
+                >Factura Directa</option>
             </select>
         </div>
     </div>

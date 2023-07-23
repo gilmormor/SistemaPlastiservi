@@ -155,5 +155,10 @@ class NotaVenta extends Model
     {
         return $this->belongsTo(DespachoObs::class);
     }
+    //RELACION DE UNO A MUCHOS dteguiadespnv
+    public function dteguiadespnvs()
+    {
+        return $this->hasMany(DteGuiaDespNV::class,'notaventa_id');
+    }
     
 }

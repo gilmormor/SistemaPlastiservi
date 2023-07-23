@@ -285,3 +285,25 @@ H1.SaltoDePagina
 .width200{
     width: 200px !important;
 }
+
+.headtarial td {
+	height: 20px;
+}
+
+.headtarial td p {
+	font-size: 13px;
+	font-family: Arial;
+}
+
+#reporte_detalle thead th{
+	background: rgb(255, 255, 255);
+	color: #000000;
+	padding: 2px;
+}
+#reporte_detalle{
+	width: 100%;
+	margin-bottom: 5px;
+}
+#reporte_detalle{
+	border-collapse: collapse;
+}

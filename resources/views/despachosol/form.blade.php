@@ -13,13 +13,10 @@
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
+<input type="hidden" name="sucursal_id" id="sucursal_id" value="{{old('sucursal_id', $data->sucursal_id ? $data->sucursal_id : $data->notaventa->sucursal_id)}}">
 
 
-@if($aux_sta==1)
-    <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $vendedor_id ?? '')}}">
-@else
-    <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $data->vendedor_id ?? '')}}">
-@endif
+<input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $data->vendedor_id ? $data->vendedor_id : $data->notaventa->vendedor_id)}}">
 <input type="hidden" name="region_id" id="region_id" value="{{old('region_id', $data->region_id ?? '')}}">
 <input type="hidden" name="provincia_id" id="provincia_id" value="{{old('provincia_id', $data->provincia_id ?? '')}}">
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
@@ -260,6 +257,62 @@
                                     @endforeach                    
                             </select>
                         </div>
+                        @if (count($data->dteguiadespnvs) > 0)
+                            <div class="form-group col-xs-12 col-sm-4">
+                                <label for="dte_id" class="control-label requerido" data-toggle='tooltip' title="Origen Solicitud Desp">Origen Solicitud Desp</label>
+                                <?php 
+                                    $j = 0;
+                                ?>
+                                @foreach($data->dteguiadespnvs as $dteguiadespnv)
+                                    <?php 
+                                        $j++;
+                                    ?>
+                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Guia despacho: {{$dteguiadespnv->dte->nrodocto}}" onclick="genpdfGD('{{$dteguiadespnv->dte->nrodocto}}','')">
+                                        {{$dteguiadespnv->dte->nrodocto}}
+                                        @if ($j < count($data->dteguiadespnvs))
+                                            ,
+                                        @endif
+                                    </a>
+                                @endforeach
+                                <select name="dte_id" id="dte_id" class="form-control select2  dte_id" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="1">Nota de Venta</option>
+                                    @foreach($data->dteguiadespnvs as $dteguiadespnv)
+                                        <option 
+                                            value="{{$dteguiadespnv->dte_id}}" 
+                                            >Guia Despacho: {{$dteguiadespnv->dte->nrodocto}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label for="tipoguiadesp" class="control-label requerido" data-toggle='tooltip' title="Tipo Guia Despacho">Tipo Guia Despacho</label>
+                            <select name="tipoguiadesp" id="tipoguiadesp" class="form-control select2  tipoguiadesp" data-live-search='true' value="{{old('tipoguiadesp', isset($data) ? $data->tipoguiadesp : '')}}" required>
+                                <option value="">Seleccione...</option>
+                                @if (count($data->dteguiadespnvs) == 0)
+                                    <option
+                                        value="1" 
+                                        @if(isset($data) and $data->tipoguiadesp =="1")
+                                            {{'selected'}}
+                                        @endif
+                                        >Precio</option>
+                                    @if (false)
+                                        <option {{count($data->dteguiadespnvs) == 0 ? "disabled='disabled'" : ""}}
+                                            value="6"
+                                            @if(isset($data) and $data->tipoguiadesp =="6")
+                                                {{'selected'}}
+                                            @endif
+                                        >Traslado</option>                                    
+                                    @endif
+                                    <option
+                                        value="20"
+                                        @if(isset($data) and $data->tipoguiadesp =="20")
+                                            {{'selected'}}
+                                        @endif
+                                        >Traslado + Precio</option>                                    
+                                @endif
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -319,13 +372,13 @@
                             <th class="width200">Bodegas/Stock</th>
                             <th style="display:none;">UnidadMedida</th>
                             <th>Nombre</th>
-                            <th>Diam</th>
-                            <th>Clase</th>
+                            <th>Clase<br>Sello</th>
+                            <th>Diam<br>Ancho</th>
                             <th style="display:none;">Diametro</th>
-                            <th>Esp</th>
-                            <th style="display:none;">Espesor</th>
                             <th>Largo</th>
                             <th style="display:none;">Largo</th>
+                            <th>Esp</th>
+                            <th style="display:none;">Espesor</th>
                             <th>Peso</th>
                             <th style="display:none;">Peso</th>
                             <th>Kilos</th>
@@ -351,6 +404,13 @@
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($detalles as $detalle)
                                 <?php 
+                                    $aux_cant = $detalle->cant;
+                                    $notaventadetalleext = null;
+                                    if($detalle->notaventadetalleext){
+                                        $notaventadetalleext = $detalle->notaventadetalleext;
+                                        $aux_cant = $detalle->cant + $notaventadetalleext->cantext;
+                                    }
+
                                     /*************************/
                                     //SUMA TOTAL SOLICITADO
                                     /*************************/
@@ -376,11 +436,26 @@
                                         $sumacantdesp= $datasumadesp[0]->cantdesp;
                                     }
                                     /*************************/
-                                    $peso = $detalle->totalkilos/$detalle->cant;
+                                    $peso = round($detalle->totalkilos/$aux_cant,3);
 
-                                    if($detalle->cant > $sumacantsoldesp){
+                                    $aux_ancho = $detalle->producto->diametro;
+                                    $aux_espesor = $detalle->espesor;
+                                    $aux_largo = $detalle->producto->long;
+                                    $aux_cla_sello_nombre = $detalle->producto->claseprod->cla_nombre;
+                                    $aux_producto_nombre = $detalle->producto->nombre;
+                                    $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
+                                    if ($detalle->producto->acuerdotecnico != null){
+                                        $AcuTec = $detalle->producto->acuerdotecnico;
+                                        $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $detalle->unidadmedida->nombre . ", " . $AcuTec->at_desc);
+                                        $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+                                        $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+                                        $aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
+                                        $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+                                    }
+
+                                    if($aux_cant > $sumacantsoldesp){
                                         $aux_nfila++;
-                                        $aux_saldo = $detalle->cant - $sumacantsoldesp;
+                                        $aux_saldo = $aux_cant - $sumacantsoldesp;
                                         foreach ($detalle->producto->categoriaprod->invbodegas as $invbodega) {
                                             InvBodegaProducto::firstOrCreate(
                                                 ['producto_id' => $detalle->producto_id, 'invbodega_id' => $invbodega->id],
@@ -416,7 +491,13 @@
                                         @endif
                                     </td>
                                     <td style="text-align:center" name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}">
-                                        {{$detalle->producto_id}}
+                                        @if ($detalle->producto->acuerdotecnico)
+                                            <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec({{$detalle->producto->acuerdotecnico->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                {{$detalle->producto_id}}
+                                            </a>
+                                        @else
+                                            {{$detalle->producto_id}}
+                                        @endif
                                         <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$detalle->producto_id}}" style="display:none;"/>
                                     </td>
                                     <td style="display:none;">
@@ -429,11 +510,29 @@
                                             <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$detalle->cant - $detalle->cantusada}}" style="display:none;"/>
                                         @endif
                                     </td>
-                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:center">
-                                        @if ($aux_sta==2)
-                                            {{$detalle->cant}}
-                                        @else 
-                                            {{$detalle->cant - $detalle->cantusada}}
+                                    <td style="text-align: center; white-space: nowrap;">
+                                        <?php
+                                            if($aux_sta==2){
+                                                //$aux_cant = $detalle->cant;
+                                            }else{
+                                                $aux_cant -= $detalle->cantusada;
+                                                $detalle->cant -= $detalle->cantusada;
+                                            }
+                                        ?>
+                                        <input type="text" name="cantext[]" id="cantext{{$aux_nfila}}" class="form-control" value="{{$notaventadetalleext ? $notaventadetalleext->cantext : 0}}" style="display:none;"/>
+                                        @if ($detalle->producto->acuerdotecnico)
+                                            <a id="canttitle{{$aux_nfila}}" name="canttitle{{$aux_nfila}}" class="btn-accion-tabla btn-sm" title="Valor:{{$detalle->cant}} Ext:{{$notaventadetalleext ? $notaventadetalleext->cantext : 0}}" data-toggle="tooltip" style="padding-left: 0px; display: inline;">
+                                                <div name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" cantorig="{{$detalle->cant}}" style="display: inline;">
+                                                    {{$aux_cant}}
+                                                </div>
+                                            </a>
+                                            <a id="cantextA{{$aux_nfila}}" name="cantextA{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar valor sobre despacho" data-toggle="tooltip" valor="{{$notaventadetalleext ? $notaventadetalleext->cantext : 0}}" fila="{{$aux_nfila}}" nomcampo="cantext" style="padding-left: 0px; display: inline;">
+                                                <i class="fa fa-fw fa-pencil-square-o"></i>
+                                            </a>
+                                        @else
+                                            <div name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" cantorig="{{$detalle->cant}}">
+                                                {{$aux_cant}}
+                                            </div>
                                         @endif
                                     </td>
                                     <td name="cantdespF{{$aux_nfila}}" id="cantdespF{{$aux_nfila}}" style="text-align:center">
@@ -541,28 +640,28 @@
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="4" style="display:none;"/>
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                        {{$detalle->producto->nombre}}
-                                    </td>
-                                    <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->producto->diametro}}
+                                        {{$aux_producto_nombre}}
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
-                                        {{$detalle->producto->claseprod->cla_nombre}}
+                                        {{$aux_cla_sello_nombre}}
+                                    </td>
+                                    <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
+                                        {{$aux_ancho}}
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->diametro}}" style="display:none;"/>
-                                    </td>
-                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:center">
-                                        {{$detalle->producto->espesor}}
-                                    </td>
-                                    <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->espesor}}" style="display:none;"/>
+                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$aux_ancho}}" style="display:none;"/>
                                     </td>
                                     <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:center">
-                                        {{$detalle->producto->long}}
+                                        {{$aux_largo}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->long}}" style="display:none;"/>
+                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$aux_largo}}" style="display:none;"/>
+                                    </td>
+                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:center">
+                                        {{$aux_espesor}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$aux_espesor}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
                                         {{$peso}}

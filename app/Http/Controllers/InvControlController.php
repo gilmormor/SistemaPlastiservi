@@ -141,6 +141,7 @@ class InvControlController extends Controller
                             /*
                             $invmovdets = InvMov::join("invmovdet","invmov.id","=","invmovdet.invmov_id")
                                     ->where("annomes","=",$aux_annomes)
+                                    ->where("invmov.sucursal_id","=",$request->sucursal_id)
                                     ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
                                     ->select([
                                                 'invbodegaproducto_id',

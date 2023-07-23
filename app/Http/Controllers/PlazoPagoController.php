@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidarPlazoPago;
 use App\Models\PlazoPago;
 use Illuminate\Http\Request;
 
@@ -36,7 +37,7 @@ class PlazoPagoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function guardar(Request $request)
+    public function guardar(ValidarPlazoPago $request)
     {
         can('guardar-plazo-de-pago');
         PlazoPago::create($request->all());
@@ -74,7 +75,7 @@ class PlazoPagoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function actualizar(Request $request, $id)
+    public function actualizar(ValidarPlazoPago $request, $id)
     {
         PlazoPago::findOrFail($id)->update($request->all());
         return redirect('plazopago')->with('mensaje','Plazo de Pago actualizado con exito');

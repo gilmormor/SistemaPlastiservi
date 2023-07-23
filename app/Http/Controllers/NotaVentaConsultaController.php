@@ -641,7 +641,7 @@ class NotaVentaConsultaController extends Controller
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
             GROUP BY areaproduccion_id,areaproduccion.nombre;";
         }
-    
+        //dd($sql);
         $datas = DB::select($sql);
         return $datas;
     }

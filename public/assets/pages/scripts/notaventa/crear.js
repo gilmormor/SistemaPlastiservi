@@ -55,7 +55,7 @@ $(document).ready(function () {
 	$("#cantM").numeric();
 	$("#precioM").numeric({decimalPlaces: 2});
 	$(".numerico").numeric();
-	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
+	//$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$(".modal-body label").css("margin-bottom", -2);
@@ -131,9 +131,12 @@ $(document).ready(function () {
 		$(".input-sm").val('');
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
+		/*San Bernardo sustituido por funcion cargardatospantprod();
 		data = datos();
 		$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
-
+		*/
+		cargardatospantprod();
+		$("#DivchVerAcuTec").hide();
 		$('#myModal')
 			.modal('hide')
 			.on('hidden.bs.modal', function (e) {
@@ -277,6 +280,31 @@ $(document).ready(function () {
 
 	$(".kv-file-remove").hide();
 	$(".file-drag-handle").hide();
+
+	if($("#staapronv").val() == "1"){
+		/*
+		$("#cotizacion_id").prop('disabled', false);
+		$("#clientedirec_id").prop('disabled', false);
+		$("#plazoentrega").prop('disabled', false);
+		$("#lugarentrega").prop('disabled', false);
+		*/
+		
+		$("#vendedor_idD").prop('disabled', true);
+		$("#tipoentrega_id").prop('disabled', true);
+		$("#sucursal_id").prop('disabled', true);
+		$("#lugarentrega").prop('disabled', true);
+		$("#comunaentrega_id").prop('disabled', true);
+		$("#contacto").prop('disabled', true);
+		$("#oc_id").prop('disabled', true);
+		$("#contactotelf").prop('disabled', true);
+		$("#contactoemail").prop('disabled', true);
+		$("#observacion").prop('disabled', true);
+		$("#oc_file").prop('disabled', true);
+		$("#oc_file").prop('readonly', true);
+		$(".input-group .file-caption-main").hide();;
+		
+	}
+
 });
 /*
 $("#botonNewProd").click(function(event)
@@ -326,6 +354,9 @@ function insertarTabla(){
 	}
 
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
+			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;">'+ 
+				$("#producto_idM").val() +
+			'</td>'+
 			'<td style="display:none;" name="NVdet_idTD'+ aux_nfila + '" id="NVdet_idTD'+ aux_nfila + '">'+ 
 				'0'+
 			'</td>'+
@@ -347,11 +378,14 @@ function insertarTabla(){
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="cant[]" id="cant'+ aux_nfila + '" class="form-control" value="'+ $("#cantM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="nombreProdTD'+ aux_nfila + '" id="nombreProdTD'+ aux_nfila + '">'+ 
+			'<td name="nombreProdTD'+ aux_nfila + '" id="nombreProdTD'+ aux_nfila + '" categoriaprod_nombre="' + aux_nombre +'">'+ 
 				aux_nombre+
 			'</td>'+
 			'<td style="display:none;">'+ 
 				'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id'+ aux_nfila + '" class="form-control" value="' + $("#unidadmedida_idM option:selected").attr('value') + '" style="display:none;"/>'+
+			'</td>'+
+			'<td name="unidadmedida_nombreTD'+ aux_nfila + '" id="unidadmedida_nombreTD'+ aux_nfila + '">' +
+				$("#unidadmedida_idM option:selected").html() +
 			'</td>'+
 			'<td name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '">'+ 
 				$("#cla_nombreM").val()+
@@ -362,22 +396,22 @@ function insertarTabla(){
 			'<td style="display:none;">'+ 
 				'<input type="text" name="diamextmm[]" id="diamextmm'+ aux_nfila + '" class="form-control" value="'+ $("#diamextmmM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right">'+ 
-				$("#espesor1M").attr('valor')+
-			'</td>'+
-			'<td style="text-align:right;display:none;">'+ 
-				'<input type="text" name="espesor[]" id="espesor'+ aux_nfila + '" class="form-control" value="'+ $("#espesor1M").attr('valor') +'" style="display:none;"/>'+
-				'<input type="text" name="ancho[]" id="ancho'+ aux_nfila + '" class="form-control" value="'+ $("#anchoM").attr('valor') +'" style="display:none;"/>'+
-				'<input type="text" name="obs[]" id="obs'+ aux_nfila + '" class="form-control" value="'+ $("#obsM").val() +'" style="display:none;"/>'+
-			'</td>'+
 			'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right">'+ 
 				$("#largoM").attr('valor')+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="long[]" id="long'+ aux_nfila + '" class="form-control" value="'+ $("#largoM").attr('valor') +'" style="display:none;"/>'+
 			'</td>'+
+			'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right">'+ 
+				MASKLA($("#espesor1M").attr('valor'),3)+
+			'</td>'+
+			'<td style="text-align:right;display:none;">'+ 
+				'<input type="text" name="espesor[]" id="espesor'+ aux_nfila + '" class="form-control" value="'+ $("#espesor1M").attr('valor') +'" style="display:none;"/>'+
+				'<input type="text" name="ancho[]" id="ancho'+ aux_nfila + '" class="form-control" value="'+ $("#anchoM").attr('valor') +'" style="display:none;"/>'+
+				'<input type="text" name="obs[]" id="obs'+ aux_nfila + '" class="form-control" value="'+ $("#obsM").val() +'" style="display:none;"/>'+
+			'</td>'+
 			'<td name="pesoTD'+ aux_nfila + '" id="pesoTD'+ aux_nfila + '" style="text-align:right;">'+ 
-				$("#pesoM").val()+
+				MASKLA($("#pesoM").val(),3)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="peso[]" id="peso'+ aux_nfila + '" class="form-control" value="'+ $("#pesoM").val() +'" style="display:none;"/>'+
@@ -428,23 +462,30 @@ function insertarTabla(){
 				$("#subtotalM").attr("valor")+
 			'</td>'+
 			'<td>' + 
-				'<a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
-				'<a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
+			'<td style="text-align:right;display:none;">'+ 
+				'<input type="text" name="acuerdotecnico[]" id="acuerdotecnico'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
+			'</td>'+
+			'<td style="text-align:right;display:none;">'+
+				'<input type="text" name="tipoprod[]" id="tipoprod'+ aux_nfila + '" class="form-control" value="' + $("#tipoprodM").attr('valor') + '" style="display:none;"/>'+
+			'</td>'+
+
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+
-			'<td colspan="12" style="text-align:right"><b>Neto</b></td>'+
+			'<td colspan="14" style="text-align:right"><b>Neto</b></td>'+
 			'<td id="tdneto" name="tdneto" style="text-align:right">0.00</td>'+
 		'</tr>'+
 		'<tr id="triva" name="triva">'+
-			'<td colspan="12" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
+			'<td colspan="14" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
 			'<td id="tdiva" name="tdiva" style="text-align:right">0.00</td>'+
 		'</tr>'+
 		'<tr id="trtotal" name="trtotal">'+
-			'<td colspan="12" style="text-align:right"><b>Total</b></td>'+
+			'<td colspan="14" style="text-align:right"><b>Total</b></td>'+
 			'<td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>'+
 		'</tr>';
 	
@@ -920,6 +961,7 @@ $("#btnaprobarM").click(function(event)
 		},
 	}).then((value) => {
 		if (value) {
+			$("#myModalaprobcot").modal('hide');
 			ajaxRequest(data,ruta,'aprobarnvsup');
 		}
 	});
@@ -947,6 +989,7 @@ $("#btnrechazarM").click(function(event)
 			},
 		}).then((value) => {
 			if (value) {
+				$("#myModalaprobcot").modal('hide');
 				ajaxRequest(data,ruta,'aprobarnvsup');
 			}
 		});
@@ -997,7 +1040,9 @@ $('#form-general').submit(function(event) {
 	}
 	$('#group_oc_id').removeClass('has-error');
 	$('#group_oc_file').removeClass('has-error');
-	$('#oc_id').prop('required', false);
+	if($("#sucursal_id option:selected").attr('value') == 3){
+		$('#oc_id').prop('required', false);
+	}
 	$("#oc_file-error").hide();
 	$('#oc_fileaux').prop('required', false);
 	aux_ocarchivo = $.trim($('#oc_file').val()) + $.trim($('#oc_file').attr("data-initial-preview"));
@@ -1014,6 +1059,7 @@ $('#form-general').submit(function(event) {
 		$("#oc_file-error").show();
 		$("#group_oc_file").addClass('has-error');
 		$('#oc_fileaux').prop('required', true);
+		//$('#oc_file').prop('required', true);
 		return false;
 	}
 	$("#cotizacion_id").prop('disabled', false);
@@ -1021,6 +1067,7 @@ $('#form-general').submit(function(event) {
 	$("#plazoentrega").prop('disabled', false);
 	$("#lugarentrega").prop('disabled', false);
 	$("#tipoentrega_id").prop('disabled', false);
+
     //Rest of code
 })
 
@@ -1034,6 +1081,7 @@ $(document).on('click','.fileinput-remove-button', function(){
  });
 */
 
+/*
 $("#botonNewProd").click(function(event)
 {
 	clientedirec_id = $("#clientedirec_id").val();
@@ -1049,19 +1097,45 @@ $("#botonNewProd").click(function(event)
 		$("#myModal").modal('show');
 		$("#direccionM").focus();	
 	}
-	/*
-	if(clientedirec_id==""){
-		mensaje('Debes seleccionar una dirección','','error');
-		return 0;
-	}
-	
-	if(clientedirec_id!="" && aux_rut!=""){
-		event.preventDefault();
-		limpiarInputOT();
-		quitarverificar();
-		$("#aux_sta").val('1');
-		$("#myModal").modal('show');
-		$("#direccionM").focus();	
-	}
-	*/
 });
+*/
+/*
+$(".form-horizontal").on("submit", function(event){
+	var aux_nfila = $("#tabla-data tbody tr").length - 3;
+	//aux_nfila++;
+	aux_banacutec = 0;
+	for (i = 1; i <= aux_nfila; i++) {
+		if($("#tipoprod" + i).val() == 1){
+			aux_banacutec = 1;
+		}
+	}
+	if(aux_banacutec == 1){
+		event.preventDefault();
+		swal({
+			title: 'Se Crearán productos de Acuerdo Tecnico.',
+			text: "Desea Continuar S/N?",
+			icon: 'warning',
+			buttons: {
+				si: {
+					text: "Si",
+					value: "Si",
+				},	
+				no: {
+					text: "No",
+					value: "No",
+				},
+			},
+		}).then((value) => {
+			switch (value) {			 
+				case "Si":
+					//event.preventDefault();
+					event.target.submit();
+					break;
+				default:
+				  //swal("Got away safely!");
+			}
+	
+		});
+	}
+});
+*/

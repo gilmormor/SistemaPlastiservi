@@ -98,12 +98,31 @@ $(document).ready(function () {
 			$("#myModalBuscarProd").modal('show');
 		}
 	});
+	/*
 	$("#btnbuscarproducto").click(function(e){
 		//e.preventDefault();
 		$(this).val("");
 		$(".input-sm").val('');
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
+		$('#myModal')
+			.modal('hide')
+			.on('hidden.bs.modal', function (e) {
+				$('#myModalBuscarProd').modal('show');
+
+				$(this).off('hidden.bs.modal'); // Remove the 'on' event binding
+			});
+
+	});
+	*/
+	$("#btnbuscarproducto").click(function(e){
+		//e.preventDefault();
+		$(this).val("");
+		$(".input-sm").val('');
+		//$("#myModal").modal('hide');
+		//$("#myModalBuscarProd").modal('show');
+		cargardatospantprod();
+		$("#staprodxcli").hide();
 		$('#myModal')
 			.modal('hide')
 			.on('hidden.bs.modal', function (e) {

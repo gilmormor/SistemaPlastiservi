@@ -70,10 +70,10 @@
 					<th>Saldo</th>
 					<th class="textcenter">Unidad</th>
 					<th class="textleft">Descripción</th>
-					<th class="textleft">Diam</th>
-					<th class="textleft">Clase</th>
+					<th class="textleft">Clase<br>Sello</th>
+					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textright">Largo</th>
-					<th class="textcenter">TU</th>
+					<th class="textcenter">TU<br>Esp</th>
 					<th class="textright">Peso</th>
 					<th class="textright">$ x Kg</th>
 					<th class="textright">Total Kg</th>
@@ -129,6 +129,29 @@
 						}
 						/*************************/
 
+						$aux_producto_nombre = $notaventaDetalle->producto->nombre;
+						$aux_ancho = $notaventaDetalle->producto->diametro;
+						$aux_largo = $notaventaDetalle->producto->long;
+						$aux_espesor = $notaventaDetalle->producto->tipounion;
+						$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
+						if ($notaventaDetalle->cotizaciondetalle and $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp != null){
+							$AcuTecTemp = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp;
+							$aux_producto_nombre = $AcuTecTemp->at_desc;
+							$aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "");
+							$aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "");
+							$aux_espesor = number_format($AcuTecTemp->at_espesor, 3, ',', '.');
+							$aux_cla_sello_nombre = $AcuTecTemp->claseprod->cla_nombre;
+						}
+						if ($notaventaDetalle->producto->acuerdotecnico != null){
+							$AcuTec = $notaventaDetalle->producto->acuerdotecnico;
+							$aux_producto_nombre = $AcuTec->at_desc;
+							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
+							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+						}
+
+
 						if($notaventaDetalle->cant > $sumacantsoldesp){
 							$aux_saldo = $notaventaDetalle->cant - $sumacantsoldesp;
 							$subtotalItem = $aux_saldo * $notaventaDetalle->preciounit;
@@ -150,13 +173,11 @@
 							{{$aux_saldo}}
 						</td>	
 						<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
-						<td class="textleft">{{$notaventaDetalle->producto->nombre}}</td>
-						<td class="textleft">
-							{{$notaventaDetalle->producto->diametro}}
-						</td>
-						<td class="textleft">{{$notaventaDetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textcenter">{{$notaventaDetalle->producto->long}} mts</td>
-						<td class="textcenter">{{$notaventaDetalle->producto->tipounion}}</td>
+						<td class="textleft">{{$aux_producto_nombre}}</td>
+						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
+						<td class="textcenter">{{$aux_ancho}}</td>
+						<td class="textcenter">{{$aux_largo}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textcenter">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($aux_totalkgItem, 2, ",", ".")}}</td>

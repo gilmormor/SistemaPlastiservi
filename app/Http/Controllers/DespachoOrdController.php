@@ -69,6 +69,16 @@ class DespachoOrdController extends Controller
 
     public function despachoordpage(Request $request){
         $datas = consultaindex($request);
+        $i = 0;
+        foreach ($datas as $data) {
+            //dd($datas[$i]);
+            $datas[$i]->obsdevolucion = ""; //Observacion devolucion
+            $despachoord = DespachoOrd::findOrFail($data->id);
+            if($despachoord->despachoordanulguiafacts->count()>0){
+                $datas[$i]->obsdevolucion = $despachoord->despachoordanulguiafacts->last()->observacion;
+            }
+            $i++;
+        }
         return datatables($datas)->toJson();
     }
 
@@ -241,9 +251,9 @@ class DespachoOrdController extends Controller
         $aux_statusPant = 0;
         session(['aux_fecinicreOD' => date("Y-m-d H:i:s")]); //Fecha inicio de creacion Orden de despacho
         $invmovmodulo = InvMovModulo::where("cod","=","ORDDESP")->get();
-        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
-
-
+        //$array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
+        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->where("sucursal_id",$data->notaventa->sucursal_id)->pluck('id')->toArray();
+        //dd($array_bodegasmodulo);
         //dd($clientedirecs);
         return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
         
@@ -258,7 +268,6 @@ class DespachoOrdController extends Controller
     public function guardar(ValidarDespachoOrd $request)
     {
         can('guardar-orden-despacho');
-        //dd($request);
         //dd($request->invcant);
         //dd(session('aux_fecinicreOD'));
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
@@ -459,8 +468,15 @@ class DespachoOrdController extends Controller
         $aux_sta=2;
         $aux_statusPant = 0;
         $invmovmodulo = InvMovModulo::where("cod","=","ORDDESP")->get();
-        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
+        //San Bernardo //$array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
+        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->where("sucursal_id",$data->notaventa->sucursal_id)->pluck('id')->toArray();
         return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
+        /*Santa Ester
+        //$array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
+        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->where("sucursal_id",$data->notaventa->sucursal_id)->pluck('id')->toArray();
+
+        return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo'));
+        */
   
     }
 
@@ -1291,8 +1307,6 @@ class DespachoOrdController extends Controller
         $tablashtml['sololectura'] = 0;
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
-
-
 }
 
 
@@ -1463,6 +1477,14 @@ function consultaindex(){
     '' as notaventaxk,comuna.nombre as comuna_nombre, sucursal.nombre as sucursal_nombre,
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
     SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
+    (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+    FROM dteoc INNER JOIN dte
+    ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+    INNER JOIN dteguiadesp
+    ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+    WHERE dteoc.oc_id = notaventa.oc_id
+    AND isnull(dteguiadesp.notaventa_id)
+    AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
     despachoord.updated_at
     FROM despachoord INNER JOIN notaventa
     ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)

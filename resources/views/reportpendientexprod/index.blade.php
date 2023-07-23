@@ -6,8 +6,12 @@ Pendiente x Producto
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportpendientexprod/index.js")}}" type="text/javascript"></script>
+<!--San Bernardo
     <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script>
+-->
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
 <?php 
@@ -288,9 +292,15 @@ Pendiente x Producto
         </div>
     </div>
 </div>
+<!--San Bernardo
 @include('generales.buscarclientebdtemp')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.buscarproductobdtemp')
+-->
+@include('generales.buscarclientebd')
+@include('generales.modalpdf')
+@include('generales.verpdf')
+@include('generales.buscarproductobd')
 @include('generales.listarorddesp')
 @endsection

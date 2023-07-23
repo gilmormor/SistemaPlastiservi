@@ -241,6 +241,45 @@ Notas de Venta
                 </div>
 
             </div>
+            <div class="table-responsive">
+                <table class="table display AllDataTables table-hover table-condensed" id="tabla-data-consulta" data-page-length="50">
+                    <thead>
+                        <tr>
+                            <th class='tooltipsC' title='Nota de Venta PDF'>NV</th>
+                            <th>Fecha</th>
+                            <th>Razón Social</th>
+                            <th class='tooltipsC' title='Orden de Compra'>OC</th>
+                            <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
+                            <th>Comuna</th>
+                            <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
+                            <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
+                            <th class='tooltipsC' title='Solicitud Despacho'>Despacho</th>            
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan='6' style='text-align:right'>Total página</th>
+                            <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                            <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
+                            <th style='text-align:right'></th>
+                        </tr>
+            
+                        <tr>
+                            <th colspan='6' style='text-align:right'>TOTAL GENERAL</th>
+                            <th style='text-align:right' id='totalgenkg' name='totalgenkg'>0,00</th>
+                            <th style='text-align:right' id='totalgendin' name='totalgendin'>0,00</th>
+                            <th style='text-align:right'></th>
+                        </tr>
+                    </tfoot>        
+                </table>
+            </div>
+            <div class="col-lg-12 text-center">
+                <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(1)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
+            </div>
+
             <!--
             <div class="container">
                 <div class="row">
@@ -254,8 +293,14 @@ Notas de Venta
         </div>
     </div>
 </div>
+<!-- San Bernardo
 @include('generales.buscarclientebdtemp')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.buscarproductobdtemp')
+-->
+@include('generales.buscarclientebd')
+@include('generales.modalpdf')
+@include('generales.verpdf')
+@include('generales.buscarproductobd')
 @endsection

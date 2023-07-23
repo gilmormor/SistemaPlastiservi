@@ -15,6 +15,7 @@ $(document).ready(function () {
 	});
 */
 
+/*
     consultar(datoslnv());
     $("#btnconsultar").click(function()
     {
@@ -25,7 +26,7 @@ $(document).ready(function () {
     {
         consultarpdf(datoslnv());
     });
-
+*/
     //alert(aux_nfila);
     $('.datepicker').datepicker({
 		language: "es",
@@ -39,25 +40,151 @@ $(document).ready(function () {
     });
 
     configurarTabla('.tablas');
+
+
+    configurarTabla1('#tabla-data-consulta');
+
+    function configurarTabla1(aux_tabla){
+        data = datoslnv1();
+        $(aux_tabla).DataTable({
+            'paging'      : true, 
+            'lengthChange': true,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'processing'  : true,
+            'serverSide'  : true,
+            'ajax'        : "/despachosol/listarnvpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+            "order": [[ 0, "desc" ]],
+            'columns'     : [
+                {data: 'id'},
+                {data: 'fechahora'},
+                {data: 'razonsocial'},
+                {data: 'oc_id'},
+                {data: 'id'},
+                {data: 'comunanombre'},
+                {data: 'totalkilos'},
+                {data: 'subtotal'},
+                {data: 'id'},
+            ],
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            },
+            "createdRow": function ( row, data, index ) {
+                $(row).attr('id','fila' + data.id);
+                $(row).attr('name','fila' + data.id);
+
+                aux_text = `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta PDF" onclick="genpdfNV(${data.id},1)">
+                    ${data.id}
+                </a>`
+                $('td', row).eq(0).html(aux_text);
+                $('td', row).eq(0).attr('data-order',data.id);
+
+                $('td', row).eq(1).attr('data-order',data.fechahora);
+                aux_fecha = new Date(data.fechahora);
+                $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
     
+                if(data.oc_file != "" && data.oc_file != null){
+                    aux_text = 
+                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
+                            data.oc_id + 
+                        "</a>";
+                    $('td', row).eq(3).html(aux_text);
+                }
+
+                aux_text = 
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Precio x Kg" onclick="genpdfNV(${data.id},2)">
+                    <i class="fa fa-fw fa-file-pdf-o"></i>
+                </a>`;
+                $('td', row).eq(4).html(aux_text);
+
+                aux_kgpend = data.totalkilos - data.totalkgsoldesp;
+                aux_dinpend = data.subtotal - data.totalsubtotalsoldesp;
+                $('td', row).eq(6).attr('class', "kgpend");
+                $('td', row).eq(6).attr('data-order',aux_kgpend);
+                $('td', row).eq(6).attr('data-search',aux_kgpend);
+                $('td', row).eq(6).attr('style','text-align:right');
+                $('td', row).eq(6).html(MASKLA(aux_kgpend,2));
+
+                $('td', row).eq(7).attr('class', "dinpend");
+                $('td', row).eq(7).attr('data-order',aux_dinpend);
+                $('td', row).eq(7).attr('data-search',aux_dinpend);
+                $('td', row).eq(7).attr('style','text-align:right');
+                $('td', row).eq(7).html(MASKLA(aux_dinpend,0));
+
+                aux_text = 
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa SD" onclick="pdfSolDespPrev(${data.id},2)">
+                    <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+                </a>`;
+
+                if(data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null){
+                    aux_text += 
+                        `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${data.clientebloqueado_desc}">
+                            <i class="fa fa-fw fa-lock text-danger"></i>
+                        </a>`;
+                    $('td', row).eq(6).html(aux_text);
+                }else{
+                    aux_text +=
+                    `<a href="${data.rutanuevasoldesp}" class="btn-accion-tabla tooltipsC" title="Hacer solicitud despacho: ${data.tipentnombre}">
+                        <i class="fa fa-fw ${data.icono}"></i>
+                    </a>`;
+                }
+                if(data.anulada != null && data.anulada != ""){
+                    aux_text = "";
+                    colorFila = 'background-color: #87CEEB;';
+                    aux_data_toggle = "tooltip";
+                    aux_title = "Anulada Fecha: " + data.anulada;
+                    //$nuevoSolDesp = "";
+                }
+                $('td', row).eq(8).html(aux_text);
+            }
+        });
+    }
+
+    totalizar();
+
+    $("#btnconsultar").click(function()
+    {
+        data = datoslnv1();
+        $('#tabla-data-consulta').DataTable().ajax.url( "/despachosol/listarnvpage/" + data.data2 ).load();
+        totalizar();
+    });
 });
+
+function totalizar(){
+    let  table = $('#tabla-data-consulta').DataTable();
+    //console.log(table);
+    table
+        .on('draw', function () {
+            eventFired( 'Page' );
+        });
+    data = datoslnv1();
+    $.ajax({
+        url: '/despachosol/totalizarlistarnvpage/' + data.data2,
+        type: 'GET',
+        success: function (datos) {
+            $("#totalgenkg").html(MASKLA(datos.aux_kgpend,2));
+            $("#totalgendin").html(MASKLA(datos.aux_dinpend,2));
+        }
+    });
+}
 
 var eventFired = function ( type ) {
 	total = 0;
-	$("#tabla-data-listar1 tr .kgpend").each(function() {
+	$("#tabla-data-consulta tr .kgpend").each(function() {
 		valor = $(this).attr('data-order') ;
 		valorNum = parseFloat(valor);
 		total += valorNum;
 	});
     $("#totalkg").html(MASKLA(total,2))
 	total = 0;
-	$("#tabla-data-listar1 tr .dinpend").each(function() {
+	$("#tabla-data-consulta tr .dinpend").each(function() {
 		valor = $(this).attr('data-order') ;
 		valorNum = parseFloat(valor);
 		total += valorNum;
 	});
     $("#totaldinero").html(MASKLA(total,0))
-
 }
 
 function configurarTabla(aux_tabla){
@@ -148,6 +275,50 @@ function datoslnv(){
     };
     return data;
 }
+
+function datoslnv1(){
+    aux_titulo ="";
+    var data1 = {
+        fechad            : $("#fechad").val(),
+        fechah            : $("#fechah").val(),
+        rut               : eliminarFormatoRutret($("#rut").val()),
+        vendedor_id       : $("#vendedor_id").val(),
+        oc_id             : $("#oc_id").val(),
+        giro_id           : $("#giro_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
+        tipoentrega_id    : $("#tipoentrega_id").val(),
+        notaventa_id      : $("#notaventa_id").val(),
+        aprobstatus       : $("#aprobstatus").val(),
+        comuna_id         : $("#comuna_id").val(),
+        plazoentrega      : $("#plazoentrega").val(),
+        producto_id       : $("#producto_idPxP").val(),
+        filtro            : 0,
+        _token            : $('input[name=_token]').val()
+    };
+
+    data2 = "?fechad="+data1.fechad+
+            "&fechah="+data1.fechah +
+            "&rut=" + data1.rut +
+            "&vendedor_id=" + data1.vendedor_id +
+            "&oc_id=" + data1.oc_id +
+            "&giro_id=" + data1.giro_id + 
+            "&areaproduccion_id=" + data1.areaproduccion_id +
+            "&tipoentrega_id=" + data1.tipoentrega_id +
+            "&notaventa_id=" + data1.notaventa_id +
+            "&aprobstatus=" + data1.aprobstatus +
+            "&comuna_id=" + data1.comuna_id +
+            "&plazoentrega=" + data1.plazoentrega +
+            "&filtro=" + data1.filtro +
+            "&producto_id=" + data1.producto_id +
+            "&aux_titulo=" + aux_titulo;
+    
+    var data = {
+        data1 : data1,
+        data2 : data2
+    };
+    return data;
+}
+
 
 function consultar(data){
     $.ajax({

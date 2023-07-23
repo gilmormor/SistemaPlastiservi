@@ -74,16 +74,16 @@
 					<th width="30px">Sol</th>
 					<th width="30px">Desp</th>
 					<th class="textcenter">Unidad</th>
-					<th class="textleft">Descripción</th>
-					<th class="textleft">Diam</th>
-					<th class="textleft">Clase</th>
+					<th width="120px" class="textleft">Descripción</th>
+					<th class="textleft">Clase<br>Sello</th>
+					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textright">Largo</th>
-					<th class="textcenter">TU</th>
+					<th class="textcenter">TU<br>Esp</th>
 					<th class="textright">Peso</th>
 					<!--<th class="textright">$ x Kg</th>-->
 					<th class="textright">Total Kg</th>
-					<th class="textright" width="90px">Precio Unit</th>
-					<th class="textright" width="90px">Total Neto</th>
+					<th class="textright" width="60px">Precio Unit</th>
+					<th class="textright" width="70px">Total Neto</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -107,19 +107,33 @@
 						$totalkilos = ($peso) * $despachoorddet->cantdesp;
 						$subtotal = $despachoorddet->cantdesp * $despachoorddet->notaventadetalle->preciounit;
 						$neto += $subtotal;
+
+						$aux_ancho = $despachoorddet->notaventadetalle->producto->diametro;
+						$aux_espesor = $despachoorddet->notaventadetalle->producto->tipounion;
+						$aux_largo = $despachoorddet->notaventadetalle->producto->long;
+						$aux_cla_sello_nombre = $despachoorddet->notaventadetalle->producto->claseprod->cla_nombre;
+						$aux_producto_nombre = $despachoorddet->notaventadetalle->producto->nombre;
+						$aux_categoria_nombre = $despachoorddet->notaventadetalle->producto->categoriaprod->nombre;
+						if ($despachoorddet->notaventadetalle->producto->acuerdotecnico != null){
+							$AcuTec = $despachoorddet->notaventadetalle->producto->acuerdotecnico;
+							$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
+							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+						}
+
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($despachoorddet->despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{number_format($despachoorddet->cantdesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
-						<td class="textleft">{{$despachoorddet->notaventadetalle->producto->nombre}}</td>
-						<td class="textcenter">
-							{{$despachoorddet->notaventadetalle->producto->diametro}}
-						</td>
-						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textright">{{$despachoorddet->notaventadetalle->producto->long}} mts</td>
-						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto->tipounion}}</td>
+						<td class="textleft">{{$aux_producto_nombre}}</td>
+						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
+						<td class="textcenter">{{$aux_ancho}}</td>
+						<td class="textright">{{$aux_largo}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textright">{{number_format($peso, 3, ",", ".")}}</td>
 						<!--<td class="textright">{{number_format($despachoorddet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>-->
 						<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>
@@ -212,7 +226,7 @@
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Guia Despacho: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{str_pad($despachoord->guiadespacho, 10, "0", STR_PAD_LEFT)}}</span></td>
+				<td class="textleft" width="50%"><span>{{str_pad($despachoord->guiadespacho , 10, "0", STR_PAD_LEFT)}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textleft" width="40%"><span><strong>Nro Factura: </strong></span></td>

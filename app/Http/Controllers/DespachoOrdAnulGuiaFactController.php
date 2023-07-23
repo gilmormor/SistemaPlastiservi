@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnulGuiaFact;
+use App\Models\Dte;
+use App\Models\DteAnul;
+use App\Models\GuiaDesp;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
@@ -92,9 +95,62 @@ class DespachoOrdAnulGuiaFactController extends Controller
 
     public function guardaranularguia(Request $request)
     {
-        //dd($request);
         if ($request->ajax()) {
-            $despachoord = DespachoOrd::findOrFail($request->id);
+            /*
+            $guiadesp = GuiaDesp::findOrFail($request->id);
+            if($request->updated_at != $guiadesp->updated_at){
+                return response()->json([
+                    'mensaje' => 'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                    'tipo_alert' => 'alert-error'
+                ]);
+                //POR ALGUNA RAZON NO REDIRECCIONA A 'factura_listarguiadesp'
+                return redirect('factura_listarguiadesp')->with([
+                    'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            */
+            if(isset($request->procesoorigen)){
+                //SI SE ANULA DESDE LA GUIA DESPACHO GENERADA DTE
+                if($request->procesoorigen == "AnularDTE"){
+                    $dte = Dte::findOrFail($request->dte_id);
+                    if($request->updated_at != $dte->updated_at){
+                        return redirect('dteguiadesp')->with([
+                            'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                            'tipo_alert' => 'alert-error'
+                        ]);
+                    }
+                    $request->request->add(['usuario_id' => auth()->id()]);
+                    $dteanul = DteAnul::create($request->all());
+                    $dte->updated_at = date("Y-m-d H:i:s");
+                    if($dte->save()){
+                        $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
+                        $despachoord->updated_at = date("Y-m-d H:i:s");
+                        if(!$despachoord->save()){
+                            return response()->json([
+                                'mensaje' => 'Error al guardar!',
+                                'tipo_alert' => 'error'
+                            ]);
+                        }
+                    }else{
+                        return response()->json([
+                            'mensaje' => 'Error al guardar!',
+                            'tipo_alert' => 'error'
+                        ]);
+                    }
+                }
+                //ESTO EN CASO QUE SE ANULE DESDE ORDEN DE DESPACHO, OJO EN ESTE MODULO NO ESTOY ENVIANDO ESTE VALOR
+                if($request->procesoorigen == "AnularDespOrd"){
+                    $data = DespachoOrd::findOrFail($request->despachoord_id);
+                    if($request->updated_at != $data->updated_at){
+                        return response()->json([
+                            'mensaje' => 'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                            'tipo_alert' => 'error'
+                        ]);
+                    }    
+                }
+            }
+            $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
             if($request->updated_at != $despachoord->updated_at){
                 return response()->json([
                     'status' => 0,
@@ -105,6 +161,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
+
             /*
             $aux_bandera = true;
             foreach ($despachoord->despachoorddets as $despachoorddet) {
@@ -280,6 +337,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     }
                 }
             }else{
+
                 $invmoduloGiaD = InvMovModulo::where("cod","GUIADESP")->get();
                 if(count($invmoduloGiaD) == 0){
                     return response()->json([
@@ -371,11 +429,29 @@ class DespachoOrdAnulGuiaFactController extends Controller
                         }
                     } 
                 }else{
+                    $aux_codigos = " NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id; //CODIGOS TRAZABILIDAD
+                    if(isset($request->descmovinv)){                        
+                        $aux_desc = $request->descmovinv;
+                        if(isset($request->dte_id)){
+                            $dte = Dte::findOrFail($request->dte_id);
+                            $aux_desc = $aux_desc . $aux_codigos . " DTE_ID:" . $dte->id;
+                            if(!is_null($dte->nrodocto)){
+                                $aux_desc = $aux_desc . " DTE_nrodocto:" . $dte->nrodocto;
+                            }
+                        }
+                    }else{
+                        $aux_desc = "Entrada por anulacion desde asignar Fact / NV:" . $aux_codigos;
+                    }
                     $invmov_array = array();
                     $invmov_array["fechahora"] = date("Y-m-d H:i:s");
+                    /* //San Bernardo
                     $invmov_array["annomes"] = $annomes;
                     $invmov_array["desc"] = "Entrada por anulacion desde asignar Fact / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
                     $invmov_array["obs"] = "Entrada por anulacion desde asignar Fact / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+                    */
+                    $invmov_array["annomes"] =  $annomes;
+                    $invmov_array["desc"] = $aux_desc;
+                    $invmov_array["obs"] = $aux_desc;
                     $invmov_array["invmovmodulo_id"] = $invmoduloBGiaD->id; //Modulo Guia Despacho
                     $invmov_array["idmovmod"] = $request->id;
                     $invmov_array["invmovtipo_id"] = 1;
@@ -387,7 +463,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                            $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
+                            $array_invmovdet["sucursal_id"] = $despachoord->notaventa->sucursal_id; //$oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachoorddet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 1;
                             $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
@@ -420,9 +496,9 @@ class DespachoOrdAnulGuiaFactController extends Controller
                     } 
                 }
             }
-
+            $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
             $despachoordanulguiafact = new DespachoOrdAnulGuiaFact();
-            $despachoordanulguiafact->despachoord_id = $request->id;
+            $despachoordanulguiafact->despachoord_id = $request->despachoord_id;
             $despachoordanulguiafact->guiadespacho = $despachoord->guiadespacho;
             $despachoordanulguiafact->guiadespachofec = $despachoord->guiadespachofec;
             $despachoordanulguiafact->numfactura = $despachoord->numfactura;
@@ -442,6 +518,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 $despachoord->fechafactura = NULL;
                 $despachoord->numfacturafec = NULL;
                 $despachoord->aprguiadesp = NULL;
+                $despachoord->aprguiadespfh = NULL;
             }
             if ($despachoord->save()) {
                 return response()->json([

@@ -65,6 +65,11 @@ $(document).on("click", ".btnAnular", function(event){
             updated_at : aux_updated_at,
             id         : id
         };
+        /* Santa Ester
+            _token  : $('input[name=_token]').val(),
+            id      : id,
+            updated_at : $("#updated_at" + id).html()
+        */
         if (value) {
             ajaxRequest(data,form.attr('href')+'/'+id+'/anular','anular',form);
         }

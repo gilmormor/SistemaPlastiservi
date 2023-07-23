@@ -12,6 +12,7 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
         'ajax'        : "despachoordpage/" + cadena,
+        "order"       : [[ 0, "desc" ]],
         'columns'     : [
             {data: 'id'},
             {data: 'fechahora'},
@@ -27,6 +28,7 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
+            {data: 'obsdevolucion',className:"ocultar"},
             {data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
@@ -43,6 +45,13 @@ $(document).ready(function () {
                     + data.id +
                 "</a>";
             $('td', row).eq(0).html(aux_text);
+            if(data.obsdevolucion !=""){
+                aux_text =
+                    "<a class='btn-sm tooltipsC' title='" + data.obsdevolucion + "'>" +
+                        "<i class='fa fa-fw fa-question-circle text-red'></i>" + 
+                    "</a>";
+                $('td', row).eq(0).html($('td', row).eq(0).html() + aux_text);
+            }
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
@@ -60,7 +69,7 @@ $(document).ready(function () {
             
             if(data.oc_file != "" && data.oc_file != null){
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
                         data.oc_id + 
                     "</a>";
                 $('td', row).eq(6).html(aux_text);
@@ -186,20 +195,41 @@ function ajaxRequestOD(data,url,funcion) {
                 return 0;
                 switch (respuesta.mensaje) {
                     case 'ok':
+                        window.location = respuesta.ruta_crear_guiadesp;
+                        /*
                         swal({
-                            title: '¿ Desea ver PDF Orden Despacho ?',
+                            title: '¿ Hacer Guia Despacho SII ?',
                             text: "",
                             icon: 'success',
                             buttons: {
-                                cancel: "Cancelar",
-                                confirm: "Aceptar"
+                                cancel: "No",
+                                confirm: "Si"
                             },
                         }).then((value) => {
                             if (value) {
-                                genpdfOD(respuesta.id,1);
+                                window.location = respuesta.ruta_crear_guiadesp;
+                            }else{
+                                swal({
+                                    title: '¿ Desea ver PDF Orden Despacho ?',
+                                    text: "",
+                                    icon: 'success',
+                                    buttons: {
+                                        cancel: "Cancelar",
+                                        confirm: "Aceptar"
+                                    },
+                                }).then((value) => {
+                                    if (value) {
+                                        genpdfOD(respuesta.id,1);
+                                        console.log(respuesta.ruta_crear_guiadesp);
+                                        window.location = respuesta.ruta_crear_guiadesp;
+                                    }
+                                    //$("#fila"+data['nfila']).remove();                            
+                                });        
                             }
                             //$("#fila"+data['nfila']).remove();                            
                         });
+                        */
+
                         $("#fila"+respuesta.nfila).remove();
                         Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                         break;

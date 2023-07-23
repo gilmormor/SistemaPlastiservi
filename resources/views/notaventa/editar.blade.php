@@ -3,7 +3,6 @@
     Nota de Venta
 @endsection
 
-@routes
 @section("styles")
     <link rel="stylesheet" href="{{asset("assets/js/bootstrap-fileinput/css/fileinput.min.css")}}">
 @endsection
@@ -18,7 +17,10 @@
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/notaventa/crear.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
+<!--San Bernardo
     <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script>
+-->
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
 @section('contenido')

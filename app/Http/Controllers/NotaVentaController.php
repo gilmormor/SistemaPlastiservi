@@ -2,30 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AprobarRechazoNotaVenta;
+use App\Events\AvisoRevisionNotaVenta;
 use App\Events\Notificacion;
 use App\Http\Requests\ValidarCotizacion;
 use App\Http\Requests\ValidarNotaVenta;
+use App\Models\AcuerdoTecnico;
+use App\Models\AcuerdoTecnico_Cliente;
 use App\Models\CategoriaProd;
+use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\ClienteDirec;
+use App\Models\ClienteProducto;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
+use App\Models\Color;
 use App\Models\Comuna;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\MateriaPrima;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\NotaVentaDetalle;
 use App\Models\Notificaciones;
 use App\Models\PlazoPago;
 use App\Models\Producto;
+use App\Models\ProductoVendedor;
+use App\Models\Provincia;
+use App\Models\Region;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\SucursalClienteDirec;
 use App\Models\TipoEntrega;
+use App\Models\TipoSello;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
 use DateTime;
@@ -33,7 +45,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use SplFileInfo;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\File;
 use PhpParser\Node\Stmt\Foreach_;
+use Illuminate\Support\Facades\Storage;
 
 class NotaVentaController extends Controller
 {
@@ -94,7 +108,7 @@ class NotaVentaController extends Controller
                 on cotizacion.cliente_id = cliente.id
                 LEFT join clientebloqueado
                 on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-                where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3) and 
+                where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3 or aprobstatus=6) and 
                 cotizacion.id not in (SELECT cotizacion_id from notaventa WHERE !(cotizacion_id is NULL) and (anulada is null))
                 and cotizacion.deleted_at is null;';
         //where usuario_id='.auth()->id();
@@ -115,6 +129,9 @@ class NotaVentaController extends Controller
         //session(['aux_aproNV' => '1']) 1=Pantalla Solo para aprobar Nota de Venta para luego emitir Guia de Despacho
         session(['aux_aproNV' => '0']);
         $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         $sql= 'SELECT COUNT(*) AS contador
         FROM vendedor INNER JOIN persona
         ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
@@ -132,7 +149,7 @@ class NotaVentaController extends Controller
         }
 
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = 'SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
+        $sql = "SELECT cotizacion.id,cotizacion.fechahora,razonsocial,aprobstatus,aprobobs,total,
                     clientebloqueado.descripcion as descripbloqueo,
                     (SELECT COUNT(*) 
                     FROM cotizaciondetalle 
@@ -142,9 +159,11 @@ class NotaVentaController extends Controller
                 on cotizacion.cliente_id = cliente.id
                 LEFT join clientebloqueado
                 on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-                where ' . $aux_condvendcot . ' and (aprobstatus=1 or aprobstatus=3) and 
+                where $aux_condvendcot and (aprobstatus=1 or aprobstatus=3 or aprobstatus=6) and 
                 cotizacion.id not in (SELECT cotizacion_id from notaventa WHERE !(cotizacion_id is NULL) and (anulada is null))
-                and cotizacion.deleted_at is null;';
+                and cotizacion.deleted_at is null
+                AND cotizacion.sucursal_id in ($sucurcadena)
+                ORDER BY cotizacion.id DESC;";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $cotizaciones = DB::select($sql);
@@ -160,6 +179,9 @@ class NotaVentaController extends Controller
         //session(['aux_aproNV' => '1']) 1=Pantalla Solo para aprobar Nota de Venta para luego emitir Guia de Despacho
         session(['aux_aproNV' => '0']);
         $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         $sql= 'SELECT COUNT(*) AS contador
         FROM vendedor INNER JOIN persona
         ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
@@ -188,7 +210,8 @@ class NotaVentaController extends Controller
                 and anulada is null
                 and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
                 and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
-                and notaventa.deleted_at is null;";
+                and notaventa.deleted_at is null
+                AND notaventa.sucursal_id in ($sucurcadena);";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);  
@@ -205,17 +228,25 @@ class NotaVentaController extends Controller
         $datas = Cliente::clientesxUsuarioSQLTemp();
         return datatables($datas)->toJson();
     }
-
+/*San Bernardo
     public function productobuscarpageid(Request $request){
         $datas = Producto::productosxClienteTemp($request);
+*///Fin San Bernardo
+    public function productobuscarpageid(Request $request){
+        $datas = Producto::productosxCliente($request);
         return datatables($datas)->toJson();
     }
 
     public function clientebuscarpageid($id){
+        /*San Bernardo
         $datas = Cliente::clientesxUsuarioSQLTemp();
         return datatables($datas)->toJson();
     }
+    *///Fin San Bernardo
 
+        $datas = Cliente::clientesxUsuarioSQL();
+        return datatables($datas)->toJson();
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -292,8 +323,23 @@ class NotaVentaController extends Controller
             ->groupBy('vendedor.id')
             ->get();
         $tablas = array();
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
+
+        $tablas['formapagos'] = FormaPago::orderBy('id')->get();
+        $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['provincias'] = Provincia::orderBy('id')->get();
+        $tablas['regiones'] = Region::orderBy('id')->get();
+        $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
+        $tablas['giros'] = Giro::orderBy('id')->get();
+        $tablas['empresa'] = Empresa::findOrFail(1);
+        $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
+        $tablas['color'] = Color::orderBy('id')->get();
+        $tablas['certificado'] = Certificado::orderBy('id')->get();
+        $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
+        session(['editaracutec' => '0']);
     
         //dd($vendedor_id);
         return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant','tablas'));
@@ -310,7 +356,8 @@ class NotaVentaController extends Controller
             ]);    
         }
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
-        $detalles = $data->cotizaciondetalles()->get();
+        //$detalles = $data->cotizaciondetalles()->get();
+        $detalles = $data->cotizaciondetalles;
         /*$detalles = $data->cotizaciondetalles()
                     ->whereColumn('cotizaciondetalle.cantusada', '<', 'cotizaciondetalle.cant')
                     ->get();*/
@@ -381,13 +428,28 @@ class NotaVentaController extends Controller
         session(['aux_aproNV' => '1']);
         
         $aux_statusPant = 0;
+
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
+        $tablas['formapagos'] = FormaPago::orderBy('id')->get();
+        $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['provincias'] = Provincia::orderBy('id')->get();
+        $tablas['regiones'] = Region::orderBy('id')->get();
+        $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
+        $tablas['giros'] = Giro::orderBy('id')->get();
+        $tablas['empresa'] = Empresa::findOrFail(1);
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
+        $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
+        $tablas['color'] = Color::orderBy('id')->get();
+        $tablas['certificado'] = Certificado::orderBy('id')->get();
+        $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
+        
+        session(['editaracutec' => '0']);
 
         //dd($aux_aproNV);
         return view('notaventa.crearcot', compact('data','clienteselec','clientedirecs','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));
-
 
     }
 
@@ -409,6 +471,16 @@ class NotaVentaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        if(!empty($request->cotizacion_id)){
+            $cotizacion = Cotizacion::findOrFail($request->cotizacion_id);
+            if(empty($cotizacion->aprobstatus) or strpos("136",(string)$cotizacion->aprobstatus) === false){
+                //SI POR ALGUNA RAZON CAMBIAN EL VALOR DE $cotizacion->aprobstatus EN EL MOMENTO QUE SE ESTAR CREANDO LA NOTA DE VENTA
+                return redirect('notaventa')->with([
+                    'mensaje'=>'Nota de venta no fue guardada, ya que cambio el estatus de aprobación de la Cotización',
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
         $dateInput = explode('/',$request->plazoentrega);
@@ -425,47 +497,112 @@ class NotaVentaController extends Controller
             $data->oc_file = $foto;
             $data->save();
         }
-        if($cont_producto>0){
-            
-            for ($i=0; $i < $cont_producto ; $i++){
-                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                    $producto = Producto::findOrFail($request->producto_id[$i]);
-                    $notaventadetalle = new NotaVentaDetalle();
-                    $notaventadetalle->notaventa_id = $notaventaid;
-                    $notaventadetalle->producto_id = $request->producto_id[$i];
-                    $notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];                    
-                    $notaventadetalle->cant = $request->cant[$i];
-                    $notaventadetalle->cantgrupo = $request->cant[$i];
-                    $notaventadetalle->cantxgrupo = 1;
-                    $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
-                    $notaventadetalle->descuento = $request->descuento[$i];
-                    $notaventadetalle->preciounit = $request->preciounit[$i];
-                    $notaventadetalle->peso = $producto->peso;
-                    $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
-                    $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
-                    $notaventadetalle->totalkilos = $request->totalkilos[$i];
-                    $notaventadetalle->subtotal = $request->subtotal[$i];
 
-                    $notaventadetalle->producto_nombre = $producto->nombre;
-                    $notaventadetalle->ancho = $request->ancho[$i];
-                    $notaventadetalle->largo = $request->long[$i];
-                    $notaventadetalle->espesor = $request->espesor[$i];
-                    $notaventadetalle->diametro = $producto->diametro;
-                    $notaventadetalle->categoriaprod_id = $producto->categoriaprod_id;
-                    $notaventadetalle->claseprod_id = $producto->claseprod_id;
-                    $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
-                    $notaventadetalle->color_id = $producto->color_id;
-                    $notaventadetalle->obs = $request->obs[$i];
-                    $notaventadetalle->save();
-                    $idDireccion = $notaventadetalle->id;
+        //$notaventaid = 1;
+        //SI ESTA VACIO EL NUMERO DE COTIZACION SE CREA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DEL LADO DEL CLIENTE
+        //SI NO ESTA VACIO EL NUMERO DE COTIZACION SE LLENA EL DETALLE DE LA NOTA DE VENTA DE LA TABLA DETALLE COTIZACION
+        if(empty($request->cotizacion_id)){
+            if($cont_producto>0){
+                for ($i=0; $i < $cont_producto ; $i++){
+                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                        $producto = Producto::findOrFail($request->producto_id[$i]);
+                        $notaventadetalle = new NotaVentaDetalle();
+                        $notaventadetalle->notaventa_id = $notaventaid;
+                        $notaventadetalle->producto_id = $request->producto_id[$i];
+                        $notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];                    
+                        $notaventadetalle->cant = $request->cant[$i];
+                        $notaventadetalle->cantgrupo = $request->cant[$i];
+                        $notaventadetalle->cantxgrupo = 1;
+                        $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
+                        $notaventadetalle->descuento = $request->descuento[$i];
+                        $notaventadetalle->preciounit = $request->preciounit[$i];
+                        $notaventadetalle->peso = $producto->peso;
+                        $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
+                        $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
+                        $notaventadetalle->totalkilos = $request->totalkilos[$i];
+                        $notaventadetalle->subtotal = $request->subtotal[$i];
+    
+                        $notaventadetalle->producto_nombre = $producto->nombre;
+                        $notaventadetalle->ancho = $request->ancho[$i];
+                        $notaventadetalle->largo = $request->long[$i];
+                        $notaventadetalle->espesor = $request->espesor[$i];
+                        $notaventadetalle->diametro = $producto->diametro;
+                        $notaventadetalle->categoriaprod_id = $producto->categoriaprod_id;
+                        $notaventadetalle->claseprod_id = $producto->claseprod_id;
+                        $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
+                        $notaventadetalle->color_id = $producto->color_id;
+                        $notaventadetalle->obs = $request->obs[$i];
+                        $notaventadetalle->save();
+                        $idDireccion = $notaventadetalle->id;    
+                    }
                 }
             }
+        }else{
+            $cotizacion = Cotizacion::findOrFail($request->cotizacion_id);
+            $cotizaciondetalles = $cotizacion->cotizaciondetalles;
+            foreach ($cotizaciondetalles as $cotizaciondetalle) {
+                //dd($cotizaciondetalle->acuerdotecnicotemp);
+                $array_cotizaciondetalle = $cotizaciondetalle->attributesToArray();
+                $array_cotizaciondetalle["notaventa_id"] = $notaventaid;
+                $array_cotizaciondetalle["cotizaciondetalle_id"] = $array_cotizaciondetalle["id"];
+                unset($array_cotizaciondetalle["id"],$array_cotizaciondetalle["usuariodel_id"],$array_cotizaciondetalle["deleted_at"],$array_cotizaciondetalle["created_at"],$array_cotizaciondetalle["updated_at"]);
+                //dd($array_cotizaciondetalle);
+                /*
+                if($cotizaciondetalle->acuerdotecnicotemp){
+                    //SI EXISTE ACUERDO TECNICO SE CREA EL PRODUCTO
+                    //dd($cotizaciondetalle->acuerdotecnicotemp->attributesToArray());
+                    $array_acuerdotecnicotemp = $cotizaciondetalle->acuerdotecnicotemp->attributesToArray();
+                    $producto = Producto::findOrFail($cotizaciondetalle->producto_id);
+                    $array_producto = $producto->attributesToArray();
+                    $array_producto["nombre"] = $array_acuerdotecnicotemp["at_desc"];
+                    $array_producto["descripcion"] = $array_acuerdotecnicotemp["at_desc"];
+                    $array_producto["precioneto"] = $cotizaciondetalle->precioxkilo;
+                    $array_producto["tipoprod"] = 0;
+                    $productonew = Producto::create($array_producto);
+                    //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
+                    //$productonew->vendedores()->sync($request->vendedor_id);
+                    $ProductoVendedor = ProductoVendedor::updateOrCreate(
+                        ['producto_id' => $productonew->id,'vendedor_id' => $request->vendedor_id],
+                        [
+                            'producto_id' => $productonew->id,
+                            'vendedor_id' => $request->vendedor_id
+                        ]
+                    );
+                    //CREAR RELACION DE PRODUCTO CON CLIENTE PARA LUEGO FILTRAR LOS PRODUCTOS DE CADA CLIENTE
+                    $ClienteProducto = ClienteProducto::updateOrCreate(
+                        ['cliente_id' => $notaventa->cliente_id,'producto_id' => $productonew->id],
+                        [
+                            'cliente_id' => $notaventa->cliente_id,
+                            'producto_id' => $productonew->id
+                        ]
+                    );
+
+                    $array_acuerdotecnicotemp["producto_id"] = $productonew->id;
+                    $acuerdotecnico = AcuerdoTecnico::create($array_acuerdotecnicotemp);
+                    //SE RELACIONA EL ACUERDO TECNICO CON EL CLIENTE
+                    //SOLO EXISTE 1 ACUERDO TECNICO, PERO PUEDEN HABER VARIOS ACUERDO TECNICO POR CADA CLIENTE QUE COMPARTEN EL MISMO ACUERDO TECNICO 
+                    //COMO POR EJEMPLO: LA FORMA DE EMPAQUE, ES EL MISNMO PRODUCTO PERO CAMBIA LA FORMA DE EMPAQUETAR.
+                    $acuerdotecnico_cliente = AcuerdoTecnico_Cliente::create([
+                        "acuerdotecnico_id" => $acuerdotecnico->id,
+                        "cliente_id" => $notaventa->cliente_id,
+                    ]);
+
+                    $array_cotizaciondetalle["producto_id"] = $productonew->id;
+                }
+                */
+                $notaventadetalle = NotaVentaDetalle::create($array_cotizaciondetalle);
+                /*
+                if($cotizaciondetalle->acuerdotecnicotemp){
+                    $acuerdotecnico->at_notaventadetalle_id = $notaventadetalle->id;
+                    $acuerdotecnico->save();
+                }*/
+            }    
         }
+
         return redirect('notaventa')->with([
                                             'mensaje'=>'Nota de Venta creada con exito.',
                                             'tipo_alert' => 'alert-success'
-                                        ]);
-        
+                                        ]);        
     }
 
     /**
@@ -489,8 +626,14 @@ class NotaVentaController extends Controller
     {
         can('editar-notaventa');
         $data = NotaVenta::findOrFail($id);
+        /*
+        foreach($data->notaventadetalles as $detalle){
+            dd($detalle->producto->acuerdotecnico);
+        }
+        */
+        //$detalles = $data->notaventadetalles()->get();
+        $detalles = $data->notaventadetalles;
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
-        $detalles = $data->notaventadetalles()->get();
         $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
         //session(['aux_aprocot' => '0']);
@@ -560,11 +703,16 @@ class NotaVentaController extends Controller
         $aux_statusPant = 0;
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
-        //$tablas['sucursales'] = $clientesArray['sucursales'];
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
-        //$tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
 
-        return view('notaventa.editar', compact('data','clienteselec','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
+        // San Bernardo return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
+        $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
+        $tablas['color'] = Color::orderBy('id')->get();
+        $tablas['certificado'] = Certificado::orderBy('id')->get();
+        $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
+
+        return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }
 
     /**
@@ -688,6 +836,12 @@ class NotaVentaController extends Controller
                 'mensaje'=>'Nota de Venta Actualizada con exito.',
                 'tipo_alert' => 'alert-success'
             ]);
+/*
+            return redirect('notaventa/'.$id.'/editar')->with([
+                                                                'mensaje'=>'Nota de Venta Actualizada con exito.',
+                                                                'tipo_alert' => 'alert-success'
+                                                            ]);
+*/
         }else{
             return redirect('notaventa')->with([
                 'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
@@ -771,54 +925,64 @@ class NotaVentaController extends Controller
                 $notaventa->aprobfechahora = date("Y-m-d H:i:s");
                 $notaventa->aprobobs = 'Aprobado por el vendedor';
             }
+            if($notaventa->sucursal->staaprobnv=="1"){ //SE VERIFICA SI EL ESTATUS QUE ESTA EN SUCURSAL SE DEBE VALIDAR SIEMPRE LA NOTA DE VENTA
+                //LAS SUCURSALES QUE EL ESTATUS ES 1 DEBEN SER APROBADAS POR SUPERVISOR 
+                //ESTO PARA VALIDAR LA LAS ORDEN DE COMPRA ANTES DE QUE LA NOTA DE VENTA 
+                $notaventa->aprobstatus = 2;
+            }
             if ($notaventa->save()) {
-                $sql = "SELECT COUNT(*) as cont
+                Event(new AvisoRevisionNotaVenta($notaventa)); //NOTIFICACION PARA LOS USUARIO QUE TIENEN ACCESO AL MENU DE APROBAR NOTA DE VENTA, EN ESTE CASO LUISA MARTINEZ, SI HAY MAS USUARIO QUE TIENEN ACCESO A ESTA PANTALLA EL SISTEMA ENVIA LA NOTIFICACION Y EL CORREO.
+                if($notaventa->sucursal->staaprobnv == "2"){ //SI ES 2 EL ESTATUS SE ENVIA LA NOTIFICACION 
+                    //ESTA NOTIFICACION ES SOLO PARA LOS PINOS Y 
+                    $sql = "SELECT COUNT(*) as cont
                     FROM notaventadetalle 
                     WHERE notaventadetalle.notaventa_id=$notaventa->id 
                     and notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal
                     and isnull(notaventadetalle.deleted_at);";
-                //where usuario_id='.auth()->id();
-                //dd($sql);
-                $datas = DB::select($sql);
-                if($datas[0]->cont > 0){
-                    //Notificaciones cuando el precio esta por debajo de lo establecido en tabla de productos
-                    //Notificacion para Cristian
-                    $notificacion = [
-                        'usuarioorigen_id' => auth()->id(),
-                        'usuariodestino_id' => 2,
-                        'vendedor_id' => $notaventa->vendedor_id,
-                        'status' => 1,
-                        'nombretabla' => 'notaventa',
-                        'mensaje' => 'Precio menor NV: '. $notaventa->id,
-                        'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
-                        'nombrepantalla' => 'notaventa.index',
-                        'rutaorigen' => 'notaventa',
-                        'rutadestino' => 'notaventaaprobar',
-                        'tabla_id' => $notaventa->id,
-                        'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
-                        'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
-                        'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
-                    ];
-                    event(new Notificacion($notificacion));
-                    //Notificacion para el usuario que aprobo la Nota Venta
-                    $notificacion = [
-                        'usuarioorigen_id' => auth()->id(),
-                        'usuariodestino_id' => auth()->id(),
-                        'vendedor_id' => $notaventa->vendedor_id,
-                        'status' => 1,
-                        'nombretabla' => 'notaventa',
-                        'mensaje' => 'Precio menor NV: '. $notaventa->id,
-                        'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
-                        'nombrepantalla' => 'notaventa.index',
-                        'rutaorigen' => 'notaventa',
-                        'rutadestino' => 'notaventaconsulta',
-                        'tabla_id' => $notaventa->id,
-                        'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
-                        'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
-                        'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
-                    ];
-                    event(new Notificacion($notificacion));
+                    //where usuario_id='.auth()->id();
+                    //dd($sql);
+                    $datas = DB::select($sql);
+                    if($datas[0]->cont > 0){
+                        //Notificaciones cuando el precio esta por debajo de lo establecido en tabla de productos
+                        //Notificacion para Cristian
+                        $notificacion = [
+                            'usuarioorigen_id' => auth()->id(),
+                            'usuariodestino_id' => 2,
+                            'vendedor_id' => $notaventa->vendedor_id,
+                            'status' => 1,
+                            'nombretabla' => 'notaventa',
+                            'mensaje' => 'Precio menor NV: '. $notaventa->id,
+                            'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
+                            'nombrepantalla' => 'notaventa.index',
+                            'rutaorigen' => 'notaventa',
+                            'rutadestino' => 'notaventaaprobar',
+                            'tabla_id' => $notaventa->id,
+                            'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
+                            'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
+                            'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
+                        ];
+                        event(new Notificacion($notificacion));
+                        //Notificacion para el usuario que aprobo la Nota Venta
+                        $notificacion = [
+                            'usuarioorigen_id' => auth()->id(),
+                            'usuariodestino_id' => auth()->id(),
+                            'vendedor_id' => $notaventa->vendedor_id,
+                            'status' => 1,
+                            'nombretabla' => 'notaventa',
+                            'mensaje' => 'Precio menor NV: '. $notaventa->id,
+                            'mensajetitle' => 'Prec menor al valor tabla: Requiere Aprobación',
+                            'nombrepantalla' => 'notaventa.index',
+                            'rutaorigen' => 'notaventa',
+                            'rutadestino' => 'notaventaconsulta',
+                            'tabla_id' => $notaventa->id,
+                            'accion' => 'Prec menor al valor tabla: Requiere Aprobación',
+                            'detalle' => 'Nota Venta: ' .$notaventa->id. ' Prec menor al valor tabla: Requiere Aprobación',
+                            'icono' => 'fa fa-fw fa-thumbs-o-down text-red',
+                        ];
+                        event(new Notificacion($notificacion));
+                    }
                 }
+
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);
@@ -839,8 +1003,65 @@ class NotaVentaController extends Controller
             $notaventa->aprobusu_id = auth()->id();
             $notaventa->aprobfechahora = date("Y-m-d H:i:s");
             $notaventa->aprobobs = $request->obs;
-            
-            if ($notaventa->save()) {
+            if ($notaventa->save()) { //($notaventa->save()) {
+                foreach ($notaventa->notaventadetalles as $notaventadetalle) {
+                    if(isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
+                        //SI EXISTE ACUERDO TECNICO SE CREA EL PRODUCTO
+                        //dd($cotizaciondetalle->acuerdotecnicotemp->attributesToArray());
+                        $array_acuerdotecnicotemp = $notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno->attributesToArray();
+                        $producto = Producto::findOrFail($notaventadetalle->producto_id);
+                        $array_producto = $producto->attributesToArray();
+                        $array_producto["nombre"] = $array_acuerdotecnicotemp["at_desc"];
+                        $array_producto["descripcion"] = $array_acuerdotecnicotemp["at_desc"];
+                        $array_producto["precioneto"] = $notaventadetalle->precioxkilo;
+                        $array_producto["tipoprod"] = 0;
+                        $productonew = Producto::create($array_producto);
+                        //dd($notaventa->vendedor_id);
+                        //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
+                        //$productonew->vendedores()->sync($request->vendedor_id);
+                        $ProductoVendedor = ProductoVendedor::updateOrCreate(
+                            ['producto_id' => $productonew->id,'vendedor_id' => $notaventa->vendedor_id],
+                            [
+                                'producto_id' => $productonew->id,
+                                'vendedor_id' => $notaventa->vendedor_id
+                            ]
+                        );
+                        //CREAR RELACION DE PRODUCTO CON CLIENTE PARA LUEGO FILTRAR LOS PRODUCTOS DE CADA CLIENTE
+                        $ClienteProducto = ClienteProducto::updateOrCreate(
+                            ['cliente_id' => $notaventa->cliente_id,'producto_id' => $productonew->id],
+                            [
+                                'cliente_id' => $notaventa->cliente_id,
+                                'producto_id' => $productonew->id
+                            ]
+                        );
+                        $array_acuerdotecnicotemp["producto_id"] = $productonew->id;
+                        $array_acuerdotecnicotemp["at_notaventadetalle_id"] = $notaventadetalle->id;
+                        $acuerdotecnico = AcuerdoTecnico::create($array_acuerdotecnicotemp);
+                        //SI EL ACUERDOTECNICOTEMP TIENE ARCHIVO ADJUNTO LO COPIO AL ACUERDOTECNICO DEFINITIVO Y COPIO EL ARCHIVO
+                        if($array_acuerdotecnicotemp["at_impreso"] == 1 and $array_acuerdotecnicotemp["at_impresofoto"] != null){
+                            $fileOrigen = 'imagenes/attemp/' . $array_acuerdotecnicotemp["at_impresofoto"];
+                            $extension = File::extension($fileOrigen);
+                            $fileDestino = 'at' . $acuerdotecnico->id . '.' . $extension;
+                            $newName = 'imagenes/at/' . $fileDestino;
+                            Storage::disk('public')->copy($fileOrigen, $newName);
+                            $acuerdotecnico->at_impresofoto = $fileDestino;
+                            $acuerdotecnico->save();
+                        }
+                        //dd($array_acuerdotecnicotemp);
+                        //SE RELACIONA EL ACUERDO TECNICO CON EL CLIENTE
+                        //SOLO EXISTE 1 ACUERDO TECNICO, PERO PUEDEN HABER VARIOS ACUERDO TECNICO POR CADA CLIENTE QUE COMPARTEN EL MISMO ACUERDO TECNICO 
+                        //COMO POR EJEMPLO: LA FORMA DE EMPAQUE, ES EL MISNMO PRODUCTO PERO CAMBIA LA FORMA DE EMPAQUETAR.
+                        $acuerdotecnico_cliente = AcuerdoTecnico_Cliente::create([
+                            "acuerdotecnico_id" => $acuerdotecnico->id,
+                            "cliente_id" => $notaventa->cliente_id,
+                        ]);
+                        NotaVentaDetalle::findOrFail($notaventadetalle->id)->update([
+                            'producto_id' => $productonew->id
+                        ]);
+                    }
+                }
+                Event(new AprobarRechazoNotaVenta($notaventa)); //NOTIFICACION A VENDEDOR SOBRE APROBACION O RECHAZO DE NOTA DE VENTA
+                //dd("romper");
                 return response()->json(['mensaje' => 'ok']);
             } else {
                 return response()->json(['mensaje' => 'ng']);

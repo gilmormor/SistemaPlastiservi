@@ -27,6 +27,7 @@ Aprobar Nota de Venta
                                 <th class="width30">Nro Cot</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
+                                <th>Vendedor</th>
                                 <th class="ocultar">contador</th>
                                 <th class="ocultar">aprobstatus</th>
                                 <th class="ocultar">aprobobs</th>

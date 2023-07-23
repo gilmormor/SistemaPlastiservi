@@ -10,7 +10,8 @@ class PlazoPago extends Model
     use SoftDeletes;
     protected $table = "plazopago";
     protected $fillable = [
-        'descripcion'
+        'descripcion',
+        'dias'
     ];
 
     public function clientedirecs()

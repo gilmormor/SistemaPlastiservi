@@ -34,6 +34,27 @@ $(document).ready(function () {
 
     configurarTabla('.tablas');
 
+	$('#oc_file').fileinput({
+		language: 'es',
+		allowedFileExtensions: ['jpg', 'jpeg', 'png', "pdf"],
+		maxFileSize: 400,
+		initialPreview: [
+			// PDF DATA
+			'/storage/imagenes/notaventa/'+$("#imagen").val(),
+		],
+		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
+		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
+		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
+		initialPreviewConfig: [
+			{type: "pdf", size: 8000, caption: $("#imagen").val(), url: "/file-upload-batch/2", key: 10, downloadUrl: false}, // disable download
+		],
+        showUpload: false,
+        showClose: false,
+        initialPreviewAsData: true,
+		dropZoneEnabled: false,
+		maxFileCount: 5,
+        theme: "fa",
+	});
 
     $("#btnpdf").click(function()
     {

@@ -74,7 +74,7 @@
     </div>
     <div class="form-group col-xs-12 col-sm-9">
         <label for="giro" class="control-label requerido" data-toggle='tooltip' title="Descripción Giro">Descripción Giro</label>
-        <input type="text" name="giro" id="giro" class="form-control" value="{{old('giro', $data->giro ?? '')}}" maxlength="100" required/>
+        <input type="text" name="giro" id="giro" class="form-control" value="{{old('giro', $data->giro ?? '')}}" maxlength="40" required/>
     </div>
 
 </div>
@@ -305,10 +305,10 @@
                                 </td>
                                 <td>
                                     @if(can('guardar-cliente',false) == true)
-                                        <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                        <a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
                                             <i class="fa fa-fw fa-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
+                                        <a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
                                             <i class="fa fa-fw fa-trash text-danger"></i>
                                         </a>
                                     @endif

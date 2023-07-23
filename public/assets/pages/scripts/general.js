@@ -62,12 +62,15 @@ $(document).ready(function () {
 	// Validar campos numericos de pantalla agregar_conveniosofitasa.php
     $('.numerico').numeric('.');
 	$('.numerico4d').numeric('.');
+    $('.numericoblanco').numeric('.');
     //*******************************************************************
 
 	$(".numerico").blur(function(e){
 		if($(this).attr('valor') != undefined){
 			$(this).attr('valor',$(this).val());
-			$(this).val(MASK(0, $(this).val(), '-###,###,###,##0.00',1));
+			//$(this).val(MASK(0, $(this).val(), '-###,###,###,##0.00',1));
+			$(this).val(MASKLA($(this).val(),2));
+
 		}
 	});
 	$(".numerico").focus(function(e){
@@ -87,6 +90,18 @@ $(document).ready(function () {
 			$(this).val($(this).attr('valor'));
 		}
 	});
+	$(".numericoblanco").blur(function(e){
+		if($(this).attr('valor') != undefined){
+			$(this).attr('valor',$(this).val());
+		}
+	});
+	
+	$(".numericoblanco").focus(function(e){
+		if($(this).attr('valor') != undefined){
+			$(this).val($(this).attr('valor'));
+		}
+	});
+
 	$("#espesor1M").blur(function(e){
 		$("#espesorM").val($("#espesor1M").val());
 	});
@@ -164,6 +179,7 @@ function validacion(campo,tipo)
 
 		break
 		case "numerico": 
+			//console.log($('#'+campo).prop('min'));
 			codigo = document.getElementById(campo).value;
 			cajatexto = document.getElementById(campo).value;
 			var caract = new RegExp(/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/);
@@ -178,8 +194,7 @@ function validacion(campo,tipo)
 			}
 			else
 			{
-				if(caract.test(cajatexto) == false)
-				{
+				if(caract.test(cajatexto) == false){
 					$("#glypcn"+campo).remove();
 					$('#'+campo).parent().attr("class", columnas+" has-error has-feedback");
 					$('#'+campo).parent().children('span').text("Solo permite valores numericos").show();
@@ -192,7 +207,7 @@ function validacion(campo,tipo)
 					$('#'+campo).parent().attr("class", columnas+" has-success has-feedback");
 					$('#'+campo).parent().children('span').hide();
 					$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
-					return true;				
+					return true;	
 				}
 			}
 			case "numericootro": 
@@ -314,6 +329,99 @@ function validacion(campo,tipo)
 				}
 			} 
 		break 
+		case "number": 
+			codigo = document.getElementById(campo).value;
+			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo) ) {
+				$("#glypcn"+campo).remove();
+				$('#'+campo).parent().attr("class", columnas+" has-error has-feedback");
+				$('#'+campo).parent().children('span').text("Campo obligatorio").show();
+				$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-remove form-control-feedback check'></span>");
+				$('#'+campo).focus();
+				return false;
+			}else{
+				$("#glypcn"+campo).remove();
+				$('#'+campo).parent().attr("class", columnas+" has-success has-feedback");
+				$('#'+campo).parent().children('span').hide();
+				$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
+
+				aux_respuesta = true;
+				aux_valor = parseInt($('#'+campo).val(), 10);
+				aux_min = parseInt($('#'+campo).attr("min1"), 10);
+				aux_max = parseInt($('#'+campo).attr("max1"), 10);
+				$("#glypcn"+campo).remove();
+				$('#'+campo).parent().attr("class", columnas+" has-success has-feedback");
+				$('#'+campo).parent().children('span').hide();
+				if(aux_min !== undefined && aux_min !== null && aux_min !== ""){
+					if(aux_valor < aux_min){
+						$('#'+campo).parent().attr("class", columnas+" has-error has-feedback");
+						$('#'+campo + "-error").parent().children('span').hide();
+						$('#'+campo).parent().children('span').text("Por favor, escribe un valor mayor o igual a " + aux_min +  ".").show();
+						$('#'+campo).focus();
+						aux_respuesta = false;
+					}else{
+						$("#glypcn"+campo).remove();
+						$('#'+campo).parent().attr("class", columnas+" has-success has-feedback");
+						$('#'+campo).parent().children('span').hide();
+						aux_respuesta = true;				
+					}
+				}
+				if(aux_max !== undefined && aux_max !== null && aux_max !== ""){
+					if(aux_valor > aux_max){
+						$('#'+campo).parent().attr("class", columnas+" has-error has-feedback");
+						$('#'+campo + "-error").parent().children('span').hide();
+						$('#'+campo).parent().children('span').text("Por favor, escribe un valor menor o igual a " + aux_max +  ".").show();
+						$('#'+campo).focus();
+						aux_respuesta = false;
+					}else{
+						$("#glypcn"+campo).remove();
+						$('#'+campo).parent().attr("class", columnas+" has-success has-feedback");
+						$('#'+campo).parent().children('span').hide();
+						aux_respuesta = true;				
+					}
+				}
+				return aux_respuesta;
+
+
+			}
+/*
+			aux_respuesta = true;
+			aux_valor = parseInt($('#'+campo).val(), 10);
+			aux_min = parseInt($('#'+campo).attr("min1"), 10);
+			aux_max = parseInt($('#'+campo).attr("max1"), 10);
+			$("#glypcn"+campo).remove();
+			$('#'+campo).parent().attr("class", columnas+" has-success has-feedback");
+			$('#'+campo).parent().children('span').hide();
+			if(aux_min !== undefined && aux_min !== null && aux_min !== ""){
+				if(aux_valor < aux_min){
+					$('#'+campo).parent().attr("class", columnas+" has-error has-feedback");
+					$('#'+campo + "-error").parent().children('span').hide();
+					$('#'+campo).parent().children('span').text("Por favor, escribe un valor mayor o igual a " + aux_min +  ".").show();
+					$('#'+campo).focus();
+					aux_respuesta = false;
+				}else{
+					$("#glypcn"+campo).remove();
+					$('#'+campo).parent().attr("class", columnas+" has-success has-feedback");
+					$('#'+campo).parent().children('span').hide();
+					aux_respuesta = true;				
+				}
+			}
+			if(aux_max !== undefined && aux_max !== null && aux_max !== ""){
+				if(aux_valor > aux_max){
+					$('#'+campo).parent().attr("class", columnas+" has-error has-feedback");
+					$('#'+campo + "-error").parent().children('span').hide();
+					$('#'+campo).parent().children('span').text("Por favor, escribe un valor menor o igual a " + aux_max +  ".").show();
+					$('#'+campo).focus();
+					aux_respuesta = false;
+				}else{
+					$("#glypcn"+campo).remove();
+					$('#'+campo).parent().attr("class", columnas+" has-success has-feedback");
+					$('#'+campo).parent().children('span').hide();
+					aux_respuesta = true;				
+				}
+			}
+			return aux_respuesta;
+			*/
+		break 
 		default: 
 			$("#glypcn"+campo).remove();
 			$('#'+campo).parent().attr("class", columnas+"");
@@ -335,7 +443,7 @@ function quitarValidacion(campo,tipo)
 			$("#glypcn"+campo).remove();
 			$('#'+campo).parent().attr("class", columnas);
 			$('#'+campo).parent().children('span').hide();
-			$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
+			//$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
 			return true;
 		break 
 		case "textootro": 
@@ -369,7 +477,9 @@ function quitarValidacion(campo,tipo)
 			$("#glypcn"+campo).remove();
 			$('#'+campo).parent().parent().attr("class", columnas);
 			$('#'+campo).parent().parent().children('span').hide();
+			/*
 			$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon'></span>");
+			*/
 			return true;
 
 		break 
@@ -571,36 +681,51 @@ function totalizarItem(aux_estprec){
 	}else{
 		aux_peso = $("#pesoM").val();
 	}
-	if(aux_estprec==1)
-	{
+	if(aux_estprec==1){
 		precioneto = $("#precionetoM").val();
 		precio = $("#precioxkilorealM").val();
 		$("#precionetoM").val(Math.round(precioneto));
 		$("#precioM").val(precio);
 	}else{
-		precioneto = $("#precioM").val() * aux_peso;
-		$("#precionetoM").val(Math.round(precioneto));
+		if($("#unidadmedida_idM option:selected").attr('value') == 7){
+			precioneto = $("#precioM").val() * aux_peso;
+			$("#precionetoM").val(Math.round(precioneto));	
+		}
 		$("#descuentoM").val('1');
 		$(".selectpicker").selectpicker('refresh');
 	}
 	//alert(aux_peso);
 	aux_tk = $("#cantM").val() * aux_peso;
+	$("#totalkilosM").attr("readonly","true");
+	$("#totalkilosM").attr("disabled","true");
+
 	if($("#pesoM").val()>0){	
+		/* San Bernardo
 		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(4), '-##,###,##0.0000',4));
 		$("#totalkilosM").attr('valor',aux_tk.toFixed(4));
+		*/
+		//$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
+		//$("#totalkilosM").val(MASKLA(aux_tk.toFixed(2),2));
+		$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
 	}else{
 		if($("#unidadmedida_idM option:selected").attr('value') == 7){
-			aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
-			$("#totalkilosM").val(aux_cant);
+			//aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
+			aux_cant = MASKLA($("#cantM").val(),2);
+			$("#totalkilosM").val($("#cantM").val());
 			$("#totalkilosM").attr('valor',$("#cantM").val());
 		}else{
+			/*
 			$("#totalkilosM").val(0.00);
 			$("#totalkilosM").attr('valor','0.00');
+			*/
+			$("#totalkilosM").removeAttr("readonly");
+			$("#totalkilosM").removeAttr("disabled");
 		}
 	}
 	//aux_total = ($("#cantM").val() * aux_peso * $("#precioM").val()) * ($("#descuentoM").val());
 	aux_total = ($("#cantM").val() * $("#precionetoM").val()) * ($("#descuentoM").val());
-	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
+	//$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
+	$("#subtotalM").val(MASKLA(aux_total.toFixed(2), 2));
 	$("#subtotalM").attr('valor',aux_total.toFixed(2));
 	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();
 //	$("#precioM").val(MASK(0, aux_precdesc, '-##,###,##0.00',1));
@@ -609,8 +734,10 @@ function totalizarItem(aux_estprec){
 
 	aux_precioUnit = aux_precdesc * aux_peso;
 	//$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
-	$("#precionetoM").val(Math.round(aux_precioUnit));
-	$("#precionetoM").attr('valor',Math.round(aux_precioUnit));
+	if($("#unidadmedida_idM option:selected").attr('value') == 7){
+		$("#precionetoM").val(Math.round(aux_precioUnit));
+		$("#precionetoM").attr('valor',Math.round(aux_precioUnit));	
+	}
 	/*
 	else{
 		$("#totalkilosM").val(0.00);
@@ -629,7 +756,29 @@ function insertarModificar(){
 }
 
 function modificarTabla(i){
-	$("#aux_sta").val('0')
+	$("#aux_sta").val('0');
+	//alert($("#tipoprodM").attr('valor'));
+	aux_botonAcuTec = '';
+	if($("#tipoprodM").attr('valor') == 1) {
+		//alert("1: " + $("#producto_idM").val() + ", 2: " + $("#producto_id" + $("#aux_numfila").val()).val());
+		aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec('+ i +')">'+
+		'<i id="icoat' + i + '" class="fa fa-cog text-red girarimagen"></i> </a>';
+	}else{
+		$("#acuerdotecnico"+i).val("null");
+		$("#tipoprod"+i).val("");
+	}
+	if($("#producto_idM").val() != $("#producto_id" + $("#aux_numfila").val()).val()){
+		let aux_productoId = $("#producto_idM").val();
+		let aux_acuerdotecnicoId = $("#acuerdotecnico_id").val();
+		let aux_clienteId = $("#cliente_id").val();
+		if(aux_acuerdotecnicoId > 0){
+			aux_productoId = `<a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec(${aux_acuerdotecnicoId},${aux_clienteId},1)" data-original-title="Acuerdo Técnico PDF" aria-describedby="tooltip895039">
+								${aux_productoId}
+							</a>`;
+		}
+		$("#producto_idTDT"+i).html(aux_productoId + aux_botonAcuTec);
+	}
+
 	$("#producto_id"+i).val($("#producto_idM").val());
 	$("#producto_idValor"+i).html($("#producto_idM").val());
 	
@@ -665,14 +814,21 @@ function modificarTabla(i){
 	if($("#pesoM").val()==0)
 	{
 		aux_precioxkilo = 0; //$("#precioM").attr("valor");
+		if($("#precioM").val()>0){
+			aux_precioxkilo = $("#precioM").attr("valor");
+		}
+
 	}
 	if($("#unidadmedida_idM option:selected").attr('value') == 7){
 		aux_precioxkilo = $("#precioM").attr("valor");
+	}else{
+
 	}
 	$("#precioxkiloTD"+i).html(MASKLA(aux_precioxkilo,0)); //$("#precioxkiloTD"+i).html(MASK(0, aux_precioxkilo, '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
 	$("#precioxkilo"+i).val(aux_precioxkilo);
 	$("#totalkilosTD"+i).html(MASKLA($("#totalkilosM").attr('valor'),2)); //$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
 	$("#totalkilos"+i).val($("#totalkilosM").attr('valor'));
+	$("#totalkilos"+i).attr("valor",$("#totalkilosM").attr('valor'));
 	$("#subtotalCFTD"+i).html(MASKLA($("#subtotalM").attr('valor'),0)); //$("#subtotalCFTD"+i).html(MASK(0, $("#subtotalM").attr('valor'), '-#,###,###,##0.00',1));
 	$("#subtotal"+i).val($("#subtotalM").attr('valor'));
 	$("#subtotalSFTD"+i).html($("#subtotalM").attr('valor'));
@@ -727,6 +883,7 @@ $("#btnGuardarM").click(function(event)
 function totalizar(){
 	total_neto = 0;
 	total_kg = 0;
+	total_cant = 0;
 	$("#tabla-data tr .subtotal").each(function() {
 		valor = $(this).html() ;
 		valorNum = parseFloat(valor);
@@ -740,28 +897,65 @@ function totalizar(){
 		valorNum = parseFloat(valor);
 		total_kg += valorNum;
 	});
-	aux_totalkgform = MASKLA(total_kg,2); //MASK(0, total_kg, '-##,###,##0.00',1)
+	$("#tabla-data tr .subtotalcant").each(function() {
+		//valor = $(this).html() ;
+		valor = $(this).attr("valor");
+		valor = valor.replace(/,/g, ""); //Elimina comas al valor con formato
+		//alert(valor);
+		valorNum = parseFloat(valor);
+		if(isNaN(valorNum)){
+			valorNum = 0;
+		}
+		total_cant += valorNum;
+	});
 
-	aux_porciva = $("#aux_iva").val();
-	aux_porciva = parseFloat(aux_porciva);
-	aux_iva = Math.round(total_neto * (aux_porciva/100));
+	aux_totalkgform = MASKLA(total_kg,2); //MASK(0, total_kg, '-##,###,##0.00',1)
+	aux_totalcantform = MASKLA(total_cant,2); //MASK(0, total_kg, '-##,###,##0.00',1)
+	let aux_foliocontrol_id = "";
+	aux_p = $("#foliocontrol_id").val();
+	if($("#foliocontrol_id").val() === 'undefined' || $("#foliocontrol_id").val() == null){
+		aux_foliocontrol_id = 1;
+	}else{
+		aux_foliocontrol_id = $("#foliocontrol_id").val();
+	}
+	if($("#dtefoliocontrol_id").val() == 5 || $("#dtefoliocontrol_id").val() == 6){
+		if($("#tdfoliocontrol_id").val() == 7){
+			aux_foliocontrol_id = 7;	
+		}
+	}
+	if(aux_foliocontrol_id == 7){
+		aux_porciva = 0;
+		aux_iva = 0;
+	}else{
+		aux_porciva = $("#aux_iva").val();
+		aux_porciva = parseFloat(aux_porciva);
+		aux_iva = Math.round(total_neto * (aux_porciva/100));	
+	}
 	aux_total = total_neto + aux_iva;
 	aux_netoform = MASKLA(total_neto,0); //MASK(0, total_neto, '-#,###,###,##0.00',1)
 	aux_ivaform = MASKLA(aux_iva,0); //MASK(0, aux_iva, '-#,###,###,##0.00',1)
 	aux_tdtotalform = MASKLA(aux_total,0); //MASK(0, aux_total, '-#,###,###,##0.00',1)
 	
 	//$("#tdneto").html(total_neto.toFixed(2));
+	$("#Tcant").html(aux_totalcantform);
 	$("#totalkg").html(aux_totalkgform);
 	$("#tdneto").html(aux_netoform);
+	$("#tdneto").attr("valor",total_neto);
 	$("#tdiva").html(aux_ivaform);
+	$("#tdtotal").attr("valor",aux_total);
 	$("#tdtotal").html(aux_tdtotalform);
 
 	$("#neto").val(total_neto);
 	$("#iva").val(aux_iva);
 	if(aux_total == 0){
 		$("#total").val("");
+		//$("tfoot").hide();
+		$("#foottotal").hide();
+		
 	}else{
 		$("#total").val(aux_total);
+		//$("tfoot").show();
+		$("#foottotal").show();
 	}
 }
 
@@ -799,7 +993,9 @@ function totalizardespacho(){
 	//$("#tdneto").html(total_neto.toFixed(2));
 	$("#totalkg").html(aux_totalkgform);
 	$("#tdneto").html(aux_netoform);
+	$("#tdneto").attr("valor",total_neto);
 	$("#tdiva").html(aux_ivaform);
+	$("#tdtotal").attr("valor",aux_total);
 	$("#tdtotal").html(aux_tdtotalform);
 
 	$("#neto").val(total_neto);
@@ -845,6 +1041,11 @@ function limpiarInputOT(){
 	$("#espesor1M").val('');
 	$("#espesor1M").attr('valor','');
 	$("#obsM").val('');
+	$("#stakilos").val('0');
+	$("#tipoprodM").val('');
+	$("#categoriaprod_id").val('');
+	$("#acuerdotecnico_id").val('');
+	
 	if($("#invbodega_idM")){
 		$("#invbodega_idM").empty();
 	}
@@ -859,9 +1060,12 @@ function verificar()
 {
 	var v1=0,v2=0,v3=0,v4=0,v5=0,v6=0,v7=0,v8=0,v9=0,v10=0,v11=0,v12=0,v13,v14=0;
 	
-	v6=validacion('unidadmedida_idM','combobox');
-	v5=validacion('precionetoM','texto');
-	v4=validacion('precioM','numerico');
+	v7=validacion('unidadmedida_idM','combobox');
+	v6=validacion('precionetoM','numerico');
+	if($("#stakilos").val() == "1"){
+		v5=validacion('totalkilosM','numerico');
+		v4=validacion('precioM','numerico');	
+	}
 	v3=validacion('descuentoM','combobox');
 	v2=validacion('cantM','numerico');
 	v1=validacion('producto_idM','textootro');
@@ -927,9 +1131,12 @@ function editarRegistro(i){
 	$("#precioM").val($("#precioxkilo"+i).val());
 	//$("#precioM").val(MASK(0, $("#precioxkilo"+i).val(), '-##,###,##0.00',1));
 	$("#totalkilosM").attr('valor',$("#totalkilos"+i).val());
-	$("#totalkilosM").val(MASK(0, $("#totalkilos"+i).val(), '-#,###,###,##0.00',1));
+	//$("#totalkilosM").val(MASK(0, $("#totalkilos"+i).val(), '-#,###,###,##0.00',1));
+	$("#totalkilosM").val($("#totalkilos"+i).val(),2);
+	
 	$("#subtotalM").attr('valor',$("#subtotal"+i).val());
-	$("#subtotalM").val(MASK(0, $("#subtotal"+i).val(), '-#,###,###,##0.00',1));
+	//$("#subtotalM").val(MASK(0, $("#subtotal"+i).val(), '-#,###,###,##0.00',1));
+	$("#subtotalM").val(MASKLA($("#subtotal"+i).val(), 2));
 	$("#cla_nombreM").val($.trim( $("#cla_nombreTD"+i).html() ));
 	$("#tipounionM").val($("#tipounion"+i).val());
 	$("#diamextmmM").val($("#diamextmm"+i).val());
@@ -945,6 +1152,8 @@ function editarRegistro(i){
 	$("#largoM").val($("#long"+i).val());
 	$("#largoM").attr('valor',$("#long"+i).val());
 	$("#obsM").val($("#obs"+i).val());
+	$("#tipoprodM").val($("#tipoprod"+i).val());
+	$("#tipoprodM").attr('valor',$("#tipoprod"+i).val())
 
 	$("#invmovtipo_idM").val($("#invmovtipo_idTD"+i).val());
 
@@ -964,11 +1173,12 @@ function editarRegistro(i){
 					//console.log(respuesta);
 					$("#invbodega_idM").val($("#invbodega_idTD"+i).val());
 					$("#invbodega_idM").selectpicker('refresh');
-
+					$("#stakilos").val(respuesta['stakilos']);
 				}
 			}
 		}
 	});
+
 	$(".selectpicker").selectpicker('refresh');
     $("#myModal").modal('show');
 }
@@ -1008,19 +1218,30 @@ $(document).on("click", ".btngenpdfCot1", function(){
 	}
 	genpdfCOT(id,1);
 });
-function genpdfCOT(id,stareport){ //GENERAR PDF COTIZACION
+function genpdfCOT(id,stareport,aux_venmodant = ""){ //GENERAR PDF COTIZACION
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
 	$('#contpdf').attr('src', '/cotizacion/'+id+'/'+stareport+'/exportPdfM');
 	$("#myModalpdf").modal('show')
 }
 
 
-function genpdfNV(id,stareport){ //GENERAR PDF NOTA DE VENTA
+function genpdfNV(id,stareport,aux_venmodant = ""){ //GENERAR PDF NOTA DE VENTA
+	$("#venmodant").val(""); //Ventana Modal Anterior
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
 	$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 }
 
 function genpdfGDI(id,stareport){ //GENERAR PDF GUIA DESPACHO INTERNA
-	$('#contpdf').attr('src', '/guiadespint/'+id+'/'+stareport+'/exportPdf');
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/guiadespint/'+id+'/'+stareport+'/exportPdf' + queryString);
 	$("#myModalpdf").modal('show')
 }
 
@@ -1079,7 +1300,13 @@ $(document).on("click", ".btngenpdfPESAJE", function(){
 	genpdfPESAJE(id,1);
 });
 
-function genpdfSD(id,stareport){ //GENERAR PDF Solicitud de Despacho
+//San Bernardo //function genpdfSD(id,stareport){ //GENERAR PDF Solicitud de Despacho
+function genpdfSD(id,stareport,aux_venmodant = ""){ //GENERAR PDF Solicitud de Despacho
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
 	$('#contpdf').attr('src', '/despachosol/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 }
@@ -1089,7 +1316,13 @@ function genpdfVPOD(id,stareport){ //GENERAR PDF Vista Previa Orden Despacho
 }
 
 
-function genpdfOD(id,stareport){ //GENERAR PDF Orden de Despacho
+function genpdfOD(id,stareport,aux_venmodant = ""){ //GENERAR PDF Orden de Despacho
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+
 	if($("#myModalTablaOD")){
 		$("#myModalTablaOD").modal('hide');
 	}
@@ -1132,15 +1365,65 @@ function genpdfPESAJE(id,stareport){ //GENERAR PDF PESAJE
 	//console.log($('#contpdf'));
 	$("#myModalpdf").modal('show')
 }
+function genpdfGD(id,nombre,aux_venmodant = ""){ //GENERAR PDF Guia Despacho
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	let id_str = id.toString();
+	id_str = id_str.padStart(8, "0");
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T52FE'+id_str+nombre+'.pdf' + queryString);
+	$("#myModalpdf").modal('show');
+}
+
+function genpdfFAC(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	//let id_str = id.toString();
+	//id_str = id_str.padStart(8, "0");
+	console.log(id);
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/'+id+nombre+'.pdf');
+	$("#myModalpdf").modal('show');
+}
+
+function genpdfNC(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	let id_str = id.toString();
+	id_str = id_str.padStart(8, "0");
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T61FE'+id_str+nombre+'.pdf');
+	$("#myModalpdf").modal('show');
+}
+
+function genpdfND(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	let id_str = id.toString();
+	id_str = id_str.padStart(8, "0");
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T56FE'+id_str+nombre+'.pdf');
+	$("#myModalpdf").modal('show');
+}
 
 
 $("#myModalpdf").on("hidden.bs.modal", function () {
 	$('#contpdf').attr('src', 'about:blank');
 });
-
 $("#precionetoM").blur(function(event){
 	if($("#pesoM").val()==0){
-		aux_preciokilo = $("#precionetoM").val();
+		if($("#unidadmedida_idM option:selected").attr('value') == 7){
+			aux_preciokilo = $("#precionetoM").val();
+		}
 	}else{
 		aux_preciokilo = $("#precionetoM").val()/$("#pesoM").val();
 		$("#precioM").val(aux_preciokilo.toFixed(2));
@@ -1150,7 +1433,70 @@ $("#precionetoM").blur(function(event){
 });
 
 //FUNCIONES VER DOCUMENTO ADJUNTO ODEN DE COMPRA
-function verpdf2(nameFile,stareport){ 
+function verpdf2(nameFile,stareport,aux_venmodant = ""){ 
+	if(nameFile==""){
+		swal({
+			title: 'Archivo Orden de Compra no se Adjuntó a la Nota de Venta.',
+			text: "",
+			icon: 'error',
+			buttons: {
+				confirm: "Cerrar",
+			},
+		}).then((value) => {
+		});
+	}else{
+		var data = {
+			slug: 'ver-pdf-orden-de-compra',
+			_token: $('input[name=_token]').val()
+		};
+		$.ajax({
+			url: '/generales_valpremiso',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				//console.log(respuesta);
+				if(respuesta.resp){
+					// Genera una cadena de consulta única utilizando la marca de tiempo actual
+					let queryString = '?timestamp=' + new Date().getTime();
+					// Concatena la cadena queryString de consulta al atributo src del iframe
+					let aux_nameFile = "";
+					let aux_folder = "";
+					if(nameFile.includes("/")){
+						aux_folder = nameFile.split("/")[0];
+						aux_nameFile = nameFile.split("/")[1];
+					}else{
+						aux_nameFile = nameFile;
+						aux_folder = "notaventa";	
+					}
+					$('#contpdf').attr('src', '/storage/imagenes/' + aux_folder + '/'+aux_nameFile + queryString);
+					if((aux_nameFile.indexOf(".pdf") > -1) || (aux_nameFile.indexOf(".PDF") > -1) || (aux_nameFile.indexOf(".jpg") > -1) || (aux_nameFile.indexOf(".bmp") > -1) || (aux_nameFile.indexOf(".png") > -1)){
+						$("#venmodant").val("");
+						if(aux_venmodant!=""){
+							$("#" + aux_venmodant).modal('hide');
+							$("#venmodant").val(aux_venmodant);
+						}
+						$("#myModalpdf").modal('show');
+					}	
+				}else{
+					swal({
+						title: respuesta.mensaje,
+						text:  respuesta.mensaje2,
+						icon: 'error',
+						buttons: {
+							confirm: "Cerrar",
+						},
+					}).then((value) => {
+					});
+				}
+			}
+		});
+	}
+	
+
+}
+
+//FUNCIONES VER DOCUMENTO ADJUNTO ODEN DE COMPRA
+function verpdf3(nameFile,stareport,ruta,aux_venmodant = ""){ 
 	if(nameFile==""){
 		swal({
 			title: 'Archivo Orden de Compra no se Adjuntó a la Nota de Venta.',
@@ -1177,7 +1523,13 @@ function verpdf2(nameFile,stareport){
 					let queryString = '?timestamp=' + new Date().getTime();
 					// Concatena la cadena queryString de consulta al atributo src del iframe
 					$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile + queryString);
+					//Santa Ester //$('#contpdf').attr('src', '/storage/imagenes/' + ruta + '/'+nameFile);
 					if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
+						$("#venmodant").val("");
+						if(aux_venmodant!=""){
+							$("#" + aux_venmodant).modal('hide');
+							$("#venmodant").val(aux_venmodant);
+						}
 						$("#myModalpdf").modal('show');
 					}	
 				}else{
@@ -1197,6 +1549,14 @@ function verpdf2(nameFile,stareport){
 	
 
 }
+
+$('#myModalpdf').on('hidden.bs.modal', function (event) {
+	aux_venmodant = $("#venmodant").val();
+	if(aux_venmodant != ""){
+		$("#" + aux_venmodant).modal('show');
+	}
+})
+
 //
 
 //FUNCIONES VER DOCUMENTO ADJUNTO RECHAZO ORDEN DESPACHO
@@ -1257,7 +1617,8 @@ function configurarTablageneral(aux_tabla){
 
 $("#producto_idM").blur(function(){
 	codigo = $("#producto_idM").val();
-	//limpiarCampos();
+	limpiarInputOT();
+	$("#producto_idM").val(codigo);
 	aux_sta = $("#aux_sta").val();
 	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
 	{
@@ -1274,7 +1635,7 @@ $("#producto_idM").blur(function(){
 				/*
 				console.log(respuesta['cont']);
 				*/
-				//console.log(respuesta);
+				console.log(respuesta);
 				//return 0;
 				if(respuesta['cont']>0){
 					if(respuesta['estado'] == 0){
@@ -1293,7 +1654,6 @@ $("#producto_idM").blur(function(){
 						});
 						return 0;	
 					}
-
 					//console.log(respuesta['nombre']);
 					$("#nombreprodM").val(respuesta['nombre']);
 					$("#codintprodM").val(respuesta['codintprod']);
@@ -1316,8 +1676,9 @@ $("#producto_idM").blur(function(){
 						$("#largoM").val(respuesta['long']);
 						$("#largoM").attr('valor',respuesta['long']);	
 					}
-					//console.log(respuesta['peso']);
-					$("#pesoM").val(respuesta['peso']);
+					aux_peso = respuesta['peso'];
+					aux_peso = aux_peso.toFixed(3);
+					$("#pesoM").val(aux_peso);
 					$("#tipounionM").val(respuesta['tipounion']);
 					$("#precioM").val(respuesta['precio']);
 					$("#precioM").attr('valor',respuesta['precio']);
@@ -1330,7 +1691,33 @@ $("#producto_idM").blur(function(){
 					$("#unidadmedida_idM").val(respuesta['unidadmedidafact_id']);
 					$("#anchoM").val('');
 					$("#anchoM").attr('valor','');
+					if(respuesta['at_ancho'] != null){
+						$("#anchoM").val(respuesta['at_ancho']);
+						$("#anchoM").attr('valor',respuesta['at_ancho']);	
+						$("#diamextmmM").val(respuesta['at_ancho']);
+						$("#diamextmmM").attr('valor',respuesta['at_ancho']);	
+					}
+					if(respuesta['at_largo'] != null){
+						$("#longM").val(respuesta['at_largo']);
+						$("#longM").attr('valor',respuesta['at_largo']);	
+						$("#largoM").val(respuesta['at_largo']);
+						$("#largoM").attr('valor',respuesta['at_largo']);
+					}
+					if(respuesta['at_espesor'] != null){
+						$("#espesorM").val(respuesta['at_espesor']);
+						$("#espesorM").attr('valor',respuesta['at_espesor']);	
+						$("#espesor1M").val(respuesta['at_espesor']);
+						$("#espesor1M").attr('valor',respuesta['at_espesor']);
+					}
+					if(respuesta['at_tiposello_desc'] != null){
+						$("#cla_nombreM").val(respuesta['at_tiposello_desc']);
+						$("#cla_nombreM").attr('valor',respuesta['at_tiposello_desc']);	
+					}
 					$("#obsM").val('');
+					$("#tipoprodM").attr('valor',respuesta['tipoprod']);
+					$("#stakilos").val(respuesta['stakilos']);
+					$("#categoriaprod_id").val(respuesta['categoriaprod_id']);
+					$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id'])
 					mostrardatosadUniMed(respuesta);
 					llenarselectbodega(respuesta);
 					$(".selectpicker").selectpicker('refresh');					
@@ -1376,6 +1763,35 @@ $("#botonNewProd").click(function(event)
 {
 	clientedirec_id = $("#clientedirec_id").val();
 	aux_rut = $("#rut").val();
+	aux_sucursal = $("#sucursal_id option:selected").attr('value');
+	if(aux_rut==""){
+		mensaje('Debes Incluir RUT del cliente','','error');
+		return 0;
+	}else{
+		if(aux_sucursal==""){
+			mensaje('Debes Seleccionar una sucursal','','error');
+			return 0;
+		}else{
+			//$("#tabla-data-productos").dataTable().fnDestroy();
+			$('#tabla-data-productos tbody').html("");
+			limpiarInputOT();
+			quitarverificar();
+			$("#aux_sta").val('1');
+			$("#myModal").modal('show');
+			$("#direccionM").focus();
+		}
+	}
+});
+
+//AL HACER CLIC EN BOTON INCLUIR NUEVO PRODUCTO. COTIZACION NOTA DE VENTA ETC, PRODUCTOS POR CLIENTE
+$("#botonNewProdxCli").click(function(event)
+{
+	/*
+	data = datos();
+	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 ).load();
+*/
+	clientedirec_id = $("#clientedirec_id").val();
+	aux_rut = $("#rut").val();
 	if(aux_rut==""){
 		mensaje('Debes Incluir RUT del cliente','','error');
 		return 0;
@@ -1387,6 +1803,7 @@ $("#botonNewProd").click(function(event)
 		$("#direccionM").focus();	
 	}
 });
+
 
 function mostrardatosadUniMed(respuesta){
 	if(respuesta['mostdatosad'] == 0){
@@ -1630,6 +2047,8 @@ function annomes(mesanno){
 
 
 $("#unidadmedida_idM").change(function(){
+	$("#totalkilosM").val(0.00);
+	$("#totalkilosM").attr('valor','0.00');
 	totalizarItem(0);
 });
 
@@ -1893,6 +2312,95 @@ function sumbodrec(i,y){
 	actSaldo(i);
 }
 
+function crearEditarAcuTec(i){
+	$("#at_certificados").val("");
+	$('.scrollg').animate({
+
+		scrollTop: 0
+
+	}, 2000);
+
+	$("#at_claseprod_id").empty();
+    $("#at_claseprod_id").append("<option value=''>Seleccione...</option>");
+    //alert($(this).val());
+    var data = {
+        categoriaprod_id: $("#producto_idTDT" + i).attr("categoriaprod_id"),
+        _token: $('input[name=_token]').val()
+    };
+    $.ajax({
+        url: '/producto/obtClaseProd',
+        type: 'POST',
+        data: data,
+        success: function (claseprod) {
+            for (i = 0; i < claseprod.length; i++) {
+                $("#at_claseprod_id").append("<option value='" + claseprod[i].id + "'>" + claseprod[i].cla_nombre + "</option>");
+            }
+			if(acuerdotecnico){
+				$("#at_claseprod_id").val(acuerdotecnico["at_claseprod_id"]);
+			}
+			$(".selectpicker").selectpicker('refresh');
+            /*
+            $.each(claseprod, function(index,value){
+                $(".claseprod_id").append("<option value='" + index + "'>" + value + "</option>")
+            });
+            */
+        }
+    });
+
+
+	$(".selectpicker").selectpicker('refresh');
+	$("#aux_numfilaAT").val(i);
+	$(".form_acutec").each(function(){
+		$(this).val("");
+		//alert($(this).attr('name'));
+		if($(this).attr('name') == "at_certificados"){
+			$(this).val([]);
+		}
+	});
+	var acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
+	for (const property in acuerdotecnico) {
+		if((property != 'id') && (property != 'updated_at')){ //Para evitar que cambie el valor del campo id o updated_at del formulario aprobar cotizacion
+			if( property == 'at_certificados'){
+				let str = acuerdotecnico[property];
+				let arr = str.split(','); 
+				$("#" + property).val(arr);
+			}else{
+				$("#" + property).val(acuerdotecnico[property]);
+			}	
+		}else{
+			$("#at_id").val(acuerdotecnico[property]);
+		}
+	}
+	$("#at_anchoum_id").val(1);
+	$("#at_largoum_id").val(1);
+	$("#at_fuelleum_id").val(1);
+	$("#at_espesorum_id").val(2);
+	$(".valorrequerido").each(function(){
+		quitarValidacion($(this).prop('name'),$(this).attr('tipoval'));
+	});
+	$("#lbltitAT1").html("Acuerdo Tecnico: " + $("#nombreProdTD" + i).html())
+	//$("#lbltitAT2").html("Acuerdo Tecnico: " + $("#nombreProdTD" + i).html())
+	if($("#tipoprod"+i).val() == 1){		 
+		aux_tituloAT = "<FONT SIZE=3 style='color:red;'>Nuevo</font> Acuerdo Tecnico: " + $("#nombreProdTD" + i).attr("categoriaprod_nombre");
+		$("#lbltitAT1").html(aux_tituloAT);
+		//$("#lbltitAT2").html(aux_tituloAT);
+	}
+	$("#at_tiposello_id").val(1);
+	$(".selectpicker").selectpicker('refresh');
+	embalajePlastiservi();
+    $("#myModalAcuerdoTecnico").modal('show');
+}
+
+/*
+function genpdfAcuTec(id){ //GENERAR PDF Acuerdo Tecnico
+	if($("#contpdf")){
+		$("#contpdf").modal('hide');
+	}
+	$('#contpdf').attr('src', '/producto/'+id+'/acutecexportPdf');
+	$("#myModalpdf").modal('show')
+}
+*/
+
 $("#btnbuscarproductogen").click(function(event){
     //$(this).val("");
     $(".input-sm").val('');
@@ -1910,6 +2418,275 @@ $("#btnbuscarproductogen").click(function(event){
     }
     $("#myModalBuscarProd").modal('show');
 });
+
+
+function redirigirARuta(ruta){
+	setTimeout(function(){
+		// *** REDIRECCIONA A UNA RUTA*** 
+		var loc = window.location;
+		window.location = loc.protocol+"//"+loc.hostname+"/"+ruta;
+		// ******************************
+	}, 2500,ruta);
+}
+
+function llenarselectGD(i,dte_id,nrodocto){
+	let strdte_id = $("#selectguiadesp").val();
+	strdte_id = strdte_id.trim();
+	let arrdte_id = strdte_id.split(','); 
+	if(strdte_id == ""){
+		arrdte_id.pop();
+	}
+	let str = dte_id.toString();
+	indice = arrdte_id.indexOf(str);
+	if(indice != -1){
+		arrdte_id.splice(indice, 1);
+	}else{
+		arrdte_id.push(dte_id);
+	}
+	//arrdte_id.toString();
+	arrdte_id = arrdte_id.sort((a,b) => parseInt(a) > parseInt(b) ? 1 : -1);
+
+	$("#selectguiadesp").val(arrdte_id.toString());
+	for (i = 0; i < arrdte_id.length; i++) {
+		aux_text = 
+		"<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\",\"\")'>"+
+			+ data.nrodocto +
+		"</a>";
+
+	}
+
+	let aux_selectguiadesp = $("#selectguiadesp").val();
+	aux_selectguiadesp = aux_selectguiadesp.trim();
+	if(aux_selectguiadesp == ""){
+		$("#btnaceptarGD").attr('disabled', true);
+	}else{
+		$("#btnaceptarGD").attr('disabled', false);
+	}
+}
+
+
+function delguiadespfactdet(nrodocto,id,dte_id){ //Borrar guias de despacho del detalle de facturar Guias despacho
+	swal({
+		title: '¿ Seguro desea eliminar ?',
+		text: "Se eliminaran todos los item asociados a la guia: " + nrodocto,
+			icon: 'warning',
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+			$("." + nrodocto).remove();
+
+			llenarselectGD(0,dte_id,nrodocto)		
+
+			totalizar();
+		}
+	});
+
+
+}
+
+function sumarDias(fecha, dias){
+	fecha.setDate(fecha.getDate() + dias);
+	return fecha;
+}
+
+function fechaddmmaaaa(f){
+    dia = f.getDate();
+    d = dia.toString();
+    d = d.padStart(2, 0);
+    mes = f.getMonth();
+    m = f.toLocaleString('es', { month: '2-digit' }); //mes.toString();
+    m = m.padStart(2, 0);
+    fecha = d + "/" + m + "/" + f.getFullYear();
+    
+    return fecha; 
+}
+
+
+$("#VerAcuTec").change(function(){
+	cargardatospantprod();
+});
+
+$("#VerTodosProd").change(function(){
+	primerfiltrobuscarprod();
+});
+
+function cargardatospantprod(){
+	$('#DivchVerAcuTec').show()
+	$(this).val("");
+	$(".input-sm").val('');
+	data = datos();
+	let aux_tipoprod = "0";
+	if($("#tipoprod").val()){ //0=PRODUCTO NORMAL, 1=PRODUCTO TRANSACCIONAL PARA HACER ACUERDO TECNICO, 2=PRODUCTO PARA HACER FACTURA DIRECTA
+        aux_tipoprod = $("#tipoprod").val();
+    }
+	$("#lbltipoprod").html("Productos");
+	$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");
+
+	if($("#VerAcuTec").prop("checked")){
+		aux_tipoprod = "1";
+		$("#VerTodosProd").prop("checked",false);
+		$("#lbltipoprod").html("Productos Base para crear Acuerdo Técnico");
+		$("#lblVerAcuTec").attr("data-original-title","Ver Productos existentes");		
+	}
+	if($("#VerTodosProd").prop("checked")){
+		aux_tipoprod = "0";
+		$("#VerAcuTec").prop("checked",false);
+		$("#lbltipoprod").html("Productos");
+		$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");		
+	}
+	if(data.data1.sucursal_id){
+		let posicion1 = data.data1.sucursal_id.indexOf('1');//Para visualizar el status de Productos base para acuerdo tecnico Santa Ester
+		let posicion3 = data.data1.sucursal_id.indexOf('3');//Para visualizar el status de Productos base para acuerdo tecnico Puerto Montt
+		if(posicion1 >= 0 || posicion3 >= 0){
+			$("#staprodxcli").css({'display':'block'});
+		}
+	}
+	if(typeof aux_staprodxcli !== 'undefined' && aux_staprodxcli){
+		$("#staprodxcli").css({'display':'block'});
+		$("#DivVerTodosProd").css({'display':'none'});
+		$("#DivchVerAcuTec").css({'display':'none'});
+		if(aux_DivVerTodosProd){
+			$("#DivVerTodosProd").css({'display':'block'});
+		}
+		if(aux_DivchVerAcuTec){
+			$("#DivchVerAcuTec").css({'display':'block'});
+		}
+	}
+	console.log(aux_tipoprod);
+	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
+}
+
+function primerfiltrobuscarprod(){
+	//$('#DivchVerAcuTec').show()
+	$(this).val("");
+	$(".input-sm").val('');
+	data = datos();
+	aux_tipoprod = "0";
+
+	$("#lblTitVerTosdosProd").html("Productos X Cliente");
+	$("#lblVerTodosProd").attr("data-original-title","Ver Productos X Cliente");
+
+	if($("#VerTodosProd").prop("checked")){
+		aux_tipoprod = "";
+		$("#VerAcuTec").prop("checked",false);
+		$("#lbltipoprod").html("Productos");
+		$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");
+	
+		$("#lblTitVerTosdosProd").html("Todos los productos");
+		$("#lblVerTodosProd").attr("data-original-title","Ver Productos X Cliente");
+
+		var data1 = {
+			cliente_id  : "",
+			sucursal_id : $("#sucursal_id").val(),
+			_token      : $('input[name=_token]').val()
+		};
+	
+		var data2 = "?cliente_id="+data1.cliente_id +
+		"&sucursal_id="+data1.sucursal_id
+	
+		var data = {
+			data1 : data1,
+			data2 : data2
+		};
+	}
+	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
+}
+
+function genpdfAcuTecTemp(id,cliente_id,aux_venmodant = ""){ //GENERAR PDF Acuerdo Tecnico Temporar y final
+	//console.log(id);
+	//console.log(cliente_id);
+	let data = "?id="+id +
+    "&cliente_id="+cliente_id
+
+	$("#venmodant").val(""); //Ventana Modal Anterior
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	$('#contpdf').attr('src', '/acuerdotecnicotemp/exportPdf/' + data);
+
+	$("#myModalpdf").modal('show')
+	//$("#modal-bodymymodadpdf").attr("style","height: 75%");
+}
+
+function genpdfAcuTec(id,cliente_id,aux_venmodant = ""){ //GENERAR PDF Acuerdo Tecnico Temporar y final
+	//console.log(id);
+	//console.log(cliente_id);
+	let data = "?id="+id +
+    "&cliente_id="+cliente_id
+
+	$("#venmodant").val(""); //Ventana Modal Anterior
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	$('#contpdf').attr('src', '/acuerdotecnico/exportPdf/' + data);
+
+	$("#myModalpdf").modal('show')
+	//$("#modal-bodymymodadpdf").attr("style","height: 75%");
+}
+
+
+$("#totalkilosM").blur(function(e){
+	if($(this).attr('valor') != undefined){
+		$(this).attr('valor',$(this).val());
+	}
+});
+
+//FUNCION PARA TOTALIZAR NOTA DE CREDITO Y DEBITO
+function totalizarNc(){
+	totalizar();
+	validarlistcodrefNc();
+}
+
+//FUNCTION PARA VALIDAR LO QUE SE MUESTRA EN EL SELECT CODREF
+function validarlistcodrefNc(){
+	$('#codref option').remove();
+	$("#codref").append("<option value=''>Seleccione...</option>");
+	let foliocontrol_id = $("foliocontrol_id").val();
+	let tdfoliocontrol_id = $("#tdfoliocontrol_id").val();
+	if($("#tdtotaloriginal").attr("valor") == $("#tdtotalmodificado").attr("valor")){
+		let aux_bandera = false;
+		let dtefoliocontrol_id = $("#dtefoliocontrol_id").val();
+		let foliocontrol_id = $("#foliocontrol_id").val();
+		/*
+		if((dtefoliocontrol_id == 5 && foliocontrol_id == 1) || (dtefoliocontrol_id == 5 && foliocontrol_id == 6)){
+			aux_bandera = true;
+		}else{
+
+		}
+		*/
+		$("#codref").append("<option value='1'>Anula Documento de Referencia</option>");
+	}
+	if(tdfoliocontrol_id == 1 || tdfoliocontrol_id == 7){
+		$("#codref").append("<option value='2'>Corrige Texto Documento Referencia</option>");
+		$("#codref").append("<option value='3' selected>Corrige montos</option>");
+	}
+	$(".selectpicker").selectpicker('refresh');
+}
+
+//FUNCION PARA TOTALIZAR NOTA DE CREDITO Y DEBITO
+function totalizarNd(){
+	totalizar();
+	validarlistcodrefNd();
+}
+
+//FUNCTION PARA VALIDAR LO QUE SE MUESTRA EN EL SELECT CODREF
+function validarlistcodrefNd(){
+	$('#codref option').remove();
+	$("#codref").append("<option value=''>Seleccione...</option>");
+	if($("#tdfoliocontrol_id").val() == 1 || $("#tdfoliocontrol_id").val() == 7){
+		$("#codref").append("<option value='3' selected>Corrige montos</option>");
+	}else{
+		$("#codref").append("<option value='1'>Anula Documento de Referencia</option>");
+	}
+	//$("#codref").val("");
+	//$('.select2').trigger('change');
+	//$(".selectpicker").selectpicker('refresh');
+}
 
 async function buscarDatosProd(producto_id){
 	codigo = producto_id.val();
@@ -2148,7 +2925,7 @@ function procesarDTE(id){
     var ruta = '/dtefactura/procesar';
     //var ruta = '/guiadesp/dteguiadesp';
     swal({
-        title: '¿ Procesar DTE Factura ?',
+        title: '¿ Procesar DTE ?',
         text: "Esta acción no se puede deshacer!",
         icon: 'warning',
         buttons: {

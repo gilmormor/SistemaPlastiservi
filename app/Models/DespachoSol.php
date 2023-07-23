@@ -15,6 +15,7 @@ class DespachoSol extends Model
         'notaventa_id',
         'sucursal_id',
         'usuario_id',
+        'sucursal_id',
         'fechahora',
         'comunaentrega_id',
         'tipoentrega_id',
@@ -25,6 +26,7 @@ class DespachoSol extends Model
         'contactotelf',
         'observacion',
         'fechaestdesp',
+        'tipoguiadesp',
         'usuariodel_id'
     ];
 
@@ -85,5 +87,10 @@ class DespachoSol extends Model
         return $this->belongsTo(Sucursal::class);
     }
     
+    //RELACION de uno a uno despachosoldte
+    public function despachosoldte()
+    {
+        return $this->hasOne(DespachoSolDTE::class,"despachosol_id");
+    }
 
 }

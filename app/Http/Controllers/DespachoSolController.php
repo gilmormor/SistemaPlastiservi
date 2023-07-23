@@ -21,9 +21,11 @@ use App\Models\DespachoSol_InvMov;
 use App\Models\DespachoSolAnul;
 use App\Models\DespachoSolDet;
 use App\Models\DespachoSolDet_InvBodegaProducto;
+use App\Models\DespachoSolDTE;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
@@ -33,6 +35,7 @@ use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\NotaVentaDetalle;
+use App\Models\NotaVentaDetalleExt;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
@@ -127,42 +130,14 @@ class DespachoSolController extends Controller
         $data = NotaVenta::findOrFail($id);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $detalles = $data->notaventadetalles()->get();
-        $vendedor_id=$data->vendedor_id;
         $clienteselec = $data->cliente()->get();
 
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
-
-
-        //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
-        //******************* */
-        $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
-        ->join('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
-        ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
-        ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->select([
-                    'cliente.id as cliente_id',
-                    'cliente.razonsocial',
-                    'cliente.telefono',
-                    'cliente.email',
-                    'cliente.regionp_id',
-                    'cliente.provinciap_id',
-                    'cliente.comunap_id',
-                    'cliente.contactonombre',
-                    'cliente.direccion',
-                    'clientedirec.id',
-                    'clientedirec.direcciondetalle'
-                ])->get();
-        //dd($clientedirecs);
         $clienteDirec = $data->clientedirec()->get();
         $fecha = date("d/m/Y", strtotime($data->fechahora));
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
 
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
@@ -192,7 +167,7 @@ class DespachoSolController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
-        return view('despachosol.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','tablas'));
+        return view('despachosol.crear', compact('data','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','array_bodegasmodulo','tablas'));
     }
 
     /**
@@ -239,6 +214,7 @@ class DespachoSolController extends Controller
                 $comuna = Comuna::findOrFail($request->comuna_id);
                 $request->request->add(['provincia_id' => $comuna->provincia_id]);
                 $request->request->add(['region_id' => $comuna->provincia->region_id]);
+                //dd($request);
                 $despachosol = DespachoSol::create($request->all());
                 $despachosolid = $despachosol->id;
                 //$cont_producto = count($request->producto_id);
@@ -255,6 +231,19 @@ class DespachoSolController extends Controller
                             $despachosoldet->notaventadetalle_id = $request->NVdet_id[$i];
                             $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
                             if($despachosoldet->save()){
+                                if($request->cantext[$i]>0){
+                                    NotaVentaDetalleExt::updateOrCreate(
+                                        ['notaventadetalle_id' => $despachosoldet->notaventadetalle_id],
+                                        [
+                                            'cantext' => $request->cantext[$i]
+                                        ]
+                                    );    
+                                }else{
+                                    $notaventadetalleext = $despachosoldet->notaventadetalle->notaventadetalleext;
+                                    if($notaventadetalleext){
+                                        $notaventadetalleext->delete();
+                                    }
+                                }
                                 $cont_bodegas = count($request->invcant);
                                 if($cont_bodegas>0){
                                     for ($b=0; $b < $cont_bodegas ; $b++){
@@ -296,6 +285,17 @@ class DespachoSolController extends Controller
                             }
                         }
                     }
+                }
+                //SI TIPO DE GUIA ES TRASLADO ENTONCES LA SOLICITUD SE ORIGINA DE UNA GUIA DE PRECIO PREVIEMENTE REALIZADA
+                //GUARDO EN LA TABLA despachosoldte PARA USAR LA REFERENCIA EN EL MODULO DE EMITIR GUIAS DE DESPACHO
+                //PARA IDENTIFICAR A ESTA GUIA DE TRASLADO QUE ESTA RELACIONADA A UNA GUIA DE PRECIO PREVIA MENTE HECHA
+                //LA GUIA DE PRECIO PREVIEMENTE HECHA NO GENERO DESPACHO NI MOVIMIENTO DE INVENTARIO
+                //POR ESTA RAZON HAY QUE HACER SOLO LA GUIA DE TRASLADO PARA QUE EL SISTEMA HAGA LA SALIDA DEL INVENTARIO
+                if($request->tipoguiadesp == 6){
+                    $despachosoldte = new DespachoSolDTE();
+                    $despachosoldte->despachosol_id = $despachosolid;
+                    $despachosoldte->dte_id = $request->dte_id;
+                    $despachosoldte->save();
                 }
                 return redirect('despachosol')->with([
                     'mensaje'=>'Registro creado con exito.',
@@ -342,60 +342,14 @@ class DespachoSolController extends Controller
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
-/*
-        foreach($detalles as $detalle){
-            dd($detalle);
-            $sql = "SELECT cantsoldesp
-                    FROM vista_sumsoldespdet
-                    WHERE notaventadetalle_id=$detalle->notaventadetalle_id";
-            $datasuma = DB::select($sql);
-            if(empty($datasuma)){
-                $sumacantsoldesp= 0;
-            }else{
-                $sumacantsoldesp= $datasuma[0]->cantsoldesp;
-            }
-            //if($detalle->cant > $sumacantsoldesp);
-            
-        }*/
-        $vendedor_id=$data->notaventa->vendedor_id;
         $clienteselec = $data->notaventa->cliente()->get();
-        //session(['aux_aprocot' => '0']);
-        //dd($clienteselec[0]->rut);
-
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        $vendedor_id = $clientesArray['vendedor_id'];
-        $sucurArray = $clientesArray['sucurArray'];
 
 
-        //dd($sucurArray);
-        //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
-        //******************* */
-        $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
-        ->join('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
-        ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
-        ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
-        ->select([
-                    'cliente.id as cliente_id',
-                    'cliente.razonsocial',
-                    'cliente.telefono',
-                    'cliente.email',
-                    'cliente.regionp_id',
-                    'cliente.provinciap_id',
-                    'cliente.comunap_id',
-                    'cliente.contactonombre',
-                    'cliente.direccion',
-                    'clientedirec.id',
-                    'clientedirec.direcciondetalle'
-                ])->get();
-        //dd($clientedirecs);
-        $clienteDirec = $data->notaventa->clientedirec()->get();
         $fecha = date("d/m/Y", strtotime($data->fechahora));
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
 
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
@@ -427,7 +381,7 @@ class DespachoSolController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
 
         //dd($clientedirecs);
-        return view('despachosol.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','invmovmodulo','array_bodegasmodulo','tablas'));
+        return view('despachosol.editar', compact('data','clienteselec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','invmovmodulo','array_bodegasmodulo','tablas'));
   
     }
 
@@ -468,6 +422,7 @@ class DespachoSolController extends Controller
                 $despachosol->contactotelf = $request->contactotelf;
                 $despachosol->observacion = $request->observacion;
                 $despachosol->fechaestdesp = $request->fechaestdesp;
+                $despachosol->tipoguiadesp = $request->tipoguiadesp;
                 $despachosol->sucursal_id = $request->sucursal_id;
                 //dd($request);
                 if($despachosol->save()){
@@ -495,6 +450,19 @@ class DespachoSolController extends Controller
                                         */
                                         $despachosoldet->delete();
                                     }else{
+                                        if($request->cantext[$i]>0){
+                                            NotaVentaDetalleExt::updateOrCreate(
+                                                ['notaventadetalle_id' => $despachosoldet->notaventadetalle_id],
+                                                [
+                                                    'cantext' => $request->cantext[$i]
+                                                ]
+                                            );    
+                                        }else{
+                                            $notaventadetalleext = $despachosoldet->notaventadetalle->notaventadetalleext;
+                                            if($notaventadetalleext){
+                                                $notaventadetalleext->delete();
+                                            }
+                                        }
                                         $cont_bodegas = count($request->invcant);
                                         if($cont_bodegas>0){
                                             for ($b=0; $b < $cont_bodegas ; $b++){
@@ -568,6 +536,21 @@ class DespachoSolController extends Controller
                         }
                     }
                 }
+                if($request->tipoguiadesp == "6"){
+                    if($despachosol->despachosoldte){
+                        $despachosol->despachosoldte->dte_id = $request->dte_id;
+                        $despachosol->despachosoldte->save();
+                    }else{
+                        $despachosoldte = new DespachoSolDTE();
+                        $despachosoldte->despachosol_id = $despachosol->id;
+                        $despachosoldte->dte_id = $request->dte_id;
+                        $despachosoldte->save();
+                    }
+                }else{
+                    if($despachosol->despachosoldte){
+                        $despachosol->despachosoldte->delete();
+                    }
+                }        
                 return redirect('despachosol')->with([
                                                             'mensaje'=>'Registro actualizado con exito.',
                                                             'tipo_alert' => 'alert-success'
@@ -610,6 +593,30 @@ class DespachoSolController extends Controller
 
     public function reportesoldespcerrarNV(Request $request){
         $respuesta = reportesoldespcerrarNV1($request);
+        return $respuesta;
+    }
+
+    public function listarnvpage(Request $request){
+        $datas = consulta($request,1,1);
+        foreach($datas as &$data){
+            $data->rutanuevasoldesp = route('crearsol_despachosol', ['id' => $data->id]);
+            $data->rutanuevaguiadespnv = route('crear_dteguiadespnv', ['id' => $data->id]);
+        }
+        return datatables($datas)->toJson();
+    }
+    public function totalizarlistarnvpage(Request $request){
+        $respuesta = array();
+        $datas = consulta($request,1,1);
+        $aux_kgpend = 0;
+        $aux_dinpend = 0;
+        //$aux_totaldinero = 0;
+        foreach ($datas as $data) {
+            $aux_kgpend += $data->totalkilos - $data->totalkgsoldesp;
+            $aux_dinpend += $data->subtotal - $data->totalsubtotalsoldesp;
+        }
+        $respuesta['aux_kgpend'] = $aux_kgpend;
+        $respuesta['aux_dinpend'] = $aux_dinpend;
+        //$respuesta['aux_totaldinero'] = $aux_totaldinero;
         return $respuesta;
     }
 
@@ -688,12 +695,16 @@ class DespachoSolController extends Controller
 
             $contorddesp = DB::select($sql);
             if($contorddesp[0]->cont > 0){
-                return response()->json(['mensaje' => 'Solicitud ya fue procesada en Orden de Despacho']);
+                return response()->json([
+                    'mensaje' => 'Solicitud ya fue procesada en Orden de Despacho'
+                ]);
             }
 
             $despachosol = DespachoSol::findOrFail($request->id);
             if($despachosol->aprorddesp != 1){
-                return response()->json(['mensaje' => 'Registro fue modificado previamente.']);
+                return response()->json([
+                    'mensaje' => 'Registro fue modificado previamente.'
+                ]);
             }
             $invmodulo = InvMovModulo::where("cod","SOLDESP")->get();
             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
@@ -815,7 +826,7 @@ class DespachoSolController extends Controller
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                            $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
+                            $array_invmovdet["sucursal_id"] = $despachosol->notaventa->sucursal_id;
                             $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
                             $array_invmovdet["invmovtipo_id"] = 1;
                             $array_invmovdet["cant"] = $aux_cant;
@@ -1331,7 +1342,7 @@ class DespachoSolController extends Controller
                                         $array_invmovdet = $oddetbodprod->attributesToArray();
                                         $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                                         $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                                        $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
+                                        $array_invmovdet["sucursal_id"] = $despachosol->notaventa->sucursal_id;
                                         $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
                                         $array_invmovdet["invmovtipo_id"] = 2;
                                         $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
@@ -1830,6 +1841,11 @@ function consulta($request,$aux_sql,$orden){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+    //dd($sucurcadena);
+
 
     if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
         $aux_condsucursal_id = " true ";
@@ -1944,7 +1960,6 @@ function consulta($request,$aux_sql,$orden){
         $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
     }
 
-
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){
         $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
@@ -1966,7 +1981,16 @@ function consulta($request,$aux_sql,$orden){
                 FROM vista_sumsoldespdet
                 WHERE notaventa_id=notaventa.id) as totalsubtotalsoldesp,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
-        tipoentrega.nombre as tipentnombre,tipoentrega.icono
+        tipoentrega.nombre as tipentnombre,tipoentrega.icono,
+        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+            FROM dteoc INNER JOIN dte
+            ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+            INNER JOIN dteguiadesp
+            ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            WHERE dteoc.oc_id = notaventa.oc_id
+            AND isnull(dteguiadesp.notaventa_id)
+            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -1989,6 +2013,8 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.id=vista_notaventatotales.id
         INNER JOIN sucursal
         ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
+        LEFT JOIN clientebloqueado
+        ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -2006,6 +2032,7 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
         and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
@@ -2022,7 +2049,16 @@ function consulta($request,$aux_sql,$orden){
         kgsoldesp,subtotalsoldesp,
         sum(cant-if(isnull(cantsoldesp),0,cantsoldesp)) as saldocant,
         sum(totalkilos-if(isnull(kgsoldesp),0,kgsoldesp)) as saldokg,
-        sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldoplata
+        sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldoplata,
+        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+            FROM dteoc INNER JOIN dte
+            ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+            INNER JOIN dteguiadesp
+            ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            WHERE dteoc.oc_id = notaventa.oc_id
+            AND isnull(dteguiadesp.notaventa_id)
+            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
@@ -2037,6 +2073,8 @@ function consulta($request,$aux_sql,$orden){
         ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
         INNER JOIN sucursal
         ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
+        LEFT JOIN clientebloqueado
+        ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -2054,6 +2092,7 @@ function consulta($request,$aux_sql,$orden){
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
         and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventadetalle.producto_id
         ORDER BY producto.nombre,producto.peso;";
     }
@@ -2079,7 +2118,8 @@ function consulta($request,$aux_sql,$orden){
                 FROM vista_sumsoldespdet
                 WHERE notaventa_id=notaventa.id)) as totalsubtotalsoldesp,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
-        tipoentrega.nombre as tipentnombre,tipoentrega.icono
+        tipoentrega.nombre as tipentnombre,tipoentrega.icono,
+        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -2100,6 +2140,8 @@ function consulta($request,$aux_sql,$orden){
         ON tipoentrega.id=notaventa.tipoentrega_id
         INNER JOIN vista_notaventatotales
         ON notaventa.id=vista_notaventatotales.id
+        LEFT JOIN clientebloqueado
+        ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -2116,13 +2158,13 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
         and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventa.cliente_id
         ORDER BY $aux_orden;";
         //dd($sql);
     }
 
     $datas = DB::select($sql);
-    //dd($datas);
     return $datas;
 }
 
@@ -2220,6 +2262,32 @@ function reporte1($request){
                 $aux_enlaceoc = $data->oc_id;
             }else{
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
+            }
+            if(!is_null($data->dte_nrodocto)){
+                $cadena = $data->dte_nrodocto;
+                if(strpos($cadena, ';')){
+                    $aux_arraynrodocto = explode(";", $cadena);
+                    //dd($aux_arraynrodocto);
+                    $aux_nroguia = $aux_arraynrodocto[0]; 
+                    $aux_ocid = $aux_arraynrodocto[1]; 
+                    $aux_folderNamefile = $aux_arraynrodocto[2];
+                }
+                $aux_title = "Orden de Compra $data->oc_id, tiene Guia de despacho generada previamente: $aux_nroguia";
+                $colorinfo = "text-red";
+                $aux_text =
+                    "<br>(<a class='btn-sm tooltipsC' title='$aux_title' style='padding-left: 0px;padding-right: 0px;'>
+                        <i class='fa fa-fw fa-question-circle $colorinfo'></i>
+                    </a>";
+                $aux_text .= 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfGD(\"$aux_nroguia\",\"\")' data-original-title='Guia despacho:$aux_nroguia' style='color:#bc3c3c'>
+                     $aux_nroguia
+                </a>,";
+                $aux_text .= 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"$aux_folderNamefile\",2)' style='color:#bc3c3c'>
+                    $aux_ocid
+                </a>)";
+
+                $aux_enlaceoc .= $aux_text;
             }
             $nuevoSolDesp = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Vista Previa SD' onclick='pdfSolDespPrev($data->id,2)'>
                                 <i class='fa fa-fw fa-file-pdf-o'></i>                                    
@@ -2346,6 +2414,32 @@ function reportesoldesp1($request){
                 $aux_enlaceoc = $data->oc_id;
             }else{
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)' class='tooltipsC' title='Orden de Compra'>$data->oc_id</a>";
+            }
+            if(!is_null($data->dte_nrodocto)){
+                $cadena = $data->dte_nrodocto;
+                if(strpos($cadena, ';')){
+                    $aux_arraynrodocto = explode(";", $cadena);
+                    //dd($aux_arraynrodocto);
+                    $aux_nroguia = $aux_arraynrodocto[0]; 
+                    $aux_ocid = $aux_arraynrodocto[1]; 
+                    $aux_folderNamefile = $aux_arraynrodocto[2];
+                }
+                $aux_title = "Orden de Compra $data->oc_id, tiene Guia de despacho generada previamente: $aux_nroguia";
+                $colorinfo = "text-red";
+                $aux_text =
+                    "<br>(<a class='btn-sm tooltipsC' title='$aux_title' style='padding-left: 0px;padding-right: 0px;'>
+                        <i class='fa fa-fw fa-question-circle $colorinfo'></i>
+                    </a>";
+                $aux_text .= 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfGD(\"$aux_nroguia\",\"\")' data-original-title='Guia despacho:$aux_nroguia' style='color:#bc3c3c'>
+                     $aux_nroguia
+                </a>,";
+                $aux_text .= 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"$aux_folderNamefile\",2)' style='color:#bc3c3c'>
+                    $aux_ocid
+                </a>)";
+
+                $aux_enlaceoc .= $aux_text;
             }
             $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
             //dd($ruta_nuevoSolDesp);
@@ -2649,6 +2743,9 @@ function consultasoldesp($request){
         }
         $aux_condsucursal_id = " (despachosol.sucursal_id in ($aux_sucursal) and despachosol.sucursal_id in ($sucurArray))";
     }
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+
 
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -2786,7 +2883,15 @@ function consultasoldesp($request){
             IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
             IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
             vista_despsoltotales.totalkilos,
-            vista_despsoltotales.subtotalsoldesp,despachosol.updated_at
+            vista_despsoltotales.subtotalsoldesp,despachosol.updated_at,
+            (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+            FROM dteoc INNER JOIN dte
+            ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+            INNER JOIN dteguiadesp
+            ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            WHERE dteoc.oc_id = notaventa.oc_id
+            AND isnull(dteguiadesp.notaventa_id)
+            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
@@ -2830,6 +2935,7 @@ function consultasoldesp($request){
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             and isnull(despachosoldet.deleted_at)
+            AND notaventa.sucursal_id in ($sucurcadena)
             GROUP BY despachosol.id
             ORDER BY despachosol.id DESC;";
 /*
@@ -2856,7 +2962,19 @@ function consultaindex(){
     '' as notaventaxk,comuna.nombre as comuna_nombre,
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
     SUM(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
-    despachosol.updated_at
+    (SELECT obs
+		FROM despachosoldev
+		WHERE despachosol_id = despachosol.id
+		ORDER by id DESC LIMIT 1) AS obsdev,
+    despachosol.updated_at,
+    (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+        FROM dteoc INNER JOIN dte
+        ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+        INNER JOIN dteguiadesp
+        ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+        WHERE dteoc.oc_id = notaventa.oc_id
+        AND isnull(dteguiadesp.notaventa_id)
+        AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
     FROM despachosol INNER JOIN notaventa
     ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente

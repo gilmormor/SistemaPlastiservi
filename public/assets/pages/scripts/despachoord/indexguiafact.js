@@ -162,6 +162,7 @@ $("#btnGuardarG").click(function(event)
 						nfila : $("#nfila").val(),
 						status : $("#status").val(),
 						updated_at : $("#updated_at" + $("#idg").val()).html(),
+						//Santa Ester //updated_at : $("#updated_at" + $("#idg").val()).val(),
 						updatesolonumguia : true,
 						_token: $('input[name=_token]').val()
 					};

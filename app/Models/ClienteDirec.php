@@ -10,6 +10,7 @@ class ClienteDirec extends Model
     use SoftDeletes;
     protected $table = "clientedirec";
     protected $fillable = [
+        'direccion',
         'direcciondetalle',
         'cliente_id',
         'region_id',

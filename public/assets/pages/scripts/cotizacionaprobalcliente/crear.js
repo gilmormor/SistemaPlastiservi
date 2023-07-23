@@ -460,10 +460,10 @@ function insertarTabla(){
 				$("#subtotalM").attr("valor")+
 			'</td>'+
 			'<td>' + 
-				'<a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
-				'<a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
+				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
 		'</tr>'+
@@ -858,7 +858,7 @@ function editarRegistro(i){
 	$("#precioM").attr('valor',$("#precioxkilo"+i).val());
 	$("#precioM").val(MASKLA($("#precioxkilo"+i).val(),0)); //$("#precioM").val(MASK(0, $("#precioxkilo"+i).val(), '-##,###,##0.00',1));
 	$("#totalkilosM").attr('valor',$("#totalkilos"+i).val());
-	$("#totalkilosM").val(MASKLA($("#totalkilos"+i).val(),2)); //$("#totalkilosM").val(MASK(0, $("#totalkilos"+i).val(), '-##,###,##0.00',1));
+	//$("#totalkilosM").val(MASKLA($("#totalkilos"+i).val(),2)); //$("#totalkilosM").val(MASK(0, $("#totalkilos"+i).val(), '-##,###,##0.00',1));
 	$("#subtotalM").attr('valor',$("#subtotal"+i).val());
 	$("#subtotalM").val(MASKLA($("#subtotal"+i).val(),0)); //$("#subtotalM").val(MASK(0, $("#subtotal"+i).val(), '-#,###,###,##0.00',1));
 	$("#cla_nombreM").val($.trim( $("#cla_nombreTD"+i).html() ));
@@ -1110,7 +1110,7 @@ function totalizarItem(aux_estprec){
 		$(".selectpicker").selectpicker('refresh');
 	}
 	aux_tk = $("#cantM").val()*$("#pesoM").val();
-	$("#totalkilosM").val(MASKLA(aux_tk.toFixed(2),2)); //$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
+	//$("#totalkilosM").val(MASKLA(aux_tk.toFixed(2),2)); //$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
 	$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
 	aux_total = ($("#cantM").val() * $("#pesoM").val() * $("#precioM").val()) * ($("#descuentoM").val());
 	$("#subtotalM").val(MASKLA(aux_total.toFixed(2),0)); //$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
@@ -1349,6 +1349,7 @@ function guardarclientenuevo(){
 		email : $("#emailCTM").val(),
 		giro : $("#giroCTM").val(),
 		giro_id : $("#giro_idCTM").val(),
+		giro : $("#giroCTM").val(),
 		formapago_id : $("#formapago_idCTM").val(),
 		plazopago_id : $("#plazopago_idCTM").val(),
 		comunap_id : $("#comunap_idCTM").val(),

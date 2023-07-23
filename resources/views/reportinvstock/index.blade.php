@@ -56,7 +56,7 @@ Stock Inventario
                                             @foreach($tablashtml['sucursales'] as $sucursal)
                                                 <option
                                                     value="{{$sucursal->id}}"
-                                                    @if ( $sucursal->id == $sucursal_id ))
+                                                    @if ( $sucursal->id == $sucursal_id )
                                                         {{'selected'}}
                                                     @endif
                                                 >
@@ -74,11 +74,13 @@ Stock Inventario
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="invbodega_id" id="invbodega_id" class="selectpicker form-control invbodega_id" data-live-search='true' multiple data-actions-box='true'>
+                                            <!--San Bernardo: Lleno el select desde javacript
                                             @foreach($tablashtml['invbodegas'] as $invbodega)
                                                 <option
                                                     value="{{$invbodega->id}}" sucursal_id="{{$invbodega->sucursal_id}}"
                                                     >{{$invbodega->nombre}}</option>
                                             @endforeach
+                                            -->
                                         </select>
                                     </div>
                                 </div>
@@ -104,11 +106,6 @@ Stock Inventario
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name='categoriaprod_id' id='categoriaprod_id' class='selectpicker form-control categoriaprod_id' data-live-search='true' multiple data-actions-box='true'>
-                                            @foreach($tablashtml['categoriaprod'] as $categoriaprod)
-                                                <option value="{{$categoriaprod->id}}">
-                                                    {{$categoriaprod->nombre}}
-                                                </option>";
-                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -153,10 +150,10 @@ Stock Inventario
                             <th class="width70 tooltipsC" title="Codigo Producto" style='text-align:center'>Cod</th>
                             <th>Producto</th>
                             <th>Categoria</th>
-                            <th>Diametro</th>
-                            <th>Clase</th>
+                            <th>Clase<br>Sello</th>
+                            <th>Diam<br>Ancho</th>
                             <th>Largo</th>
-                            <th>Peso</th>
+                            <th>Peso<br>Esp</th>
                             <th class="tooltipsC" title="Tipo de Union">TU</th>
                             <th>Bodega</th>
                             <th style='text-align:center'>Ini</th>

@@ -10,6 +10,7 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
+        "order"       : [[ 0, "desc" ]],
         'ajax'        : "despachosolpage",
         'columns'     : [
             {data: 'id'},
@@ -24,6 +25,7 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
+            {data: 'obsdev',className:"ocultar"},
             {data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}
@@ -47,6 +49,14 @@ $(document).ready(function () {
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 
+            if(data.obsdev != "" && data.obsdev != null){
+				aux_text = data.razonsocial +
+				" <a class='btn-sm tooltipsC' title='" + data.obsdev + "'>" +
+					"<i class='fa fa-fw fa-question-circle text-red'></i>" + 
+				"</a>";
+				$('td', row).eq(2).html(aux_text);
+			}
+
 
             if(data.oc_file != "" && data.oc_file != null){
                 aux_text = 
@@ -54,6 +64,34 @@ $(document).ready(function () {
                         data.oc_id + 
                     "</a>";
                 $('td', row).eq(3).html(aux_text);
+                if(data.dte_nrodocto != null){
+                    let cadena = data.dte_nrodocto
+					if(cadena.includes(";")){
+                        aux_nroguia = cadena.split(";")[0]; 
+                        aux_ocid = cadena.split(";")[1]; 
+						aux_folderNamefile = cadena.split(";")[2];
+					}
+                    aux_title = `Orden de Compra ${data.oc_id}, tiene Guia de despacho generada previamente: ${aux_nroguia}`;
+                    colorinfo = `text-red`;
+                    aux_text +=
+                        `<br>(<a class="btn-sm tooltipsC" title="${aux_title}" style="padding-left: 0px;padding-right: 0px;">
+                            <i class="fa fa-fw fa-question-circle ${colorinfo}"></i>
+                        </a>`;
+
+                    aux_text += 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" onclick="genpdfGD('${aux_nroguia}','')" data-original-title="Guia despacho:${aux_nroguia}" style='color:#bc3c3c'>
+                        ${aux_nroguia}
+                    </a>,`;
+
+                    aux_text += 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra" onclick="verpdf2('${aux_folderNamefile}',2)" style='color:#bc3c3c'>
+                        ${aux_ocid}
+                    </a>)`;
+
+                    $('td', row).eq(3).html(aux_text);
+
+                    //$('td', row).eq(4).html($('td', row).eq(4).html() + aux_text);
+                }
             }
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
@@ -97,15 +135,24 @@ $(document).ready(function () {
                     <i class='fa fa-fw fa-pencil'></i>
                 </a>`;
             }
-            $('td', row).eq(12).addClass('updated_at');
-            $('td', row).eq(12).attr('item',data.id);
-            $('td', row).eq(12).attr('id','updated_at'+data.id);
-            $('td', row).eq(12).attr('name','updated_at'+data.id);
+            $('td', row).eq(13).addClass('updated_at');
+            $('td', row).eq(13).attr('item',data.id);
+            $('td', row).eq(13).attr('id','updated_at'+data.id);
+            $('td', row).eq(13).attr('name','updated_at'+data.id);
             aux_text = aux_text +
             `<a href="despachosol" class="btn-accion-tabla btn-sm btnAnular tooltipsC" title="Anular Solicitud Despacho" data-toggle="tooltip" item="${data.id}">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
-            $('td', row).eq(13).html(aux_text);
+            $('td', row).eq(14).html(aux_text);
+            /* Santa Ester
+            $('td', row).eq(13).addClass('updated_at');
+
+            aux_text = aux_text +
+            "<a href='despachosol' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Solicitud Despacho' data-toggle='tooltip'>"+
+                "<span class='glyphicon glyphicon-remove text-danger'></span>"
+            "</a>";
+            $('td', row).eq(14).html(aux_text);
+            */
         }
     });
 

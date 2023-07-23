@@ -3,19 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\CategoriaProd;
+use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
+use App\Models\Color;
 use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\MateriaPrima;
 use App\Models\NotaVenta;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\TipoEntrega;
+use App\Models\TipoSello;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -112,12 +116,17 @@ class NotaventaAprobarController extends Controller
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
         $sql = "SELECT notaventa.id,DATE_FORMAT(notaventa.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_file,oc_id,'' as pdfnv, 
+                    concat(persona.nombre, ' ' ,persona.apellido) as vendedor_nombre,
                     (SELECT COUNT(*) 
                     FROM notaventadetalle 
                     WHERE notaventadetalle.notaventa_id=notaventa.id and 
                     notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
                 FROM notaventa inner join cliente
                 on notaventa.cliente_id = cliente.id
+                INNER JOIN vendedor
+                ON notaventa.vendedor_id = vendedor.id
+                INNER JOIN persona
+                ON vendedor.persona_id = persona.id
                 where $aux_condvend
                 and anulada is null
                 and aprobstatus=2
@@ -241,6 +250,13 @@ class NotaventaAprobarController extends Controller
         $tablas = array();
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
+        $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
+        $tablas['color'] = Color::orderBy('id')->get();
+        $tablas['certificado'] = Certificado::orderBy('id')->get();
+        $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
+        $tablas['staapronv'] = 1;
+
 
         //dd($clientedirecs);
         return view('notaventaAprobar.editar', compact('data','clienteselec','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));

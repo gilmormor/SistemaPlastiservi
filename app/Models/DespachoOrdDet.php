@@ -47,5 +47,10 @@ class DespachoOrdDet extends Model
     {
         return $this->hasMany(DespachoOrdDet_InvBodegaProducto::class,'despachoorddet_id');
     }
-    
+
+    //Relacion uno a uno con guiadespdet
+    public function guiadespdet()
+    {
+        return $this->hasOne(GuiaDespDet::class,"despachoorddet_id");
+    }
 }

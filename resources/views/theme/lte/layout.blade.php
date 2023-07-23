@@ -175,6 +175,7 @@
         <!--<script src="{{asset("assets/js/funciones.js")}}"></script>-->
         <script src="{{autoVer("assets/js/funciones.js")}}"></script>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
         @yield('scripts')
 
     </body>

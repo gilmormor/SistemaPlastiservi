@@ -27,8 +27,8 @@ $(document).ready(function () {
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
                 {data: 'categoria_nombre'},
-                {data: 'diametro'},
                 {data: 'cla_nombre'},
+                {data: 'diametro'},
                 {data: 'long'},
                 {data: 'peso'},
                 {data: 'tipounion'},
@@ -49,16 +49,28 @@ $(document).ready(function () {
                 }*/
                 $('td', row).eq(0).attr('style','text-align:center');
                 $('td', row).eq(3).attr('style','text-align:center');
+
+                $('td', row).eq(4).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');
-                $('td', row).eq(6).html(NUM(data.peso, 2));
-                $('td', row).eq(6).attr('style','text-align:right');
+                $('td', row).eq(6).attr('style','text-align:center');
+                if(data.acuerdotecnico_id){
+                    $('td', row).eq(4).html(NUM(data.at_ancho, 2));
+                    $('td', row).eq(5).html(NUM(data.at_largo, 2));
+                    $('td', row).eq(6).html(MASKLA(data.at_espesor, 3));    
+                }else{
+                    $('td', row).eq(6).html(NUM(data.peso, 2));
+                }
                 $('td', row).eq(9).attr('style','text-align:center');
                 $('td', row).eq(10).attr('style','text-align:center');
                 $('td', row).eq(11).attr('style','text-align:center');
                 $('td', row).eq(12).attr('style','text-align:center');
                 $('td', row).eq(13).attr('style','text-align:right');
                 //$('td', row).eq(13).html(MASK(0, data.stockkg, '-###,###,###,##0.00',1));
-                stockKg = data.stock * data.peso
+                if(data.peso <= 0){
+                    stockKg = data.stockkg;
+                }else{
+                    stockKg = data.stock * data.peso;
+                }
                 $('td', row).eq(13).attr('data-order',stockKg);
                 $('td', row).eq(13).attr('data-search',stockKg);
                 $('td', row).eq(13).html(MASKLA(stockKg,2));
@@ -107,6 +119,13 @@ $(document).ready(function () {
     if($("#sucursal_id").val() > 0){
 		llenarbodegas($("#sucursal_id").val())
 	}
+/* //Santa Ester
+        $('#tabla-data-consulta').DataTable().ajax.url( "invcontrolpage/" + data.data2 ).load();
+        totalizar();
+    });
+
+    tablascolsultainv($("#sucursal_id").val());
+*/
 
 });
 
@@ -218,4 +237,39 @@ function llenarbodegas(sucursal_id){
         }
     }
     $(".selectpicker").selectpicker('refresh');
+/*  //Llenar Bodegas con ajax Santa Ester, lo cambie por llenarlas en javascript
+    //Me traigo las bodegas previamente de php
+    tablascolsultainv($("#sucursal_id").val());
+*/
+}
+//Esta funcion era para llenar en tiempo real el select de bodegas
+///Ahora lo hago desde phph y en JS recorreo el arreglo de bodegas
+function tablascolsultainv(id){
+    $("#invbodega_id").empty();
+    $("#categoriaprod_id").empty();
+    if((id == "" || id == "0" || id == "x") == false){
+        var data = {
+            id: id,
+            _token: $('input[name=_token]').val()
+        };
+        //console.log(data);
+        
+        $.ajax({
+            url: '/sucursal/tablascolsultainv',
+            type: 'POST',
+            data: data,
+            success: function (respuesta) {
+                $.each(respuesta.invbodegas, function(index,value){
+                    $("#invbodega_id").append("<option value='" + value.id + "'>" + value.nombre + "</option>")
+                });
+                $.each(respuesta.categoria, function(index,value){
+                    $("#categoriaprod_id").append("<option value='" + value.id + "'>" + value.nombre + "</option>")
+                });
+
+                $(".selectpicker").selectpicker('refresh');
+            }
+        });    
+    }else{
+        $(".selectpicker").selectpicker('refresh');
+    }
 }

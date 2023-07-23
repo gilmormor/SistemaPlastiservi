@@ -4,7 +4,7 @@
 @endsection
 
 @section('scripts')
-    <script src="{{autoVer("assets/pages/scripts/admin/plazopago/crear.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/plazopago/crear.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')

@@ -1,4 +1,6 @@
 <?php
+
+use App\Models\Admin\Menu;
 use App\Models\Admin\Permiso;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -97,5 +99,116 @@ function getIniciales($nombre){
     return $name;    
 }
 
+//FUNCION REEMPLAZA CARACTERES ESPECIALES
+if (!function_exists('sanear_string')) {
+    function sanear_string($string){
+        $string = trim($string);
+ 
+        $string = str_replace(
+            array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'),
+            array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A'),
+            $string
+        );
+     
+        $string = str_replace(
+            array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'),
+            array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E'),
+            $string
+        );
+     
+        $string = str_replace(
+            array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'),
+            array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I'),
+            $string
+        );
+     
+        $string = str_replace(
+            array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
+            array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O'),
+            $string
+        );
+     
+        $string = str_replace(
+            array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'),
+            array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U'),
+            $string
+        );
+     
+        $string = str_replace(
+            array('ñ', 'Ñ', 'ç', 'Ç'),
+            array('n', 'N', 'c', 'C',),
+            $string
+        );
+     
+        //Esta parte se encarga de eliminar cualquier caracter extraño
+        /*
+        $string = str_replace(
+            array("\", "¨", "º", "-", "~",
+                 "#", "@", "|", "!", """,
+                 "·", "$", "%", "&", "/",
+                 "(", ")", "?", "'", "¡",
+                 "¿", "[", "^", "<code>", "]",
+                 "+", "}", "{", "¨", "´",
+                 ">", "< ", ";", ",", ":",
+                 ".", " "),
+            '',
+            $string
+        );
+        */
+     
+     
+        return $string;
+    }
+}
+
+if (!function_exists('cadVacia')) { //VALIDAR CADENA VACIA O NULL
+    function cadVacia($cad)
+    {
+        if($cad == "" OR is_null($cad)){
+            return true;
+        }
+        return false;
+    }
+}
+
+if (!function_exists('urlRaiz')) {
+    function urlRaiz(){
+        $ruta = url()->current();
+        $currentUrl = url()->current();
+
+        $parsedUrl = parse_url($currentUrl);
+        // Obtener el dominio
+        $domain = $parsedUrl['host'];
+        // Construir la URL deseada
+        $desiredUrl = 'https://' . $domain;
+        return $desiredUrl;
+    }
+}
+
+if (!function_exists('usuariosConAccesoMenuURL')) {
+    function usuariosConAccesoMenuURL($tabla,$url){
+        $menu = Menu::where("url","=",$url)->get(); //BUSCO EN LA TABLA MENU EL REGISTRO QUE CONTIENE EL URL notaventaaprobar
+        $menu = Menu::findOrFail($menu[0]->id); //LUEGO BUSCO EL ID EN MENU PARA TENER EL OBJETO COMPLETO CON SUS TABLAS HIJAS
+        $arrayUsuarios = []; //ARRAY PARA ALMACENAR LOS USUARIOS
+        //LUEGO RECORRO Y BUSCO TODOS LOS USUARIO QUE TIENEN ACCESO A ESTE URL PARA ENVIARLES EL CORREO
+        //PERO SOLO LOS USUARIOS TIENEN ACCESO A LA MISMA SUCURSAL DE LA NOTA DE VENTA, PUEDEN SER VARIOS USUARIOS UE TENGAN ACCESO A APROBAR NOTAS DE VENTA
+        foreach ($menu->menuroles as $menurol) {
+            if($menurol->rol_id != 1){
+                foreach ($menurol->usuarioroles as $usuariorol){
+                    foreach ($usuariorol->usuario->sucursales as $sucursal) {
+                        if($tabla->sucursal_id == $sucursal->id){
+                            $arrayUsuarios[] = [
+                                "usuario_id" =>$usuariorol->usuario->id,
+                                "nombre" => $usuariorol->usuario->nombre,
+                                "email" => $usuariorol->usuario->email
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        return $arrayUsuarios;
+    }
+}
 
 ?>

@@ -54,13 +54,13 @@ $(document).ready(function () {
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
 
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden despacho: " + data.id + "' onclick='genpdfOD(" + data.id + ",1)'>"+
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden despacho: " + data.id + "' onclick='genpdfOD(" + data.id + ",1)'>"+
                     + data.id +
                 "</a>";
             $('td', row).eq(4).html(aux_text);
 
 			aux_text = 
-				"<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" +
+				"<a class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" +
 					data.despachosol_id +
 				"</a>";
 			$('td', row).eq(5).html(aux_text);

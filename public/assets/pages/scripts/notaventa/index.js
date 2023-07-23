@@ -302,10 +302,19 @@ $("#btnnuevaNV").click(function(event){
 		text: "",
 		icon: 'success',
 		buttons: {
-			confirm: "Si",
-			cancel: "No"
+			si: {
+				text: "Si",
+				value: "Si",
+			},
+
+			no: {
+				text: "No",
+				value: "No",
+			},
+			cancel: "Cancelar"
 		},
 	}).then((value) => {
+		/*
 		if (value) {
 			limpiarCampos();
 			$("#myModalnumcot .modal-body").removeAttr("style");
@@ -317,6 +326,26 @@ $("#btnnuevaNV").click(function(event){
 			window.location = loc.protocol+"//"+loc.hostname+"/notaventa/crear";
 			// ******************************
         }
+		*/
+		switch (value) {
+ 
+			case "Si":
+				limpiarCampos();
+				$("#myModalnumcot .modal-body").removeAttr("style");
+				$("#myModalnumcot").modal('show');
+				break;
+		 
+			case "No":
+				//alert('Sin Cotizacion');
+				// *** REDIRECCIONA A UNA RUTA*** 
+				var loc = window.location;
+				window.location = loc.protocol+"//"+loc.hostname+"/notaventa/crear";
+				// ******************************
+				break;
+			default:
+			  //swal("Got away safely!");
+		}
+
 	});
 	
 });
@@ -360,13 +389,16 @@ $("#cotizacion_idM").blur(function(){
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
-				if(respuesta.length>0){
-					if(respuesta[0]['descripbloqueo']==null){
-						$("#razonsocialM").val(respuesta[0]['razonsocial']);
+				//console.log(respuesta);
+				console.log(respuesta.cotizaciones)
+				console.log(respuesta.cotizaciones["length"]);
+				if(respuesta.cotizaciones["length"]>0){
+					if(respuesta.cotizaciones[0]['descripbloqueo']==null){
+						$("#razonsocialM").val(respuesta.cotizaciones[0]['razonsocial']);
 					}else{
 						swal({
 							title: 'Cliente Bloqueado.',
-							text: respuesta[0]['descripbloqueo'],
+							text: respuesta.cotizaciones[0]['descripbloqueo'],
 							icon: 'error',
 							buttons: {
 								confirm: "Aceptar"
@@ -378,15 +410,13 @@ $("#cotizacion_idM").blur(function(){
 								$("#cotizacion_idM").focus();
 							}
 						});
-	
 					}
-					
 				}else{
 					$('#cotizacion_idM').val('');
 					$('#razonsocialM').val('');
 					swal({
-						title: 'Cotización no existe.',
-						text: "Presione F2 para buscar",
+						title: respuesta.mensaje,
+						text: "", //"Presione F2 para buscar",
 						icon: 'error',
 						buttons: {
 							confirm: "Aceptar"

@@ -54,6 +54,9 @@ class CotizacionAprobarController extends Controller
     public function cotizacionaprobarpage(){
         session(['aux_aprocot' => '1']);
         $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         //$vendedor_id=$user->persona->vendedor->id;
 
         //$aux_statusPant 0=Pantalla Normal CRUD de Cotizaciones
@@ -62,7 +65,8 @@ class CotizacionAprobarController extends Controller
 
         $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
-                    aprobstatus,'1' as pdfcot, 
+                    aprobstatus,'1' as pdfcot,
+                    concat(persona.nombre, ' ' ,persona.apellido) as vendedor_nombre,
                     (SELECT COUNT(*) 
                     FROM cotizaciondetalle 
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and cotizaciondetalle.precioxkilo<cotizaciondetalle.precioxkiloreal) AS contador
@@ -70,8 +74,13 @@ class CotizacionAprobarController extends Controller
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
+                INNER JOIN vendedor
+                ON cotizacion.vendedor_id = vendedor.id
+                INNER JOIN persona
+                ON vendedor.persona_id = persona.id
                 where aprobstatus=2
-                and cotizacion.deleted_at is null;";
+                and cotizacion.deleted_at is null
+                AND cotizacion.sucursal_id in ($sucurcadena);";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);

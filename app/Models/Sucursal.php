@@ -21,6 +21,7 @@ class Sucursal extends Model
             'telefono2',
             'telefono3',
             'email',
+            'staaprobnv',
             'usuariodel_id'
         ];
 
@@ -76,5 +77,23 @@ class Sucursal extends Model
     {
         return $this->hasMany(InvBodega::class);
     }
+
+    //RELACION UNO A UNO CON CENTRO ECONOMICO
+    public function centroeconomico()
+    {
+        return $this->hasOne(CentroEconomico::class);
+    }
+
+    //Relacion inversa a Comuna
+    public function comuna()
+    {
+        return $this->belongsTo(Comuna::class);
+    }
+    
+    public function categorias()
+    {
+        return $this->belongsToMany(CategoriaProd::class, 'categoriaprodsuc','sucursal_id','categoriaprod_id')->withTimestamps();
+    }
+ 
 
 }

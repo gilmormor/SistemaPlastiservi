@@ -309,6 +309,10 @@ function consultaorddesp($request){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+    $aux_condsucurArray = "notaventa.sucursal_id  in ($sucurcadena)";
+
 
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -528,6 +532,7 @@ function consultaorddesp($request){
             and $aux_condfechaestdesp
             and $aux_condproducto_id
             and $aux_condsucursal_id
+            and $aux_condsucurArray
             GROUP BY despachoord.id
             ORDER BY despachoord.id asc,despachoordrec.id asc;";
 

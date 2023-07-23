@@ -101,6 +101,25 @@ class Cliente extends Model
     {
         return $this->belongsTo(PlazoPago::class);
     }
+    //RELACION MUCHO A MUCHOS CON PRODUCTO A TRAVES DE cliente_producto
+    public function productos()
+    {
+        return $this->belongsToMany(Producto::class, 'cliente_producto')->withTimestamps();
+    }
+
+    //RELACION DE UNO A MUCHOS acuerdotecnico_cliente
+    public function acuerdotecnico_cliente()
+    {
+        return $this->hasMany(AcuerdoTecnico_Cliente::class);
+    }
+    
+    //RELACION DE UNO A MUCHOS acuerdotecnicotemp_cliente
+    public function acuerdotecnicotemp_cliente()
+    {
+        return $this->hasMany(AcuerdoTecnicoTemp_Cliente::class);
+    }
+    
+    
 
     public static function clientesxUsuario($vendedor_id = '0',$cliente_id = 0){
         $respuesta = array();
@@ -163,7 +182,8 @@ class Cliente extends Model
         return $respuesta;
     }
 
-    public static function clientesxUsuarioSQLTemp($vendedor_id = '0',$sucursal_id = false){ //Esta funcion es temporal mientras fusiono las 2 ramas de Santa Ester y San Bernardo
+    //San Bernardo //public static function clientesxUsuarioSQLTemp($vendedor_id = '0',$sucursal_id = false){ //Esta funcion es temporal mientras fusiono las 2 ramas de Santa Ester y San Bernardo
+    public static function clientesxUsuarioSQL($vendedor_id = '0',$sucursal_id = false){
         $users = Usuario::findOrFail(auth()->id());
         if($sucursal_id){
             $sucurArray = [$sucursal_id];

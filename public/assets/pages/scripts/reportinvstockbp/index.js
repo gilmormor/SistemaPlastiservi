@@ -27,9 +27,9 @@ $(document).ready(function () {
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
                 {data: 'categoria_nombre'},
-                {data: 'diametro'},
                 {data: 'cla_nombre'},
-                {data: 'long'},
+                {data: 'diametro'},
+                {data: 'largo'},
                 {data: 'peso'},
                 {data: 'tipounion'},
                 {data: 'stockBodProdTerm'},
@@ -57,11 +57,22 @@ $(document).ready(function () {
                 $('td', row).eq(5).html(MASK(0, data.metacomerkg, '-###,###,###,##0.00',1));
                 */
                 $('td', row).eq(0).attr('style','text-align:center');
-                stockKg = data.stock * data.peso
+                if(data.peso <= 0){
+                    stockKg = data.stockkg;
+                }else{
+                    stockKg = data.stock * data.peso
+                }
+                $('td', row).eq(4).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');
-
-                $('td', row).eq(6).html(NUM(data.peso, 2));
-                $('td', row).eq(6).attr('style','text-align:right');
+                $('td', row).eq(6).attr('style','text-align:center');
+                if(data.acuerdotecnico_id){
+                    $('td', row).eq(4).html(NUM(data.at_ancho, 2));
+                    $('td', row).eq(5).html(NUM(data.at_largo, 2));
+                    $('td', row).eq(6).html(MASKLA(data.at_espesor, 3));    
+                }else{
+                    $('td', row).eq(6).html(NUM(data.peso, 2));
+                }
+                //$('td', row).eq(6).attr('style','text-align:right');
                 $('td', row).eq(7).attr('style','text-align:center');
 
                 $('td', row).eq(9).attr('style','text-align:center');
@@ -91,6 +102,7 @@ $(document).ready(function () {
         $('#tabla-data-reporte-stockpicking').DataTable().ajax.url( "reportinvstockbppage/" + data.data2 ).load();
         totalizar();
     });
+    tablascolsultainv($("#sucursal_id").val());
 
 });
 
@@ -189,3 +201,33 @@ $("#btnpdf").click(function(event){
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 });
+
+$("#sucursal_id").change(function(){
+    tablascolsultainv($("#sucursal_id").val());
+});
+
+
+function tablascolsultainv(id){
+    $("#categoriaprod_id").empty();
+    if((id == "" || id == "x") == false){
+        var data = {
+            id: id,
+            _token: $('input[name=_token]').val()
+        };
+        //console.log(data);
+        
+        $.ajax({
+            url: '/sucursal/tablascolsultainv',
+            type: 'POST',
+            data: data,
+            success: function (respuesta) {
+                $.each(respuesta.categoria, function(index,value){
+                    $("#categoriaprod_id").append("<option value='" + value.id + "'>" + value.nombre + "</option>")
+                });
+                $(".selectpicker").selectpicker('refresh');
+            }
+        });    
+    }else{
+        $(".selectpicker").selectpicker('refresh');
+    }
+}

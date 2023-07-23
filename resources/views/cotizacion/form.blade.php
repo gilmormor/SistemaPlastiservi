@@ -1,4 +1,5 @@
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
+<input type="hidden" name="aprobstatus" id="aprobstatus" value="{{old('aprobstatus', $data->aprobstatus ?? '')}}">
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
 <input type="hidden" name="aux_iva" id="aux_iva" value="{{$tablas['empresa']->iva}}">
 <input type="hidden" name="direccioncot" id="direccioncot" value="{{old('direccioncot', $data->direccioncot ?? '')}}">
@@ -9,6 +10,7 @@
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
 <input type="hidden" name="giro" id="giro" value="{{old('giro', $data->giro ?? '')}}">
+<input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
 
 @if($aux_sta==1)
     <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $tablas['vendedor_id'] ?? '')}}">
@@ -22,11 +24,8 @@
 <input type="hidden" name="neto" id="neto" value="{{old('neto', $data->neto ?? '')}}">
 <input type="hidden" name="piva" id="piva" value="{{old('piva', $tablas['empresa']->iva ?? '')}}">
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
-<div class="form-group col-xs-4 col-sm-4" style="display:none;">
-    <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
-    <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
-</div>
 
+<input type="hidden" name="aux_aprocot" id="aux_aprocot" value="{{old('aux_aprocot', session('aux_aprocot') ?? '')}}">
 <?php
     $selecmultprod = false;
 ?>
@@ -35,8 +34,9 @@
 <?php
     $disabledReadOnly = "";
     //Si la pantalla es de aprobacion de Cotizacion desactiva todos input
-    if(session('aux_aprocot')=='1'){
-        $disabledReadOnly = ' disabled ';
+    //if(strpos("15", session('aux_aprocot'))){ //(session('aux_aprocot')=='1'){
+    if (session('aux_aprocot')=='1' or session('aux_aprocot')=='5'){
+        $disabledReadOnly = ' readonly disabled ';
     }
 ?>
 
@@ -250,6 +250,7 @@
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                     <thead>
                         <tr>
+                            <th style="text-align:center;">Cod</th>
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">cotizacionDetalle_ID</th>
                             <th style="display:none;">Codigo Producto</th>
@@ -257,15 +258,16 @@
                             <th style="display:none;">CódInterno</th>
                             <th>Cant</th>
                             <th style="display:none;">Cant</th>
-                            <th>Nombre</th>
+                            <th>Unid</th>
+                            <th>Nombre Producto</th>
                             <th style="display:none;">UnidadMedida</th>
-                            <th>Clase</th>
-                            <th>Diam</th>
+                            <th>Clase<br>Sello</th>
+                            <th>Diam<br>Ancho</th>
                             <th style="display:none;">Diametro</th>
-                            <th>Esp</th>
-                            <th style="display:none;">Espesor</th>
                             <th>Largo</th>
                             <th style="display:none;">Largo</th>
+                            <th>Esp</th>
+                            <th style="display:none;">Espesor</th>
                             <th>Peso</th>
                             <th style="display:none;">Peso</th>
                             <th>TU</th>
@@ -283,15 +285,91 @@
                             <th>Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
+                            <th style="display:none;">Array Acuerdo Tecnico</th>
+                            <th style="display:none;">Tipo Producto</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
                     <tbody>
                         @if ($aux_sta==2)
-                            <?php $aux_nfila = 0; $i = 0;?>
+                            <?php $aux_nfila = 0; $i = 0;
+                            ?>
                             @foreach($cotizacionDetalles as $CotizacionDetalle)
-                                <?php $aux_nfila++; ?>
+                                <?php 
+                                    $aux_nfila++;
+                                    $aux_ancho = $CotizacionDetalle->producto->diametro;
+                                    $aux_espesor = $CotizacionDetalle->espesor;
+                                    $aux_largo = $CotizacionDetalle->largo;
+                                    $aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod->cla_nombre;
+                                    $aux_producto_nombre = $CotizacionDetalle->producto->nombre;
+                                    $aux_categoria_nombre = $CotizacionDetalle->producto->categoriaprod->nombre;
+                                    if ($CotizacionDetalle->acuerdotecnicotemp != null){
+                                        $AcuTecTemp = $CotizacionDetalle->acuerdotecnicotemp;
+                                        //$aux_producto_nombre = nl2br($AcuTecTemp->at_desc . "\n" . $AcuTecTemp->materiaprima->nombre . " " . $AcuTecTemp->materiaprima->desc . "\n". $AcuTecTemp->at_tiposelloobs);
+                                        $aux_producto_nombre = nl2br($CotizacionDetalle->producto->categoriaprod->nombre . ", " . $AcuTecTemp->at_desc);
+                                        $aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "") ;
+                                        $aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "") ;
+                                        $aux_espesor = $AcuTecTemp->at_espesor;
+                                        $aux_cla_sello_nombre = $AcuTecTemp->claseprod->cla_nombre;
+                                    }
+                                    if ($CotizacionDetalle->producto->acuerdotecnico != null){
+                                        $AcuTec = $CotizacionDetalle->producto->acuerdotecnico;
+                                        //$aux_producto_nombre = nl2br($AcuTec->at_desc . "\n" . $AcuTecTemp->materiaprima->nombre . " " . $AcuTecTemp->materiaprima->desc . "\n". $AcuTec->at_tiposelloobs);
+                                        $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+                                        $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+                                        $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+                                        $aux_espesor = $AcuTec->at_espesor;
+                                        $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+                                    }
+                                    $aux_mostrarimagenat = "display:none;";
+                                ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
+                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$CotizacionDetalle->producto->categoriaprod_id}}">
+                                        @if ($CotizacionDetalle->producto->tipoprod == 1)
+                                            <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$CotizacionDetalle->acuerdotecnicotempunoauno->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                {{$CotizacionDetalle->producto_id}}
+                                            </a>
+                                        @else
+                                            @if ($CotizacionDetalle->producto->acuerdotecnico)
+                                                <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec({{$CotizacionDetalle->producto->acuerdotecnico->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                    {{$CotizacionDetalle->producto_id}}
+                                                </a>
+                                            @else
+                                                {{$CotizacionDetalle->producto_id}}
+                                            @endif
+                                        @endif
+
+                                        @if ($CotizacionDetalle->producto->tipoprod == 1)
+                                            <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
+                                            @if ($CotizacionDetalle->acuerdotecnicotemp == null)
+                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
+                                            @else
+                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
+                                                <?php 
+                                                    if($CotizacionDetalle->acuerdotecnicotemp->at_impreso==1){
+                                                        $aux_mostrarimagenat = "display:inline;";
+                                                    }
+                                                ?>
+                                            @endif
+                                            <div id="divMostrarImagenat{{$aux_nfila}}" name="divMostrarImagenat{{$aux_nfila}}" style={{$aux_mostrarimagenat}}>
+                                                <a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
+                                                    <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
+                                                </a>
+                                                <?php 
+                                                    if($CotizacionDetalle->acuerdotecnicotemp == null){
+                                                        $aux_imagen = "";
+                                                    }else{
+                                                        $aux_at_impresofoto = $CotizacionDetalle->acuerdotecnicotemp->at_impresofoto;
+                                                        $data_initial_preview=isset($aux_at_impresofoto) ? Storage::url("imagenes/attemp/$aux_at_impresofoto") : "";
+                                                    }
+                                                ?>
+                                                <div id="div_at_imagen{{$aux_nfila}}" name="div_at_imagen{{$aux_nfila}}" style="display: none;">
+                                                    <input type="file" name="at_imagen{{$aux_nfila}}" id="at_imagen{{$aux_nfila}}" class="form-control at_imagen" data-initial-preview='{{$data_initial_preview}}' accept="*"/>
+                                                    <input type="hidden" name="imagen{{$aux_nfila}}" id="imagen{{$aux_nfila}}" value="{{old("imagen$aux_nfila", $aux_at_impresofoto ?? '')}}">
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td style="display:none;" name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">
                                         {{$CotizacionDetalle->id}}
                                     </td>
@@ -307,43 +385,46 @@
                                     <td style="display:none;">
                                         <input type="text" name="codintprod[]" id="codintprod{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->codintprod}}" style="display:none;"/>
                                     </td>
-                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:center">
                                         {{$CotizacionDetalle->cant}}
                                     </td>
                                     <td style="text-align:right;display:none;">
                                         <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->cant}}" style="display:none;"/>
                                     </td>
-                                    <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                        {{$CotizacionDetalle->producto->nombre}}
+                                    <td name="unidadmedida_nombreTD{{$aux_nfila}}" id="unidadmedida_nombreTD{{$aux_nfila}}" style="text-align:center">
+                                        {{$CotizacionDetalle->unidadmedida->nombre}}
+                                    </td>
+                                    <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}" categoriaprod_nombre="{{$aux_categoria_nombre}}">
+                                        {!!$aux_producto_nombre!!}
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->unidadmedida_id}}" style="display:none;"/>
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
-                                        {{$CotizacionDetalle->producto->claseprod->cla_nombre}}
+                                        {{$aux_cla_sello_nombre}}
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$CotizacionDetalle->producto->diametro}}
+                                        {{$aux_ancho}}
                                     </td>
                                     <td style="display:none;">
-                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->diametro}}" style="display:none;"/>
+                                        <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$aux_ancho}}" style="display:none;"/>
                                     </td>
-                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$CotizacionDetalle->espesor}}
+                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
+                                        {{$aux_largo}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->espesor}}" style="display:none;"/>
+                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$aux_largo}}" style="display:none;"/>
+                                    </td>
+                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
+                                        {{number_format($aux_espesor, 3, ',', '.')}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$aux_espesor}}" style="display:none;"/>
                                         <input type="text" name="ancho[]" id="ancho{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->ancho}}" style="display:none;"/>
                                         <input type="text" name="obs[]" id="obs{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->obs}}" style="display:none;"/>
                                     </td>
-                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$CotizacionDetalle->largo}}
-                                    </td>
-                                    <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->largo}}" style="display:none;"/>
-                                    </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
-                                        {{$CotizacionDetalle->peso}}
+                                        {{number_format($CotizacionDetalle->peso, 3, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->peso}}" style="display:none;"/>
@@ -389,34 +470,45 @@
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
                                         {{number_format($CotizacionDetalle->subtotal, 0, ',', '.')}}
                                     </td>
-                                    <td class="subtotalCF" style="text-align:right;display:none;"> 
+                                    <td class="subtotalCF" style="text-align:right;display:none;">
                                         <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->subtotal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalSFTD{{$aux_nfila}}" id="subtotalSFTD{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
                                         {{$CotizacionDetalle->subtotal}}
                                     </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="acuerdotecnico[]" id="acuerdotecnico{{$aux_nfila}}" class="form-control" value="{{json_encode($CotizacionDetalle->acuerdotecnicotemp)}}" style="display:none;"/>
+                                    </td>
+                                    <td style="text-align:right;display:none;">
+                                        <input type="text" name="tipoprod[]" id="tipoprod{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->producto->tipoprod}}" style="display:none;"/>
+                                    </td>
                                     <td>
                                         @if(session('aux_aprocot')=='0')
-                                            <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
-                                            <i class="fa fa-fw fa-pencil"></i>
+                                            <a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                                <i class="fa fa-fw fa-pencil"></i>
                                             </a>
-                                            <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
-                                            <i class="fa fa-fw fa-trash text-danger"></i></a>
+                                            <a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
+                                                <i class="fa fa-fw fa-trash text-danger"></i>
+                                            </a>
+                                        @else
+                                            <a class="btn-accion-tabla tooltipsC" title="Editar Observación" onclick="ObsItemCot({{$CotizacionDetalle->id}},{{$aux_nfila}})">
+                                                <i class="fa fa-fw fa-comment-o"></i>
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="12" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="14" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="12" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
+                                <td colspan="14" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="12" style="text-align:right"><b>Total</b></td>
+                                <td colspan="14" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif
@@ -426,14 +518,24 @@
         </div>
     </div>
 </div>
+<div class="form-group col-xs-4 col-sm-4" style="display:none;">
+    <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
+    <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
+</div>
+<div class="form-group col-xs-4 col-sm-4" style="display:none;">
+    <label name="lblitemcompletos" id="lblitemcompletos" for="itemcompletos" class="control-label requerido" data-toggle='tooltip' title="Complete valores item">Complete valores item 1</label>
+    <input type="hidden" name="itemcompletos" id="itemcompletos" value="" class="form-control" style="text-align:right;" readonly required>
+</div>
 
 @include('generales.calcprecioprodsn')
-@include('generales.buscarclientebdtemp')
-@include('generales.buscarproductobdtemp')
-@if (session('aux_aprocot')=='1')
+@if (session('aux_aprocot')=='1' or session('aux_aprocot')=='5') <!--(strpos("15", session('aux_aprocot'))) -->
     @include('generales.aprobarcotnv')
+@else
+    @include('generales.buscarclientebd')
+    @include('generales.buscarproductobd')
 @endif
-
+@include('generales.acuerdotecnico')
+@include('generales.modalpdf')
 
     <!-- Modal -->
     <!-- FORMULARIO DE CLIENTE TEMPORAL CON TODOS LOS CAMPOS 

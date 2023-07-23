@@ -182,11 +182,11 @@
     </div>
 </div>
 <div class="row">
-    <div class="form-group col-xs-12 col-sm-4">
-        <label for="contactoemail" class="control-label requerido">Email</label>
+    <div class="form-group col-xs-12 col-sm-3">
+        <label for="contactoemail" class="control-label requerido">Contacto Email</label>
         <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
     </div>
-    <div class="form-group col-xs-12 col-sm-4">
+    <div class="form-group col-xs-12 col-sm-3">
         <label for="observacion" class="control-label">Observaciones</label>
         <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
     </div>
@@ -209,5 +209,46 @@
                 </option>
             @endforeach
         </select>
+    </div>
+    <?php 
+        if(isset($data->despachosol)){
+            $despachosol = $data->despachosol;
+        }else{
+            $despachosol = $data;
+        }
+        if(isset($despachosol->despachosoldte)){
+            
+        }
+    ?>
+    @if (count($despachosol->notaventa->dteguiadespnvs) > 0)
+        <div class="form-group col-xs-12 col-sm-4">
+            <label for="dte_id" class="control-label requerido" data-toggle='tooltip' title="Origen Solicitud Desp">Origen Solicitud Desp</label>
+            <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Guia despacho: {{$despachosol->despachosoldte->dte->nrodocto}}" onclick="genpdfGD('{{$despachosol->despachosoldte->dte->nrodocto}}','')">
+                {{$despachosol->despachosoldte->dte->nrodocto}}
+            </a>
+            <input type="text" name="dte_id" id="dte_id" class="form-control" value="{{old('dte_id', "Guia Despacho: " . $despachosol->despachosoldte->dte->nrodocto ?? '')}}" required readonly/>    
+        </div>
+    @endif
+    <div class="form-group col-xs-12 col-sm-2">
+        <?php
+            $aux_tipoguiadesp = "";
+            if(isset($data->tipoguiadesp)){
+                $tipoguiadesp = $data->tipoguiadesp;
+            }else{
+                $tipoguiadesp = $data->despachosol->tipoguiadesp;
+            }
+            if($tipoguiadesp == "1"){
+                $aux_tipoguiadesp = "Precio";
+            }
+            if($tipoguiadesp == "6"){
+                $aux_tipoguiadesp = "Traslado";
+            }
+            if($tipoguiadesp == "20"){
+                $aux_tipoguiadesp = "Traslado + Precio";
+            }
+
+        ?>
+        <label for="tipoguiadesp" class="control-label requerido"  data-toggle='tooltip' title="Tipo Guia Despacho">Tipo Guia Despacho</label>
+        <input type="text" name="tipoguiadesp" id="tipoguiadesp" class="form-control" value="{{old('tipoguiadesp', $aux_tipoguiadesp ?? '')}}" required readonly/>
     </div>
 </div>
