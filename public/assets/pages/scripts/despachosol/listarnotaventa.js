@@ -123,7 +123,6 @@ $(document).ready(function () {
                         `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${data.clientebloqueado_desc}">
                             <i class="fa fa-fw fa-lock text-danger"></i>
                         </a>`;
-                    $('td', row).eq(6).html(aux_text);
                 }else{
                     aux_text +=
                     `<a href="${data.rutanuevasoldesp}" class="btn-accion-tabla tooltipsC" title="Hacer solicitud despacho: ${data.tipentnombre}">

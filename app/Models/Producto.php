@@ -258,7 +258,7 @@ class Producto extends Model
         return $datas;
     }
 
-    public static function pendientexProducto($request,$aux_sql,$orden){
+    public static function pendientexProducto1($request,$aux_sql,$orden){
         //dd($request);
         if($orden==1){
             $aux_orden = "notaventadetalle.notaventa_id desc";
