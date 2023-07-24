@@ -230,17 +230,6 @@ Notas de Venta
 					<legend></legend>
 				</div>
 			</div>
-<!--
-            <div class="table-responsive" id="tablaconsulta">
-            </div>-->
-            <div class="row">
-                <div class="table-responsive" id="tablaconsulta">
-                </div>
-                <div class="col-lg-12 text-center">
-                    <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF" onclick='btnpdf(1)'><i class='glyphicon glyphicon-print'></i> Reporte</button>
-                </div>
-
-            </div>
             <div class="table-responsive">
                 <table class="table display AllDataTables table-hover table-condensed" id="tabla-data-consulta" data-page-length="50">
                     <thead>
@@ -293,12 +282,7 @@ Notas de Venta
         </div>
     </div>
 </div>
-<!-- San Bernardo
-@include('generales.buscarclientebdtemp')
-@include('generales.modalpdf')
-@include('generales.verpdf')
-@include('generales.buscarproductobdtemp')
--->
+
 @include('generales.buscarclientebd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
