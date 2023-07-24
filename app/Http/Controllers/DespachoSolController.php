@@ -76,27 +76,6 @@ class DespachoSolController extends Controller
         return datatables($datas)->toJson();
     }
 
-    public function productobuscarpage(Request $request){
-        $datas = Producto::productosxClienteTemp($request);
-        return datatables($datas)->toJson();
-    }
-
-    public function clientebuscarpage(){
-        $datas = Cliente::clientesxUsuarioSQLTemp();
-        return datatables($datas)->toJson();
-    }
-
-    public function productobuscarpageid(Request $request){
-        $datas = Producto::productosxClienteTemp($request);
-        return datatables($datas)->toJson();
-    }
-
-    public function clientebuscarpageid($id){
-        $datas = Cliente::Temp();
-        return datatables($datas)->toJson();
-    }
-
-
     public function listarnv()
     {
         $arrayvend = Vendedor::vendedores(); //Viene del modelo vendedores
