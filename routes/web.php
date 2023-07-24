@@ -558,11 +558,6 @@ Route::post('despachosol/reporte', 'DespachoSolController@reporte')->name('repor
 Route::post('despachosol/{id}/anular', 'DespachoSolController@anular')->name('anular_despachosol');
 Route::get('despachosol/{id}/{stareport}/exportPdf', 'DespachoSolController@exportPdf')->name('exportPdf_despachosol');
 Route::post('despachosol/aproborddesp/{id}', 'DespachoSolController@aproborddesp')->name('aproborddesp_despachosol');
-Route::get('despachosol/productobuscarpage', 'DespachoSolController@productobuscarpage')->name('productobuscarpage');
-Route::get('despachosol/clientebuscarpage', 'DespachoSolController@clientebuscarpage')->name('clientebuscarpage');
-Route::get('despachosol/{id}/productobuscarpage', 'DespachoSolController@productobuscarpageid')->name('productobuscarpageid');
-Route::get('despachosol/{id}/clientebuscarpage', 'DespachoSolController@clientebuscarpageid')->name('clientebuscarpageid');
-
 
 Route::post('despachosol/reportesoldesp', 'DespachoSolController@reportesoldesp')->name('reportesoldesp_despachosol');
 Route::post('despachosol/reportesoldespcerrarNV', 'DespachoSolController@reportesoldespcerrarNV')->name('reportesoldespcerrarNV_despachosol');
