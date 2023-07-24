@@ -28,7 +28,6 @@ $(document).ready(function () {
             {data: 'icono',className:"ocultar"},
             {data: 'clientebloqueado_descripcion',className:"ocultar"},
             {data: 'oc_file',className:"ocultar"},
-            {data: 'obsdevolucion',className:"ocultar"},
             {data: 'updated_at',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : ""}

@@ -51,7 +51,7 @@ $(document).ready(function () {
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 
             $('td', row).eq(2).attr('data-order',data.fechaestdesp);
-            aux_fecha = new Date(data.fechaestdesp);
+            aux_fecha = new Date(data.fechaestdesp + " 12:00:00");
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
 
             
@@ -341,6 +341,7 @@ function ajaxRequest(data,url,funcion) {
 							statusM        : $("#statusM").val(),
 							invbodega_id   : respuesta.datas[0].id,
 							pantalla_origen  : 1, //Para saber de donde viene la anulacion en este caso de la pantalla Asignar Guia
+                            updated_at     : $("#updated_at" + $("#nfilaanul").val()).html(),
 							_token: $('input[name=_token]').val()
 						};
 						var ruta = '/guardaranularguia';
@@ -389,10 +390,10 @@ function ajaxRequest(data,url,funcion) {
                 return respuesta;
             }
             if(funcion=='guardaranularguia'){
-				if (respuesta.mensaje == "ok") {
+				if (respuesta.status == "1") {
 					$("#fila" + respuesta.nfila).remove();
 					$("#myModalanularguiafact").modal('hide');
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
 				}

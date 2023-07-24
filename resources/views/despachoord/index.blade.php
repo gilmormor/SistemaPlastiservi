@@ -42,7 +42,6 @@ Orden de despacho
                                 <th class="ocultar">Icono</th>
                                 <th class="ocultar">Obs Bloqueo</th>
                                 <th class="ocultar">oc_file</th>
-                                <th class="ocultar">obsdevolucion</th>
                                 <th class="ocultar">updated_at</th>
                                 <th class="width70">Acción</th>
                             </tr>
@@ -51,12 +50,12 @@ Orden de despacho
                             <tr>
                             </tr>
                             <tr>
-                                <th colspan='8' style='text-align:right'>Total página</th>
+                                <th colspan='9' style='text-align:right'>Total página</th>
                                 <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
                                 <th colspan='2' style='text-align:right'></th>
                             </tr>
                             <tr>
-                                <th colspan='8' style='text-align:right'>TOTAL GENERAL</th>
+                                <th colspan='9' style='text-align:right'>TOTAL GENERAL</th>
                                 <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                                 <th colspan='2' style='text-align:right'></th>
                             </tr>

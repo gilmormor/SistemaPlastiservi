@@ -74,13 +74,6 @@ Stock Inventario
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="invbodega_id" id="invbodega_id" class="selectpicker form-control invbodega_id" data-live-search='true' multiple data-actions-box='true'>
-                                            <!--San Bernardo: Lleno el select desde javacript
-                                            @foreach($tablashtml['invbodegas'] as $invbodega)
-                                                <option
-                                                    value="{{$invbodega->id}}" sucursal_id="{{$invbodega->sucursal_id}}"
-                                                    >{{$invbodega->nombre}}</option>
-                                            @endforeach
-                                            -->
                                         </select>
                                     </div>
                                 </div>

@@ -151,15 +151,29 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 }
             }
             $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
-            if($request->updated_at != $despachoord->updated_at){
-                return response()->json([
-                    'status' => 0,
-                    'id' => 0,
-                    'error' => '0',
-                    'title' => '',
-                    'mensaje' => 'Registro fué modificado por otro usuario.',
-                    'tipo_alert' => 'error'
-                ]);
+            if(isset($request->procesoorigen) and $request->procesoorigen == 1){
+                if($request->updated_at != $despachoord->updated_at){
+                    return response()->json([
+                        'status' => 0,
+                        'id' => 0,
+                        'error' => '0',
+                        'title' => '',
+                        'mensaje' => 'Registro fué modificado por otro usuario.',
+                        'tipo_alert' => 'error'
+                    ]);
+                }    
+            }
+            if(isset($request->pantalla_origen) and $request->pantalla_origen == 2){
+                if($request->updated_at != $despachoord->updated_at){
+                    return response()->json([
+                        'status' => 0,
+                        'id' => 0,
+                        'error' => '0',
+                        'title' => '',
+                        'mensaje' => 'Registro fué modificado por otro usuario.',
+                        'tipo_alert' => 'error'
+                    ]);
+                }    
             }
 
             /*

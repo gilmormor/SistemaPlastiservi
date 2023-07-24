@@ -411,6 +411,7 @@ $("#btnGuardarGanul").click(function(event)
 		var data = {
 			id    : $("#idanul").val(),
 			nfila : $("#nfilaanul").val(),
+			despachoord_id : $("#idanul").val(),
 			observacion : $("#observacionanul").val(),
 			statusM : $("#statusM").val(),
 			//invbodega_id : respuesta.datas[0].id,

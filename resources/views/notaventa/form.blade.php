@@ -697,10 +697,6 @@
 
 @include('generales.modalpdf')
 @include('generales.calcprecioprodsn')
-<!--San Bernardo
-@include('generales.buscarclientebdtemp')
-@include('generales.buscarproductobdtemp')
--->
 @if (($aux_sta!=3))
     @include('generales.buscarclientebd')
     @include('generales.buscarproductobd')

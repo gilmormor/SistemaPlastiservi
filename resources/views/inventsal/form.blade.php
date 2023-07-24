@@ -249,7 +249,4 @@
 -->
 
 @include('generales.inventsalprod')
-<!--San Bernardo
-@include('generales.buscarproductobdtemp')
--->
 @include('generales.buscarproductobd')

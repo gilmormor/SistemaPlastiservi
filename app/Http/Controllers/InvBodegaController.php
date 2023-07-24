@@ -174,6 +174,7 @@ class InvBodegaController extends Controller
                             ->where('invbodega.tipo','=',$request->tipobodega)
                             ->where('invbodega.activo','=',1)
                             ->whereIn('invbodega.sucursal_id', $sucurArray)
+                            ->where('invbodega.sucursal_id',$despachoord->notaventa->sucursal_id)
                             ->select([
                                 'invbodega.id',
                                 'invbodega.nombre',
