@@ -68,7 +68,7 @@
                                             </tfoot>
                                         </table>
                                     </div>
-                                    @if (isset($selecmultprod)) <!-- Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
+                                    @if (isset($selecmultprod) and $selecmultprod == true) <!-- Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
                                         <div class="col-xs-12" id="divprodselec" name="divprodselec">
                                             <div class="col-xs-12 col-md-1 col-sm-1 text-left" data-toggle='tooltip' title="Productos seleccionados">
                                                 <label for="productos">Selección:</label>
@@ -87,7 +87,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                @if (isset($selecmultprod)) <!-- Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
+                @if (isset($selecmultprod) and $selecmultprod == true) <!-- Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
                     <button id="aceptarmbp" name="aceptarmbp" type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
                 @endif
             </div>
