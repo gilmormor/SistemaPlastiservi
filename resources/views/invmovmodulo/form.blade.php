@@ -43,7 +43,7 @@
                     value="{{$invbodega->id}}"
                     {{is_array(old('invmovmodulobodsal_id')) ? (in_array($invbodega->id, old('invmovmodulobodsal_id')) ? 'selected' : '') : (isset($data) ? ($data->invmovmodulobodsals->firstWhere('id', $invbodega->id) ? 'selected' : '') : '')}}
                     >
-                    {{$invbodega->nombre}}
+                    {{$invbodega->nombre}}/{{$invbodega->sucursal->nombre}}
                 </option>
             @endforeach
         </select>
@@ -78,7 +78,7 @@
                     value="{{$invbodega->id}}"
                     {{is_array(old('invmovmodulobodent_id')) ? (in_array($invbodega->id, old('invmovmodulobodent_id')) ? 'selected' : '') : (isset($data) ? ($data->invmovmodulobodents->firstWhere('id', $invbodega->id) ? 'selected' : '') : '')}}
                     >
-                    {{$invbodega->nombre}}
+                    {{$invbodega->nombre}}/{{$invbodega->sucursal->nombre}}
                 </option>
             @endforeach
         </select>
