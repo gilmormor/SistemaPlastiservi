@@ -101,13 +101,19 @@ class AcuerdoTecnicoController extends Controller
             if(!is_null($request->at_fuelle)){
                 $aux_ta_largoCond = "if(isnull(at_largo),'',at_largo) = $request->at_largo";
             }
-            $aux_at_feunidxpaq = "if(isnull(at_feunidxpaq),'',at_feunidxpaq) = $request->at_feunidxpaq";
+            $aux_at_feunidxpaq = $request->at_feunidxpaq;
             if(is_null($request->at_feunidxpaq)){
-                $aux_at_feunidxpaq = "if(isnull(at_feunidxpaq),'',at_feunidxpaq) = ''";
+                $aux_at_feunidxpaq = "";
             }
-            //dd($aux_at_feunidxpaq);
+            $aux_at_feunidxcont = $request->at_feunidxcont;
+            if(is_null($request->at_feunidxcont)){
+                $aux_at_feunidxcont = "";
+            }
+            $aux_at_feunitxpalet = $request->at_feunitxpalet;
+            if(is_null($request->at_feunitxpalet)){
+                $aux_at_feunitxpalet = "";
+            }
             $json = json_decode($request->objtxt);
-            //dd($json);
             $sql = "SELECT acuerdotecnico.*, producto.nombre as producto_nombre
             FROM acuerdotecnico INNER JOIN producto
             on acuerdotecnico.producto_id = producto.id
@@ -126,12 +132,11 @@ class AcuerdoTecnicoController extends Controller
             and $aux_ta_largoCond
             and at_espesor = $request->at_espesor
             and at_impreso = $request->at_impreso
-            and at_tiposello_id = $request->at_tiposello_id
-            and $aux_at_feunidxpaq  
-            and if(isnull(at_feunidxcont),'',at_feunidxcont) = '$request->at_feunidxcont' 
-            and if(isnull(at_feunitxpalet),'',at_feunitxpalet) = '$request->at_feunitxpalet' 
+            and at_tiposello_id = '$request->at_tiposello_id'
+            and if(isnull(at_feunidxpaq),'',at_feunidxpaq) = '$aux_at_feunidxpaq' 
+            and if(isnull(at_feunidxcont),'',at_feunidxcont) = '$aux_at_feunidxcont' 
+            and if(isnull(at_feunitxpalet),'',at_feunitxpalet) = '$aux_at_feunitxpalet' 
             and isnull(acuerdotecnico.deleted_at)";
-            //dd($sql);
             $datas = DB::select($sql);
             //dd($datas);
             return $datas;

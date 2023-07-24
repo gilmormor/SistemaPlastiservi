@@ -484,9 +484,11 @@
                                     </td>
                                     <td>
                                         @if(session('aux_aprocot')=='0')
-                                            <a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
-                                                <i class="fa fa-fw fa-pencil"></i>
-                                            </a>
+                                            @if ($CotizacionDetalle->producto->tipoprod != 1)
+                                                <a  id="editarRegistro{{$aux_nfila}}" name="editarRegistro{{$aux_nfila}}"  class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                                    <i class="fa fa-fw fa-pencil"></i>
+                                                </a>
+                                            @endif
                                             <a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
                                                 <i class="fa fa-fw fa-trash text-danger"></i>
                                             </a>

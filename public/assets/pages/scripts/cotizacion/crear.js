@@ -486,8 +486,8 @@ function insertarTabla(){
 				'<input type="text" name="tipoprod[]" id="tipoprod'+ aux_nfila + '" class="form-control" value="' + $("#tipoprodM").attr('valor') + '" style="display:none;"/>'+
 			'</td>'+
 			'<td>' + 
-				'<a class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
-				'<i class="fa fa-fw fa-pencil"></i>'+
+				'<a id="editarRegistro'+ aux_nfila + '" name="editarRegistro'+ aux_nfila + '" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+					'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
 				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
@@ -664,7 +664,12 @@ function ajaxRequest(data,url,funcion) {
 					$("#longTD" + datatemp.nfila).html($("#at_largo").val());
 					$("#espesorTD" + datatemp.nfila).html($("#at_espesor").val());
 					$("#cla_nombreTD" + datatemp.nfila).html($("#at_claseprod_id option:selected").html());
-					console.log($("#at_impreso").val());
+					$("#unidadmedida_nomnreTD" + datatemp.nfila).html($("#at_unidadmedida_id option:selected").html());
+					$("#unidadmedida_id" + datatemp.nfila).val($("#at_unidadmedida_id option:selected").val());
+					console.log($("#at_unidadmedida_id option:selected").html());
+					console.log($("#at_unidadmedida_id option:selected").val());
+					$("#editarRegistro" + datatemp.nfila).hide();
+					//console.log($("#at_impreso").val());
 					if($("#at_impreso").val() == 1){
 						$("#divMostrarImagenat" + datatemp.nfila).css({'display':'inline'});
 					}else{
