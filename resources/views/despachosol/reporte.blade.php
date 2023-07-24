@@ -108,7 +108,7 @@
 						$neto += $subtotal;
 
 						$aux_ancho = $despachosoldet->notaventadetalle->producto->diametro;
-						$aux_largo = $despachosoldet->notaventadetalle->producto->long;
+						$aux_largo = $despachosoldet->notaventadetalle->producto->long . "Mts";
 						$aux_espesor = $despachosoldet->notaventadetalle->producto->tipounion;
 						$aux_cla_sello_nombre = $despachosoldet->notaventadetalle->producto->claseprod->cla_nombre;
 						$aux_producto_nombre = $despachosoldet->notaventadetalle->producto->nombre;

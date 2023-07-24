@@ -99,7 +99,7 @@
 						$aux_totalcant += $inventsaldet->cant;
 						$aux_totalcantkg += $inventsaldet->cantkg;
 						$aux_ancho = $inventsaldet->invbodegaproducto->producto->diametro;
-						$aux_largo = $inventsaldet->invbodegaproducto->producto->long;
+						$aux_largo = $inventsaldet->invbodegaproducto->producto->long . "Mts";
 						$aux_espesor = $inventsaldet->invbodegaproducto->producto->tipounion;
 						$aux_cla_sello_nombre = $inventsaldet->invbodegaproducto->producto->claseprod->cla_nombre;
 						$aux_producto_nombre = $inventsaldet->invbodegaproducto->producto->nombre;

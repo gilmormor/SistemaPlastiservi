@@ -289,7 +289,7 @@ function reporte1($request){
             $aux_producto_id = $data->producto_id;
             $aux_ancho = $producto->diametro;
             $aux_espesor = $data->peso;
-            $aux_largo = $data->long;
+            $aux_largo = $data->long . "Mts";
             $aux_cla_sello_nombre = $data->cla_nombre;
             $aux_producto_nombre = $data->nombre;
             //$aux_categoria_nombre = $data->producto->categoriaprod->nombre;

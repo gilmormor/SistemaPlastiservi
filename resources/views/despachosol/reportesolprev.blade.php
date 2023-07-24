@@ -131,7 +131,7 @@
 
 						$aux_producto_nombre = $notaventaDetalle->producto->nombre;
 						$aux_ancho = $notaventaDetalle->producto->diametro;
-						$aux_largo = $notaventaDetalle->producto->long;
+						$aux_largo = $notaventaDetalle->producto->long . "Mts";
 						$aux_espesor = $notaventaDetalle->producto->tipounion;
 						$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
 						if ($notaventaDetalle->cotizaciondetalle and $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp != null){

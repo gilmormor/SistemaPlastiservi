@@ -50,7 +50,7 @@ $(document).ready(function () {
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 
             $('td', row).eq(2).attr('data-order',data.fechaestdesp);
-            aux_fecha = new Date(data.fechaestdesp);
+            aux_fecha = new Date(data.fechaestdesp + " 12:00:00");
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
 
 			aux_text = 

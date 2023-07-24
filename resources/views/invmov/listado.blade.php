@@ -72,7 +72,7 @@
 				@foreach($datas->invmovdets as $invmovdet)
 					<?php 
 						$aux_ancho = $invmovdet->invbodegaproducto->producto->diametro;
-						$aux_largo = $invmovdet->invbodegaproducto->producto->long;
+						$aux_largo = $invmovdet->invbodegaproducto->producto->long . "Mts";
 						$aux_espesor = $invmovdet->invbodegaproducto->producto->tipounion;
 						$aux_cla_sello_nombre = $invmovdet->invbodegaproducto->producto->claseprod->cla_nombre;
 						$aux_producto_nombre = $invmovdet->invbodegaproducto->producto->nombre;

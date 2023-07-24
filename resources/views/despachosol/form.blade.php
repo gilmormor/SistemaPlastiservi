@@ -440,7 +440,7 @@
 
                                     $aux_ancho = $detalle->producto->diametro;
                                     $aux_espesor = $detalle->espesor;
-                                    $aux_largo = $detalle->producto->long;
+                                    $aux_largo = $detalle->producto->long . "Mts";
                                     $aux_cla_sello_nombre = $detalle->producto->claseprod->cla_nombre;
                                     $aux_producto_nombre = $detalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;

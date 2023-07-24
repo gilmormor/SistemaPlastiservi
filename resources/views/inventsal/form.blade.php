@@ -126,7 +126,7 @@
 
                                     $aux_ancho = $detalle->producto->diametro;
                                     $aux_anchonum = $detalle->producto->diametro;
-                                    $aux_largo = $detalle->producto->long;
+                                    $aux_largo = $detalle->producto->long . "Mts";
                                     $aux_largonum = $detalle->producto->long;
                                     $aux_espesor = $detalle->producto->espesor;
                                     $aux_espesornum = $detalle->producto->espesor;
