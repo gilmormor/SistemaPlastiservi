@@ -211,7 +211,7 @@
                         <?php 
                             $despachosol = $data->despachosol;
                         ?>
-                        @if (count($despachosol->notaventa->dteguiadespnvs) > 0)
+                        @if (false) <?php (count($despachosol->notaventa->dteguiadespnvs) > 0) ?>
                             <div class="form-group col-xs-12 col-sm-4">
                                 <label for="dte_id" class="control-label requerido" data-toggle='tooltip' title="Origen">Origen</label>
                                 <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Guia despacho: {{$despachosol->despachosoldte->dte->nrodocto}}" onclick="genpdfGD('{{$despachosol->despachosoldte->dte->nrodocto}}','')">
