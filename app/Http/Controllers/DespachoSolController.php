@@ -2394,6 +2394,7 @@ function reportesoldesp1($request){
             }else{
                 $aux_enlaceoc = "<a onclick='verpdf2(\"$data->oc_file\",2)' class='tooltipsC' title='Orden de Compra'>$data->oc_id</a>";
             }
+            /* EN COMENTARIO, POR EL MOMENTO NO ES NECESARIO MOSTRAR ESTA INFORMACION 
             if(!is_null($data->dte_nrodocto)){
                 $cadena = $data->dte_nrodocto;
                 if(strpos($cadena, ';')){
@@ -2420,6 +2421,7 @@ function reportesoldesp1($request){
 
                 $aux_enlaceoc .= $aux_text;
             }
+            */
             $ruta_nuevoOrdDesp = route('crearord_despachoord', ['id' => $data->id]);
             //dd($ruta_nuevoSolDesp);
 

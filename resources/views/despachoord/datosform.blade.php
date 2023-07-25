@@ -220,7 +220,7 @@
             
         }
     ?>
-    @if (false) <?php //count($despachosol->notaventa->dteguiadespnvs) > 0) ?>
+    @if (count($despachosol->notaventa->dteguiadespnvs) > 0 and isset($despachosol->despachosoldte->dte->nrodocto))
         <div class="form-group col-xs-12 col-sm-4">
             <label for="dte_id" class="control-label requerido" data-toggle='tooltip' title="Origen Solicitud Desp">Origen Solicitud Desp</label>
             <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Guia despacho: {{$despachosol->despachosoldte->dte->nrodocto}}" onclick="genpdfGD('{{$despachosol->despachosoldte->dte->nrodocto}}','')">

@@ -64,6 +64,7 @@ $(document).ready(function () {
                         data.oc_id + 
                     "</a>";
                 $('td', row).eq(3).html(aux_text);
+                /*EN COMENTARIO PORQUE NO HACE FALTA MOSTRAR ESTO, IGUALMETE QUEDA EN COMENTARIO
                 if(data.dte_nrodocto != null){
                     let cadena = data.dte_nrodocto
 					if(cadena.includes(";")){
@@ -92,6 +93,7 @@ $(document).ready(function () {
 
                     //$('td', row).eq(4).html($('td', row).eq(4).html() + aux_text);
                 }
+                */
             }
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
