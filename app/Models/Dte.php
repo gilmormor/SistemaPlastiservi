@@ -299,7 +299,8 @@ class Dte extends Model
         dte.centroeconomico_id,dte.indtraslado,
         dteoc.oc_id,dteoc.oc_file,comuna.nombre as comunanombre,
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,dtedte.dter_id,
-        dteguiadesp.notaventa_id,despachoord.fechaestdesp,dteguiadesp.despachoord_id,despachoord.despachosol_id,
+        dteguiadesp.notaventa_id,dteguiadespnv.notaventa_id as dteguiadespnv_notaventa_id,
+        despachoord.fechaestdesp,dteguiadesp.despachoord_id,despachoord.despachosol_id,
         (SELECT dte1.nrodocto
         FROM dtedte as dtedte1 INNER JOIN dte as dte1
         ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
@@ -352,6 +353,8 @@ class Dte extends Model
         ON dtedte_rel_guia.dte_id = dte.id AND isnull(dtedte_rel_guia.deleted_at)
         LEFT JOIN dte as dte_rel_guia
         ON dtedte_rel_guia.dter_id = dte_rel_guia.id AND (dte_rel_guia.foliocontrol_id = 2)  AND isnull(dte_rel_guia.deleted_at)
+        LEFT JOIN dteguiadespnv
+        ON dteguiadespnv.dte_id = dte.id
         WHERE $aux_condproducto_id
         and $aux_condguiadesp_id
         and $vendedorcond

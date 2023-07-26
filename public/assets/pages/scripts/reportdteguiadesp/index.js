@@ -78,6 +78,12 @@ $(document).ready(function () {
                             data.notaventa_id +
                         "</a>";
                 }
+                if(data.dteguiadespnv_notaventa_id != "" && data.dteguiadespnv_notaventa_id != null){
+                    aux_text = 
+                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.dteguiadespnv_notaventa_id + ",1)'>" +
+                            data.dteguiadespnv_notaventa_id +
+                        "</a>";
+                }
                 $('td', row).eq(5).html(aux_text);
                 aux_text = "";
                 if(data.despachosol_id != "" && data.despachosol_id != null){
