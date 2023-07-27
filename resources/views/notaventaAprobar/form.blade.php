@@ -393,6 +393,7 @@
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                     <thead>
                         <tr>
+                            <th style="text-align:center;">Cod</th>
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">NotaVentaDetalle_ID</th>
                             <th style="display:none;">cotizacion_ID</th>
@@ -403,13 +404,13 @@
                             <th style="display:none;">Cant</th>
                             <th>Nombre</th>
                             <th style="display:none;">UnidadMedida</th>
-                            <th>Clase</th>
-                            <th>Diam</th>
+                            <th>Clase<br>Sello</th>
+                            <th>Diam<br>Ancho</th>
                             <th style="display:none;">Diametro</th>
-                            <th>Esp</th>
-                            <th style="display:none;">Espesor</th>
                             <th>Largo</th>
                             <th style="display:none;">Largo</th>
+                            <th>Esp</th>
+                            <th style="display:none;">Espesor</th>
                             <th>Peso</th>
                             <th style="display:none;">Peso</th>
                             <th>TU</th>
@@ -436,8 +437,83 @@
                         @if ($aux_sta==2 or $aux_sta==3)
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($detalles as $detalle)
-                                <?php $aux_nfila++; ?>
+                                <?php 
+                                $aux_nfila++; 
+                                    $acuerdotecnico = null;
+                                    if ($detalle->producto->tipoprod == 1){
+                                        //SI 
+                                        //dd(isset($detalle->acuerdotecnico));
+                                        if(isset($detalle->acuerdotecnico) and $detalle->acuerdotecnico){
+                                            $acuerdotecnico = $detalle->acuerdotecnico;
+                                        }else{
+                                            if(isset($detalle->acuerdotecnicotempunoauno) and $detalle->acuerdotecnicotempunoauno){
+                                                $acuerdotecnico = $detalle->acuerdotecnicotempunoauno;
+                                            }else{
+                                                $acuerdotecnico = $detalle->cotizaciondetalle->acuerdotecnicotempunoauno;
+                                            }
+                                            //dd($acuerdotecnico);
+                                        }
+                                    }
+                                    $aux_ancho = $detalle->producto->diametro;
+                                    $aux_espesor = $detalle->espesor;
+                                    $aux_largo = $detalle->largo;
+                                    $aux_cla_sello_nombre = $detalle->producto->claseprod->cla_nombre;
+                                    $aux_producto_nombre = $detalle->producto->nombre;
+                                    $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
+                                    //dd($detalle);
+                                    if ($detalle->acuerdotecnicotempunoauno){
+                                        $AcuTecTemp = $detalle->acuerdotecnicotempunoauno;
+                                        $aux_producto_nombre = nl2br($detalle->producto->categoriaprod->nombre . ", " . $AcuTecTemp->at_desc);
+                                        $aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "") ;
+                                        $aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "") ;
+                                        $aux_espesor = $AcuTecTemp->at_espesor;
+                                        $aux_cla_sello_nombre = $AcuTecTemp->claseprod->cla_nombre;
+                                    }
+                                    if ($detalle->producto->acuerdotecnico != null){
+                                        $AcuTec = $detalle->producto->acuerdotecnico;
+                                        $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+                                        $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+                                        $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+                                        $aux_espesor = $AcuTec->at_espesor;
+                                        $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+                                    }                                
+                                ?>
+
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
+                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$detalle->producto->categoriaprod_id}}">
+                                        @if ($detalle->producto->tipoprod == 1)
+                                            <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$acuerdotecnico->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                {{$detalle->producto_id}}
+                                            </a>
+                                        @else
+                                            @if ($detalle->producto->acuerdotecnico)
+                                                <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec({{$detalle->producto->acuerdotecnico->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                    {{$detalle->producto_id}}
+                                                </a>
+                                            @else
+                                                {{$detalle->producto_id}}
+                                            @endif
+    
+                                        @endif
+    
+                                        @if (false)
+                                            @if ($detalle->producto->tipoprod == 1)
+                                                <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
+                                                    @if ($acuerdotecnico == null)
+                                                        <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
+                                                    @else
+                                                        <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
+                                                    @endif
+                                                </a>
+                                            @endif
+                                            @if ($detalle->producto->acuerdotecnico)
+                                                <a class="btn-accion-tabla tooltipsC" title="Acuerdo tecnico" onclick="genpdfAcuTec({{$detalle->producto_id}})">
+                                                    <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
+                                                </a>
+                                            @endif
+                                            
+                                        @endif
+                                    </td>
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
                                         @if ($aux_sta==2)
                                             {{$detalle->id}}
@@ -483,33 +559,33 @@
                                         @endif
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                        {{$detalle->producto->nombre}}
+                                        {{$aux_producto_nombre}}
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control"  value="{{$detalle->unidadmedida_id}}" style="display:none;"/>
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
-                                        {{$detalle->producto->claseprod->cla_nombre}}
+                                        {{$aux_cla_sello_nombre}}
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->producto->diametro}}
+                                        {{$aux_ancho}}
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->diametro}}" style="display:none;"/>
                                     </td>
+                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
+                                        {{$aux_largo}}
+                                    </td>
+                                    <td style="text-align:right;display:none;"> 
+                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->largo}}" style="display:none;"/>
+                                    </td>
                                     <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->espesor}}
+                                        {{number_format($aux_espesor, 3, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="espesor[]" id="espesor{{$aux_nfila}}" class="form-control" value="{{$detalle->espesor}}" style="display:none;"/>
                                         <input type="text" name="ancho[]" id="ancho{{$aux_nfila}}" class="form-control" value="{{$detalle->ancho}}" style="display:none;"/>
                                         <input type="text" name="obs[]" id="obs{{$aux_nfila}}" class="form-control" value="{{$detalle->obs}}" style="display:none;"/>
-                                    </td>
-                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
-                                        {{$detalle->largo}}
-                                    </td>
-                                    <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->largo}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
                                         {{$detalle->producto->peso}}
@@ -577,15 +653,15 @@
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="12" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="13" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="12" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="13" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="12" style="text-align:right"><b>Total</b></td>
+                                <td colspan="13" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif
