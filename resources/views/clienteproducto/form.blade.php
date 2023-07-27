@@ -118,7 +118,7 @@
                             </td>
                             <td>
                                 @if (isset($producto->acuerdotecnico->id))
-                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfCOT({{$producto->acuerdotecnico->id}},1)" data-original-title="Acuerdo Técnico: {{$producto->acuerdotecnico->id}}">
+                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec({{$producto->acuerdotecnico->id}},{{$data->id}},1)" data-original-title="Acuerdo Técnico: {{$producto->acuerdotecnico->id}}">
                                         <i class="fa fa-fw fa-file-pdf-o"></i>
                                     </a>
                                     <input type="text" name="acuerdotecnico_id[]" id="acuerdotecnico_id{{$aux_nfila}}" class="form-control" value="{{$producto->acuerdotecnico->id}}" style="display:none;"/>
