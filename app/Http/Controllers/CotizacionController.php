@@ -22,6 +22,7 @@ use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\MateriaPrima;
+use App\Models\Moneda;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Provincia;
@@ -179,6 +180,7 @@ class CotizacionController extends Controller
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
+        $tablas['moneda'] = Moneda::orderBy('id')->get();
         //dd($tablas['unidadmedida']);
         session(['aux_aprocot' => '0']);
         session(['editaracutec' => '1']);
@@ -1065,6 +1067,7 @@ function editar($id){
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
+        $tablas['moneda'] = Moneda::orderBy('id')->get();
 
         $aux_sta=2;
 

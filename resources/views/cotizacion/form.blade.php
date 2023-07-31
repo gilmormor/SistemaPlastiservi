@@ -180,7 +180,7 @@
     </div>
 
     <div class="row">
-        <div class="form-group col-xs-12 col-sm-3">
+        <div class="form-group col-xs-12 col-sm-2">
             <label id="lblsucursal_id" name="lblsucursal_id" for="sucursal_id" class="control-label requerido">Sucursal</label>
             <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' {{$disabledReadOnly}} required>
                 <option value=''>Seleccione...</option>
@@ -229,8 +229,25 @@
         </div>
         <div class="form-group col-xs-12 col-sm-3">
             <label for="observacion" class="control-label">Observaciones</label>
-            <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$disabledReadOnly}}/>
+            <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$disabledReadOnly}} maxlength="200"/>
         </div>
+        <div class="form-group col-xs-12 col-sm-1">
+            <label id="lblmoneda_id" name="lblmoneda_id" for="moneda_id" class="control-label requerido">Moneda</label>
+            <select name="moneda_id" id="moneda_id" class="form-control select2 moneda_id" data-live-search='true' required>
+                <option value=''>Seleccione...</option>
+                    @foreach($tablas['moneda'] as $moneda)
+                        <option
+                            value="{{$moneda->id}}"
+                            @if (isset($data) and ($data->moneda_id==$moneda->id))
+                                {{'selected'}}
+                            @endif
+                            >
+                            {{$moneda->nombre}}
+                        </option>
+                    @endforeach                    
+            </select>
+        </div>
+
     </div>
     <div class="row">
     </div>

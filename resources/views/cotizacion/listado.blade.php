@@ -1,6 +1,18 @@
 <link rel="stylesheet" href="{{asset("assets/css/factura.css")}}">
 
 <!--<img class="anulada" src="img/anulado.png" alt="Anulada">-->
+<?php
+	$aux_monedaLocal = true;
+	$aux_modena_nombre = "";
+	$aux_modena_desc = "";
+	$aux_modena_simb = "";
+	if($empresa[0]['moneda_id'] != $cotizacion->moneda_id){
+		$aux_monedaLocal = false;
+		$aux_modena_nombre = $cotizacion->moneda->nombre;
+		$aux_modena_desc = $cotizacion->moneda->desc;
+		$aux_modena_simb = $cotizacion->moneda->simbolo;
+	}
+?>
 <br>
 <br>
 <div id="page_pdf">
@@ -97,8 +109,8 @@
 					<th class="textcenter" width="35px">Diamet<br>Ancho</th>
 					<th class="textcenter">Largo</th>
 					<th class="textcenter">Esp</th>
-					<th class="textright" width="70px">Precio Neto</th>
-					<th class="textright" width="90px">Total Neto</th>
+					<th class="textright" width="70px">Precio Neto {{$aux_modena_desc}}</th>
+					<th class="textright" width="90px">Total Neto {{$aux_modena_desc}}</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -177,7 +189,7 @@
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->iva, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 			<tr>
-				<td colspan="8" class="textright" width="85%"><span><strong>TOTAL</strong></span></td>
+				<td colspan="8" class="textright" width="85%"><span><strong>TOTAL {{$aux_modena_desc}}</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->total, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 		</table>
@@ -234,6 +246,9 @@
 	</div>
 	<div>
 		<p class="nota">
+			@if ($aux_monedaLocal == false)
+				<br><br>Valores en dólares americanos {{$aux_modena_desc}}. Tipo de cambio: dólar observado.
+			@endif
 			<br><br>Si usted tiene preguntas sobre esta cotización, pongase en contacto con nombre, teléfono y Email
 		</p>
 		<!--<h4 class="label_gracias">¡Gracias por su compra!</h4>-->

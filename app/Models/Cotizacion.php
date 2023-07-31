@@ -35,6 +35,7 @@ class Cotizacion extends Model
         'piva',
         'iva',
         'total',
+        'moneda_id',
         'usuario_id',
         'aprobstatus',
         'aprobusu_id',
@@ -91,5 +92,10 @@ class Cotizacion extends Model
     public function clientetemp()
     {
         return $this->belongsTo(ClienteTemp::class);
+    }
+    //Relacion inversa a Moneda
+    public function moneda()
+    {
+        return $this->belongsTo(Moneda::class);
     }
 }

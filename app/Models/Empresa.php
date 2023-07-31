@@ -17,6 +17,7 @@ class Empresa extends Model
         'iva',
         'sucursal_id',
         'acteco',
+        'moneda_id',
         'usuariodel_id'
     ];
 
@@ -24,6 +25,11 @@ class Empresa extends Model
     public function sucursal()
     {
         return $this->belongsTo(Sucursal::class);
+    }
+    //Relacion inversa a Moneda
+    public function moneda()
+    {
+        return $this->belongsTo(Moneda::class);
     }
     
 }

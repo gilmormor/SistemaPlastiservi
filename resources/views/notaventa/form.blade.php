@@ -331,7 +331,7 @@
                         </div>
                         <div class="form-group col-xs-12 col-sm-5">
                             <label for="observacion" class="control-label">Observaciones</label>
-                            <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
+                            <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}} maxlength="200"/>
                         </div>
                     </div>
                 </div>
