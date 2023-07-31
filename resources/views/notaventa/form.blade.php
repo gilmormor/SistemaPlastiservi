@@ -188,9 +188,7 @@
                                         @if (($aux_sta==2 or $aux_sta==3) and ($data->vendedor_id==$vendedor->id))
                                             {{'selected'}}
                                         @endif
-                                        >
-                                        {{$vendedor->nombre}} {{$vendedor->apellido}}
-                                    </option>
+                                        >{{$vendedor->nombre}} {{$vendedor->apellido}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -204,9 +202,7 @@
                                         @if (($aux_sta==2 or $aux_sta==3) and ($data->plazopago_id==$plazopago->id))
                                             {{'selected'}}
                                         @endif
-                                        >
-                                        {{$plazopago->descripcion}}
-                                    </option>
+                                        >{{$plazopago->descripcion}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -221,9 +217,7 @@
                                         @if (($aux_sta==2 or $aux_sta==3) and ($data->formapago_id==$formapago->id))
                                             {{'selected'}}
                                         @endif
-                                        >
-                                        {{$formapago->descripcion}}
-                                    </option>
+                                    >{{$formapago->descripcion}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -240,9 +234,7 @@
                                         @if (($aux_sta==2 or $aux_sta==3) and ($data->giro_id==$giro->id))
                                             {{'selected'}}
                                         @endif
-                                        >
-                                        {{$giro->nombre}}
-                                    </option>
+                                        >{{$giro->nombre}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -257,9 +249,7 @@
                                         @if (($aux_sta==2 or $aux_sta==3) and ($data->tipoentrega_id==$tipoentrega->id))
                                             {{'selected'}}
                                         @endif
-                                        >
-                                        {{$tipoentrega->nombre}}
-                                    </option>
+                                    >{{$tipoentrega->nombre}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -282,8 +272,7 @@
                                             @if (isset($data->sucursal_id) and ($data->sucursal_id==$sucursal->id))
                                                 {{'selected'}}
                                             @endif
-                                            >{{$sucursal->nombre}}
-                                        </option>
+                                        >{{$sucursal->nombre}}</option>
                                     @endforeach
                                 @endif
                             </select>
@@ -303,9 +292,7 @@
                                         @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comunaentrega_id)
                                             {{'selected'}}
                                         @endif
-                                        >
-                                        {{$comuna->nombre}}
-                                    </option>
+                                    >{{$comuna->nombre}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -321,17 +308,35 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-xs-12 col-sm-3">
+                        <div class="form-group col-xs-12 col-sm-2">
                             <label for="contactotelf" class="control-label requerido">Teléfono</label>
                             <input type="text" name="contactotelf" id="contactotelf" class="form-control" value="{{old('contactotelf', $data->contactotelf ?? '')}}" required placeholder="Teléfono Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-4">
+                        <div class="form-group col-xs-12 col-sm-3">
                             <label for="contactoemail" class="control-label requerido">Email</label>
                             <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-5">
                             <label for="observacion" class="control-label">Observaciones</label>
                             <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}} maxlength="200"/>
+                        </div>
+                        <div class="form-group col-xs-12 col-sm-2">
+                            <label id="lblmoneda_id" name="lblmoneda_id" for="moneda_id" class="control-label requerido">Moneda</label>
+                            <select name="moneda_id" id="moneda_id" class="form-control select2 moneda_id" data-live-search='true' required>
+                                <option value=''>Seleccione...</option>
+                                    @foreach($tablas['moneda'] as $moneda)
+                                        <option
+                                            value="{{$moneda->id}}"
+                                            @if (isset($data) and ($data->moneda_id==$moneda->id))
+                                                {{'selected'}}
+                                            @else
+                                                @if ($moneda->id==1)
+                                                    {{'selected'}}                                    
+                                                @endif
+                                            @endif
+                                        >{{$moneda->nombre}} {{$moneda->desc}}</option>
+                                    @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>

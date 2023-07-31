@@ -32,8 +32,8 @@ class CreateMonedaTable extends Migration
         // Insertar valores iniciales
         $aux_fh = date("Y-m-d H:i:s");
         DB::table('moneda')->insert([
-            ['nombre' => 'Peso', 'Desc' => 'Peso', 'simbolo' => '$', 'valor' => 1, 'usuario_id' => 1, 'created_at' => $aux_fh, 'updated_at' => $aux_fh],
-            ['nombre' => 'Dolar', 'Desc' => 'USD', 'simbolo' => '$', 'valor' => 827.84, 'usuario_id' => 1, 'created_at' => $aux_fh, 'updated_at' => $aux_fh]
+            ['nombre' => 'Peso', 'desc' => 'CL', 'simbolo' => '$', 'valor' => 1, 'usuario_id' => 1, 'created_at' => $aux_fh, 'updated_at' => $aux_fh],
+            ['nombre' => 'Dolar', 'desc' => 'USD', 'simbolo' => '$', 'valor' => 827.84, 'usuario_id' => 1, 'created_at' => $aux_fh, 'updated_at' => $aux_fh]
         ]);
     }
 

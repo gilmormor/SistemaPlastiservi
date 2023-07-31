@@ -1,6 +1,18 @@
 <link rel="stylesheet" href="{{asset("assets/css/factura.css")}}">
 
 <!--<img class="anulada" src="img/anulado.png" alt="Anulada">-->
+<?php
+	$aux_monedaLocal = true;
+	$aux_modena_nombre = "";
+	$aux_modena_desc = "";
+	$aux_modena_simb = "";
+	if($empresa[0]['moneda_id'] != $notaventa->moneda_id){
+		$aux_monedaLocal = false;
+		$aux_modena_nombre = $notaventa->moneda->nombre;
+		$aux_modena_desc = $notaventa->moneda->desc;
+		$aux_modena_simb = $notaventa->moneda->simbolo;
+	}
+?>
 <br>
 <br>
 <div id="page_pdf">
@@ -75,8 +87,8 @@
 					<th class="textcenter">Largo</th>
 					<th class="textcenter">Espesor</th>
 					<th class="textcenter">TU</th>
-					<th class="textright" width="50px">Precio<br>Neto</th>
-					<th class="textright" width="70px">Total<br>Neto</th>
+					<th class="textright" width="50px">Precio<br>Neto {{$aux_modena_desc}}</th>
+					<th class="textright" width="70px">Total<br>Neto {{$aux_modena_desc}}</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -132,7 +144,7 @@
 				<td class="textright" width="10%"><span><strong>{{number_format($notaventa->iva, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 			<tr>
-				<td colspan="10" class="textright" width="90%"><span><strong>TOTAL </strong></span></td>
+				<td colspan="10" class="textright" width="90%"><span><strong>TOTAL {{$aux_modena_desc}}</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($notaventa->total, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 		</table>
@@ -193,7 +205,11 @@
 	</div>
 	<br>
 	<div>
-		<p class="nota">Si usted tiene preguntas sobre esta Nota de Venta, <br>pongase en contacto con nombre, teléfono y Email</p>
+		<p class="nota">
+			@if ($aux_monedaLocal == false)
+				<br><br>Valores en dólares americanos {{$aux_modena_desc}}. Tipo de cambio: dólar observado.
+			@endif
+			<br><br>Si usted tiene preguntas sobre esta Nota de Venta, <br>pongase en contacto con nombre, teléfono y Email</p>
 		<!--<h4 class="label_gracias">¡Gracias por su compra!</h4>-->
 	</div>
 </div>

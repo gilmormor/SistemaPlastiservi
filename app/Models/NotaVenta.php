@@ -41,6 +41,7 @@ class NotaVenta extends Model
         'piva',
         'iva',
         'total',
+        'moneda_id',
         'oc_id',
         'oc_file',
         'usuario_id',
@@ -160,5 +161,9 @@ class NotaVenta extends Model
     {
         return $this->hasMany(DteGuiaDespNV::class,'notaventa_id');
     }
-    
+    //Relacion inversa a Moneda
+    public function moneda()
+    {
+        return $this->belongsTo(Moneda::class);
+    }
 }

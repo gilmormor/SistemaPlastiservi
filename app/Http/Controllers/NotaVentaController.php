@@ -24,6 +24,7 @@ use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\MateriaPrima;
+use App\Models\Moneda;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\NotaVentaDetalle;
@@ -339,6 +340,7 @@ class NotaVentaController extends Controller
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
+        $tablas['moneda'] = Moneda::orderBy('id')->get();
         session(['editaracutec' => '0']);
     
         //dd($vendedor_id);
@@ -445,7 +447,8 @@ class NotaVentaController extends Controller
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
-        
+        $tablas['moneda'] = Moneda::orderBy('id')->get();
+
         session(['editaracutec' => '0']);
 
         //dd($aux_aproNV);
@@ -711,6 +714,7 @@ class NotaVentaController extends Controller
         $tablas['color'] = Color::orderBy('id')->get();
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
+        $tablas['moneda'] = Moneda::orderBy('id')->get();
 
         return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }

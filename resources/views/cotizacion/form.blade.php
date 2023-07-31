@@ -190,14 +190,12 @@
                             @if (isset($data) and ($data->sucursal_id==$sucursal->id))
                                 {{'selected'}}
                             @endif
-                            >
-                            {{$sucursal->nombre}}
-                        </option>
+                        >{{$sucursal->nombre}}</option>
                     @endforeach                    
             </select>
         </div>
 
-        <div class="form-group col-xs-12 col-sm-3">
+        <div class="form-group col-xs-12 col-sm-2">
             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
             <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" {{$disabledReadOnly}}/>
         </div>
@@ -221,9 +219,7 @@
                         @if (($aux_sta==2) and ($data->tipoentrega_id==$tipoentrega->id))
                             {{'selected'}}
                         @endif
-                        >
-                        {{$tipoentrega->nombre}}
-                    </option>
+                    >{{$tipoentrega->nombre}}</option>
                 @endforeach
             </select>
         </div>
@@ -231,7 +227,7 @@
             <label for="observacion" class="control-label">Observaciones</label>
             <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$disabledReadOnly}} maxlength="200"/>
         </div>
-        <div class="form-group col-xs-12 col-sm-1">
+        <div class="form-group col-xs-12 col-sm-2">
             <label id="lblmoneda_id" name="lblmoneda_id" for="moneda_id" class="control-label requerido">Moneda</label>
             <select name="moneda_id" id="moneda_id" class="form-control select2 moneda_id" data-live-search='true' required>
                 <option value=''>Seleccione...</option>
@@ -240,14 +236,15 @@
                             value="{{$moneda->id}}"
                             @if (isset($data) and ($data->moneda_id==$moneda->id))
                                 {{'selected'}}
+                            @else
+                                @if ($moneda->id==1)
+                                    {{'selected'}}                                    
+                                @endif
                             @endif
-                            >
-                            {{$moneda->nombre}}
-                        </option>
-                    @endforeach                    
+                            >{{$moneda->nombre}} {{$moneda->desc}}</option>
+                    @endforeach
             </select>
         </div>
-
     </div>
     <div class="row">
     </div>

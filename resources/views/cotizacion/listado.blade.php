@@ -109,8 +109,8 @@
 					<th class="textcenter" width="35px">Diamet<br>Ancho</th>
 					<th class="textcenter">Largo</th>
 					<th class="textcenter">Esp</th>
-					<th class="textright" width="70px">Precio Neto {{$aux_modena_desc}}</th>
-					<th class="textright" width="90px">Total Neto {{$aux_modena_desc}}</th>
+					<th class="textright" width="70px">Precio<br>Neto {{$aux_modena_desc}}</th>
+					<th class="textright" width="90px">Total<br>Neto {{$aux_modena_desc}}</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">

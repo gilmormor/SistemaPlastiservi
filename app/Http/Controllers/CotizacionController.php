@@ -784,6 +784,27 @@ class CotizacionController extends Controller
                     break;
                 }
             }
+            $aux_staacutec = false;
+            foreach ($cotizacion->cotizaciondetalles as $detalle) {
+                if(isset($detalle->acuerdotecnicotemp)){
+                    $aux_staacutec = true;
+                    break;
+                }
+            }
+            if($aux_staacutec){
+                $cotizacion->aprobstatus = 2;
+                $cotizacion->aprobusu_id = auth()->id();
+                $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
+                $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion (Santa Ester)';
+            }else{
+                //SEGUN SOLICITUD SE ELIMINO LA VALIDACION DE PRECIOS
+                //ENTONCES SI LA SUCURSAL ES 2 O 3 LA COTIZACION PASA DIRECTO A NOTA DE VENTA    
+                $cotizacion->aprobstatus = 1;
+                $cotizacion->aprobusu_id = auth()->id();
+                $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
+                $cotizacion->aprobobs = 'Aprobado por el mismo vendedor';    
+            }
+            /*
             if($request->aprobstatus=='1'){
                 if($cotizacion->sucursal_id == 1){ //TODAS LAS COTIZACIONES DE SANTA ESTER NECESITAN APROBACION DE LUISA MARTINEZ
                     $cotizacion->aprobstatus = 2;
@@ -799,6 +820,7 @@ class CotizacionController extends Controller
                     $cotizacion->aprobobs = 'Aprobado por el mismo vendedor';    
                 }
             }
+            */
             if ($cotizacion->save()) {
                 if($aux_statusAcuTec){
                     Event(new AvisoRevisionAcuTec($cotizacion));
