@@ -944,14 +944,25 @@ class CotizacionController extends Controller
         }else{
             $aux_razonsocial = $cotizacion->clientetemp->razonsocial;
         }
+        $aux_staacutec = false;
+        foreach ($cotizacion->cotizaciondetalles as $detalle) {
+            if(isset($detalle->acuerdotecnicotemp) or isset($detalle->producto->acuerdotecnico)){
+                $aux_staacutec = true;
+                break;
+            }
+        }
         //dd($cotizacion->cliente);
         //$rut = number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 );
         //dd($empresa[0]['iva']);
         //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         if(env('APP_DEBUG')){
-            return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
+            //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         }
-        $pdf = PDF::loadView('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
+        if($aux_staacutec){
+            $pdf = PDF::loadView('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
+        }else{
+            $pdf = PDF::loadView('cotizacion.listadosinesp', compact('cotizacion','cotizacionDetalles','empresa'));
+        }
         //return $pdf->download('cotizacion.pdf');
         return $pdf->stream(str_pad($cotizacion->id, 5, "0", STR_PAD_LEFT) .' - '. $aux_razonsocial . '.pdf');
         
