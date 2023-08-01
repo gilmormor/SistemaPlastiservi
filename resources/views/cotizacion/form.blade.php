@@ -498,7 +498,7 @@
                                     </td>
                                     <td>
                                         @if(session('aux_aprocot')=='0')
-                                            @if ($CotizacionDetalle->producto->tipoprod != 1)
+                                            @if (true) <!--($CotizacionDetalle->producto->tipoprod != 1)-->
                                                 <a  id="editarRegistro{{$aux_nfila}}" name="editarRegistro{{$aux_nfila}}"  class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
                                                     <i class="fa fa-fw fa-pencil"></i>
                                                 </a>
