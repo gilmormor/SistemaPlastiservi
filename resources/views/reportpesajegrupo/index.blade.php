@@ -7,6 +7,7 @@ Pesaje
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportpesajegrupo/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
 @endsection
 <?php
     use App\Models\CategoriaGrupoValMes;
@@ -137,5 +138,5 @@ Pesaje
 </div>
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproductobdtemp')
+@include('generales.buscarproductobd')
 @endsection

@@ -251,5 +251,5 @@ Pesaje
 </div>
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproductobdtemp')
+@include('generales.buscarproductobd')
 @endsection

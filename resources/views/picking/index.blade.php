@@ -301,5 +301,5 @@ Pendiente Solicitud Orden Despacho
 @include('generales.buscarclientebdtemp')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproductobdtemp')
+@include('generales.buscarproductobd')
 @endsection

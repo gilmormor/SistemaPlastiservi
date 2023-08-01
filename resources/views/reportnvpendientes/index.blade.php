@@ -7,8 +7,8 @@ Notas de Ventas Pendientes
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportnvpendientes/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script>
 @endsection
 <?php 
     $selecmultprod = true;
@@ -226,8 +226,8 @@ Notas de Ventas Pendientes
         </div>
     </div>
 </div>
-@include('generales.buscarclientebdtemp')
-@include('generales.buscarproductobdtemp')
+@include('generales.buscarclientebd')
+@include('generales.buscarproductobd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @endsection

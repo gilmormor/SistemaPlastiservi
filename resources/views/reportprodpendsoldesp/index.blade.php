@@ -6,8 +6,8 @@ Pendiente x Producto
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportprodpendsoldesp/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script>
 @endsection
 <?php 
     $selecmultprod = true;
@@ -222,8 +222,8 @@ Pendiente x Producto
         </div>
     </div>
 </div>
-@include('generales.buscarclientebdtemp')
-@include('generales.buscarproductobdtemp')
+@include('generales.buscarclientebd')
+@include('generales.buscarproductobd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.listarorddesp')

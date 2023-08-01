@@ -10,8 +10,8 @@ Notas de Venta
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportsoldesppendiente/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/producto/buscarprod.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/cliente/buscarcli.js")}}" type="text/javascript"></script> 
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
 @section('contenido')
@@ -264,8 +264,8 @@ Notas de Venta
         </div>
     </div>
 </div>
-@include('generales.buscarclientebdtemp')
+@include('generales.buscarclientebd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
-@include('generales.buscarproductobdtemp')
+@include('generales.buscarproductobd')
 @endsection

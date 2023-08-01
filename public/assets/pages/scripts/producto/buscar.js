@@ -139,7 +139,6 @@ function configTablaProd(){
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
-            console.log(data);
             aux_nfila++;
             selecmultprod = false;
             //aux_onclick = "llenarlistaprod(" + aux_nfila + "," + data.id + ")";
@@ -208,7 +207,7 @@ function configTablaProd(){
                 $('td', row).eq(3).attr('data-order',"");
                 $('td', row).eq(3).attr('data-search',"");    
             }
-            $('td', row).eq(3).attr('style','text-align:center');
+            $('td', row).eq(3).attr('style','text-align:left');
             if(data.long1 == 0 || data.long1 == "" || data.long1 == null){
                 $('td', row).eq(4).html("");
                 $('td', row).eq(4).attr('data-order',"");
