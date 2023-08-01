@@ -62,7 +62,6 @@ function configTablaProd(){
                 //aux_onclick = "insertarTabla(" + data.id + ",'" + data.nombre + "'," + data.acuerdotecnico_id + ")";
             }
 
-
             $(row).attr('name', 'fila' + aux_nfila);
             $(row).attr('id', 'fila' + aux_nfila);
             $(row).attr('prodid', 'tooltip');

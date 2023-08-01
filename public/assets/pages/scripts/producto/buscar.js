@@ -139,6 +139,7 @@ function configTablaProd(){
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
+            console.log(data);
             aux_nfila++;
             selecmultprod = false;
             //aux_onclick = "llenarlistaprod(" + aux_nfila + "," + data.id + ")";
@@ -164,7 +165,6 @@ function configTablaProd(){
                 $('td', row).eq(i).addClass('tooltipsC');
                 $('td', row).eq(i).attr('title', "Click para seleccionar producto");    
             }
-
             if(data.acuerdotecnico_id != null){
                 aux_text = 
                 `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico">

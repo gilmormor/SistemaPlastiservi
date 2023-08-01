@@ -281,4 +281,4 @@
 </div>
 -->
 
-@include('generales.buscarproductobdtemp')
+@include('generales.buscarproductobd')

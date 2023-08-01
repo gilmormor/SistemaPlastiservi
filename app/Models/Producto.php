@@ -146,7 +146,7 @@ class Producto extends Model
         $sucurcadena = implode(",", $sucurArray);
 
         $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
-                if(isnull(at_ancho),CAST(producto.diametro AS SIGNED),at_ancho) as diametro,
+                if(isnull(at_ancho),CAST(producto.diamextpg AS CHAR),at_ancho) as diametro,
                 if(isnull(at_espesor),producto.espesor,at_espesor) as espesor,
                 if(isnull(at_largo),producto.long,at_largo) as long1,producto.long,
                 if(isnull(at_espesor),producto.peso,at_espesor) as peso,
@@ -167,6 +167,7 @@ class Producto extends Model
                 ORDER BY producto.id asc;";
         //dd($sql);
         $datas = DB::select($sql);
+        dd($datas);
         return $datas;
     }
 
@@ -190,7 +191,7 @@ class Producto extends Model
             $tipoprodCond = "producto.tipoprod = " . $request->tipoprod;
         }
         $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
-                if(isnull(at_ancho),CAST(producto.diametro AS SIGNED),at_ancho) as diametro,
+                if(isnull(at_ancho),CAST(producto.diamextpg AS CHAR),at_ancho) as diametro,
                 if(isnull(at_espesor),producto.espesor,at_espesor) as espesor,
                 if(isnull(at_largo),producto.long,at_largo) as long1,producto.long,
                 if(isnull(at_espesor),producto.peso,at_espesor) as peso,
