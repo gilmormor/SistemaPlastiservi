@@ -681,51 +681,36 @@ function totalizarItem(aux_estprec){
 	}else{
 		aux_peso = $("#pesoM").val();
 	}
-	if(aux_estprec==1){
+	if(aux_estprec==1)
+	{
 		precioneto = $("#precionetoM").val();
 		precio = $("#precioxkilorealM").val();
 		$("#precionetoM").val(Math.round(precioneto));
 		$("#precioM").val(precio);
 	}else{
-		if($("#unidadmedida_idM option:selected").attr('value') == 7){
-			precioneto = $("#precioM").val() * aux_peso;
-			$("#precionetoM").val(Math.round(precioneto));	
-		}
+		precioneto = $("#precioM").val() * aux_peso;
+		$("#precionetoM").val(Math.round(precioneto));
 		$("#descuentoM").val('1');
 		$(".selectpicker").selectpicker('refresh');
 	}
 	//alert(aux_peso);
 	aux_tk = $("#cantM").val() * aux_peso;
-	$("#totalkilosM").attr("readonly","true");
-	$("#totalkilosM").attr("disabled","true");
-
 	if($("#pesoM").val()>0){	
-		/* San Bernardo
 		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(4), '-##,###,##0.0000',4));
 		$("#totalkilosM").attr('valor',aux_tk.toFixed(4));
-		*/
-		//$("#totalkilosM").val(MASK(0, aux_tk.toFixed(2), '-##,###,##0.00',1));
-		//$("#totalkilosM").val(MASKLA(aux_tk.toFixed(2),2));
-		$("#totalkilosM").attr('valor',aux_tk.toFixed(2));
 	}else{
 		if($("#unidadmedida_idM option:selected").attr('value') == 7){
-			//aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
-			aux_cant = MASKLA($("#cantM").val(),2);
-			$("#totalkilosM").val($("#cantM").val());
+			aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
+			$("#totalkilosM").val(aux_cant);
 			$("#totalkilosM").attr('valor',$("#cantM").val());
 		}else{
-			/*
 			$("#totalkilosM").val(0.00);
 			$("#totalkilosM").attr('valor','0.00');
-			*/
-			$("#totalkilosM").removeAttr("readonly");
-			$("#totalkilosM").removeAttr("disabled");
 		}
 	}
 	//aux_total = ($("#cantM").val() * aux_peso * $("#precioM").val()) * ($("#descuentoM").val());
 	aux_total = ($("#cantM").val() * $("#precionetoM").val()) * ($("#descuentoM").val());
-	//$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
-	$("#subtotalM").val(MASKLA(aux_total.toFixed(2), 2));
+	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
 	$("#subtotalM").attr('valor',aux_total.toFixed(2));
 	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();
 //	$("#precioM").val(MASK(0, aux_precdesc, '-##,###,##0.00',1));
@@ -734,10 +719,8 @@ function totalizarItem(aux_estprec){
 
 	aux_precioUnit = aux_precdesc * aux_peso;
 	//$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
-	if($("#unidadmedida_idM option:selected").attr('value') == 7){
-		$("#precionetoM").val(Math.round(aux_precioUnit));
-		$("#precionetoM").attr('valor',Math.round(aux_precioUnit));	
-	}
+	$("#precionetoM").val(Math.round(aux_precioUnit));
+	$("#precionetoM").attr('valor',Math.round(aux_precioUnit));
 	/*
 	else{
 		$("#totalkilosM").val(0.00);
