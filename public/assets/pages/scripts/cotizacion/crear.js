@@ -1499,7 +1499,7 @@ function desvEspesor(aux_valor,aux_desc){
 	if(aux_valor > 0){
 		if(aux_desc == "Baja" || aux_desc == "Mezcla"){
 			switch(true) {
-				case aux_valor >= 0.025 && aux_valor <= 0.040:
+				case aux_valor >= 0.010 && aux_valor <= 0.040:
 					aux_desv = "±2 µ";
 					break;
 				case aux_valor >= 0.041 && aux_valor <= 0.080:
