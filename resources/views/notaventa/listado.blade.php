@@ -82,7 +82,7 @@
 					<th width="50px">Cant.</th>
 					<th class="textcenter" width="50px">Unid</th>
 					<th class="textleft" width="190px">Descripción</th>
-					<th class="textleft" width="60px">Clase<br>Sello</th>
+					<th class="textcenter" width="60px">Sello</th>
 					<th class="textcenter">Ancho</th>
 					<th class="textcenter">Largo</th>
 					<th class="textcenter">Espesor</th>
@@ -121,8 +121,8 @@
 						<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}</td>
-						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
-						<td class="textleft">{{$aux_ancho}}</td>
+						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
+						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textcenter">{{$notaventaDetalle->producto->tipounion}}</td>

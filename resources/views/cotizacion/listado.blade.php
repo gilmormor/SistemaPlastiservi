@@ -105,10 +105,10 @@
 					<th class="textright">Largo</th>
 					<th class="textcenter">TU</th>
 -->
-					<th class="textleft" width="60px">Clase<br>Sello</th>
-					<th class="textcenter" width="35px">Diamet<br>Ancho</th>
+					<th class="textcenter" width="60px">Sello</th>
+					<th class="textcenter" width="35px">Ancho</th>
 					<th class="textcenter">Largo</th>
-					<th class="textcenter">Esp</th>
+					<th class="textcenter">Espesor</th>
 					<th class="textright" width="70px">Precio<br>Neto {{$aux_modena_desc}}</th>
 					<th class="textright" width="90px">Total<br>Neto {{$aux_modena_desc}}</th>
 				</tr>
@@ -154,7 +154,7 @@
 						<td class="textcenter">{{$CotizacionDetalle->producto->tipounion}}</td>
 						-->
 						<td class="textleft">{!!$aux_producto_nombre!!}</td>
-						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
+						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{number_format($aux_espesor, 3, ',', '.')}}</td>
