@@ -792,7 +792,7 @@ class CotizacionController extends Controller
                 }
             }
             if($aux_staacutec){
-                $cotizacion->aprobstatus = 2;
+                $cotizacion->aprobstatus = 5;
                 $cotizacion->aprobusu_id = auth()->id();
                 $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
                 $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion (Santa Ester)';
