@@ -1088,9 +1088,16 @@ function quitarverificar(){
 	}
 }
 
-function editarRegistro(i){
+function editarRegistro(i,aux_acuerdotecnicoId = 0){
 	//alert($("#direccion"+i).val());
 	//event.preventDefault();
+	$("#producto_idM").prop("disabled", false);
+	$("#btnbuscarproducto").prop("disabled", false);
+	console.log(aux_acuerdotecnicoId);
+	if(aux_acuerdotecnicoId > 0){
+		$("#producto_idM").attr("disabled", "disabled");
+		$("#btnbuscarproducto").attr("disabled", "disabled");
+	}
     limpiarInputOT();
 	quitarverificar();
 	$("#aux_sta").val('0');

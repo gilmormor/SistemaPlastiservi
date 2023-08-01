@@ -486,7 +486,7 @@ function insertarTabla(){
 				'<input type="text" name="tipoprod[]" id="tipoprod'+ aux_nfila + '" class="form-control" value="' + $("#tipoprodM").attr('valor') + '" style="display:none;"/>'+
 			'</td>'+
 			'<td>' + 
-				'<a id="editarRegistro'+ aux_nfila + '" name="editarRegistro'+ aux_nfila + '" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +')">'+
+				'<a id="editarRegistro'+ aux_nfila + '" name="editarRegistro'+ aux_nfila + '" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +',' + aux_acuerdotecnicoId + ')">'+
 					'<i class="fa fa-fw fa-pencil"></i>'+
 				'</a>'+
 				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+

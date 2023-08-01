@@ -657,8 +657,14 @@
                                         {{$detalle->subtotal}}
                                     </td>
                                     @if(($aux_sta==1 or $aux_sta==2) and $aux_concot == false)
+                                        <?php 
+                                            $aux_acutec = 0;
+                                            if (isset($detalle->acuerdotecnicotemp) or isset($detalle->producto->acuerdotecnico)){
+                                                $aux_acutec = 1;
+                                            }
+                                        ?>
                                         <td>
-                                            <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
+                                            <a href="#" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}},{{$aux_acutec}})">
                                             <i class="fa fa-fw fa-pencil"></i>
                                             </a>
                                             <a href="#" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">

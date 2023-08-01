@@ -498,11 +498,15 @@
                                     </td>
                                     <td>
                                         @if(session('aux_aprocot')=='0')
-                                            @if (true) <!--($CotizacionDetalle->producto->tipoprod != 1)-->
-                                                <a  id="editarRegistro{{$aux_nfila}}" name="editarRegistro{{$aux_nfila}}"  class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}})">
-                                                    <i class="fa fa-fw fa-pencil"></i>
-                                                </a>
-                                            @endif
+                                            <?php 
+                                                $aux_acutec = 0;
+                                                if (isset($CotizacionDetalle->acuerdotecnicotemp) or isset($CotizacionDetalle->producto->acuerdotecnico)){
+                                                    $aux_acutec = 1;
+                                                }
+                                            ?>
+                                            <a  id="editarRegistro{{$aux_nfila}}" name="editarRegistro{{$aux_nfila}}"  class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}},{{$aux_acutec}})">
+                                                <i class="fa fa-fw fa-pencil"></i>
+                                            </a>
                                             <a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro({{$aux_nfila}})">
                                                 <i class="fa fa-fw fa-trash text-danger"></i>
                                             </a>
