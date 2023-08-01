@@ -574,7 +574,9 @@ class NotaVentaConsultaController extends Controller
             }
             $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
         }
-        
+        $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+        $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
+    
         if($aux_consulta == 1){
             $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -607,6 +609,7 @@ class NotaVentaConsultaController extends Controller
             and $aux_aprobstatus
             and $aux_condproducto_id
             and $aux_condcomuna_id
+            and $aux_condsucursal_id
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,

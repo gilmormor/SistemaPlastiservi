@@ -539,6 +539,8 @@ function consulta($request,$aux_sql,$orden){
         $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
     }
 
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+    $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){
@@ -594,6 +596,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condcomuna_id
         and $aux_condplazoentrega
         and $aux_condproducto_id
+        and $aux_condsucursal_id
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null

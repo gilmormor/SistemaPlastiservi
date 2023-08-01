@@ -255,6 +255,9 @@ function consulta($request){
     }
     $aux_orden = str_getcsv($request->orden);
 
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+    $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
+
     $sql = "SELECT notaventadetalle.producto_id,categoriaprod.nombre,
     grupoprod.gru_nombre,
     producto.diamextmm,producto.diametro,producto.long,claseprod.cla_nombre,
@@ -282,6 +285,7 @@ function consulta($request){
     and $aux_condgiro_id
     and $aux_condrut
     and $aux_condareaproduccion_id
+    and $aux_condsucursal_id
     and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
     and isnull(notaventa.anulada)
     and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)

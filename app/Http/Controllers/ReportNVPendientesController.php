@@ -333,6 +333,8 @@ function consultasoldesp($request){
 
     //$suma = despachoord::findOrFail(2)->despachoorddets->where('notaventadetalle_id',1);
 
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+    $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
             despachoord.notaventa_id,despachoord.fechaestdesp,
@@ -368,6 +370,7 @@ function consultasoldesp($request){
             and $aux_condaprobord
             and $aux_condid
             and $aux_conddespachosol_id
+            and $aux_condsucursal_id
             and despachoord.deleted_at is null AND notaventa.deleted_at is null AND notaventadetalle.deleted_at is null
             GROUP BY despachoord.id;";
     //dd($sql);

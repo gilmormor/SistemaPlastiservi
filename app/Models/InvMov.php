@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -159,6 +160,10 @@ class InvMov extends Model
         }else{
             $aux_sucursal_idCond = "invmovdet.sucursal_id = $request->sucursal_id";
         }
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+        $aux_condsucursal_id = " categoriaprodsuc.sucursal_id in ($sucurArray) ";
+    
         if(!isset($request->tipobodega) or empty($request->tipobodega)){
             $aux_tipobodegaCond = "true";
         }else{
@@ -201,7 +206,7 @@ class InvMov extends Model
             }
             $aux_areaproduccion_idCond = " categoriaprod.areaproduccion_id in ($aux_areaproduccionid) ";
         }
-
+        $aux_areaproduccion_idSucursalCond = " categoriaprod.areaproduccion_id in (SELECT areaproduccion_id from areaproduccionsuc where sucursal_id in ($sucurArray)) ";
         $sql = "SELECT invbodegaproducto.producto_id, producto.nombre as producto_nombre, 
         if(isnull(acuerdotecnico.id),producto.diametro,at_ancho) as diametro,
         if(isnull(acuerdotecnico.id),producto.long,at_largo) as largo,
@@ -223,6 +228,7 @@ class InvMov extends Model
         on invbodegaproducto.producto_id = producto.id and isnull(producto.deleted_at)
         inner join categoriaprod 
         on producto.categoriaprod_id = categoriaprod.id and isnull(categoriaprod.deleted_at)
+        and categoriaprod.id in (SELECT categoriaprod_id FROM categoriaprodsuc where categoriaprodsuc.categoriaprod_id=categoriaprod.id and $aux_condsucursal_id)
         inner join invbodega 
         on invbodegaproducto.invbodega_id = invbodega.id and isnull(invbodega.deleted_at)
         inner join claseprod 
@@ -238,6 +244,7 @@ class InvMov extends Model
         and $aux_producto_idCodn
         and $aux_categoriaprod_idCond
         and $aux_areaproduccion_idCond
+        and $aux_areaproduccion_idSucursalCond
         group by $agrupar 
         having SUM(cant) != 0 
         order by invbodegaproducto.producto_id asc, invbodega.orden ASC;";
