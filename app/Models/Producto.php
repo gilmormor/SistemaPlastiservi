@@ -167,7 +167,6 @@ class Producto extends Model
                 ORDER BY producto.id asc;";
         //dd($sql);
         $datas = DB::select($sql);
-        dd($datas);
         return $datas;
     }
 
