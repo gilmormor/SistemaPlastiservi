@@ -37,7 +37,8 @@ class NotifyMailAprobarRechazoNotaVenta
             $aux_mensaje = "Nota de Venta $notaventa->id fue APROBADA.";
             $aux_mensaje2 = "\nSi es el caso inicia el proceso de produccion y posterior despacho.";
             $aux_icono = "fa fa-fw fa-thumbs-o-up text-primary";    
-            $arrayUsuarios = usuariosConAccesoMenuURL($notaventa,"despachosol");
+            //En comentario para que no envie correo a los usuarios que tengan acceso al menu de aprobar nota venta
+            //$arrayUsuarios = usuariosConAccesoMenuURL($notaventa,"despachosol");
             $arrayUsuarios[] = [
                 "usuario_id" => $notaventa->vendedor->persona->usuario_id,
                 "nombre" => $notaventa->vendedor->persona->usuario->nombre,
