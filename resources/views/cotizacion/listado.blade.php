@@ -118,7 +118,7 @@
 					<?php 
 						$aux_producto_nombre = $CotizacionDetalle->producto->nombre;
 						$aux_ancho = $CotizacionDetalle->producto->diametro;
-						$aux_espesor = $CotizacionDetalle->espesor;
+						$aux_espesor = ""; //$CotizacionDetalle->espesor;
 						$aux_largo = $CotizacionDetalle->producto->long . " mts";
 						$aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod->cla_nombre;
 						if ($CotizacionDetalle->acuerdotecnicotemp != null){
