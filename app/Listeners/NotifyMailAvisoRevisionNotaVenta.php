@@ -32,7 +32,10 @@ class NotifyMailAvisoRevisionNotaVenta
         $rutaPantalla = urlPrevio();
         $rutaOrigen = urlActual();
         $notaventa = $event->notaventa;
-        $arrayUsuarios = usuariosConAccesoMenuURL($notaventa,"notaventaaprobar");
+        //en comentario porque a Sonia le molestaron los mensajes
+        //$arrayUsuarios = usuariosConAccesoMenuURL($notaventa,"notaventaaprobar");
+        //en comentario porque a Sonia le molestaron los mensajes
+        $arrayUsuarios = []; //dejo en blanco los usuarios
         /* ESTO LO MANDE A LA FUNCION usuariosConAccesoMenuURL
         $menu = Menu::where("url","=","notaventaaprobar")->get(); //BUSCO EN LA TABLA MENU EL REGISTRO QUE CONTIENE EL URL notaventaaprobar
         $menu = Menu::findOrFail($menu[0]->id); //LUEGO BUSCO EL ID EN MENU PARA TENER EL OBJETO COMPLETO CON SUS TABLAS HIJAS
