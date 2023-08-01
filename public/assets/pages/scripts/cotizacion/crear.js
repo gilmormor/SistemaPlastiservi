@@ -666,9 +666,9 @@ function ajaxRequest(data,url,funcion) {
 					$("#cla_nombreTD" + datatemp.nfila).html($("#at_claseprod_id option:selected").html());
 					$("#unidadmedida_nomnreTD" + datatemp.nfila).html($("#at_unidadmedida_id option:selected").html());
 					$("#unidadmedida_id" + datatemp.nfila).val($("#at_unidadmedida_id option:selected").val());
-					console.log($("#at_unidadmedida_id option:selected").html());
-					console.log($("#at_unidadmedida_id option:selected").val());
-					$("#editarRegistro" + datatemp.nfila).hide();
+					//console.log($("#at_unidadmedida_id option:selected").html());
+					//console.log($("#at_unidadmedida_id option:selected").val());
+					//$("#editarRegistro" + datatemp.nfila).hide();
 					//console.log($("#at_impreso").val());
 					if($("#at_impreso").val() == 1){
 						$("#divMostrarImagenat" + datatemp.nfila).css({'display':'inline'});
