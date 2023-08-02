@@ -368,7 +368,7 @@ function insertarTabla(){
 							${aux_productoId}
 						</a>`;
 	}
-	$("#producto_idTDT"+i).html(aux_productoId + aux_botonAcuTec);
+	$("#producto_idTDT"+aux_nfila).html(aux_productoId + aux_botonAcuTec);
 
 
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
@@ -661,6 +661,7 @@ function ajaxRequest(data,url,funcion) {
 					$("#icoat" + datatemp.nfila).attr('class','fa fa-cog text-aqua');
 					$("#nombreProdTD" + datatemp.nfila).html($("#at_desc").val());
 					$("#diamextmmTD" + datatemp.nfila).html($("#at_ancho").val());
+					$("#ancho" + datatemp.nfila).val($("#at_ancho").val());
 					$("#longTD" + datatemp.nfila).html($("#at_largo").val());
 					$("#espesorTD" + datatemp.nfila).html($("#at_espesor").val());
 					$("#cla_nombreTD" + datatemp.nfila).html($("#at_claseprod_id option:selected").html());

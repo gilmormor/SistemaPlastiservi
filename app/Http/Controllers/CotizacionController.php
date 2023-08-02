@@ -303,6 +303,7 @@ class CotizacionController extends Controller
                             }
                             $arrayAT = (array) $objetAT;
                             $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
+                            $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
                             $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
                                 "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
@@ -614,6 +615,7 @@ class CotizacionController extends Controller
                     if($producto->tipoprod == 1){
                         if($request->acuerdotecnico[$i] != "null"){
                             $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
+                            $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
                             if($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
                                 $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
@@ -664,6 +666,7 @@ class CotizacionController extends Controller
                     $cotizaciondetalle = CotizacionDetalle::findOrFail($request->cotdet_id[$i]);
                     if(($producto->tipoprod == 1) and ($request->acuerdotecnico[$i] != "null")){
                         $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
+                        $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
                         if($cotizaciondetalle->acuerdotecnicotemp_id == null){
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
                             if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
