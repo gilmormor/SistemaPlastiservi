@@ -842,7 +842,7 @@ function modificarTabla(i){
 	$("#subtotalSFTD"+i).html($("#subtotalM").attr('valor'));
 
 	$("#unidadmedida_id"+i).val($("#unidadmedida_idM option:selected").attr('value'));
-	$("#unidadmedida_nombreTD"+i).html($("#unidadmedida_idM option:selected").html());
+	$("#unidadmedida_nomnreTD"+i).html($("#unidadmedida_idM option:selected").html());
 
 	if($("#invmovtipo_idM")){
 		$("#invbodega_idTXT"+i).html($("#invbodega_idM option:selected").html());
