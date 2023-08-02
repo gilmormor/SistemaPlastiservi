@@ -542,6 +542,10 @@ class CotizacionController extends Controller
                         unset($objetAT->anchounidadmedida);
                         //dd($objetAT);
                         $arrayAT = (array) $objetAT;
+                        $aux_at_pigmentacion = $arrayAT["at_pigmentacion"];
+                        if($aux_at_pigmentacion == "" or is_null($aux_at_pigmentacion)){
+                            $arrayAT["at_pigmentacion"] = 0;
+                        }
                         /*
                         $acuerdotecnicotemp = AcuerdoTecnicoTemp::updateOrInsert(
                             ['id' => $acuerdotecnico_id],
