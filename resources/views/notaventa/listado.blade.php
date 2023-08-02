@@ -209,7 +209,8 @@
 			@if ($aux_monedaLocal == false)
 				<br><br>Valores en dólares americanos {{$aux_modena_desc}}. Tipo de cambio: dólar observado.
 			@endif
-			<br><br>Si usted tiene preguntas sobre esta Nota de Venta, <br>pongase en contacto con nombre, teléfono y Email</p>
+			<br><br>Si usted tiene preguntas sobre esta Nota de Venta, <br>pongase en contacto con nombre, teléfono y Email
+		</p>
 		<!--<h4 class="label_gracias">¡Gracias por su compra!</h4>-->
 	</div>
 </div>
