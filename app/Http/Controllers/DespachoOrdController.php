@@ -251,12 +251,12 @@ class DespachoOrdController extends Controller
         $aux_statusPant = 0;
         session(['aux_fecinicreOD' => date("Y-m-d H:i:s")]); //Fecha inicio de creacion Orden de despacho
         $invmovmodulo = InvMovModulo::where("cod","=","ORDDESP")->get();
-        //$array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
-        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->where("sucursal_id",$data->notaventa->sucursal_id)->pluck('id')->toArray();
-        //dd($array_bodegasmodulo);
+        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
+
+
         //dd($clientedirecs);
         return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
-        
+         
     }
 
     /**
@@ -468,15 +468,9 @@ class DespachoOrdController extends Controller
         $aux_sta=2;
         $aux_statusPant = 0;
         $invmovmodulo = InvMovModulo::where("cod","=","ORDDESP")->get();
-        //San Bernardo //$array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
-        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->where("sucursal_id",$data->notaventa->sucursal_id)->pluck('id')->toArray();
+        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
         return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
-        /*Santa Ester
-        //$array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
-        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->where("sucursal_id",$data->notaventa->sucursal_id)->pluck('id')->toArray();
-
-        return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo'));
-        */
+  
   
     }
 
