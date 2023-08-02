@@ -116,6 +116,7 @@ $(document).ready(function () {
 		}
 	});
 	$("#btnbuscarcliente").click(function(event){
+		/*
 			var aux_nfila = $("#tabla-data tbody tr").length - 3;
 			if(aux_nfila>0){
 				swal({
@@ -145,6 +146,11 @@ $(document).ready(function () {
 				$(".input-sm").val('');
 				$("#myModalBusqueda").modal('show');	
 			}
+			*/
+			$("#rut").val("");
+			$(".input-sm").val('');
+			$("#myModalBusqueda").modal('show');	
+
 	});
 	$("#producto_idM").keyup(function(event){
 		if(event.which==113){

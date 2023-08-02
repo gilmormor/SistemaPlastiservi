@@ -6,6 +6,7 @@ use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnul;
 use App\Models\NotaVentaCerrada;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,18 +21,23 @@ class DespachoOrdGuiaController extends Controller
     {
         can('listar-guia-despacho');
         $aux_vista = 'G';
-        return view('despachoordguia.index', compact('aux_vista'));
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')
+                        ->whereIn('sucursal.id', $sucurArray)
+                        ->get();
+        return view('despachoordguia.index', compact('tablashtml','aux_vista'));
 
     }
 
-    public function despachoordguiapage(){
-        $datas = consultaindex();
+    public function despachoordguiapage(Request $request){
+        $datas = consultaindex($request);
         return datatables($datas)->toJson();
     }
 
-    public function totalizarindex(){
+    public function totalizarindex(Request $request){
         $respuesta = array();
-        $datas = consultaindex();
+        $datas = consultaindex($request);
         $aux_totalkg = 0;
         $aux_subtotal = 0;
         //$aux_totaldinero = 0;
@@ -102,11 +108,18 @@ class DespachoOrdGuiaController extends Controller
 
 }
 
-function consultaindex(){
+function consultaindex($request){
 
     $user = Usuario::findOrFail(auth()->id());
     $sucurArray = $user->sucursales->pluck('id')->toArray();
     $sucurcadena = implode(",", $sucurArray);
+
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "x")){
+        $aux_sucursal_idCond = "false";
+    }else{
+        $aux_sucursal_idCond = "notaventa.sucursal_id = $request->sucursal_id";
+    }
+
 
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
     cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
@@ -138,7 +151,9 @@ function consultaindex(){
     ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
     LEFT JOIN clientebloqueado
     ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-    WHERE despachoord.aprguiadesp='1' and isnull(despachoord.guiadespacho)
+    WHERE despachoord.aprguiadesp='1' 
+    and $aux_sucursal_idCond
+    and isnull(despachoord.guiadespacho)
     AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
     AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
     AND notaventa.sucursal_id in ($sucurcadena)

@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	Biblioteca.validacionGeneral('form-general');
     i = 0;
+	data = datosdespguia();
     $('#tabla-data-despachoordguia').DataTable({
         'paging'      : true, 
         'lengthChange': true,
@@ -11,7 +12,7 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
 		"order"       : [[ 0, "desc" ]],
-        'ajax'        : "despachoordguiapage",
+        'ajax'        : "despachoordguiapage/" + data.data2,
         'columns'     : [
             {data: 'id'},
             {data: 'fechahora'},
@@ -154,22 +155,34 @@ $(document).ready(function () {
 
 	$(".numerico").numeric({ negative : false });
 
+	totalizar();
+	$("#btnconsultar").click(function()
+    {
+        data = datosdespguia();
+        $('#tabla-data-despachoordguia').DataTable().ajax.url( "despachoordguiapage/" + data.data2 ).load();
+        totalizar();
+    });
+
+});
+
+function totalizar(){
     let  table = $('#tabla-data-despachoordguia').DataTable();
     //console.log(table);
     table
         .on('draw', function () {
             eventFired( 'Page' );
         });
-
+	data = datosdespguia();
     $.ajax({
-        url: '/despachoordguia/totalizarindex',
+        url: '/despachoordguia/totalizarindex/' + data.data2,
         type: 'GET',
         success: function (datos) {
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
             $("#total").html(MASKLA(datos.aux_subtotal,0));
 		}
     });
-});
+
+}
 
 var eventFired = function ( type ) {
 	total = 0;
@@ -772,4 +785,17 @@ function clickbloquearhacerguia(obj){
     var ruta = '/despachoordguia/bloquearhacerguia'; //Guardar Fecha estimada de despacho
     ajaxRequest(data,ruta,'staverfacdesp');
 
+}
+
+function datosdespguia(){
+    var data1 = {
+        sucursal_id       : $("#sucursal_id").val(),
+        _token            : $('input[name=_token]').val()
+    };
+    var data2 = "?sucursal_id="+data1.sucursal_id
+    var data = {
+        data1 : data1,
+        data2 : data2
+    };
+    return data;
 }
