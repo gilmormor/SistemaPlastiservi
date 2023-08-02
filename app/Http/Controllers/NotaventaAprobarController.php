@@ -112,7 +112,9 @@ class NotaventaAprobarController extends Controller
         }else{
             $aux_condvend = 'true';
         }
-
+        $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+        $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
+    
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
         $sql = "SELECT notaventa.id,DATE_FORMAT(notaventa.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_file,oc_id,'' as pdfnv, 
@@ -128,6 +130,7 @@ class NotaventaAprobarController extends Controller
                 INNER JOIN persona
                 ON vendedor.persona_id = persona.id
                 where $aux_condvend
+                and $aux_condsucursal_id
                 and anulada is null
                 and aprobstatus=2
                 and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
