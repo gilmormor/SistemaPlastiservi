@@ -99,11 +99,12 @@ $(document).ready(function () {
                     $('td', row).eq(2).html()+
                     "</a>"
                 );
+                /*
                 $('td', row).eq(4).html(
                     "<a href='#' class='dropdown-toggle tooltipsC' data-toggle='dropdown' title='Precio menor al valor en tabla'>"+
                     $('td', row).eq(3).html()+
                     "</a>"
-                );
+                );*/
                 //$('td', row).parent().prop("title","Precio menor al valor en tabla")
             }    
         }
