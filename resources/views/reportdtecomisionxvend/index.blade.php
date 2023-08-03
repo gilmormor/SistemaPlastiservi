@@ -8,6 +8,7 @@ Comisión x Vendedor
 ?>
 
 @section("scripts")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportdtecomisionxvend/index.js")}}" type="text/javascript"></script>

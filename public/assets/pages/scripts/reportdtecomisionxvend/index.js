@@ -275,39 +275,42 @@ function btnpdf(data){
 }
 
 function exportarExcel() {
-    var tabla = $('#tabla-data-producto').DataTable();
+    var tabla = $('#tabla-data-consulta').DataTable();
     data = datosFac();
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
-      url: "/reportdtecomisionxvend/reportdtecomisionxvendpage/" + aux_data.data2, // ajusta la URL de la solicitud al endpoint correcto
+      url: "/reportdtecomisionxvend/reportdtecomisionxvendpage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
       type: 'POST',
       dataType: 'json',
       success: function(data) {
-        console.log(data);
-        return 0;
+        //console.log(data);
         // Crear una matriz para los datos de Excel
         var datosExcel = [];
+        console.log(datosExcel);
         
         // Agregar encabezados de columna al arreglo
+        /*
         var encabezados = tabla.columns().header().toArray();
         var encabezadosExcel = encabezados.map(function(encabezado) {
           return encabezado.innerHTML;
         });
         datosExcel.push(encabezadosExcel);
-        
+        */
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","Producto","Neto","Comisión %","Comisión $"]);
         // Agregar los datos de la tabla al arreglo
         data.data.forEach(function(registro) {
+            aux_fecha = new Date(registro.fechahora);
+
           var filaExcel = [
-            registro.producto_id,
-            registro.producto_nombre,
-            registro.categoria_nombre,
-            registro.diametro,
-            registro.cla_nombre,
-            registro.long,
-            registro.espesor,
-            registro.peso,
-            registro.tipounion,
-            registro.precioneto
+            registro.foliocontrol_doc,
+            registro.nrodocto,
+            fechaddmmaaaa(aux_fecha),
+            registro.razonsocial,
+            registro.rut,
+            registro.nmbitem,
+            registro.montoitem,
+            registro.porc_comision,
+            registro.comision
           ];
           datosExcel.push(filaExcel);
         });
@@ -318,7 +321,7 @@ function exportarExcel() {
         XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
         
         // Generar el archivo Excel y descargarlo
-        XLSX.writeFile(libro, 'productos.xlsx');
+        XLSX.writeFile(libro, 'comisonxVend.xlsx');
       },
       error: function(xhr, status, error) {
         console.log(error);

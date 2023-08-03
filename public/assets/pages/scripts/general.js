@@ -1652,7 +1652,7 @@ $("#producto_idM").blur(function(){
 				/*
 				console.log(respuesta['cont']);
 				*/
-				//console.log(respuesta);
+				console.log(respuesta);
 				//return 0;
 				if(respuesta['cont']>0){
 					if(respuesta['estado'] == 0){
@@ -1734,8 +1734,8 @@ $("#producto_idM").blur(function(){
 					$("#tipoprodM").attr('valor',respuesta['tipoprod']);
 					$("#stakilos").val(respuesta['stakilos']);
 					$("#categoriaprod_id").val(respuesta['categoriaprod_id']);
-					$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id'])
-					$("#at_unidadmedida_idM").val(respuesta['at_unidadmedida_id'])
+					$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id']);
+					$("#at_unidadmedida_idM").val(respuesta['at_unidadmedida_id']);
 					activarCajasPreciokgUni();
 					mostrardatosadUniMed(respuesta);
 					llenarselectbodega(respuesta);
@@ -3058,8 +3058,8 @@ function activarCajasPreciokgUni(){
 	if(aux_staAT > 0 || aux_tipoProd == 1){
 		if(aux_staAT > 0){
 			$("#unidadmedida_idM").prop("disabled", true);
-			$("#unidadmedida_idM").val($("#at_unidadmedida_id").val())
-			if($("#at_unidadmedida_id").val() != 7){
+			$("#unidadmedida_idM").val($("#at_unidadmedida_idM").val())
+			if($("#at_unidadmedida_idM").val() != 7){
 				$("#totalkilosM").prop("disabled", false);
 				$("#totalkilosM").prop("readonly", false);
 			}
