@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	Biblioteca.validacionGeneral('form-general');
     i = 0;
+	data = datosdespfact();
     $('#tabla-data-despachoordfact').DataTable({
         'paging'      : true, 
         'lengthChange': true,
@@ -10,7 +11,7 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        'ajax'        : "despachoordfactpage",
+        'ajax'        : "despachoordfactpage/" + data.data2,
         'columns'     : [
             {data: 'id'},
             {data: 'fechahora'},
@@ -119,21 +120,24 @@ $(document).ready(function () {
 
 	$(".numerico").numeric({ negative : false });
 
-    let  table = $('#tabla-data-despachoordfact').DataTable();
-    //console.log(table);
-    table
-        .on('draw', function () {
-            eventFired( 'Page' );
-        });
-
-    $.ajax({
-        url: '/despachoordfact/totalizarindex',
-        type: 'GET',
-        success: function (datos) {
-            $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
-            $("#total").html(MASKLA(datos.aux_subtotal,0));
-		}
+	totalizar();
+	$("#btnconsultar").click(function(){
+		consultar();
     });
+
+});
+
+function consultar(){
+	data = datosdespfact();
+	$('#tabla-data-despachoordfact').DataTable().ajax.url( "despachoordfactpage/" + data.data2 ).load();
+	totalizar();
+}
+
+$('#sucursal_id').on('change', function () {
+	consultar();
+});
+$('#sucursal_id').on('change', function () {
+	consultar();
 });
 
 var eventFired = function ( type ) {
@@ -154,6 +158,23 @@ var eventFired = function ( type ) {
 
 }
 
+function totalizar(){
+    let  table = $('#tabla-data-despachoordfact').DataTable();
+    //console.log(table);
+    table
+        .on('draw', function () {
+            eventFired( 'Page' );
+        });
+
+    $.ajax({
+        url: '/despachoordfact/totalizarindex',
+        type: 'GET',
+        success: function (datos) {
+            $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
+            $("#total").html(MASKLA(datos.aux_subtotal,0));
+		}
+    });
+}
 
 
 function ajaxRequest(datas,url,funcion) {
@@ -595,4 +616,17 @@ function verificarAnulGuia()
 	}else{
 		return true;
 	}
+}
+
+function datosdespfact(){
+    var data1 = {
+        sucursal_id       : $("#sucursal_id").val(),
+        _token            : $('input[name=_token]').val()
+    };
+    var data2 = "?sucursal_id="+data1.sucursal_id
+    var data = {
+        data1 : data1,
+        data2 : data2
+    };
+    return data;
 }

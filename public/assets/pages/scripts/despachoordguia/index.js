@@ -156,14 +156,22 @@ $(document).ready(function () {
 	$(".numerico").numeric({ negative : false });
 
 	totalizar();
-	$("#btnconsultar").click(function()
-    {
-        data = datosdespguia();
-        $('#tabla-data-despachoordguia').DataTable().ajax.url( "despachoordguiapage/" + data.data2 ).load();
-        totalizar();
+	$("#btnconsultar").click(function(){
+		consultar();
     });
 
 });
+
+function consultar(){
+	data = datosdespguia();
+	$('#tabla-data-despachoordguia').DataTable().ajax.url( "despachoordguiapage/" + data.data2 ).load();
+	totalizar();
+}
+
+$('#sucursal_id').on('change', function () {
+	consultar();
+});
+
 
 function totalizar(){
     let  table = $('#tabla-data-despachoordguia').DataTable();
