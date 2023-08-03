@@ -1735,7 +1735,7 @@ $("#producto_idM").blur(function(){
 					$("#stakilos").val(respuesta['stakilos']);
 					$("#categoriaprod_id").val(respuesta['categoriaprod_id']);
 					$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id'])
-					$("#at_unidadmedida_id").val(respuesta['at_unidadmedida_id'])
+					$("#at_unidadmedida_idM").val(respuesta['at_unidadmedida_id'])
 					activarCajasPreciokgUni();
 					mostrardatosadUniMed(respuesta);
 					llenarselectbodega(respuesta);

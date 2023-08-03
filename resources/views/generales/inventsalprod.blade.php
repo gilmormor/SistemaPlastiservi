@@ -15,7 +15,7 @@
                 <input type="hidden" name="stakilos" id="stakilos" value="0">
                 <input type="hidden" name="categoriaprod_id" id="categoriaprod_id">
                 <input type="hidden" name="acuerdotecnico_id" id="acuerdotecnico_id">
-                <input type="hidden" name="at_unidadmedida_id" id="at_unidadmedida_id">
+                <input type="hidden" name="at_unidadmedida_idM" id="at_unidadmedida_idM">
                 <input type="hidden" name="tipoprodM" id="tipoprodM">
                 <div class="row">
                     <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
