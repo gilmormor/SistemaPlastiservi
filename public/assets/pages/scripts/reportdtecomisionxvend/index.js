@@ -273,3 +273,55 @@ function btnpdf(data){
     $('#contpdf').attr('src', '/reportdtecomisionxvend/exportPdf/'+data.data2);
     $("#myModalpdf").modal('show');
 }
+
+function exportarExcel() {
+    var tabla = $('#tabla-data-producto').DataTable();
+    data = datosFac();
+    // Obtener todos los registros mediante una solicitud AJAX
+    $.ajax({
+      url: "/reportdtecomisionxvend/reportdtecomisionxvendpage/" + aux_data.data2, // ajusta la URL de la solicitud al endpoint correcto
+      type: 'POST',
+      dataType: 'json',
+      success: function(data) {
+        console.log(data);
+        return 0;
+        // Crear una matriz para los datos de Excel
+        var datosExcel = [];
+        
+        // Agregar encabezados de columna al arreglo
+        var encabezados = tabla.columns().header().toArray();
+        var encabezadosExcel = encabezados.map(function(encabezado) {
+          return encabezado.innerHTML;
+        });
+        datosExcel.push(encabezadosExcel);
+        
+        // Agregar los datos de la tabla al arreglo
+        data.data.forEach(function(registro) {
+          var filaExcel = [
+            registro.producto_id,
+            registro.producto_nombre,
+            registro.categoria_nombre,
+            registro.diametro,
+            registro.cla_nombre,
+            registro.long,
+            registro.espesor,
+            registro.peso,
+            registro.tipounion,
+            registro.precioneto
+          ];
+          datosExcel.push(filaExcel);
+        });
+        
+        // Crear el libro de Excel
+        var libro = XLSX.utils.book_new();
+        var hoja = XLSX.utils.aoa_to_sheet(datosExcel);
+        XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
+        
+        // Generar el archivo Excel y descargarlo
+        XLSX.writeFile(libro, 'productos.xlsx');
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+  }

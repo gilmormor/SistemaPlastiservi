@@ -126,7 +126,7 @@
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{$aux_espesor}}</td>
 						<td class="textcenter">{{$notaventaDetalle->producto->tipounion}}</td>
-						<td class="textright">{{number_format($notaventaDetalle->preciounit, 0, ",", ".")}}</td>
+						<td class="textright">{{number_format($notaventaDetalle->preciounit, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($notaventaDetalle->subtotal, 0, ",", ".")}}&nbsp;</td>
 					</tr>
 				@endforeach

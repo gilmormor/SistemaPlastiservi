@@ -100,6 +100,7 @@ Comisión x Vendedor
                             <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
                                 <i class='glyphicon glyphicon-print'></i> Reporte
                             </button>
+                            <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">Excel</button>
                         </div>
                     </form>
                 </div>
