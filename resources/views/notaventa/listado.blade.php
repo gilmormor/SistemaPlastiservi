@@ -119,7 +119,7 @@
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$notaventaDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
-						<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
+						<td class="textcenter">{{$notaventaDetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}</td>
 						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
