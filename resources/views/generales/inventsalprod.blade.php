@@ -12,6 +12,11 @@
             <div class="modal-body">
                 <input type="hidden" name="aux_numfila" id="aux_numfila" value="0">
                 <input type="hidden" name="precioxkilorealM" id="precioxkilorealM" value="0">
+                <input type="hidden" name="stakilos" id="stakilos" value="0">
+                <input type="hidden" name="categoriaprod_id" id="categoriaprod_id">
+                <input type="hidden" name="acuerdotecnico_id" id="acuerdotecnico_id">
+                <input type="hidden" name="at_unidadmedida_id" id="at_unidadmedida_id">
+                <input type="hidden" name="tipoprodM" id="tipoprodM">
                 <div class="row">
                     <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
                         <label for="producto_idM" class="control-label" title="F2 Buscar">Producto</label>

@@ -1120,7 +1120,7 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 	//event.preventDefault();
 	$("#producto_idM").prop("disabled", false);
 	$("#btnbuscarproducto").prop("disabled", false);
-	console.log(aux_acuerdotecnicoId);
+	//console.log(aux_acuerdotecnicoId);
 	if(aux_acuerdotecnicoId > 0){
 		$("#producto_idM").attr("disabled", "disabled");
 		$("#btnbuscarproducto").attr("disabled", "disabled");
@@ -1403,7 +1403,7 @@ function genpdfFAC(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
 	}
 	//let id_str = id.toString();
 	//id_str = id_str.padStart(8, "0");
-	console.log(id);
+	//console.log(id);
 	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/'+id+nombre+'.pdf');
 	$("#myModalpdf").modal('show');
 }
@@ -1652,7 +1652,7 @@ $("#producto_idM").blur(function(){
 				/*
 				console.log(respuesta['cont']);
 				*/
-				console.log(respuesta);
+				//console.log(respuesta);
 				//return 0;
 				if(respuesta['cont']>0){
 					if(respuesta['estado'] == 0){
@@ -1735,6 +1735,7 @@ $("#producto_idM").blur(function(){
 					$("#stakilos").val(respuesta['stakilos']);
 					$("#categoriaprod_id").val(respuesta['categoriaprod_id']);
 					$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id'])
+					$("#at_unidadmedida_id").val(respuesta['at_unidadmedida_id'])
 					activarCajasPreciokgUni();
 					mostrardatosadUniMed(respuesta);
 					llenarselectbodega(respuesta);
@@ -2577,7 +2578,7 @@ function cargardatospantprod(){
 			$("#DivchVerAcuTec").css({'display':'block'});
 		}
 	}
-	console.log(aux_tipoprod);
+	//console.log(aux_tipoprod);
 	$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
 }
 
@@ -3054,13 +3055,18 @@ function activarCajasPreciokgUni(){
 	*/
 	aux_staAT = $("#acuerdotecnico_id").val();
 	aux_tipoProd = $("#tipoprodM").attr('valor');
-	aux_UM = $("#unidadmedida_idM").val();
 	if(aux_staAT > 0 || aux_tipoProd == 1){
 		if(aux_staAT > 0){
 			$("#unidadmedida_idM").prop("disabled", true);
+			$("#unidadmedida_idM").val($("#at_unidadmedida_id").val())
+			if($("#at_unidadmedida_id").val() != 7){
+				$("#totalkilosM").prop("disabled", false);
+				$("#totalkilosM").prop("readonly", false);
+			}
 		}else{
 			$("#unidadmedida_idM").prop("disabled", false);
 		}
+		aux_UM = $("#unidadmedida_idM").val();
 		$("#precioM").attr('staAT',1);
 		if(aux_UM == 7){
 			$("#precionetoM").prop("disabled", true);

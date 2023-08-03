@@ -302,7 +302,8 @@ class ProductoController extends Controller
                     'acuerdotecnico.at_largo',
                     'acuerdotecnico.at_espesor',
                     'acuerdotecnico.at_fuelle',
-                    'tiposello.desc as at_tiposello_desc'
+                    'tiposello.desc as at_tiposello_desc',
+                    'acuerdotecnico.at_unidadmedida_id'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                     ->where('producto.deleted_at','=',null)
