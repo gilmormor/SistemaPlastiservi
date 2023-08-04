@@ -151,7 +151,9 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 }
             }
             $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
-            if(isset($request->procesoorigen) and $request->procesoorigen == 1){
+            //EN COMENTARIO PORQUE DEBO REVISAR SI REGISTRO YA FUE EDITADOR POR OTRO USUARIO
+            //TENGO QUE REVISAR PORQUE POSE ESTA CONDICION if(isset($request->procesoorigen) and $request->procesoorigen == 1)
+            //if(isset($request->procesoorigen) and $request->procesoorigen == 1){
                 if($request->updated_at != $despachoord->updated_at){
                     return response()->json([
                         'status' => 0,
@@ -162,7 +164,7 @@ class DespachoOrdAnulGuiaFactController extends Controller
                         'tipo_alert' => 'error'
                     ]);
                 }    
-            }
+            //}
             if(isset($request->pantalla_origen) and $request->pantalla_origen == 2){
                 if($request->updated_at != $despachoord->updated_at){
                     return response()->json([

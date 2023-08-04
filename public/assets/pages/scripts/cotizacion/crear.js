@@ -1504,7 +1504,7 @@ function desvAnchoLargo(aux_valor){
 function desvEspesor(aux_valor,aux_desc){
 	aux_desv = "";
 	if(aux_valor > 0){
-		if(aux_desc == "Baja" || aux_desc == "Mezcla"){
+		if(aux_desc == "Baja" || aux_desc == "Mezcla" || aux_desc == "PP"){
 			switch(true) {
 				case aux_valor >= 0.010 && aux_valor <= 0.040:
 					aux_desv = "±2 µ";

@@ -161,7 +161,7 @@ var eventFired = function ( type ) {
     
 }
 
-function datosFac(){
+function datosFac(orderby = ""){
     var data1 = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -171,7 +171,7 @@ function datosFac(){
         filtro            : 1,
         statusgen         : 1,
         foliocontrol_id   : "",
-        orderby           : "",
+        orderby           : orderby,
         groupby           : "",
         _token            : $('input[name=_token]').val()
     };
@@ -184,6 +184,7 @@ function datosFac(){
     "&filtro="+data1.filtro +
     "&statusgen="+data1.statusgen +
     "&foliocontrol_id="+data1.foliocontrol_id +
+    "&orderby="+data1.orderby +
     "&_token="+data1._token
 
     var data = {
@@ -276,7 +277,8 @@ function btnpdf(data){
 
 function exportarExcel() {
     var tabla = $('#tabla-data-consulta').DataTable();
-    data = datosFac();
+    orderby = " order by dte.vendedor_id asc,foliocontrol.doc,dte.id ";
+    data = datosFac(orderby);
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
       url: "/reportdtecomisionxvend/reportdtecomisionxvendpage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
@@ -286,7 +288,7 @@ function exportarExcel() {
         //console.log(data);
         // Crear una matriz para los datos de Excel
         var datosExcel = [];
-        console.log(datosExcel);
+        //console.log(datosExcel);
         
         // Agregar encabezados de columna al arreglo
         /*
@@ -296,30 +298,47 @@ function exportarExcel() {
         });
         datosExcel.push(encabezadosExcel);
         */
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","Producto","Neto","Comisión %","Comisión $"]);
         // Agregar los datos de la tabla al arreglo
+        aux_vendedor_id = "";
+		count = 0;
+        //console.log(data);
         data.data.forEach(function(registro) {
+            if (registro.vendedor_id != aux_vendedor_id){
+                datosExcel.push([registro.vendedor_nombre,"","","","","","","",""]);
+                datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","Producto","Neto","Comisión %","Comisión $"]);
+            }
             aux_fecha = new Date(registro.fechahora);
+            var filaExcel = [
+                registro.foliocontrol_doc,
+                registro.nrodocto,
+                fechaddmmaaaa(aux_fecha),
+                registro.razonsocial,
+                registro.rut,
+                registro.nmbitem,
+                registro.montoitem,
+                registro.porc_comision,
+                registro.comision
+            ];
+            aux_vendedor_id = registro.vendedor_id;
+            count++;
 
-          var filaExcel = [
-            registro.foliocontrol_doc,
-            registro.nrodocto,
-            fechaddmmaaaa(aux_fecha),
-            registro.razonsocial,
-            registro.rut,
-            registro.nmbitem,
-            registro.montoitem,
-            registro.porc_comision,
-            registro.comision
-          ];
-          datosExcel.push(filaExcel);
+            datosExcel.push(filaExcel);
         });
         
         // Crear el libro de Excel
         var libro = XLSX.utils.book_new();
         var hoja = XLSX.utils.aoa_to_sheet(datosExcel);
         XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
+
+        hoja['!autofilter'] = [{ ref: "A:A" }];
         
+
+        /*
+        if (!hoja['!cols']) hoja['!cols'] = [];
+        hoja['!cols'][3] = { width: 20 };
+        hoja['!cols'][5] = { width: 20 };
+        */
+
         // Generar el archivo Excel y descargarlo
         XLSX.writeFile(libro, 'comisonxVend.xlsx');
       },

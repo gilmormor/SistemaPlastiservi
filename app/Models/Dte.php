@@ -2149,6 +2149,7 @@ class Dte extends Model
     
         $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
+        CONCAT(persona.nombre,' ',persona.apellido) as vendedor_nombre,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
         GROUP_CONCAT(DISTINCT notaventa.oc_id) AS oc_id,
@@ -2213,6 +2214,10 @@ class Dte extends Model
         ON dtedet.producto_id = producto.id
         LEFT JOIN claseprod
         ON producto.claseprod_id = claseprod.id
+        LEFT JOIN vendedor
+        ON dte.vendedor_id = vendedor.id
+        LEFT JOIN persona
+        ON vendedor.persona_id = persona.id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond

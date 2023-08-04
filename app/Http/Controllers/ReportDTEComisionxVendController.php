@@ -32,7 +32,9 @@ class ReportDTEComisionxVendController extends Controller
 
     public function reportdtecomisionxvendpage(Request $request){
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
-        $request->merge(['orderby' => " order by foliocontrol.doc,dte.id desc "]);
+        if(is_null($request->orderby) or $request->orderby == "" or !isset($request->orderby)){
+            $request->merge(['orderby' => " order by foliocontrol.doc,dte.id desc "]);
+        }
         $request->merge(['groupby' => " group by dtedet.id "]);
         $datas = Dte::reportcomisionxvend($request);
         return datatables($datas)->toJson();
