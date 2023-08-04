@@ -1563,7 +1563,19 @@ class DespachoSolController extends Controller
             if(env('APP_DEBUG')){
                 return view('despachosol.reportesolprev', compact('notaventa','notaventaDetalles','empresa'));
             }
-            $pdf = PDF::loadView('despachosol.reportesolprev', compact('notaventa','notaventaDetalles','empresa'));
+            $aux_staacutec = false;
+            foreach ($notaventa->notaventadetalles as $detalle) {
+                if(isset($detalle->cotizaciondetalle->acuerdotecnicotemp) or isset($detalle->producto->acuerdotecnico)){
+                    $aux_staacutec = true;
+                    break;
+                }
+            }
+            if($aux_staacutec){
+                $pdf = PDF::loadView('despachosol.reportesolprev', compact('notaventa','notaventaDetalles','empresa'));
+            }else{
+                $pdf = PDF::loadView('despachosol.reportesolprevsinesp', compact('notaventa','notaventaDetalles','empresa'));
+            }
+
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
         }else{

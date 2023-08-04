@@ -172,7 +172,7 @@
 						<td class="textcenter">
 							{{$aux_saldo}}
 						</td>	
-						<td class="textcenter">{{$notaventaDetalle->unidadmedida->nombre}}</td>
+						<td class="textcenter">{{$notaventaDetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}</td>
 						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>

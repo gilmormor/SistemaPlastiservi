@@ -1109,10 +1109,14 @@ class NotaVentaController extends Controller
             }else{
                 if($stareport == '2'){
                     if(env('APP_DEBUG')){
-                        return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                        //return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                    }
+                    if($aux_staacutec){
+                        $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                    }else{
+                        $pdf = PDF::loadView('notaventa.listado1sinesp', compact('notaventa','notaventaDetalles','empresa'));
                     }
             
-                    $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
                     //return $pdf->download('cotizacion.pdf');
                     return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
         
