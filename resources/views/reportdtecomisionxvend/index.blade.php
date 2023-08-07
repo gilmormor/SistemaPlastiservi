@@ -9,6 +9,7 @@ Comisión x Vendedor
 
 @section("scripts")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportdtecomisionxvend/index.js")}}" type="text/javascript"></script>
@@ -58,13 +59,11 @@ Comisión x Vendedor
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
-                                            <option value="">Seleccione...</option>
+                                            <option value="">Todos...</option>
                                             @foreach($tablas['sucursales'] as $sucursal)
                                                 <option
                                                     value="{{$sucursal->id}}"
-                                                >
-                                                    {{$sucursal->nombre}}
-                                                </option>
+                                                >{{$sucursal->nombre}}</option>
                                             @endforeach
                                         </select>
                                     </div>

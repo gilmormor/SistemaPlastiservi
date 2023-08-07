@@ -89,6 +89,8 @@ class NotifyMailAcuTecAprobarRechazar
         $asunto = $notificaciones->mensaje;
         //$cuerpo = $notificaciones->mensaje;
         Mail::to($aux_email)->send(new MailAcuTecAprobarRechazar($notificaciones,$asunto,$cuerpo,$cotizacion));
+        /*
+        //EN COMENTARIO POR PETICION DE LUISA MARTINEZ 04/08/2023
         if($cotizacion->aprobstatus == 2){
             $notificaciones->mensaje .= " Esperando por aprobación financiera";
             $asunto = "Tienes una nueva Cotizacion en tu bandeja para ser validada.";
@@ -96,5 +98,6 @@ class NotifyMailAcuTecAprobarRechazar
             $aux_email = "lmartinez@plastiservi.cl";
             Mail::to($aux_email)->send(new MailAcuTecAprobarRechazar($notificaciones,$asunto,$cuerpo,$cotizacion));    
         }
+        */
     }
 }

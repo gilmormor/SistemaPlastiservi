@@ -173,6 +173,7 @@ function datosFac(orderby = ""){
         foliocontrol_id   : "",
         orderby           : orderby,
         groupby           : "",
+        fechahoy          : "",
         _token            : $('input[name=_token]').val()
     };
 
@@ -288,25 +289,48 @@ function exportarExcel() {
         //console.log(data);
         // Crear una matriz para los datos de Excel
         var datosExcel = [];
-        //console.log(datosExcel);
-        
-        // Agregar encabezados de columna al arreglo
-        /*
-        var encabezados = tabla.columns().header().toArray();
-        var encabezadosExcel = encabezados.map(function(encabezado) {
-          return encabezado.innerHTML;
-        });
-        datosExcel.push(encabezadosExcel);
-        */
         // Agregar los datos de la tabla al arreglo
         aux_vendedor_id = "";
 		count = 0;
+
+        cellLengthRazonSoc = 0;
+        cellLengthProducto = 0;
+        filainifusionar = -1
+        arrayfusionarCelNomVend = [];
         //console.log(data);
+        aux_sucursalNombre = $("#sucursal_id option:selected").html();
+        aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
+        datosExcel.push(["Informe Comisión Vendedores","","","","","","","",data.input.fechahoy]);
+        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
+        aux_totalMonto = 0;
+        aux_totalComision = 0;
         data.data.forEach(function(registro) {
             if (registro.vendedor_id != aux_vendedor_id){
-                datosExcel.push([registro.vendedor_nombre,"","","","","","","",""]);
+                filainifusionar += 4;
+                if(aux_vendedor_id == ""){
+                    datosExcel.push(["","","","","","","","",""]);
+                }else{
+                    datosExcel.push(["","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
+                }
+                aux_totalMonto = 0;
+                aux_totalComision = 0;        
+                datosExcel.push(["","","","","","","","",""]);
+                datosExcel.push(["Vendedor: " + registro.vendedor_rut + " - " + registro.vendedor_nombre,"","","","","","","",""]);
                 datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","Producto","Neto","Comisión %","Comisión $"]);
+                arrayfusionarCelNomVend.push(filainifusionar);
             }
+            aux_totalMonto += registro.montoitem;
+            aux_totalComision += registro.comision;
+            filainifusionar++;
+            aux_length = registro.razonsocial.toString().length
+            if(aux_length > cellLengthRazonSoc){
+                cellLengthRazonSoc = aux_length;
+            }
+            aux_length = registro.nmbitem.toString().length
+            if(aux_length > cellLengthProducto){
+                cellLengthProducto = aux_length;
+            }
+            
             aux_fecha = new Date(registro.fechahora);
             var filaExcel = [
                 registro.foliocontrol_doc,
@@ -324,26 +348,218 @@ function exportarExcel() {
 
             datosExcel.push(filaExcel);
         });
-        
+        if(aux_totalMonto > 0){
+            datosExcel.push(["","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
+        }
+
+/*
         // Crear el libro de Excel
         var libro = XLSX.utils.book_new();
         var hoja = XLSX.utils.aoa_to_sheet(datosExcel);
         XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
 
-        hoja['!autofilter'] = [{ ref: "A:A" }];
-        
-
-        /*
+        // Ajustar automáticamente el ancho de la columna A (columna con índice 0) al contenido:
         if (!hoja['!cols']) hoja['!cols'] = [];
-        hoja['!cols'][3] = { width: 20 };
-        hoja['!cols'][5] = { width: 20 };
-        */
+        hoja['!cols'][3] = { width: cellLengthRazonSoc + 2};        
+        if (!hoja['!cols']) hoja['!cols'] = [];
+        hoja['!cols'][5] = { width: cellLengthProducto + 2};
+
+
+        arrayfusionarCelNomVend.forEach(function(fila) {
+            //console.log(celda);
+            const mergeRange = { s: { r: fila, c: 0 }, e: { r: fila, c: 3 } };
+            if (!hoja['!merges']) hoja['!merges'] = [];
+            hoja['!merges'].push(mergeRange);
+        });
 
         // Generar el archivo Excel y descargarlo
         XLSX.writeFile(libro, 'comisonxVend.xlsx');
+*/
+        createExcel(datosExcel,arrayfusionarCelNomVend);
+
       },
       error: function(xhr, status, error) {
         console.log(error);
       }
     });
+
+
+    // Llamar a la función para crear el archivo Excel
+
   }
+
+  function getCellWidth(cellValue) {
+    // Puedes ajustar un valor constante para el ancho mínimo que deseas asignar a la columna.
+    const minimumColumnWidth = 10;
+  
+    // Calcula la longitud del valor en la celda y agrega un poco de espacio adicional.
+    const cellLength = cellValue.toString().length + 2;
+  
+    // Retorna el ancho máximo entre el ancho calculado y el ancho mínimo establecido.
+    return Math.max(cellLength, minimumColumnWidth);
+  }
+
+
+  // Función para crear el archivo Excel
+function createExcel(datosExcel,arrayfusionarCelNomVend) {
+    // Crear un nuevo libro de trabajo y una nueva hoja
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Datos");
+
+    // Insertar los datos en la hoja de trabajo
+    worksheet.addRows(datosExcel);
+
+    // Establecer negrita en la celda A1
+    //worksheet.getCell("A5").font = { bold: true };
+
+
+    // Ajustar automáticamente el ancho de la columna B al contenido
+    ajustarcolumnaexcel(worksheet,"C");
+    ajustarcolumnaexcel(worksheet,"D");
+    ajustarcolumnaexcel(worksheet,"E");
+    ajustarcolumnaexcel(worksheet,"F");
+    ajustarcolumnaexcel(worksheet,"G");
+    ajustarcolumnaexcel(worksheet,"H");
+    ajustarcolumnaexcel(worksheet,"I");
+    
+
+    // Combinar celdas desde [4,0] hasta [4,2]
+    arrayfusionarCelNomVend.forEach(function(fila) {
+        
+        // Establecer negrita a totales
+        row = worksheet.getRow(fila + 2 -2);
+        for (let i = 1; i <= 9; i++) {
+            cell = row.getCell(i);
+            cell.font = { bold: true };
+            cell.alignment = { horizontal: "right" };
+            cell.numFmt = "#,##0";
+        }
+
+        row = worksheet.getRow(datosExcel.length);
+        for (let i = 1; i <= 9; i++) {
+            cell = row.getCell(i);
+            cell.font = { bold: true };
+            cell.alignment = { horizontal: "right" };
+            cell.numFmt = "#,##0";
+        }
+
+        // Establecer negrita en la celda de Vendedor
+        const row5 = worksheet.getRow(fila + 2);
+        const cellA5 = row5.getCell(1);
+        cellA5.font = { bold: true };
+
+        //Establecer negrita a todos los titulos debajo de vendedor
+        const row6 = worksheet.getRow(fila + 3);
+        for (let i = 1; i <= 9; i++) {
+            cell = row6.getCell(i);
+            cell.font = { bold: true };
+        }
+
+        //Fusionar celdas de vendedor
+        const startCol = 0;
+        const endCol = 4;
+        worksheet.mergeCells(fila + 2, startCol, fila + 2, endCol);
+        
+        // Establecer el formato de negrita en la celda superior izquierda del rango fusionado
+    });
+
+    // Recorrer la columna 7 y dar formato con punto para separar los miles
+    const columnG = worksheet.getColumn(7);
+    columnG.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna 8 y dar formato con punto para separar los miles
+    const columnH = worksheet.getColumn(8);
+    columnH.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Recorrer la columna 9 y dar formato con punto para separar los miles
+    const columnI = worksheet.getColumn(9);
+    columnI.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+    
+    // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
+    for (let i = 4; i <= datosExcel.length; i++) {
+    const cell = worksheet.getCell(i, 8);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    }
+
+    /*
+    // Ajustar automáticamente el ancho de las columnas al contenido
+    worksheet.columns.forEach((column) => {
+        let maxLength = 0;
+        column.eachCell({ includeEmpty: true }, (cell) => {
+        const length = cell.value ? cell.value.toString().length : 0;
+        if (length > maxLength) {
+            maxLength = length;
+        }
+        });
+        column.width = maxLength < 10 ? 10 : maxLength;
+    });
+    */
+
+    //Negrita Columna Titulo
+    const row1 = worksheet.getRow(1);
+    cell = row1.getCell(1);
+    cell.font = { bold: true, size: 20 };
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    //Fecha Reporte
+    const row2 = worksheet.getRow(1);
+    cell = row2.getCell(9);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+
+    //Fusionar celdas de Titulo
+    const startCol = 0;
+    const endCol = 8;
+    worksheet.mergeCells(1, startCol, 1, endCol);
+
+    //Negrita Columna Sucursal
+    const row3 = worksheet.getRow(2);
+    cell = row3.getCell(1);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    
+    //Fusionar celdas Sucursal
+    const startCol1 = 0;
+    const endCol1 = 8;
+    worksheet.mergeCells(2, startCol1, 2, endCol1);
+
+    // Guardar el archivo
+    workbook.xlsx.writeBuffer().then(function(buffer) {
+      // Crear un objeto Blob para el archivo Excel
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+      // Crear un enlace de descarga
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "comisionVendedores.xlsx";
+      a.click();
+
+      // Limpiar el objeto Blob
+      window.URL.revokeObjectURL(url);
+    });
+}
+
+function ajustarcolumnaexcel(worksheet,columna){
+    const columnB = worksheet.getColumn(columna);
+    let maxLengthB = 0;
+    columnB.eachCell({ includeEmpty: true }, (cell) => {
+      const length = cell.value ? cell.value.toString().length : 0;
+      if (length > maxLengthB) {
+        maxLengthB = length;
+      }
+    });
+    columnB.width = maxLengthB < 10 ? 10 : maxLengthB;
+
+}

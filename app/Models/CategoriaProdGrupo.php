@@ -11,7 +11,8 @@ class CategoriaProdGrupo extends Model
     protected $table = "categoriaprodgrupo";
     protected $fillable = [
         'nombre',
-        'desc'
+        'desc',
+        'comisionventas'
     ];
 
     //RELACION UNO A MUCHOS CategoriaProd

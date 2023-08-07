@@ -36,6 +36,7 @@ class ReportDTEComisionxVendController extends Controller
             $request->merge(['orderby' => " order by foliocontrol.doc,dte.id desc "]);
         }
         $request->merge(['groupby' => " group by dtedet.id "]);
+        $request->merge(['fechahoy' => date("d/m/Y")]);
         $datas = Dte::reportcomisionxvend($request);
         return datatables($datas)->toJson();
     }

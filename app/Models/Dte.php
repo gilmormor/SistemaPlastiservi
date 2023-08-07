@@ -2149,7 +2149,7 @@ class Dte extends Model
     
         $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
-        CONCAT(persona.nombre,' ',persona.apellido) as vendedor_nombre,
+        persona.rut as vendedor_rut, CONCAT(persona.nombre,' ',persona.apellido) as vendedor_nombre,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
         GROUP_CONCAT(DISTINCT notaventa.oc_id) AS oc_id,
@@ -2187,7 +2187,9 @@ class Dte extends Model
         dtedet.producto_id,producto.diametro,claseprod.cla_nombre,producto.long,nmbitem,producto.tipounion,nmbitem,
         (dte.mnttotal * foliocontrol.signo) as mnttotal,
         sum((dtedet.montoitem * foliocontrol.signo)) as montoitem,
-        3 as porc_comision,ROUND(sum((dtedet.montoitem * foliocontrol.signo)) * 0.03) as comision
+        categoriaprodgrupo.comisionventas,
+        categoriaprodgrupo.comisionventas as porc_comision,
+        CEIL(sum((dtedet.montoitem * foliocontrol.signo)) * (categoriaprodgrupo.comisionventas/100)) as comision
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dtedet
@@ -2212,6 +2214,10 @@ class Dte extends Model
         ON dtefac.dte_id = dte.id
         LEFT JOIN producto
         ON dtedet.producto_id = producto.id
+        LEFT JOIN categoriaprod
+        ON categoriaprod.id = producto.categoriaprod_id
+        LEFT JOIN categoriaprodgrupo
+        ON categoriaprodgrupo.id = categoriaprod.categoriaprodgrupo_id
         LEFT JOIN claseprod
         ON producto.claseprod_id = claseprod.id
         LEFT JOIN vendedor

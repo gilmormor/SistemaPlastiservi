@@ -77,25 +77,25 @@
 				</thead>
 		@endif
 				<tbody id="detalle_productos">
-						<tr class='btn-accion-tabla tooltipsC'>
-							<td style='text-align:center'>{{$data->nrodocto}}</td>
-							<td style='text-align:center'>{{$data->foliocontrol_doc}}</td>
-							<td style='text-align:center'>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
-							<td style='text-align:center'>{{$data->rut}}</td>
-							<td style='text-align:left'>{{$data->razonsocial}}</td>
-							<td style='text-align:left'>{{$data->nmbitem}}</td>
-							<td style='text-align:right'>{{number_format($data->montoitem, 0, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format(3, 1, ",", ".")}}</td>
-							<td style='text-align:right'>{{number_format(round($data->montoitem * 0.03, 0), 0, ",", ".")}}&nbsp;&nbsp;</td>
-						</tr>
-						<?php 
-							$aux_vendedor_id = $datas[0]->vendedor_id;
-						?>
-				
+					<tr class='btn-accion-tabla tooltipsC'>
+						<td style='text-align:center'>{{$data->nrodocto}}</td>
+						<td style='text-align:center'>{{$data->foliocontrol_doc}}</td>
+						<td style='text-align:center'>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
+						<td style='text-align:center'>{{$data->rut}}</td>
+						<td style='text-align:left'>{{$data->razonsocial}}</td>
+						<td style='text-align:left'>{{$data->nmbitem}}</td>
+						<td style='text-align:right'>{{number_format($data->montoitem, 0, ",", ".")}}</td>
+						<td style='text-align:right'>{{number_format($data->porc_comision, 2, ",", ".")}}</td>
+						<td style='text-align:right'>{{number_format(round($data->comision, 0), 0, ",", ".")}}&nbsp;&nbsp;</td>
+					</tr>
+					<?php 
+						$aux_vendedor_id = $datas[0]->vendedor_id;
+					?>
+			
 				</tbody>
 				<?php
 					$aux_totalmontoitem += round($data->montoitem, 0);
-					$aux_totalcomision += round($data->montoitem * 0.03, 0);
+					$aux_totalcomision += $data->comision;
 					$aux_vendedor_id = $data->vendedor_id;
 					$count++;
 				?>
