@@ -286,6 +286,22 @@ function exportarExcel() {
       type: 'POST',
       dataType: 'json',
       success: function(data) {
+        console.log(data.data.length);
+        if(data.input  === undefined || data.data.length == 0){
+            swal({
+                title: 'Información no encontrada!',
+                text: "",
+                icon: 'warning',
+                buttons: {
+                    confirm: "Aceptar"
+                },
+            }).then((value) => {
+                if (value) {
+                    //ajaxRequest(data,ruta,'accionnotaventa');
+                }
+            });
+            return 0;
+        }
         //console.log(data);
         // Crear una matriz para los datos de Excel
         var datosExcel = [];
