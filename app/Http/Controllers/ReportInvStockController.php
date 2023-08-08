@@ -47,8 +47,8 @@ class ReportInvStockController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $datas = InvMov::stock($request);
-        $datas = $datas->get();
+        $datas = InvMov::stocksql($request);
+        //$datas = $datas->get();
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());

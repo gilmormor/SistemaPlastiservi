@@ -33,7 +33,8 @@ class Cliente extends Model
         'finanzascontacto',
         'finanzanemail',
         'finanzastelefono',
-        'observaciones'
+        'observaciones',
+        'limitecredito'
     ];
 
     //RELACION DE UNO A MUCHOS Cotizacion

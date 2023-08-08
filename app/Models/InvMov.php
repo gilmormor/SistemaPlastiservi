@@ -207,7 +207,7 @@ class InvMov extends Model
             $aux_areaproduccion_idCond = " categoriaprod.areaproduccion_id in ($aux_areaproduccionid) ";
         }
         $aux_areaproduccion_idSucursalCond = " categoriaprod.areaproduccion_id in (SELECT areaproduccion_id from areaproduccionsuc where sucursal_id in ($sucurArray)) ";
-        $sql = "SELECT invbodegaproducto.producto_id, producto.nombre as producto_nombre, 
+        $sql = "SELECT invbodegaproducto.producto_id, CONCAT(producto.nombre,'',IF(!isnull(at_unidadmedida.nombre),CONCAT(': ',at_unidadmedida.nombre),'')) as producto_nombre, 
         if(isnull(acuerdotecnico.id),producto.diametro,at_ancho) as diametro,
         if(isnull(acuerdotecnico.id),producto.long,at_largo) as largo,
         if(isnull(acuerdotecnico.id),producto.peso,at_espesor) as peso,
@@ -237,6 +237,8 @@ class InvMov extends Model
         on invmovdet.invmovtipo_id = invmovtipo.id and isnull(invmovtipo.deleted_at)
         LEFT JOIN acuerdotecnico
         ON producto.id = acuerdotecnico.producto_id
+        LEFT JOIN unidadmedida as at_unidadmedida
+        ON at_unidadmedida.id = acuerdotecnico.at_unidadmedida_id
         where invmov.annomes = $aux_annomes 
         and $aux_sucursal_idCond 
         and $aux_tipobodegaCond

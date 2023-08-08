@@ -252,11 +252,16 @@
     </div>
 </div>
 <div class="row">
+    <div class="form-group col-xs-12 col-sm-2">
+        <label for="limitecredito" class="control-label requerido" data-toggle='tooltip' title="Limite de Crédito">Limite de Crédito</label>
+        <input type="text" name="limitecredito" id="limitecredito" class="form-control numericopositivosindec" value="{{old('limitecredito', $data->limitecredito ?? '')}}" maxlength="15" valini="{{old('limitecredito', $data->limitecredito ?? '')}}" required/>
+    </div>
     <div class="form-group col-xs-12 col-sm-4">
         <label for="observaciones" class="col-form-label" data-toggle='tooltip' title="Observación">Observación</label>
         <textarea class="form-control" name="observaciones" id="observaciones" value="{{old('observaciones', $data->observaciones ?? '')}}" placeholder="Observación"></textarea>
         <span class="help-block"></span>
     </div>
+
 </div>
 <div class="box box-danger">
     <div class="box-header with-border">

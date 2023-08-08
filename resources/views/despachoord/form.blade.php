@@ -252,7 +252,13 @@
                                         <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->cotizaciondetalle_id}}" style="display:none;"/>
                                     </td>
                                     <td style='text-align:center' name="producto_idTD{{$aux_nfila}}" id="producto_idTD{{$aux_nfila}}">
-                                        {{$detalle->notaventadetalle->producto_id}}
+                                        @if ($detalle->notaventadetalle->producto->acuerdotecnico)
+                                            <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec({{$detalle->notaventadetalle->producto->acuerdotecnico->id}},{{$data->notaventa->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                                {{$detalle->notaventadetalle->producto_id}}
+                                            </a>
+                                        @else
+                                            {{$detalle->notaventadetalle->producto_id}}
+                                        @endif
                                         <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
                                     </td>
                                     <td style="display:none;">

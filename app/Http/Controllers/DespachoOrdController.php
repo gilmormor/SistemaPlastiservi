@@ -253,7 +253,6 @@ class DespachoOrdController extends Controller
         $invmovmodulo = InvMovModulo::where("cod","=","ORDDESP")->get();
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
 
-
         //dd($clientedirecs);
         return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
          

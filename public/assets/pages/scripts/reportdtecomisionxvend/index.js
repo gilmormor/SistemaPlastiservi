@@ -286,7 +286,6 @@ function exportarExcel() {
       type: 'POST',
       dataType: 'json',
       success: function(data) {
-        console.log(data.data.length);
         if(data.input  === undefined || data.data.length == 0){
             swal({
                 title: 'Información no encontrada!',

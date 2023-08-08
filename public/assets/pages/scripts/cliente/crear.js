@@ -1,5 +1,6 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
+	$(".numericopositivosindec").numeric({decimalPlaces: 2, negative : false });
     $( "#rut" ).focus();
     //$("#rut").numeric();
 	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
