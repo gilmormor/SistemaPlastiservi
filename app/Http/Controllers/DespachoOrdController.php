@@ -163,6 +163,12 @@ class DespachoOrdController extends Controller
     {
         can('crear-orden-despacho');
         $data = DespachoSol::findOrFail($id);
+        if(isset($data->despachosolanul)){
+            return redirect('despachoord')->with([
+                'mensaje'=>'Solicitud Despacho anulada: ' . $data->id,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
@@ -267,13 +273,24 @@ class DespachoOrdController extends Controller
     public function guardar(ValidarDespachoOrd $request)
     {
         can('guardar-orden-despacho');
-        //dd($request->invcant);
+        //dd($request);
         //dd(session('aux_fecinicreOD'));
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
         //dd($notaventacerrada);
         if(count($notaventacerrada) == 0){
             $despachosol = DespachoSol::findOrFail($request->despachosol_id);
-
+            if($despachosol->updated_at != $request->updated_at){
+                return redirect('despachoord')->with([
+                    'mensaje'=>'Solicitud Despacho modificada por otro usuario:' . $despachosol->id,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            if(isset($despachosol->despachosolanul)){
+                return redirect('despachoord')->with([
+                    'mensaje'=>'Solicitud Despacho anulada: ' . $despachosol->id,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
             $array_despachoord = DespachoOrd::where("despachosol_id",$request->despachosol_id)->pluck('id')->toArray();
             $despachoordrec = DespachoOrdRec::whereIn('despachoord_id',$array_despachoord)
                             ->where("updated_at",">",session('aux_fecinicreOD'))
