@@ -1392,9 +1392,10 @@ class NotaVentaController extends Controller
             $sql = "SELECT notaventa.*
                 FROM notaventa INNER JOIN cliente
                 ON notaventa.cliente_id = cliente.id and isnull(notaventa.deleted_at)  and isnull(cliente.deleted_at)
-                WHERE notaventa.oc_id = $request->oc_id and cliente.rut = '$request->cliente_rut'
+                WHERE notaventa.oc_id = '$request->oc_id' and cliente.rut = '$request->cliente_rut'
                 AND isnull(notaventa.anulada);";
             $datas = DB::select($sql);
+            //dd($datas);
             if(count($datas) > 0){
                 return response()->json(['mensaje' => 'ok',
                 'Mensaje' => 'Encontrado',
