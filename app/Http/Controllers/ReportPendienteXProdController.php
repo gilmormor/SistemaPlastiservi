@@ -11,6 +11,7 @@ use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\NotaVenta;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
@@ -223,6 +224,7 @@ function reporte1($request){
                 <th>Largo</th>
                 <th>Peso<br>Espesor</th>
                 <th>TU</th>
+                <th style='text-align:right'>Stock</th>
                 <th style='text-align:right'>Cant</th>
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>
@@ -243,6 +245,7 @@ function reporte1($request){
         $aux_totalprecio = 0;
         $i = 0;
         foreach ($datas as $data) {
+            //dd($data);
             //SUMA TOTAL DE SOLICITADO
             /*************************/
             $sql = "SELECT cantsoldesp
@@ -283,9 +286,26 @@ function reporte1($request){
             }
             $comuna = Comuna::findOrFail($data->comunaentrega_id);
             $producto = Producto::findOrFail($data->producto_id);
+            $notaventa = NotaVenta::findOrFail($data->notaventa_id);
             $aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
 
             //$aux_peso = $data->peso == 0 ? $data->totalkilos/ :
+
+            $request = new Request();
+            $request["producto_id"] = $data->producto_id;
+            //dd($producto->invbodegaproductos);
+            $aux_invbodega_id = "";
+            foreach ($producto->invbodegaproductos as $invbodegaproducto) {
+                if($invbodegaproducto->invbodega->sucursal_id == $notaventa->sucursal_id and $invbodegaproducto->invbodega->tipo = 2){
+                    $aux_invbodega_id = $invbodegaproducto->invbodega_id; 
+                }
+            }
+            $request["invbodega_id"] = $aux_invbodega_id;
+            $request["tipo"] = 2;
+            $existencia = $invbodegaproducto::existencia($request);
+            $stock = $existencia["stock"]["cant"];
+            //dd($existencia);
+
             $aux_producto_id = $data->producto_id;
             $aux_ancho = $producto->diametro;
             $aux_espesor = $data->peso;
@@ -326,8 +346,9 @@ function reporte1($request){
                 <td>$aux_cla_sello_nombre</td>
                 <td>$aux_ancho</td>
                 <td>$aux_largo</td>
-                <td>$aux_espesor</td>
+                <td data-order='" . $aux_espesor . "'>". number_format($aux_espesor, 2, ",", ".") ."</td>
                 <td>$data->tipounion</td>
+                <td style='text-align:right' data-order='$stock'>$stock</td>
                 <td style='text-align:right' data-order='" . $data->cant . "'>". number_format($data->cant, 0, ",", ".") ."</td>
                 <td style='text-align:right' data-order='$sumacantdesp'>
                     $fila_cantdesp
@@ -358,7 +379,7 @@ function reporte1($request){
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='13' style='text-align:right'>TOTALES</th>
+                    <th colspan='14' style='text-align:right'>TOTALES</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>". number_format($aux_totalcantpend, 0, ",", ".") ."</th>
@@ -367,7 +388,7 @@ function reporte1($request){
                     <th style='text-align:right' class='tooltipsC' title='Total $'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
                 </tr>
                 <tr>
-                    <th colspan='13' style='text-align:right'>PROMEDIO</th>
+                    <th colspan='14' style='text-align:right'>PROMEDIO</th>
                     <th colspan='4' style='text-align:right'></th>
                     <th style='text-align:right' class='tooltipsC' title='Precio Kg Promedio'>". number_format($aux_promprecioxkilo, 2, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Total $ (Precio promedio)'>". number_format($aux_totalkilospend * $aux_promprecioxkilo, 2, ",", ".") ."</th>
