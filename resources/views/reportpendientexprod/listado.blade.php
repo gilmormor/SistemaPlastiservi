@@ -6,6 +6,7 @@
 <?php 
 	use App\Models\Producto;
 	use App\Models\Comuna;
+	use App\Models\NotaVenta;
 ?>
 <div id="page_pdf">
 	<table id="factura_head">
@@ -46,11 +47,12 @@
 						<th class='width50'>Comuna</th>
 						<th style='text-align:left' class='width10'>Cod</th>
 						<th style='text-align:left' class='width90'>Descripción</th>
-						<th style='text-align:left' class='width30'>Diam</th>
-						<th style='text-align:left' class='width40'>Clase</th>
+						<th style='text-align:left' class='width40'>Clase<br>Sello</th>
+						<th style='text-align:left' class='width30'>Diam<br>Ancho</th>
 						<th style='text-align:left' class='width10'>L</th>
-						<th style='text-align:left' class='width30'>Peso</th>
+						<th style='text-align:left' class='width30'>Peso<br>Esp</th>
 						<th style='text-align:left' class='width10'>TU</th>
+						<th style='text-align:right' class='width40'>Stock</th>
 						<th style='text-align:right' class='width40'>Cant</th>
 						<!--
 						<th style='text-align:right'>Kilos</th>
@@ -119,6 +121,42 @@
 							$aux_razonsocial = ucwords(strtolower($data->razonsocial));
 							$aux_razonsocial = ucwords($aux_razonsocial,".");
 							$aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
+
+							$notaventa = NotaVenta::findOrFail($data->notaventa_id);
+							$aux_invbodega_id = "";
+							foreach ($producto->invbodegaproductos as $invbodegaproducto) {
+								if($invbodegaproducto->invbodega->sucursal_id == $notaventa->sucursal_id and $invbodegaproducto->invbodega->tipo = 2){
+									$aux_invbodega_id = $invbodegaproducto->invbodega_id; 
+								}
+							}
+							$request["invbodega_id"] = $aux_invbodega_id;
+							$request["tipo"] = 2;
+							$existencia = $invbodegaproducto::existencia($request);
+							$stock = $existencia["stock"]["cant"];
+
+							$aux_producto_id = $data->producto_id;
+							$aux_ancho = $producto->diametro;
+							$aux_espesor = $data->peso;
+							$aux_largo = $data->long . "Mts";
+							$aux_cla_sello_nombre = $data->cla_nombre;
+							$aux_producto_nombre = $data->nombre;
+							//$aux_categoria_nombre = $data->producto->categoriaprod->nombre;
+							if ($producto->acuerdotecnico != null){
+								$AcuTec = $producto->acuerdotecnico;
+								$aux_producto_id = "<a class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfAcuTec($AcuTec->id,$data->cliente_id,1)' data-original-title='Acuerdo Técnico PDF'>
+										$data->producto_id
+									</a>";
+								$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+								$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
+								$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+								$aux_espesor = $AcuTec->at_espesor;
+								if($AcuTec->claseprod){
+									$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+								}else{
+									$aux_cla_sello_nombre = "";
+								}
+							}
+
 						?>
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td>{{$data->notaventa_id}}</td>
@@ -129,11 +167,12 @@
 							<td>{{$comuna->nombre}}</td>
 							<td>{{$data->producto_id}}</td>
 							<td>{{$data->nombre}}</td>
-							<td>{{$producto->diametro}}</td>
-							<td>{{$data->cla_nombre}}</td>
-							<td>{{$data->long}}</td>
-							<td>{{$data->peso}}</td>
+							<td>{{$aux_cla_sello_nombre}}</td>
+							<td>{{$aux_ancho}}</td>
+							<td>{{$aux_largo}}</td>
+							<td>{{$aux_espesor}}</td>
 							<td>{{$data->tipounion}}</td>
+							<td style='text-align:right'>{{$stock}}</td>
 							<td style='text-align:right'>{{number_format($data->cant, 0, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($sumacantdesp, 0, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($aux_cantsaldo, 0, ",", ".")}}</td>
@@ -162,7 +201,7 @@
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr>
-						<th colspan='13' style='text-align:right'>TOTALES</th>
+						<th colspan='14' style='text-align:right'>TOTALES</th>
 						<th style='text-align:right'>{{number_format($aux_totalcant, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalcantdesp, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalcantpend, 0, ",", ".")}}</th>
@@ -172,7 +211,7 @@
 						<th> </th>
 					</tr>
 					<tr>
-						<th colspan='13' style='text-align:right'>PROMEDIO</th>
+						<th colspan='14' style='text-align:right'>PROMEDIO</th>
 						<th colspan='4' style='text-align:right'></th>
 						<th style='text-align:right'>{{number_format($aux_promprecioxkilo, 2, ",", ".")}}</th>
 						<th style='text-align:right'>&nbsp;{{number_format($aux_totalkilospend * $aux_promprecioxkilo, 2, ",", ".")}}</th>

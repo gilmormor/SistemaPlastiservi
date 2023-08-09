@@ -296,7 +296,7 @@ function reporte1($request){
             //dd($producto->invbodegaproductos);
             $aux_invbodega_id = "";
             foreach ($producto->invbodegaproductos as $invbodegaproducto) {
-                if($invbodegaproducto->invbodega->sucursal_id == $notaventa->sucursal_id and $invbodegaproducto->invbodega->tipo = 2){
+                if($invbodegaproducto->invbodega->sucursal_id == $notaventa->sucursal_id and $invbodegaproducto->invbodega->tipo == 2){
                     $aux_invbodega_id = $invbodegaproducto->invbodega_id; 
                 }
             }
@@ -304,7 +304,7 @@ function reporte1($request){
             $request["tipo"] = 2;
             $existencia = $invbodegaproducto::existencia($request);
             $stock = $existencia["stock"]["cant"];
-            //dd($existencia);
+            //dd($request);
 
             $aux_producto_id = $data->producto_id;
             $aux_ancho = $producto->diametro;
@@ -348,7 +348,7 @@ function reporte1($request){
                 <td>$aux_largo</td>
                 <td data-order='" . $aux_espesor . "'>". number_format($aux_espesor, 2, ",", ".") ."</td>
                 <td>$data->tipounion</td>
-                <td style='text-align:right' data-order='$stock'>$stock</td>
+                <td style='text-align:right' data-order='$stock'>". number_format($stock, 0, ",", ".") ."</td>
                 <td style='text-align:right' data-order='" . $data->cant . "'>". number_format($data->cant, 0, ",", ".") ."</td>
                 <td style='text-align:right' data-order='$sumacantdesp'>
                     $fila_cantdesp
