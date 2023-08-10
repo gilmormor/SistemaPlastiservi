@@ -99,17 +99,17 @@
 						$aux_largo = $notaventaDetalle->producto->long . "Mts";
 						$aux_espesor = ""; //number_format($notaventaDetalle->producto->espesor, 3, ',', '.');
 						$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
+						$aux_staAT = false;
+						$aux_atribAcuTec = "";
 						if ($notaventaDetalle->cotizaciondetalle and $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp != null){
 							$AcuTec = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp;
-							$aux_producto_nombre = $AcuTec->at_desc;
-							$aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
-							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
-							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
-							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
-							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+							$aux_staAT = true;
 						}
 						if ($notaventaDetalle->producto->acuerdotecnico != null){
 							$AcuTec = $notaventaDetalle->producto->acuerdotecnico;
+							$aux_staAT = true;
+						}
+						if($aux_staAT){
 							$aux_producto_nombre = $AcuTec->at_desc;
 							$aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
 							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
@@ -122,7 +122,11 @@
 						<td class="textcenter">{{$notaventaDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$notaventaDetalle->unidadmedida->nombre}}</td>
-						<td class="textleft">{{$aux_producto_nombre}} <br><span class='small-text'>{{$aux_atribAcuTec}}</span></td>
+						<td class="textleft">{{$aux_producto_nombre}} 
+							@if ($aux_staAT)
+								<br><span class='small-text'>{{$aux_atribAcuTec}}</span>
+							@endif
+						</td>
 						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
