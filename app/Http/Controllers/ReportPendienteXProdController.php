@@ -346,7 +346,7 @@ function reporte1($request){
                 <td>$aux_cla_sello_nombre</td>
                 <td>$aux_ancho</td>
                 <td>$aux_largo</td>
-                <td data-order='" . $aux_espesor . "'>". number_format($aux_espesor, 2, ",", ".") ."</td>
+                <td data-order='" . $aux_espesor . "'>". number_format($aux_espesor, 4, ",", ".") ."</td>
                 <td>$data->tipounion</td>
                 <td style='text-align:right' data-order='$stock'>". number_format($stock, 0, ",", ".") ."</td>
                 <td style='text-align:right' data-order='" . $data->cant . "'>". number_format($data->cant, 0, ",", ".") ."</td>

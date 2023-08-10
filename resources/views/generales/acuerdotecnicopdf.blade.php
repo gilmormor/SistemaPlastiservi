@@ -56,6 +56,8 @@
 							@else
 								<td style="width: 25% !important;"><p>{{$acuerdotecnico->producto->categoriaprod->nombre}}</p></td>
 							@endif
+							<td style="width: 16% !important;"><strong>Unid Medida:</strong></td>
+							<td style="width: 25% !important;"><p>{{$acuerdotecnico->unidadmedida->nombre}}</p></td>
 						</tr>
 						<tr class="headtarial">
 							<td style="width: 16% !important;"><strong>Descripción:</strong></td>
