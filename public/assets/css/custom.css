@@ -445,3 +445,8 @@ td.highlight {
     margin-right: 10px;
     font-weight: bold;
     }
+
+    .small-text {
+        font-size: smaller;
+        color: #444; /* Color que no sea tan negro */
+      }

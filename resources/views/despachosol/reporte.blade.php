@@ -112,6 +112,8 @@
 						$aux_espesor = $despachosoldet->notaventadetalle->producto->tipounion;
 						$aux_cla_sello_nombre = $despachosoldet->notaventadetalle->producto->claseprod->cla_nombre;
 						$aux_producto_nombre = $despachosoldet->notaventadetalle->producto->nombre;
+						$aux_atribAcuTec = "";
+                        $aux_staAT = false;
 						//$aux_categoria_nombre = $despachosoldet->notaventadetalle->producto->categoriaprod->nombre;
 						if ($despachosoldet->notaventadetalle->producto->acuerdotecnico != null){
 							$AcuTec = $despachosoldet->notaventadetalle->producto->acuerdotecnico;
@@ -120,6 +122,8 @@
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+							$aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
+                            $aux_staAT = true;
 						}
 					?>
 					<tr class="headt" style="height:150%;">
@@ -127,7 +131,11 @@
 						<td class="textcenter">{{number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
-						<td class="textleft">{{$aux_producto_nombre}}</td>
+						<td class="textleft">{{$aux_producto_nombre}}
+							@if ($aux_staAT)
+								<br><span class="small-text">{{$aux_atribAcuTec}}</span>
+							@endif
+						</td>
 						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>

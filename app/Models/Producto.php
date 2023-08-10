@@ -163,6 +163,7 @@ class Producto extends Model
                 LEFT JOIN acuerdotecnico
                 ON producto.id = acuerdotecnico.producto_id
                 WHERE sucursal.id in ($sucurcadena)
+                AND producto.estado = 1
                 GROUP BY producto.id
                 ORDER BY producto.id asc;";
         //dd($sql);
