@@ -574,6 +574,7 @@ class NotaVentaConsultaController extends Controller
             }
             $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_comuna) ";
         }
+        $user = Usuario::findOrFail(auth()->id());
         $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
         $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
     

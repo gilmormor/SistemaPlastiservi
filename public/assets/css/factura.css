@@ -307,3 +307,8 @@ H1.SaltoDePagina
 #reporte_detalle{
 	border-collapse: collapse;
 }
+
+.small-text {
+    font-size: smaller;
+    color: #444; /* Color que no sea tan negro */
+  }
