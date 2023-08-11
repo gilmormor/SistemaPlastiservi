@@ -144,6 +144,13 @@ class AcuerdoTecnicoTemp extends Model
     {
         return $this->belongsTo(UnidadMedida::class,"at_espesorum_id");
     }
+
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function unidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class,"at_unidadmedida_id");
+    }
+    
     
     public static function setImagen($foto,$id,$request,$at_imagen,$imagen, $actual = false){
         //dd($foto);
