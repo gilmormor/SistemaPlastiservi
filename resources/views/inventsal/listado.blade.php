@@ -104,6 +104,8 @@
 						$aux_cla_sello_nombre = $inventsaldet->invbodegaproducto->producto->claseprod->cla_nombre;
 						$aux_producto_nombre = $inventsaldet->invbodegaproducto->producto->nombre;
 						//$aux_categoria_nombre = $inventsaldet->invbodegaproducto->producto->categoriaprod->nombre;
+						$aux_atribAcuTec = "";
+						$aux_staAT = false;
 						if ($inventsaldet->invbodegaproducto->producto->acuerdotecnico != null){
 							$AcuTec = $inventsaldet->invbodegaproducto->producto->acuerdotecnico;
 							$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
@@ -111,18 +113,20 @@
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+							$aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
+							$aux_staAT = true;
 						}
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto_id}}</td>
-						<td class="textleft">{{$aux_producto_nombre}}</td>
+						<td class="textleft">{{$aux_producto_nombre}}
+							@if ($aux_staAT)
+								<br><span class="small-text">{{$aux_atribAcuTec}}</span>
+							@endif
+						</td>
 						<td class="textleft">{{$inventsaldet->invbodegaproducto->producto->categoriaprod->nombre}}</td>
-						<td class="textleft">{{$inventsaldet->invbodegaproducto->invbodega->nombre}} / {{$inventsaldet->invbodegaproducto->invbodega->sucursal->nombre}}</td>
-						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto->diametro}}</td>
-						<!--Santa Ester
-						<td class="textleft">{{$inventsaldet->invbodegaproducto->invbodega->nombre}}</td>
-						-->
-						<td class="textcenter">{{$inventsaldet->invbodegaproducto->producto->claseprod->cla_nombre}}</td> 
+						<td class="textleft">{{$inventsaldet->invbodegaproducto->invbodega->nombre}} / {{$inventsaldet->invbodegaproducto->invbodega->sucursal->abrev}}</td>
+						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{$aux_espesor}}</td>

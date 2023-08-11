@@ -211,6 +211,7 @@ class Producto extends Model
                 WHERE sucursal.id in ($sucurcadena)
                 and $cliente_idCond
                 and $tipoprodCond
+                AND producto.estado = 1
                 GROUP BY producto.id
                 ORDER BY producto.id asc;";
         //dd($sql);
