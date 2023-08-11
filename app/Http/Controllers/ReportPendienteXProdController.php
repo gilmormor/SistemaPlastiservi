@@ -313,12 +313,13 @@ function reporte1($request){
             $aux_cla_sello_nombre = $data->cla_nombre;
             $aux_producto_nombre = $data->nombre;
             //$aux_categoria_nombre = $data->producto->categoriaprod->nombre;
+            $aux_atribAcuTec = "";
             if ($producto->acuerdotecnico != null){
                 $AcuTec = $producto->acuerdotecnico;
                 $aux_producto_id = "<a class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfAcuTec($AcuTec->id,$data->cliente_id,1)' data-original-title='Acuerdo Técnico PDF'>
                         $data->producto_id
                     </a>";
-                $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+                $aux_producto_nombre = $AcuTec->at_desc; //nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
                 $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
                 $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
                 $aux_espesor = $AcuTec->at_espesor;
@@ -327,6 +328,9 @@ function reporte1($request){
                 }else{
                     $aux_cla_sello_nombre = "";
                 }
+                $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
+                $aux_staAT = true;
+                $aux_atribAcuTec = "<br><span class='small-text'>$aux_atribAcuTec</span>";
             }
 
             $respuesta['tabla3'] .= "
@@ -342,7 +346,8 @@ function reporte1($request){
                 <td>$data->razonsocial</td>
                 <td>$comuna->nombre</td>
                 <td>$aux_producto_id</td>
-                <td>$aux_producto_nombre</td>
+                <td>$aux_producto_nombre $aux_atribAcuTec
+                </td>
                 <td>$aux_cla_sello_nombre</td>
                 <td>$aux_ancho</td>
                 <td>$aux_largo</td>
