@@ -1726,10 +1726,12 @@ $("#producto_idM").blur(function(){
 						$("#espesor1M").val(respuesta['at_espesor']);
 						$("#espesor1M").attr('valor',respuesta['at_espesor']);
 					}
+					/*
 					if(respuesta['at_tiposello_desc'] != null){
 						$("#cla_nombreM").val(respuesta['at_tiposello_desc']);
 						$("#cla_nombreM").attr('valor',respuesta['at_tiposello_desc']);	
 					}
+					*/
 					$("#obsM").val('');
 					$("#tipoprodM").attr('valor',respuesta['tipoprod']);
 					$("#stakilos").val(respuesta['stakilos']);
