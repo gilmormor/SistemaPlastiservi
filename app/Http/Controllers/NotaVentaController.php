@@ -1007,6 +1007,24 @@ class NotaVentaController extends Controller
             $notaventa->aprobusu_id = auth()->id();
             $notaventa->aprobfechahora = date("Y-m-d H:i:s");
             $notaventa->aprobobs = $request->obs;
+            if($notaventa->aprobstatus == 3){
+                foreach ($notaventa->notaventadetalles as $notaventadetalle) {
+                    if(isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
+                        $array_acuerdotecnicotemp = $notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno->attributesToArray();
+                        //BUSCAR ACUERDO TECNICO
+                        $at = AcuerdoTecnico::buscaratxcampos($array_acuerdotecnicotemp);
+                        if(count($at) > 0){
+                            //SI EXISTE DEVUELVO EL ACUERDO TECNICO A LA VISTA
+                            return response()->json([
+                                'id' => 0,
+                                'mensaje' => 'Acuerdo tecnico ya existe',
+                                'at' => $at[0]
+                            ]);
+                        }
+                    }
+                }
+            }
+            //dd("entro");
             if ($notaventa->save()) { //($notaventa->save()) {
                 if($notaventa->aprobstatus == 3){
                     foreach ($notaventa->notaventadetalles as $notaventadetalle) {
@@ -1018,6 +1036,7 @@ class NotaVentaController extends Controller
                             $array_producto = $producto->attributesToArray();
                             $array_producto["nombre"] = $array_acuerdotecnicotemp["at_desc"];
                             $array_producto["descripcion"] = $array_acuerdotecnicotemp["at_desc"];
+                            $array_producto["claseprod_id"] = $array_acuerdotecnicotemp["at_claseprod_id"];
                             $array_producto["precioneto"] = $notaventadetalle->precioxkilo;
                             $array_producto["tipoprod"] = 0;
                             $productonew = Producto::create($array_producto);
@@ -1068,9 +1087,15 @@ class NotaVentaController extends Controller
                 }
                 Event(new AprobarRechazoNotaVenta($notaventa)); //NOTIFICACION A VENDEDOR SOBRE APROBACION O RECHAZO DE NOTA DE VENTA
                 //dd("romper");
-                return response()->json(['mensaje' => 'ok']);
+                return response()->json([
+                    'id' => 1,
+                    'mensaje' => 'El registro fue actualizado correctamente'
+                ]);
             } else {
-                return response()->json(['mensaje' => 'ng']);
+                return response()->json([
+                    'id' => 2,
+                    'mensaje' => 'Error al guardar.'
+                ]);
             }
         } else {
             abort(404);

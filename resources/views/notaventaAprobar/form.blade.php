@@ -1,3 +1,4 @@
+@include('generales.modalpdf')
 <input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
@@ -10,6 +11,7 @@
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
 
 
+<input type="hidden" name="staapronv" id="staapronv" value="{{old('staapronv', session('aux_aproNV') ?? '')}}">
 @if($aux_sta==1)
     <input type="hidden" name="vendedor_id" id="vendedor_id" value="{{old('vendedor_id', $vendedor_id ?? '')}}">
 @else
@@ -96,7 +98,7 @@
                             </div>
             
                         </div>
-                        <div class="form-group col-xs-12 col-sm-5">
+                        <div class="form-group col-xs-12 col-sm-6">
                             <label for="razonsocial" class="control-label requerido" data-toggle='tooltip' title="Razón Social">Razón Social</label>
                             <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', $clienteselec[0]->razonsocial ?? '')}}" readonly/>
                         </div>
@@ -147,115 +149,130 @@
                         -->
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="comuna_idD" class="control-label requerido">Comuna</label>
-                            <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
-                                <option value="">Seleccione...</option>
-                                @foreach($comunas as $comuna)
-                                    <option
-                                        value="{{$comuna->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comuna_id)
-                                            {{'selected'}}
-                                        @endif
-                                        >
-                                        {{$comuna->nombre}}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="comuna_idDT" id="comuna_idDT" class="form-control"  value="{{old('comuna_idDT', $data->comuna->nombre . " " .$data->vendedor->persona->apellido ?? '')}}" readonly required disabled>
+                            <div style="display:none;">
+                                <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
+                                    <option value="">Seleccione...</option>
+                                    @foreach($comunas as $comuna)
+                                        <option
+                                            value="{{$comuna->id}}"
+                                            @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comuna_id)
+                                                {{'selected'}}
+                                            @endif
+                                            >
+                                            {{$comuna->nombre}}
+                                        </option>
+                                    @endforeach
+                                </select>                                
+                            </div>
                         </div>
-            
                     </div>
             
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
-                            <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required {{(isset($data) ? ($data->vendedor_id == $vendedor_id ? "readonly disabled" : "") : "readonly disabled")  }}>
-                                <option value="">Seleccione...</option>
-                                @foreach($vendedores1 as $vendedor)
-                                    <option
-                                        value="{{$vendedor->id}}"
-                                        @if (($aux_sta==1) and ($vendedor_id==$vendedor->id))
-                                            {{'selected'}}
-                                        @endif
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->vendedor_id==$vendedor->id))
-                                            {{'selected'}}
-                                        @endif
-                                        >
-                                        {{$vendedor->nombre}} {{$vendedor->apellido}}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="vendedor_idDT" id="vendedor_idDT" class="form-control"  value="{{old('vendedor_idDT', $data->vendedor->persona->nombre . " " .$data->vendedor->persona->apellido ?? '')}}" readonly required disabled>
+                            <div style="display:none;">
+                                <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required {{(isset($data) ? ($data->vendedor_id == $vendedor_id ? "readonly disabled" : "") : "readonly disabled")  }}  readonly disabled>
+                                    <option value="">Seleccione...</option>
+                                    @foreach($vendedores1 as $vendedor)
+                                        <option
+                                            value="{{$vendedor->id}}"
+                                            @if (($aux_sta==1) and ($vendedor_id==$vendedor->id))
+                                                {{'selected'}}
+                                            @endif
+                                            @if (($aux_sta==2 or $aux_sta==3) and ($data->vendedor_id==$vendedor->id))
+                                                {{'selected'}}
+                                            @endif
+                                            >
+                                            {{$vendedor->nombre}} {{$vendedor->apellido}}
+                                        </option>
+                                    @endforeach
+                                </select>    
+                            </div>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="plazopago_idD" class="control-label requerido">Plazo</label>
-                            <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
-                                <option value=''>Seleccione...</option>
-                                @foreach($plazopagos as $plazopago)
-                                    <option
-                                        value="{{$plazopago->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->plazopago_id==$plazopago->id))
-                                            {{'selected'}}
-                                        @endif
-                                        >
-                                        {{$plazopago->descripcion}}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="plazopago_idDT" id="plazopago_idDT" class="form-control"  value="{{old('plazopago_idDT', $data->plazopago->descripcion ?? '')}}" readonly required disabled>
+                            <div style="display:none;">
+                                <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
+                                    <option value=''>Seleccione...</option>
+                                    @foreach($plazopagos as $plazopago)
+                                        <option
+                                            value="{{$plazopago->id}}"
+                                            @if (($aux_sta==2 or $aux_sta==3) and ($data->plazopago_id==$plazopago->id))
+                                                {{'selected'}}
+                                            @endif
+                                            >
+                                            {{$plazopago->descripcion}}
+                                        </option>
+                                    @endforeach
+                                </select>    
+                            </div>
                         </div>
             
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="formapago_idD" class="control-label requerido">Forma de Pago</label>
-                            <select name="formapago_idD" id="formapago_idD" class="form-control selectpicker formapago_idD" required readonly disabled>
-                                <option value=''>Seleccione...</option>
-                                @foreach($formapagos as $formapago)
-                                    <option
-                                        value="{{$formapago->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->formapago_id==$formapago->id))
-                                            {{'selected'}}
-                                        @endif
-                                        >
-                                        {{$formapago->descripcion}}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="formapago_idDT" id="formapago_idDT" class="form-control"  value="{{old('formapago_idDT', $data->formapago->descripcion ?? '')}}" readonly required disabled>
+                            <div style="display:none;">
+                                <select name="formapago_idD" id="formapago_idD" class="form-control selectpicker formapago_idD" required readonly disabled>
+                                    <option value=''>Seleccione...</option>
+                                    @foreach($formapagos as $formapago)
+                                        <option
+                                            value="{{$formapago->id}}"
+                                            @if (($aux_sta==2 or $aux_sta==3) and ($data->formapago_id==$formapago->id))
+                                                {{'selected'}}
+                                            @endif
+                                            >
+                                            {{$formapago->descripcion}}
+                                        </option>
+                                    @endforeach
+                                </select>                                
+                            </div>
+
                         </div>
-            
-            
-            
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="giro_idD" class="control-label requerido">Giro</label>
-                            <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
-                                <option value=''>Seleccione...</option>
-                                @foreach($giros as $giro)
-                                    <option
-                                        value="{{$giro->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->giro_id==$giro->id))
-                                            {{'selected'}}
-                                        @endif
-                                        >
-                                        {{$giro->nombre}}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="giroDT" id="giroDT" class="form-control" value="{{old('giroDT', $data->cliente->giro ?? '')}}" readonly required disabled>
+                            <div style="display:none;">
+                                <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
+                                    <option value=''>Seleccione...</option>
+                                    @foreach($giros as $giro)
+                                        <option
+                                            value="{{$giro->id}}"
+                                            @if (($aux_sta==2 or $aux_sta==3) and ($data->giro_id==$giro->id))
+                                                {{'selected'}}
+                                            @endif
+                                            >
+                                            {{$giro->nombre}}
+                                        </option>
+                                    @endforeach
+                                </select>                                
+                            </div>
                         </div>
             
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="tipoentrega_id" class="control-label requerido">Tipo Entrega</label>
-                            <select name="tipoentrega_id" id="tipoentrega_id" class="form-control select2 tipoentrega_id" required {{$enableCamposCot}}>
-                                <option value=''>Seleccione...</option>
-                                @foreach($tipoentregas as $tipoentrega)
-                                    <option
-                                        value="{{$tipoentrega->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and ($data->tipoentrega_id==$tipoentrega->id))
-                                            {{'selected'}}
-                                        @endif
-                                        >
-                                        {{$tipoentrega->nombre}}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="tipoentrega_idT" id="tipoentrega_idT" class="form-control" value="{{old('tipoentrega_idT', $data->tipoentrega->nombre ?? '')}}" readonly required disabled>
+                            <div style="display:none;">
+                                <select name="tipoentrega_id" id="tipoentrega_id" class="form-control select2 tipoentrega_id" required {{$enableCamposCot}}>
+                                    <option value=''>Seleccione...</option>
+                                    @foreach($tipoentregas as $tipoentrega)
+                                        <option
+                                            value="{{$tipoentrega->id}}"
+                                            @if (($aux_sta==2 or $aux_sta==3) and ($data->tipoentrega_id==$tipoentrega->id))
+                                                {{'selected'}}
+                                            @endif
+                                            >
+                                            {{$tipoentrega->nombre}}
+                                        </option>
+                                    @endforeach
+                                </select>    
+                            </div>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="plazoentrega" class="control-label requerido">Plazo Ent.</label>
-                            <input type="text" name="plazoentrega" id="plazoentrega" class="form-control pull-right datepicker"  value="{{old('plazoentrega', $data->plazoentrega ?? '')}}" readonly required {{$enableCamposCot}}>
+                            <input type="text" name="plazoentrega" id="plazoentrega" class="form-control"  value="{{old('plazoentrega', $data->plazoentrega ?? '')}}" readonly required {{$enableCamposCot}}>
                         </div>
                         
             
@@ -263,42 +280,48 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="sucursal_id" class="control-label requerido">Sucursal</label>
-                            <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' required>
-                                <option value=''>Seleccione...</option>
-                                @if (isset($data))
-                                    @foreach($tablas['sucursales'] as $sucursal)
-                                        <option
-                                            value="{{$sucursal->id}}"
-                                            @if (isset($data->sucursal_id) and ($data->sucursal_id==$sucursal->id))
-                                                {{'selected'}}
-                                            @endif
-                                            >
-                                            {{$sucursal->nombre}}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
+                            <input type="text" name="sucursal_idT" id="sucursal_idT" class="form-control" value="{{old('sucursal_idT', $data->sucursal->nombre ?? '')}}" readonly required disabled>
+                            <div style="display:none;">
+                                <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' required>
+                                    <option value=''>Seleccione...</option>
+                                    @if (isset($data))
+                                        @foreach($tablas['sucursales'] as $sucursal)
+                                            <option
+                                                value="{{$sucursal->id}}"
+                                                @if (isset($data->sucursal_id) and ($data->sucursal_id==$sucursal->id))
+                                                    {{'selected'}}
+                                                @endif
+                                                >
+                                                {{$sucursal->nombre}}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>    
+                            </div>
                         </div>
                 
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
-                            <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" {{$enableCamposCot}}/>
+                            <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" readonly required disabled/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="comunaentrega_id" class="control-label requerido">Comuna Entrega</label>
-                            <select name="comunaentrega_id" id="comunaentrega_id" class="form-control select2  comunaentrega_id" data-live-search='true' value="{{old('comunaentrega_id', $data->comunaentrega_id ?? '')}}" required {{$enableCamposCot}}>
-                                <option value="">Seleccione...</option>
-                                @foreach($comunas as $comuna)
-                                    <option
-                                        value="{{$comuna->id}}"
-                                        @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comunaentrega_id)
-                                            {{'selected'}}
-                                        @endif
-                                        >
-                                        {{$comuna->nombre}}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="comunaentrega_idT" id="comunaentrega_idT" class="form-control" value="{{old('comunaentrega_idT', $data->comunaentrega->nombre ?? '')}}" readonly required disabled>
+                            <div style="display:none;">
+                                <select name="comunaentrega_id" id="comunaentrega_id" class="form-control select2  comunaentrega_id" data-live-search='true' value="{{old('comunaentrega_id', $data->comunaentrega_id ?? '')}}" required {{$enableCamposCot}}>
+                                    <option value="">Seleccione...</option>
+                                    @foreach($comunas as $comuna)
+                                        <option
+                                            value="{{$comuna->id}}"
+                                            @if (($aux_sta==2 or $aux_sta==3) and $comuna->id==$data->comunaentrega_id)
+                                                {{'selected'}}
+                                            @endif
+                                            >
+                                            {{$comuna->nombre}}
+                                        </option>
+                                    @endforeach
+                                </select>                                
+                            </div>
                         </div>
                         <!--
                         <div class="form-group col-xs-12 col-sm-3">
@@ -308,21 +331,21 @@
                         
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="contacto" class="control-label requerido">Contacto</label>
-                            <input type="text" name="contacto" id="contacto" class="form-control" value="{{old('contacto', $data->contacto ?? '')}}" required placeholder="Contacto Entrega" {{$enableCamposCot}}/>
+                            <input type="text" name="contacto" id="contacto" class="form-control" value="{{old('contacto', $data->contacto ?? '')}}" required placeholder="Contacto Entrega" readonly required disabled/>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="contactotelf" class="control-label requerido">Teléfono</label>
-                            <input type="text" name="contactotelf" id="contactotelf" class="form-control" value="{{old('contactotelf', $data->contactotelf ?? '')}}" required placeholder="Teléfono Contacto Entrega" {{$enableCamposCot}}/>
+                            <input type="text" name="contactotelf" id="contactotelf" class="form-control" value="{{old('contactotelf', $data->contactotelf ?? '')}}" required placeholder="Teléfono Contacto Entrega" readonly required disabled/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-4">
                             <label for="contactoemail" class="control-label requerido">Email</label>
-                            <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" {{$enableCamposCot}}/>
+                            <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" readonly required disabled/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-5">
                             <label for="observacion" class="control-label">Observaciones</label>
-                            <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}}/>
+                            <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" readonly disabled/>
                         </div>
                     </div>
                 </div>
@@ -337,7 +360,7 @@
                         <div id="group_oc_id" class="form-group col-xs-12 col-sm-12">
                             <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label">Nro OrdenCompra</label>
                             <div class="input-group">
-                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="15" {{$enableCamposCot}}/>
+                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="15" readonly disabled/>
                                 <!--<span class="input-group-btn">
                                     <button class="btn btn-default" type="button" id="btnfotooc" name="btnfotooc" data-toggle='tooltip' title="Cargar Imagen OC" {{$enableCamposCot}}>Examinar...</button>
                                 </span>-->
@@ -460,25 +483,27 @@
                                     $aux_cla_sello_nombre = $detalle->producto->claseprod->cla_nombre;
                                     $aux_producto_nombre = $detalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
+                                    $aux_staAT = false;
+            						$aux_atribAcuTec = "";
                                     //dd($detalle);
                                     if ($detalle->acuerdotecnicotempunoauno){
-                                        $AcuTecTemp = $detalle->acuerdotecnicotempunoauno;
-                                        $aux_producto_nombre = nl2br($detalle->producto->categoriaprod->nombre . ", " . $AcuTecTemp->at_desc);
-                                        $aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "") ;
-                                        $aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "") ;
-                                        $aux_espesor = $AcuTecTemp->at_espesor;
-                                        $aux_cla_sello_nombre = $AcuTecTemp->claseprod->cla_nombre;
+                                        $AcuTec = $detalle->acuerdotecnicotempunoauno;
+                                        $aux_producto_nombre = nl2br($detalle->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+                                        $aux_staAT = true;
                                     }
                                     if ($detalle->producto->acuerdotecnico != null){
                                         $AcuTec = $detalle->producto->acuerdotecnico;
                                         $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+                                        $aux_staAT = true;
+                                    }
+                                    if($aux_staAT){
+                                        $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                         $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
                                         $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
                                         $aux_espesor = $AcuTec->at_espesor;
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-                                    }                                
+                                    }
                                 ?>
-
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$detalle->producto->categoriaprod_id}}">
                                         @if ($detalle->producto->tipoprod == 1)
@@ -560,6 +585,9 @@
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
                                         {{$aux_producto_nombre}}
+                                        @if ($aux_staAT)
+                                            <br><span class='small-text'>{{$aux_atribAcuTec}}</span>
+                                        @endif        
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control"  value="{{$detalle->unidadmedida_id}}" style="display:none;"/>
@@ -722,5 +750,3 @@
         @include('generales.verfoto')
     @endif
 @endif
-
-@include('generales.modalpdf')

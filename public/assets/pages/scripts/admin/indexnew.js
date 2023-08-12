@@ -111,7 +111,6 @@ $(document).on("click", ".btnaprobar", function(event){
 
 
 function ajaxRequest(data,url,funcion,form = false) {
-    //console.log(data);
     $.ajax({
         url: url,
         type: 'POST',

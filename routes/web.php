@@ -32,6 +32,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['aut
     Route::get('', 'AdminController@index');
     /*RUTAS DE USUARIOS*/
     Route::get('usuario', 'UsuarioController@index')->name('usuario');
+    Route::get('usuariopage', 'UsuarioController@usuariopage')->name('usuariopage_usuario');
     Route::get('usuario/crear', 'UsuarioController@crear')->name('crear_usuario');
     Route::post('usuario', 'UsuarioController@guardar')->name('guardar_usuario');
     Route::get('usuario/{id}/editar', 'UsuarioController@editar')->name('editar_usuario');

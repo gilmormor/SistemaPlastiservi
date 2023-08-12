@@ -5,7 +5,8 @@
 
 
 @section("scripts")
-    <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/usuario/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -24,42 +25,16 @@
             <div class="box-body">
                 @csrf
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" name="tabla-data"> 
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Usuario</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Roles</th>
-                        <th class="width70"></th>
-                    </tr>
-                </thead>
-                    <tbody>
-                        @foreach ($usuarios as $usuario)
-                            <tr>
-                                <td>{{$usuario->id}}</td>
-                                <td ><a href="{{route('ver_usuario', ['id' => $usuario->id])}}" class="ver-usuario"> {{$usuario->usuario}} </a></td>
-                                <td>{{$usuario->nombre}}</td>
-                                <td>{{$usuario->email}}</td>
-                                <td>
-                                    @foreach ($usuario->roles as $rol)
-                                        {{$loop->last ? $rol->nombre : $rol->nombre . ','}}
-                                    @endforeach
-                                </td>
-                                <td>
-                                    <a href="{{route('editar_usuario', ['id' => $usuario->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                        <i class="fa fa-fw fa-pencil"></i>
-                                    </a>
-                                    <form action="{{route('eliminar_usuario', ['id' => $usuario->id])}}" class="d-inline form-eliminar" method="POST">
-                                        @csrf @method("delete")
-                                        <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                            <i class="fa fa-fw fa-trash text-danger"></i>
-                                        </button>
-                                    </form>         
-                                </td>    
-                            </tr>
-                        @endforeach
-                    </tbody>
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Usuario</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Roles</th>
+                            <th class="width70"></th>
+                        </tr>
+                    </thead>
                 </table>
             </div>
         </div>
@@ -73,7 +48,7 @@
         <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Modal Header</h4>
+            <h4 class="modal-title">Usuario</h4>
         </div>
         <div class="modal-body">
             <p>Some text in the modal.</p>

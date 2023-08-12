@@ -301,7 +301,7 @@ $(document).ready(function () {
 		$("#observacion").prop('disabled', true);
 		$("#oc_file").prop('disabled', true);
 		$("#oc_file").prop('readonly', true);
-		$(".input-group .file-caption-main").hide();;
+		$(".input-group .file-caption-main").hide();
 		
 	}
 
@@ -592,17 +592,33 @@ function ajaxRequest(data,url,funcion) {
 				$("#myModal").modal('show');
 			}
 			if(funcion=='aprobarnvsup'){
-				if (respuesta.mensaje == "ok") {
-					Biblioteca.notificaciones('El registro fue actualizado correctamente', 'Plastiservi', 'success');
+				//console.log(respuesta.at);
+				if (respuesta.id == 1) {
+					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'success');
 					// *** REDIRECCIONA A UNA RUTA*** 
 					var loc = window.location;
     				window.location = loc.protocol+"//"+loc.hostname+"/notaventaaprobar";
 					// ****************************** 
 				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no puso se actualizado.', 'Plastiservi', 'error');
+					if (respuesta.id == 2){
+						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
 					}else{
-						Biblioteca.notificaciones('El registro no puso se actualizado, hay recursos usandolo', 'Plastiservi', 'error');
+						swal({
+							title: respuesta.mensaje + ": " + respuesta.at.at_desc,
+							text: "Ver Acuerdo Técnico?",
+							icon: 'warning',
+							buttons: {
+								cancel: "No",
+								confirm: "Si"
+							},
+						}).then((value) => {
+							if (value) {
+								genpdfAcuTec(respuesta.at.id,$("#cliente_id").val())
+							}
+						});
+				
+						//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
+						//$("#cliente_id").val();
 					}
 				}
 			}

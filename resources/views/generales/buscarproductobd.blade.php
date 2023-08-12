@@ -38,7 +38,7 @@
                                                 <tr>
                                                     <th>ID</th>
                                                     <th>Nombre</th>
-                                                    <th>Clase</th>
+                                                    <th>Clase<br>Sello</th>
                                                     <th>Diamet/<br>Ancho</th>
                                                     <th style="text-align:right">Largo</th>
                                                     <th style="text-align:right">Peso/<br>Espesor</th>

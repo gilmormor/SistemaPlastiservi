@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class AcuerdoTecnico extends Model
 {
@@ -150,6 +152,65 @@ class AcuerdoTecnico extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class);
+    }
+
+    public static function buscaratxcampos($request)
+    {
+        $request = new Request($request);
+        //dd($request);
+        //dd($request);
+        $aux_ta_fuelleCond = " true ";
+        if(!is_null($request->at_fuelle)){
+            $aux_ta_fuelleCond = "if(isnull(at_fuelle),'',at_fuelle) = $request->at_fuelle";
+        }
+        $aux_ta_largoCond = " true ";
+        if(!is_null($request->at_fuelle)){
+            $aux_ta_largoCond = "if(isnull(at_largo),'',at_largo) = $request->at_largo";
+        }
+        $aux_at_feunidxpaq = $request->at_feunidxpaq;
+        if(is_null($request->at_feunidxpaq)){
+            $aux_at_feunidxpaq = "";
+        }
+        $aux_at_feunidxcont = $request->at_feunidxcont;
+        if(is_null($request->at_feunidxcont)){
+            $aux_at_feunidxcont = "";
+        }
+        $aux_at_feunitxpalet = $request->at_feunitxpalet;
+        if(is_null($request->at_feunitxpalet)){
+            $aux_at_feunitxpalet = "";
+        }
+        $json = json_decode($request->objtxt);
+        $sql = "SELECT acuerdotecnico.*, producto.nombre as producto_nombre
+        FROM acuerdotecnico INNER JOIN producto
+        on acuerdotecnico.producto_id = producto.id
+        WHERE at_claseprod_id = $request->at_claseprod_id
+        and at_materiaprima_id = $request->at_materiaprima_id
+        and at_color_id = $request->at_color_id
+        and at_pigmentacion = $request->at_pigmentacion
+        and at_translucidez = $request->at_translucidez
+        and at_uv = $request->at_uv
+        and at_antideslizante = $request->at_antideslizante
+        and at_antiestatico = $request->at_antiestatico
+        and at_antiblock = $request->at_antiblock
+        and at_aditivootro = $request->at_aditivootro
+        and at_ancho = $request->at_ancho
+        and $aux_ta_fuelleCond
+        and $aux_ta_largoCond
+        and at_espesor = $request->at_espesor
+        and at_impreso = $request->at_impreso
+        and at_tiposello_id = '$request->at_tiposello_id'
+        and if(isnull(at_feunidxpaq),'',at_feunidxpaq) = '$aux_at_feunidxpaq' 
+        and if(isnull(at_feunidxcont),'',at_feunidxcont) = '$aux_at_feunidxcont' 
+        and if(isnull(at_feunitxpalet),'',at_feunitxpalet) = '$aux_at_feunitxpalet' 
+        and isnull(acuerdotecnico.deleted_at)";
+        $datas = DB::select($sql);
+        //dd($datas);
+        return $datas;
+        //return datatables($datas)->toJson();
+
+
+        //return $respuesta;
+        //return response()->json($productos->get());
     }
 
 }

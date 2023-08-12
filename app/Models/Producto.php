@@ -145,7 +145,8 @@ class Producto extends Model
         }
         $sucurcadena = implode(",", $sucurArray);
 
-        $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+        $sql = "SELECT producto.id,producto.nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+                if(isnull(at_claseprod_id),CAST(claseprod.cla_nombre AS CHAR),at_claseprod.cla_nombre) as cla_nombre,
                 if(isnull(at_ancho),CAST(producto.diametro AS CHAR),at_ancho) as diametro,
                 if(isnull(at_espesor),producto.espesor,at_espesor) as espesor,
                 if(isnull(at_largo),producto.long,at_largo) as long1,producto.long,
@@ -162,6 +163,8 @@ class Producto extends Model
                 ON categoriaprodsuc.sucursal_id = sucursal.id
                 LEFT JOIN acuerdotecnico
                 ON producto.id = acuerdotecnico.producto_id
+                LEFT JOIN claseprod as at_claseprod
+                ON at_claseprod.id = acuerdotecnico.at_claseprod_id
                 WHERE sucursal.id in ($sucurcadena)
                 AND producto.estado = 1
                 GROUP BY producto.id
@@ -190,7 +193,8 @@ class Producto extends Model
         }else{
             $tipoprodCond = "producto.tipoprod = " . $request->tipoprod;
         }
-        $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+        $sql = "SELECT producto.id,producto.nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+                if(isnull(at_claseprod_id),CAST(claseprod.cla_nombre AS CHAR),at_claseprod.cla_nombre) as cla_nombre,
                 if(isnull(at_ancho),CAST(producto.diametro AS CHAR),at_ancho) as diametro,
                 if(isnull(at_espesor),producto.espesor,at_espesor) as espesor,
                 if(isnull(at_largo),producto.long,at_largo) as long1,producto.long,
@@ -208,6 +212,8 @@ class Producto extends Model
                 ON categoriaprodsuc.sucursal_id = sucursal.id
                 LEFT JOIN acuerdotecnico
                 ON producto.id = acuerdotecnico.producto_id
+                LEFT JOIN claseprod as at_claseprod
+                ON at_claseprod.id = acuerdotecnico.at_claseprod_id
                 WHERE sucursal.id in ($sucurcadena)
                 and $cliente_idCond
                 and $tipoprodCond

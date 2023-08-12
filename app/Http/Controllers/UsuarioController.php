@@ -9,6 +9,7 @@ use App\Http\Requests\ValidarUsuarioClave;
 use App\Models\Admin\Rol;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\Facades\Image;
 
@@ -26,6 +27,7 @@ class UsuarioController extends Controller
         return view('admin.usuario.index', compact('usuarios')); //Se usa compact() para evitar la sintaxis anterior 
 
     }
+
 
     /**
      * Show the form for creating a new resource.

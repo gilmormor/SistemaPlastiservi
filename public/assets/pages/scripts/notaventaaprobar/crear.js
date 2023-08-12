@@ -255,6 +255,7 @@ $(document).ready(function () {
 		allowedFileExtensions: ["jpg", "png", "gif", "pdf"]
 	});
 */
+	$(".input-group .file-caption-main").hide();
 });
 
 
@@ -536,7 +537,7 @@ function ajaxRequest(data,url,funcion) {
 					if (respuesta.mensaje == "sp"){
 						Biblioteca.notificaciones('Registro no puso se actualizado.', 'Plastiservi', 'error');
 					}else{
-						Biblioteca.notificaciones('El registro no puso se actualizado, hay recursos usandolo', 'Plastiservi', 'error');
+						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
 					}
 				}
 			}

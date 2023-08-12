@@ -3,7 +3,6 @@
     Nota de Venta
 @endsection
 
-@routes
 @section("styles")
     <link rel="stylesheet" href="{{asset("assets/js/bootstrap-fileinput/css/fileinput.min.css")}}">
 @endsection
@@ -64,5 +63,4 @@
         </div>
     </div>
 </div>
-@include('generales.modalpdf')
 @endsection

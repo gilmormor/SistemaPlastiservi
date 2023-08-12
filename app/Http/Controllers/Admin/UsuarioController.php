@@ -10,6 +10,7 @@ use App\Http\Requests\ValidarUsuarioClave;
 use App\Models\Admin\Rol;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\Facades\Image;
 
@@ -26,6 +27,22 @@ class UsuarioController extends Controller
         //dd($usuarios);
         return view('admin.usuario.index', compact('usuarios')); //Se usa compact() para evitar la sintaxis anterior 
 
+    }
+
+    public function usuariopage(){
+        $sql = "SELECT usuario.`*`,'' as rutausuario, GROUP_CONCAT(DISTINCT rol.nombre) AS rol_nombre
+        FROM usuario
+        LEFT JOIN usuario_rol
+        ON usuario_rol.usuario_id = usuario.id
+        LEFT JOIN rol
+        ON rol.id = usuario_rol.rol_id
+        WHERE isnull(usuario.deleted_at)
+        GROUP BY usuario.id;";
+        $datas = DB::select($sql);
+        foreach($datas as &$data){
+            $data->rutausuario = route('ver_usuario', ['id' => $data->id]);
+        }
+        return datatables($datas)->toJson();
     }
 
     /**
@@ -135,7 +152,8 @@ class UsuarioController extends Controller
         if ($request->ajax()) {
             $usuario = Usuario::findOrFail($id);
             $usuario->roles()->detach();
-            $usuario->delete();
+            Usuario::destroy($id);
+            //$usuario->delete();
             return response()->json(['mensaje' => 'ok']);
          } else {
             abort(404);

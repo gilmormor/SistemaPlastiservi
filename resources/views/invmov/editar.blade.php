@@ -3,7 +3,6 @@
     Entrada, Salida Inventario
 @endsection
 
-@routes
 
 @section('scripts')
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>

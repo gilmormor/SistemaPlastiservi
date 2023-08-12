@@ -3,7 +3,6 @@
     Cotización
 @endsection
 
-@routes
 @section('scripts')
     <script src="{{autoVer("assets/pages/scripts/cotizacion/crear.js")}}" type="text/javascript"></script>
 @endsection

@@ -3,8 +3,6 @@
     Pesaje
 @endsection
 
-@routes
-
 @section('scripts')
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/pesaje/crear.js")}}" type="text/javascript"></script>
