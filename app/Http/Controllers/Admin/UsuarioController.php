@@ -30,7 +30,7 @@ class UsuarioController extends Controller
     }
 
     public function usuariopage(){
-        $sql = "SELECT usuario.`*`,'' as rutausuario, GROUP_CONCAT(DISTINCT rol.nombre) AS rol_nombre
+        $sql = "SELECT usuario.*,'' as rutausuario, GROUP_CONCAT(DISTINCT rol.nombre) AS rol_nombre
         FROM usuario
         LEFT JOIN usuario_rol
         ON usuario_rol.usuario_id = usuario.id
