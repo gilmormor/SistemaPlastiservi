@@ -243,11 +243,11 @@
                         </div>-->
                     </div>
                     <div class="row">
-                        <div class="form-group col-xs-12 col-sm-3">
+                        <div class="form-group col-xs-12 col-sm-2">
                             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
                             <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->lugarentrega : ($data->lugarentrega ?? ''))}}" required placeholder="Lugar de Entrega"/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-3">
+                        <div class="form-group col-xs-12 col-sm-2">
                             <label for="comunaentrega_id" class="control-label requerido">Comuna Entrega</label>
                             <select name="comunaentrega_id" id="comunaentrega_id" class="form-control select2  comunaentrega_id" data-live-search='true' value="{{old('comunaentrega_id', $data->comunaentrega_id ?? '')}}" required>
                                 <option value="">Seleccione...</option>
@@ -265,11 +265,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-6">
-                            <label for="obs" class="control-label">Observaciones</label>
-                            <!--<input type='text' name="obs" id="obs" class="form-control" value="{{old('obs', isset($dteguiadesp) ? $dteguiadesp->obs : ($data->observacion ?? ''))}}" placeholder="Observaciones" maxlength="90"/>-->
-                            <textarea class="form-control" name="obs" id="obs" value="{{old('obs', isset($dteguiadesp) ? $dteguiadesp->obs : ($data->observacion ?? ''))}}" placeholder="Observación" maxlength="90"></textarea>
+                        <div class="form-group col-xs-12 col-sm-4">
+                            <label for="obsdespord" class="control-label">Observación Orden Despacho</label>
+                            <textarea class="form-control" name="obsdespord" id="obsdespord" value="{{old('obsdespord', isset($dteguiadesp) ? $dteguiadesp->obs : ($data->observacion ?? ''))}}" placeholder="Observación" readonly disabled></textarea>
                         </div>
+                        <div class="form-group col-xs-12 col-sm-4">
+                            <label for="obs" class="control-label">Observación Guia</label>
+                            <textarea class="form-control" name="obs" id="obs" maxlength="90"></textarea>
+                        </div>
+
                     </div>
                 </div>
             </div>

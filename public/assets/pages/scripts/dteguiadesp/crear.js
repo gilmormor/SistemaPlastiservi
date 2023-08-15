@@ -1,7 +1,7 @@
 $(document).ready(function () {
 	Biblioteca.validacionGeneral('form-general');
 	aux_obs = $("#aux_obs").val();
-	$("#obs").val(aux_obs);
+	$("#obsdespord").val(aux_obs);
 
 	$('.tablas').DataTable({
 		'paging'      : true, 

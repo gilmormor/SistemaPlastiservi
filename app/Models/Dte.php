@@ -2596,7 +2596,8 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                 $aux_totalqtyitem += $dtedet->qtyitem;
             }
         
-            $TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->dteguiadesp->ot) ? "" : "OT:" . $dte->dteguiadesp->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->dteguiadesp->lugarentrega . " ")  . (empty($dte->dteguiadesp->comunaentrega_id) ? "" : $dte->dteguiadesp->comunaentrega->nombre . " ");
+            //$TpoDocRef = (empty($dte->dteguiadesp->despachoord_id) ? "" : "OD:" . $dte->dteguiadesp->despachoord_id . " ") . (empty($dte->dteguiadesp->ot) ? "" : "OT:" . $dte->dteguiadesp->ot . " ")  . (empty($dte->obs) ? "" : $dte->obs . " ") . (empty($dte->lugarentrega) ? "" : $dte->dteguiadesp->lugarentrega . " ")  . (empty($dte->dteguiadesp->comunaentrega_id) ? "" : $dte->dteguiadesp->comunaentrega->nombre . " ");
+            $TpoDocRef = (empty($dte->obs) ? "" : $dte->obs . " ");
             $TpoDocRef = strtoupper(sanear_string(substr(trim($TpoDocRef),0,90)));
         
             $contenido .= "<Referencia>" .
@@ -2622,11 +2623,22 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                 "<RazonRef>$TpoDocRef</RazonRef>" .
                 "</Referencia>";
         
+            }else{
+                if(!empty($dte->obs)){
+                    $FolioRef = date('dmY');
+                    $contenido .= "<Referencia>" .
+                    "<NroLinRef>3</NroLinRef>" .
+                    "<TpoDocRef>801</TpoDocRef>" .
+                    "<FolioRef>$FolioRef</FolioRef>" .
+                    "<FchRef>$FchEmis</FchRef>" .
+                    "<RazonRef>$TpoDocRef</RazonRef>" .
+                    "</Referencia>";    
+                }
             }
             $contenido .= "</Documento>" .
-            "</DTE>";        
+            "</DTE>";
         }
-    
+        //dd($contenido);
         return $contenido;
     }
     if($dte->foliocontrol->tipodocto == 33 or $dte->foliocontrol->tipodocto == 34){

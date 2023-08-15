@@ -302,8 +302,11 @@ function reporte1($request){
             }
             $request["invbodega_id"] = $aux_invbodega_id;
             $request["tipo"] = 2;
-            $existencia = $invbodegaproducto::existencia($request);
-            $stock = $existencia["stock"]["cant"];
+            $stock = 0;
+            if(isset($invbodegaproducto)){
+                $existencia =  $invbodegaproducto::existencia($request);
+                $stock = $existencia["stock"]["cant"];    
+            }
             //dd($request);
 
             $aux_producto_id = $data->producto_id;
