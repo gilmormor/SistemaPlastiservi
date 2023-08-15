@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\AcuTecAprobarRechazar;
 use App\Events\AvisoRevisionAcuTec;
 use App\Http\Requests\ValidarCotizacion;
+use App\Models\AcuerdoTecnico;
 use App\Models\AcuerdoTecnicoTemp;
 use App\Models\AcuerdoTecnicoTemp_Cliente;
 use App\Models\CategoriaProd;
@@ -856,6 +857,22 @@ class CotizacionController extends Controller
             }else{
                 if($cotizacion->aprobstatus == "5"){ //Aprobar o rechazar acuerdo tecnico
                     if($request->valor == "3"){
+                        foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
+                            if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
+                                $array_acuerdotecnicotemp = $cotizaciondetalle->acuerdotecnicotempunoauno->attributesToArray();
+                                //BUSCAR ACUERDO TECNICO
+                                $at = AcuerdoTecnico::buscaratxcampos($array_acuerdotecnicotemp);
+                                if(count($at) > 0){
+                                    //SI EXISTE DEVUELVO EL ACUERDO TECNICO A LA VISTA
+                                    return response()->json([
+                                        'id' => 0,
+                                        'mensaje' => 'Acuerdo tecnico ya existe',
+                                        'at' => $at[0]
+                                    ]);
+                                }
+                            }
+                        }
+            
                         //$cotizacion->aprobstatus = "6"; Este estatus era para acuerdo tecnico aprobado, pero ahora todas las cotizaciones deben pasar por aprobacion de Luisa Martinez
                         $cotizacion->aprobstatus = "2";
                         $cotizacion->aprobobs = "Cotizacion requiere Aprobacion Financiera (Santa Ester)";

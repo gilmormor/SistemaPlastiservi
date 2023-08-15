@@ -1652,7 +1652,7 @@ $("#producto_idM").blur(function(){
 				/*
 				console.log(respuesta['cont']);
 				*/
-				console.log(respuesta);
+				//console.log(respuesta);
 				//return 0;
 				if(respuesta['cont']>0){
 					if(respuesta['estado'] == 0){
@@ -2411,6 +2411,7 @@ function crearEditarAcuTec(i){
 	}
 	$("#at_tiposello_id").val(1);
 	$("#at_unidadmedida_id").val($("#unidadmedida_id" + i).val())
+	$("#at_unidadmedida_nombre").val($("#at_unidadmedida_id option:selected").html())
 	$(".selectpicker").selectpicker('refresh');
 	embalajePlastiservi();
     $("#myModalAcuerdoTecnico").modal('show');

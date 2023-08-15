@@ -234,6 +234,15 @@ function consultarpage(data){
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(3).html(fechaddmmaaaa(aux_fecha));
 
+            if(data.acuerdotecnico_id != null){
+                aux_text = 
+                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico">
+                    ${data.producto_id}
+                </a>`;
+                $('td', row).eq(5).html(aux_text);
+                $('td', row).eq(5).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',1,"");');
+            }
+            
             $('td', row).eq(9).attr('data-order',data.cant);
             $('td', row).eq(9).attr('style','text-align:right');
             aux_text = MASKLA(data.cant,2);

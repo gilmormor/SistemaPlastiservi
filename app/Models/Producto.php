@@ -162,7 +162,7 @@ class Producto extends Model
                 INNER JOIN sucursal
                 ON categoriaprodsuc.sucursal_id = sucursal.id
                 LEFT JOIN acuerdotecnico
-                ON producto.id = acuerdotecnico.producto_id
+                ON producto.id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
                 LEFT JOIN claseprod as at_claseprod
                 ON at_claseprod.id = acuerdotecnico.at_claseprod_id
                 WHERE sucursal.id in ($sucurcadena)
@@ -211,7 +211,7 @@ class Producto extends Model
                 INNER JOIN sucursal
                 ON categoriaprodsuc.sucursal_id = sucursal.id
                 LEFT JOIN acuerdotecnico
-                ON producto.id = acuerdotecnico.producto_id
+                ON producto.id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
                 LEFT JOIN claseprod as at_claseprod
                 ON at_claseprod.id = acuerdotecnico.at_claseprod_id
                 WHERE sucursal.id in ($sucurcadena)
@@ -256,7 +256,7 @@ class Producto extends Model
                 INNER JOIN sucursal
                 ON categoriaprodsuc.sucursal_id = sucursal.id
                 LEFT JOIN acuerdotecnico
-                ON producto.id = acuerdotecnico.producto_id
+                ON producto.id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
                 WHERE sucursal.id in ($sucurcadena)
                 and $cliente_idCond
                 GROUP BY producto.id
@@ -905,7 +905,7 @@ class Producto extends Model
             producto.diamextmm,producto.diamextpg,
             producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,
             categoriaprod.nombre as categoria_nombre,categoriaprod.precio,categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,
-            producto.precioneto
+            producto.precioneto,acuerdotecnico.id as acuerdotecnico_id
             FROM producto INNER JOIN claseprod
             ON producto.claseprod_id=claseprod.id AND isnull(producto.deleted_at) AND isnull(claseprod.deleted_at)
             INNER JOIN categoriaprod
@@ -914,6 +914,8 @@ class Producto extends Model
             ON categoriaprod.id = categoriaprodsuc.categoriaprod_id AND isnull(categoriaprodsuc.deleted_at)
             INNER JOIN sucursal
             ON categoriaprodsuc.sucursal_id = sucursal.id AND isnull(sucursal.deleted_at)
+            LEFT JOIN acuerdotecnico
+            ON producto.id = acuerdotecnico.producto_id AND isnull(acuerdotecnico.deleted_at)
             WHERE $aux_areaproduccion_idCond
             and $aux_producto_idCodn
             and $aux_categoriaprod_idCond

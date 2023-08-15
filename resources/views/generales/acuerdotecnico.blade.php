@@ -353,16 +353,17 @@
                                                     <div class="col-xs-12 col-sm-12" classorig="col-xs-12 col-sm-12">
                                                         <label for="at_unidadmedida_id" class="control-label at_unidadmedida_id requerido" data-toggle='tooltip' title="Unidad Medida Base">Unid Medida Base</label>
                                                         <a class="btn-sm tooltipsC" data-original-title="Unidad de medida como va ser vendido el producto" aria-describedby="tooltip202998"><i class="fa fa-fw fa-question-circle text-aqua"></i></a>
-                                                        <select name="at_unidadmedida_id" id="at_unidadmedida_id" class="selectpicker form-control at_unidadmedida_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox" disabled>
-                                                            <option value="">Seleccione...</option>
-                                                            @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
-                                                                <option
-                                                                    value="{{$unidadmedida->id}}"
-                                                                    >
-                                                                    {{$unidadmedida->nombre}}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
+                                                        <input type="text" name="at_unidadmedida_nombre" id="at_unidadmedida_nombre" class="form-control form_acutec valorrequerido" tipoval="texto" disabled/>
+                                                        <div style="display:none">
+                                                            <select name="at_unidadmedida_id" id="at_unidadmedida_id" class="selectpicker form-control at_unidadmedida_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                                                <option value="">Seleccione...</option>
+                                                                @foreach($tablas['unidadmedidaAT'] as $unidadmedida)
+                                                                    <option
+                                                                        value="{{$unidadmedida->id}}"
+                                                                        >{{$unidadmedida->nombre}}</option>
+                                                                @endforeach
+                                                            </select>    
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

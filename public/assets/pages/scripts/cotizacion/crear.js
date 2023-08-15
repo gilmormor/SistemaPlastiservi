@@ -620,7 +620,25 @@ function ajaxRequest(data,url,funcion) {
 					if (respuesta.mensaje == "sp"){
 						Biblioteca.notificaciones('Registro no puso se actualizado.', 'Plastiservi', 'error');
 					}else{
-						Biblioteca.notificaciones('El registro no puso se actualizado, hay recursos usandolo', 'Plastiservi', 'error');
+						if($("#aprobstatus").val()== "5"){
+							if(respuesta.id !== undefined && respuesta.id == 0){
+								swal({
+									title: respuesta.mensaje + ": " + respuesta.at.at_desc,
+									text: "Ver Acuerdo Técnico?",
+									icon: 'warning',
+									buttons: {
+										cancel: "No",
+										confirm: "Si"
+									},
+								}).then((value) => {
+									if (value) {
+										genpdfAcuTec(respuesta.at.id,$("#cliente_id").val())
+									}
+								});	
+							}else{
+								Biblioteca.notificaciones('El registro no puso se actualizado, hay recursos usandolo', 'Plastiservi', 'error');
+							}	
+						}
 					}
 				}
 			}
@@ -646,7 +664,9 @@ function ajaxRequest(data,url,funcion) {
 							confirm: "Ver AT"
 						},
 						}).then((value) => {
-							genpdfAcuTec(respuesta[0].id,$("#cliente_id").val(),1);
+							if(value){
+								genpdfAcuTec(respuesta[0].id,$("#cliente_id").val(),1);
+							}
 							/*
 							fila = $(this).closest("tr");
 							form = $(this);
@@ -1259,6 +1279,7 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 		$(".form_acutec").serializeArray().map(function(x){data[x.name] = x.value;});
 		arrayat_certificados = $("#at_certificados").val();
 		data.at_certificados = arrayat_certificados.toString();
+		//console.log(data);
 		localStorage.setItem('datos', JSON.stringify(data));
 		var guardado = localStorage.getItem('datos');
 		aux_nfila = $("#aux_numfilaAT").val();

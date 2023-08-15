@@ -236,7 +236,7 @@ class InvMov extends Model
         inner join invmovtipo 
         on invmovdet.invmovtipo_id = invmovtipo.id and isnull(invmovtipo.deleted_at)
         LEFT JOIN acuerdotecnico
-        ON producto.id = acuerdotecnico.producto_id
+        ON producto.id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
         LEFT JOIN unidadmedida as at_unidadmedida
         ON at_unidadmedida.id = acuerdotecnico.at_unidadmedida_id
         where invmov.annomes = $aux_annomes 

@@ -44,6 +44,15 @@ $(document).ready(function () {
                     $(row).hide();                    
                 }*/
                 $('td', row).eq(0).attr('style','text-align:center');
+                if(data.acuerdotecnico_id != null){
+                    aux_text = 
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico">
+                        ${data.producto_id}
+                    </a>`;
+                    $('td', row).eq(0).html(aux_text);
+                    $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',1,"");');
+                }
+    
                 $('td', row).eq(3).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');
                 $('td', row).eq(6).attr('data-order',data.espesor);
