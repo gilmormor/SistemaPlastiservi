@@ -107,6 +107,13 @@ class DteGuiaDespNVController extends Controller
         }
 
         $cliente = Cliente::findOrFail($request->cliente_id);
+        foreach ($cliente->clientebloqueados as $clientebloqueado) {
+            return redirect('dteguiadespnv')->with([
+                'id' => 0,
+                'mensaje'=>'No es posible hacer Guia Despacho, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $dte = new Dte();
         //CREAR REGISTRO DE ORDEN DE COMPRA
         //dd($request->oc_id);

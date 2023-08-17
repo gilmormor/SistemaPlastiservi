@@ -78,6 +78,13 @@ class DteFacturaExentaController extends Controller
         }
 
         $cliente = Cliente::findOrFail($request->cliente_id);
+        foreach ($cliente->clientebloqueados as $clientebloqueado) {
+            return redirect('dtefacturaexenta')->with([
+                'id' => 0,
+                'mensaje'=>'No es posible hacer Factura, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $dte = new Dte();
         $dtefac = new DteFac();
         //$dtefac->dte_id = $dte_id;
