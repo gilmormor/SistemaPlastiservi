@@ -171,7 +171,14 @@ class DespachoSolController extends Controller
         if(count($notaventacerrada) == 0){
             $notaventa = NotaVenta::findOrFail($request->notaventa_id);
             //dd('cliente bloquedo');
-            
+            foreach ($notaventa->cliente->clientebloqueados as $clientebloqueado) {
+                return redirect('despachosol')->with([
+                    'id' => 0,
+                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            /*
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$notaventa->cliente_id)->get();
             if(count($clibloq) > 0){
                 return redirect('despachosol')->with([
@@ -179,6 +186,7 @@ class DespachoSolController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);
             }
+            */
             if($notaventa->updated_at == $request->updated_at){
                 //dd($request->invbodegaproducto_id);
                 $notaventa->updated_at = date("Y-m-d H:i:s");
@@ -383,6 +391,14 @@ class DespachoSolController extends Controller
             $dateInput = explode('/',$request->fechaestdesp);
             $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
             $despachosol = DespachoSol::findOrFail($id);
+            foreach ($despachosol->notaventa->cliente->clientebloqueados as $clientebloqueado) {
+                return redirect('despachosol')->with([
+                    'id' => 0,
+                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            /*
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
             if(count($clibloq) > 0){
                 return redirect('despachosol')->with([
@@ -390,6 +406,7 @@ class DespachoSolController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);
             }
+            */
             if(true or $despachosol->updated_at == $request->updated_at){
                 $despachosol->updated_at = date("Y-m-d H:i:s");
                 $despachosol->comunaentrega_id = $request->comunaentrega_id;
@@ -1738,6 +1755,13 @@ class DespachoSolController extends Controller
         //dd($request);
         $despachosol = DespachoSol::findOrFail($request->id);
         if(count($despachosol->notaventa->notaventacerradas) == 0){
+            foreach ($despachosol->notaventa->cliente->clientebloqueados as $clientebloqueado) {
+                return [
+                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clientebloqueado->descripcion ,
+                    'tipo_alert' => 'error'
+                ];
+            }
+            /*
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
             if(count($clibloq) > 0){
                 return [
@@ -1745,6 +1769,7 @@ class DespachoSolController extends Controller
                     'tipo_alert' => 'error'
                 ];
             }
+            */
             if($despachosol->updated_at == $request->updated_at){
                 $dateInput = explode('/',$request->aux_fechaestdesp);
                 $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];  

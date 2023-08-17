@@ -141,6 +141,13 @@ class DteGuiaDespController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        foreach ($despachoord->notaventa->cliente->clientebloqueados as $clientebloqueado) {
+            return redirect('dteguiadesp/listarorddesp')->with([
+                'id' => 0,
+                'mensaje'=>'No es posible hacer Guia de Despacho, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         if(is_null($despachoord->notaventa->cliente->giro) or empty($despachoord->notaventa->cliente->giro) or $despachoord->notaventa->cliente->giro ==""){
             return redirect('dteguiadesp/listarorddesp')->with([
                 'id' => 0,

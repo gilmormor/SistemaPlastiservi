@@ -115,29 +115,21 @@ $(document).ready(function () {
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
             $('td', row).eq(9).html(aux_text);
             $('td', row).eq(9).attr('style','text-align:center');
-
+            console.log(data);
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
-                        "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
+                        "<button type='button' class='btn btn-default btn-xs' disabled>" +
+                            "<i class='fa fa-fw fa-lock text-danger text-danger'></i>"+
+                        "</button>" +
                     "</a>";
             }else{
-                /*
-                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarsol(" + i + "," + data.id + ")' title='Aprobar Orden Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+*/
-/*
-                "<a href='/despachoord/aproborddesp' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar Orden Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+
-*/
                 aux_text = 
-                "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm' onclick='aprobarord(" + data.id + "," + data.id + ")' title='Aprobar Orden Despacho' data-toggle='tooltip'>"+
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+
-                "<a href='despachoord' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-                    "<i class='fa fa-fw fa-pencil'></i>"
-                "</a>";
+                "<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Guia Despacho: " + data.tipoentrega_nombre + "'>" +
+                    "<button type='button' class='btn btn-default btn-xs'>" +
+                        "<i class='fa fa-fw " + data.icono + "'></i>"+
+                    "</button>" +
+                "</a>|";
             }
             $('td', row).eq(14).addClass('updated_at');
             $('td', row).eq(14).attr('id','updated_at' + data.id);
@@ -156,11 +148,7 @@ $(document).ready(function () {
             "</a>|";
             }
             */
-            aux_text = "<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Guia Despacho: " + data.tipoentrega_nombre + "'>" +
-                    "<button type='button' class='btn btn-default btn-xs'>" +
-                        "<i class='fa fa-fw " + data.icono + "'></i>"+
-                    "</button>" +
-                    "</a>|" +
+            aux_text =  aux_text +
                     "<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Devolver Orden Despacho' data-toggle='tooltip'>" +
                                     "<button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>" +
                     "</a>";

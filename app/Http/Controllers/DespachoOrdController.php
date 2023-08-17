@@ -279,6 +279,7 @@ class DespachoOrdController extends Controller
         //dd($notaventacerrada);
         if(count($notaventacerrada) == 0){
             $despachosol = DespachoSol::findOrFail($request->despachosol_id);
+
             if($despachosol->updated_at != $request->updated_at){
                 return redirect('despachoord')->with([
                     'mensaje'=>'Solicitud Despacho modificada por otro usuario:' . $despachosol->id,
@@ -301,71 +302,77 @@ class DespachoOrdController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);
 
-            }else{
-                //dd($aux_despachoord);
-
-                $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
-                if(count($clibloq) > 0){
-                    return redirect('despachoord')->with([
-                        'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
-                        'tipo_alert' => 'alert-error'
-                    ]);
-                }
-                if($despachosol->updated_at == $request->updated_at){
-                    $despachosol->updated_at = date("Y-m-d H:i:s");
-                    $despachosol->save();
-                    $hoy = date("Y-m-d H:i:s");
-                    $request->request->add(['fechahora' => $hoy]);
-                    $request->request->add(['usuario_id' => auth()->id()]);
-                    $dateInput = explode('/',$request->plazoentrega);
-                    $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-                    $dateInput = explode('/',$request->fechaestdesp);
-                    $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-                    $despachoord = DespachoOrd::create($request->all());
-                    $despachoord_id = $despachoord->id;
-                    $cont_producto = count($request->producto_id);
-                    if($cont_producto>0){
-                        for ($i=0; $i < $cont_producto ; $i++){
-                            $aux_cantord = $request->cantord[$i];
-                            if(is_null($request->producto_id[$i])==false && is_null($aux_cantord)==false && $aux_cantord > 0){
-                                $despachoorddet = new DespachoOrdDet();
-                                $despachoorddet->despachoord_id = $despachoord_id;
-                                $despachoorddet->despachosoldet_id = $request->despachosoldet_id[$i];
-                                $despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];
-                                $despachoorddet->cantdesp = $request->cantord[$i];
-                                if($despachoorddet->save()){
-                                    $cont_bodegas = count($request->invcant);
-                                    if($cont_bodegas>0){
-                                        for ($b=0; $b < $cont_bodegas ; $b++){
-                                            if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
-                                                $despachoorddet_invbodegaproducto = new DespachoOrdDet_InvBodegaProducto();
-                                                $despachoorddet_invbodegaproducto->despachoorddet_id = $despachoorddet->id;
-                                                $despachoorddet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
-                                                $despachoorddet_invbodegaproducto->cant = $request->invcant[$b] * -1;
-                                                $despachoorddet_invbodegaproducto->save();
-                                            }
+            }
+            foreach ($despachosol->notaventa->cliente->clientebloqueados as $clientebloqueado) {
+                return redirect('despachoord')->with([
+                    'id' => 0,
+                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            /*
+            $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
+            if(count($clibloq) > 0){
+                return redirect('despachoord')->with([
+                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            */
+            if($despachosol->updated_at == $request->updated_at){
+                $despachosol->updated_at = date("Y-m-d H:i:s");
+                $despachosol->save();
+                $hoy = date("Y-m-d H:i:s");
+                $request->request->add(['fechahora' => $hoy]);
+                $request->request->add(['usuario_id' => auth()->id()]);
+                $dateInput = explode('/',$request->plazoentrega);
+                $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+                $dateInput = explode('/',$request->fechaestdesp);
+                $request["fechaestdesp"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+                $despachoord = DespachoOrd::create($request->all());
+                $despachoord_id = $despachoord->id;
+                $cont_producto = count($request->producto_id);
+                if($cont_producto>0){
+                    for ($i=0; $i < $cont_producto ; $i++){
+                        $aux_cantord = $request->cantord[$i];
+                        if(is_null($request->producto_id[$i])==false && is_null($aux_cantord)==false && $aux_cantord > 0){
+                            $despachoorddet = new DespachoOrdDet();
+                            $despachoorddet->despachoord_id = $despachoord_id;
+                            $despachoorddet->despachosoldet_id = $request->despachosoldet_id[$i];
+                            $despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];
+                            $despachoorddet->cantdesp = $request->cantord[$i];
+                            if($despachoorddet->save()){
+                                $cont_bodegas = count($request->invcant);
+                                if($cont_bodegas>0){
+                                    for ($b=0; $b < $cont_bodegas ; $b++){
+                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
+                                            $despachoorddet_invbodegaproducto = new DespachoOrdDet_InvBodegaProducto();
+                                            $despachoorddet_invbodegaproducto->despachoorddet_id = $despachoorddet->id;
+                                            $despachoorddet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
+                                            $despachoorddet_invbodegaproducto->cant = $request->invcant[$b] * -1;
+                                            $despachoorddet_invbodegaproducto->save();
                                         }
                                     }
-                                    /*
-                                    $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
-                                    $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
-                                    $notaventadetalle->save();
-                                    */
-                                    //$despacho_id = $despachoord->id;
                                 }
+                                /*
+                                $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
+                                $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
+                                $notaventadetalle->save();
+                                */
+                                //$despacho_id = $despachoord->id;
                             }
                         }
                     }
-                    return redirect('despachoord')->with([
-                        'mensaje'=>'Registro creado con exito.',
-                        'tipo_alert' => 'alert-success'
-                    ]);
-                }else{
-                    return redirect('despachoord')->with([
-                        'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
-                        'tipo_alert' => 'alert-error'
-                    ]);
                 }
+                return redirect('despachoord')->with([
+                    'mensaje'=>'Registro creado con exito.',
+                    'tipo_alert' => 'alert-success'
+                ]);
+            }else{
+                return redirect('despachoord')->with([
+                    'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                    'tipo_alert' => 'alert-error'
+                ]);
             }
         }else{
             return redirect('despachoord')->with([
