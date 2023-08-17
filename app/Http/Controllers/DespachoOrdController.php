@@ -1147,6 +1147,7 @@ class DespachoOrdController extends Controller
                 <tr>
                     <th>ID OD</th>
                     <th>Fecha</th>
+                    <th>CodProd</th>
                     <th style='text-align:right'>Solic</th>
                     <th style='text-align:right'>Entregado</th>
                     <th class='textcenter'>Unidad</th>
@@ -1234,11 +1235,12 @@ class DespachoOrdController extends Controller
                     $respuesta['tabla'] .= "
                     <tr id='fila$i' name='fila$i'>
                         <td id='id$i' name='id$i'>
-                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoorddet->despachoord_id,1)'>
+                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoorddet->despachoord_id,1,\"myModalTablaOD\")'>
                                 $despachoorddet->despachoord_id
                             </a>                            
                         </td>
-                        <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($despachoorddet->created_at)) . "</td>
+                        <td id='fechahora$i' name='fechahora$i'>" . date('d/m/Y', strtotime($despachoorddet->created_at)) . "</td>
+                        <td style='text-align:center'>". $despachoorddet->notaventadetalle->producto_id ."</td>
                         <td style='text-align:right'>". number_format($cantsoldesp, 0, ",", ".") ."</td>
                         <td style='text-align:right'>" . $aux_botonMostrar . number_format($despachoorddet->cantdesp, 0, ",", ".") .
                             "<div id='divTabOT$i' style='display:none;'>
@@ -1253,7 +1255,7 @@ class DespachoOrdController extends Controller
                         <td class='textcenter'>$tipounion</td>
                         <td class='textcenter'>$peso</td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->guiadespacho ." </td>
-                        <td class='textcenter'>" . date('d-m-Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
+                        <td class='textcenter'>" . date('d/m/Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->numfactura . "</td>    
                     </tr>";
 
@@ -1267,6 +1269,7 @@ class DespachoOrdController extends Controller
                 <tfoot>
                     <tr>
                         <th colspan='2' style='text-align:left'>TOTALES</th>
+                        <th style='text-align:right'></th>
                         <th style='text-align:right'></th>
                         <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
                         <th colspan='10' style='text-align:right'></th>
