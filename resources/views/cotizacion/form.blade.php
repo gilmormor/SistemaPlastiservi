@@ -411,15 +411,15 @@
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}" categoriaprod_nombre="{{$aux_categoria_nombre}}">
                                         {!!$aux_producto_nombre!!}
+                                        @if ($aux_staAT)
+                                            <br><span class='small-text'>{{$aux_atribAcuTec}}</span>
+                                        @endif
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->unidadmedida_id}}" style="display:none;"/>
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
                                         {{$aux_cla_sello_nombre}}
-                                        @if ($aux_staAT)
-                                            <br><span class='small-text'>{{$aux_atribAcuTec}}</span>
-                                        @endif
                                     </td>
                                     <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
                                         {{$aux_ancho}}
