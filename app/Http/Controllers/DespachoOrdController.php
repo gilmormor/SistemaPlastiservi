@@ -32,6 +32,7 @@ use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovDet_BodSolDesp;
 use App\Models\InvMovModulo;
+use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\PlazoPago;
 use App\Models\Producto;
@@ -1136,13 +1137,57 @@ class DespachoOrdController extends Controller
 		$respuesta['mensaje'] = "Código no Existe";
 		$respuesta['tabla'] = "";
         if($request->ajax()){
+            $notaventa = NotaVenta::findOrFail($request->id);
+            //dd($notaventa->despachoords);
+            $tab1 = "
+            <table id='tabladespachoord' name='tabladespachoord' class='table display AllDataTables table-hover table-condensed' data-page-length='10'>
+            <thead>
+                <tr>
+                    <th>ID OD</th>
+                    <th>Fecha</th>
+                    <th style='text-align:left'>Razon Social</th>
+                    <th class='textcenter'>Guia</th>
+                    <th class='textcenter'>FecFact</th>
+                    <th class='textcenter'>Nfact</th>
+                </tr>
+            </thead>
+            <tbody>";
+            $i=0;
+
+            foreach ($notaventa->despachoords as $despachoord) {
+                $tab1 .=
+                    "<tr id='filaord$i' name='filaord$i'>
+                    <td id='id$i' name='id$i'>
+                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoord->id,1,\"myModalTablaOD\")'>
+                            $despachoord->id
+                        </a>                            
+                    </td>
+                    <td id='fechahoraord$i' name='fechahoraord$i'>" . date('d/m/Y', strtotime($despachoord->created_at)) . "</td>
+                    <td style='text-align:left'>". $despachoord->notaventa->cliente->razonsocial ."</td>
+                    <td class='textcenter'>" . $despachoord->guiadespacho ." </td>
+                    <td class='textcenter'>" . date('d/m/Y', strtotime($despachoord->fechafactura)) . "</td>
+                    <td class='textcenter'>" . $despachoord->numfactura . "</td>    
+                </tr>";
+            }
+
+            $tab1 .= "
+                </tbody>
+            </table>";
+
             $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
+            $despchoords = DespachoOrd::orderBy('id')
+                ->where('notaventa_id','=',$request->id)
+                ->whereNotIn('id',  $despachoordanul)
+                ->get();
+/*
             $despchoords = DespachoOrd::orderBy('id')
                     ->where('notaventa_id','=',$request->id)
                     ->whereNotNull('numfactura')
                     ->whereNotIn('id',  $despachoordanul)
                     ->get();
-            $respuesta['tabla'] .= "<table id='tabladespachoorddet' name='tabladespachoorddet' class='table display AllDataTables table-hover table-condensed' data-page-length='10'>
+*/
+            $tab2 = "
+            <table id='tabladespachoorddet' name='tabladespachoorddet' class='table display AllDataTables table-hover table-condensed' data-page-length='10'>
             <thead>
                 <tr>
                     <th>ID OD</th>
@@ -1232,7 +1277,7 @@ class DespachoOrdController extends Controller
                                 </a>";
                     }
 //                    $tablaOrdTrab= "";
-                    $respuesta['tabla'] .= "
+                    $tab2 .= "
                     <tr id='fila$i' name='fila$i'>
                         <td id='id$i' name='id$i'>
                             <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoorddet->despachoord_id,1,\"myModalTablaOD\")'>
@@ -1264,18 +1309,34 @@ class DespachoOrdController extends Controller
                     $aux_totalcantdesp += $despachoorddet->cantdesp;
                 }
             }
+            $tab2 .= "
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='2' style='text-align:left'>TOTALES</th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'></th>
+                    <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
+                    <th colspan='10' style='text-align:right'></th>
+                </tr>
+            </tfoot>
+            </table>";
+
             $respuesta['tabla'] .= "
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan='2' style='text-align:left'>TOTALES</th>
-                        <th style='text-align:right'></th>
-                        <th style='text-align:right'></th>
-                        <th style='text-align:right'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
-                        <th colspan='10' style='text-align:right'></th>
-                    </tr>
-                </tfoot>
-                </table>";
+            <div class='nav-tabs-custom' id='tabs'>
+                <ul class='nav nav-tabs'>
+                    <li class='active'><a href='#tab_1' data-toggle='tab'  id='tab1' name='tab1'>Orden de despacho</a></li>
+                    <li><a href='#tab_2' data-toggle='tab' id='tab2' name='tab2'>Detalle Orden Despacho</a></li>
+                </ul>
+                <div class='tab-content'>
+                <div class='tab-pane active' id='tab_1'>
+                    $tab1
+                </div>
+                <div class='tab-pane' id='tab_2'>
+                    $tab2
+                </div>
+            </div>";
+
         }
         return $respuesta;
     }

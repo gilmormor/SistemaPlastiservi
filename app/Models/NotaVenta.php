@@ -166,4 +166,10 @@ class NotaVenta extends Model
     {
         return $this->belongsTo(Moneda::class);
     }
+    //RELACION DE UNO A MUCHOS DespachoOrd
+    public function despachoords()
+    {
+        return $this->hasMany(DespachoOrd::class,'notaventa_id');
+    }
+    
 }

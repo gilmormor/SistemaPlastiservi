@@ -107,15 +107,15 @@ $(document).ready(function () {
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
 
 			aux_text = 
-				"<a class='btn-accion-tabla btn-sm btngenpdfNV1 tooltipsC' title='Nota de venta: " + data.id + "'>" +
+				"<a class='btn-accion-tabla btn-sm btngenpdfNV1 tooltipsC action-buttons' title='Nota de venta: " + data.id + "'>" +
 					"<i class='fa fa-fw fa-file-pdf-o'></i>" +
 				"</a>"+
-				"<a class='btn-accion-tabla btn-sm btngenpdfNV2 tooltipsC' title='Precio x Kg: " + data.id + "'>" +
+				"<a class='btn-accion-tabla btn-sm btngenpdfNV2 tooltipsC action-buttons' title='Precio x Kg: " + data.id + "'>" +
 					"<i class='fa fa-fw fa-file-pdf-o'></i>" +
 				"</a>";
 			if(colorinfo != ""){
 				aux_text +=
-				"<a class='btn-sm tooltipsC' title='" + aux_title + "'>" +
+				"<a class='btn-sm tooltipsC action-buttons' title='" + aux_title + "'>" +
 					"<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
 				"</a>";
 			}
@@ -135,7 +135,7 @@ $(document).ready(function () {
 
 			aux_text = 
 			"<div class='tools1'>" +
-				"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar'>" +
+				"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC action-buttons' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar'>" +
 					"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>" + 
 				"</a>"
 			"</div>";
@@ -143,7 +143,7 @@ $(document).ready(function () {
 
 			aux_text = 
 			"<div class='tools1'>" +
-				"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular'>" +
+				"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC action-buttons' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular'>" +
 					"<span class='glyphicon glyphicon-remove' style='bottom: 0px;top: 2px;'></span>" + 
 				"</a>" +
 			"</div>";
@@ -169,19 +169,21 @@ $(document).ready(function () {
 				*/
 				//$(row).attr('class',"tooltip");
 			}
+			//clase tools1: hace el efecto de mostrar o no los botones al pasar el cursor sobre la fila 
+			//Clase acciones: hace el efecto de atenuar los botones y poner un circulo al rededor del boton
 			aux_text = 
-				"<div class='tools1'>" +
-					"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar'>" +
+				"<div class='tools11'>" +
+					"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC action-buttons' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar'>" +
 						"<!--<span class='glyphicon glyphicon-floppy-save sombra' style='bottom: 0px;top: 2px;'></span>-->" + 
-						"<i class='fa fa-fw fa-save acciones fa-lg'></i>" +
+						"<i class='fa fa-fw fa-save acciones1 fa-lg'></i>" +
 					"</a>  " +
-					"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular'>" +
-						"<!--<span class='glyphicon glyphicon-remove sombra' style='bottom: 0px;top: 2px;'></span>-->" + 
-						"<i class='fa fa-fw fa-close acciones fa-lg'></i>" +
-					"</a>  " +
-					"<a href='notaventa' class='btn-accion-tabla tooltipsC btnEditar' title='Editar'>" +
-						"<i class='fa fa-fw fa-pencil acciones fa-lg'></i>" +
+					"<a href='notaventa' class='btn-accion-tabla tooltipsC btnEditar action-buttons' title='Editar'>" +
+						"<i class='fa fa-fw fa-pencil acciones1 fa-lg'></i>" +
 					"</a>" +
+					"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC action-buttons' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular'>" +
+						"<!--<span class='glyphicon glyphicon-remove sombra' style='bottom: 0px;top: 2px;'></span>-->" + 
+						"<i class='fa fa-fw fa-close acciones1 fa-lg text-danger'></i>" +
+					"</a>  " +
 				"</div>";
 			$('td', row).eq(12).attr('style','padding-top: 0px;padding-bottom: 0px;');
 			$('td', row).eq(12).html(aux_text);

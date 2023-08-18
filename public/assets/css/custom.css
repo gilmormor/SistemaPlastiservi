@@ -449,4 +449,8 @@ td.highlight {
     .small-text {
         font-size: smaller;
         color: #444; /* Color que no sea tan negro */
-      }
+    }
+
+    .action-buttons {
+        white-space: nowrap; /* Evita el salto de línea */
+    }

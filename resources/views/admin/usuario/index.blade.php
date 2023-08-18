@@ -24,18 +24,20 @@
             </div>
             <div class="box-body">
                 @csrf
-                <table class="table table-striped table-bordered table-hover" id="tabla-data" name="tabla-data"> 
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Usuario</th>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Roles</th>
-                            <th class="width70"></th>
-                        </tr>
-                    </thead>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-data" name="tabla-data"> 
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Usuario</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Roles</th>
+                                <th class="width70"></th>
+                            </tr>
+                        </thead>
+                    </table>    
+                </div>
             </div>
         </div>
     </div>

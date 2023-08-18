@@ -19,10 +19,10 @@ $(document).ready(function () {
             {data: 'email'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : 
-                "<a href='admin/usuario' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>" + 
+                "<a href='admin/usuario' class='btn-accion-tabla tooltipsC btnEditar action-buttons' title='Editar este registro'>" + 
                     "<i class='fa fa-fw fa-pencil'></i>" + 
                 "</a>"+
-                "<a href='usuario' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
+                "<a href='usuario' class='btn-accion-tabla btnEliminar tooltipsC action-buttons' title='Eliminar este registro'>"+
                     "<i class='fa fa-fw fa-trash text-danger'></i>"+
                 "</a>"
             }

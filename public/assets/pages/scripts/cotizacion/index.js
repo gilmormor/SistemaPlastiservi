@@ -24,16 +24,16 @@ $(document).ready(function () {
         {data: 'contacutec',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
-            "<div class='tools1'>" +
-                "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV' title='Enviar a Nota de venta'>"+
+            "<div class='tools11'>" +
+                "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV action-buttons' title='Enviar a Nota de venta'>"+
                     "<!--<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>-->"+
-                    "<i class='fa fa-fw fa-save acciones fa-lg'></i>" +
+                    "<i class='fa fa-fw fa-save accioness fa-lg'></i>" +
                 "</a>"+
-                "<a href='cotizacion' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
-                    "<i class='fa fa-fw fa-pencil acciones fa-lg'></i>"+
+                "<a href='cotizacion' class='btn-accion-tabla tooltipsC btnEditar action-buttons' title='Editar este registro'>"+
+                    "<i class='fa fa-fw fa-pencil accioness fa-lg'></i>"+
                 "</a>"+
-                "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
-                    "<i class='fa fa-fw fa-trash text-danger acciones fa-lg'></i>"+
+                "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC action-buttons' title='Eliminar este registro'>"+
+                    "<i class='fa fa-fw fa-trash text-danger accioness fa-lg'></i>"+
                 "</a>" +
             "</div>"}
     ],
@@ -44,7 +44,7 @@ $(document).ready(function () {
 
         //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
         aux_text = 
-            "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
+            "<a class='btn-accion-tabla btn-sm tooltipsC action-buttons' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
                 "<i class='fa fa-fw fa-file-pdf-o'></i>"+
             "</a>";
         $('td', row).eq(3).html(aux_text);
@@ -77,7 +77,7 @@ $(document).ready(function () {
             aux_title = 'Precio menor al valor en tabla';
             colorinfo = 'text-aqua';
             aux_text =
-				"<a class='btn-sm tooltipsC' title='" + aux_title + "'>" +
+				"<a class='btn-sm tooltipsC action-buttons' title='" + aux_title + "'>" +
 					"<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
 				"</a>";
             $('td', row).eq(3).html($('td', row).eq(3).html() + aux_text);
