@@ -40,10 +40,10 @@
 				<thead>
 					<tr>
 						<th class='width30'>NV</th>
-						<th class='width60'>OC</th>
+						<th class='width40'>OC</th>
 						<th class='width50'>Fecha</th>
 						<th class='width50'>Plazo<br>Entrega</th>
-						<th>Razón Social</th>
+						<th class='width180'>Razón Social</th>
 						<th class='width50'>Comuna</th>
 						<th style='text-align:left' class='width10'>Cod</th>
 						<th style='text-align:left' class='width90'>Descripción</th>
@@ -52,7 +52,7 @@
 						<th style='text-align:left' class='width10'>L</th>
 						<th style='text-align:left' class='width30'>Peso<br>Esp</th>
 						<th style='text-align:left' class='width10'>TU</th>
-						<th style='text-align:right' class='width40'>Stock</th>
+						<th style='text-align:right' class='width30'>Stock</th>
 						<th style='text-align:right' class='width40'>Cant</th>
 						<!--
 						<th style='text-align:right'>Kilos</th>
@@ -163,14 +163,14 @@
 							<td>{{$data->oc_id}}</td>
 							<td>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
 							<td>{{date('d-m-Y', strtotime($data->plazoentrega))}}</td>
-							<td>{{$aux_razonsocial}}</td>
-							<td>{{$comuna->nombre}}</td>
+							<td style="font-size: 9px;">{{$aux_razonsocial}}</td>
+							<td style="font-size: 9px;">{{$comuna->nombre}}</td>
 							<td>{{$data->producto_id}}</td>
-							<td>{{$data->nombre}}</td>
+							<td style="font-size: 9px;">{{$data->nombre}}</td>
 							<td>{{$aux_cla_sello_nombre}}</td>
 							<td>{{$aux_ancho}}</td>
 							<td>{{$aux_largo}}</td>
-							<td>{{$aux_espesor}}</td>
+							<td>{{number_format($aux_espesor, 4, ",", ".")}}</td>
 							<td>{{$data->tipounion}}</td>
 							<td style='text-align:right'>{{$stock}}</td>
 							<td style='text-align:right'>{{number_format($data->cant, 0, ",", ".")}}</td>
