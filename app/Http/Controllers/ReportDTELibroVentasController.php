@@ -18,7 +18,7 @@ class ReportDTELibroVentasController extends Controller
      */
     public function index()
     {
-        can('listar-dte-libro-ventas');
+        can('listar-reporte-dte-libro-ventas');
         $fechaAct = date("d/m/Y");
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
