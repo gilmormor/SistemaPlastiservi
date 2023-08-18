@@ -475,21 +475,23 @@
                                     $aux_producto_nombre = $detalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
                                     //dd($detalle);
+                                    $aux_atribAcuTec = "";
+                                    $aux_staAT = false;
                                     if ($detalle->acuerdotecnicotempunoauno){
-                                        $AcuTecTemp = $detalle->acuerdotecnicotempunoauno;
-                                        $aux_producto_nombre = nl2br($detalle->producto->categoriaprod->nombre . ", " . $AcuTecTemp->at_desc);
-                                        $aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "") ;
-                                        $aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "") ;
-                                        $aux_espesor = $AcuTecTemp->at_espesor;
-                                        $aux_cla_sello_nombre = $AcuTecTemp->claseprod->cla_nombre;
+                                        $AcuTec = $detalle->acuerdotecnicotempunoauno;
+                                        $aux_staAT = true;
                                     }
                                     if ($detalle->producto->acuerdotecnico != null){
                                         $AcuTec = $detalle->producto->acuerdotecnico;
-                                        $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
-                                        $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
-                                        $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
+                                        $aux_staAT = true;
+                                    }
+                                    if($aux_staAT){
+                                        $aux_producto_nombre = $AcuTec->at_desc;
+                                        $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "") ;
+                                        $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "") ;
                                         $aux_espesor = $AcuTec->at_espesor;
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+                                        $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                     }
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
@@ -573,6 +575,9 @@
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}" categoriaprod_nombre="{{$aux_categoria_nombre}}">
                                         {{$aux_producto_nombre}}
+                                        @if ($aux_staAT)
+                                            <br><span class='small-text'>{{$aux_atribAcuTec}}</span>
+                                        @endif
                                     </td>
                                     <td name="unidadmedida_nombreTD{{$aux_nfila}}" id="unidadmedida_nombreTD{{$aux_nfila}}">
                                         {{$detalle->unidadmedida->nombre}}
