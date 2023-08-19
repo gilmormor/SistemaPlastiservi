@@ -1874,10 +1874,7 @@ class Dte extends Model
         }else{
             $aux_condvendedor_id = "dte.vendedor_id in ($request->vendedor_id)";
         }
-
-
-    
-        $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
+        $sql = "SELECT dte.id,dte.fechahora,dte.fchemis,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
@@ -1913,7 +1910,8 @@ class Dte extends Model
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
         foliocontrol.doc as foliocontrol_doc,foliocontrol.desc as foliocontrol_desc,foliocontrol.tipodocto,foliocontrol.nombrepdf,
         dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at,
-        (dte.mnttotal * foliocontrol.signo) as mnttotal
+        dte.mntneto,dte.iva,dte.mnttotal as mnttotal_a,(dte.mnttotal * foliocontrol.signo) as mnttotal,
+        sucursal.nombre as sucursal_nombre,if(isnull(dtefac.fchvenc),dte.fchemis,dtefac.fchvenc) as fchvenc
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         LEFT JOIN dteguiadesp
@@ -1934,6 +1932,8 @@ class Dte extends Model
         ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
         LEFT JOIN dtefac
         ON dtefac.dte_id = dte.id
+        INNER JOIN sucursal
+        ON dte.sucursal_id = sucursal.id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond

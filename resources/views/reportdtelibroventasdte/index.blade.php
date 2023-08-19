@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Libro Ventas
+DTE Libro Ventas
 @endsection
 
 <?php
@@ -10,7 +10,7 @@ Libro Ventas
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/reportdtelibroventas/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/reportdtelibroventasdte/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
@@ -20,7 +20,7 @@ Libro Ventas
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Libro Ventas</h3>
+                <h3 class="box-title">DTE Libro Ventas</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>

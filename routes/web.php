@@ -1354,3 +1354,10 @@ Route::delete('dteguiadespnv/{id}', 'DteGuiaDespNVController@eliminar')->name('e
 Route::get('dteguiadespnv/listarnv', 'DteGuiaDespNVController@listarnv')->name('listarnv_dteguiadespnv');
 Route::get('dteguiadespnv/listarnvpage', 'DespachoSolController@listarnvpage')->name('listarnvpage_dteguiadespnv'); //ESTOY USANDO DespachoSolController
 Route::get('dteguiadespnv/totalizarlistarnvpage', 'DespachoSolController@totalizarlistarnvpage')->name('dteguiadespnv_totalizarlistarnvpage'); //ESTOY USANDO DespachoSolController
+
+/*RUTAS REPORTE LIBRO VENTAS DTE*/
+Route::get('reportdtelibroventasdte', 'ReportDTELibroVentasDTEController@index')->name('reportdtelibroventasdte');
+Route::get('reportdtelibroventasdte/reportdtelibroventasdtepage', 'ReportDTELibroVentasDTEController@reportdtelibroventasdtepage')->name('reportdtelibroventasdtepage');
+Route::get('reportdtelibroventasdte/reporte', 'ReportDTELibroVentasDTEController@reporte')->name('reportdtelibroventasdte_reporte');
+Route::get('reportdtelibroventasdte/exportPdf', 'ReportDTELibroVentasDTEController@exportPdf')->name('reportdtelibroventasdte_exportPdf');
+Route::get('reportdtelibroventasdte/totalizarindex', 'ReportDTELibroVentasDTEController@totalizarindex')->name('reportdtelibroventasdte_totalizarindex');

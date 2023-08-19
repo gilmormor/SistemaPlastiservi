@@ -9,7 +9,7 @@ use App\Models\Sucursal;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 
-class ReportDTELibroVentasController extends Controller
+class ReportDTELibroVentasDTEController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,17 +18,17 @@ class ReportDTELibroVentasController extends Controller
      */
     public function index()
     {
-        can('listar-reporte-dte-libro-ventas');
+        can('listar-reporte-dte-libro-ventas-dte');
         $fechaAct = date("d/m/Y");
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $tablas['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
-        return view('reportdtelibroventas.index', compact('tablas'));
+        return view('reportdtelibroventasdte.index', compact('tablas'));
     }
 
-    public function reportdtelibroventaspage(Request $request){
+    public function reportdtelibroventasdtepage(Request $request){
         //can('reporte-guia_despacho');
         //dd('entro');
         //$datas = GuiaDesp::reporteguiadesp($request);
@@ -36,7 +36,7 @@ class ReportDTELibroVentasController extends Controller
         //$request->request->add(['foliocontrol_id' => "(1,5,6,7)"]);
         //$request->request["foliocontrol_id"] = "(1,5,6,7)";
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
-        $request->merge(['orderby' => " order by dte.id desc "]);
+        $request->merge(['orderby' => " order by dte.id,dte.sucursal_id desc "]);
         $request->merge(['groupby' => " group by dte.id "]);
         //dd($request->request);
         $datas = Dte::reportestadocli($request);
@@ -50,6 +50,7 @@ class ReportDTELibroVentasController extends Controller
         $request->merge(['groupby' => " group by dte.id "]);
         $datas = Dte::reportestadocli($request);
         //dd($datas[0]);
+        //dd('entro');
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
@@ -60,20 +61,18 @@ class ReportDTELibroVentasController extends Controller
             $aux_sucursalNombre = $sucursal->nombre;
             $request->merge(['sucursal_nombre' => $sucursal->nombre]);
         }
-
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportdtelibroventas.listado', compact('datas','empresa','usuario','request'));
+                return view('reportdtelibroventasdte.listado', compact('datas','empresa','usuario','request'));
             }
             
-            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
-            
-            //$pdf = PDF::loadView('reportdtelibroventas.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-            $pdf = PDF::loadView('reportdtelibroventas.listado', compact('datas','empresa','usuario','request'));
+            //dd($datas);
+
+            $pdf = PDF::loadView('reportdtelibroventasdte.listado', compact('datas','empresa','usuario','request'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("libroventas.pdf");
+            return $pdf->stream("libroventasdte.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 
@@ -90,4 +89,5 @@ class ReportDTELibroVentasController extends Controller
         $respuesta['aux_total'] = $aux_total;
         return $respuesta;
     }
+    
 }
