@@ -1155,19 +1155,22 @@ class DespachoOrdController extends Controller
             $i=0;
 
             foreach ($notaventa->despachoords as $despachoord) {
-                $tab1 .=
-                    "<tr id='filaord$i' name='filaord$i'>
-                    <td id='id$i' name='id$i'>
-                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoord->id,1,\"myModalTablaOD\")'>
-                            $despachoord->id
-                        </a>                            
-                    </td>
-                    <td id='fechahoraord$i' name='fechahoraord$i'>" . date('d/m/Y', strtotime($despachoord->created_at)) . "</td>
-                    <td style='text-align:left'>". $despachoord->notaventa->cliente->razonsocial ."</td>
-                    <td class='textcenter'>" . $despachoord->guiadespacho ." </td>
-                    <td class='textcenter'>" . date('d/m/Y', strtotime($despachoord->fechafactura)) . "</td>
-                    <td class='textcenter'>" . $despachoord->numfactura . "</td>    
-                </tr>";
+                //VALIDAR QUE NO ESTE ANULADA LA OD
+                if(!isset($despachoord->despachoordanul)){
+                    $tab1 .=
+                        "<tr id='filaord$i' name='filaord$i'>
+                        <td id='id$i' name='id$i'>
+                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoord->id,1,\"myModalTablaOD\")'>
+                                $despachoord->id
+                            </a>                            
+                        </td>
+                        <td id='fechahoraord$i' name='fechahoraord$i'>" . date('d/m/Y', strtotime($despachoord->created_at)) . "</td>
+                        <td style='text-align:left'>". $despachoord->notaventa->cliente->razonsocial ."</td>
+                        <td class='textcenter'>" . $despachoord->guiadespacho ." </td>
+                        <td class='textcenter'>" . date('d/m/Y', strtotime($despachoord->fechafactura)) . "</td>
+                        <td class='textcenter'>" . $despachoord->numfactura . "</td>    
+                    </tr>";
+                }
             }
 
             $tab1 .= "
