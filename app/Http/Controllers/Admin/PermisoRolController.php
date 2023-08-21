@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Permiso;
 use App\Models\Admin\Rol;
+use Illuminate\Support\Facades\DB;
 
 class PermisoRolController extends Controller
 {
@@ -20,6 +21,54 @@ class PermisoRolController extends Controller
         $permisos = Permiso::get();
         $permisosRols = Permiso::with('roles')->get()->pluck('roles', 'id')->toArray();
         return view('admin.permiso-rol.index', compact('rols', 'permisos', 'permisosRols'));
+    }
+
+    public function permisorolpage(){
+        $permisosRols = Permiso::with('roles')->get()->pluck('roles', 'id')->toArray();
+        $sql = "SELECT *
+        FROM permiso
+        WHERE isnull(permiso.deleted_at);";
+        $permisos = DB::select($sql);
+        $arraypermisos = (array) $permisos;
+        //dd($arraypermisos);
+        $sql = "SELECT *
+        FROM rol
+        WHERE isnull(rol.deleted_at);";
+        $roles = DB::select($sql);
+
+        foreach ($permisos as &$permiso) {
+            $permisoArray = (array) $permiso; // Convertir el objeto en un array
+            foreach ($roles as $rol) {
+                $permisoArray["id" . $rol->id] = in_array($rol->id, array_column($permisosRols[$permiso->id], "id"))? "checked" : "";;
+            }
+            $permiso = (object) $permisoArray; // Convertir el array en un objeto de nuevo
+        }
+        //dd($permisos);
+        return datatables($permisos)->toJson();
+    }
+
+    public function encabezadoTabla(Request $request){
+        $sql = "SELECT *
+        FROM rol
+        WHERE isnull(rol.deleted_at);";
+        $rols = DB::select($sql);
+        $respuesta = [];
+        $respuesta["campos"] = [];
+        $respuesta["campos_id"] = [];
+        $respuesta["rol_id"] = [];
+        $respuesta["encabezadotabla"] = "<thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Permiso</th>";
+        foreach ($rols as $rol){
+            $respuesta["encabezadotabla"] .="<th class='text-center'>$rol->nombre</th>";
+            $respuesta["campos"][] = $rol->nombre;
+            $respuesta["campos_id"][] = "id" .strval($rol->id);
+            $respuesta["rol_id"][] = $rol->id;
+        }
+        $respuesta["encabezadotabla"] .= "</tr>
+                        </thead>";
+        return $respuesta;
     }
 
     /**

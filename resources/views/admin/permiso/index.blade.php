@@ -4,7 +4,8 @@
 @endsection
 
 @section("scripts")
-    <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/permiso/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -23,34 +24,14 @@
             <div class="box-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered table-hover" id="tabla-data">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Nombre</th>
-                            <th>Slug</th>
-                            <th class="width70"></th>
-                        </tr>
-                    </thead>
-                        <tbody>
-                            @foreach ($permisos as $permiso)
-                                <tr>
-                                    <td>{{$permiso->id}}</td>
-                                    <td>{{$permiso->nombre}}</td>
-                                    <td>{{$permiso->slug}}</td>
-                                    <td>
-                                        <a href="{{route('editar_permiso', ['id' => $permiso->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                            <i class="fa fa-fw fa-pencil"></i>
-                                        </a>
-                                        <form action="{{route('eliminar_permiso', ['id' => $permiso->id])}}" class="d-inline form-eliminar" method="POST">
-                                            @csrf @method("delete")
-                                            <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                                <i class="fa fa-fw fa-trash text-danger"></i>
-                                            </button>
-                                        </form>         
-                                    </td>    
-                                </tr>
-                            @endforeach
-                        </tbody>
+                        <thead>
+                            <tr>
+                                <th class="width10">Id</th>
+                                <th>Nombre</th>
+                                <th>Slug</th>
+                                <th class="width70"></th>
+                            </tr>
+                        </thead>
                     </table>
                 </div>
             </div>

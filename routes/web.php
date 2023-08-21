@@ -42,6 +42,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['aut
 
     /*RUTAS DEL PERMISO*/
     Route::get('permiso', 'PermisoController@index')->name('permiso');
+    Route::get('permisopage', 'PermisoController@permisopage')->name('permisopage_permiso');
     Route::get('permiso/crear', 'PermisoController@crear')->name('crear_permiso');
     Route::post('permiso', 'PermisoController@guardar')->name('guardar_permiso');
     Route::get('permiso/{id}/editar', 'PermisoController@editar')->name('editar_permiso');
@@ -57,6 +58,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['aut
     Route::put('menu/{id}', 'MenuController@actualizar')->name('actualizar_menu');
     /*RUTAS ROL*/
     Route::get('rol', 'RolController@index')->name('rol');
+    Route::get('rolpage', 'RolController@rolpage')->name('rolpage_usuario');
     Route::get('rol/crear', 'RolController@crear')->name('crear_rol');
     Route::post('rol', 'RolController@guardar')->name('guardar_rol');
     Route::get('rol/{id}/editar', 'RolController@editar')->name('editar_rol');
@@ -68,6 +70,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['aut
     /*MENU PERMISOS-ROL*/
     Route::get('permiso-rol', 'PermisoRolController@index')->name('permiso_rol');
     Route::post('permiso-rol', 'PermisoRolController@guardar')->name('guardar_permiso_rol');
+    Route::get('permisorolpage', 'PermisoRolController@permisorolpage')->name('permisorolpage_rol');
+    Route::post('permiso-rol/encabezadoTabla', 'PermisoRolController@encabezadoTabla')->name('encabezadoTabla_rol');
 
 });
 //MIGRACION

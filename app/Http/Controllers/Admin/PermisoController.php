@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ValidarPermiso;
 use App\Models\Admin\Permiso;
+use App\Models\Admin\PermisoRol;
+use App\Models\Admin\Rol;
+use Illuminate\Support\Facades\DB;
 
 class PermisoController extends Controller
 {
@@ -19,6 +22,15 @@ class PermisoController extends Controller
         $permisos = Permiso::orderBy('id')->get();
         //return view('admin.permiso.index', ['permiso' => $permiso]); Asi se hace normalmente en laravel
         return view('admin.permiso.index', compact('permisos')); //Se usa compact() para evitar la sintaxis anterior 
+    }
+
+    public function permisopage(){
+
+        $sql = "SELECT *
+        FROM permiso
+        WHERE isnull(permiso.deleted_at);";
+        $permisos = DB::select($sql);
+        return datatables($permisos)->toJson();
     }
 
     /**

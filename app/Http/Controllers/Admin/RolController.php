@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ValidacionRol;
 use App\Models\Admin\Rol;
+use Illuminate\Support\Facades\DB;
 
 class RolController extends Controller
 {
@@ -18,6 +19,19 @@ class RolController extends Controller
     {
         $datas = Rol::orderBy('id')->get();
         return view('admin.rol.index',compact('datas'));
+    }
+
+    public function rolpage(){
+        $sql = "SELECT *
+        FROM rol
+        WHERE isnull(rol.deleted_at);";
+        $datas = DB::select($sql);
+        /*
+        foreach($datas as &$data){
+            $data->rutausuario = route('ver_usuario', ['id' => $data->id]);
+        }
+        */
+        return datatables($datas)->toJson();
     }
 
     /**

@@ -4,7 +4,8 @@ Roles
 @endsection
 
 @section("scripts")
-    <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/rol/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -21,33 +22,17 @@ Roles
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th class="width70"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($datas as $data)
-                        <tr>
-                            <td>{{$data->nombre}}</td>
-                            <td>
-                                <a href="{{route('editar_rol', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                    <i class="fa fa-fw fa-pencil"></i>
-                                </a>
-                                <form action="{{route('eliminar_rol', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
-                                    @csrf @method("delete")
-                                    <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                        <i class="fa fa-fw fa-trash text-danger"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-data" name="tabla-data">
+                        <thead>
+                            <tr>
+                                <th class="width10">id</th>
+                                <th>Nombre</th>
+                                <th class="width70"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
