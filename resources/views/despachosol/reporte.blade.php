@@ -130,7 +130,7 @@
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
-						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
+						<td class="textcenter">{{$despachosoldet->notaventadetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}
 							@if ($aux_staAT)
 								<br><span class="small-text">{{$aux_atribAcuTec}}</span>
