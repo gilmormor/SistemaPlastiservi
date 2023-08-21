@@ -34,7 +34,12 @@ if (!function_exists('canUser')) {
             if (!in_array($permiso, $permisos)) {
                 if ($redirect) {
                     if (!request()->ajax())
-                        return redirect()->route('inicio')->with('mensaje', 'No tienes permisos para entrar en este módulo')->send();
+                        $permisoT = Permiso::where("slug",$permiso)->get();
+                        $nombre_permiso = "";
+                        if(count($permisoT) > 0){
+                            $nombre_permiso = ": " . $permisoT[0]->nombre;
+                        }
+                        return redirect()->route('inicio')->with('mensaje', 'No tienes permisos para entrar en este módulo' . $nombre_permiso)->send();
                     abort(403, 'No tiene permiso');
                 } else {
                     return false;

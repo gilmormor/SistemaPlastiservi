@@ -1,9 +1,23 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
+    /*
     var data = {
-        _token: $('input[name=_token]').val()
-    };
-    ajaxRequestI('/admin/permiso-rol/encabezadoTabla', data,"encabezadotabla");
+        rol_id : $("#rol_id").val(),
+        _token : $('input[name=_token]').val()
+    };*/
+    data = datosPermisoRol();
+    ajaxRequestI('/admin/permiso-rol/encabezadoTabla', data.data1,"encabezadotabla");
+
+    $("#btnconsultar").click(function()
+    {
+        $("#tabla-data").dataTable().fnDestroy();
+        $("#tabla-data").html("");
+        data = datosPermisoRol();
+        ajaxRequestI('/admin/permiso-rol/encabezadoTabla', data.data1,"encabezadotabla");
+        //$('#tabla-data').DataTable().ajax.url( "/reportdtefac/reportdtefacpage/" + data.data2 ).load();
+
+    });
+
 
 
 });
@@ -35,6 +49,10 @@ function ajaxRequestI (url, data,funcion) {
                     campos.push({data: respuesta.campos_id[i]})
                 }
                 //console.log(campos);
+                $("#tabla-data").attr('style','');
+                $("#tabla-data").dataTable().fnDestroy();
+            
+                data = datosPermisoRol();
                 $('#tabla-data').DataTable({
                     'paging'      : true, 
                     'lengthChange': true,
@@ -44,7 +62,7 @@ function ajaxRequestI (url, data,funcion) {
                     'autoWidth'   : false,
                     'processing'  : true,
                     'serverSide'  : true,
-                    'ajax'        : "permisorolpage",
+                    'ajax'        : "permisorolpage/" + data.data2,
                     'columns'     : campos,
                     "language": {
                         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -52,6 +70,7 @@ function ajaxRequestI (url, data,funcion) {
                     "createdRow": function ( row, data, index ) {
                         $(row).attr('id','fila' + data.id);
                         $(row).attr('name','fila' + data.id);
+                        $('td', row).eq(0).attr('class','text-center');
                         for (let i = 0; i < respuesta.campos_id.length; i++) {
                             campos_id = respuesta.campos_id[i];
                             campos_id = campos_id.trim();
@@ -66,6 +85,7 @@ function ajaxRequestI (url, data,funcion) {
                             data-permisoid=${data.id}
                             value="${respuesta.rol_id[i]}" ${data[campos_id]}>`;
                             $('td', row).eq(i+2).html(aux_text);
+                            $('td', row).eq(i+2).attr('class','text-center');
                         }        
                     }
                 });
@@ -103,4 +123,20 @@ function permiso_rol(nombretd,permiso_id,rol_id){
         data.estado = 0
     }
     ajaxRequestI('/admin/permiso-rol', data,"darPermiso");
+}
+
+function datosPermisoRol(){
+    var data1 = {
+        rol_id            : $("#rol_id").val(),
+        _token            : $('input[name=_token]').val()
+    };
+
+    var data2 = "?rol_id="+data1.rol_id
+
+    var data = {
+        data1 : data1,
+        data2 : data2
+    };
+    //console.log(data);
+    return data;
 }

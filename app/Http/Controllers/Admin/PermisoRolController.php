@@ -18,12 +18,25 @@ class PermisoRolController extends Controller
     public function index()
     {
         $rols = Rol::orderBy('id')->pluck('nombre', 'id')->toArray();
+        $roles = Rol::get();
         $permisos = Permiso::get();
         $permisosRols = Permiso::with('roles')->get()->pluck('roles', 'id')->toArray();
-        return view('admin.permiso-rol.index', compact('rols', 'permisos', 'permisosRols'));
+        return view('admin.permiso-rol.index', compact('rols','roles', 'permisos', 'permisosRols'));
     }
 
-    public function permisorolpage(){
+    public function permisorolpage(Request $request){
+        if(empty($request->rol_id)){
+            $aux_condrol_id = " true";
+        }else{
+    
+            if(is_array($request->rol_id)){
+                $aux_rolid = implode ( ',' , $request->rol_id);
+            }else{
+                $aux_rolid = $request->rol_id;
+            }
+            $aux_condrol_id = " rol.id in ($aux_rolid) ";
+        }
+    
         $permisosRols = Permiso::with('roles')->get()->pluck('roles', 'id')->toArray();
         $sql = "SELECT *
         FROM permiso
@@ -32,14 +45,15 @@ class PermisoRolController extends Controller
         $arraypermisos = (array) $permisos;
         //dd($arraypermisos);
         $sql = "SELECT *
-        FROM rol
-        WHERE isnull(rol.deleted_at);";
+            FROM rol
+            WHERE $aux_condrol_id
+            AND isnull(rol.deleted_at);";
         $roles = DB::select($sql);
 
         foreach ($permisos as &$permiso) {
             $permisoArray = (array) $permiso; // Convertir el objeto en un array
             foreach ($roles as $rol) {
-                $permisoArray["id" . $rol->id] = in_array($rol->id, array_column($permisosRols[$permiso->id], "id"))? "checked" : "";;
+                $permisoArray["id" . $rol->id] = in_array($rol->id, array_column($permisosRols[$permiso->id], "id"))? "checked" : "";
             }
             $permiso = (object) $permisoArray; // Convertir el array en un objeto de nuevo
         }
@@ -48,9 +62,21 @@ class PermisoRolController extends Controller
     }
 
     public function encabezadoTabla(Request $request){
+        if(empty($request->rol_id)){
+            $aux_condrol_id = " true";
+        }else{
+    
+            if(is_array($request->rol_id)){
+                $aux_rolid = implode ( ',' , $request->rol_id);
+            }else{
+                $aux_rolid = $request->rol_id;
+            }
+            $aux_condrol_id = " rol.id in ($aux_rolid) ";
+        }
         $sql = "SELECT *
-        FROM rol
-        WHERE isnull(rol.deleted_at);";
+            FROM rol
+            WHERE  $aux_condrol_id
+            AND isnull(rol.deleted_at);";
         $rols = DB::select($sql);
         $respuesta = [];
         $respuesta["campos"] = [];
