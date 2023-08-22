@@ -251,9 +251,9 @@
                                                 </div>
                                                 <div class="row">                    
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                                                        <label for="at_largo" class="control-label" data-toggle='tooltip' title="Largo">Largo</label>
-                                                        <input type="text" name="at_largo" id="at_largo" class="form-control form_acutec numerico" placeholder="Largo"/>
-                                                        <span class="help-block" style="margin-top: -2px; display: none;"></span>
+                                                        <label for="at_largo" class="control-label requerido" data-toggle='tooltip' title="Largo">Largo</label>
+                                                        <input type="text" name="at_largo" id="at_largo" class="form-control form_acutec numerico valorrequerido" placeholder="Largo" tipoval="texto"/>
+                                                        <span class="help-block"></span>
                                                     </div>
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                                         <label for="at_largoum_text" class="control-label largoum_id" data-toggle='tooltip' title="Unidad Medida Largo">UM</label>
@@ -286,8 +286,8 @@
                                             <div class="box-body">
                                                 <div class="row">
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                                                        <label for="at_fuelle" class="control-label" data-toggle='tooltip' title="Fuelle">Fuelle</label>
-                                                        <input type="text" name="at_fuelle" id="at_fuelle" class="form-control form_acutec numerico" placeholder="Fuelle"/>
+                                                        <label for="at_fuelle" class="control-label requerido" data-toggle='tooltip' title="Fuelle">Fuelle</label>
+                                                        <input type="text" name="at_fuelle" id="at_fuelle" class="form-control form_acutec numerico valorrequerido" placeholder="Fuelle" tipoval="texto"/>
                                                         <span class="help-block" style="margin-top: -2px; display: none;"></span>
                                                     </div>
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
