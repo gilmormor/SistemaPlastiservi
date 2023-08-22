@@ -57,7 +57,7 @@
 							<td style='text-align:center'>{{$data->diametro}}</td>
 							<td style='text-align:center'>{{$data->cla_nombre}}</td>
 							<td style='text-align:center'>{{$data->long}}</td>
-							<td style='text-align:center'>{{$data->peso}}</td>
+							<td style='text-align:center'>{{number_format($data->peso, 3, ",", ".")}}</td>
 							<td style='text-align:center'>{{$data->tipounion}}</td>
 							<td>{{$data->invbodega_nombre}}</td>
 							<td style='text-align:center'>{{$data->stockini}}</td>
