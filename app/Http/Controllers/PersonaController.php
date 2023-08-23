@@ -9,6 +9,7 @@ use App\Models\JefaturaSucursalAreaPersona;
 use App\Models\Persona;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PersonaController extends Controller
 {
@@ -23,6 +24,14 @@ class PersonaController extends Controller
         $datas = Persona::orderBy('id')->get();
         //dd($datas->user);
         return view('persona.index', compact('datas'));
+    }
+
+    public function personapage(){
+        $sql = "SELECT persona.*, concat(nombre, ' ' ,apellido) AS nombreapellido
+            from persona
+            where isnull(persona.deleted_at);";
+        $datas = DB::select($sql);
+        return datatables($datas)->toJson();
     }
 
     /**
@@ -76,6 +85,11 @@ class PersonaController extends Controller
     {
         can('editar-persona');
         $data = Persona::findOrFail($id);
+        //dd(usuPerSuc($data));
+        /*
+        foreach ($data->jefaturasucursalareas as $jefaturasucursalarea) {
+            dd($jefaturasucursalarea->sucursal_area->sucursal);
+        }*/
         //dd($data->jefaturasucursalareas);
         $cargos = Cargo::orderBy('id')->get();
         $jefaturasucursalareas = JefaturaSucursalArea::orderBy('id')->get();

@@ -4,7 +4,8 @@ Persona
 @endsection
 
 @section("scripts")
-    <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/persona/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido') 
@@ -30,27 +31,6 @@ Persona
                             <th class="width70"></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach ($datas as $data)
-                        <tr>
-                            <td>{{$data->id}}</td>
-                            <td>{{$data->rut}}</td>
-                            <td>{{$data->nombre}} {{$data->apellido}}</td>
-                            <td>
-                                <a href="{{route('editar_persona', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                    <i class="fa fa-fw fa-pencil"></i>
-                                </a>
-                                <form action="{{route('eliminar_persona', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
-                                    @csrf @method("delete")
-                                    <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                        <i class="fa fa-fw fa-trash text-danger"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-
-                    </tbody>
                 </table>
             </div>
         </div>

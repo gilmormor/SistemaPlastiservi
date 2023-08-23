@@ -231,4 +231,14 @@ if (!function_exists('formatearRUT')) {
         return $rutFormateado;
     }
 }
+//Sucursales fisicas por Usuario. Sucursales a las que pertenese el Usuario a traves de tabla persona
+if (!function_exists('sucFisXUsu')) {
+    function sucFisXUsu($persona){
+        $arraySuc = [];
+        foreach ($persona->jefaturasucursalareas as $jefaturasucursalarea) {
+            $arraySuc[] = $jefaturasucursalarea->sucursal_area->sucursal_id;
+        }            
+        return $arraySuc;
+    }
+}
 ?>

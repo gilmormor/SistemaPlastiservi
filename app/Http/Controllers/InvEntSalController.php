@@ -37,8 +37,12 @@ class InvEntSalController extends Controller
     }
 
     public function inventsalpage(){
+        $datas = consultaindex();
+        return datatables($datas)->toJson();
+        /*
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $arrayUsuPerSuc = usuPerSuc($user->persona);
         return datatables()
             ->eloquent(InvEntSal::query()
                         ->whereNull('staaprob')
@@ -46,6 +50,7 @@ class InvEntSalController extends Controller
                         ->whereIn('inventsal.sucursal_id', $sucurArray)
                     )
             ->toJson();
+        */
     }
 
     public function productobuscarpage(Request $request){
@@ -442,4 +447,23 @@ class InvEntSalController extends Controller
         }
     }
 
+}
+
+function consultaindex(){
+    $user = Usuario::findOrFail(auth()->id());
+    $aux_condMovUsu = " usuario_id = $user->id";
+    if(auth()->id() == 1){
+        $aux_condMovUsu = " true ";
+    }
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurArray = implode(",", $sucurArray);
+    $arraySucPerUsu = implode(",", sucFisXUsu($user->persona));
+    //dd($arraySucPerUsu);
+    $sql = "SELECT *
+        FROM inventsal
+        WHERE (staaprob IS NULL OR staaprob = 3)
+        AND $aux_condMovUsu
+        AND inventsal.sucursal_id IN ($sucurArray)
+        AND isnull(inventsal.deleted_at);";
+    return DB::select($sql);
 }

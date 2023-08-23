@@ -280,6 +280,7 @@ Route::delete('cargo/{id}', 'CargoController@eliminar')->name('eliminar_cargo');
 
 /*RUTAS PERSONA*/
 Route::get('persona', 'PersonaController@index')->name('persona');
+Route::get('personapage', 'PersonaController@personapage')->name('personapage');
 Route::get('persona/crear', 'PersonaController@crear')->name('crear_persona');
 Route::post('persona', 'PersonaController@guardar')->name('guardar_persona');
 Route::get('persona/{id}/editar', 'PersonaController@editar')->name('editar_persona');

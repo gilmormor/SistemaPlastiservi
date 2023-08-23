@@ -53,6 +53,4 @@ class Persona extends Model
     {
         return $this->hasMany(JefaturaSucursalArea::class);
     }
-    
-    
 }
