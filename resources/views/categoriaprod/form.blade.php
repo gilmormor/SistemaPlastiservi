@@ -100,7 +100,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label for="unidadmedidafact_id" class="col-lg-3 control-label" data-toggle='tooltip' title="Unidad Medida de Factura">Unidad Medida Factura</label>
+    <label for="unidadmedidafact_id" class="col-lg-3 control-label" data-toggle='tooltip' title="Unidad Medida de Venta">Unidad Medida Venta</label>
     <div class="col-lg-8">
         <select name="unidadmedidafact_id" id="unidadmedidafact_id" class="form-control select2 unidadmedidafact_id">
             <option value="">Seleccione...</option>
