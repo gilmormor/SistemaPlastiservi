@@ -2032,7 +2032,7 @@ function consulta($request,$aux_sql,$orden){
         INNER JOIN producto
         ON notaventadetalle.producto_id=producto.id
         INNER JOIN categoriaprod
-        ON categoriaprod.id=producto.categoriaprod_id
+        ON categoriaprod.id=producto.categoriaprod_id AND ISNULL(categoriaprod.deleted_at)
         INNER JOIN areaproduccion
         ON areaproduccion.id=categoriaprod.areaproduccion_id
         INNER JOIN cliente
