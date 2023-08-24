@@ -73,12 +73,12 @@
 					<th width="30px">Cod</th>
 					<th width="30px">Cant.</th>
 					<th width="30px">Sol</th>
-					<th class="textcenter">Unidad</th>
+					<th class="textcenter">UN</th>
 					<th width="120px" class="textleft">Descripción</th>
-					<th class="textleft">Clase<br>Sello</th>
-					<th class="textleft">Diam<br>Ancho</th>
+					<th class="textleft">Clase</th>
+					<th class="textleft">Diam</th>
 					<th class="textright">Largo</th>
-					<th class="textcenter">TU<br>Esp</th>
+					<th class="textcenter">TU</th>
 					<th class="textright">Peso</th>
 					<!--<th class="textright">$ x Kg</th>-->
 					<th class="textright">Total Kg</th>
