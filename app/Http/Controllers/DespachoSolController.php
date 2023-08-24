@@ -1514,21 +1514,37 @@ class DespachoSolController extends Controller
             $despachosoldets = $despachosol->despachosoldets()->get();
             $empresa = Empresa::orderBy('id')->get();
             $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
+            $aux_staacutec = false;
+            foreach ($despachosol->despachosoldets as $detalle) {
+                if(isset($detalle->notaventadetalle->producto->acuerdotecnico)){
+                    $aux_staacutec = true;
+                    break;
+                }
+            }
+
             if($stareport == '1'){
                 if(env('APP_DEBUG')){
-                    return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+                    if($aux_staacutec == false){
+                        return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+                    }else{
+                        return view('despachosol.reporteat', compact('despachosol','despachosoldets','empresa'));
+                    }
                 }
-            
-                $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+                if($aux_staacutec == false){
+                    $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa'));
+                }else{
+                    $pdf = PDF::loadView('despachosol.reporteat', compact('despachosol','despachosoldets','empresa'));
+                }
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
             }else{
                 if($stareport == '2'){
-                    return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));        
-                    $pdf = PDF::loadView('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
-                    //return $pdf->download('cotizacion.pdf');
-                    return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
-        
+                    if($aux_staacutec == false){
+                        return view('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));        
+                        $pdf = PDF::loadView('despachosol.listado1', compact('despachosol','despachosoldets','empresa'));
+                        //return $pdf->download('cotizacion.pdf');
+                        return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');    
+                    }       
                 }
             }
         }else{

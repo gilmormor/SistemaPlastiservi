@@ -65,7 +65,7 @@
 				<thead>
 					<tr>
 						<th width="30px">Cant.</th>
-						<th class="textcenter">Unidad</th>
+						<th class="textcenter">UN</th>
 						<th class="textleft">Descripción</th>
 						<th class="textleft">Clase<br>Sello</th>
 						<th class="textcenter">Diam<br>Ancho</th>

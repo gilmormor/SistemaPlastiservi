@@ -80,7 +80,7 @@
 				<tr>
 					<th width="30px">Cod</th>
 					<th width="50px">Cant.</th>
-					<th class="textcenter" width="50px">Unidad</th>
+					<th class="textcenter" width="50px">UN</th>
 					<th class="textleft" width="190px">Descripción</th>
 					<th class="textleft">Diamet</th>
 					<th class="textleft" width="60px">Clase</th>

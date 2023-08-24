@@ -1108,12 +1108,29 @@ class DespachoOrdController extends Controller
             //dd($despachoorddets);
             $empresa = Empresa::orderBy('id')->get();
             $rut = number_format( substr ( $despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoord->notaventa->cliente->rut, strlen($despachoord->notaventa->cliente->rut) -1 , 1 );
+            $aux_staacutec = false;
+            foreach ($despachoord->despachoorddets as $detalle) {
+                if(isset($detalle->notaventadetalle->producto->acuerdotecnico)){
+                    $aux_staacutec = true;
+                    break;
+                }
+            }
+
             //dd($empresa[0]['iva']);
             if($stareport == '1'){
                 if(env('APP_DEBUG')){
-                    return view('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
+                    if($aux_staacutec == false){
+                        return view('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
+                    }else{
+                        return view('despachoord.reporteat', compact('despachoord','despachoorddets','empresa'));
+                    }
                 }
-                $pdf = PDF::loadView('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
+                if($aux_staacutec == false){
+                    $pdf = PDF::loadView('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
+                }else{
+                    $pdf = PDF::loadView('despachoord.reporteat', compact('despachoord','despachoorddets','empresa'));
+                }
+
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($despachoord->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachoord->notaventa->cliente->razonsocial . '.pdf');
             }else{
