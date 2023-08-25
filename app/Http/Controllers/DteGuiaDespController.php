@@ -172,6 +172,7 @@ class DteGuiaDespController extends Controller
     
         $aux_indtraslado = $request->tipoguiadesp;
         //dd($request);
+        //dd(sanear_string("GILMER Ñ x&@x  Moreno"));
         if($request->tipoguiadesp == 20){ 
             //SI $request->tipoguiadesp = 20, GENERO DE FORMA AUTOMATICA LA GUIA DE TRASLADO, LUEGO SE GENERA LA GUIA DE VENTA
             //PASO EL VALOR DE 6 A LA FUNCION PARA IDENTIFICAR QUE VOY A GENERAR LA GUIA DE TRASLADO
