@@ -1995,6 +1995,14 @@ function consulta($request,$aux_sql,$orden){
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
     if($aux_sql==1){
+/*
+        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
+        FROM categoriaprodsuc 
+        WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
+        AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
+                FROM vista_sucfisxusu
+                WHERE vista_sucfisxusu.usuario_id=$user->id))
+    and */
         $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
         comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
@@ -2050,14 +2058,7 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
         INNER JOIN vista_sucxcategoriaprod
         ON categoriaprod.id = vista_sucxcategoriaprod.categoriaprod_id
-        WHERE 
-        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
-            FROM categoriaprodsuc 
-            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
-            AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
-                    FROM vista_sucfisxusu
-                    WHERE vista_sucfisxusu.usuario_id=$user->id))
-        and $vendedorcond
+        WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
         and $aux_condoc_id
@@ -2081,6 +2082,15 @@ function consulta($request,$aux_sql,$orden){
         ORDER BY $aux_orden;";
     }
     if($aux_sql==2){
+         /*
+        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
+            FROM categoriaprodsuc 
+            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
+            AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
+                    FROM vista_sucfisxusu
+                    WHERE vista_sucfisxusu.usuario_id=$user->id))
+        and 
+        */
         //if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,
         $sql = "SELECT notaventadetalle.producto_id,producto.nombre,
         producto.diametro,sucursal.nombre as sucursal_nombre,
@@ -2117,14 +2127,7 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
         LEFT JOIN clientebloqueado
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-        WHERE 
-        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
-            FROM categoriaprodsuc 
-            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
-            AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
-                    FROM vista_sucfisxusu
-                    WHERE vista_sucfisxusu.usuario_id=$user->id))
-        and $vendedorcond
+        WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
         and $aux_condoc_id
@@ -2148,6 +2151,16 @@ function consulta($request,$aux_sql,$orden){
     
 
     if($aux_sql==3){
+
+        /*
+        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
+            FROM categoriaprodsuc 
+            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
+            AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
+                    FROM vista_sucfisxusu
+                    WHERE vista_sucfisxusu.usuario_id=$user->id))
+        and 
+        */
         $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
         comuna.nombre as comunanombre,
@@ -2191,14 +2204,7 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.id=vista_notaventatotales.id
         LEFT JOIN clientebloqueado
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-        WHERE 
-        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
-            FROM categoriaprodsuc 
-            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
-            AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
-                    FROM vista_sucfisxusu
-                    WHERE vista_sucfisxusu.usuario_id=$user->id))
-        and $vendedorcond
+        WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
         and $aux_condoc_id
