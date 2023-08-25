@@ -2933,7 +2933,15 @@ function consultasoldesp($request){
                     ) >= despachosoldet.cantsoldesp,FALSE,TRUE)
                     AND $aux_notinNullSoldesp";
     //$aux_condactivas = "true";
+    /*
     $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
+
+    categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
+    FROM categoriaprodsuc 
+    WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
+    AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu))
+and 
+*/
 
     $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
             notaventa.oc_file,notaventa.sucursal_id,
@@ -2976,12 +2984,7 @@ function consultasoldesp($request){
             ON despachosol.id = vista_despordxdespsoltotales.despachosol_id
             INNER JOIN sucursal
             ON despachosol.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
-            WHERE 
-            categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
-                                FROM categoriaprodsuc 
-                                WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
-                                AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu))
-            and $vendedorcond
+            WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
             and $aux_condoc_id
