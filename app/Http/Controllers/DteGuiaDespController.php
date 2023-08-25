@@ -175,15 +175,28 @@ class DteGuiaDespController extends Controller
         if($request->tipoguiadesp == 20){ 
             //SI $request->tipoguiadesp = 20, GENERO DE FORMA AUTOMATICA LA GUIA DE TRASLADO, LUEGO SE GENERA LA GUIA DE VENTA
             //PASO EL VALOR DE 6 A LA FUNCION PARA IDENTIFICAR QUE VOY A GENERAR LA GUIA DE TRASLADO
-            guardarDTE($request,6,$cont_producto);
+            $respuesta = guardarDTE($request,6,$cont_producto);
+            if($respuesta->original["id"] != 1){
+                return redirect('dteguiadesp/listarorddesp')->with([
+                    'mensaje'=>$respuesta->original["mensaje"] ,
+                    'tipo_alert' => 'alert-error'
+                ]);    
+            }    
             //AL SER $request->tipoguiadesp = 9 Y HABERSE GENERADO LA GUI DE TRASLADO, DEBO CAMBIAR $aux_indtraslado A 1, PARA QUE LUEGO SE GENERE LA GUIA DE VENTA
             $aux_indtraslado = 1; 
         }
-        guardarDTE($request,$aux_indtraslado,$cont_producto);
-        return redirect('dteguiadesp')->with([
-            'mensaje'=>'Guia Despacho creada con exito.',
-            'tipo_alert' => 'alert-success'
-        ]);
+        $respuesta = guardarDTE($request,$aux_indtraslado,$cont_producto);
+        if($respuesta->original["id"] == 1){
+            return redirect('dteguiadesp')->with([
+                'mensaje'=>'Guia Despacho creada con exito.',
+                'tipo_alert' => 'alert-success'
+            ]);    
+        }else{
+            return redirect('dteguiadesp/listarorddesp')->with([
+                'mensaje'=>$respuesta->original["mensaje"] ,
+                'tipo_alert' => 'alert-error'
+            ]);    
+        }
     }
      
 
@@ -1523,9 +1536,13 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     }else{
         $foliocontrol->bloqueo = 0;
         $foliocontrol->save();
+        //dd($respuesta->original["id"]);
+        /*
         return redirect('dteguiadesp/listarorddesp')->with([
             'mensaje'=>$respuesta->original["mensaje"] ,
             'tipo_alert' => 'alert-error'
         ]);
+        */
     }
+    return $respuesta;
 }
