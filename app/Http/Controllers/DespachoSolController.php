@@ -1993,6 +1993,7 @@ function consulta($request,$aux_sql,$orden){
     }
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
+    $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
     if($aux_sql==1){
         $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -2047,7 +2048,16 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
         LEFT JOIN clientebloqueado
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-        WHERE $vendedorcond
+        INNER JOIN vista_sucxcategoriaprod
+        ON categoriaprod.id = vista_sucxcategoriaprod.categoriaprod_id
+        WHERE 
+        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
+            FROM categoriaprodsuc 
+            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
+            AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
+                    FROM vista_sucfisxusu
+                    WHERE vista_sucfisxusu.usuario_id=$user->id))
+        and $vendedorcond
         and $aux_condFecha
         and $aux_condrut
         and $aux_condoc_id
@@ -2107,7 +2117,14 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
         LEFT JOIN clientebloqueado
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-        WHERE $vendedorcond
+        WHERE 
+        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
+            FROM categoriaprodsuc 
+            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
+            AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
+                    FROM vista_sucfisxusu
+                    WHERE vista_sucfisxusu.usuario_id=$user->id))
+        and $vendedorcond
         and $aux_condFecha
         and $aux_condrut
         and $aux_condoc_id
@@ -2174,7 +2191,14 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.id=vista_notaventatotales.id
         LEFT JOIN clientebloqueado
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-        WHERE $vendedorcond
+        WHERE 
+        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
+            FROM categoriaprodsuc 
+            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
+            AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
+                    FROM vista_sucfisxusu
+                    WHERE vista_sucfisxusu.usuario_id=$user->id))
+        and $vendedorcond
         and $aux_condFecha
         and $aux_condrut
         and $aux_condoc_id
@@ -2909,6 +2933,7 @@ function consultasoldesp($request){
                     ) >= despachosoldet.cantsoldesp,FALSE,TRUE)
                     AND $aux_notinNullSoldesp";
     //$aux_condactivas = "true";
+    $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
 
     $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
             notaventa.oc_file,notaventa.sucursal_id,
@@ -2951,7 +2976,12 @@ function consultasoldesp($request){
             ON despachosol.id = vista_despordxdespsoltotales.despachosol_id
             INNER JOIN sucursal
             ON despachosol.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
-            WHERE $vendedorcond
+            WHERE 
+            categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
+                                FROM categoriaprodsuc 
+                                WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
+                                AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu))
+            and $vendedorcond
             and $aux_condFecha
             and $aux_condrut
             and $aux_condoc_id

@@ -354,11 +354,11 @@
                                         $at_espesor = empty($at_espesor) ? "0.00" : $at_espesor;
                                         //$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
 
-                                        $AcuTec = $producto->acuerdotecnico
+                                        $AcuTec = $producto->acuerdotecnico;
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                         //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
-                                        $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_nombreprod . " " . $aux_atribAcuTec . " " . $aux_cla_sello_nombre . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor);
+                                        $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $aux_cla_sello_nombre . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor);
                                     }else{
                                         //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
                                         $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_nombre);
