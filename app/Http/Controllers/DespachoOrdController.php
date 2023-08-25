@@ -1572,6 +1572,7 @@ function consultaindex(){
     $user = Usuario::findOrFail(auth()->id());
     $sucurArray = $user->sucursales->pluck('id')->toArray();
     $sucurcadena = implode(",", $sucurArray);
+    $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
 
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
     cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
@@ -1605,7 +1606,15 @@ function consultaindex(){
     ON despachoord.despachosol_id = despachosol.id AND ISNULL(despachosol.deleted_at)
     INNER JOIN sucursal
     ON despachosol.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
-    WHERE ISNULL(despachoord.aprguiadesp)
+    INNER JOIN producto
+    ON producto.id = notaventadetalle.producto_id AND ISNULL(producto.deleted_at)
+    INNER JOIN categoriaprod
+    ON categoriaprod.id=producto.categoriaprod_id AND ISNULL(categoriaprod.deleted_at)
+    WHERE categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
+        FROM categoriaprodsuc 
+        WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
+        AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu))
+    AND ISNULL(despachoord.aprguiadesp)
     AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
     AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
     AND despachosol.sucursal_id in ($sucurcadena)
