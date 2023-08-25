@@ -356,7 +356,7 @@
 
                                         $AcuTec = $producto->acuerdotecnico;
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-                                        $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
+                                        $aux_atribAcuTec = $AcuTec->materiaprima->nombre . " " . $AcuTec->color->descripcion . " " . $AcuTec->at_impresoobs;
                                         //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
                                         $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $aux_cla_sello_nombre . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor);
                                     }else{
