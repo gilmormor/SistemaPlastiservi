@@ -541,11 +541,20 @@ class CotizacionController extends Controller
                         unset($objetAT->claseprod);
                         unset($objetAT->cotizaciondetalle);
                         unset($objetAT->anchounidadmedida);
+                        unset($objetAT->color);
                         //dd($objetAT);
                         $arrayAT = (array) $objetAT;
                         $aux_at_pigmentacion = $arrayAT["at_pigmentacion"];
                         if($aux_at_pigmentacion == "" or is_null($aux_at_pigmentacion)){
                             $arrayAT["at_pigmentacion"] = 0;
+                        }
+                        $aux_at_largo = $arrayAT["at_largo"];
+                        if($aux_at_largo == "" or is_null($aux_at_largo)){
+                            $arrayAT["at_largo"] = 0;
+                        }
+                        $aux_at_fuelle = $arrayAT["at_fuelle"];
+                        if($aux_at_fuelle == "" or is_null($aux_at_fuelle)){
+                            $arrayAT["at_fuelle"] = 0;
                         }
                         /*
                         $acuerdotecnicotemp = AcuerdoTecnicoTemp::updateOrInsert(
