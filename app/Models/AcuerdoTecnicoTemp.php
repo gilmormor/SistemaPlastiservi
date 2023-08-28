@@ -76,7 +76,9 @@ class AcuerdoTecnicoTemp extends Model
         'at_etiqotroobs',
         'at_certificados',
         'at_otrocertificado',
-        'at_aprobado'
+        'at_aprobado',
+        'at_formatofilm',
+        'usuariodel_id'
     ];
 
     //RELACION INVERSA PARA BUSCAR EL PADRE

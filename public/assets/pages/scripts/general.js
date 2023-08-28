@@ -2347,6 +2347,21 @@ function crearEditarAcuTec(i){
 	$("#at_claseprod_id").empty();
     $("#at_claseprod_id").append("<option value=''>Seleccione...</option>");
     //alert($(this).val());
+	console.log($("#producto_id" + i).val());
+
+	var palabraEnVariable = $("#nombreProdTD"  + i).html();
+	var palabraBuscada = "Film";
+
+	// Convertir ambas palabras a minúsculas antes de comparar
+	if (palabraEnVariable.toLowerCase().includes(palabraBuscada.toLowerCase())) {
+		// Agregar una clase al elemento
+		$("#at_formatofilm").addClass("valorrequerido");
+		$("#div_at_formatofilm").css('display','block');
+	} else {
+		// Eliminar una clase del elemento
+		$("#at_formatofilm").removeClass("valorrequerido");
+		$("#div_at_formatofilm").css('display','none');
+	}
     var data = {
         categoriaprod_id: $("#producto_idTDT" + i).attr("categoriaprod_id"),
         _token: $('input[name=_token]').val()

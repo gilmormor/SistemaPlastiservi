@@ -58,6 +58,9 @@
 							@endif
 							<td style="width: 16% !important;"><strong>Unid Medida:</strong></td>
 							<td style="width: 25% !important;"><p>{{$acuerdotecnico->unidadmedida->nombre}}</p></td>
+							@if ($acuerdotecnico->at_formatofilm > 0)
+								<td style="width: 16% !important;"><strong>Formato: </strong>{{number_format($acuerdotecnico->at_formatofilm, 2, ',', '.')}} Kg.</td>
+							@endif
 						</tr>
 						<tr class="headtarial">
 							<td style="width: 16% !important;"><strong>Descripción:</strong></td>

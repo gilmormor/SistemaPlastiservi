@@ -77,6 +77,7 @@ class AcuerdoTecnico extends Model
         'at_etiqotroobs',
         'at_certificados',
         'at_otrocertificado',
+        'at_formatofilm',
         'usuariodel_id'
     ];    
 
