@@ -356,9 +356,10 @@
 
                                         $AcuTec = $producto->acuerdotecnico;
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-                                        $aux_atribAcuTec = $AcuTec->materiaprima->nombre . " " . $AcuTec->color->descripcion . " " . $AcuTec->at_impresoobs;
+                                        $aux_impresa = $AcuTec->at_impreso==1 ? "Impresa" : "";
+                                        $aux_atribAcuTec = $AcuTec->materiaprima->nombre . " " . $AcuTec->color->descripcion . " " . $aux_impresa . " " . $AcuTec->at_impresoobs;
                                         //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
-                                        $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $aux_cla_sello_nombre . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor);
+                                        $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
                                     }else{
                                         //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
                                         $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_nombre);
