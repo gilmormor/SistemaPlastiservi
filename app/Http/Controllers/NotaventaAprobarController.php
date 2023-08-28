@@ -114,9 +114,20 @@ class NotaventaAprobarController extends Controller
         }
         $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
         $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
-    
+        //$arraySucFisxUsu Ubicacion de Sucursal fisica de usuario
+        //Valido con las ubicaciones fisicas de Usuario que creo el registro
+        //Esto para solo mostrar los registros correspondientes a la Sucursal del Usuario que se loguio
+        /*
+        Este Inner join busca todas las Ubicaciones fisicas de usuario quien creo el registro
+        luego si estan contenidas en las ubicaciones fisicas $arraySucFisxUsu de usuario que se loguio las muestra
+        INNER JOIN vista_sucfisxusu
+        ON notaventa.usuario_id = vista_sucfisxusu.usuario_id and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu)
+        */
+
+        $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
+
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = "SELECT notaventa.id,DATE_FORMAT(notaventa.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
+        $sql = "SELECT DISTINCT notaventa.id,DATE_FORMAT(notaventa.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_file,oc_id,'' as pdfnv, 
                     concat(persona.nombre, ' ' ,persona.apellido) as vendedor_nombre,
                     (SELECT COUNT(*) 
@@ -129,6 +140,8 @@ class NotaventaAprobarController extends Controller
                 ON notaventa.vendedor_id = vendedor.id
                 INNER JOIN persona
                 ON vendedor.persona_id = persona.id
+                INNER JOIN vista_sucfisxusu
+                ON notaventa.usuario_id = vista_sucfisxusu.usuario_id and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu)
                 where $aux_condvend
                 and $aux_condsucursal_id
                 and anulada is null

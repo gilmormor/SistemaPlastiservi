@@ -62,7 +62,10 @@ class CotizacionAprobarController extends Controller
         //$aux_statusPant 0=Pantalla Normal CRUD de Cotizaciones
         //$aux_statusPant 1=Pantalla Solo para aprobar cotizacion para luego emitir la Nota de Venta
         $aux_statusPant = 1;
-
+        //$arraySucFisxUsu Ubicacion de Sucursal fisica de usuario
+        //Valido con las ubicaciones fisicas de Usuario que creo el registro
+        //Esto para solo mostrar los registros correspondientes a la Sucursal del Usuario que se loguio
+        $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
         $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
                     aprobstatus,'1' as pdfcot,
@@ -78,6 +81,8 @@ class CotizacionAprobarController extends Controller
                 ON cotizacion.vendedor_id = vendedor.id
                 INNER JOIN persona
                 ON vendedor.persona_id = persona.id
+                INNER JOIN vista_sucfisxusu
+                ON cotizacion.usuario_id = vista_sucfisxusu.usuario_id and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu)
                 where aprobstatus=2
                 and cotizacion.deleted_at is null
                 AND cotizacion.sucursal_id in ($sucurcadena);";
