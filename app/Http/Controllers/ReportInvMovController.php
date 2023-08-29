@@ -91,7 +91,7 @@ function consultainvmov($request){
     $aux_condannomes = "invmov.annomes='$aux_annomes'";
     $aux_condsucursal_id = " true";
     if(!empty($request->sucursal_id)){
-        $aux_condsucursal_id = "invmovdet.sucursal_id='$request->sucursal_id'";
+        $aux_condsucursal_id = "invbodega.sucursal_id='$request->sucursal_id'";
     }
     if(empty($request->fechad) or empty($request->fechah)){
         $aux_condFecha = " true";
@@ -124,14 +124,14 @@ function consultainvmov($request){
             invmov.invmovmodulo_id,acuerdotecnico.id as acuerdotecnico_id
             FROM invmov INNER JOIN invmovdet
             ON invmov.id = invmovdet.invmov_id and isnull(invmov.deleted_at) and isnull(invmov.staanul) and isnull(invmovdet.deleted_at)
-            INNER JOIN sucursal
-            on invmovdet.sucursal_id = sucursal.id and isnull(sucursal.deleted_at)
             INNER JOIN invbodegaproducto
             on invmovdet.invbodegaproducto_id = invbodegaproducto.id and isnull(invbodegaproducto.deleted_at)
             INNER JOIN producto
             on invbodegaproducto.producto_id = producto.id and isnull(producto.deleted_at)
             INNER JOIN invbodega
             on invbodegaproducto.invbodega_id = invbodega.id and isnull(invbodega.deleted_at)
+            INNER JOIN sucursal
+            on invbodega.sucursal_id = sucursal.id and isnull(sucursal.deleted_at)
             INNER JOIN categoriaprod
             on categoriaprod.id=producto.categoriaprod_id and isnull(categoriaprod.deleted_at)
             INNER JOIN invmovmodulo

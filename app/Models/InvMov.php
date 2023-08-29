@@ -158,7 +158,7 @@ class InvMov extends Model
         if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "x")){
             $aux_sucursal_idCond = "false";
         }else{
-            $aux_sucursal_idCond = "invmovdet.sucursal_id = $request->sucursal_id";
+            $aux_sucursal_idCond = "invbodega.sucursal_id = $request->sucursal_id";
         }
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
