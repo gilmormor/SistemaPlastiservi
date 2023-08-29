@@ -204,8 +204,6 @@ class DespachoSolController extends Controller
                 //dd($request);
                 $despachosol = DespachoSol::create($request->all());
                 $despachosolid = $despachosol->id;
-                $despachosol->sucursal_id = $notaventa->sucursal_id;
-                $despachosol->save();
                 //$cont_producto = count($request->producto_id);
                 if($cont_producto>0){
                     //CONTROLAR EL STOCK AGRUPADO POR invbodegaproducto_id
