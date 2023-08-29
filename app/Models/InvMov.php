@@ -69,7 +69,7 @@ class InvMov extends Model
                 if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
                     true;
                 }else{
-                    $query->where("invmovdet.sucursal_id","=",$request->sucursal_id);
+                    $query->where("invbodega.sucursal_id","=",$request->sucursal_id);
                 }
             })
             ->where(function($query) use ($request)  {

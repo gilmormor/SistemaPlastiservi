@@ -158,7 +158,7 @@ class InvControlController extends Controller
                                     ->groupBy("invmovdet.invbodegaproducto_id")
                                     ->get();
                             */
-                            $aux_sucursal_id = $request->sucursal_id;
+                            /*EN COMENTARIO DESDE EL 29/08/2023
                             $invmovdets = InvMov::join('invmovdet', function ($join)  use ($aux_sucursal_id) {
                                                     $join->on('invmov.id', '=', 'invmovdet.invmov_id')
                                                         ->where("invmovdet.sucursal_id",$aux_sucursal_id);
@@ -180,6 +180,28 @@ class InvControlController extends Controller
                                     ->where("invmovdet.sucursal_id",$aux_sucursal_id)
                                     ->groupBy("invmovdet.invbodegaproducto_id")
                                     ->get();
+                            */
+                            $aux_sucursal_id = $request->sucursal_id;
+                            $invmovdets = InvMov::join('invmovdet','invmov.id', '=', 'invmovdet.invmov_id')
+                                    ->where("annomes","=",$aux_annomes)
+                                    ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
+                                    ->select([
+                                                'invbodegaproducto_id',
+                                                'producto_id',
+                                                'invbodega_id',
+                                                'invbodega.sucursal_id',
+                                                'unidadmedida_id',
+                                                'invmovdet.invmovtipo_id',
+                                                DB::raw('sum(cant) as cant'),
+                                                DB::raw('sum(cantkg) as cantkg')
+                                            ])
+                                    ->whereNull('invmov.deleted_at')
+                                    ->whereNull('invmovdet.deleted_at')
+                                    ->where("invbodega.sucursal_id",$aux_sucursal_id)
+                                    ->groupBy("invmovdet.invbodegaproducto_id")
+                                    ->get();
+
+                                    
                             $invmov_array = array();
                             $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                             $invmov_array["annomes"] = $annomesini;
