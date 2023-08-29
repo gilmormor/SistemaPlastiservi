@@ -2991,7 +2991,7 @@ function consultasoldesp($request){
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             and isnull(despachosoldet.deleted_at)
-            AND notaventa.sucursal_id in ($sucurcadena)
+            AND despachosol.sucursal_id in ($sucurcadena)
             GROUP BY despachosol.id
             ORDER BY despachosol.id DESC;";
 /*
