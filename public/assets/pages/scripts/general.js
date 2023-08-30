@@ -2350,7 +2350,7 @@ function crearEditarAcuTec(i){
 	console.log($("#producto_id" + i).val());
 
 	var palabraEnVariable = $("#nombreProdTD"  + i).html();
-	var palabraBuscada = "Film";
+	var palabraBuscada = "Film Strech";
 
 	// Convertir ambas palabras a minúsculas antes de comparar
 	if (palabraEnVariable.toLowerCase().includes(palabraBuscada.toLowerCase())) {
