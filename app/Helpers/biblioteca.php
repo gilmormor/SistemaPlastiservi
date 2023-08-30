@@ -148,13 +148,13 @@ if (!function_exists('sanear_string')) {
         //Esta parte se encarga de eliminar cualquier caracter extraño
         $string = str_replace(
             array(
-                "\\", "¨", "º", "~",
-                "#", "@", "|", "!", "\"",
-                "·", "$", "%", "&", "/",
+                "¨", "º", "~",
+                "#", "@", "|", "!",
+                "·", "$", "%", "&",
                 "(", ")", "?", "¡",
                 "¿", "[", "^", "<code>", "]",
                 "+", "}", "{", "¨", "´",
-                ">", "<", ","
+                ">", "<"
             ),
             ' ',
             $string
