@@ -357,13 +357,20 @@
                                         $AcuTec = $producto->acuerdotecnico;
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
                                         $aux_impresa = $AcuTec->at_impreso==1 ? "Impresa" : "";
-                                        $aux_atribAcuTec = $AcuTec->materiaprima->nombre . " " . $AcuTec->color->descripcion . " " . $aux_impresa . " " . $AcuTec->at_impresoobs;
+                                        $aux_formatofilm = $AcuTec->at_formatofilm > 0 ? number_format($AcuTec->at_formatofilm, 2, ',', '.') . "Kg." : "";
+                                        $aux_atribAcuTec = $AcuTec->materiaprima->nombre . " " . $AcuTec->color->descripcion . " " . $aux_impresa . " " . $AcuTec->at_impresoobs . " " . $aux_formatofilm;
                                         //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
                                         $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
                                     }else{
                                         //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
-                                        $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_nombre);
-                                        $aux_nombreprod = $aux_nombreprod . " D:" . $producto->diametro . " L:" . $producto->long . " " . $aux_cla_nombre. " " . $producto->tipounion;
+                                        $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_descripcion);
+                                        $aux_diametro = $producto->diametro > 0 ? " D:" . $producto->diametro : "";
+                                        $aux_long = $producto->long ? " L:" . $producto->long : "";
+                                        $aux_tipounion = "";
+                                        if(!($producto->tipounion === "S/C" or $producto->tipounion === "S/U")){
+                                            $aux_tipounion = $producto->tipounion;
+                                        }                                        
+                                        $aux_nombreprod = $aux_nombreprod . $aux_diametro . $aux_long . " " . $aux_cla_nombre. " " . $aux_tipounion;
                                     }
                                 }
                                 //esto es para reemplazar el caracter comilla doble " de la cadena, para evitar que me trunque los valores en javascript al asignar a attr val 
