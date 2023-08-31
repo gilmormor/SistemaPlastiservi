@@ -974,9 +974,10 @@ class DteFacturaController extends Controller
                 $dtedev->obs = $request->observacion;
                 $dtedev->usuario_id = auth()->id();
                 $dtedev->save();
-
+                /* En comentario porque el que elimina la guia de despacho es al momento de anular la guia
                 $despachoord->guiadespacho = NULL;
                 $despachoord->guiadespachofec = NULL;
+                */
                 if($request->statusM == '2'){ //Si status es = 1 solo borra la guia de despacho si es = 2 borra guia y factura
                     $despachoord->guiadespacho = NULL;
                     $despachoord->guiadespachofec = NULL;

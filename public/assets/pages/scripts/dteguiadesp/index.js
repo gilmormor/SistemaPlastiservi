@@ -423,8 +423,13 @@ function ajaxRequest(data,url,funcion) {
             }
             if (funcion=='guardarguiadespanul') {
                 if (respuesta.mensaje == "ok") {
+                    aux_nfila = $("#nfilaanul").val();
+					$("#fila" + aux_nfila).remove();
+					$("#myModalanularguiafact").modal('hide');
+                    /* EN COMENTARIO PORQUE AL ANULAR LA GUIA NO SE DEBE MOVER EL INVENTARIO, YA QUE EL QUE MUEVE EL INV ES CUANDO SE DEVUELVE LA ORDEN DE DESPACHO
                     var ruta = '/guardaranularguia';
                     ajaxRequest(datatemp,ruta,'guardaranularguia');
+                    */
                 } else {
                     Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
                 }

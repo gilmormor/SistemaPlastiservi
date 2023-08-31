@@ -718,7 +718,6 @@ class DteGuiaDespController extends Controller
 
     public function guiadespanul(Request $request)
     {
-        return response()->json(['mensaje' => 'ok']);
         $dte = Dte::findOrFail($request->guiadesp_id);
         if($request->updated_at != $dte->updated_at){
             return redirect('dteguiadesp')->with([
@@ -734,6 +733,8 @@ class DteGuiaDespController extends Controller
             //NO ENTRA EN LA CONDICION
             if($dte->dteguiadesp->despachoord_id){
                 $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
+                $despachoord->guiadespacho = NULL;
+                $despachoord->guiadespachofec = NULL;
                 $despachoord->updated_at = date("Y-m-d H:i:s");
                 if($despachoord->save()){
                     return response()->json(['mensaje' => 'ok']);
