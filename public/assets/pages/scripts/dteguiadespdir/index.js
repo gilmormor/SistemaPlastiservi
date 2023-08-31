@@ -79,6 +79,9 @@ $(document).ready(function () {
             </a> | 
             <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
                 <span class="fa fa-upload text-danger"></span>
+            </a> | 
+            <a onclick="anularguiafact(${data.id},0,'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro" data-toggle="tooltip">
+                <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
             $('td', row).eq(12).html(aux_text);
         }
@@ -187,6 +190,17 @@ function ajaxRequest(data,url,funcion) {
 					Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
 				}
 			}
+            if(funcion=='guiadespanul'){
+				if (respuesta.mensaje == "ok") {
+					$("#fila" + datatemp.nfila).remove();
+					$("#myModalanularguiafact").modal('hide');
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+                    Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+					//Biblioteca.notificaciones('Registro no fue guardado.', 'Plastiservi', 'error');
+				}
+			}
+
 		},
 		error: function () {
 		}
@@ -205,4 +219,31 @@ function verificarAnulGuia()
 	}else{
 		return true;
 	}
+}
+
+function anularguiafact(nfila,id,aux_rutacargs){
+    var data = {
+        id         : nfila,
+        dte_id     : nfila,
+        nfila      : nfila,
+        guiadesp_id: nfila,
+        updated_at : $("#updated_at" + nfila).html(),
+        despordupdated_at : $("#despordupdated_at" + id).html(),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dteguiadesp/guiadespanul';
+    swal({
+        title: '¿ Seguro desea continuar ?',
+        text: "Esta acción no se puede deshacer!",
+            icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequest(data,ruta,'guiadespanul');
+        }
+    });
+
 }

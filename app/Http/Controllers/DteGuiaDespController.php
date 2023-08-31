@@ -171,6 +171,9 @@ class DteGuiaDespController extends Controller
         }
     
         $aux_indtraslado = $request->tipoguiadesp;
+        if($aux_indtraslado == 30){ //ESTO ES TEMPORAL POR EL MES DE AGOSTO 2023 PARA QUE PUEDAN HACER GUIA DE TRASLADO DE LAS GUIAS HECHAS POR EPROPLAS
+            $aux_indtraslado = 6;
+        }
         //dd($request);
         //dd(sanear_string("GILMER Ñ x&@x  Moreno"));
         if($request->tipoguiadesp == 20){ 
@@ -715,7 +718,7 @@ class DteGuiaDespController extends Controller
 
     public function guiadespanul(Request $request)
     {
-        //dd($request);
+        return response()->json(['mensaje' => 'ok']);
         $dte = Dte::findOrFail($request->guiadesp_id);
         if($request->updated_at != $dte->updated_at){
             return redirect('dteguiadesp')->with([
@@ -723,16 +726,20 @@ class DteGuiaDespController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
-        //dd($request);
         $request->request->add(['usuario_id' => auth()->id()]);
         $dteanul = DteAnul::create($request->all());
         $dte->updated_at = date("Y-m-d H:i:s");
         if($dte->save()){
-            $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
-            $despachoord->updated_at = date("Y-m-d H:i:s");
-            if($despachoord->save()){
-                return response()->json(['mensaje' => 'ok']);
+            //SI LA GUIA DESPACHO ES DIRECTA ES DECIR NO VIENE DE UNA ORDEN DE DESPACHO
+            //NO ENTRA EN LA CONDICION
+            if($dte->dteguiadesp->despachoord_id){
+                $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
+                $despachoord->updated_at = date("Y-m-d H:i:s");
+                if($despachoord->save()){
+                    return response()->json(['mensaje' => 'ok']);
+                }
             }
+            return response()->json(['mensaje' => 'ok']);
         }
         //SI NO EJECUTA EL RETURN ANTERIOR, EJECUTA ESTE RETURN
         return redirect('dteguiadesp')->with([

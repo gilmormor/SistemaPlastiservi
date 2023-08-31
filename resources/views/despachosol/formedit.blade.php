@@ -308,6 +308,13 @@
                                         >Traslado</option>
                                     
                                 @else
+                                    <option
+                                        value="30"
+                                        @if(isset($data) and $data->tipoguiadesp =="30")
+                                            {{'selected'}}
+                                        @endif
+                                        >Traslado x Fact eProPlas</option>
+
                                     <option 
                                         value="1" 
                                         @if(isset($data) and $data->tipoguiadesp =="1")

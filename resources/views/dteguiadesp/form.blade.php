@@ -232,6 +232,9 @@
                                 if($tipoguiadesp == "20"){
                                     $aux_tipoguiadesp = "Traslado + Precio";
                                 }
+                                if($tipoguiadesp == "30"){
+                                    $aux_tipoguiadesp = "Traslado x Fact eProPlas";
+                                }
                             ?>
                             <label for="txttipoguiadesp" class="control-label requerido">Tipo Guia</label>
                             <input type="text" name="txttipoguiadesp" id="txttipoguiadesp" class="form-control" value="{{old('txttipoguiadesp', $aux_tipoguiadesp ?? '')}}" required readonly/>

@@ -246,6 +246,9 @@
             if($tipoguiadesp == "20"){
                 $aux_tipoguiadesp = "Traslado + Precio";
             }
+            if($tipoguiadesp == "30"){
+                $aux_tipoguiadesp = "Traslado x Fact eProPlas";
+            }
 
         ?>
         <label for="tipoguiadesp" class="control-label requerido"  data-toggle='tooltip' title="Tipo Guia Despacho">Tipo Guia Despacho</label>

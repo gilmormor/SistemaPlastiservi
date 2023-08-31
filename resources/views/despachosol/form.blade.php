@@ -291,6 +291,12 @@
                                 <option value="">Seleccione...</option>
                                 @if (count($data->dteguiadespnvs) == 0)
                                     <option
+                                        value="30"
+                                        @if(isset($data) and $data->tipoguiadesp =="30")
+                                            {{'selected'}}
+                                        @endif
+                                        >Traslado x Fact eProPlas</option>
+                                    <option
                                         value="1" 
                                         @if(isset($data) and $data->tipoguiadesp =="1")
                                             {{'selected'}}
@@ -302,14 +308,14 @@
                                             @if(isset($data) and $data->tipoguiadesp =="6")
                                                 {{'selected'}}
                                             @endif
-                                        >Traslado</option>                                    
+                                        >Traslado</option>
                                     @endif
                                     <option
                                         value="20"
                                         @if(isset($data) and $data->tipoguiadesp =="20")
                                             {{'selected'}}
                                         @endif
-                                        >Traslado + Precio</option>                                    
+                                        >Traslado + Precio</option>
                                 @endif
                             </select>
                         </div>
