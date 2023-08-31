@@ -247,7 +247,7 @@
                 $aux_tipoguiadesp = "Traslado + Precio";
             }
             if($tipoguiadesp == "30"){
-                $aux_tipoguiadesp = "Traslado x Fact eProPlas";
+                $aux_tipoguiadesp = "Traslado";
             }
 
         ?>

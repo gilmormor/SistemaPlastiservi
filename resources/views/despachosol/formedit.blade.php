@@ -313,7 +313,7 @@
                                         @if(isset($data) and $data->tipoguiadesp =="30")
                                             {{'selected'}}
                                         @endif
-                                        >Traslado x Fact eProPlas</option>
+                                        >Traslado</option>
 
                                     <option 
                                         value="1" 

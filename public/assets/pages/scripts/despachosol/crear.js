@@ -753,7 +753,7 @@ $("#dte_id").change(function(){
 	$("#tipoguiadesp").empty();
 	$("#tipoguiadesp").append("<option value=''>Seleccione...</option>")
 	if(aux_val == 1){
-		$("#tipoguiadesp").append("<option value='30'>Traslado x Fact eProPlas</option>")
+		$("#tipoguiadesp").append("<option value='30'>Traslado</option>")
 		$("#tipoguiadesp").append("<option value='1'>Precio</option>")
 		$("#tipoguiadesp").append("<option value='20'>Traslado + Precio</option>")
 		$("#tipoguiadesp").val("");
