@@ -452,6 +452,7 @@ function datosGD(){
         comuna_id         : $("#comuna_id").val(),
         despachoord_id    : $("#despachoord_id").val(),
         producto_id       : $("#producto_idPxP").val(),
+        sucursal_id       : $("#sucursal_id").val(),
         filtro            : 1,
         dtenotnull        : 1, //Estatus que se envia a la consulta para mostrar o no los dte anulados (1=no se trae los anulados ""=empty se trae todo sin importar que esta anulado)
         dteguiausada      : 1,
@@ -469,7 +470,8 @@ function datosGD(){
     "&despachoord_id=" + data.despachoord_id +
     "&filtro=" + data.filtro +
     "&dtenotnull=" + data.dtenotnull +
-    "&dteguiausada=" + data.dteguiausada;
+    "&dteguiausada=" + data.dteguiausada +
+    "&sucursal_id=" + data.sucursal_id;
 
     var data = {
         data1 : data,

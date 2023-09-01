@@ -32,6 +32,7 @@ use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -403,7 +404,9 @@ class DteFacturaController extends Controller
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')
+                                    ->whereIn('sucursal.id', $sucurArray)
+                                    ->get();
         return view('dtefactura.listarguiadesp', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
