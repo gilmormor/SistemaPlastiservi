@@ -416,6 +416,7 @@ class CotizacionController extends Controller
     public function editaraat($id)
     {
         session(['editaracutec' => '0']);
+        session(['aux_aprocot' => '1']);
         return editar($id);
     }
 
