@@ -16,6 +16,7 @@ class AcuerdoTecnicoTemp extends Model
         'at_claseprod_id',
         'at_grupoprod_id',
         'at_desc',
+        'at_complementonomprod',
         'at_entmuestra',
         'at_color_id',
         'at_npantone',

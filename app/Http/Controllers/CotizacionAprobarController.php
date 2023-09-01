@@ -85,7 +85,8 @@ class CotizacionAprobarController extends Controller
                 ON cotizacion.usuario_id = vista_sucfisxusu.usuario_id and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu)
                 where aprobstatus=2
                 and cotizacion.deleted_at is null
-                AND cotizacion.sucursal_id in ($sucurcadena);";
+                AND cotizacion.sucursal_id in ($sucurcadena)
+                GROUP BY cotizacion.id;";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);
