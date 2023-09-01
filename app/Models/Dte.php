@@ -459,15 +459,12 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
-    
-/*
         $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
-        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "") or ($request->sucursal_id == "undefined")){
             $aux_sucursal_idCond = "true";
         }else{
             $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
         }
-*/
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,
         cliente.razonsocial,
@@ -513,11 +510,9 @@ class Dte extends Model
         AND $aux_condindtraslado
         AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
         AND indtraslado != 6
-        order BY dte.nrodocto;";
-        /*
         AND $aux_condsucurArray
         AND $aux_sucursal_idCond
-        */
+        order BY dte.nrodocto;";
         //dd($sql);
         //AND $aux_conddtenotnull
 
