@@ -605,6 +605,7 @@ function consultaorddesp($request){
         $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
     }
 
+    $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
 
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,
             cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
@@ -633,6 +634,8 @@ function consultaorddesp($request){
             ON comuna.id=despachoord.comunaentrega_id
             LEFT JOIN despachoordanul
             ON despachoordanul.despachoord_id=despachoord.id
+            INNER JOIN vista_sucfisxusu
+            ON notaventa.usuario_id = vista_sucfisxusu.usuario_id and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu)
             WHERE $vendedorcond
             and $aux_conddespachoord_id
             and $aux_condFecha
