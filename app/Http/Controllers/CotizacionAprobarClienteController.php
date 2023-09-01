@@ -36,21 +36,31 @@ class CotizacionAprobarClienteController extends Controller
         //session(['aux_aprocot' => '1']) 1=Pantalla Solo para aprobar cotizacion para luego emitir la Nota de Venta
         session(['aux_aprocot' => '1']);
         $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         //$vendedor_id=$user->persona->vendedor->id;
 
         //$aux_statusPant 0=Pantalla Normal CRUD de Cotizaciones
         //$aux_statusPant 1=Pantalla Solo para aprobar cotizacion para luego emitir la Nota de Venta
         $aux_statusPant = 1;
+        //$arraySucFisxUsu Ubicacion de Sucursal fisica de usuario
+        //Valido con las ubicaciones fisicas de Usuario que creo el registro
+        //Esto para solo mostrar los registros correspondientes a la Sucursal del Usuario que se loguio
+        $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
 
-        $sql = 'SELECT cotizacion.id,cotizacion.fechahora,clientetemp.razonsocial,aprobstatus, 
+        $sql = "SELECT cotizacion.id,cotizacion.fechahora,clientetemp.razonsocial,aprobstatus, 
                     (SELECT COUNT(*) 
                     FROM cotizaciondetalle 
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id and cotizaciondetalle.precioxkilo<cotizaciondetalle.precioxkiloreal) AS contador
                 FROM cotizacion inner join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
+                INNER JOIN vista_sucfisxusu
+                ON cotizacion.usuario_id = vista_sucfisxusu.usuario_id and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu)
                 where isnull(cliente_id)
                 and (aprobstatus=1 or aprobstatus=2 or aprobstatus=3)
-                and cotizacion.deleted_at is null;';
+                and cotizacion.deleted_at is null
+                AND cotizacion.sucursal_id in ($sucurcadena);";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);

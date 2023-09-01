@@ -986,10 +986,12 @@ function consultaindex(){
         ON dte.id = dtedev.dte_id AND ISNULL(dtedev.deleted_at)
         LEFT JOIN usuario
         ON dtedev.usuario_id = usuario.id AND ISNULL(usuario.deleted_at)
+        INNER JOIN despachosol
+        ON despachoord.despachosol_id = despachosol.id AND ISNULL(despachosol.deleted_at)
         WHERE despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
         AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
-        AND notaventa.sucursal_id in ($sucurcadena)
+        AND despachosol.sucursal_id in ($sucurcadena)
         AND ISNULL(dte.statusgen)
         AND dte.foliocontrol_id=2
         GROUP BY dte.id
@@ -1124,6 +1126,8 @@ function consultalistarorddesppage($request){
     ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
     LEFT JOIN clientebloqueado
     ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+    INNER JOIN despachosol
+    ON despachoord.despachosol_id = despachosol.id AND ISNULL(despachosol.deleted_at)
     WHERE $vendedorcond
     and $aux_condFecha
     and $aux_condrut
@@ -1137,7 +1141,7 @@ function consultalistarorddesppage($request){
     and despachoord.aprguiadesp='1' and isnull(despachoord.guiadespacho)
     AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
     AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
-    AND notaventa.sucursal_id in ($sucurcadena)
+    AND despachosol.sucursal_id in ($sucurcadena)
     AND despachoord.id NOT IN (SELECT guiadesp.despachoord_id FROM guiadesp WHERE ISNULL(guiadesp.deleted_at) AND guiadesp.id not in (SELECT guiadespanul.guiadesp_id FROM guiadespanul WHERE ISNULL(guiadespanul.deleted_at)))
     AND despachoord.id NOT IN (SELECT dteguiadesp.despachoord_id
         FROM dte INNER JOIN dteguiadesp

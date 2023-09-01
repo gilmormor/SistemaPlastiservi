@@ -16,7 +16,6 @@ $(document).ready(function () {
             {data: 'nombre'},
             {data: 'email'},
             {data: 'rol_nombre'},
-            {data: 'email'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : 
                 "<a href='admin/usuario' class='btn-accion-tabla tooltipsC btnEditar action-buttons' title='Editar este registro'>" + 

@@ -320,6 +320,38 @@
                                 /*************************/
                                 $peso = $detalle->totalkilos/$aux_cant;
 
+                                $aux_nombreprod = $detalle->producto->nombre;
+                                if(isset($detalle->producto->acuerdotecnico)){
+                                    $at_ancho = $detalle->producto->acuerdotecnico->at_ancho;
+                                    $at_largo = $detalle->producto->acuerdotecnico->at_largo;
+                                    $at_espesor = $detalle->producto->acuerdotecnico->at_espesor;
+                                    $at_ancho = empty($at_ancho) ? "0.00" : $at_ancho;
+                                    $at_largo = empty($at_largo) ? "0.00" : $at_largo;
+                                    $at_espesor = empty($at_espesor) ? "0.00" : $at_espesor;
+                                    //$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
+
+                                    $AcuTec = $detalle->producto->acuerdotecnico;
+                                    $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
+                                    $aux_impresa = $AcuTec->at_impreso==1 ? "Impresa" : "";
+                                    $aux_formatofilm = $AcuTec->at_formatofilm > 0 ? number_format($AcuTec->at_formatofilm, 2, ',', '.') . "Kg." : "";
+                                    $aux_atribAcuTec = $AcuTec->materiaprima->nombre . " " . $AcuTec->color->descripcion . " " . $aux_impresa . " " . $AcuTec->at_impresoobs . " " . $aux_formatofilm;
+                                    //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+                                    $aux_nombreprod = nl2br($detalle->producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
+                                }else{
+                                    //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
+                                    $aux_cla_nombre =str_replace("N/A","",$detalle->producto->claseprod->cla_descripcion);
+                                    $aux_diametro = $detalle->producto->diametro > 0 ? " D:" . $detalle->producto->diametro : "";
+                                    $aux_long = $detalle->producto->long ? " L:" . $detalle->producto->long : "";
+                                    $aux_tipounion = "";
+                                    if(!($detalle->producto->tipounion === "S/C" or $detalle->producto->tipounion === "S/U")){
+                                        $aux_tipounion = $detalle->producto->tipounion;
+                                    }                                        
+                                    $aux_nombreprod = $aux_nombreprod . $aux_diametro . $aux_long . " " . $aux_cla_nombre. " " . $aux_tipounion;
+                                    }
+                                //esto es para reemplazar el caracter comilla doble " de la cadena, para evitar que me trunque los valores en javascript al asignar a attr val 
+                                $aux_nombreprod = str_replace('"',"'",$aux_nombreprod);
+
+
                                 if($aux_cant > $sumacantsoldesp){
                                     $aux_nfila++;
                                     $aux_saldo = $aux_cant - $sumacantsoldesp;
@@ -372,7 +404,7 @@
                                 </td>
                                 <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
                                     <a id="producto_nombre{{$aux_nfila}}" name="producto_nombre{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Nombre Producto" data-toggle="tooltip" valor="{{$detalle->producto->nombre}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="producto_nombre">
-                                        {{$detalle->producto->nombre}}
+                                        {{$aux_nombreprod}}
                                     </a>
                                     <input type="text" name="nmbitem[]" id="nmbitem{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->nombre}}" style="display:none;"/>
                                     <input type="text" name="dscitem[]" id="dscitem{{$aux_nfila}}" class="form-control" value="" style="display:none;"/>
