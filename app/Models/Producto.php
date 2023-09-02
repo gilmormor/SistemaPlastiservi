@@ -152,7 +152,10 @@ class Producto extends Model
                 if(isnull(at_largo),producto.long,at_largo) as long1,producto.long,
                 if(isnull(at_espesor),producto.peso,at_espesor) as peso,
                 producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
-                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
+                categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id,
+                at_color_id,at_formatofilm,at_complementonomprod,at_materiaprima_id,
+                categoriaprod.nombre as categoriaprod_nombre,
+                at_usoprevisto,at_impresoobs,at_tiposelloobs,at_feunidxpaqobs
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod
@@ -171,6 +174,22 @@ class Producto extends Model
                 ORDER BY producto.id asc;";
         //dd($sql);
         $datas = DB::select($sql);
+        foreach ($datas as &$data) {
+            if($data->acuerdotecnico_id != null){
+                $aux_formatofilm = $data->at_formatofilm > 0 ? " " . number_format($data->at_formatofilm, 2, ',', '.') . "Kg." : "";
+                $color = Color::findOrFail($data->at_color_id);
+                $aux_color =  empty($color->descripcion) ? "" : " " . $color->descripcion . " ";
+                $aux_at_complementonomprod = empty($data->at_complementonomprod) ? "" : $data->at_complementonomprod . " ";
+                $materiaprima = MateriaPrima::findOrFail($data->at_materiaprima_id);
+                $aux_atribAcuTec = $materiaprima->nombre . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+                //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+                $aux_nombreprod = nl2br($data->categoriaprod_nombre . " " . $aux_atribAcuTec); // . " " . $data->at_ancho . "x" . $data->at_largo . "x" . number_format($data->at_espesor, 3, ',', '.'));
+                $data->nombre = $aux_nombreprod; 
+                //dd($aux_nombreprod);
+                //dd($data);    
+            }
+        }
+
         return $datas;
     }
 
@@ -201,7 +220,10 @@ class Producto extends Model
                 if(isnull(at_espesor),producto.peso,at_espesor) as peso,
                 producto.tipounion,producto.precioneto,categoriaprod.precio,
                 categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,
-                acuerdotecnico.id as acuerdotecnico_id,at_ancho,at_largo,at_espesor
+                acuerdotecnico.id as acuerdotecnico_id,at_ancho,at_largo,at_espesor,
+                at_color_id,at_formatofilm,at_complementonomprod,at_materiaprima_id,
+                categoriaprod.nombre as categoriaprod_nombre,
+                at_usoprevisto,at_impresoobs,at_tiposelloobs,at_feunidxpaqobs
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod
@@ -222,6 +244,21 @@ class Producto extends Model
                 ORDER BY producto.id asc;";
         //dd($sql);
         $datas = DB::select($sql);
+        foreach ($datas as &$data) {
+            if($data->acuerdotecnico_id != null){
+                $aux_formatofilm = $data->at_formatofilm > 0 ? number_format($data->at_formatofilm, 2, ',', '.') . "Kg." : "";
+                $color = Color::findOrFail($data->at_color_id);
+                $aux_color =  empty($color->descripcion) ? "" : " " . $color->descripcion . " ";
+                $aux_at_complementonomprod = empty($data->at_complementonomprod) ? "" : $data->at_complementonomprod . " ";
+                $materiaprima = MateriaPrima::findOrFail($data->at_materiaprima_id);
+                $aux_atribAcuTec = $materiaprima->nombre . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+                //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+                $aux_nombreprod = nl2br($data->categoriaprod_nombre . " " . $aux_atribAcuTec); // . " " . $data->at_ancho . "x" . $data->at_largo . "x" . number_format($data->at_espesor, 3, ',', '.'));
+                $data->nombre = $aux_nombreprod; 
+                //dd($aux_nombreprod);
+                //dd($data);    
+            }
+        }
         return $datas;
     }
 

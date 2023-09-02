@@ -358,11 +358,10 @@
                                         //$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
 
                                         $AcuTec = $producto->acuerdotecnico;
-                                        $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-                                        $aux_impresa = $AcuTec->at_impreso==1 ? "Impresa" : "";
-                                        $aux_formatofilm = $AcuTec->at_formatofilm > 0 ? number_format($AcuTec->at_formatofilm, 2, ',', '.') . "Kg." : "";
-                                        //$aux_atribAcuTec = $AcuTec->materiaprima->nombre . " " . $AcuTec->color->descripcion . " " . $aux_impresa . " " . $AcuTec->at_impresoobs . " " . $aux_formatofilm;
-                                        $aux_atribAcuTec = $AcuTec->materiaprima->nombre . " " . $AcuTec->color->descripcion . " " . $AcuTec->at_complementonomprod . " " . $aux_formatofilm;
+                                        $aux_formatofilm = $AcuTec->at_formatofilm > 0 ? " " . number_format($AcuTec->at_formatofilm, 2, ',', '.') . "Kg." : "";
+                                        $aux_color =  empty($AcuTec->color->descripcion) ? "" : " " . $AcuTec->color->descripcion . " ";
+                                        $aux_at_complementonomprod = empty($AcuTec->at_complementonomprod) ? "" : $AcuTec->at_complementonomprod . " ";
+                                        $aux_atribAcuTec = $AcuTec->materiaprima->nombre . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
                                         //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
                                         $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
                                     }else{

@@ -165,8 +165,15 @@ function configTablaProd(){
                 $('td', row).eq(i).attr('title', "Click para seleccionar producto");    
             }
             if(data.acuerdotecnico_id != null){
+                data.at_usoprevisto = data.at_impresoobs != null ? "UsoPrev: " + data.at_impresoobs : "";
+                data.at_impresoobs = data.at_impresoobs != null ? "ObsImp: " + data.at_impresoobs : ""; 
+                data.at_tiposelloobs = data.at_tiposelloobs != null ? "ObsSell: " + data.at_tiposelloobs : "";
+                data.at_feunidxpaqobs  = data.at_feunidxpaqobs != null ? "UnixEmp: " + data.at_feunidxpaqobs : "";
+                aux_atribAT = `${data.at_usoprevisto} ${data.at_impresoobs} ${data.at_tiposelloobs} ${data.at_feunidxpaqobs}`;
+                aux_atribAT = aux_atribAT.trim();
+                aux_atribAT = aux_atribAT == "" ? "Acuerdo Técnico" : aux_atribAT;
                 aux_text = 
-                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico">
+                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${aux_atribAT}">
                     ${data.id}
                 </a>`;
                 $('td', row).eq(0).html(aux_text);
@@ -207,11 +214,12 @@ function configTablaProd(){
                 $('td', row).eq(3).attr('data-order',"");
                 $('td', row).eq(3).attr('data-search',"");    
             }
-            $('td', row).eq(3).attr('style','text-align:left');
+            $('td', row).eq(3).html(MASKLA(data.diametro,2));
+            $('td', row).eq(3).attr('style','text-align:center');
             if(data.long1 == 0 || data.long1 == "" || data.long1 == null){
                 $('td', row).eq(4).html("");
                 $('td', row).eq(4).attr('data-order',"");
-                $('td', row).eq(4).attr('data-search',"");    
+                $('td', row).eq(4).attr('data-search',"");
             }
             $('td', row).eq(4).attr('style','text-align:center');
             if(data.peso == 0 || data.peso == "" || data.peso == null){
