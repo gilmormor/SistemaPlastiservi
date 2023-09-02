@@ -169,7 +169,8 @@ function configTablaProd(){
                 data.at_impresoobs = data.at_impresoobs != null ? "ObsImp: " + data.at_impresoobs : ""; 
                 data.at_tiposelloobs = data.at_tiposelloobs != null ? "ObsSell: " + data.at_tiposelloobs : "";
                 data.at_feunidxpaqobs  = data.at_feunidxpaqobs != null ? "UnixEmp: " + data.at_feunidxpaqobs : "";
-                aux_atribAT = `${data.at_usoprevisto} ${data.at_impresoobs} ${data.at_tiposelloobs} ${data.at_feunidxpaqobs}`;
+                data.at_complementonomprod  = data.at_complementonomprod != null ? "CompImp: " + data.at_complementonomprod : "";
+                aux_atribAT = `${data.at_usoprevisto} ${data.at_impresoobs} ${data.at_tiposelloobs} ${data.at_feunidxpaqobs} ${data.at_complementonomprod}`;
                 aux_atribAT = aux_atribAT.trim();
                 aux_atribAT = aux_atribAT == "" ? "Acuerdo Técnico" : aux_atribAT;
                 aux_text = 
