@@ -2349,9 +2349,10 @@ function crearEditarAcuTec(i){
     //alert($(this).val());
 	console.log($("#producto_id" + i).val());
 
-	var palabraEnVariable = $("#nombreProdTD"  + i).html();
+	var palabraEnVariable = $("#nombreProdTD"  + i).attr("categoriaprod_nombre");
 	var palabraBuscada = "Film Strech";
-
+	console.log(palabraEnVariable);
+	console.log(palabraBuscada);
 	// Convertir ambas palabras a minúsculas antes de comparar
 	if (palabraEnVariable.toLowerCase().includes(palabraBuscada.toLowerCase())) {
 		// Agregar una clase al elemento
