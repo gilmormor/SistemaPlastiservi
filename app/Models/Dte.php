@@ -2786,7 +2786,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             }
             //$array_ocs = explode(",", $aux_dte[0]->oc_id);
             $i = 2;
-            $aux_RazonRef = strtoupper(sanear_string(($dte->dtefac->hep ? ("Hep: " . $dte->dtefac->hep) : "") . ($dte->obs ? (" " . $dte->obs) : "")));
+            $aux_RazonRef = strtoupper(sanear_string($dte->obs ? (" " . $dte->obs) : ""));
             $aux_RazonRefImp = false;
             foreach ($dte->dteocs as $dteoc) {
                 $array_ocs [$dteoc->oc_id] = [
@@ -2823,6 +2823,15 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                     $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
                 }
                 $contenido .= "</Referencia>";
+            }
+            if($dte->dtefac->hep){
+                $i++;
+                $contenido .= "<Referencia>" .
+                "<NroLinRef>$i</NroLinRef>" .
+                "<TpoDocRef>802</TpoDocRef>" .
+                "<FolioRef>" . $dte->dtefac->hep . "</FolioRef>" .
+                "<FchRef>$FchEmis</FchRef>" .
+                "</Referencia>";
             }
             $contenido .= "</Documento>" .
             "</DTE>";
