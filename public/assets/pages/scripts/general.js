@@ -2347,21 +2347,19 @@ function crearEditarAcuTec(i){
 	$("#at_claseprod_id").empty();
     $("#at_claseprod_id").append("<option value=''>Seleccione...</option>");
     //alert($(this).val());
-	console.log($("#producto_id" + i).val());
-
 	var palabraEnVariable = $("#nombreProdTD"  + i).attr("categoriaprod_nombre");
 	var palabraBuscada = "Film Strech";
-	console.log(palabraEnVariable);
-	console.log(palabraBuscada);
 	// Convertir ambas palabras a minúsculas antes de comparar
 	if (palabraEnVariable.toLowerCase().includes(palabraBuscada.toLowerCase())) {
 		// Agregar una clase al elemento
 		$("#at_formatofilm").addClass("valorrequerido");
 		$("#div_at_formatofilm").css('display','block');
+		$("#at_formatofilm").val("");
 	} else {
 		// Eliminar una clase del elemento
 		$("#at_formatofilm").removeClass("valorrequerido");
 		$("#div_at_formatofilm").css('display','none');
+		$("#at_formatofilm").val("0");
 	}
     var data = {
         categoriaprod_id: $("#producto_idTDT" + i).attr("categoriaprod_id"),
@@ -2397,7 +2395,13 @@ function crearEditarAcuTec(i){
 			$(this).val([]);
 		}
 	});
+	if (palabraEnVariable.toLowerCase().includes(palabraBuscada.toLowerCase())) {
+		$("#at_formatofilm").val("");
+	} else {
+		$("#at_formatofilm").val("0");
+	}
 	var acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
+	//console.log(acuerdotecnico);
 	for (const property in acuerdotecnico) {
 		if((property != 'id') && (property != 'updated_at')){ //Para evitar que cambie el valor del campo id o updated_at del formulario aprobar cotizacion
 			if( property == 'at_certificados'){

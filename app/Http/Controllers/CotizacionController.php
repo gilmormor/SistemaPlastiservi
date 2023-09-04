@@ -557,6 +557,10 @@ class CotizacionController extends Controller
                         if($aux_at_fuelle == "" or is_null($aux_at_fuelle)){
                             $arrayAT["at_fuelle"] = 0;
                         }
+                        $aux_at_formatofilm = $arrayAT["at_formatofilm"];
+                        if($aux_at_formatofilm == "" or is_null($aux_at_formatofilm)){
+                            $arrayAT["at_formatofilm"] = 0;
+                        }
                         /*
                         $acuerdotecnicotemp = AcuerdoTecnicoTemp::updateOrInsert(
                             ['id' => $acuerdotecnico_id],

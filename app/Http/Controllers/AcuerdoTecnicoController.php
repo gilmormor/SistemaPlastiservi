@@ -137,6 +137,7 @@ class AcuerdoTecnicoController extends Controller
             and if(isnull(at_feunidxcont),'',at_feunidxcont) = '$aux_at_feunidxcont' 
             and if(isnull(at_feunitxpalet),'',at_feunitxpalet) = '$aux_at_feunitxpalet' 
             and at_unidadmedida_id = $request->at_unidadmedida_id
+            and at_formatofilm = $request->at_formatofilm
             and isnull(acuerdotecnico.deleted_at)";
             $datas = DB::select($sql);
             //dd($datas);

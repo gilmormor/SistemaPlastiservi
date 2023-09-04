@@ -1881,7 +1881,7 @@ class Dte extends Model
         }else{
             $aux_condvendedor_id = "dte.vendedor_id in ($request->vendedor_id)";
         }
-        $sql = "SELECT dte.id,dte.fechahora,dte.fchemis,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
+        $sql = "SELECT dte.id,dte.fechahora,dte.fchemis,dte.cliente_id,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
