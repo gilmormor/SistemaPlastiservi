@@ -82,7 +82,7 @@ class ClienteController extends Controller
         can('crear-cliente');
         $regiones = Region::orderBy('id')->get();
         $formapagos = FormaPago::orderBy('id')->get();
-        $plazopagos = PlazoPago::orderBy('id')->get();
+        $plazopagos = PlazoPago::orderBy('dias')->get();
         $sucursales = Sucursal::orderBy('id')->pluck('nombre', 'id')->toArray();
         //$vendedores = Vendedor::orderBy('id')->get();
         $sql = 'SELECT vendedor.id,vendedor.persona_id,concat(nombre, " " ,apellido) AS nombre
@@ -207,7 +207,7 @@ class ClienteController extends Controller
             $comunas = Comuna::orderBy('id')->get();
             //dd($regiones);
             $formapagos = FormaPago::orderBy('id')->get();
-            $plazopagos = PlazoPago::orderBy('id')->get();
+            $plazopagos = PlazoPago::orderBy('dias')->get();
             //$vendedores = Vendedor::orderBy('id')->get();
             $sql = 'SELECT vendedor.id,vendedor.persona_id,concat(nombre, " " ,apellido) AS nombre
                     FROM vendedor INNER JOIN persona

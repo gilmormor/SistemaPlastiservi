@@ -215,7 +215,7 @@ function configTablaProd(){
                 $('td', row).eq(3).attr('data-order',"");
                 $('td', row).eq(3).attr('data-search',"");    
             }
-            $('td', row).eq(3).html(MASKLA(data.diametro,2));
+            //$('td', row).eq(3).html(MASKLA(data.diametro,2));
             $('td', row).eq(3).attr('style','text-align:center');
             if(data.long1 == 0 || data.long1 == "" || data.long1 == null){
                 $('td', row).eq(4).html("");
