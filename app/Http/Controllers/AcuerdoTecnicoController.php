@@ -113,6 +113,10 @@ class AcuerdoTecnicoController extends Controller
             if(is_null($request->at_feunitxpalet)){
                 $aux_at_feunitxpalet = "";
             }
+            $aux_Condat_formatofilm = "at_formatofilm = $request->at_formatofilm";
+            if(is_null($request->at_formatofilm) or empty($request->at_formatofilm) or $request->at_formatofilm == ""){
+                $aux_Condat_formatofilm = "at_formatofilm = 0";
+            }
             $json = json_decode($request->objtxt);
             $sql = "SELECT acuerdotecnico.*, producto.nombre as producto_nombre
             FROM acuerdotecnico INNER JOIN producto
@@ -137,7 +141,7 @@ class AcuerdoTecnicoController extends Controller
             and if(isnull(at_feunidxcont),'',at_feunidxcont) = '$aux_at_feunidxcont' 
             and if(isnull(at_feunitxpalet),'',at_feunitxpalet) = '$aux_at_feunitxpalet' 
             and at_unidadmedida_id = $request->at_unidadmedida_id
-            and at_formatofilm = $request->at_formatofilm
+            and $aux_Condat_formatofilm
             and isnull(acuerdotecnico.deleted_at)";
             $datas = DB::select($sql);
             //dd($datas);
