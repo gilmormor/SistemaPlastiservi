@@ -12,6 +12,7 @@ class MateriaPrima extends Model
     protected $fillable = [
         'nombre',
         'desc',
+        'descfact',
         'pe',
         'usuariodel_id'
     ];
