@@ -359,7 +359,7 @@ class CotizacionController extends Controller
     public function editar($id)
     {
         session(['editaracutec' => '1']);
-        session(['aux_aprocot' => '0']);
+        //session(['aux_aprocot' => '0']);
         return editar($id);
         /*
         can('editar-cotizacion');
