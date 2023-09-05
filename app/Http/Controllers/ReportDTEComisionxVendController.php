@@ -38,6 +38,7 @@ class ReportDTEComisionxVendController extends Controller
         $request->merge(['groupby' => " group by dtedet.id "]);
         $request->merge(['fechahoy' => date("d/m/Y")]);
         $datas = Dte::reportcomisionxvend($request);
+        dd($datas);
         return datatables($datas)->toJson();
     }
 
