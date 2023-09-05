@@ -14,6 +14,7 @@ use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -46,6 +47,12 @@ class ReportOrdDespGuiaFactController extends Controller
         $titulo = "Consultar Orden Despacho, Guia, Factura, cerrada";
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')
+        ->whereIn('sucursal.id', $sucurArray)
+        ->get();
+
         $selecmultprod = 1;
 
         return view('reportorddespguiafact.index', compact('giros','areaproduccions','tipoentregas','fechaServ','aux_verestado','titulo','tablashtml','selecmultprod'));
@@ -290,6 +297,14 @@ class ReportOrdDespGuiaFactController extends Controller
             $giro = Giro::findOrFail($request->giro_id);
             $nombreGiro=$giro->nombre;
         }
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $request->merge(['sucursal_nombre' => "Todos"]);
+        }else{
+            $sucursal = Sucursal::findOrFail($request->sucursal_id);
+            $aux_sucursalNombre = $sucursal->nombre;
+            $request->merge(['sucursal_nombre' => $sucursal->nombre]);
+        }
+
 
         if($datas){
             $pdf = PDF::loadView('reportorddespguiafact.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');;
@@ -607,6 +622,16 @@ function consultaorddesp($request){
 
     $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
 
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurcadena = implode(",", $sucurArray);
+    $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+        $aux_sucursal_idCond = "true";
+    }else{
+        $aux_sucursal_idCond = "notaventa.sucursal_id = $request->sucursal_id";
+    }
+
+
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,cliente.rut,
             cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
             comuna.nombre as comunanombre,
@@ -655,6 +680,8 @@ function consultaorddesp($request){
             and $aux_condguiadespacho
             and $aux_condnumfactura
             and $aux_condproducto_id
+            AND notaventa.sucursal_id IN ($sucurcadena)
+            AND $aux_sucursal_idCond
             and isnull(despachoord.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             GROUP BY despachoord.id;";
             

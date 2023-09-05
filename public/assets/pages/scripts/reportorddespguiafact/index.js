@@ -115,6 +115,7 @@ function datosGuiaFact(){
         despachoord_id    : $("#despachoord_id").val(),
         aux_verestado     : $("#aux_verestado").val(),
         producto_id       : $("#producto_idPxP").val(),
+        sucursal_id       : $("#sucursal_id").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -261,7 +262,8 @@ $("#btnpdf").click(function()
                     "&aux_titulo="+aux_titulo +
                     "&guiadespacho="+data.guiadespacho +
                     "&aux_verestado="+data.aux_verestado +
-                    "&producto_id="+data.producto_id
+                    "&producto_id="+data.producto_id +
+                    "&sucursal_id="+data.sucursal_id
             $('#contpdf').attr('src', '/reportorddespguiafact/exportPdf/'+cadena);
             $("#myModalpdf").modal('show');
         },
