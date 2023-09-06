@@ -434,7 +434,7 @@
                                     <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                 </td>
                                 <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right;"> 
-                                    {{number_format(isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit, 0, ',', '.')}}
+                                    {{number_format(isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit, 2, ',', '.')}}
                                     <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit}}" style="display:none;"/>
                                     <input type="text" name="prcitem[]" id="prcitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit}}" style="display:none;"/>
                                 </td>

@@ -139,7 +139,7 @@
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{$aux_espesor}}</td>
-						<td class="textright">{{number_format($despachoorddet->notaventadetalle->preciounit, 0, ",", ".")}}</td>
+						<td class="textright">{{number_format($despachoorddet->notaventadetalle->preciounit, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($subtotal, 0, ",", ".")}}</td>
 					</tr>
 				@endforeach
