@@ -38,7 +38,14 @@ class ReportDTEComisionxVendController extends Controller
         $request->merge(['groupby' => " group by dtedet.id "]);
         $request->merge(['fechahoy' => date("d/m/Y")]);
         $datas = Dte::reportcomisionxvend($request);
-        return datatables($datas)->toJson();
+        if($request->genexcel == 1){
+            $respuesta = [];
+            $respuesta["datos"] = $datas; //datatables($datas)->toJson();
+            $respuesta["fechaact"] = date("d/m/Y");    
+        }else{
+            $respuesta = datatables($datas)->toJson();
+        }
+        return $respuesta;
     }
 
     public function exportPdf(Request $request)

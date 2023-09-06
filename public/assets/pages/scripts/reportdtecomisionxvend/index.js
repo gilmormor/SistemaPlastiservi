@@ -14,13 +14,13 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
-        consultarpage(datosFac());
+        consultarpage(datosFac("",0));
     });
     $("#btnpdf2").click(function()
     {
-        btnpdf(datosFac());
+        btnpdf(datosFac("",0));
     });
-    consultarpage(datosFac());
+    consultarpage(datosFac("",0));
 });
 
 function consultarpage(aux_data){
@@ -130,7 +130,7 @@ function totalizar(){
         .on('draw', function () {
             eventFired( 'Page' );
         });
-    data = datosFac();
+    data = datosFac("",0);
     $.ajax({
         url: '/reportdtecomisionxvend/totalizarindex/' + data.data2,
         type: 'GET',
@@ -161,7 +161,7 @@ var eventFired = function ( type ) {
     
 }
 
-function datosFac(orderby = ""){
+function datosFac(orderby = "",aux_genexcel){
     var data1 = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -174,6 +174,7 @@ function datosFac(orderby = ""){
         orderby           : orderby,
         groupby           : "",
         fechahoy          : "",
+        genexcel          : aux_genexcel,
         _token            : $('input[name=_token]').val()
     };
 
@@ -186,6 +187,7 @@ function datosFac(orderby = ""){
     "&statusgen="+data1.statusgen +
     "&foliocontrol_id="+data1.foliocontrol_id +
     "&orderby="+data1.orderby +
+    "&genexcel="+data1.genexcel +
     "&_token="+data1._token
 
     var data = {
@@ -279,14 +281,14 @@ function btnpdf(data){
 function exportarExcel() {
     var tabla = $('#tabla-data-consulta').DataTable();
     orderby = " order by dte.vendedor_id asc,foliocontrol.doc,dte.id ";
-    data = datosFac(orderby);
+    data = datosFac(orderby,1);
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
       url: "/reportdtecomisionxvend/reportdtecomisionxvendpage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
       type: 'POST',
       dataType: 'json',
       success: function(data) {
-        if(data.input  === undefined || data.data.length == 0){
+        if(data.datos.length == 0){
             swal({
                 title: 'Información no encontrada!',
                 text: "",
@@ -315,11 +317,11 @@ function exportarExcel() {
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Informe Comisión Vendedores","","","","","","","",data.input.fechahoy]);
+        datosExcel.push(["Informe Comisión Vendedores","","","","","","","",data.fechaact]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
         aux_totalMonto = 0;
         aux_totalComision = 0;
-        data.data.forEach(function(registro) {
+        data.datos.forEach(function(registro) {
             if (registro.vendedor_id != aux_vendedor_id){
                 filainifusionar += 4;
                 if(aux_vendedor_id == ""){
