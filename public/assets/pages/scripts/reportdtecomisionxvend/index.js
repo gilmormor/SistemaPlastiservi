@@ -93,7 +93,7 @@ function consultarpage(aux_data){
             aux_cla_nombre = data.cla_nombre == "0" || data.cla_nombre == "" ? "" : " C:" + data.cla_nombre;
             aux_long = data.long == "0" || data.long == "" ? "" : " L:" + data.long;
             aux_tipounion = data.tipounion == "0" || data.tipounion == "" ? "" : " TU:" + data.tipounion;
-            aux_nombreprod = data.nmbitem + aux_diametro + aux_cla_nombre + aux_long + aux_tipounion;
+            aux_nombreprod = data.nmbitem; // + aux_diametro + aux_cla_nombre + aux_long + aux_tipounion;
             $('td', row).eq(7).attr('style','text-align:left');
             $('td', row).eq(7).attr('data-search',aux_nombreprod);
             $('td', row).eq(7).attr('data-order',aux_nombreprod);
@@ -317,23 +317,23 @@ function exportarExcel() {
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Informe Comisión Vendedores","","","","","","","",data.fechaact]);
-        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
+        datosExcel.push(["Informe Comisión Vendedores","","","","","","","","",data.fechaact]);
+        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","","",""]);
         aux_totalMonto = 0;
         aux_totalComision = 0;
         data.datos.forEach(function(registro) {
             if (registro.vendedor_id != aux_vendedor_id){
                 filainifusionar += 4;
                 if(aux_vendedor_id == ""){
-                    datosExcel.push(["","","","","","","","",""]);
+                    datosExcel.push(["","","","","","","","","",""]);
                 }else{
-                    datosExcel.push(["","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
+                    datosExcel.push(["","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
                 }
                 aux_totalMonto = 0;
                 aux_totalComision = 0;        
-                datosExcel.push(["","","","","","","","",""]);
-                datosExcel.push(["Vendedor: " + registro.vendedor_rut + " - " + registro.vendedor_nombre,"","","","","","","",""]);
-                datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","Producto","Neto","Comisión %","Comisión $"]);
+                datosExcel.push(["","","","","","","","","",""]);
+                datosExcel.push(["Vendedor: " + registro.vendedor_rut + " - " + registro.vendedor_nombre,"","","","","","","","",""]);
+                datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Neto","Comisión %","Comisión $"]);
                 arrayfusionarCelNomVend.push(filainifusionar);
             }
             aux_totalMonto += registro.montoitem;
@@ -355,6 +355,7 @@ function exportarExcel() {
                 fechaddmmaaaa(aux_fecha),
                 registro.razonsocial,
                 registro.rut,
+                registro.producto_id,
                 registro.nmbitem,
                 registro.montoitem,
                 registro.porc_comision,
@@ -366,7 +367,7 @@ function exportarExcel() {
             datosExcel.push(filaExcel);
         });
         if(aux_totalMonto > 0){
-            datosExcel.push(["","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
+            datosExcel.push(["","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
         }
 
 /*
@@ -445,7 +446,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
         
         // Establecer negrita a totales
         row = worksheet.getRow(fila + 2 -2);
-        for (let i = 1; i <= 9; i++) {
+        for (let i = 1; i <= 10; i++) {
             cell = row.getCell(i);
             cell.font = { bold: true };
             cell.alignment = { horizontal: "right" };
@@ -453,7 +454,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
         }
 
         row = worksheet.getRow(datosExcel.length);
-        for (let i = 1; i <= 9; i++) {
+        for (let i = 1; i <= 10; i++) {
             cell = row.getCell(i);
             cell.font = { bold: true };
             cell.alignment = { horizontal: "right" };
@@ -467,7 +468,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
 
         //Establecer negrita a todos los titulos debajo de vendedor
         const row6 = worksheet.getRow(fila + 3);
-        for (let i = 1; i <= 9; i++) {
+        for (let i = 1; i <= 10; i++) {
             cell = row6.getCell(i);
             cell.font = { bold: true };
         }
@@ -481,7 +482,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     });
 
     // Recorrer la columna 7 y dar formato con punto para separar los miles
-    const columnG = worksheet.getColumn(7);
+    const columnG = worksheet.getColumn(8);
     columnG.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -489,7 +490,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     });
 
     // Recorrer la columna 8 y dar formato con punto para separar los miles
-    const columnH = worksheet.getColumn(8);
+    const columnH = worksheet.getColumn(9);
     columnH.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0.00";
@@ -497,7 +498,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     });
 
     // Recorrer la columna 9 y dar formato con punto para separar los miles
-    const columnI = worksheet.getColumn(9);
+    const columnI = worksheet.getColumn(10);
     columnI.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -506,7 +507,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
     for (let i = 4; i <= datosExcel.length; i++) {
-    const cell = worksheet.getCell(i, 8);
+    const cell = worksheet.getCell(i, 9);
     cell.alignment = { horizontal: "center", vertical: "middle" };
     }
 
@@ -538,7 +539,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
 
     //Fusionar celdas de Titulo
     const startCol = 0;
-    const endCol = 8;
+    const endCol = 9;
     worksheet.mergeCells(1, startCol, 1, endCol);
 
     //Negrita Columna Sucursal
@@ -548,7 +549,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     
     //Fusionar celdas Sucursal
     const startCol1 = 0;
-    const endCol1 = 8;
+    const endCol1 = 9;
     worksheet.mergeCells(2, startCol1, 2, endCol1);
 
     // Guardar el archivo

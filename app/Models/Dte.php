@@ -2191,7 +2191,7 @@ class Dte extends Model
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
         foliocontrol.doc as foliocontrol_doc,foliocontrol.desc as foliocontrol_desc,foliocontrol.tipodocto,foliocontrol.nombrepdf,
         dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at,
-        dtedet.producto_id,producto.diametro,claseprod.cla_nombre,producto.long,nmbitem,producto.tipounion,nmbitem,
+        dtedet.producto_id,producto.diametro,claseprod.cla_nombre,producto.long,nmbitem,producto.tipounion,
         (dte.mnttotal * foliocontrol.signo) as mnttotal,
         sum((dtedet.montoitem * foliocontrol.signo)) as montoitem,
         categoriaprodgrupo.comisionventas,
