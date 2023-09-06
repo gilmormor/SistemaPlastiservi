@@ -210,6 +210,7 @@ class AcuerdoTecnico extends Model
         and if(isnull(at_feunitxpalet),'',at_feunitxpalet) = '$aux_at_feunitxpalet' 
         and at_unidadmedida_id = $request->at_unidadmedida_id
         and $aux_Condat_formatofilm
+        and at_etiqplastiservi = $request->at_etiqplastiservi
         and isnull(acuerdotecnico.deleted_at)";
         //dd($sql);
         $datas = DB::select($sql);
