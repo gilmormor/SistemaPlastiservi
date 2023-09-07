@@ -1918,7 +1918,8 @@ class Dte extends Model
         foliocontrol.doc as foliocontrol_doc,foliocontrol.desc as foliocontrol_desc,foliocontrol.tipodocto,foliocontrol.nombrepdf,
         dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at,
         dte.mntneto,dte.iva,dte.mnttotal as mnttotal_a,(dte.mnttotal * foliocontrol.signo) as mnttotal,
-        sucursal.nombre as sucursal_nombre,if(isnull(dtefac.fchvenc),dte.fchemis,dtefac.fchvenc) as fchvenc
+        sucursal.nombre as sucursal_nombre,if(isnull(dtefac.fchvenc),dte.fchemis,dtefac.fchvenc) as fchvenc,
+        concat(persona.nombre,' ',persona.apellido) as vendedor_nombre,formapago.descripcion as formapago_descripcion
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         LEFT JOIN dteguiadesp
@@ -1941,6 +1942,12 @@ class Dte extends Model
         ON dtefac.dte_id = dte.id
         INNER JOIN sucursal
         ON dte.sucursal_id = sucursal.id
+        LEFT JOIN vendedor
+        ON vendedor.id = dte.vendedor_id AND ISNULL(vendedor.deleted_at)
+        LEFT JOIN persona
+        ON persona.id = vendedor.persona_id AND ISNULL(persona.deleted_at)
+        LEFT JOIN formapago
+        ON formapago.id = dtefac.formapago_id AND ISNULL(formapago.deleted_at)
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond

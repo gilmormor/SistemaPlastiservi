@@ -8,6 +8,8 @@ Libro Ventas
 ?>
 
 @section("scripts")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportdtelibroventas/index.js")}}" type="text/javascript"></script>
@@ -39,7 +41,7 @@ Libro Ventas
                                         <label for="fecha">Fecha Ini:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad"  value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad"  value="{{old('fechad', $tablas['fecha1erDiaMes'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final">
@@ -58,7 +60,7 @@ Libro Ventas
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
-                                            <option value="">Seleccione...</option>
+                                            <option value="">Todos</option>
                                             @foreach($tablas['sucursales'] as $sucursal)
                                                 <option
                                                     value="{{$sucursal->id}}"
@@ -89,6 +91,7 @@ Libro Ventas
                                 <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
                                     <i class='glyphicon glyphicon-print'></i> Reporte
                                 </button>
+                                <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">Excel</button>
                         </div>
                     </form>
                 </div>
