@@ -25,6 +25,7 @@ class ReportDTELibroVentasController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
+        $tablas['fecha1erDiaMes'] = date("01/m/Y");
         return view('reportdtelibroventas.index', compact('tablas'));
     }
 
@@ -40,7 +41,14 @@ class ReportDTELibroVentasController extends Controller
         $request->merge(['groupby' => " group by dte.id "]);
         //dd($request->request);
         $datas = Dte::reportestadocli($request);
-        return datatables($datas)->toJson();
+        if($request->genexcel == 1){
+            $respuesta = [];
+            $respuesta["datos"] = $datas;
+            $respuesta["fechaact"] = date("d/m/Y");    
+        }else{
+            $respuesta = datatables($datas)->toJson();
+        }
+        return $respuesta;
     }
 
     public function exportPdf(Request $request)

@@ -105,31 +105,31 @@
 			</tbody>
 			<tfoot id="detalle_totales">
 				<tr>
-					<th colspan='7' style='text-align:right'>TOTAL</th>
+					<th colspan='7' style='text-align:right'>TOTAL:&nbsp;&nbsp;&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mntneto, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_iva, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mnttotal_a, 0, ",", ".")}}&nbsp;&nbsp;</th>
 				</tr>
 				<tr>
-					<th colspan='7' style='text-align:right'>Facturas:</th>
+					<th colspan='7' style='text-align:right'>Facturas:&nbsp;&nbsp;&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mntnetoF, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_ivaF, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mnttotal_aF, 0, ",", ".")}}&nbsp;&nbsp;</th>
 				</tr>
 				<tr>
-					<th colspan='7' style='text-align:right'>Notas de Crédito:</th>
+					<th colspan='7' style='text-align:right'>Notas de Crédito:&nbsp;&nbsp;&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mntnetoNC, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_ivaNC, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mnttotal_aNC, 0, ",", ".")}}&nbsp;&nbsp;</th>
 				</tr>
 				<tr>
-					<th colspan='7' style='text-align:right'>Notas de Débito:</th>
+					<th colspan='7' style='text-align:right'>Notas de Débito:&nbsp;&nbsp;&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mntnetoND, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_ivaND, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mnttotal_aND, 0, ",", ".")}}&nbsp;&nbsp;</th>
 				</tr>
 				<tr>
-					<th colspan='7' style='text-align:right'>Exento:</th>
+					<th colspan='7' style='text-align:right'>Exento:&nbsp;&nbsp;&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mntnetoEX, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_ivaEX, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					<th style='text-align:right'>{{number_format($total_mnttotal_aEX, 0, ",", ".")}}&nbsp;&nbsp;</th>
