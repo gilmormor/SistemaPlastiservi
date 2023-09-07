@@ -1771,6 +1771,7 @@ class Dte extends Model
     }
 
     public static function reportestadocli($request){
+        //dd($request);
         /*
         $vendedorcond = " true ";
         if(isset($request->vendedor_id)){

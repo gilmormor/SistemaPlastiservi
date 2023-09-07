@@ -37,7 +37,7 @@ class ReportDTELibroVentasController extends Controller
         //$request->request->add(['foliocontrol_id' => "(1,5,6,7)"]);
         //$request->request["foliocontrol_id"] = "(1,5,6,7)";
         $request->merge(['foliocontrol_id' => "(1,5,6,7)"]);
-        $request->merge(['orderby' => " order by dte.id desc "]);
+        $request->merge(['orderby' => " order by dte.id asc "]);
         $request->merge(['groupby' => " group by dte.id "]);
         //dd($request->request);
         $datas = Dte::reportestadocli($request);

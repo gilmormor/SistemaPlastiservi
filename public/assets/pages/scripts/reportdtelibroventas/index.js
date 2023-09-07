@@ -417,6 +417,7 @@ function exportarExcel() {
         datosExcel.push(["","","","","","","","","","","",""]);
         datosExcel.push(["Suc","Doc","Fecha","Numero","FechaVenc","RUT","Razon Social","Vendedor","FormaPago","Neto","IVA","Total"]);
         data.datos.forEach(function(registro) {
+            console.log(registro);
             aux_totalNeto += registro.mntneto;
             aux_totalIva += registro.iva;
             aux_total += registro.mnttotal_a;
@@ -430,8 +431,8 @@ function exportarExcel() {
                 cellLengthProducto = aux_length;
             }
             
-            aux_fecha = new Date(registro.fchemis);
-            aux_fechavenc = new Date(registro.fchvenc);
+            aux_fecha = new Date(registro.fchemis + " 01:00:00");
+            aux_fechavenc = new Date(registro.fchvenc + " 01:00:00");
             var filaExcel = [
                 registro.sucursal_nombre,
                 registro.foliocontrol_doc,
