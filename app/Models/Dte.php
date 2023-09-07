@@ -2828,7 +2828,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                 $i++;
                 $contenido .= "<Referencia>" .
                 "<NroLinRef>$i</NroLinRef>" .
-                "<TpoDocRef>802</TpoDocRef>" .
+                "<TpoDocRef>HES</TpoDocRef>" .
                 "<FolioRef>" . $dte->dtefac->hep . "</FolioRef>" .
                 "<FchRef>$FchEmis</FchRef>" .
                 "</Referencia>";
