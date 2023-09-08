@@ -929,9 +929,24 @@ class NotaVentaController extends Controller
                 $notaventa->aprobfechahora = date("Y-m-d H:i:s");
                 $notaventa->aprobobs = 'Aprobado por el vendedor';
             }
+            $aux_staAcueTec = false;
+            foreach ($notaventa->notaventadetalles as $notaventadetalle) {
+                if($notaventadetalle->producto->tipoprod == 1){
+                    $aux_staAcueTec = true;
+                };
+                if($notaventadetalle->producto->acuerdotecnico){
+                    $aux_staAcueTec = true;
+                };
+            }
+            /*
             if($notaventa->sucursal->staaprobnv=="1"){ //SE VERIFICA SI EL ESTATUS QUE ESTA EN SUCURSAL SE DEBE VALIDAR SIEMPRE LA NOTA DE VENTA
                 //LAS SUCURSALES QUE EL ESTATUS ES 1 DEBEN SER APROBADAS POR SUPERVISOR 
                 //ESTO PARA VALIDAR LA LAS ORDEN DE COMPRA ANTES DE QUE LA NOTA DE VENTA 
+                $notaventa->aprobstatus = 2;
+            }
+            */
+            if($aux_staAcueTec){
+                //SI algun producto es tipoprod es = 1 o si el producto tiene acuerdo tecnico la nota de venta pasara a aprobacion
                 $notaventa->aprobstatus = 2;
             }
             if ($notaventa->save()) {
@@ -1009,7 +1024,7 @@ class NotaVentaController extends Controller
             $notaventa->aprobobs = $request->obs;
             if($notaventa->aprobstatus == 3){
                 foreach ($notaventa->notaventadetalles as $notaventadetalle) {
-                    if(isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
+                    if(!isset($notaventadetalle->producto->acuerdotecnico) and $notaventadetalle->producto->tipoprod == 1 and isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
                         $array_acuerdotecnicotemp = $notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno->attributesToArray();
                         //BUSCAR ACUERDO TECNICO
                         $at = AcuerdoTecnico::buscaratxcampos($array_acuerdotecnicotemp);
@@ -1028,7 +1043,7 @@ class NotaVentaController extends Controller
             if ($notaventa->save()) { //($notaventa->save()) {
                 if($notaventa->aprobstatus == 3){
                     foreach ($notaventa->notaventadetalles as $notaventadetalle) {
-                        if(isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
+                        if(!isset($notaventadetalle->producto->acuerdotecnico) and $notaventadetalle->producto->tipoprod == 1 and isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
                             //SI EXISTE ACUERDO TECNICO SE CREA EL PRODUCTO
                             //dd($cotizaciondetalle->acuerdotecnicotemp->attributesToArray());
                             $array_acuerdotecnicotemp = $notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno->attributesToArray();
@@ -1167,6 +1182,23 @@ class NotaVentaController extends Controller
             if($notaventa->cotizacion_id>0){
                 $cotizacion = Cotizacion::findOrFail($notaventa->cotizacion_id);
                 $cotizacion->aprobstatus = 0;
+                $cotizacion->aprobobs = "Cotizacion liberada por anulacion de Nota de Venta $request->id";
+                //SI SE ANULA LA NV ELIMINO LA cotizacion_id DE LA NV
+                //PERO TAMBIEN ASIGNO EL CODIGO DE PRODUCTO QUE VIENE DE LA NOTA DE VENTA AL DETALLE DE LA COTIZACION
+                //SI LOS PRODUCTOS DE LA NOTA DE VENTA INICIALMENTE ERAN PROD BASE 
+                //Y FUERON CREADOS EL PRODUCTO OFICIAL, ASIGNO EL NUEVO CODIGO DE PRODUCTO A LA COTIZACION
+                //Y TAMBIEN ASIGNO NULO AL $cotizaciondetalle->acuerdotecnicotemp_id
+                $notaventa->cotizacion_id = null;
+                foreach ($notaventa->notaventadetalles as $notaventadetalle) {
+                    $cotizaciondetalle = CotizacionDetalle::findOrFail($notaventadetalle->cotizaciondetalle_id);
+                    $cotizaciondetalle->producto_id = $notaventadetalle->producto_id;
+                    if($notaventadetalle->producto->acuerdotecnico){
+                        if($cotizaciondetalle->acuerdotecnicotemp_id){
+                            $cotizaciondetalle->acuerdotecnicotemp_id = null;
+                        }
+                    }
+                    $cotizaciondetalle->save();
+                }
                 if ($notaventa->save() and $cotizacion->save()) {
                     $sta_save = true;
                 }

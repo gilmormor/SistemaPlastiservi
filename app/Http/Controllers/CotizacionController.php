@@ -806,25 +806,40 @@ class CotizacionController extends Controller
                     break;
                 }
             }
+            //SI TIENE ACUERDO TECNICO DEBE PASAR POR APROBACION FINANCIERA
             $aux_staacutec = false;
             foreach ($cotizacion->cotizaciondetalles as $detalle) {
-                if(isset($detalle->acuerdotecnicotemp)){
+                if(isset($detalle->producto->acuerdotecnico)){
                     $aux_staacutec = true;
                     break;
                 }
             }
-            if($aux_staacutec){
+            $aux_staacutectemp = false;
+            foreach ($cotizacion->cotizaciondetalles as $detalle) {
+                if(isset($detalle->acuerdotecnicotemp)){
+                    $aux_staacutectemp = true;
+                    break;
+                }
+            }
+            if($aux_staacutectemp){
                 $cotizacion->aprobstatus = 5;
                 $cotizacion->aprobusu_id = auth()->id();
                 $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
-                $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion (Santa Ester)';
+                $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion Acuerdo Tecnico (Santa Ester)';
             }else{
-                //SEGUN SOLICITUD SE ELIMINO LA VALIDACION DE PRECIOS
-                //ENTONCES SI LA SUCURSAL ES 2 O 3 LA COTIZACION PASA DIRECTO A NOTA DE VENTA    
-                $cotizacion->aprobstatus = 1;
-                $cotizacion->aprobusu_id = auth()->id();
-                $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
-                $cotizacion->aprobobs = 'Aprobado por el mismo vendedor';    
+                if($aux_staacutec){
+                    $cotizacion->aprobstatus = 2;
+                    $cotizacion->aprobusu_id = auth()->id();
+                    $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
+                    $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion Financiera (Santa Ester)';    
+                }else{
+                    //SEGUN SOLICITUD SE ELIMINO LA VALIDACION DE PRECIOS
+                    //ENTONCES SI LA SUCURSAL ES 2 O 3 LA COTIZACION PASA DIRECTO A NOTA DE VENTA    
+                    $cotizacion->aprobstatus = 1;
+                    $cotizacion->aprobusu_id = auth()->id();
+                    $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
+                    $cotizacion->aprobobs = 'Aprobado por el mismo vendedor';    
+                }
             }
             /*
             if($request->aprobstatus=='1'){
