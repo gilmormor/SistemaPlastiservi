@@ -318,6 +318,7 @@ class InvEntSalController extends Controller
     public function aprobinventsal(Request $request)
     {
         if ($request->ajax()) {
+            //dd($request);
             $inventsal = InvEntSal::findOrFail($request->id);
             if(($inventsal->staaprob == 1) and ($inventsal->staanul == null)){
                 //VALIDAR SI EL REGISTRO YA FUE APROBADA O QUE FUE ELIMINADA O ANULADA
@@ -349,6 +350,23 @@ class InvEntSalController extends Controller
                             }
                         }
                         if($request->staaprob == 2){
+                            //SI ES APROBACION, VALIDO QUE EL MES Y AÑO NO ESTE CERRADO
+                            foreach ($inventsal->inventsaldets as $inventsaldet) {
+                                $annomes = date('Ym', strtotime($inventsal->fechahora));
+                                $invcontrolMes = InvControl::where('annomes','=',$annomes)
+                                        ->where('sucursal_id','=',$inventsaldet->sucursal_id)
+                                        ->where('status','=',1);
+                                if($invcontrolMes->count() > 0){
+                                    $anno = substr($annomes, 0, 4);  // Extraer los primeros cuatro caracteres (el año)
+                                    $mes = substr($annomes, 4);     // Extraer los últimos dos caracteres (el mes)
+                                    $mesanno = "$mes/$anno";
+                                    return response()->json([
+                                        'resp' => 0,
+                                        'tipmen' => 'error',
+                                        'mensaje' => "Mes y año $mesanno cerrado no permite movimientos. Sucursal: " . $inventsaldet->sucursal->nombre
+                                    ]);                
+                                }
+                            }    
                             $annomes = date("Ym", strtotime($inventsal->fechahora)); // date("Ym");
                             $inventsal->annomes = $annomes;
                             $array_inventsal = $inventsal->attributesToArray();

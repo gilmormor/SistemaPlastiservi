@@ -377,6 +377,22 @@ class PesajeController extends Controller
                         }
                     }
                     if($request->staaprob == 2){
+                        //SI ES APROBACION VALIDO QUE EL MES Y AÑO NO ESTE CERRADO
+                        foreach ($pesaje->pesajedets as $pesajedet) {
+                            $invcontrolMes = InvControl::where('annomes','=',$pesaje->annomes)
+                                    ->where('sucursal_id','=',$pesajedet->sucursal_id)
+                                    ->where('status','=',1);
+                            if($invcontrolMes->count() > 0){
+                                $anno = substr($pesaje->annomes, 0, 4);  // Extraer los primeros cuatro caracteres (el año)
+                                $mes = substr($pesaje->annomes, 4);     // Extraer los últimos dos caracteres (el mes)
+                                $mesanno = "$mes/$anno";
+                                return response()->json([
+                                    'resp' => 0,
+                                    'tipmen' => 'error',
+                                    'mensaje' => "Mes y año $mesanno cerrado no permite movimientos. Sucursal: " . $pesajedet->sucursal->nombre
+                                ]);                
+                            }
+                        }    
                         $annomes = date("Ym", strtotime($pesaje->fechahora)); // date("Ym");
                         $pesaje->annomes = $annomes;
                         $array_pesaje = $pesaje->attributesToArray();
@@ -394,7 +410,7 @@ class PesajeController extends Controller
                                 //$pesajedet->save();
                                 $array_pesajedet = $pesajedet->attributesToArray();
                                 $array_pesajedet["invmov_id"] = $invmov->id;
-                                $invmovdet = InvMovDet::create($array_pesajedet);                                
+                                $invmovdet = InvMovDet::create($array_pesajedet);
                             }
                             if($pesaje->invmovtipo->stacieinimes == 1){
                                 $invcontrol = InvControl::where('annomes','=',date('Ym', strtotime($pesaje->fechahora)))

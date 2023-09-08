@@ -146,7 +146,8 @@
                                     $total_DiferenciaKg += $DiferenciaKg;
                                     $DiferenciaPorc = round(($DiferenciaKg / $PesoTotNorma) * 100,2);
                                     $total_DiferenciaPorc += $DiferenciaPorc;
-                                    $aux_producto_nombre = $pesajedet->producto->nombre . " D:" . $pesajedet->producto->diametro . " C:" . $pesajedet->producto->claseprod->cla_nombre . " L:" . $pesajedet->producto->long . " TU:" . $pesajedet->producto->tipounion;
+                                    $aux_clase = $pesajedet->producto->claseprod ? $pesajedet->producto->claseprod->cla_nombre : "";
+                                    $aux_producto_nombre = $pesajedet->producto->nombre . " D:" . $pesajedet->producto->diametro . " C:" . $aux_clase . " L:" . $pesajedet->producto->long . " TU:" . $pesajedet->producto->tipounion;
                                 ?>
                                 <tr name="fila{{$i}}" id="fila{{$i}}" class="proditems" item="{{$i}}">
                                     <td id="nroitem{{$i}}" name="nroitem{{$i}}" class="nroitem" style="text-align:center;padding-left: 3px;padding-right: 3px;">

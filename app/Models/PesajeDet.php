@@ -79,5 +79,11 @@ class PesajeDet extends Model
     public function areaproduccionsuclinea()
     {
         return $this->belongsTo(AreaProduccionSucLinea::class);
-    }    
+    }
+    //RELACION INVERSA Sucursal
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class);
+    }
+    
 }

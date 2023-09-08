@@ -311,7 +311,7 @@ function consultaorddesp($request){
     }
     $sucurArray = $user->sucursales->pluck('id')->toArray();
     $sucurcadena = implode(",", $sucurArray);
-    $aux_condsucurArray = "notaventa.sucursal_id  in ($sucurcadena)";
+    $aux_condsucurArray = "despachosol.sucursal_id  in ($sucurcadena)";
 
 
     if(empty($request->fechad) or empty($request->fechah)){

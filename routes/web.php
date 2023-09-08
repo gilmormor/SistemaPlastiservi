@@ -979,7 +979,7 @@ Route::delete('pesaje/{id}', 'PesajeController@eliminar')->name('eliminar_pesaje
 Route::post('pesaje/enviaraprobarpesaje/{id}', 'PesajeController@enviaraprobarpesaje')->name('enviaraprobarpesaje_pesaje');
 Route::post('pesaje/aprobpesaje/{id}', 'PesajeController@aprobpesaje')->name('aprobpesaje_pesaje');
 Route::get('pesaje/exportPdf', 'PesajeController@exportPdf')->name('exportPdf_pesaje');
-Route::get('pesaje/{id}/productobuscarpage', 'PesajeController@productobuscarpageid')->name('productobuscarpageid_pesaje');
+Route::get('pesaje/{id}/productobuscarpage', 'ProductoController@productobuscarpage')->name('productobuscarpageid_pesaje');
 
 /*RUTAS Pesaje Aprobar y pasar al inventario InvMov*/
 Route::get('pesajeaprobar', 'PesajeAprobarController@index')->name('pesajeaprobar');

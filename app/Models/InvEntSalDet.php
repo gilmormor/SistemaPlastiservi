@@ -61,5 +61,9 @@ class InvEntSalDet extends Model
     {
         return $this->belongsTo(InvBodegaProducto::class);
     }
-    
+    //Relacion inversa a Sucursal
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class);
+    }    
 }
