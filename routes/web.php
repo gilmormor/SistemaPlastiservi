@@ -327,6 +327,11 @@ Route::get('cotizacionconsulta/exportPdf', 'CotizacionConsultaController@exportP
 /*RUTAS APROBAR COTIZACION*/
 Route::get('cotizacionaprobar', 'CotizacionAprobarController@index')->name('cotizacionaprobar');
 Route::get('cotizacionaprobarpage', 'CotizacionAprobarController@cotizacionaprobarpage')->name('cotizacionaprobarpage');
+Route::get('cotizacionaprobar/{id}/editar', 'CotizacionAprobarController@editar')->name('editar_cotizacionaprobar');
+Route::get('cotizacionaprobar/productobuscarpage', 'CotizacionAprobarController@productobuscarpage')->name('productobuscarpage_cotizacionaprobar');
+Route::get('cotizacionaprobar/clientebuscarpage', 'CotizacionAprobarController@clientebuscarpage')->name('clientebuscarpage_cotizacionaprobar');
+Route::get('cotizacionaprobar/{id}/productobuscarpage', 'CotizacionAprobarController@productobuscarpageid')->name('productobuscarpageid_cotizacionaprobar');
+Route::get('cotizacionaprobar/{id}/clientebuscarpage', 'CotizacionAprobarController@clientebuscarpageid')->name('clientebuscarpageid_cotizacionaprobar');
 
 /*RUTAS GIRO*/
 Route::get('giro', 'GiroController@index')->name('giro');

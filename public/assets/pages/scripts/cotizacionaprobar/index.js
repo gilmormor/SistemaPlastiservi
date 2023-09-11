@@ -22,7 +22,7 @@ $(document).ready(function () {
             {data: 'contador',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : 
-                "<a href='cotizacion' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
+                "<a href='cotizacionaprobar' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
                     "<i class='fa fa-fw fa-pencil'></i>"+
                 "</a>"}
         ],
