@@ -2,9 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Certificado;
 use App\Models\Cliente;
+use App\Models\Color;
+use App\Models\Comuna;
+use App\Models\Cotizacion;
+use App\Models\Empresa;
+use App\Models\FormaPago;
+use App\Models\Giro;
+use App\Models\MateriaPrima;
+use App\Models\Moneda;
+use App\Models\PlazoPago;
 use App\Models\Producto;
+use App\Models\Provincia;
+use App\Models\Region;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
+use App\Models\TipoEntrega;
+use App\Models\TipoSello;
+use App\Models\UnidadMedida;
+use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -100,8 +117,11 @@ class CotizacionAprobarAcuTecController extends Controller
     public function editar($id)
     {
         session(['editaracutec' => '0']);
+        return editar($id);
+        /*
         $objeto = new CotizacionController();
         return $objeto->editaraat($id);
+        */
     }
 
     /**
@@ -126,4 +146,54 @@ class CotizacionAprobarAcuTecController extends Controller
     {
         //
     }
+}
+
+function editar($id){
+    can('editar-cotizacion');
+        $data = Cotizacion::findOrFail($id);
+        $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
+        $cotizacionDetalles = $data->cotizaciondetalles()->get();
+
+
+        $vendedor_id=$data->vendedor_id;
+        if(empty($data->cliente_id)){
+            $clienteselec = $data->clientetemp()->get();
+        }else{
+            $clienteselec = $data->cliente()->get();
+        }
+        //VENDEDORES POR SUCURSAL
+        $tablas = array();
+        $vendedor_id = Vendedor::vendedor_id();
+        $tablas['vendedor_id'] = $vendedor_id["vendedor_id"];
+        $vendedor = Vendedor::vendedores();
+        $tablas['vendedores'] = $vendedor['vendedores'];
+        
+        $fecha = date("d/m/Y", strtotime($data->fechahora));
+        $user = Usuario::findOrFail(auth()->id());
+        //$clientesArray = Cliente::clientesxUsuario('0',$data->cliente_id); //Paso vendedor en 0 y el id del cliente para que me traiga las Sucursales que coinciden entre el vendedor y el cliente
+        //$clientes = $clientesArray['clientes'];
+        //$tablas['vendedor_id'] = $clientesArray['vendedor_id'];
+
+        $tablas['formapagos'] = FormaPago::orderBy('id')->get();
+        $tablas['plazopagos'] = PlazoPago::orderBy('id')->get();
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['provincias'] = Provincia::orderBy('id')->get();
+        $tablas['regiones'] = Region::orderBy('id')->get();
+        $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
+        $tablas['giros'] = Giro::orderBy('id')->get();
+        $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray();
+        $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
+        //$tablas['sucursales'] = $clientesArray['sucursales'];
+        $tablas['empresa'] = Empresa::findOrFail(1);
+        $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
+        $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
+        $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
+        $tablas['color'] = Color::orderBy('id')->get();
+        $tablas['certificado'] = Certificado::orderBy('id')->get();
+        $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
+        $tablas['moneda'] = Moneda::orderBy('id')->get();
+
+        $aux_sta=2;
+
+        return view('cotizacionaprobaracutec.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','aux_cont','tablas'));
 }
