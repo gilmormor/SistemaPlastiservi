@@ -259,7 +259,8 @@ function consulta($request){
     and $aux_condgiro_id
     and $aux_condcomuna_id
     and $aux_bloqueado
-    AND isnull(cliente.deleted_at);";
+    AND isnull(cliente.deleted_at)
+    group by cliente.id;";
 
     $datas = DB::select($sql);
     return $datas;
