@@ -116,7 +116,7 @@
                 </select>
             </div>
             <div class="form-group col-xs-12 col-sm-3">
-                <label for="hep" class="control-label" data-toggle='tooltip' title="Numero de Atencion o HEP">Hep</label>
+                <label for="hep" class="control-label" data-toggle='tooltip' title="Hoja de Entrada de Servicio HES">Hes</label>
                 <input type="text" name="hep" id="hep" class="form-control" value="{{old('hep', $data->dtefac->hep ?? '')}}" maxlength="12"/>
             </div>
             <div class="form-group col-xs-12 col-sm-2">
