@@ -2827,6 +2827,69 @@ async function llenarDatosProd(vlrcodigo){
 			$("#nombreProdTD" + item).html(arrayDatosProducto["nombre"]);
 			$("#nmbitem" + item).val(arrayDatosProducto["nombre"]);
 			$("#prcitem" + item).val(arrayDatosProducto["precio"]);
+			console.log(arrayDatosProducto["acuerdotecnico"]);
+			if(arrayDatosProducto["acuerdotecnico"] != null){
+				console.log(arrayDatosProducto["acuerdotecnico"].at_ancho);
+				at_ancho = arrayDatosProducto["acuerdotecnico"].at_ancho;
+				at_largo = arrayDatosProducto["acuerdotecnico"].at_largo;
+				at_espesor = arrayDatosProducto["acuerdotecnico"].at_espesor;
+				at_ancho = (at_ancho === null || at_ancho === undefined || at_ancho === "") ? "0.00" : at_ancho;
+				at_largo = (at_largo === null || at_largo === undefined || at_largo === "") ? "0.00" : at_largo;
+				at_espesor = (at_espesor === null || at_espesor === undefined || at_espesor === "") ? "0.00" : MASKLA(at_espesor,3);
+				//$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
+
+				aux_formatofilm = arrayDatosProducto["acuerdotecnico"].at_formatofilm > 0 ? " " + MASKLA(arrayDatosProducto["acuerdotecnico"].at_formatofilm,2)  + "Kg." : "";
+				aux_color = (arrayDatosProducto["at_color_nombre"] === null || arrayDatosProducto["at_color_nombre"] === undefined || arrayDatosProducto["at_color_nombre"] === "") ? "" : " " + arrayDatosProducto["at_color_nombre"];
+				aux_at_complementonomprod = arrayDatosProducto["acuerdotecnico"].at_complementonomprod === null ? "" : " " + arrayDatosProducto["acuerdotecnico"].at_complementonomprod;
+				aux_atribAcuTec = arrayDatosProducto["at_materiaprima_nombre"] + aux_color + aux_at_complementonomprod + aux_formatofilm;
+				//CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+				aux_nombreprod = arrayDatosProducto["categoriaprod_nombre"] + " " + aux_atribAcuTec + " " + at_ancho + "x" + at_largo + "x" + at_espesor;
+			}else{
+				console.log("Sin Acuerdo");
+				console.log(arrayDatosProducto);
+				aux_cla_nombre = arrayDatosProducto["cla_descripcion"];
+				aux_cla_nombre = aux_cla_nombre == "N/A" ? "" : " " + aux_cla_nombre; // str_replace("N/A","",arrayDatosProducto["cla_descripcion"]);
+				aux_diametro = arrayDatosProducto["diametro"] > 0 ? " D:" + arrayDatosProducto["diametro"] : "";
+				aux_long = arrayDatosProducto["long"]  ? " L:" + arrayDatosProducto["long"] : "";
+				aux_tipounion = "";
+				if(!(arrayDatosProducto["tipounion"] === "S/C" || arrayDatosProducto["tipounion"] === "S/U")){
+					aux_tipounion = " " + arrayDatosProducto["tipounion"];
+				}                                        
+				aux_nombreprod = arrayDatosProducto["nombre"] + aux_diametro + aux_long + aux_cla_nombre + aux_tipounion;
+
+			}
+			$("#nmbitem" + item).val(aux_nombreprod);
+			/*
+			if(arrayDatosProducto["acuerdotecnico"]){
+				$at_ancho = arrayDatosProducto["acuerdotecnico"].at_ancho;
+				$at_largo = $producto->acuerdotecnico->at_largo;
+				$at_espesor = $producto->acuerdotecnico->at_espesor;
+				$at_ancho = empty($at_ancho) ? "0.00" : $at_ancho;
+				$at_largo = empty($at_largo) ? "0.00" : $at_largo;
+				$at_espesor = empty($at_espesor) ? "0.00" : $at_espesor;
+				//$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
+
+				$AcuTec = $producto->acuerdotecnico;
+				$aux_formatofilm = $AcuTec->at_formatofilm > 0 ? " " . number_format($AcuTec->at_formatofilm, 2, ',', '.') . "Kg." : "";
+				$aux_color =  empty($AcuTec->color->descripcion) ? "" : " " . $AcuTec->color->descripcion;
+				$aux_at_complementonomprod = empty($AcuTec->at_complementonomprod) ? "" : " " . $AcuTec->at_complementonomprod;
+				$aux_atribAcuTec = $AcuTec->materiaprima->descfact . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+				//CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+				$aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
+			}else{
+				//CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
+				$aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_descripcion);
+				$aux_diametro = $producto->diametro > 0 ? " D:" . $producto->diametro : "";
+				$aux_long = $producto->long ? " L:" . $producto->long : "";
+				$aux_tipounion = "";
+				if(!($producto->tipounion === "S/C" or $producto->tipounion === "S/U")){
+					$aux_tipounion = $producto->tipounion;
+				}                                        
+				$aux_nombreprod = $aux_nombreprod . $aux_diametro . $aux_long . " " . $aux_cla_nombre. " " . $aux_tipounion;
+			}
+			*/
+
+			
 		}
 		calsubtotalitem($("#vlrcodigo" + item));	
 	}

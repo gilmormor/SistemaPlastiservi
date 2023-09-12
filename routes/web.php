@@ -1366,3 +1366,12 @@ Route::get('reportdtelibroventasdte/reportdtelibroventasdtepage', 'ReportDTELibr
 Route::get('reportdtelibroventasdte/reporte', 'ReportDTELibroVentasDTEController@reporte')->name('reportdtelibroventasdte_reporte');
 Route::get('reportdtelibroventasdte/exportPdf', 'ReportDTELibroVentasDTEController@exportPdf')->name('reportdtelibroventasdte_exportPdf');
 Route::get('reportdtelibroventasdte/totalizarindex', 'ReportDTELibroVentasDTEController@totalizarindex')->name('reportdtelibroventasdte_totalizarindex');
+
+/*RUTAS FACTURA DIRECTA ANTIGUA: INCLUIR FACTURAS ANTIGUAS PARA PROCESAR NOTA DE CREDITO O DEBITO*/
+Route::get('dtefacturadirantigua', 'DteFacturaDirAntiguaController@index')->name('dtefacturadirantigua');
+Route::get('dtefacturadirantiguapage', 'DteFacturaDirAntiguaController@dtefacturadirantiguapage')->name('dtefacturadirantiguapage');
+Route::get('dtefacturadirantigua/totalizarindex', 'DteFacturaDirAntiguaController@totalizarindex')->name('dtefacturadirantigua_totalizarindex');
+Route::get('dtefacturadirantigua/crear', 'DteFacturaDirAntiguaController@crear')->name('crear_dtefacturadirantigua');
+Route::post('dtefacturadirantigua', 'DteFacturaDirAntiguaController@guardar')->name('guardar_dtefacturadirantigua');
+Route::post('dtefacturadirantigua/procesar', 'DteFacturaDirAntiguaController@procesar')->name('dtefacturadirantigua_procesar');
+Route::post('dtefacturadirantigua/dtedtefacturadirantigua', 'DteFacturaDirAntiguaController@dtedtefacturadirantigua')->name('dtefacturadirantigua_dtedtefacturadir');
