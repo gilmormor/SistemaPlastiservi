@@ -70,7 +70,7 @@ class ReportProductoController extends Controller
             $pdf = PDF::loadView('reportproducto.listado', compact('datas','empresa','usuario','request'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("ReporteStockInv.pdf");
+            return $pdf->stream("ReporteProducto.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 

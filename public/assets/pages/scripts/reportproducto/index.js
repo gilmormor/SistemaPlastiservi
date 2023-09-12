@@ -50,7 +50,7 @@ $(document).ready(function () {
                         ${data.producto_id}
                     </a>`;
                     $('td', row).eq(0).html(aux_text);
-                    $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',1,"");');
+                    $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',0,"");');
                 }
     
                 $('td', row).eq(4).attr('style','text-align:center');

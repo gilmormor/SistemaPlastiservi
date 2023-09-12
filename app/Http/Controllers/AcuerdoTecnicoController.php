@@ -189,7 +189,13 @@ class AcuerdoTecnicoController extends Controller
         if(can('ver-pdf-acuerdo-tecnico',false)){
             //dd($request);
             $aux_tituloreportte = "";
-            $cliente = Cliente::findOrFail($request->cliente_id);
+            //dd($request->cliente_id);
+            $aux_nombreCliente = "";
+            if($request->cliente_id != 0){
+                $cliente = Cliente::findOrFail($request->cliente_id);
+                $aux_nombreCliente = ' - '. $cliente->razonsocial;
+                $rut = number_format( substr ( $cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cliente->rut, strlen($cliente->rut) -1 , 1 );
+            }
             $acuerdotecnico = AcuerdoTecnico::findOrFail($request->id);
             //dd($acuerdotecnico);
             $categoria_nombre = $acuerdotecnico->producto->categoriaprod->nombre;
@@ -200,7 +206,6 @@ class AcuerdoTecnicoController extends Controller
             $notaventaDetalles = $notaventa->notaventadetalles()->get();
             */
             $empresa = Empresa::orderBy('id')->get();
-            $rut = number_format( substr ( $cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cliente->rut, strlen($cliente->rut) -1 , 1 );
 
             //dd($empresa[0]['iva']);
             //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa'));
@@ -209,7 +214,7 @@ class AcuerdoTecnicoController extends Controller
             }
             $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre'));
             //return $pdf->download('cotizacion.pdf');
-            return $pdf->stream(str_pad($acuerdotecnico->id, 5, "0", STR_PAD_LEFT) .' - '. $cliente->razonsocial . '.pdf');
+            return $pdf->stream(str_pad("IdProd_" . $acuerdotecnico->producto_id . " IdAT_" . $acuerdotecnico->id, 5, "0", STR_PAD_LEFT) . $aux_nombreCliente . '.pdf');
         }else{
             //return false;            
             $pdf = PDF::loadView('generales.pdfmensajesinacceso');
