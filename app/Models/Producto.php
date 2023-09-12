@@ -944,7 +944,8 @@ class Producto extends Model
             producto.diamextmm,producto.diamextpg,
             producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,
             categoriaprod.nombre as categoria_nombre,categoriaprod.precio,categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,
-            producto.precioneto,acuerdotecnico.id as acuerdotecnico_id
+            producto.precioneto,acuerdotecnico.id as acuerdotecnico_id,
+            categoriaprod.nombre as categoriaprod_nombre
             FROM producto INNER JOIN claseprod
             ON producto.claseprod_id=claseprod.id AND isnull(producto.deleted_at) AND isnull(claseprod.deleted_at)
             INNER JOIN categoriaprod
@@ -960,8 +961,44 @@ class Producto extends Model
             and $aux_categoriaprod_idCond
             and $aux_condsucursal_id
             ORDER BY producto.id;";
+            $datas = DB::select($sql);
+            foreach ($datas as &$data) {
+                if($data->acuerdotecnico_id != null){
+                    $acuerdotecnico = AcuerdoTecnico::findOrFail($data->acuerdotecnico_id);
+                    $aux_formatofilm = $acuerdotecnico->at_formatofilm > 0 ? number_format($acuerdotecnico->at_formatofilm, 2, ',', '.') . "Kg." : "";
+                    $color = Color::findOrFail($acuerdotecnico->at_color_id);
+                    $aux_color =  empty($color->descripcion) ? "" : " " . $color->descripcion . " ";
+                    $aux_at_complementonomprod = empty($acuerdotecnico->at_complementonomprod) ? "" : $acuerdotecnico->at_complementonomprod . " ";
+                    $materiaprima = MateriaPrima::findOrFail($acuerdotecnico->at_materiaprima_id);
+                    $aux_atribAcuTec = $materiaprima->nombre . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+                    //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+                    $aux_nombreprod = nl2br($data->categoriaprod_nombre . " " . $aux_atribAcuTec) . " (" . $acuerdotecnico->unidadmedida->nombre . ")"; // . " " . $data->at_ancho . "x" . $data->at_largo . "x" . number_format($data->at_espesor, 3, ',', '.'));
+                    $data->nombre = $aux_nombreprod; 
+
+
+                    $at_ancho = $acuerdotecnico->at_ancho;
+                    $at_largo = $acuerdotecnico->at_largo;
+                    $at_espesor = $acuerdotecnico->at_espesor;
+                    $at_ancho = empty($at_ancho) ? "0.00" : $at_ancho;
+                    $at_largo = empty($at_largo) ? "0.00" : $at_largo;
+                    $at_espesor = empty($at_espesor) ? "0.00" : $at_espesor;
+                    //$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
+
+                    $aux_formatofilm = $acuerdotecnico->at_formatofilm > 0 ? " " . number_format($acuerdotecnico->at_formatofilm, 2, ',', '.') . "Kg." : "";
+                    $aux_color = empty($acuerdotecnico->color->descripcion) ? "" : " " . $acuerdotecnico->color->descripcion;
+                    $aux_at_complementonomprod = empty($acuerdotecnico->at_complementonomprod) ? "" : " " . $acuerdotecnico->at_complementonomprod;
+                    $aux_atribAcuTec = $acuerdotecnico->materiaprima->nombre . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+                    //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+                    $aux_nombreprod = nl2br($data->categoria_nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($acuerdotecnico->at_espesor, 3, ',', '.')) . " (" . $acuerdotecnico->unidadmedida->nombre . ")";
+                    $data->producto_nombre = $aux_nombreprod;
+
+
+                    //dd($aux_nombreprod);
+                    //dd($data);    
+                }
+            }
             
-        $datas = DB::select($sql);
+        //dd($datas);
         return $datas;
         
     }
