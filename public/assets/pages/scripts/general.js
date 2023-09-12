@@ -2826,10 +2826,11 @@ async function llenarDatosProd(vlrcodigo){
 			$("#producto_id" + item).val(arrayDatosProducto["id"]);
 			$("#nombreProdTD" + item).html(arrayDatosProducto["nombre"]);
 			$("#nmbitem" + item).val(arrayDatosProducto["nombre"]);
-			$("#prcitem" + item).val(arrayDatosProducto["precio"]);
-			console.log(arrayDatosProducto["acuerdotecnico"]);
+			//$("#prcitem" + item).val(arrayDatosProducto["precio"]);
+			$("#prcitem" + item).val("");
+			//console.log(arrayDatosProducto["acuerdotecnico"]);
 			if(arrayDatosProducto["acuerdotecnico"] != null){
-				console.log(arrayDatosProducto["acuerdotecnico"].at_ancho);
+				//console.log(arrayDatosProducto["acuerdotecnico"].at_ancho);
 				at_ancho = arrayDatosProducto["acuerdotecnico"].at_ancho;
 				at_largo = arrayDatosProducto["acuerdotecnico"].at_largo;
 				at_espesor = arrayDatosProducto["acuerdotecnico"].at_espesor;
@@ -2845,8 +2846,8 @@ async function llenarDatosProd(vlrcodigo){
 				//CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
 				aux_nombreprod = arrayDatosProducto["categoriaprod_nombre"] + " " + aux_atribAcuTec + " " + at_ancho + "x" + at_largo + "x" + at_espesor;
 			}else{
-				console.log("Sin Acuerdo");
-				console.log(arrayDatosProducto);
+				//console.log("Sin Acuerdo");
+				//console.log(arrayDatosProducto);
 				aux_cla_nombre = arrayDatosProducto["cla_descripcion"];
 				aux_cla_nombre = aux_cla_nombre == "N/A" ? "" : " " + aux_cla_nombre; // str_replace("N/A","",arrayDatosProducto["cla_descripcion"]);
 				aux_diametro = arrayDatosProducto["diametro"];
