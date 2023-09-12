@@ -27,7 +27,14 @@ $(document).ready(function () {
         agregarFila(2);
     });
 	fieldHTML = "<input type='hidden' name='itemAct' id='itemAct'>" //Creo input con campo itemAct=item actual
-	$("#DivVerTodosProd").append(fieldHTML)
+	$("#DivVerTodosProd").append(fieldHTML);
+	$('.datepicker').datepicker({
+		language: "es",
+        autoclose: true,
+        clearBtn : true,
+		todayHighlight: true
+    }).datepicker("setDate");
+	$("#nrodocto").numeric();
 
 	iniciarFileinput();
 
@@ -246,7 +253,8 @@ $("#rut").blur(function(){
 
 							$("#formapago_desc").val(respuesta.cliente[0].formapago_desc);
 							$("#plazopago").val(respuesta.cliente[0].plazopago_dias);
-							$("#fchemis").change();
+							$("#fchvenc").val("");
+							//$("#fchemis").change();
 							$("#ids").val("1");
 							agregarFila();
 							

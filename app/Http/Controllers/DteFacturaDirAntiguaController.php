@@ -29,7 +29,7 @@ class DteFacturaDirAntiguaController extends Controller
      */
     public function index()
     {
-        can('listar-dte-factura-directa');
+        can('listar-dte-factura-directa-antigua');
         return view('dtefacturadirantigua.index');
     }
 
@@ -46,7 +46,7 @@ class DteFacturaDirAntiguaController extends Controller
      */
     public function crear()
     {
-        can('crear-dte-factura-directa');
+        can('crear-dte-factura-directa-antigua');
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
         $tablas['empresa'] = Empresa::findOrFail(1);
@@ -67,8 +67,15 @@ class DteFacturaDirAntiguaController extends Controller
      */
     public function guardar(Request $request)
     {
-        can('guardar-dte-factura-directa');
+        can('guardar-dte-factura-directa-antigua');
         //dd($request);
+        $dtebusq = Dte::where("nrodocto",$request->nrodocto)->get();
+        if(count($dtebusq) > 0){
+            return redirect('dtefacturadirantigua')->with([
+                "mensaje"=>"Número de factura $request->nrodocto ya existe.",
+                "tipo_alert" => "alert-error"
+            ]);
+        }        
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
             return redirect('dtefacturadirantigua')->with([
@@ -205,7 +212,9 @@ class DteFacturaDirAntiguaController extends Controller
         $hoy = date("Y-m-d H:i:s");
         $dte->foliocontrol_id = $request->foliocontrol_id;
         $dte->nrodocto = $request->nrodocto;
-        $dte->fchemis = $request->fchemis;
+        $dateInput = explode('/',$request->fchemis);
+        $fchemis = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+        $dte->fchemis = $fchemis;
         $dte->fchemisgen = $hoy;
         $dte->fechahora = $hoy;
         $dte->sucursal_id = $centroeconomico->sucursal_id;
@@ -337,7 +346,7 @@ function consultaindex($dte_id){
         $aux_conddte_id = "dte.id = $dte_id";
     }
 
-    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,
+    $sql = "SELECT dte.id,dte.fchemis,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,
     comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at

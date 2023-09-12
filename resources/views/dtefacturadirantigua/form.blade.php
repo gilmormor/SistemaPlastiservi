@@ -57,6 +57,32 @@
             </div>
         </div>
         <div class="row">
+            <div class="form-group col-xs-12 col-sm-2">
+                <label for="email" class="control-label requerido">Email</label>
+                <input type="text" name="email" id="email" class="form-control" value="" required readonly/>
+            </div>
+            <div class="form-group col-xs-12 col-sm-2">
+                <label for="formapago_desc" class="control-label requerido">Forma de Pago</label>
+                <input type="text" name="formapago_desc" id="formapago_desc" class="form-control" value="" required readonly/>
+            </div>
+            <div class="form-group col-xs-12 col-sm-2">
+                <label for="plazopago" class="control-label requerido tooltipsC" title="Plazo Pago">Plazo pago</label>
+                <input type="text" name="plazopago" id="plazopago" class="form-control" value="" required readonly/>
+            </div>
+            <div class="form-group col-xs-12 col-sm-2">
+                <label for="fchemis" class="control-label requerido" data-toggle='tooltip' title="Fecha Fa ctura">Fec Factura</label>
+                <input type="text" name="fchemis" id="fchemis" class="form-control pull-right datepicker" value="{{old('fchemis', $data->fchemis ?? '')}}" required readonly/>
+            </div>
+            <div class="form-group col-xs-12 col-sm-2">
+                <label for="nrodocto" class="control-label requerido">Nro. Factura</label>
+                <input type="text" name="nrodocto" id="nrodocto" class="form-control" value="" required placeholder="Nro. Factura" maxlength="7" required/>
+            </div>
+            <div class="form-group col-xs-12 col-sm-2">
+                <label for="fchvenc" class="control-label requerido">F. Venc</label>
+                <input type="text" name="fchvenc" id="fchvenc" class="form-control" value="{{old('fchvenc', isset($data) ? date('d/m/Y', strtotime(date('Y-m-d')))  : "")}}" required readonly/>
+            </div>
+        </div>
+        <div class="row">
             <div class="form-group col-xs-12 col-sm-6">
                 <label for="direccion" class="control-label">Dirección Princ</label>
                 <input type="text" name="direccion" id="direccion" class="form-control" value="" required placeholder="Dirección principal" readonly/>
@@ -72,28 +98,6 @@
             <div class="form-group col-xs-12 col-sm-2">
                 <label for="telefono" class="control-label requerido">Telefono</label>
                 <input type="text" name="telefono" id="telefono" class="form-control" value="" required readonly/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-xs-12 col-sm-4">
-                <label for="email" class="control-label requerido">Email</label>
-                <input type="text" name="email" id="email" class="form-control" value="" required readonly/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="formapago_desc" class="control-label requerido">Forma de Pago</label>
-                <input type="text" name="formapago_desc" id="formapago_desc" class="form-control" value="" required readonly/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="plazopago" class="control-label requerido tooltipsC" title="Plazo Pago">Plazo pago</label>
-                <input type="text" name="plazopago" id="plazopago" class="form-control" value="" required readonly/>
-            </div>
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="fchemis" class="control-label requerido">Fecha Emision</label>
-                <input type="text" name="fchemis" id="fchemis" class="form-control pull-right datepicker"  value="{{old('fchemis', date("d/m/Y") )}}" readonly required>
-            </div>
-            <div class="form-group col-xs-12 col-sm-2">
-                <label for="fchvenc" class="control-label requerido">F. Venc</label>
-                <input type="text" name="fchvenc" id="fchvenc" class="form-control" value="{{old('fchvenc', isset($data) ? date('d/m/Y', strtotime(date('Y-m-d') ."+ " . $data->cliente->plazopago->dias . " days"))  : "")}}" required readonly/>
             </div>
         </div>
         <div class="row">

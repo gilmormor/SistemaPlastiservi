@@ -14,7 +14,7 @@ $(document).ready(function () {
         'ajax'        : "dtefacturadirantiguapage",
         'columns'     : [
             {data: 'id'}, // 0
-            {data: 'fechahora'}, // 1
+            {data: 'fchemis'}, // 1
             {data: 'rut'}, // 2
             {data: 'razonsocial'}, // 3
             {data: 'oc_id'}, // 4
@@ -44,8 +44,8 @@ $(document).ready(function () {
             "</a>";
             $('td', row).eq(0).html(aux_text);
 
-            $('td', row).eq(1).attr('data-order',data.fechahora);
-            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(1).attr('data-order',data.fchemis);
+            aux_fecha = new Date(data.fchemis + " 00:00:00");
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 
 

@@ -34,10 +34,10 @@
                     </a>
                 </div>
             </div>
-            <form action="{{route('guardar_dtefacturadir')}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
+            <form action="{{route('guardar_dtefacturadirantigua')}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
                 @csrf
                 <div class="box-body">
-                    @include('dtefacturadir.form')
+                    @include('dtefacturadirantigua.form')
                 </div>
                 <div class="box-footer text-center">
                     @include('includes.boton-form-crear')
