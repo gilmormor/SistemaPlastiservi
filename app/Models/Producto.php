@@ -176,6 +176,7 @@ class Producto extends Model
         $datas = DB::select($sql);
         foreach ($datas as &$data) {
             if($data->acuerdotecnico_id != null){
+                $acuerdotecnico = AcuerdoTecnico::findOrFail($data->acuerdotecnico_id);
                 $aux_formatofilm = $data->at_formatofilm > 0 ? " " . number_format($data->at_formatofilm, 2, ',', '.') . "Kg." : "";
                 $color = Color::findOrFail($data->at_color_id);
                 $aux_color =  empty($color->descripcion) ? "" : " " . $color->descripcion . " ";
@@ -183,7 +184,7 @@ class Producto extends Model
                 $materiaprima = MateriaPrima::findOrFail($data->at_materiaprima_id);
                 $aux_atribAcuTec = $materiaprima->nombre . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
                 //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
-                $aux_nombreprod = nl2br($data->categoriaprod_nombre . " " . $aux_atribAcuTec); // . " " . $data->at_ancho . "x" . $data->at_largo . "x" . number_format($data->at_espesor, 3, ',', '.'));
+                $aux_nombreprod = nl2br($data->categoriaprod_nombre . " " . $aux_atribAcuTec) . " (" . $acuerdotecnico->unidadmedida->nombre . ")"; // . " " . $data->at_ancho . "x" . $data->at_largo . "x" . number_format($data->at_espesor, 3, ',', '.'));
                 $data->nombre = $aux_nombreprod; 
                 //dd($aux_nombreprod);
                 //dd($data);    
@@ -246,6 +247,7 @@ class Producto extends Model
         $datas = DB::select($sql);
         foreach ($datas as &$data) {
             if($data->acuerdotecnico_id != null){
+                $acuerdotecnico = AcuerdoTecnico::findOrFail($data->acuerdotecnico_id);
                 $aux_formatofilm = $data->at_formatofilm > 0 ? number_format($data->at_formatofilm, 2, ',', '.') . "Kg." : "";
                 $color = Color::findOrFail($data->at_color_id);
                 $aux_color =  empty($color->descripcion) ? "" : " " . $color->descripcion . " ";
@@ -253,7 +255,7 @@ class Producto extends Model
                 $materiaprima = MateriaPrima::findOrFail($data->at_materiaprima_id);
                 $aux_atribAcuTec = $materiaprima->nombre . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
                 //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
-                $aux_nombreprod = nl2br($data->categoriaprod_nombre . " " . $aux_atribAcuTec); // . " " . $data->at_ancho . "x" . $data->at_largo . "x" . number_format($data->at_espesor, 3, ',', '.'));
+                $aux_nombreprod = nl2br($data->categoriaprod_nombre . " " . $aux_atribAcuTec) . " (" . $acuerdotecnico->unidadmedida->nombre . ")"; // . " " . $data->at_ancho . "x" . $data->at_largo . "x" . number_format($data->at_espesor, 3, ',', '.'));
                 $data->nombre = $aux_nombreprod; 
                 //dd($aux_nombreprod);
                 //dd($data);    
