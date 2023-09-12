@@ -960,6 +960,7 @@ class Producto extends Model
             and $aux_producto_idCodn
             and $aux_categoriaprod_idCond
             and $aux_condsucursal_id
+            and tipoprod = 0
             ORDER BY producto.id;";
             $datas = DB::select($sql);
             foreach ($datas as &$data) {
@@ -990,6 +991,10 @@ class Producto extends Model
                     $aux_atribAcuTec = $acuerdotecnico->materiaprima->nombre . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
                     //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
                     $aux_nombreprod = nl2br($data->categoria_nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($acuerdotecnico->at_espesor, 3, ',', '.')) . " (" . $acuerdotecnico->unidadmedida->nombre . ")";
+                    $data->diametro = $acuerdotecnico->at_ancho;
+                    $data->long = $acuerdotecnico->at_largo;
+                    $data->espesor =  $acuerdotecnico->at_espesor;
+                    $data->cla_nombre = $acuerdotecnico->claseprod->cla_nombre;
                     $data->producto_nombre = $aux_nombreprod;
 
 

@@ -128,8 +128,8 @@ Reporte Productos
                             <th class="width70 tooltipsC" title="Codigo Producto" style='text-align:center'>Cod</th>
                             <th>Producto</th>
                             <th>Categoria</th>
-                            <th>Diametro</th>
-                            <th>Clase</th>
+                            <th>Clase<br>Sello</th>
+                            <th>Diametro<br>Ancho</th>
                             <th>Largo</th>
                             <th>Espesor</th>
                             <th>Peso</th>

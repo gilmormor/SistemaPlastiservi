@@ -27,8 +27,8 @@ $(document).ready(function () {
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
                 {data: 'categoria_nombre'},
-                {data: 'diametro'},
                 {data: 'cla_nombre'},
+                {data: 'diametro'},
                 {data: 'long'},
                 {data: 'espesor'},
                 {data: 'peso'},
@@ -53,12 +53,12 @@ $(document).ready(function () {
                     $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',1,"");');
                 }
     
-                $('td', row).eq(3).attr('style','text-align:center');
+                $('td', row).eq(4).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');
                 $('td', row).eq(6).attr('data-order',data.espesor);
                 $('td', row).eq(6).attr('data-search',data.espesor);
                 $('td', row).eq(6).html(MASKLA(data.espesor,3));
-                $('td', row).eq(6).attr('style','text-align:right');
+                $('td', row).eq(6).attr('style','text-align:center');
                 $('td', row).eq(7).attr('data-order',data.peso);
                 $('td', row).eq(7).attr('data-search',data.peso);
                 $('td', row).eq(7).html(MASKLA(data.peso,3));
