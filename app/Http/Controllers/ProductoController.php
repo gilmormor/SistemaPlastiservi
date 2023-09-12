@@ -289,6 +289,7 @@ class ProductoController extends Controller
                     'producto.estado',
                     'producto.tipoprod',
                     'producto.categoriaprod_id',
+                    'categoriaprod.nombre as categoriaprod_nombre',
                     'categoriaprod.precio',
                     'categoriaprodsuc.sucursal_id',
                     'categoriaprod.unidadmedida_id',
@@ -303,7 +304,8 @@ class ProductoController extends Controller
                     'acuerdotecnico.at_espesor',
                     'acuerdotecnico.at_fuelle',
                     'tiposello.desc as at_tiposello_desc',
-                    'acuerdotecnico.at_unidadmedida_id'
+                    'acuerdotecnico.at_unidadmedida_id',
+                    'claseprod.cla_descripcion'
                     ])
                     ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
                     ->where('producto.deleted_at','=',null)
@@ -319,6 +321,11 @@ class ProductoController extends Controller
                 //$respuesta['areaproduccion'] = $producto->categoriaprod->areaproduccion->toArray();
                 $respuesta['areaproduccionsucs'] = $producto->categoriaprod->areaproduccion->areaproduccionsucs->toArray();
                 $respuesta['areaproduccionsuclineas'] = AreaProduccionSucLinea::get();
+                $respuesta['acuerdotecnico'] = $producto->acuerdotecnico;
+                if($producto->acuerdotecnico){
+                    $respuesta['at_color_nombre'] = $producto->acuerdotecnico->color->descripcion;
+                    $respuesta['at_materiaprima_nombre'] = $producto->acuerdotecnico->materiaprima->descfact;
+                }
                 //dd($respuesta['bodegas']);
                 foreach ($respuesta['bodegas'] as &$bodega) {
                     $request1 = new Request();

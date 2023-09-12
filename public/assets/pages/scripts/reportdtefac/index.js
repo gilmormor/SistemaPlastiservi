@@ -25,11 +25,11 @@ $(document).ready(function () {
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
-            "order"       : [[ 0, "asc" ]],
+            "order"       : [[ 1, "asc" ],[ 11, "asc" ]],
             'ajax'        : "/reportdtefac/reportdtefacpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             'columns'     : [
                 {data: 'id'}, // 0
-                {data: 'fechahora'}, // 1
+                {data: 'fchemis'}, // 1
                 {data: 'rut'}, // 2
                 {data: 'razonsocial'}, // 3
                 {data: 'cotizacion_id'}, // 4
@@ -77,8 +77,8 @@ $(document).ready(function () {
                 $('td', row).eq(0).attr('data-order',data.id);
 
     
-                $('td', row).eq(1).attr('data-order',data.fechahora);
-                aux_fecha = new Date(data.fechahora);
+                $('td', row).eq(1).attr('data-order',data.fchemis);
+                aux_fecha = new Date(data.fchemis + " 00:00:00");
                 $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
     
                 if(data.cotizacion_id != null){

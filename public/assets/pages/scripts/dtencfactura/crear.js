@@ -420,9 +420,9 @@ function llenarDatosCliente(respuesta){
 	$("#formapago_desc").val(respuesta.dte[0].formapago_desc);
 	$("#plazopago").val(respuesta.dte[0].plazopago_dias);
 	
-	aux_fecha = new Date(respuesta.dte[0].fchemis);
+	aux_fecha = new Date(respuesta.dte[0].fchemis + " 00:00:00");
 	$("#fchemis").val(fechaddmmaaaa(aux_fecha));
-	aux_fecha = new Date(respuesta.dte[0].fchvenc);
+	aux_fecha = new Date(respuesta.dte[0].fchvenc + " 00:00:00");
 	$("#fchvenc").val(fechaddmmaaaa(aux_fecha));
 
 	$('#centroeconomico_id').val(respuesta.dte[0].centroeconomico_id); // Select the option with a value of '1'
