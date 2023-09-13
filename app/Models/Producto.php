@@ -196,6 +196,8 @@ class Producto extends Model
 
     public static function productosxCliente($request){
         $cliente_idCond = " true";
+        $aux_sucursalidCond = " true ";
+        $tipoprodCond = " true ";
         if(isset($request->cliente_id) and ($request->cliente_id != "undefined")){
             $cliente_idCond = "if(categoriaprod.asoprodcli = 1, ((producto.id IN (SELECT producto_id FROM cliente_producto WHERE 
                                 cliente_producto.cliente_id = $request->cliente_id)) OR producto.tipoprod = 1), TRUE )";
@@ -208,11 +210,18 @@ class Producto extends Model
             $sucurArray = $users->sucursales->pluck('id')->toArray();
         }
         $sucurcadena = implode(",", $sucurArray);
+        $aux_sucursalidCond = " sucursal.id in ($sucurcadena) ";
         if(!isset($request->tipoprod) or ($request->tipoprod == "undefined") or is_null($request->tipoprod)){
             $tipoprodCond = "producto.tipoprod = 0";
         }else{
             $tipoprodCond = "producto.tipoprod = " . $request->tipoprod;
         }
+        if(isset($request->tipoprod) and $request->tipoprod=="10"){
+            $cliente_idCond = " true";
+            $aux_sucursalidCond = " true ";
+            $tipoprodCond = " producto.tipoprod != 1";
+        }
+
         $sql = "SELECT producto.id,producto.nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
                 if(isnull(at_claseprod_id),CAST(claseprod.cla_nombre AS CHAR),at_claseprod.cla_nombre) as cla_nombre,
                 if(isnull(at_ancho),CAST(producto.diametro AS CHAR),at_ancho) as diametro,
@@ -237,7 +246,7 @@ class Producto extends Model
                 ON producto.id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
                 LEFT JOIN claseprod as at_claseprod
                 ON at_claseprod.id = acuerdotecnico.at_claseprod_id
-                WHERE sucursal.id in ($sucurcadena)
+                WHERE $aux_sucursalidCond
                 and $cliente_idCond
                 and $tipoprodCond
                 AND producto.estado = 1

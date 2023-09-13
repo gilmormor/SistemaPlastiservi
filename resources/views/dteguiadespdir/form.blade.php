@@ -7,7 +7,7 @@
 <input type="hidden" name="foliocontrol_id" id="foliocontrol_id" value="2">
 <input type="text" name="ids" id="ids" value="0" style="display: none">
 <input type="hidden" name="imagen" id="imagen" value="{{old('imagen', $data->oc_file ?? '')}}">
-<input type="hidden" name="tipoprod" id="tipoprod" value="2">
+<input type="hidden" name="tipoprod" id="tipoprod" value="10">
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label for="oc_fileaux" class="control-label requerido" data-toggle='tooltip' title="Adjuntar Orden de compra">Adjuntar Orden de compra</label>
     <input type="hidden" name="oc_fileaux" id="oc_fileaux" value="" class="form-control" style="text-align:right;">
