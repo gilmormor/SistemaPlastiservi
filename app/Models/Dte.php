@@ -1409,6 +1409,10 @@ class Dte extends Model
         //PROCESO DE ANULAR DTE SIN HABER ASIGNADO O GENERADO UN NUMERO DE DTE (DOCUMENTO TRIBUTARIO LELECTRONICO)
         //dd($request);
         $dte = Dte::findOrFail($request->dte_id);
+        $request->request->add(['obs' => $dte->foliocontrol->desc]);
+        $request->request->add(['motanul_id' => 5]);
+        $request->request->add(['moddevgiadesp_id' => $dte->foliocontrol->doc]);
+
         $aux_dtehijos = false;
         foreach ($dte->dtedters as $dtedter) {
             if($dtedter->dte->dteanul == null){

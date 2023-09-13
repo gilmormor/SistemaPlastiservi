@@ -3009,7 +3009,7 @@ function anulardte(id){
         updated_at : $("#updated_at" + id).html(),
         _token: $('input[name=_token]').val()
     };
-    var ruta = '/dtendfactura/anular';
+    var ruta = '/dtefactura/anular';
     //var ruta = '/guiadesp/dteguiadesp';
     swal({
         title: '¿ Anular DTE ?',
