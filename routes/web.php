@@ -1381,7 +1381,7 @@ Route::post('dtefacturadirantigua', 'DteFacturaDirAntiguaController@guardar')->n
 Route::post('dtefacturadirantigua/procesar', 'DteFacturaDirAntiguaController@procesar')->name('dtefacturadirantigua_procesar');
 Route::post('dtefacturadirantigua/dtedtefacturadirantigua', 'DteFacturaDirAntiguaController@dtedtefacturadirantigua')->name('dtefacturadirantigua_dtedtefacturadir');
 
-//RUTA ANULAR FACTURA
+//RUTA ANULAR FACTURA 
 Route::get('dtefacturaanular', 'DteFacturaAnularController@index')->name('dtefacturaanular');
 Route::get('dtefacturaanular/dtefacturaanularpage', 'DteFacturaAnularController@dtefacturaanularpage')->name('dtefacturaanularpage');
 Route::get('dtefacturaanular/reporte', 'DteFacturaAnularController@reporte')->name('dtefacturaanular_reporte');
