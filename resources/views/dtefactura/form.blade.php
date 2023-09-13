@@ -121,7 +121,7 @@
             </div>
             <div class="form-group col-xs-12 col-sm-2">
                 <label id="lblocnv_id" for="ocnv_id" class="control-label" data-toggle='tooltip' title="Orden de compra Nota de venta">OC</label>
-                <input type="text" name="ocnv_id" id="ocnv_id" class="form-control" value="" maxlength="12" disabled/>
+                <input type="text" name="ocnv_id" id="ocnv_id" class="form-control" value="" maxlength="15" disabled/>
             </div>
 
             <div class="form-group col-xs-12 col-sm-4" style="display:none;">
