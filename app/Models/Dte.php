@@ -450,6 +450,14 @@ class Dte extends Model
             $aux_conddteguiausada = " true";
         }else{
             $aux_conddteguiausada = "dte.id NOT IN (SELECT dteguiausada.dte_id FROM dteguiausada WHERE ISNULL(dteguiausada.deleted_at))";
+            /*
+            $aux_conddteguiausada = "dte.id NOT IN (SELECT dtedte.dter_id
+                                        FROM dtedte
+                                        WHERE dtedte.dter_id = dte.id 
+                                        AND ISNULL(dtedte.deleted_at)
+                                        AND dtedte.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at)))";
+            */
+            
         }
         if(!isset($request->indtraslado) or empty($request->indtraslado)){
             $aux_condindtraslado = " true";
@@ -666,7 +674,7 @@ class Dte extends Model
         AND isnull(despachoord.numfactura)
         AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
         order BY dte.nrodocto;";
-    
+        //dd($sql);
         $arrays = DB::select($sql);
         /*
         $i = 0;
@@ -1109,7 +1117,7 @@ class Dte extends Model
             if($foliocontrol->ultfoliouti >= $foliocontrol->ultfoliohab ){
                 return response()->json([
                     'id' => 0,
-                    'mensaje'=>'Se agotaron los folios. Se deben de pedir nuevos folios',
+                    'mensaje'=>'Se agotaron los folios. Se deben pedir nuevos folios',
                     'tipo_alert' => 'error'
                 ]);
             }
@@ -1292,7 +1300,7 @@ class Dte extends Model
         if($foliocontrol->ultfoliouti >= $foliocontrol->ultfoliohab ){
             return response()->json([
                 'id' => 0,
-                'mensaje'=>'Se agotaron los folios. Se deben de pedir nuevos folios',
+                'mensaje'=>'Se agotaron los folios. Se deben pedir nuevos folios',
                 'tipo_alert' => 'error'
             ]);
         }

@@ -259,10 +259,18 @@ class DteNDFacturaController extends Controller
         $dte->kgtotal = $Tkgtotal;
         $dte->save();
 
-        return redirect('dtendfactura')->with([
-            'mensaje'=>'Nota de Debito creada con exito.',
-            'tipo_alert' => 'alert-success'
-        ]);
+        $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+        if($aux_foliosdisp <=20){
+            return redirect('dtendfactura')->with([
+                'mensaje'=>"Nota de Debito creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }else{
+            return redirect('dtendfactura')->with([
+                'mensaje'=>'Nota de Debito creada con exito.',
+                'tipo_alert' => 'alert-success'
+            ]);
+        }
     }
     /**
      * Display the specified resource.

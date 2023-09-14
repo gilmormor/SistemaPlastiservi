@@ -255,10 +255,18 @@ class DteNCFacturaController extends Controller
         $dte->kgtotal = $Tkgtotal;
         $dte->save();
 
-        return redirect('dtencfactura')->with([
-            'mensaje'=>'Nota de Credito creada con exito.',
-            'tipo_alert' => 'alert-success'
-        ]);
+        $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+        if($aux_foliosdisp <=20){
+            return redirect('dtencfactura')->with([
+                'mensaje'=>"Nota de Credito creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }else{
+            return redirect('dtencfactura')->with([
+                'mensaje'=>'Nota de Credito creada con exito.',
+                'tipo_alert' => 'alert-success'
+            ]);
+        }
     }
 
     /**

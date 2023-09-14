@@ -174,7 +174,6 @@ class DteGuiaDespController extends Controller
         if($aux_indtraslado == 30){ //ESTO ES TEMPORAL POR EL MES DE AGOSTO 2023 PARA QUE PUEDAN HACER GUIA DE TRASLADO DE LAS GUIAS HECHAS POR EPROPLAS
             $aux_indtraslado = 6;
         }
-        //dd($request);
         //dd(sanear_string("GILMER Ñ x&@x  Moreno"));
         if($request->tipoguiadesp == 20){ 
             //SI $request->tipoguiadesp = 20, GENERO DE FORMA AUTOMATICA LA GUIA DE TRASLADO, LUEGO SE GENERA LA GUIA DE VENTA
@@ -191,10 +190,20 @@ class DteGuiaDespController extends Controller
         }
         $respuesta = guardarDTE($request,$aux_indtraslado,$cont_producto);
         if($respuesta->original["id"] == 1){
-            return redirect('dteguiadesp')->with([
-                'mensaje'=>'Guia Despacho creada con exito.',
-                'tipo_alert' => 'alert-success'
-            ]);    
+            $foliocontrol = Foliocontrol::findOrFail(2);
+            $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+            if($aux_foliosdisp <=100){
+                return redirect('dteguiadesp')->with([
+                    'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }else{
+                return redirect('dteguiadesp')->with([
+                    'mensaje'=>'Guia Despacho creada con exito.',
+                    'tipo_alert' => 'alert-success'
+                ]);    
+            }
+    
         }else{
             return redirect('dteguiadesp/listarorddesp')->with([
                 'mensaje'=>$respuesta->original["mensaje"] ,
@@ -412,81 +421,7 @@ class DteGuiaDespController extends Controller
             $empresa = Empresa::findOrFail(1);
             $soap = new SoapController();
             $Estado_DTE = $soap->Estado_DTE($empresa->rut,$dte->foliocontrol->tipodocto,$dte->nrodocto);
-            //VALIDAR QUE DOCUMENTO FUE ACEPTAFO POR SII
-            //SI NO EXISTE DOCUMENTO EN SII
-            /*
-            //EN COMENTARIO: A PETICION DE ERIKA BUSTOS PARA EVITAR RETRASOS EN ENVIO DE GUIAS DE DESPACHO
-            if($Estado_DTE->Estatus == 3){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje' => $Estado_DTE->MsgEstatus . " Nro: " . $dte->nrodocto,
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            //SI NO FUE ACEPTADO POR SII
-            if($Estado_DTE->EstadoDTE != 16){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje' => $Estado_DTE->DescEstado . " Nro: " . $dte->nrodocto,
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            //FIN EN COMENTARIO: A PETICION DE ERIKA BUSTOS PARA EVITAR RETRASOS EN ENVIO DE GUIAS DE DESPACHO
-            */
 
-            /*
-            if(!is_null($dte->statusgen)){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Guia de Despacho ya fue Generada! Nro: ' . $dte->nrodocto,
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            $foliocontrol = Foliocontrol::where("doc","=","GDVE")->get();
-            if(count($foliocontrol) == 0){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Numero de folio no encontrado.',
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            if($foliocontrol[0]->ultfoliouti >= $foliocontrol[0]->ultfoliohab ){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Se agotaron los folios. Se deben de pedir nuevos folios',
-                    'tipo_alert' => 'error'
-                ]);
-            }
-            $foliocontrol = Foliocontrol::findOrFail($foliocontrol[0]->id);
-            if($foliocontrol->bloqueo == 1){
-                $aux_guidesp = Dte::whereNotNull("nrodocto")
-                            ->whereNull("statusgen")
-                            ->whereNull("deleted_at")
-                            ->get();
-                //dd($aux_guidesp);
-                if(count($aux_guidesp) == 0){
-                    return response()->json([
-                        'id' => 0,
-                        'mensaje'=>'Folio bloqueado, vuelva a intentar. Folio: ' . $foliocontrol->ultfoliouti,
-                        'tipo_alert' => 'error'
-                    ]);
-                }else{
-                    if(is_null($dte->nrodocto)){
-                        return response()->json([
-                            'id' => 0,
-                            'mensaje' => 'Existe una Guia de Despacho pendiente por Generar: ' . $aux_guidesp[0]->nrodocto,
-                            'tipo_alert' => 'error'
-                        ]);        
-                    }
-                }
-            }else{
-                //Si $foliocontrol->bloqueo = 0;
-                //Bloqueo el registro para que no pueda ser modificado por otro usuario
-                //Al procesar el registro desbloqueo 
-                $foliocontrol->bloqueo = 1;
-                $foliocontrol->save();
-            }
-            */
             $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
             $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$despachoord->notaventa_id)->get();
             if(count($notaventacerrada) == 0){

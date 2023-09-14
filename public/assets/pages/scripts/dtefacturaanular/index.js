@@ -202,7 +202,9 @@ $(document).ready(function () {
                 if (data.dteanul_obs == null) {
                     aux_text = 
                     `<a onclick="anulardte(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro" data-toggle="tooltip">
-                        <span class="glyphicon glyphicon-remove text-danger"></span>
+                        <button type="button" class="btn btn-default btn-xs">
+                            <i class="glyphicon glyphicon-remove text-danger"></i>
+                        </button>
                     </a>`;
                     $('td', row).eq(13).html(aux_text);
                 }else{

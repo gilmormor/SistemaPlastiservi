@@ -470,7 +470,7 @@ class GuiaDespController extends Controller
             if($foliocontrol[0]->ultfoliouti >= $foliocontrol[0]->ultfoliohab ){
                 return response()->json([
                     'id' => 0,
-                    'mensaje'=>'Se agotaron los folios. Se deben de pedir nuevos folios',
+                    'mensaje'=>'Se agotaron los folios. Se deben pedir nuevos folios',
                     'tipo_alert' => 'error'
                 ]);
             }

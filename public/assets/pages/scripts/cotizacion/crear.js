@@ -1539,7 +1539,7 @@ function desvEspesor(aux_valor,aux_desc){
 				case aux_valor >= 0.091 && aux_valor <= 0.140:
 					aux_desv = "±5 µ";
 					break;
-				case aux_valor >= 0.141 && aux_valor <= 0.200:
+				case aux_valor >= 0.141 && aux_valor <= 0.220:
 					aux_desv = "±7 µ";
 					break;
 			}		

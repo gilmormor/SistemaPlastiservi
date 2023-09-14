@@ -285,10 +285,18 @@ class DteFacturaDirAntiguaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
-            return redirect('dtefacturadirantigua')->with([
-                'mensaje'=>'Factura creada con exito.',
-                'tipo_alert' => 'alert-success'
-            ]);
+            $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+            if($aux_foliosdisp <=20){
+                return redirect('dtefacturadirantigua')->with([
+                    'mensaje'=>"Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }else{
+                return redirect('dtefacturadirantigua')->with([
+                    'mensaje'=>'Factura creada con exito.',
+                    'tipo_alert' => 'alert-success'
+                ]);
+            }
         }else{
             $foliocontrol->bloqueo = 0;
             $foliocontrol->save();
