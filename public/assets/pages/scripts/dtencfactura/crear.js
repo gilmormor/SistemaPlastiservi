@@ -285,10 +285,10 @@ function llenarItemFact(data){
 					<input type="text" name="unmditem[]" id="unmditem${data[i].id}" class="form-control" value="${data[i].unmditem}" style="display:none;"/>
 			</td>
 			<td name="NPTD${data[i].id}" id="NPTD${data[i].id}" valor="${aux_nmbitem}">
-				<p name="nombreProdTD${data[i].id}" id="nombreProdTD${data[i].id}" valor="${aux_nmbitem}">
+				<p name="nombreProdTD${data[i].id}" id="nombreProdTD${data[i].id}" valor="${aux_nmbitem}" style="display:none;">
 					${aux_nmbitemhtml}
 				</p>
-				<input type="text" name="nmbitem[]" id="nmbitem${data[i].id}" class="form-control itemrequerido" value="${aux_nmbitem}" style="display:none;" title="Nombre producto"/>
+				<input type="text" name="nmbitem[]" id="nmbitem${data[i].id}" class="form-control itemrequerido" value="${aux_nmbitem}" title="Nombre producto"/>
 				<input type="text" name="dscitem[]" id="dscitem${data[i].id}" class="form-control" value="${data[i].dscitem}" style="display:none;"/>
 			</td>
 			<td name="subtotalkg${data[i].id}" id="subtotalkg${data[i].id}" style="text-align:right;" class="subtotalkg" valor="${data[i].itemkg}">
@@ -608,6 +608,15 @@ $("#codref").change(function(){
 			$i++;
 		});
 		//buscardocumento(aux_val,this); //paso una bandera = 1 y el objeto this que corresponde a codref
+	}
+	if(aux_val == 3){
+		$("#tabla-data tr .subtotal").each(function() {
+			let item = $(this).attr("item");
+			//console.log(item);
+			$("#nmbitem" + item).show();
+			$i++;
+		});
+
 	}
 	totalizar();
 	if(aux_val == 2){
