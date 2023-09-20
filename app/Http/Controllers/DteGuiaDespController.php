@@ -791,7 +791,13 @@ class DteGuiaDespController extends Controller
             }
             //SOLO TOCA EL INVENTARIO SI ES GUIS DE VENTA indtraslado=1, 
             //SI ES DE TRANSLADO indtraslado=6 GENERADA DE FORMA AUTOMATICA DESDE GUIA DE DESPACHO NO TOCA EL INVENTARIO
-            if($dte->indtraslado == 1){
+            //dd($dte->dteguiadesp->despachoord->despachosol->tipoguiadesp);
+            //EN EL CASO QUE EL TIPO DE TRASLADO DE LA GUIA DESP SEA = 6 Y $aux_tipoguiadesp = 6 Ó 30 TOCA EL INVENTARIO
+            //SI $aux_indtraslado = 6 Y $aux_tipoguiadesp = 20 NO TOCA EL INVENTARIO, ESTO PORQUE FUE GENERADA A TRAVES DE UNA GUIA DOBLE, ES DECIR QUE SE GENERO AL MISMO TIEMPO UNA GUIA DE TRALADO Y UNA GUIA DE PRECIO
+            $aux_indtraslado = $dte->indtraslado;
+            $aux_tipoguiadesp = $dte->dteguiadesp->despachoord->despachosol->tipoguiadesp;
+            //if($dte->indtraslado == 1){
+            if($aux_indtraslado == 1 or ($aux_indtraslado == 6 and ($aux_tipoguiadesp == 6 or $aux_tipoguiadesp == 30))){
                 $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
                 foreach ($despachoord->despachoorddets as $despachoorddet) {
                     //ESTO DEBE IR EN EL PROYECTO FINAL
