@@ -42,16 +42,16 @@
 					<span class="h3">Cliente</span>
 					<table class="datos_cliente">
 						<tr class="headt">
-							<td style="width:10%"><label>Rut:</label></td><td style="width:50%"><p id="rutform" name="rutform">{{number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 )}}</p></td>
-							<td style="width:10%"><label>Teléfono:</label></td><td style="width:30%"><p>{{$despachosol->notaventa->cliente->telefono}}</p></td>
+							<td style="width:10%"><label>Rut:</label></td><td style="width:50%"><p id="rutform" name="rutform">{{number_format( substr ( $notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $notaventa->cliente->rut, strlen($notaventa->cliente->rut) -1 , 1 )}}</p></td>
+							<td style="width:10%"><label>Teléfono:</label></td><td style="width:30%"><p>{{$notaventa->cliente->telefono}}</p></td>
 						</tr>
 						<tr class="headt">
-							<td style="width:10%"><label>Nombre:</label></td><td style="width:50%"><p>{{$despachosol->notaventa->cliente->razonsocial}}</p></td>
-							<td style="width:10%"><label>Dirección:</label></td><td style="width:30%"><p>{{$despachosol->notaventa->cliente->direccion}}</p></td>
+							<td style="width:10%"><label>Nombre:</label></td><td style="width:50%"><p>{{$notaventa->cliente->razonsocial}}</p></td>
+							<td style="width:10%"><label>Dirección:</label></td><td style="width:30%"><p>{{$notaventa->cliente->direccion}}</p></td>
 						</tr>
 						<tr class="headt">
-							<td style="width:10%"><label>Contacto:</label></td><td style="width:50%"><p>{{$despachosol->notaventa->cliente->contactonombre}}</p></td>
-							<td style="width:10%"><label>Comuna:</label></td><td style="width:30%"><p>{{$despachosol->notaventa->cliente->comuna->nombre}}</p></td>
+							<td style="width:10%"><label>Contacto:</label></td><td style="width:50%"><p>{{$notaventa->cliente->contactonombre}}</p></td>
+							<td style="width:10%"><label>Comuna:</label></td><td style="width:30%"><p>{{$notaventa->cliente->comuna->nombre}}</p></td>
 						</tr>
 					</table>
 				</div>
