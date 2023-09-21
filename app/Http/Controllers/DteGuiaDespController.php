@@ -1433,6 +1433,7 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     $dteguiadesp->comunaentrega_id = $request->comunaentrega_id;
     $dteguiadesp->lugarentrega = $request->lugarentrega;
     $dteguiadesp->ot = $request->ot;
+    /*
     if($dte->cliente_id == 1659){
         $respuesta = response()->json([
             'id' => 1
@@ -1440,10 +1441,9 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     }else{
         $respuesta = Dte::generardteprueba($dte);
     }
-    $dte->dteguiadesp = $dteguiadesp;
-    /*
-    $respuesta = Dte::generardteprueba($dte);
     */
+    $dte->dteguiadesp = $dteguiadesp;
+    $respuesta = Dte::generardteprueba($dte);
     /*
     $respuesta = response()->json([
         'id' => 1
