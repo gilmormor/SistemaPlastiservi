@@ -35,17 +35,17 @@
 				<div>
 					<span class="h3">Cliente</span>
 					<table class="datos_cliente">
-						<tr>
-							<td><label>Rut:</label><p id="rutform" name="rutform">{{number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 )}}</p></td>
-							<td><label>Teléfono:</label> <p>{{$despachosol->notaventa->cliente->telefono}}</p></td>
+						<tr class="headt">
+							<td style="width:10%"><label>Rut:</label></td><td style="width:50%"><p id="rutform" name="rutform">{{number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 )}}</p></td>
+							<td style="width:10%"><label>Teléfono:</label></td><td style="width:30%"><p>{{$despachosol->notaventa->cliente->telefono}}</p></td>
 						</tr>
-						<tr>
-							<td><label>Nombre:</label> <p>{{$despachosol->notaventa->cliente->razonsocial}}</p></td>
-							<td><label>Dirección:</label> <p>{{$despachosol->notaventa->cliente->direccion}}</p></td>
+						<tr class="headt">
+							<td style="width:10%"><label>Nombre:</label></td><td style="width:50%"><p>{{$despachosol->notaventa->cliente->razonsocial}}</p></td>
+							<td style="width:10%"><label>Dirección:</label></td><td style="width:30%"><p>{{$despachosol->notaventa->cliente->direccion}}</p></td>
 						</tr>
-						<tr>
-							<td><label>Contacto:</label> <p>{{$despachosol->notaventa->cliente->contactonombre}}</p></td>
-							<td><label>Comuna:</label> <p>{{$despachosol->notaventa->cliente->comuna->nombre}}</p></td>
+						<tr class="headt">
+							<td style="width:10%"><label>Contacto:</label></td><td style="width:50%"><p>{{$despachosol->notaventa->cliente->contactonombre}}</p></td>
+							<td style="width:10%"><label>Comuna:</label></td><td style="width:30%"><p>{{$despachosol->notaventa->cliente->comuna->nombre}}</p></td>
 						</tr>
 					</table>
 				</div>
