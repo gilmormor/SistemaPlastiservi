@@ -14,6 +14,7 @@ $(document).ready(function () {
             {data: 'id'},
             {data: 'nombre'},
             {data: 'categorianombre'},
+            {data: 'gru_nombre'},
             {data: 'diametro'},
             {data: 'espesor'},
             {data: 'long'},
@@ -28,14 +29,14 @@ $(document).ready(function () {
         },
         "createdRow": function ( row, data, index ) {
 
-            $('td', row).eq(6).attr('data-order',data.peso);
-            $('td', row).eq(6).attr('data-search',data.peso);
-            $('td', row).eq(6).html(MASKLA(data.peso,3));
+            $('td', row).eq(7).attr('data-order',data.peso);
+            $('td', row).eq(7).attr('data-search',data.peso);
+            $('td', row).eq(7).html(MASKLA(data.peso,3));
 
-            $('td', row).eq(8).attr('data-order',data.precioneto);
-            $('td', row).eq(8).attr('data-search',data.precioneto);
-            $('td', row).eq(8).attr('style','text-align:right');
-            $('td', row).eq(8).html(MASKLA(data.precioneto,2));
+            $('td', row).eq(9).attr('data-order',data.precioneto);
+            $('td', row).eq(9).attr('data-search',data.precioneto);
+            $('td', row).eq(9).attr('style','text-align:right');
+            $('td', row).eq(9).html(MASKLA(data.precioneto,2));
         }
       });
 

@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Cotización
+Consulta Nota Venta
 @endsection
 
 @section("styles")
