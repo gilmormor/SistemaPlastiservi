@@ -1316,6 +1316,7 @@ function validarSiExisteBodega($despachoord,$invmoduloBod){
 }
 
 function guardarDTE($request,$aux_indtraslado,$cont_producto){
+    //dd($request);
     $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
     $empresa = Empresa::findOrFail(1);
     $hoy = date("Y-m-d H:i:s");

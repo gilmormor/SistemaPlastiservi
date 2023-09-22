@@ -115,7 +115,7 @@ $(document).ready(function () {
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
             $('td', row).eq(9).html(aux_text);
             $('td', row).eq(9).attr('style','text-align:center');
-            console.log(data);
+            //console.log(data);
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+

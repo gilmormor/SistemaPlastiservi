@@ -35,6 +35,12 @@ $(document).ready(function () {
 			negative: false
 		},
 	);
+	$("#dolarobser").numeric(
+		{
+			decimalPlaces: 2,
+			negative: false
+		},
+	);
 
 	//$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
@@ -295,3 +301,46 @@ $('#form-general').submit(function(event) {
 
 	//event.preventDefault();
 })
+
+$(".caltotal").keyup(function(){
+	aux_netototal = 0;
+	aux_tasaiva = $("#tasaiva").val();
+	aux_iva = 0;
+	aux_total = 0;
+	valorDolarObser = $("#dolarobser").val();
+	if(valorDolarObser <= 0){
+		valorDolarObser = 1;
+	}	
+	$("#tabla-data tr .preciounititem").each(function() {
+		//valor = $(this).html() ;
+		valorOrig = $(this).attr("valueorig");
+		item = $(this).attr("item");
+		aux_cant = $("#qtyitem" + item).val();
+		if(valorDolarObser <= 1){
+			valorUni = valorOrig * valorDolarObser;
+			valorSubTotal = valorUni * aux_cant;	
+		}else{
+			valorUni = Math.round(valorOrig * valorDolarObser);
+			valorSubTotal = Math.round(valorUni * aux_cant);	
+		}
+
+		$("#txtprcitem" + item).html(MASKLA(valorUni,2));
+		$("#txtmontoitem" + item).html(MASKLA(valorSubTotal,0));
+
+		$("#preciounit" + item).val(valorUni);
+		$("#prcitem" + item).val(valorUni);
+		$("#subtotal" + item).val(valorSubTotal);
+		$("#montoitem" + item).val(valorSubTotal);
+				if(isNaN(valorSubTotal)){
+			valorSubTotal = 0;
+		}
+		aux_netototal += valorSubTotal;
+	});
+	aux_netototal = Math.round(aux_netototal);
+	aux_iva = Math.round(aux_netototal * (aux_tasaiva/100));	
+	aux_total = aux_netototal + aux_iva;
+
+	$("#tdneto").html(MASKLA(aux_netototal));
+	$("#tdiva").html(MASKLA(aux_iva));
+	$("#tdtotal").html(MASKLA(aux_total));
+});

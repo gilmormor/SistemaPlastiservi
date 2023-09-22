@@ -8,6 +8,9 @@
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
 <input type='hidden' id="aux_obs" name="aux_obs" value="{{old('aux_obs', isset($dteguiadesp) ? $dteguiadesp->obs : ($data->observacion ?? '') ?? '')}}">
 <input type="hidden" id="tipoguiadesp" name="tipoguiadesp" value="{{old('tipoguiadesp', $data->despachosol->tipoguiadesp ?? '')}}"/>
+<input type="hidden" id="moneda_id" name="moneda_id" value="{{old('moneda_id', $data->despachosol->notaventa->moneda_id ?? '')}}"/>
+<input type="hidden" id="tasaiva" name="tasaiva" value="{{old('tasaiva', $empresa->iva ?? '')}}"/>
+
 
 
 <div class="row">
@@ -278,6 +281,14 @@
                         </div>
 
                     </div>
+                    @if ($data->despachosol->notaventa->moneda_id == 2)
+                        <div class="row">
+                            <div class="form-group col-xs-12 col-sm-2">
+                                <label for="dolarobser" class="control-label requerido">Valor Dolar</label>
+                                <input type="text" name="dolarobser" id="dolarobser" class="form-control caltotal" placeholder="Valor Dolar" required/>
+                            </div>
+                        </div>                        
+                    @endif
                 </div>
             </div>
         </div>
@@ -434,8 +445,8 @@
                                     <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                 </td>
                                 <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right;"> 
-                                    {{number_format(isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit, 2, ',', '.')}}
-                                    <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit}}" style="display:none;"/>
+                                    <div id="txtprcitem{{$aux_nfila}}" name="txtprcitem{{$aux_nfila}}">{{number_format(isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit, 2, ',', '.')}}</div>
+                                    <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control preciounititem" value="{{isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit}}" valueorig="{{isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit}}" style="display:none;" item="{{$aux_nfila}}"/>
                                     <input type="text" name="prcitem[]" id="prcitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->prcitem : $NVDet->preciounit}}" style="display:none;"/>
                                 </td>
                                 <td style="display:none;" name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
@@ -448,8 +459,8 @@
                                     <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? 0 : $NVDet->precioxkiloreal}}" style="display:none;"/>
                                 </td>
                                 <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCFTD" style="text-align:right"> 
-                                    {{number_format(isset($dteguiadesp) ? $detalle->montoitem : $aux_subtotal, 0, ',', '.')}}
-                                    <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->montoitem : $aux_subtotal}}" style="display:none;"/>
+                                    <div id="txtmontoitem{{$aux_nfila}}" name="txtmontoitem{{$aux_nfila}}">{{number_format(isset($dteguiadesp) ? $detalle->montoitem : $aux_subtotal, 0, ',', '.')}}</div>
+                                    <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->montoitem : $aux_subtotal}}" valueorig="{{isset($dteguiadesp) ? $detalle->montoitem : $aux_subtotal}}" style="display:none;"/>
                                     <input type="text" name="montoitem[]" id="montoitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->montoitem : $aux_subtotal}}" style="display:none;"/>
                                 </td>
                             </tr>
