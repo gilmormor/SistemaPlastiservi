@@ -225,10 +225,12 @@ $(document).ready(function () {
             </a>|
             <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
                 <span class="fa fa-upload text-danger"></span>
-            </a>|
-            <a onclick="anulardte(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro" data-toggle="tooltip">
-                <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
+            /*ELIMINAR BOTON ANULAR FACTURA, LAS FACTURAS DESPUES DE GENERADAS NO SE PUEDEN ANULAR, SOLO SE PUEDEN ANULAR CON NOTA DE CREDITO
+            `|<a onclick="anulardte(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro" data-toggle="tooltip">
+                <span class="glyphicon glyphicon-remove text-danger"></span>
+            </a>`
+            */
             $('td', row).eq(16).html(aux_text);
         }
     });
