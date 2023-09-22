@@ -22,6 +22,7 @@ use App\Models\DespachoOrdDet_InvBodegaProducto;
 use App\Models\DespachoOrdRec;
 use App\Models\DespachoSol;
 use App\Models\DespachoSolDet;
+use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
@@ -1166,6 +1167,7 @@ class DespachoOrdController extends Controller
                     <th class='textcenter'>Guia</th>
                     <th class='textcenter'>FecFact</th>
                     <th class='textcenter'>Nfact</th>
+                    <th style='text-align:right'>Total</th>
                 </tr>
             </thead>
             <tbody>";
@@ -1174,6 +1176,26 @@ class DespachoOrdController extends Controller
             foreach ($notaventa->despachoords as $despachoord) {
                 //VALIDAR QUE NO ESTE ANULADA LA OD
                 if(!isset($despachoord->despachoordanul)){
+                    $aux_enlaceguia = "";
+                    if(!is_null($despachoord->guiadespacho) and !empty($despachoord->guiadespacho)){
+                        $aux_numguia = $despachoord->guiadespacho;
+                        $aux_enlaceguia = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfGD($aux_numguia,\"\",\"myModalTablaOD\")' data-original-title='Guia Despacho'>
+                            $aux_numguia
+                        </a>";
+                    }
+                    $aux_enlacefactura = "";
+                    $aux_totalFact = "";
+                    if(!is_null($despachoord->numfactura) and !empty($despachoord->numfactura)){
+                        $dte = Dte::where("nrodocto",$despachoord->numfactura)->get();
+                        $dte = Dte::findOrFail($dte[0]->id);
+                        $aux_numfac = $despachoord->numfactura;
+                        $nrodocto_str = $dte->foliocontrol->nombrepdf . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT);
+                        $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFAC(\"$nrodocto_str\",\"\",\"myModalTablaOD\")' data-original-title='Factura'>
+                            $dte->nrodocto
+                        </a>";
+                        $aux_totalFact = number_format($dte->mnttotal, 0, ",", ".");
+                    }
+
                     $tab1 .=
                         "<tr id='filaord$i' name='filaord$i'>
                         <td id='id$i' name='id$i'>
@@ -1183,9 +1205,10 @@ class DespachoOrdController extends Controller
                         </td>
                         <td id='fechahoraord$i' name='fechahoraord$i'>" . date('d/m/Y', strtotime($despachoord->created_at)) . "</td>
                         <td style='text-align:left'>". $despachoord->notaventa->cliente->razonsocial ."</td>
-                        <td class='textcenter'>" . $despachoord->guiadespacho ." </td>
+                        <td class='textcenter'>" . $aux_enlaceguia ." </td>
                         <td class='textcenter'>" . date('d/m/Y', strtotime($despachoord->fechafactura)) . "</td>
-                        <td class='textcenter'>" . $despachoord->numfactura . "</td>    
+                        <td class='textcenter'>" . $aux_enlacefactura . "</td>
+                        <td style='text-align:right'>". $aux_totalFact ."</td>
                     </tr>";
                 }
             }
