@@ -50,6 +50,7 @@ class DteFacturaController extends Controller
     public function index()
     {
         can('listar-dte-factura-gd');
+        dd(env('APP_URLSII'));
         return view('dtefactura.index');
     }
 

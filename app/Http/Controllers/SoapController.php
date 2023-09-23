@@ -118,9 +118,9 @@ class SoapController extends Controller
     public function Carga_TXTDTE($ArchivoTXT,$TipoArchivo)
     {
         try{
-            //$soapclient = new SoapClient(env('APP_URLSII')); //AMBIENTE PRUEBA
+            $soapclient = new SoapClient(env('APP_URLSII'));
             //$soapclient = new SoapClient('http://bes-cert.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRUEBA
-            $soapclient = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
+            //$soapclient = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
             $response = $soapclient->Carga_TXTDTE([
                 "ArchivoTXT" => $ArchivoTXT,
                 "TipoArchivo" => $TipoArchivo
@@ -134,9 +134,9 @@ class SoapController extends Controller
 
     public function Solicitar_Folio($RutEmpresa,$TipoDocto){
         try{
-            //$soapFolio = new SoapClient(env('APP_URLSII')); //AMBIENTE PRUEBA
+            $soapFolio = new SoapClient(env('APP_URLSII'));
             //$soapFolio = new SoapClient('http://bes-cert.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRUEBA
-            $soapFolio = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
+            //$soapFolio = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
             $response = $soapFolio->Solicitar_Folio([
                 "RutEmpresa" => $RutEmpresa,
                 "TipoDocto" => $TipoDocto
@@ -149,9 +149,9 @@ class SoapController extends Controller
 
     public function Estado_DTE($RutEmpresa,$TipoDocto,$NroDocto){
         try{
-            //$soapFolio = new SoapClient(env('APP_URLSII')); //AMBIENTE PRUEBA
+            $soapFolio = new SoapClient(env('APP_URLSII'));
             //$soapFolio = new SoapClient('http://bes-cert.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRUEBA
-            $soapFolio = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
+            //$soapFolio = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
             $response = $soapFolio->Estado_DTE([
                 "RUTEmpresa" => $RutEmpresa,
                 "TipoDocto" => $TipoDocto,
@@ -170,9 +170,9 @@ class SoapController extends Controller
 
     public function Reimprimir_DoctoDTE($RutEmpresa,$TipoDocto,$NroDocto){
         try{
-            //$soapFolio = new SoapClient(env('APP_URLSII')); //AMBIENTE PRUEBA
+            $soapFolio = new SoapClient(env('APP_URLSII'));
             //$soapFolio = new SoapClient('http://bes-cert.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRUEBA
-            $soapFolio = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
+            //$soapFolio = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
             $response = $soapFolio->Reimprimir_DoctoDTE([
                 "RUTEmpresa" => $RutEmpresa,
                 "TipoDocto" => $TipoDocto,
