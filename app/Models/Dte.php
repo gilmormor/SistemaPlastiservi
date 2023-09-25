@@ -209,11 +209,20 @@ class Dte extends Model
         if(!isset($request->fechad) or empty($request->fechad) or empty($request->fechah)){
             $aux_condFecha = " true";
         }else{
+            /*
             $fecha = date_create_from_format('d/m/Y', $request->fechad);
             $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
             $fecha = date_create_from_format('d/m/Y', $request->fechah);
             $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
             $aux_condFecha = "dte.fechahora>='$fechad' and dte.fechahora<='$fechah'";
+            */
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d');
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d');
+            $aux_condFecha = "dte.fchemis>='$fechad' and dte.fchemis<='$fechah'";
+
+
         }
         if(!isset($request->rut) or empty($request->rut)){
             $aux_condrut = " true";
@@ -294,7 +303,7 @@ class Dte extends Model
             $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
         }
     
-        $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,dte.mnttotal,
+        $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,dte.mnttotal,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as nvoc_id,
         if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as nvoc_file,
         dte.centroeconomico_id,dte.indtraslado,
@@ -2272,6 +2281,31 @@ class Dte extends Model
         //dd($sql);
         $arrays = DB::select($sql);
         return $arrays;
+    }
+
+    public static function buscarnrodocto($request){
+        $dte = Dte::where('nrodocto' ,'=',$request->nrodocto)
+                    ->where('foliocontrol_id' ,'=',$request->foliocontrol_id)->get();
+        $sql = "SELECT *
+            FROM dte
+            WHERE nrodocto = $request->nrodocto
+            AND foliocontrol_id = $request->foliocontrol_id
+            and ISNULL(dte.deleted_at);";
+        $datas = DB::select($sql);
+        //dd($datas);
+        if(count($datas) > 0){
+            return response()->json([
+                'respuesta' => 1,
+                'Mensaje' => 'Encontrado',
+                'data' => $datas[0]
+            ]);
+        }else{
+            return response()->json([
+                'respuesta' => 0,
+                'Mensaje' => 'No encontrado',
+                'data' => $datas
+            ]);
+        }
     }
 
 }

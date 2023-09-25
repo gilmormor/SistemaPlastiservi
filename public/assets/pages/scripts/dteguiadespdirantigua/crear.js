@@ -36,9 +36,15 @@ $(document).ready(function () {
     }).datepicker("setDate");
 	$("#nrodocto").numeric();
 
+
 	iniciarFileinput();
 
 	totalizar();
+	/*
+	aux_staprodxcli = true;
+	aux_DivVerTodosProd = true;
+	aux_DivchVerAcuTec = false;
+	*/
 });
 
 function iniciarFileinput(){
@@ -253,8 +259,7 @@ $("#rut").blur(function(){
 
 							$("#formapago_desc").val(respuesta.cliente[0].formapago_desc);
 							$("#plazopago").val(respuesta.cliente[0].plazopago_dias);
-							$("#fchvenc").val("");
-							//$("#fchemis").change();
+							$("#fchemis").change();
 							$("#ids").val("1");
 							agregarFila();
 							
@@ -346,7 +351,7 @@ function blanquearDatos(){
 	$("#fchvenc").val("");
 	$("#vendedor_id").val("");
 	$("#centroeconomico_id").val("");
-	$("#hep").val("");
+	$("#ot").val("");
 	$("#obs").val("");
 	$("#oc_id").val("");
 	$('.select2').trigger('change');
@@ -369,7 +374,7 @@ function agregarFila() {
 			aux_nroitem +
 		'</td>' +
 		'<td style="text-align:center" name="producto_idTD' + aux_nfila + '" id="producto_idTD' + aux_nfila + '" >' +
-			'<input type="text" name="vlrcodigo[]" id="vlrcodigo' + aux_nfila + '" onblur="onBlurProducto_id(this)" class="form-control numerico itemrequerido" value="" maxlength="4" onkeyup="buscarProdKeyUp(this,event)" style="text-align:right" item="' + aux_nfila +'" title="Codigo Producto(Presione F2 para Buscar Producto)" placeholder="F2 Buscar"/>' +
+			'<input type="text" name="vlrcodigo[]" id="vlrcodigo' + aux_nfila + '" onblur="onBlurProducto_id(this)" class="form-control numerico itemrequerido vlrcodigo" value="" maxlength="4" onkeyup="buscarProdKeyUp(this,event)" style="text-align:right" item="' + aux_nfila +'" title="Codigo Producto(Presione F2 para Buscar Producto)" placeholder="F2 Buscar"/>' +
 			'<input type="text" name="producto_id[]" id="producto_id' + aux_nfila + '" class="form-control numerico" value="" maxlength="4" onkeyup="buscarProdKeyUp(this,event)" style="text-align:right;display:none;"/>' +
 			'<input type="text" name="nrolindet[]" id="nrolindet' + aux_nfila + '" class="form-control" value="' + aux_nroitem + '" style="display:none;"/>' +
 		'</td>' +
@@ -506,7 +511,6 @@ function copiar_codprod(id,codintprod){
 
 function onBlurProducto_id(vlrcodigo){
 	objvlrcodigo = $("#" + vlrcodigo["id"]);
-	//console.log(objvlrcodigo);
 	llenarDatosProd(objvlrcodigo);
 	//console.log(vlrcodigo["id"]);
 }
@@ -553,6 +557,7 @@ $(".form-horizontal").on("submit", function(event){
 		return false;
 	}
 	//if (($('#oc_id').val().length != 0) && (($('#oc_file').val().length == 0) && ($('#oc_file').attr("data-initial-preview").length == 0))) {
+	/*
 	if (($('#oc_id').val().length != 0) && (aux_ocarchivo.length == 0)) {
 		alertify.error("El campo Adjuntar OC es requerido cuando Nro OrdenCompra está presente.");
 		$("#oc_file-error").show();
@@ -561,6 +566,7 @@ $(".form-horizontal").on("submit", function(event){
 		//$('#oc_file').prop('required', true);
 		return false;
 	}
+	*/
 });
 
 function procesar(id){
@@ -570,7 +576,7 @@ function procesar(id){
         updated_at : $("#updated_at" + id).html(),
         _token: $('input[name=_token]').val()
     };
-    var ruta = '/dtefacturadir/procesar';
+    var ruta = '/dteguiadespdirantigua/procesar';
     //var ruta = '/guiadesp/dteguiadesp';
     swal({
         title: '¿ Procesar DTE Factura ?',
@@ -644,3 +650,39 @@ function delitem(fila){
 		}
 	});
 }
+
+$("#nrodocto").blur(function(){
+	aux_nrodocto = $.trim($("#nrodocto").val());
+	$("#nrodocto").val(aux_nrodocto);
+	if(aux_nrodocto != "" ){
+		var data = {
+			nrodocto: $("#nrodocto").val(),
+			foliocontrol_id: 2,
+			_token: $('input[name=_token]').val()
+		};
+		$.ajax({
+			url: '/dteguiadespdirantigua/buscarnrodocto',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				if(respuesta.respuesta == 1){
+					swal({
+						title: 'Guia despacho N°.' +respuesta.data.nrodocto+ ' ya existe.',
+						text: "",
+						icon: 'error',
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							//$("#oc_id").focus();
+						}
+					});
+					$("#nrodocto").val("");
+				
+				}
+			}
+		});
+	
+	}
+});

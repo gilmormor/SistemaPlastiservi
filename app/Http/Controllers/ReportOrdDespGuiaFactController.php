@@ -690,7 +690,7 @@ function consultaorddesp($request){
 
             //and despachoord.id not in (SELECT despachoord_id from despachoordanul where isnull(deleted_at))
 
-    //dd($sql);
+    dd($sql);
     $datas = DB::select($sql);
 
     return $datas;
