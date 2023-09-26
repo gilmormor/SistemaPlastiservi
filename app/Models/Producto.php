@@ -946,10 +946,19 @@ class Producto extends Model
             $aux_areaproduccion_idCond = " categoriaprod.areaproduccion_id in ($aux_areaproduccionid) ";
         }
 
+        if(!isset($request->rut) or empty($request->rut)){
+            $aux_cliente_producto_sql = "";
+            $aux_campoClienteID = "";
+        }else{
+            $aux_campoClienteID = "cliente_producto.cliente_id,";
+            $aux_cliente_producto_sql = "INNER JOIN cliente_producto
+            ON cliente_producto.producto_id = producto.id
+            INNER JOIN cliente
+            ON cliente.id = cliente_producto.cliente_id AND cliente.rut = $request->rut AND isnull(cliente.deleted_at)";
+        }
 
 
-
-        $sql = "SELECT producto.id as producto_id,producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
+        $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
             producto.diamextmm,producto.diamextpg,
             producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,
             categoriaprod.nombre as categoria_nombre,categoriaprod.precio,categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,
@@ -965,6 +974,7 @@ class Producto extends Model
             ON categoriaprodsuc.sucursal_id = sucursal.id AND isnull(sucursal.deleted_at)
             LEFT JOIN acuerdotecnico
             ON producto.id = acuerdotecnico.producto_id AND isnull(acuerdotecnico.deleted_at)
+            $aux_cliente_producto_sql
             WHERE $aux_areaproduccion_idCond
             and $aux_producto_idCodn
             and $aux_categoriaprod_idCond

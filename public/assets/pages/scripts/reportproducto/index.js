@@ -50,9 +50,14 @@ $(document).ready(function () {
                         ${data.producto_id}
                     </a>`;
                     $('td', row).eq(0).html(aux_text);
-                    $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',0,"");');
-                }
+                    if (data.hasOwnProperty('cliente_id')) {
+                        aux_cliente_id = data.cliente_id;
+                    } else {
+                        aux_cliente_id = 0;
+                    }
     
+                    $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
+                }
                 $('td', row).eq(4).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');
                 $('td', row).eq(6).attr('data-order',data.espesor);
@@ -113,6 +118,7 @@ function datosproducto(){
         producto_id       : $("#producto_idPxP").val(),
         categoriaprod_id  : $("#categoriaprod_id").val(),
         areaproduccion_id : $("#areaproduccion_id").val(),
+        rut               : eliminarFormatoRutret($("#rut").val()),
         _token            : $('input[name=_token]').val()
     };
 
@@ -121,7 +127,8 @@ function datosproducto(){
     "&invbodega_id="+data1.invbodega_id +
     "&producto_id="+data1.producto_id +
     "&categoriaprod_id="+data1.categoriaprod_id +
-    "&areaproduccion_id="+data1.areaproduccion_id
+    "&areaproduccion_id="+data1.areaproduccion_id +
+    "&rut="+data1.rut
 
 
     var data = {
@@ -236,3 +243,14 @@ function exportarExcel() {
       }
     });
   }
+
+  $("#btnbuscarcliente").click(function(event){
+    $("#rut").val("");
+    $("#myModalBusqueda").modal('show');
+});
+function copiar_rut(id,rut){
+	$("#myModalBusqueda").modal('hide');
+	$("#rut").val(rut);
+	//$("#rut").focus();
+	$("#rut").blur();
+}

@@ -191,6 +191,7 @@ class AcuerdoTecnicoController extends Controller
             $aux_tituloreportte = "";
             //dd($request->cliente_id);
             $aux_nombreCliente = "";
+            $cliente = "";
             if($request->cliente_id != 0){
                 $cliente = Cliente::findOrFail($request->cliente_id);
                 $aux_nombreCliente = ' - '. $cliente->razonsocial;
@@ -210,9 +211,9 @@ class AcuerdoTecnicoController extends Controller
             //dd($empresa[0]['iva']);
             //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa'));
             if(env('APP_DEBUG')){
-                return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre'));
+                return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','request'));
             }
-            $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre'));
+            $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','request'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream(str_pad("IdProd_" . $acuerdotecnico->producto_id . " IdAT_" . $acuerdotecnico->id, 5, "0", STR_PAD_LEFT) . $aux_nombreCliente . '.pdf');
         }else{

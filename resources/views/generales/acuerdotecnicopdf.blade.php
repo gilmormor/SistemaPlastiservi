@@ -35,6 +35,31 @@
 			</td>
 		</tr>
 	</table>
+	@if (isset($cliente->telefono))
+		<table id="factura_cliente">
+			<tr>
+				<td class="info_cliente">
+					<div>
+						<span class="h3" style="margin-bottom: 0px;">Cliente</span>
+						<table class="datos_cliente" style="padding-top: 0px;">
+							<tr class="headtarial">
+								<td style="width:10% !important;"><strong>Rut:</strong> </td><td style="width:50%">{{number_format( substr ( $cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cliente->rut, strlen($cliente->rut) -1 , 1 )}}</td>
+								<td style="width:10% !important;"><strong>Teléfono:</strong> </td><td style="width:30%">{{$cliente->telefono}}</td>
+							</tr>
+							<tr class="headtarial">
+								<td style="width:10% !important;"><strong>Nombre:</strong> </td><td style="width:50%">{{$cliente->razonsocial}}</td>
+								<td style="width:10% !important;"><strong>Dirección:</strong> </td><td style="width:30%">{{$cliente->direccion}}</td>
+							</tr>
+							<tr class="headtarial">
+								<td style="width:10% !important;"><strong>Contacto:</strong> </td><td style="width:50%">{{$cliente->contactonombre}}</td>
+								<td style="width:10% !important;"><strong>Comuna:</strong> </td><td style="width:30%">{{$cliente->comuna->nombre}}</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>	
+	@endif
 	<table id="factura_cliente">
 		<tr>
 			<td class="info_cliente">
