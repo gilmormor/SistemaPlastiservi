@@ -43,6 +43,9 @@
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
+					<?php 
+						$aux_mnttotal = 0;
+					?>
 					@foreach($datas as $data)
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td style='text-align:center;width: 5% !important;'>{{$data->nrodocto}}</td>
@@ -52,8 +55,17 @@
 							<td style='text-align:right;width: 7% !important;'>{{number_format($data->mnttotal, 0, ",", ".")}}&nbsp;&nbsp;</td>
 							<td style='text-align:center;width: 6% !important;'>{{$data->oc_id}}</td>
 						</tr>
+						<?php 
+							$aux_mnttotal += $data->mnttotal;
+						?>
 					@endforeach
 				</tbody>
+				<tfoot id="detalle_totales">
+					<tr>
+						<th colspan='4' style='text-align:right'>TOTAL:&nbsp;&nbsp;&nbsp;&nbsp;</th>
+						<th style='text-align:right'>{{number_format($aux_mnttotal, 0, ",", ".")}}&nbsp;&nbsp;</th>
+					</tr>
+				</tfoot>
 		</table>
 	</div>
 </div>
