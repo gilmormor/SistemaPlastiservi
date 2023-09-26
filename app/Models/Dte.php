@@ -2173,9 +2173,9 @@ class Dte extends Model
             $aux_condvendedor_id = "dte.vendedor_id in ($request->vendedor_id)";
         }
 
-
+        
     
-        $sql = "SELECT dte.id,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
+        $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
         persona.rut as vendedor_rut, CONCAT(persona.nombre,' ',persona.apellido) as vendedor_nombre,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -2217,7 +2217,11 @@ class Dte extends Model
         sum((dtedet.montoitem * foliocontrol.signo)) as montoitem,
         categoriaprodgrupo.comisionventas,
         categoriaprodgrupo.comisionventas as porc_comision,
-        CEIL(sum((dtedet.montoitem * foliocontrol.signo)) * (categoriaprodgrupo.comisionventas/100)) as comision
+        CEIL(sum((dtedet.montoitem * foliocontrol.signo)) * (categoriaprodgrupo.comisionventas/100)) as comision,
+        acuerdotecnico.at_ancho,acuerdotecnico.at_largo,acuerdotecnico.at_largo,at_espesor,
+        materiaprima.nombre as materiaprima_nombre,materiaprima.desc as materiaprima_desc,
+        unidadmedida.nombre as unidadmedida_nombre,at_formatofilm,
+        sum(dtedet.qtyitem) as qtyitem,sum(dtedet.itemkg) as itemkg,sucursal.nombre as sucursal_nombre
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dtedet
@@ -2252,6 +2256,14 @@ class Dte extends Model
         ON dte.vendedor_id = vendedor.id
         LEFT JOIN persona
         ON vendedor.persona_id = persona.id
+        LEFT JOIN acuerdotecnico
+        ON producto.id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
+        LEFT JOIN materiaprima
+        ON materiaprima.id = acuerdotecnico.at_materiaprima_id and isnull(materiaprima.deleted_at)
+        INNER JOIN unidadmedida
+        on unidadmedida.id = dtedet.unidadmedida_id
+        INNER JOIN sucursal
+        ON sucursal.id = dte.sucursal_id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond

@@ -1387,3 +1387,10 @@ Route::get('dtefacturaanular/dtefacturaanularpage', 'DteFacturaAnularController@
 Route::get('dtefacturaanular/reporte', 'DteFacturaAnularController@reporte')->name('dtefacturaanular_reporte');
 Route::get('dtefacturaanular/exportPdf', 'DteFacturaAnularController@exportPdf')->name('dtefacturaanular_exportPdf');
 Route::get('dtefacturaanular/totalizarindex', 'DteFacturaAnularController@totalizarindex')->name('dtefacturaanular_totalizarindex');
+
+/*RUTAS REPORTE ESTADISTICA VENTAS DTE*/
+Route::get('reportdteestadisticaventa', 'ReportDTEEstadisticaVentasController@index')->name('reportdteestadisticaventa');
+Route::get('reportdteestadisticaventa/reportdteestadisticaventapage', 'ReportDTEEstadisticaVentasController@reportdteestadisticaventapage')->name('reportdteestadisticaventapage');
+Route::get('reportdteestadisticaventa/reporte', 'ReportDTEEstadisticaVentasController@reporte')->name('reportdteestadisticaventa_reporte');
+Route::get('reportdteestadisticaventa/exportPdf', 'ReportDTEEstadisticaVentasController@exportPdf')->name('reportdteestadisticaventa_exportPdf');
+Route::get('reportdteestadisticaventa/totalizarindex', 'ReportDTEEstadisticaVentasController@totalizarindex')->name('reportdteestadisticaventa_totalizarindex');
