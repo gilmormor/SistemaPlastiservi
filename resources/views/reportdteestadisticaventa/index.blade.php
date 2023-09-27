@@ -97,9 +97,11 @@ Estadistica Ventas
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
                             <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                            <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
-                                <i class='glyphicon glyphicon-print'></i> Reporte
-                            </button>
+                            @if (false)
+                                <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                                    <i class='glyphicon glyphicon-print'></i> Reporte
+                                </button>                                
+                            @endif
                             <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">Excel</button>
                         </div>
                     </form>
