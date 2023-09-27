@@ -170,6 +170,7 @@ $("#nrodoctoF").blur(function(){
 			data: data,
 			success: function (respuesta) {
 				bandera = true;
+				//console.log(respuesta.anulado);
 				if(respuesta.dte.length>0){
 					if(respuesta.dte[0].statusgen == 1){
 						if(respuesta.dtefacdet.length>0){
@@ -179,7 +180,7 @@ $("#nrodoctoF").blur(function(){
 						}	
 					}
 				}
-				if(bandera){
+				if(respuesta.anulado){
 					swal({
 						//title: aux_mensaje,
 						text: respuesta.mensaje,

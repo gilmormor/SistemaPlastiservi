@@ -909,12 +909,14 @@ class Dte extends Model
                 }
                 foreach ($dte->dtedters as $dtedter) {
                     if(!isset($dtedter->dte->dteanul)){
+                        /*
                         if($dtedter->dte->dtencnd->codref == 1){
                             unset($respuesta['dte'][0]);
                             //EL DOCUMENTO QUE SE BUSCA, PREVIAMENTE SE IDENTIFICA SI FUE ANULADO POR OTRO DOCUMENTO
                             $respuesta['mensaje'] = $dte->foliocontrol->desc . ":" . $request->nrodocto . " anulado por " . $dtedter->dte->foliocontrol->desc . ":" . $dtedter->dte->nrodocto;
                             return $respuesta;
                         }
+                        */
                         if(($dtedter->dte->foliocontrol_id == 5)){
                             if($dtedter->dte->dtencnd){
                                 //dd($dtedter->dte);
@@ -933,6 +935,7 @@ class Dte extends Model
                 $dtefactdets1 = $dte->dtedets;
                 $aux_saldomntneto = $dte->mntneto;
                 $aux_saldomntnetoband = 0;
+                $aux_nrodoctoQueAnula = [];
                 if(str_contains("NC,ND", $request->TipoDTE)){
                     if($dte->foliocontrol_id == 1 or $dte->foliocontrol_id == 7){
                         //dd($dte->dtedtefacasosiadas);
@@ -956,8 +959,22 @@ class Dte extends Model
                                 $aux_saldomntneto += ($dteAsoc->mntneto * $operador);
                                 $aux_saldomntnetoband++;
                             }
+                            if($aux_saldomntneto == 0){
+                                $aux_nrodoctoQueAnula = [
+                                    "id" => $dteAsoc->id,
+                                    "nrodocto" => $dteAsoc->nrodocto,
+                                    "foliocontrol_desc" => $dteAsoc->foliocontrol->desc,
+                                ];
+                            }
                         }
                     }
+                }
+                $respuesta['anulado'] = false;
+                if($aux_saldomntneto > 0){
+                    $aux_nrodoctoQueAnula = [];
+                }else{
+                    $respuesta['mensaje'] = $dte->foliocontrol->desc . ":" . $request->nrodocto . " anulado por " . $aux_nrodoctoQueAnula["foliocontrol_desc"] . ":" . $aux_nrodoctoQueAnula["nrodocto"];
+                    $respuesta['anulado'] = true;
                 }
                 $i = 0;
                 foreach ($dte->dtedets as $dtedet){
@@ -1000,6 +1017,8 @@ class Dte extends Model
                 $respuesta['totaloriginal'] = $dte->mntneto;
                 $respuesta['dtefacdet'] = $dte->dtedets;
                 $respuesta['totalmodificado'] = $aux_saldomntneto;
+                $respuesta['nrodoctoQueAnula'] = $aux_nrodoctoQueAnula;
+                
 
 
                 //hasta aqui la prueba

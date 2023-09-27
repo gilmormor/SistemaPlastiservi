@@ -325,9 +325,9 @@
                                     $at_ancho = $detalle->producto->acuerdotecnico->at_ancho;
                                     $at_largo = $detalle->producto->acuerdotecnico->at_largo;
                                     $at_espesor = $detalle->producto->acuerdotecnico->at_espesor;
-                                    $at_ancho = empty($at_ancho) ? "0.00" : $at_ancho;
-                                    $at_largo = empty($at_largo) ? "0.00" : $at_largo;
-                                    $at_espesor = empty($at_espesor) ? "0.00" : $at_espesor;
+                                    $at_ancho = empty($at_ancho) ? "0,00" : $at_ancho;
+                                    $at_largo = empty($at_largo) ? "0,00" : $at_largo;
+                                    $at_espesor = empty($at_espesor) ? "0,00" : $at_espesor;
                                     //$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
 
                                     $AcuTec = $detalle->producto->acuerdotecnico;

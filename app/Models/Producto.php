@@ -999,9 +999,9 @@ class Producto extends Model
                     $at_ancho = $acuerdotecnico->at_ancho;
                     $at_largo = $acuerdotecnico->at_largo;
                     $at_espesor = $acuerdotecnico->at_espesor;
-                    $at_ancho = empty($at_ancho) ? "0.00" : $at_ancho;
-                    $at_largo = empty($at_largo) ? "0.00" : $at_largo;
-                    $at_espesor = empty($at_espesor) ? "0.00" : $at_espesor;
+                    $at_ancho = empty($at_ancho) ? "0,00" : $at_ancho;
+                    $at_largo = empty($at_largo) ? "0,00" : $at_largo;
+                    $at_espesor = empty($at_espesor) ? "0,00" : $at_espesor;
                     //$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
 
                     $aux_formatofilm = $acuerdotecnico->at_formatofilm > 0 ? " " . number_format($acuerdotecnico->at_formatofilm, 2, ',', '.') . "Kg." : "";
