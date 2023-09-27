@@ -1394,3 +1394,17 @@ Route::get('reportdteestadisticaventa/reportdteestadisticaventapage', 'ReportDTE
 Route::get('reportdteestadisticaventa/reporte', 'ReportDTEEstadisticaVentasController@reporte')->name('reportdteestadisticaventa_reporte');
 Route::get('reportdteestadisticaventa/exportPdf', 'ReportDTEEstadisticaVentasController@exportPdf')->name('reportdteestadisticaventa_exportPdf');
 Route::get('reportdteestadisticaventa/totalizarindex', 'ReportDTEEstadisticaVentasController@totalizarindex')->name('reportdteestadisticaventa_totalizarindex');
+
+/*RUTAS GUIA DIRECTA DIRECTA ANTIGUA*/
+Route::get('dteguiadespdirantigua', 'DteGuiaDespDirAntiguaController@index')->name('dteguiadespdirantigua');
+Route::get('dteguiadespdirantiguapage', 'DteGuiaDespDirAntiguaController@dteguiadespdirantiguapage')->name('dteguiadespdirantiguapage');
+Route::get('dteguiadespdirantigua/totalizarindex', 'DteGuiaDespDirAntiguaController@totalizarindex')->name('dteguiadespdirantigua_totalizarindex');
+Route::get('dteguiadespdirantigua/crear', 'DteGuiaDespDirAntiguaController@crear')->name('crear_dteguiadespdirantigua');
+Route::post('dteguiadespdirantigua', 'DteGuiaDespDirAntiguaController@guardar')->name('guardar_dteguiadespdirantigua');
+Route::get('dteguiadespdirantigua/{id}/editar', 'DteGuiaDespDirAntiguaController@editar')->name('editar_dteguiadespdirantigua');
+Route::put('dteguiadespdirantigua/{id}', 'DteGuiaDespDirAntiguaController@actualizar')->name('actualizar_dteguiadespdirantigua');
+Route::delete('dteguiadespdirantigua/{id}', 'DteGuiaDespDirAntiguaController@eliminar')->name('eliminar_dteguiadespdirantigua');
+Route::get('dteguiadespdirantigua/listarguiadesp', 'DteGuiaDespDirAntiguaController@listarguiadesp')->name('dteguiadespdirantigua_listarguiadesp');
+Route::get('dteguiadespdirantigua/listarguiadesppage', 'DteGuiaDespDirAntiguaController@listarguiadesppage')->name('listarguiadesppage_dteguiadespdirantigua');
+Route::post('dteguiadespdirantigua/procesar', 'DteGuiaDespDirAntiguaController@procesar')->name('procesar_dteguiadespdirantigua');
+Route::post('dteguiadespdirantigua/buscarnrodocto', 'DteGuiaDespDirAntiguaController@buscarnrodocto')->name('buscarnrodocto_dteguiadespdirantigua');

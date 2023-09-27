@@ -28,7 +28,7 @@ $(document).ready(function () {
             "order": [[ 0, "asc" ]],
             'columns'     : [
                 {data: 'id'},
-                {data: 'fechahora'},
+                {data: 'fchemis'},
                 {data: 'razonsocial'},
                 {data: 'comunanombre'},
                 {data: 'nvoc_id'},
@@ -60,8 +60,8 @@ $(document).ready(function () {
                 }
                 $('td', row).eq(0).attr('data-order',data.id);
 
-                $('td', row).eq(1).attr('data-order',data.fechahora);
-                aux_fecha = new Date(data.fechahora);
+                $('td', row).eq(1).attr('data-order',data.fchemis);
+                aux_fecha = new Date(data.fchemis + " 00:00:00");
                 $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 
                 if(data.nvoc_file != "" && data.nvoc_file != null){
