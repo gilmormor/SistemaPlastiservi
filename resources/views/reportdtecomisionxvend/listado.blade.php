@@ -82,8 +82,8 @@
 						<td style='text-align:center'>{{$data->foliocontrol_doc}}</td>
 						<td style='text-align:center'>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
 						<td style='text-align:center'>{{$data->rut}}</td>
-						<td style='text-align:left'>{{$data->razonsocial}}</td>
-						<td style='text-align:left'>{{$data->nmbitem}}</td>
+						<td style='text-align:left;font-size: 8px;'>{{$data->razonsocial}}</td>
+						<td style='text-align:left;font-size: 8px;'>{{$data->nmbitem}}</td>
 						<td style='text-align:right'>{{number_format($data->montoitem, 0, ",", ".")}}</td>
 						<td style='text-align:right'>{{number_format($data->porc_comision, 2, ",", ".")}}</td>
 						<td style='text-align:right'>{{number_format(round($data->comision, 0), 0, ",", ".")}}&nbsp;&nbsp;</td>

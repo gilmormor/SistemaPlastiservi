@@ -274,8 +274,65 @@ function copiar_rut(id,rut){
 function btnpdf(data){
     //console.log(data);
     //alert('entro');
-    $('#contpdf').attr('src', '/reportdtecomisionxvend/exportPdf/'+data.data2);
-    $("#myModalpdf").modal('show');
+    /*
+    $.ajax({
+        type: "GET",
+        url: "/reportdtecomisionxvend/exportPdf/"+data.data2, // Ajusta la URL según tu estructura
+        success: function (data1) {
+            // Abre una nueva ventana del navegador para mostrar el PDF
+            var blob = new Blob([data], { type: 'application/pdf' });
+            var pdfUrl = URL.createObjectURL(blob);
+            window.open(pdfUrl, "_blank");
+        },
+        error: function () {
+            alert("Se produjo un error al generar el PDF.");
+        }
+    });
+    */
+
+
+    swal({
+        title: 'Ver!',
+        text: "",
+        icon: 'success',
+        buttons: {
+            si: {
+                text: "Descargar",
+                value: "1",
+            },
+
+            no: {
+                text: "Pantalla",
+                value: "2",
+            },
+            cancel: "Cancelar"
+        },
+    }).then((value) => {
+        console.log(value);
+        if(value){
+            switch (value) {
+
+                case "1":
+                    data.data2 += "&verpdf=" + value;
+                    aux_modal = 'hide';
+                    break;
+             
+                case "2":
+                    data.data2 += "&verpdf=" + value;
+                    aux_modal = 'show';
+                    break;
+                default:
+                  //swal("Got away safely!");
+            }
+            $('#contpdf').attr('src', '/reportdtecomisionxvend/exportPdf/'+data.data2);
+            $("#myModalpdf").modal(aux_modal);    
+        }
+    
+    });
+
+
+
+
 }
 
 function exportarExcel() {

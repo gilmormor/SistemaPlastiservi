@@ -65,20 +65,22 @@ class ReportDTEComisionxVendController extends Controller
             $aux_sucursalNombre = $sucursal->nombre;
             $request->merge(['sucursal_nombre' => $sucursal->nombre]);
         }
-
         if($datas){
-            
+            /*
             if(env('APP_DEBUG')){
                 return view('reportdtecomisionxvend.listado', compact('datas','empresa','usuario','request'));
             }
-            
+            */
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             //$pdf = PDF::loadView('reportdteestadocli.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
             $pdf = PDF::loadView('reportdtecomisionxvend.listado', compact('datas','empresa','usuario','request'));
-            //return $pdf->download('cotizacion.pdf');
+            if($request->verpdf == "1"){
+                return $pdf->download('comisionxvend.pdf');
+            }else{
+                return $pdf->stream("comisionxvend.pdf");
+            }
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("ReporteStockInv.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 
