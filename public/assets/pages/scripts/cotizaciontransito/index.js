@@ -20,6 +20,7 @@ $(document).ready(function () {
             {data: 'aprobobs',className:"ocultar"},
             {data: 'cliente_id',className:"ocultar"},
             {data: 'clientetemp_id',className:"ocultar"},
+            {data: 'updated_at',className:"ocultar"},
             {data: 'estado'},
             {data: 'pdfcot'}
         ],
@@ -76,12 +77,14 @@ $(document).ready(function () {
                     }
                 }    
             }
-
+            $('td', row).eq(7).html(data.updated_at);
+            $('td', row).eq(7).attr("id","updated_at"+data.id);
+            $('td', row).eq(7).attr("name","updated_at"+data.id);
             aux_text = 
                 "<a class='btn-xs tooltipsC "+aux_color+"' title='"+ aux_mensaje +"'>"+
                     "<span class='"+aux_icono+"' style='bottom: 0px;top: 2px;'></span>"+
                 "</a>";
-            $('td', row).eq(7).html(aux_text);
+            $('td', row).eq(8).html(aux_text);
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
                     "<i class='fa fa-fw fa-file-pdf-o'></i>"+
@@ -89,7 +92,7 @@ $(document).ready(function () {
                 "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>"+
                     "<i class='fa fa-fw fa-trash text-danger'></i>"+
                 "</a>";
-            $('td', row).eq(8).html(aux_text);
+            $('td', row).eq(9).html(aux_text);
             if ( data.contador * 1 > 0 ) {
                 //console.log(row);
                 ///$('tr').addClass('preciomenor');
@@ -110,7 +113,7 @@ $(document).ready(function () {
                     "</a>"
                 );
                 //$('td', row).parent().prop("title","Precio menor al valor en tabla")
-            }    
+            }
         }
     });
 

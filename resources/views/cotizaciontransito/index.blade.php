@@ -30,6 +30,7 @@ Cotización
                                 <th class="ocultar">aprobobs</th>
                                 <th class="ocultar">cliente_id</th>
                                 <th class="ocultar">clientetemp_id</th>
+                                <th class="ocultar">updated_at</th>
                                 <th class="width30">Estado</th>
                                 <th>PDF</th>
                             </tr>

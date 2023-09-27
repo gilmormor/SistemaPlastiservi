@@ -87,7 +87,8 @@ class CotizacionTransController extends Controller
                     (SELECT COUNT(*) 
                     FROM cotizaciondetalle 
                     WHERE cotizaciondetalle.cotizacion_id=T1.id and 
-                    cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador
+                    cotizaciondetalle.precioxkilo < cotizaciondetalle.precioxkiloreal) AS contador,
+                    T1.updated_at
                 FROM cotizacion T1 left join cliente
                 on T1.cliente_id = cliente.id
                 left join clientetemp
