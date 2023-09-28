@@ -1404,7 +1404,8 @@ function genpdfFAC(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
 	//let id_str = id.toString();
 	//id_str = id_str.padStart(8, "0");
 	//console.log(id);
-	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/'+id+nombre+'.pdf');
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/'+id+nombre+'.pdf' + queryString);
 	$("#myModalpdf").modal('show');
 }
 
@@ -1416,7 +1417,8 @@ function genpdfNC(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
 	}
 	let id_str = id.toString();
 	id_str = id_str.padStart(8, "0");
-	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T61FE'+id_str+nombre+'.pdf');
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T61FE'+id_str+nombre+'.pdf' + queryString);
 	$("#myModalpdf").modal('show');
 }
 
@@ -1428,7 +1430,8 @@ function genpdfND(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
 	}
 	let id_str = id.toString();
 	id_str = id_str.padStart(8, "0");
-	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T56FE'+id_str+nombre+'.pdf');
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T56FE'+id_str+nombre+'.pdf' + queryString);
 	$("#myModalpdf").modal('show');
 }
 
@@ -1539,8 +1542,11 @@ function verpdf3(nameFile,stareport,ruta,aux_venmodant = ""){
 					// Genera una cadena de consulta única utilizando la marca de tiempo actual
 					let queryString = '?timestamp=' + new Date().getTime();
 					// Concatena la cadena queryString de consulta al atributo src del iframe
-					$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile + queryString);
-					//Santa Ester //$('#contpdf').attr('src', '/storage/imagenes/' + ruta + '/'+nameFile);
+					if(ruta == ""){
+						$('#contpdf').attr('src', '/storage/imagenes/notaventa/'+nameFile + queryString);
+					}else{
+						$('#contpdf').attr('src', '/storage/imagenes/' + ruta + '/'+nameFile + queryString);
+					}
 					if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
 						$("#venmodant").val("");
 						if(aux_venmodant!=""){
@@ -1589,7 +1595,8 @@ function verdocadj(nameFile,carpera){
 		}).then((value) => {
 		});
 	}else{
-		$('#contpdf').attr('src', '/storage/imagenes/' + carpera + '/'+nameFile);
+		let queryString = '?timestamp=' + new Date().getTime();
+		$('#contpdf').attr('src', '/storage/imagenes/' + carpera + '/'+nameFile + queryString);
 		if((nameFile.indexOf(".pdf") > -1) || (nameFile.indexOf(".PDF") > -1) || (nameFile.indexOf(".jpg") > -1) || (nameFile.indexOf(".bmp") > -1) || (nameFile.indexOf(".png") > -1)){
 			$("#myModalpdf").modal('show');
 		}

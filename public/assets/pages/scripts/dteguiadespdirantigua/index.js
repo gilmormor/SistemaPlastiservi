@@ -77,9 +77,6 @@ $(document).ready(function () {
             `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
                 <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
             </a> | 
-            <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
-                <span class="fa fa-upload text-danger"></span>
-            </a> | 
             <a onclick="anularguiafact(${data.id},0,'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro" data-toggle="tooltip">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
