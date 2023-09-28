@@ -2242,14 +2242,14 @@ class Dte extends Model
         dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at,
         dtedet.producto_id,producto.diametro,claseprod.cla_nombre,producto.long,nmbitem,producto.tipounion,
         (dte.mnttotal * foliocontrol.signo) as mnttotal,
-        sum((dtedet.montoitem * foliocontrol.signo)) as montoitem,
+        sum(DISTINCT dtedet.montoitem * foliocontrol.signo) as montoitem,
         categoriaprodgrupo.comisionventas,
         categoriaprodgrupo.comisionventas as porc_comision,
-        CEIL(sum((dtedet.montoitem * foliocontrol.signo)) * (categoriaprodgrupo.comisionventas/100)) as comision,
+        CEIL(sum(DISTINCT dtedet.montoitem * foliocontrol.signo) * (categoriaprodgrupo.comisionventas/100)) as comision,
         acuerdotecnico.at_ancho,acuerdotecnico.at_largo,acuerdotecnico.at_largo,at_espesor,
         materiaprima.nombre as materiaprima_nombre,materiaprima.desc as materiaprima_desc,
         unidadmedida.nombre as unidadmedida_nombre,at_formatofilm,
-        sum(dtedet.qtyitem) as qtyitem,sum(dtedet.itemkg) as itemkg,sucursal.nombre as sucursal_nombre
+        sum(DISTINCT dtedet.qtyitem) as qtyitem,sum(DISTINCT dtedet.itemkg) as itemkg,sucursal.nombre as sucursal_nombre
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dtedet
