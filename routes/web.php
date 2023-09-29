@@ -1111,6 +1111,7 @@ Route::post('dteguiadesp/consultardteguiadesp', 'DteGuiaDespController@consultar
 Route::post('dteguiadesp/guiadespanul', 'DteGuiaDespController@guiadespanul')->name('guiadespanul_dteguiadesp');
 Route::post('dteguiadesp/volverGenDTE', 'DteGuiaDespController@volverGenDTE')->name('volverGenDTE_dteguiadesp');
 Route::post('dteguiadesp/procesar', 'DteGuiaDespController@procesar')->name('procesar_dteguiadesp');
+Route::post('dteguiadesp/guiadespanulsininv', 'DteGuiaDespController@guiadespanulsininv')->name('guiadespanulsininv_dteguiadesp');
 
 /*RUTAS REPORTE DTE GUIA DESPACHO*/
 Route::get('reportdteguiadesp', 'ReportDTEGuiaDespController@index')->name('reportdteguiadesp');
