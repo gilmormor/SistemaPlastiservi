@@ -195,6 +195,22 @@ $("#nrodoctoF").blur(function(){
 						}
 					});
 				}
+				if(bandera){
+					swal({
+						//title: aux_mensaje,
+						text: respuesta.mensaje,
+						icon: 'warning',
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+							$("#nrodoctoF").focus();
+						}
+					});
+				}
+
 			}
 		});
 	}

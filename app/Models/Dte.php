@@ -2890,7 +2890,9 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                     "<FchRef>" . $array_oc["fecha"] . "</FchRef>";
                     if($aux_RazonRefImp == false){
                         $aux_RazonRefImp = true;
-                        $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
+                        if($aux_RazonRef != "" and !is_null($aux_RazonRef)){
+                            $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
+                        }
                     }
                     $contenido .= "</Referencia>";    
                 }

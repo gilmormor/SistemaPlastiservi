@@ -101,7 +101,8 @@ class DteNDFacturaController extends Controller
                 $dtedet->unmditem = $request->unmditem[$i];
                 $dtedet->unidadmedida_id = $request->unidadmedida_id[$i];
                 $dtedet->prcitem = $request->prcitem[$i]; //$request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
-                $dtedet->montoitem = $request->montoitem[$i];
+                //$dtedet->montoitem = $request->montoitem[$i];
+                $dtedet->montoitem = round($dtedet->qtyitem * $dtedet->prcitem,0); //$request->montoitem[$i];
                 //$dtedet->obsdet = $request->obsdet[$i];
                 $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
                 $dtedet->itemkg = $aux_itemkg;
