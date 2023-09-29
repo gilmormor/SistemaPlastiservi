@@ -290,7 +290,7 @@ function btnpdf(data){
     });
     */
 
-
+/*
     swal({
         title: 'Ver!',
         text: "",
@@ -330,6 +330,9 @@ function btnpdf(data){
     
     });
 
+*/
+    $('#contpdf').attr('src', '/reportdtecomisionxvend/exportPdf/'+data.data2);
+    $("#myModalpdf").modal('show');    
 
 
 

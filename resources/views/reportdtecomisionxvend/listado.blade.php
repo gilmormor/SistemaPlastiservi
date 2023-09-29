@@ -8,28 +8,6 @@
 	use App\Models\Vendedor;
 ?>
 <div id="page_pdf">
-	<table id="factura_head">
-		<tr>
-			<td class="logo_factura">
-				<div>
-					<img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png")}}" style="max-width:1200%;width:auto;height:auto;">
-					<p>{{$empresa[0]['nombre']}}</p>					
-					<p>RUT: {{$empresa[0]['rut']}}</p>
-				</div>
-			</td>
-			<td class="info_empresa">
-			</td>
-			<td class="info_factura">
-				<div class="round">
-					<span class="h3">Comisión Ventas</span>
-					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
-					<p>Sucursal: {{$request->sucursal_nombre}}</p>
-					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
-				</div>
-			</td>
-		</tr>
-	</table>
-
 	<?php
 		$aux_vendedor_id = "";
 		$count = 0;
@@ -55,6 +33,33 @@
 				$aux_totalcomision = 0;
 				$vendedor = Vendedor::findOrFail($data->vendedor_id);
 			?>
+			@if ($count > 0)
+				<div style="page-break-before: always;">
+				</div>
+			@endif
+		
+			<table id="factura_head">
+				<tr>
+					<td class="logo_factura">
+						<div>
+							<img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png")}}" style="max-width:1200%;width:auto;height:auto;">
+							<p>{{$empresa[0]['nombre']}}</p>					
+							<p>RUT: {{$empresa[0]['rut']}}</p>
+						</div>
+					</td>
+					<td class="info_empresa">
+					</td>
+					<td class="info_factura">
+						<div class="round">
+							<span class="h3">Comisión Ventas</span>
+							<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
+							<p>Sucursal: {{$request->sucursal_nombre}}</p>
+							<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
+						</div>
+					</td>
+				</tr>
+			</table>
+		
 			<div class="round">
 				<table id="reporte_detalle">
 				<thead>
