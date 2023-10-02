@@ -9,6 +9,7 @@ use App\Models\DespachoSol_InvMov;
 use App\Models\Empresa;
 use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
+use App\Models\InvControl;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\Producto;
@@ -97,6 +98,21 @@ class InvBodPesajeaBodProdTermController extends Controller
     public function guardar(Request $request)
     {
         //can('guardar-pesaje-carro');
+        //dd($request);
+        $annomes = CategoriaGrupoValMes::annomes($request->annomes);
+        $invcontrolMes = InvControl::where('annomes','=',$annomes)
+                ->where('sucursal_id','=',$request->sucursal_id)
+                ->where('status','=',1);
+        if($invcontrolMes->count() > 0){
+            $sucursal = Sucursal::findOrFail($request->sucursal_id);
+            $anno = substr($annomes, 0, 4);  // Extraer los primeros cuatro caracteres (el año)
+            $mes = substr($annomes, 4);     // Extraer los últimos dos caracteres (el mes)
+            $mesanno = "$mes/$anno";
+            return redirect('invbodpesajeabodprodterm')->with([
+                'mensaje'=> "Mes y año $mesanno cerrado no permite movimientos. Sucursal: " . $sucursal->nombre,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
 
         $request["mesanno"] = $request->annomes;
         $request["producto_id"] = null;
@@ -106,6 +122,8 @@ class InvBodPesajeaBodProdTermController extends Controller
         $datas = InvMov::stocksql($request);
         foreach ($datas as $data) {
             $requestProd = new Request();
+            $requestProd["annomespredef"] = true;
+            $requestProd["annomes"] = CategoriaGrupoValMes::annomes($request->annomes);
             $requestProd["data_id"] = $data->invbodegaproducto_id;
             $requestProd["producto_id"] = $data->producto_id;
             $requestProd["invbodega_id"] = $data->invbodega_id;
@@ -135,6 +153,8 @@ class InvBodPesajeaBodProdTermController extends Controller
         $invmov = InvMov::create($invmov_array);       
         foreach ($datas as $data) {
             $requestProd = new Request();
+            $requestProd["annomespredef"] = true;
+            $requestProd["annomes"] = $annomes;
             $requestProd["data_id"] = $data->invbodegaproducto_id;
             $requestProd["producto_id"] = $data->producto_id;
             $requestProd["invbodega_id"] = $data->invbodega_id;

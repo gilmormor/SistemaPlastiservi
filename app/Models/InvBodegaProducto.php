@@ -28,7 +28,11 @@ class InvBodegaProducto extends Model
     
     public static function existencia($request){
         //$request["tipo"] es el valor que define que tipo de bodega se consulta, 1=Bodega normal de almacenaje. 2=Bodega de despago, de esta bodega sale el producto para la calle a traves de la Guia de despacho
-        $annomes = date("Ym");
+        if(isset($request->annomespredef) and $request->annomespredef and isset($request->annomes) and !empty($request->annomes) and $request->annomes != ""){
+            $annomes = $request->annomes;
+        }else{
+            $annomes = date("Ym");
+        }
         if($request["invbodegaproducto_id"]){
             $existencia = InvMov::selectRaw('SUM(cant) as cant')
                             ->join("invmovdet","invmov.id","=","invmovdet.invmov_id")
