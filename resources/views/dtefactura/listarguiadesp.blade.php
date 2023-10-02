@@ -286,4 +286,5 @@ Guia Despacho por Facturar
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.despachoanularguiafact')
+@include('generales.editarcampotex')
 @endsection

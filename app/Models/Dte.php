@@ -681,7 +681,7 @@ class Dte extends Model
         AND NOT ISNULL(dte.fchemis)
         AND $aux_conddtenotnull
         AND $aux_conddtedet
-        AND isnull(despachoord.numfactura)
+        and dte.id NOT IN (SELECT dteguiausada.dte_id FROM dteguiausada WHERE ISNULL(dteguiausada.deleted_at))
         AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
         order BY dte.nrodocto;";
         //dd($sql);
@@ -2890,7 +2890,9 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                     "<FchRef>" . $array_oc["fecha"] . "</FchRef>";
                     if($aux_RazonRefImp == false){
                         $aux_RazonRefImp = true;
-                        $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
+                        if($aux_RazonRef != "" and !is_null($aux_RazonRef)){
+                            $contenido .= "<RazonRef>$aux_RazonRef</RazonRef>";
+                        }
                     }
                     $contenido .= "</Referencia>";    
                 }

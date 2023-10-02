@@ -684,6 +684,35 @@ class DteGuiaDespController extends Controller
         ]);
     }
 
+    public function guiadespanulsininv(Request $request)
+    {
+        $dte = Dte::findOrFail($request->id);
+        if($request->updated_at != $dte->updated_at){
+            return [
+                'status' => 0,
+                'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                'tipo_alert' => 'error'
+            ];
+        }
+        $request->request->add(['usuario_id' => auth()->id()]);
+        $dteanul = DteAnul::create($request->all());
+        $dte->updated_at = date("Y-m-d H:i:s");
+        if($dte->save()){
+            return [
+                'status' => 1,
+                'mensaje'=>'Informacion procesada con exito!',
+                'tipo_alert' => 'success'
+            ];
+        }
+        //SI NO EJECUTA EL RETURN ANTERIOR, EJECUTA ESTE RETURN
+        return [
+            'status' => 0,
+            'mensaje'=>'No se actualizaron los datos, ocurrio un error al intentar guardar!',
+            'tipo_alert' => 'error'
+        ];
+    }
+
+
     public function consultarDteGuiaDesp(Request $request)
     {
         if ($request->ajax()) {

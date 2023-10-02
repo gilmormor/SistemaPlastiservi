@@ -42,6 +42,7 @@ $(document).ready(function () {
             $(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
             $(row).attr('nrodocto','fila' + data.id);
+            $(row).attr('nrodocto1',data.nrodocto);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
 
             $('td', row).eq(1).attr('data-order',data.fchemis);
@@ -152,11 +153,16 @@ $(document).ready(function () {
                             "</button>" +
                         "</a>|" +
                         */
-                        "<a onclick='anularguiafact(" + data.id + "," + data.despachoord_id + ")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Devolver Guia Despacho' data-toggle='tooltip'>" +
-                            "<button type='button' class='btn btn-warning btn-xs'>" +
-                                "<i class='fa fa-fw fa-reply'></i>"+
-                            "</button>" +
-                        "</a>";
+                        `<a onclick='anularguiafact("${data.id}","${data.despachoord_id}")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Devolver Guia Despacho' data-toggle='tooltip'>
+                            <button type='button' class='btn btn-warning btn-xs'>
+                                <i class='fa fa-fw fa-reply'></i>
+                            </button>
+                        </a>|
+                        <a onclick='anularguia("${data.id}","${data.despachoord_id}")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular Guia Despacho sin devolver a Orden y sin afectar Inventario' data-toggle='tooltip'>
+                            <button type='button' class='btn btn-danger btn-xs'>
+                                <i class='fa fa-fw fa-close'></i>
+                            </button>
+                        </a>`;
             $('td', row).eq(18).html(aux_text);
         }
     });
@@ -433,6 +439,13 @@ function ajaxRequest(data,url,funcion) {
 					Biblioteca.notificaciones('Registro no encontrado.', 'Plastiservi', 'error');
 				}
 			}
+            if(funcion=='guiadespanulsininv'){
+				$("#myModalEditarCampoTex").modal('hide');
+				if (respuesta.status == "1") {
+					$("#fila" + datatemp['nfila']).remove();
+				}
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+			} 
 		},
 		error: function () {
 		}
@@ -939,4 +952,74 @@ function consultaranularguiafact(guiadespacho){
     //$(".requeridos").keyup();
     quitarvalidacioneach();
     $("#myModalanularguiafact").modal('show');
+}
+
+
+function anularguia(id,despachoord_id){
+    console.log("entro");
+    quitarvalidacioneach();
+    $("#titeditarcampo").html("Observacion");
+    $("#lbleditarcampo").html("Observacion: Anular Guia " + $("#fila" + id).attr("nrodocto1"));    
+    $("#auxeditcampoT").attr('fila_id',id);
+    $("#myModalEditarCampoTex").modal('show');
+}
+
+$("#btnaceptarMT").click(function(event){
+	event.preventDefault();
+	$("#auxeditcampoN").val(1);
+	if(verificarDato(".valorrequerido"))
+	{
+		var data = {
+			id     : $("#auxeditcampoT").attr('fila_id'),
+            dte_id : $("#auxeditcampoT").attr('fila_id'),
+			nfila  : $("#auxeditcampoT").attr('fila_id'),
+            motanul_id : 5,
+            moddevgiadesp_id : "FC",
+			obs : $("#auxeditcampoT").val(),
+			updated_at : $("#updated_at" + $("#auxeditcampoT").attr('fila_id')).html(),
+			_token: $('input[name=_token]').val()
+		};
+		var ruta = '/dteguiadesp/guiadespanulsininv';
+		swal({
+			title: '¿ Seguro desea continuar ?',
+			text: "Esta acción no se puede deshacer!",
+				icon: 'warning',
+			buttons: {
+				cancel: "Cancelar",
+				confirm: "Aceptar"
+			},
+		}).then((value) => {
+			if (value) {
+				ajaxRequest(data,ruta,'guiadespanulsininv');
+			}
+		});	
+
+        /*
+		let auxeditcampoT = $("#auxeditcampoT").val();
+		//esto es para reemplazar el caracter comilla doble " de la cadena, para evitar que me trunque los valores en javascript al asignar a attr val 
+		auxeditcampoT = auxeditcampoT.replaceAll('"', "'");
+		id = $("#auxeditcampoT").attr('fila_id');
+
+		$("#myModalEditarCampoTex").modal('hide');
+        */
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+});
+
+function verificarDato(aux_nomclass)
+{
+	aux_resultado = true;
+	$(aux_nomclass).serializeArray().map(function(x){
+		aux_tipoval = $("#" + x.name).attr('tipoval');
+		if (validacion(x.name,aux_tipoval) == false)
+		{
+			//return false;
+			aux_resultado = false;
+
+		}else{
+			//return true;
+		}
+	});
+	return aux_resultado;
 }
