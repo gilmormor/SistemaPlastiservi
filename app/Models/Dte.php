@@ -311,13 +311,13 @@ class Dte extends Model
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,dtedte.dter_id,
         dteguiadesp.notaventa_id,dteguiadespnv.notaventa_id as dteguiadespnv_notaventa_id,
         despachoord.fechaestdesp,dteguiadesp.despachoord_id,despachoord.despachosol_id,
-        (SELECT dte1.nrodocto
+        (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
         FROM dtedte as dtedte1 INNER JOIN dte as dte1
         ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
         WHERE dtedte1.dter_id = dte.id
         AND (dte1.foliocontrol_id = 1) 
         AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
-        (SELECT foliocontrol.nombrepdf
+        (SELECT GROUP_CONCAT(DISTINCT foliocontrol.nombrepdf) AS nombrepdf
         FROM dtedte as dtedte1 INNER JOIN dte as dte1
         ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
         INNER JOIN foliocontrol
@@ -3113,7 +3113,7 @@ function consultaindex($dte_id){
     FROM dte AS dte1
     where dte1.id = dtedtefac.dter_id
     GROUP BY dte1.id) AS nrodocto_guiadesp,
-    (SELECT dte1.nrodocto
+    (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
     FROM dte AS dte1
     where dte1.id = dtedtenc.dtefac_id
     GROUP BY dte1.id) AS nrodocto_factura,

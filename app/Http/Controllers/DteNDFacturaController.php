@@ -496,7 +496,7 @@ function consultaindex($dte_id){
     FROM dte AS dte1
     where dte1.id = dtedtefac.dter_id
     GROUP BY dte1.id) AS nrodocto_guiadesp,
-    (SELECT dte1.nrodocto
+    (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
     FROM dte AS dte1
     where dte1.id = dtedtenc.dtefac_id
     GROUP BY dte1.id) AS nrodocto_factura,
