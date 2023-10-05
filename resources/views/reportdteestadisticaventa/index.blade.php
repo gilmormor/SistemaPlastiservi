@@ -121,7 +121,7 @@ Estadistica Ventas
                     <thead>
                         <tr>
                             <th class="width20 tooltipsC" title='Id'>ID</th>
-                            <th class='width30 tooltipsC' title='Factura'>DTE</th>
+                            <th class='width60 tooltipsC' title='Factura'>DTE</th>
                             <th class='width20 tooltipsC' title='Documento'>Doc</th>
                             <th class='width30 tooltipsC' title='Fecha'>Fecha</th>
                             <th class='width40'>RUT</th>

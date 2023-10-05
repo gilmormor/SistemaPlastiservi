@@ -1409,3 +1409,11 @@ Route::get('dteguiadespdirantigua/listarguiadesp', 'DteGuiaDespDirAntiguaControl
 Route::get('dteguiadespdirantigua/listarguiadesppage', 'DteGuiaDespDirAntiguaController@listarguiadesppage')->name('listarguiadesppage_dteguiadespdirantigua');
 Route::post('dteguiadespdirantigua/procesar', 'DteGuiaDespDirAntiguaController@procesar')->name('procesar_dteguiadespdirantigua');
 Route::post('dteguiadespdirantigua/buscarnrodocto', 'DteGuiaDespDirAntiguaController@buscarnrodocto')->name('buscarnrodocto_dteguiadespdirantigua');
+
+//RUTA LIBERAR GUIA DESPACHO USADA
+Route::get('dteguiadespusadaliberar', 'DteGuiaDespUsadaLiberarController@index')->name('dteguiadespusadaliberar');
+Route::get('dteguiadespusadaliberar/dteguiadespusadaliberarpage', 'DteGuiaDespUsadaLiberarController@dteguiadespusadaliberarpage')->name('dteguiadespusadaliberarpage');
+Route::get('dteguiadespusadaliberar/reporte', 'DteGuiaDespUsadaLiberarController@reporte')->name('dteguiadespusadaliberar_reporte');
+Route::get('dteguiadespusadaliberar/exportPdf', 'DteGuiaDespUsadaLiberarController@exportPdf')->name('dteguiadespusadaliberar_exportPdf');
+Route::get('dteguiadespusadaliberar/totalizarindex', 'DteGuiaDespUsadaLiberarController@totalizarindex')->name('dteguiadespusadaliberar_totalizarindex');
+Route::post('dteguiadespusadaliberar/liberarguiadesp', 'DteGuiaDespUsadaLiberarController@liberarguiadesp')->name('dteguiadespusadaliberar_liberarguiadesp');

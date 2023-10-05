@@ -302,6 +302,26 @@ class Dte extends Model
         }else{
             $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
         }
+
+        $aux_conddteguiausada = " true";
+        //dd(!empty($request->dteguiausada));
+        if(isset($request->dteguiausada) and !empty($request->dteguiausada)){
+            $aux_conddteguiausada = "dte.id in (SELECT dteguiausada.dte_id FROM dteguiausada WHERE ISNULL(dteguiausada.deleted_at))";
+        }
+
+        $aux_conddteguiausadaActasParaLiberar = " true";
+        //dd(!empty($request->dteguiausada));
+        if(isset($request->dteguiausadaActasParaLiberar) and !empty($request->dteguiausadaActasParaLiberar)){
+            $aux_conddteguiausadaActasParaLiberar = "ISNULL((SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
+            FROM dtedte as dtedte1 INNER JOIN dte as dte1
+            ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+            WHERE dtedte1.dter_id = dte.id
+            AND (dte1.foliocontrol_id = 1) 
+            and dte1.id in (SELECT vista_dtefacsaldoncnd.id FROM vista_dtefacsaldoncnd where vista_dtefacsaldoncnd.id and vista_dtefacsaldoncnd.mntnetoncnd_saldo>0)
+            AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))))";
+        }
+
+        //dd($aux_conddteguiausada);
     
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,dte.mnttotal,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as nvoc_id,
@@ -311,13 +331,13 @@ class Dte extends Model
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,dtedte.dter_id,
         dteguiadesp.notaventa_id,dteguiadespnv.notaventa_id as dteguiadespnv_notaventa_id,
         despachoord.fechaestdesp,dteguiadesp.despachoord_id,despachoord.despachosol_id,
-        (SELECT dte1.nrodocto
+        (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
         FROM dtedte as dtedte1 INNER JOIN dte as dte1
         ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
         WHERE dtedte1.dter_id = dte.id
         AND (dte1.foliocontrol_id = 1) 
         AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
-        (SELECT foliocontrol.nombrepdf
+        (SELECT GROUP_CONCAT(DISTINCT foliocontrol.nombrepdf) AS nombrepdf
         FROM dtedte as dtedte1 INNER JOIN dte as dte1
         ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
         INNER JOIN foliocontrol
@@ -326,7 +346,8 @@ class Dte extends Model
         AND (dte1.foliocontrol_id = 1) 
         AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nombrepdf,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
-        dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto
+        dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,dte.updated_at as dteupdated_at,
+        dteguiausada.id as dteguiausada_id,dteguiausada.updated_at as dteguiausadaupdated_at
         FROM dte INNER JOIN dtedet
         ON dte.id=dtedet.dte_id and isnull(dte.deleted_at) and isnull(dtedet.deleted_at)
         INNER JOIN dteguiadesp
@@ -365,6 +386,8 @@ class Dte extends Model
         ON dtedte_rel_guia.dter_id = dte_rel_guia.id AND (dte_rel_guia.foliocontrol_id = 2)  AND isnull(dte_rel_guia.deleted_at)
         LEFT JOIN dteguiadespnv
         ON dteguiadespnv.dte_id = dte.id
+        LEFT JOIN dteguiausada
+        ON dteguiausada.dte_id = dte.id AND isnull(dteguiausada.deleted_at)
         WHERE $aux_condproducto_id
         and $aux_condguiadesp_id
         and $vendedorcond
@@ -379,6 +402,8 @@ class Dte extends Model
         and $aux_aprobstatus
         and $aux_condsucurArray
         and $aux_sucursal_idCond
+        and $aux_conddteguiausada
+        and $aux_conddteguiausadaActasParaLiberar
         GROUP BY dte.id
         ORDER BY dte.id asc;";
         //dd($sql);
@@ -485,7 +510,7 @@ class Dte extends Model
         }
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,
-        cliente.razonsocial,
+        cliente.razonsocial,cliente.rut,cliente.razonsocial,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as oc_id,
         if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as oc_file,
         dteguiadesp.notaventa_id,

@@ -181,9 +181,9 @@ function consultarpage(aux_data){
                     aux_text += 
                     `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='${arr_foliocontroldesc_origen[i]}' onclick="genpdfFAC('${id_str}','')">
                         ${arr_nrodocto_origen[i]}
-                    </a>:
-                    <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='${arr_foliocontroldesc_origen[i]}' onclick="genpdfFAC('${id_str}','_cedible')">
-                        ${arr_nrodocto_origen[i]}
+                    </a>
+                    <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='${arr_foliocontroldesc_origen[i]} Cedible:${arr_nrodocto_origen[i]}' onclick="genpdfFAC('${id_str}','_cedible')">
+                        <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>`;
                     if((i+1) < arr_nrodocto_origen.length){
                         aux_text += ",";
@@ -201,9 +201,9 @@ function consultarpage(aux_data){
                     aux_text = 
                     `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc}" onclick="genpdfFAC('${id_str}','')">
                         ${data.nrodocto}
-                    </a>:
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc} Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
-                        ${data.nrodocto}
+                    </a>
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc} Cedible:${data.nrodocto}" onclick="genpdfFAC('${id_str}','_cedible')">
+                        <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>`;
                 }    
             }

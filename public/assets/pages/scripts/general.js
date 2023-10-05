@@ -3003,6 +3003,24 @@ function ajaxRequestGeneral(data,url,funcion) {
 					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
 				}
 			}
+			if(funcion=='liberarguiadesp'){
+				if (respuesta.id == 1) {
+                    //genpdfND(respuesta.nrodocto,"_U");
+                    $("#fila"+datatemp.nfila).remove();
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+                    swal({
+						title: respuesta.title,
+						text: respuesta.mensaje,
+						icon: 'error',
+						buttons: {
+							confirm: "Cerrar"
+						},
+					});
+					//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+				}
+				
+			}
 		},
 		error: function () {
 		}

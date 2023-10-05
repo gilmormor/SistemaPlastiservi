@@ -106,9 +106,9 @@ $(document).ready(function () {
                     aux_text = 
                         `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','')">
                             ${data.nrodocto}
-                        </a>:
+                        </a>
                         <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','_cedible')" style="padding-left: 0px;">
-                            ${data.nrodocto}
+                            <i class="fa fa-fw fa-file-pdf-o"></i>
                         </a>`;
                         if(data.guiaorigenprecio_nrodocto != null){
                             aux_text +=
@@ -126,9 +126,9 @@ $(document).ready(function () {
                     aux_text = 
                     `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFAC('${id_str}','')">
                         ${data.fact_nrodocto}
-                    </a>:
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
-                        ${data.fact_nrodocto}
+                    </a>
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.fact_nrodocto}" onclick="genpdfFAC('${id_str}','_cedible')">
+                        <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>`;
                 }
                 $('td', row).eq(9).html(aux_text);

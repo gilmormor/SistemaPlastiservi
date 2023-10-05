@@ -73,9 +73,9 @@ function consultarpage(aux_data){
                     aux_text = 
                     `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc}" onclick="genpdfFAC('${id_str}','')">
                         ${data.nrodocto}
-                    </a>:
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc} Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
-                        ${data.nrodocto}
+                    </a>
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible:${data.nrodocto}" onclick="genpdfFAC('${id_str}','_cedible')">
+                        <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>`;
                 }    
             }
