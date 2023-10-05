@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AcuerdoTecnico;
 use App\Models\AcuerdoTecnicoTemp;
+use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
@@ -207,13 +208,24 @@ class AcuerdoTecnicoController extends Controller
             $notaventaDetalles = $notaventa->notaventadetalles()->get();
             */
             $empresa = Empresa::orderBy('id')->get();
+            $tablas['certificado'] = Certificado::orderBy('id')->get();
+            $sql = "SELECT certificado.descripcion
+            FROM certificado
+            where certificado.id in ($acuerdotecnico->at_certificados)
+            order by certificado.id asc;";
+            $aux_certificados = DB::select($sql);
+            $certificado_array = [];
+            foreach($aux_certificados as $aux_certificado){
+                $certificado_array[] = $aux_certificado->descripcion;
+            }
+            $tablas['certificados'] = implode(", ", $certificado_array);
 
-            //dd($empresa[0]['iva']);
+            //dd($tablas['certificado']);
             //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa'));
             if(env('APP_DEBUG')){
-                return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','request'));
+                return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
             }
-            $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','request'));
+            $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream(str_pad("IdProd_" . $acuerdotecnico->producto_id . " IdAT_" . $acuerdotecnico->id, 5, "0", STR_PAD_LEFT) . $aux_nombreCliente . '.pdf');
         }else{

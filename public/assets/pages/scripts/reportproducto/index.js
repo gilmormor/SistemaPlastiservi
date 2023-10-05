@@ -55,6 +55,14 @@ $(document).ready(function () {
                     } else {
                         aux_cliente_id = 0;
                     }
+                    if(data.at_impresofoto != "" && data.at_impresofoto != null){
+                        aux_text += 
+                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2(\"at/${data.at_impresofoto}\",2)'>
+                                <i class="fa fa-fw fa-photo"></i>
+                            </a>`;
+                        $('td', row).eq(0).html(aux_text);
+                    }
+        
     
                     $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
                 }

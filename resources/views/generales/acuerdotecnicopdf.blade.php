@@ -257,5 +257,24 @@
 				</div>
 			</td>
 		</tr>
+		@if (isset($cliente->telefono))
+			<tr>
+				<td class="info_cliente">
+					<div>
+						<span class="h3" style="margin-bottom: 0px;">Certificados</span>
+						<table class="datos_cliente" style="padding-top: 0px;">
+							<tr class="headtarial">
+								<td style="width: 40% !important;">
+									<strong>Certificados:</strong> {{$tablas['certificados']}}
+								</td>
+								<td style="width: 40% !important;">
+									<strong>Otro:</strong> {{$acuerdotecnico->at_otrocertificado}}
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+		@endif
 	</table>
 </div>

@@ -954,7 +954,7 @@ class Producto extends Model
             $aux_cliente_producto_sql = "INNER JOIN cliente_producto
             ON cliente_producto.producto_id = producto.id
             INNER JOIN cliente
-            ON cliente.id = cliente_producto.cliente_id AND cliente.rut = $request->rut AND isnull(cliente.deleted_at)";
+            ON cliente.id = cliente_producto.cliente_id AND cliente.rut = '$request->rut' AND isnull(cliente.deleted_at)";
         }
 
 
@@ -962,7 +962,7 @@ class Producto extends Model
             producto.diamextmm,producto.diamextpg,
             producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,
             categoriaprod.nombre as categoria_nombre,categoriaprod.precio,categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,
-            producto.precioneto,acuerdotecnico.id as acuerdotecnico_id,
+            producto.precioneto,acuerdotecnico.id as acuerdotecnico_id,acuerdotecnico.at_impresofoto,
             categoriaprod.nombre as categoriaprod_nombre
             FROM producto INNER JOIN claseprod
             ON producto.claseprod_id=claseprod.id AND isnull(producto.deleted_at) AND isnull(claseprod.deleted_at)
