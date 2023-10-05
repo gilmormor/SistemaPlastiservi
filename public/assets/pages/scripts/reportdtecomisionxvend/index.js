@@ -612,6 +612,20 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     const endCol1 = 9;
     worksheet.mergeCells(2, startCol1, 2, endCol1);
 
+    aux_nombrearchivo = "comisionVendedores.xlsx";
+    //SI ES UN SOLO VENDEDOR TOMO EL NOMBRE DEL VENDEDOR Y LO ASIGNO AL NOMBR DEL ARCHIVO
+    // Selecciona el elemento <select> por su ID
+    var selectElement = $("#vendedor_id");
+    // Verifica cuántos elementos están seleccionados
+    var selectedOptions = selectElement.find("option:selected");
+    // Si solo un elemento está seleccionado
+    if (selectedOptions.length === 1) {
+    // Realiza alguna acción o muestra un mensaje
+        var aux_nombrearchivo = selectElement.find("option:selected").text();
+        aux_nombrearchivo = aux_nombrearchivo + ".xlsx"
+        //alert("Solo un elemento está seleccionado.");
+    }
+
     // Guardar el archivo
     workbook.xlsx.writeBuffer().then(function(buffer) {
       // Crear un objeto Blob para el archivo Excel
@@ -621,7 +635,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "comisionVendedores.xlsx";
+      a.download = aux_nombrearchivo;
       a.click();
 
       // Limpiar el objeto Blob
