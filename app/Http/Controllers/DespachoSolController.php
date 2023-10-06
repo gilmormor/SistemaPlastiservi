@@ -2936,7 +2936,7 @@ function consultasoldesp($request){
     if(isset($request->orden) and !empty($request->orden) and $request->orden === null){
         $aux_orden = "ORDER BY $request->orden";
     }
-    dd($aux_orden);
+    //dd($aux_orden);
     $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
             notaventa.oc_file,notaventa.sucursal_id,
             comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
