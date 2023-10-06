@@ -285,8 +285,8 @@ class CotizacionConsultaController extends Controller
 }
 
 function consulta($request){
+    $user = Usuario::findOrFail(auth()->id());
     if(empty($request->vendedor_id)){
-        $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
             ON vendedor.persona_id=persona.id

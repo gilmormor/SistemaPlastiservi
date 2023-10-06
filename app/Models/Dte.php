@@ -412,8 +412,8 @@ class Dte extends Model
     }
 
     public static function consultalistarguiadesppage($request){
+        $user = Usuario::findOrFail(auth()->id());
         if(empty($request->vendedor_id)){
-            $user = Usuario::findOrFail(auth()->id());
             $sql= 'SELECT COUNT(*) AS contador
                 FROM vendedor INNER JOIN persona
                 ON vendedor.persona_id=persona.id
@@ -570,8 +570,8 @@ class Dte extends Model
     }
 
     public static function consultadtedet($request){
+        $user = Usuario::findOrFail(auth()->id());
         if(empty($request->vendedor_id)){
-            $user = Usuario::findOrFail(auth()->id());
             $sql= 'SELECT COUNT(*) AS contador
                 FROM vendedor INNER JOIN persona
                 ON vendedor.persona_id=persona.id
@@ -724,8 +724,8 @@ class Dte extends Model
     public static function reportdtefac($request){
         $vendedorcond = " true ";
         if(isset($request->vendedor_id)){
+            $user = Usuario::findOrFail(auth()->id());
             if(empty($request->vendedor_id)){
-                $user = Usuario::findOrFail(auth()->id());
                 $sql= 'SELECT COUNT(*) AS contador
                     FROM vendedor INNER JOIN persona
                     ON vendedor.persona_id=persona.id
@@ -1583,8 +1583,8 @@ class Dte extends Model
     }
 
     public static function reportdtencnd($request){
+        $user = Usuario::findOrFail(auth()->id());
         if(empty($request->vendedor_id)){
-            $user = Usuario::findOrFail(auth()->id());
             $sql= 'SELECT COUNT(*) AS contador
                 FROM vendedor INNER JOIN persona
                 ON vendedor.persona_id=persona.id

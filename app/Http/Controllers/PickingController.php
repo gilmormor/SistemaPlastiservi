@@ -53,7 +53,6 @@ class PickingController extends Controller
     }
 
     public function reportesoldesp(Request $request){
-        
         //$respuesta = app(DespachoSolController::class)->reportesoldesp($request);
         $respuesta = reportesoldesp1($request);
         return $respuesta;
@@ -638,8 +637,9 @@ function reportesoldesp1($request){
 }
 
 function consultasoldesp($request){
+    //dd($request->vendedor_id);
+    $user = Usuario::findOrFail(auth()->id());
     if(empty($request->vendedor_id)){
-        $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
             ON vendedor.persona_id=persona.id
@@ -657,6 +657,7 @@ function consultasoldesp($request){
             $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
         }
     }else{
+        //dd("Entro aqui");
         if(is_array($request->vendedor_id)){
             $aux_vendedorid = implode ( ',' , $request->vendedor_id);
         }else{
@@ -666,6 +667,7 @@ function consultasoldesp($request){
 
         //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
     }
+    //dd($vendedorcond);
     $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
     if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
         $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";

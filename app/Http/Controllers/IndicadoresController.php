@@ -1826,8 +1826,8 @@ function consulta($request){
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
     }
 */
+    $user = Usuario::findOrFail(auth()->id());
     if(empty($request->vendedor_id)){
-        $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
             ON vendedor.persona_id=persona.id
@@ -2220,8 +2220,8 @@ function consultaODcerrada($request){
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
     }
 */
+    $user = Usuario::findOrFail(auth()->id());
     if(empty($request->vendedor_id)){
-        $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
             ON vendedor.persona_id=persona.id
@@ -2840,8 +2840,8 @@ function consultakilostipoentrega($request){
         $vendedorcond = " notaventa.vendedor_id in ($aux_vendedor) ";
     }
 */
+    $user = Usuario::findOrFail(auth()->id());
     if(empty($request->vendedor_id)){
-        $user = Usuario::findOrFail(auth()->id());
         $sql= 'SELECT COUNT(*) AS contador
             FROM vendedor INNER JOIN persona
             ON vendedor.persona_id=persona.id
