@@ -446,6 +446,7 @@ function btnpdf(numrep){
 
 $("#btnpdf2").click(function()
 {
+    aux_orden = (ordentablaGen($('#pendientesoldesp').DataTable()));
     aux_titulo = 'Pendientes Solicitud Despacho';
     data = datoslsd();
     cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
@@ -462,6 +463,7 @@ $("#btnpdf2").click(function()
             "&id=" + data.id +
             "&filtro=" + data.filtro +
             "&producto_id=" + data.producto_id +
+            "&orden=" + ordentablaGen($('#pendientesoldesp').DataTable()) +
             "&aux_titulo=" + aux_titulo;
     $('#contpdf').attr('src', '/despachosol/pdfpendientesoldesp/'+cadena);
     $("#myModalpdf").modal('show'); 

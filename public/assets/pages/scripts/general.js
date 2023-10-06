@@ -3192,3 +3192,23 @@ function activarCajasPreciokgUni(){
 		}
 	}
 }
+
+function ordentablaGen(aux_tabla){
+    var tabla = aux_tabla; //$('#tablacotizacion').DataTable();
+    var ordenActual = tabla.order(); //obtengo el array del orden actual de la tabla
+	aux_orden = "";
+    if(ordenActual == undefined){
+        aux_orden = "0,'1','asc'";
+    }else{
+        var encabezado = tabla.column(ordenActual[0][0]).header(); //en la posicion [0][0] esta el num de columna
+        var nombreCampo = encabezado.getAttribute('nombrecampo'); //a traves del atributo nombrecampo que asigne en php al crear la tabla en los encabezados
+        if(ordenActual[0][2]){
+            ordenActual[0][2] = nombreCampo;
+        }else{
+            ordenActual[0].push(nombreCampo); //inserto a array el nombre de campo por el cual quiero ordenar en la consulta SQL en php
+        }
+		aux_orden = ordenActual[0];
+        //$("#orden").val(ordenActual[0]); //Actualizo el valor del elemento orden para que lo envie a php    
+    }
+	return aux_orden;
+}

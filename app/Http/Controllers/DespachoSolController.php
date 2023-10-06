@@ -1638,6 +1638,7 @@ class DespachoSolController extends Controller
         $request->producto_id = $_GET["producto_id"];
         $request->filtro = $_GET["filtro"];
         $request->aux_titulo = $_GET["aux_titulo"];
+        $request->orden = $_GET["orden"];
 
         $datas = consultasoldesp($request);
 
@@ -2441,14 +2442,14 @@ function reportesoldesp1($request){
         $respuesta['tabla'] .= "<table id='pendientesoldesp' name='pendientesoldesp' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
         <thead>
             <tr>
-                <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
-                <th>Fecha</th>
-                <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
-                <th>Razón Social</th>
-                <th>Sucursal</th>
-                <th class='tooltipsC' title='Orden de Compra'>OC</th>
-                <th class='tooltipsC' title='Nota de Venta'>NV</th>
-                <th>Comuna</th>
+                <th nombrecampo='despachosol.id' class='tooltipsC' title='Solicitud de Despacho'>SD</th>
+                <th nombrecampo='despachosol.fechahora'>Fecha</th>
+                <th nombrecampo='despachosol.fechaestdesp' class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
+                <th nombrecampo='cliente.razonsocial'>Razón Social</th>
+                <th nombrecampo='sucursal.nombre'>Sucursal</th>
+                <th nombrecampo='notaventa.oc_id' class='tooltipsC' title='Orden de Compra'>OC</th>
+                <th nombrecampo='despachosol.notaventa_id' class='tooltipsC' title='Nota de Venta'>NV</th>
+                <th nombrecampo='comuna.nombre'>Comuna</th>
                 <th class='tooltipsC' title='Total Kg Pendientes'>Total Kg</th>
                 <th class='tooltipsC' title='Total $'>$</th>
                 <th class='tooltipsC' title='Vista Previa Orden Despacho'>VP</th>
@@ -2930,6 +2931,12 @@ function consultasoldesp($request){
                     AND $aux_notinNullSoldesp";
     //$aux_condactivas = "true";
 
+    $aux_orden = "ORDER BY despachosol.id DESC";
+    //dd($request->orden);
+    if(isset($request->orden) and !empty($request->orden) and $request->orden === null){
+        $aux_orden = "ORDER BY $request->orden";
+    }
+    dd($aux_orden);
     $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
             notaventa.oc_file,notaventa.sucursal_id,
             comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
@@ -2991,7 +2998,7 @@ function consultasoldesp($request){
             and isnull(despachosoldet.deleted_at)
             AND despachosol.sucursal_id in ($sucurcadena)
             GROUP BY despachosol.id
-            ORDER BY despachosol.id DESC;";
+            $aux_orden;";
 /*
 (select sum(cantsoldesp) as cantsoldesp
                     from despachosol inner join despachosoldet

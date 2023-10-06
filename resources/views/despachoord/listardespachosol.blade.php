@@ -35,7 +35,7 @@ Pendiente Solicitud Orden Despacho
             <div class="box-body">
                 <input type="hidden" name="sololectura" id="sololectura" value="{{old('sololectura', $tablashtml["sololectura"] ?? '0')}}">
                 <div class="row">
-                    <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
+                    <form id="form-general" action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
                         <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
