@@ -564,7 +564,7 @@ function exportarExcelLosPinos() {
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Formato","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
             aux_totalComision += registro.comision;
@@ -598,7 +598,7 @@ function exportarExcelLosPinos() {
                 registro.materiaprima_nombre, //"MateriaPrima",
                 registro.qtyitem, //"Cant",
                 registro.unidadmedida_nombre, //"UN"
-                registro.at_formatofilm, //,"Formato"
+                registro.vendedor_nombre, //,"Vendedor"
                 registro.itemkg, //,"Kg",
                 registro.montoitem, //"Neto",
                 registro.gru_nombre, //"Categoria",
@@ -663,6 +663,7 @@ function createExcelLosPinos(datosExcel) {
     ajustarcolumnaexcel(worksheet,"G");
     ajustarcolumnaexcel(worksheet,"H");
     ajustarcolumnaexcel(worksheet,"I");
+    ajustarcolumnaexcel(worksheet,"N");
     ajustarcolumnaexcel(worksheet,"Q");
     
     //Establecer negrilla a titulo de columnas Fila 4
@@ -682,8 +683,10 @@ function createExcelLosPinos(datosExcel) {
     columnhidden.hidden = true;
     columnhidden = worksheet.getColumn("K");
     columnhidden.hidden = true;
+    /*
     columnhidden = worksheet.getColumn("N");
     columnhidden.hidden = true;
+    */
 
     //AJUSTAR EL TEXTO CELDAS A4:AI4
     // Supongamos que deseas ajustar el texto en la fila 4 y hacer que las celdas en negrita
@@ -734,7 +737,7 @@ function createExcelLosPinos(datosExcel) {
     const columnU = worksheet.getColumn(21);
     columnU.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
-        cell.numFmt = "#,##0";
+        cell.numFmt = "#,##0.00";
         }
     });
 

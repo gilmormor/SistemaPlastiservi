@@ -2281,8 +2281,8 @@ class Dte extends Model
         acuerdotecnico.at_ancho,acuerdotecnico.at_largo,acuerdotecnico.at_largo,at_espesor,
         materiaprima.nombre as materiaprima_nombre,materiaprima.desc as materiaprima_desc,
         unidadmedida.nombre as unidadmedida_nombre,at_formatofilm,
-        sum(DISTINCT dtedet.qtyitem) as qtyitem,sum(DISTINCT dtedet.itemkg) as itemkg,sucursal.nombre as sucursal_nombre,
-        sum(DISTINCT dtedet.prcitem) as prcitem,
+        sum(DISTINCT dtedet.qtyitem * foliocontrol.signo) as qtyitem,sum(DISTINCT dtedet.itemkg * foliocontrol.signo) as itemkg,sucursal.nombre as sucursal_nombre,
+        sum(DISTINCT dtedet.prcitem * foliocontrol.signo) as prcitem,
         grupoprod.gru_nombre,categoriagrupovalmes.costo
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
