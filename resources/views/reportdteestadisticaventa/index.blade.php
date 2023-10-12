@@ -93,6 +93,23 @@ Estadistica Ventas
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label data-toggle='tooltip' title="Area de Producción">Area Prod:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="areaproduccion_id" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id" multiple>
+                                            @foreach($tablas['areaproduccions'] as $areaproduccion)
+                                                <option
+                                                    value="{{$areaproduccion->id}}"
+                                                    >
+                                                    {{$areaproduccion->nombre}}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+    
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
@@ -102,7 +119,12 @@ Estadistica Ventas
                                     <i class='glyphicon glyphicon-print'></i> Reporte
                                 </button>                                
                             @endif
-                            <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">Excel</button>
+                            @if (in_array(1, $tablas['sucFisXUsu']))
+                                <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcelSantaEster()">Excel SE</button>                            
+                            @endif
+                            @if (in_array(2, $tablas['sucFisXUsu']))
+                                <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcelLosPinos()">Excel LP</button>
+                            @endif
                         </div>
                     </form>
                 </div>

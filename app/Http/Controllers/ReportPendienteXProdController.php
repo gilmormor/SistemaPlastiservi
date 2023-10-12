@@ -33,7 +33,6 @@ class ReportPendienteXProdController extends Controller
     {
         can('reporte-pendiente-por-producto');
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
@@ -43,6 +42,10 @@ class ReportPendienteXProdController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
+        $areaproduccions = AreaProduccion::areaproduccionxusuario();
+        //dd($areaproduccions);
+        //$areaproduccions = AreaProduccion::orderBy('id')->get();
+
         $selecmultprod = 1;
         return view('reportpendientexprod.index', compact('giros','areaproduccions','tipoentregas','comunas','fechaAct','tablashtml'));
         //Santa Ester //return view('reportpendientexprod.index', compact('vendedores','vendedores1','giros','areaproduccions','tipoentregas','comunas','fechaAct','selecmultprod','tablashtml'));

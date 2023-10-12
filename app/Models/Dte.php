@@ -2141,7 +2141,7 @@ class Dte extends Model
             }    
         }
         */
-    
+        $fechaannomes = date('Ym');
         if(!isset($request->fechad) or !isset($request->fechah) or empty($request->fechad) or empty($request->fechah)){
             $aux_condFecha = " true";
         }else{
@@ -2149,6 +2149,7 @@ class Dte extends Model
             $fechad = date_format($fecha, 'Y-m-d');
             $fecha = date_create_from_format('d/m/Y', $request->fechah);
             $fechah = date_format($fecha, 'Y-m-d');
+            $fechaannomes = date_format($fecha, 'Ym');
             $aux_condFecha = "dte.fchemis>='$fechad' and dte.fchemis<='$fechah'";
         }
         if(!isset($request->rut) or empty($request->rut)){
@@ -2225,9 +2226,15 @@ class Dte extends Model
         }else{
             $aux_condvendedor_id = "dte.vendedor_id in ($request->vendedor_id)";
         }
+        $sucurJefAreaFis = Persona::sucursalFisica(auth()->id());
+        $sucurJefAreaFis = implode(', ', $sucurJefAreaFis);
+        $aux_condsucurJefAreaFis = "dte.sucursal_id in ($sucurJefAreaFis)";
+        if(!isset($request->areaproduccion_id) or empty($request->areaproduccion_id)){
+            $aux_condareaproduccion_id = " true ";
+        }else{
+            $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id in ($request->areaproduccion_id)";
+        }
 
-        
-    
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
         persona.rut as vendedor_rut, CONCAT(persona.nombre,' ',persona.apellido) as vendedor_nombre,
@@ -2274,7 +2281,9 @@ class Dte extends Model
         acuerdotecnico.at_ancho,acuerdotecnico.at_largo,acuerdotecnico.at_largo,at_espesor,
         materiaprima.nombre as materiaprima_nombre,materiaprima.desc as materiaprima_desc,
         unidadmedida.nombre as unidadmedida_nombre,at_formatofilm,
-        sum(DISTINCT dtedet.qtyitem) as qtyitem,sum(DISTINCT dtedet.itemkg) as itemkg,sucursal.nombre as sucursal_nombre
+        sum(DISTINCT dtedet.qtyitem) as qtyitem,sum(DISTINCT dtedet.itemkg) as itemkg,sucursal.nombre as sucursal_nombre,
+        sum(DISTINCT dtedet.prcitem) as prcitem,
+        grupoprod.gru_nombre,categoriagrupovalmes.costo
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dtedet
@@ -2317,6 +2326,10 @@ class Dte extends Model
         on unidadmedida.id = dtedet.unidadmedida_id
         INNER JOIN sucursal
         ON sucursal.id = dte.sucursal_id
+        LEFT JOIN grupoprod
+        ON producto.grupoprod_id = grupoprod.id
+        LEFT JOIN categoriagrupovalmes
+        ON categoriagrupovalmes.grupoprod_id = grupoprod.id and categoriagrupovalmes.annomes = '$fechaannomes' and isnull(categoriagrupovalmes.deleted_at)
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond
@@ -2329,6 +2342,8 @@ class Dte extends Model
         AND $aux_condstatusgen
         AND $aux_condvendedor_id
         AND $aux_condsucurArray
+        AND $aux_condsucurJefAreaFis
+        AND $aux_condareaproduccion_id
         AND NOT ISNULL(dte.nrodocto)
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
         $aux_groupby

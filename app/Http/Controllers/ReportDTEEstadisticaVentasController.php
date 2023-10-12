@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AreaProduccion;
 use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\Seguridad\Usuario;
@@ -27,6 +28,11 @@ class ReportDTEEstadisticaVentasController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablas['vendedores'] = Vendedor::selectvendedores();
+        $tablas['areaproduccions'] = AreaProduccion::areaproduccionxusuario();
+        $arreglo = $tablas['areaproduccions']->map(function ($area) {
+            return $area->attributesToArray();
+        })->toArray();
+        $tablas['sucFisXUsu'] = sucFisXUsu($users->persona);
         return view('reportdteestadisticaventa.index', compact('tablas'));
     }
 

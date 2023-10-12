@@ -174,6 +174,7 @@ function datosFac(orderby = "",aux_genexcel){
         groupby           : "",
         fechahoy          : "",
         genexcel          : aux_genexcel,
+        areaproduccion_id : $("#areaproduccion_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -187,6 +188,7 @@ function datosFac(orderby = "",aux_genexcel){
     "&foliocontrol_id="+data1.foliocontrol_id +
     "&orderby="+data1.orderby +
     "&genexcel="+data1.genexcel +
+    "&areaproduccion_id="+data1.areaproduccion_id +
     "&_token="+data1._token
 
     var data = {
@@ -277,7 +279,7 @@ function btnpdf(data){
     $("#myModalpdf").modal('show');
 }
 
-function exportarExcel() {
+function exportarExcelSantaEster() {
     var tabla = $('#tabla-data-consulta').DataTable();
     orderby = " order by foliocontrol.doc,dte.id ";
     data = datosFac(orderby,1);
@@ -312,7 +314,6 @@ function exportarExcel() {
         cellLengthRazonSoc = 0;
         cellLengthProducto = 0;
         filainifusionar = -1
-        arrayfusionarCelNomVend = [];
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
@@ -363,30 +364,7 @@ function exportarExcel() {
             datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto]);
         }
 
-/*
-        // Crear el libro de Excel
-        var libro = XLSX.utils.book_new();
-        var hoja = XLSX.utils.aoa_to_sheet(datosExcel);
-        XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
-
-        // Ajustar automáticamente el ancho de la columna A (columna con índice 0) al contenido:
-        if (!hoja['!cols']) hoja['!cols'] = [];
-        hoja['!cols'][3] = { width: cellLengthRazonSoc + 2};        
-        if (!hoja['!cols']) hoja['!cols'] = [];
-        hoja['!cols'][5] = { width: cellLengthProducto + 2};
-
-
-        arrayfusionarCelNomVend.forEach(function(fila) {
-            //console.log(celda);
-            const mergeRange = { s: { r: fila, c: 0 }, e: { r: fila, c: 3 } };
-            if (!hoja['!merges']) hoja['!merges'] = [];
-            hoja['!merges'].push(mergeRange);
-        });
-
-        // Generar el archivo Excel y descargarlo
-        XLSX.writeFile(libro, 'comisonxVend.xlsx');
-*/
-        createExcel(datosExcel,arrayfusionarCelNomVend);
+        createExcelSantaEster(datosExcel);
 
       },
       error: function(xhr, status, error) {
@@ -397,7 +375,7 @@ function exportarExcel() {
 
     // Llamar a la función para crear el archivo Excel
 
-  }
+}
 
   function getCellWidth(cellValue) {
     // Puedes ajustar un valor constante para el ancho mínimo que deseas asignar a la columna.
@@ -412,7 +390,7 @@ function exportarExcel() {
 
 
   // Función para crear el archivo Excel
-function createExcel(datosExcel,arrayfusionarCelNomVend) {
+function createExcelSantaEster(datosExcel) {
     // Crear un nuevo libro de trabajo y una nueva hoja
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Datos");
@@ -542,3 +520,452 @@ function ajustarcolumnaexcel(worksheet,columna){
     columnB.width = maxLengthB < 10 ? 10 : maxLengthB;
 
 }
+
+function exportarExcelLosPinos() {
+    var tabla = $('#tabla-data-consulta').DataTable();
+    orderby = " order by foliocontrol.doc,dte.id ";
+    data = datosFac(orderby,1);
+    // Obtener todos los registros mediante una solicitud AJAX
+    $.ajax({
+      url: "/reportdteestadisticaventa/reportdteestadisticaventapage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+      type: 'POST',
+      dataType: 'json',
+      success: function(data) {
+        if(data.datos.length == 0){
+            swal({
+                title: 'Información no encontrada!',
+                text: "",
+                icon: 'warning',
+                buttons: {
+                    confirm: "Aceptar"
+                },
+            }).then((value) => {
+                if (value) {
+                    //ajaxRequest(data,ruta,'accionnotaventa');
+                }
+            });
+            return 0;
+        }
+        //console.log(data);
+        // Crear una matriz para los datos de Excel
+        var datosExcel = [];
+        // Agregar los datos de la tabla al arreglo
+        aux_vendedor_id = "";
+		count = 0;
+
+        cellLengthRazonSoc = 0;
+        cellLengthProducto = 0;
+        filainifusionar = -1
+        //console.log(data);
+        aux_sucursalNombre = $("#sucursal_id option:selected").html();
+        aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
+        datosExcel.push(["Estadistica Ventas","","","","","","","","","","","","","","",data.fechaact]);
+        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","","","","","","",""]);
+        aux_totalMonto = 0;
+        aux_totalComision = 0;
+        datosExcel.push(["","","","","","","","","","","","","","",""]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Formato","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom"]);
+        data.datos.forEach(function(registro) {
+            aux_totalMonto += registro.montoitem;
+            aux_totalComision += registro.comision;
+            filainifusionar++;
+            aux_length = registro.razonsocial.toString().length
+            if(aux_length > cellLengthRazonSoc){
+                cellLengthRazonSoc = aux_length;
+            }
+            aux_length = registro.nmbitem.toString().length
+            if(aux_length > cellLengthProducto){
+                cellLengthProducto = aux_length;
+            }
+            aux_precioxkg = 0;
+            if(registro.itemkg>0){
+                aux_precioxkg = registro.montoitem/registro.itemkg;
+
+            }
+            aux_fecha = new Date(registro.fchemis + " 00:00:00");
+
+            var filaExcel = [
+                registro.foliocontrol_doc, //"Tipo Doc",
+                registro.nrodocto, //"NDoc",
+                fechaddmmaaaa(aux_fecha), //"Fecha",
+                registro.razonsocial, //"Cliente",
+                registro.rut, //"RUT",
+                registro.producto_id, //"CodProd",
+                registro.nmbitem, //"Producto",
+                registro.at_ancho, //"Ancho"
+                registro.at_largo, //,"Largo"
+                registro.at_espesor, //,"Espesor",
+                registro.materiaprima_nombre, //"MateriaPrima",
+                registro.qtyitem, //"Cant",
+                registro.unidadmedida_nombre, //"UN"
+                registro.at_formatofilm, //,"Formato"
+                registro.itemkg, //,"Kg",
+                registro.montoitem, //"Neto",
+                registro.gru_nombre, //"Categoria",
+                registro.prcitem, //"Precio",
+                registro.itemkg/registro.qtyitem, //"Peso Nominal",
+                registro.itemkg/registro.qtyitem, //"Peso Real",
+                0, //"Kg Desp",
+                aux_precioxkg, //"Precio x Kg"
+                registro.montoitem, //,"Venta $",
+                registro.costo, //"Costo Formula Nom",
+                "=L7-R7", //"Margen x Kg",
+                "=S7*O7", //"Margen Total",
+                "=J7*M7", //"Margen real ventas",
+                registro.itemkg, //"Kg Desp Nom"
+                registro.prcitem, //"Precio UniNom",
+                aux_precioxkg, //"Precio x Kg Nom",
+                registro.montoitem,//"Ventas $ Nom",
+                registro.costo, //"Costo Formula Nom",
+                0, //"Margen x Unid Nom",
+                0, //"Margen Total Nom"
+                0 //"Margen % peso Nom"
+            ];
+            aux_vendedor_id = registro.vendedor_id;
+            count++;
+
+            datosExcel.push(filaExcel);
+        });
+        if(aux_totalMonto > 0){
+            datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto,""]);
+        }
+
+        createExcelLosPinos(datosExcel);
+
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+
+
+    // Llamar a la función para crear el archivo Excel
+
+}
+
+function createExcelLosPinos(datosExcel) {
+    // Crear un nuevo libro de trabajo y una nueva hoja
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Datos");
+
+    // Insertar los datos en la hoja de trabajo
+    worksheet.addRows(datosExcel);
+
+    // Establecer negrita en la celda A1
+    //worksheet.getCell("A5").font = { bold: true };
+
+
+    // Ajustar automáticamente el ancho de la columna B al contenido
+    ajustarcolumnaexcel(worksheet,"C");
+    ajustarcolumnaexcel(worksheet,"D");
+    ajustarcolumnaexcel(worksheet,"E");
+    ajustarcolumnaexcel(worksheet,"F");
+    ajustarcolumnaexcel(worksheet,"G");
+    ajustarcolumnaexcel(worksheet,"H");
+    ajustarcolumnaexcel(worksheet,"I");
+    ajustarcolumnaexcel(worksheet,"Q");
+    
+    //Establecer negrilla a titulo de columnas Fila 4
+    const row6 = worksheet.getRow(4);
+    for (let i = 1; i <= 35; i++) {
+        cell = row6.getCell(i);
+        cell.font = { bold: true };
+        cell.autosize = true;
+    }
+
+    // Obtén el objeto de la columna y establece la propiedad hidden en true
+    columnhidden = worksheet.getColumn("H");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("I");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("J");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("K");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("N");
+    columnhidden.hidden = true;
+
+    //AJUSTAR EL TEXTO CELDAS A4:AI4
+    // Supongamos que deseas ajustar el texto en la fila 4 y hacer que las celdas en negrita
+    fila = 4;
+
+    // Iterar a través de las celdas en la fila y configurar el formato
+    for (let i = 1; i <= 35; i++) {
+        columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
+        const celda = worksheet.getCell(`${columna}${fila}`);
+        celda.alignment = { wrapText: true, vertical: 'middle' };
+        celda.autosize = true;
+    }    
+
+
+    // Recorrer la columna 7 y dar formato con punto para separar los miles
+    const columnG = worksheet.getColumn(16);
+    columnG.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna R y dar formato con punto para separar los miles
+    const columnR = worksheet.getColumn(18);
+    columnR.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna S y dar formato con punto para separar los miles
+    const columnS = worksheet.getColumn(19);
+    columnS.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Recorrer la columna T y dar formato con punto para separar los miles
+    const columnT = worksheet.getColumn(20);
+    columnT.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+    
+    // Recorrer la columna U y dar formato con punto para separar los miles
+    const columnU = worksheet.getColumn(21);
+    columnU.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna V y dar formato con punto para separar los miles
+    const columnV = worksheet.getColumn(22);
+    columnV.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Recorrer la columna W y dar formato con punto para separar los miles
+    const columnW = worksheet.getColumn(23);
+    columnW.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna X y dar formato con punto para separar los miles
+    const columnX = worksheet.getColumn(24);
+    columnX.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna Y y dar formato con punto para separar los miles
+    const columnY = worksheet.getColumn(25);
+    columnY.eachCell({ includeEmpty: true }, (cell) => {
+        cell.numFmt = "#,##0.00";
+    });
+    
+    // Recorrer la columna Z y dar formato con punto para separar los miles
+    const columnZ = worksheet.getColumn(26);
+    columnZ.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null) {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna AA y dar formato con punto para separar los miles
+    const columnAA = worksheet.getColumn(27);
+    columnAA.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null) {
+        cell.numFmt = "0%";
+        }
+    });
+
+    // Recorrer la columna AB y dar formato con punto para separar los miles
+    const columnAB = worksheet.getColumn(28);
+    columnAB.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Recorrer la columna AC y dar formato con punto para separar los miles
+    const columnAC = worksheet.getColumn(29);
+    columnAC.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna AD y dar formato con punto para separar los miles
+    const columnAD = worksheet.getColumn(30);
+    columnAD.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Recorrer la columna AE y dar formato con punto para separar los miles
+    const columnAE = worksheet.getColumn(31);
+    columnAE.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna AF y dar formato con punto para separar los miles
+    const columnAF = worksheet.getColumn(32);
+    columnAF.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna AG y dar formato con punto para separar los miles
+    const columnAG = worksheet.getColumn(33);
+    columnAG.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Recorrer la columna AH y dar formato con punto para separar los miles
+    const columnAH = worksheet.getColumn(34);
+    columnAH.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna AI y dar formato con punto para separar los miles
+    const columnAI = worksheet.getColumn(35);
+    columnAI.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "0%";
+        }
+    });
+    
+
+    // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
+    for (let i = 4; i <= datosExcel.length; i++) {
+        const cell8 = worksheet.getCell(i, 8);
+        cell8.alignment = { horizontal: "center", vertical: "middle" };
+        const cell9 = worksheet.getCell(i, 9);
+        cell9.alignment = { horizontal: "center", vertical: "middle" };
+        const cell10 = worksheet.getCell(i, 10);
+        cell10.alignment = { horizontal: "center", vertical: "middle" };
+
+        const cell = worksheet.getCell(i, 13);
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    }
+
+    for (let i = 5; i <= datosExcel.length-1; i++) {
+        //Kg Desp
+        var formula = `T${i}*L${i}`;
+        worksheet.getCell(`U${i}`).value = { formula: formula };
+        /*
+        //Precio x Kg
+        formula = `SI.ERROR(P${i}/U${i}, 0)`; 
+        worksheet.getCell(`V${i}`).value = { formula: formula };
+        */
+        //Margen x Kg
+        formula = `V${i}-X${i}`; 
+        worksheet.getCell(`Y${i}`).value = { formula: formula };
+        //Margen Total
+        formula = `Y${i}*U${i}`; 
+        worksheet.getCell(`Z${i}`).value = { formula: formula };
+        //Margen real ventas
+        formula = `Z${i}/W${i}`; 
+        worksheet.getCell(`AA${i}`).value = { formula: formula };
+        //Margen x Unid Nom
+        formula = `AD${i}-AF${i}`; 
+        worksheet.getCell(`AG${i}`).value = { formula: formula };
+        //Margen Total Nom
+        formula = `AB${i}*AG${i}`; 
+        worksheet.getCell(`AH${i}`).value = { formula: formula };
+        //Margen Total Nom
+        formula = `AH${i}/AE${i}`; 
+        worksheet.getCell(`AI${i}`).value = { formula: formula };
+    }
+
+    /*
+    // Ajustar automáticamente el ancho de las columnas al contenido
+    worksheet.columns.forEach((column) => {
+        let maxLength = 0;
+        column.eachCell({ includeEmpty: true }, (cell) => {
+        const length = cell.value ? cell.value.toString().length : 0;
+        if (length > maxLength) {
+            maxLength = length;
+        }
+        });
+        column.width = maxLength < 10 ? 10 : maxLength;
+    });
+    */
+
+    //Negrita Columna Titulo
+    const row1 = worksheet.getRow(1);
+    cell = row1.getCell(1);
+    cell.font = { bold: true, size: 20 };
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    //Fecha Reporte
+    const row2 = worksheet.getRow(1);
+    cell = row2.getCell(16);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+
+    //Fusionar celdas de Titulo
+    const startCol = 0;
+    const endCol = 15;
+    worksheet.mergeCells(1, startCol, 1, endCol);
+
+    //Negrita Columna Sucursal
+    const row3 = worksheet.getRow(2);
+    cell = row3.getCell(1);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    
+    //Fusionar celdas Sucursal
+    const startCol1 = 0;
+    const endCol1 = 15;
+    worksheet.mergeCells(2, startCol1, 2, endCol1);
+
+    // Establecer negrita a totales
+    row = worksheet.getRow(datosExcel.length);
+    for (let i = 1; i <= 16; i++) {
+        cell = row.getCell(i);
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: "right" };
+        cell.numFmt = "#,##0";
+    }
+    
+
+    // Guardar el archivo
+    workbook.xlsx.writeBuffer().then(function(buffer) {
+      // Crear un objeto Blob para el archivo Excel
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+      // Crear un enlace de descarga
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "EstadistivaVentas.xlsx";
+      a.click();
+
+      // Limpiar el objeto Blob
+      window.URL.revokeObjectURL(url);
+    });
+}
+
+function getColumnLetter(columnIndex) {
+    let columnLetter = '';
+    while (columnIndex > 0) {
+      const remainder = (columnIndex - 1) % 26;
+      columnLetter = String.fromCharCode(65 + remainder) + columnLetter;
+      columnIndex = Math.floor((columnIndex - 1) / 26);
+    }
+    return columnLetter;
+  }

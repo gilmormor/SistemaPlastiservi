@@ -53,4 +53,15 @@ class Persona extends Model
     {
         return $this->hasMany(JefaturaSucursalArea::class);
     }
+
+    //SUCURSAL FISICAMENTE DONDE ESTA LA PERSONA
+    //PUEDER SER QUE LA PERSONA ESTE EN MAS DE UNA SUCURSAL DE FORMA FISICA 
+    public static function sucursalFisica($usuario_id){
+        $user = Usuario::findOrFail($usuario_id);
+        $sucurJefAreaFis = [];
+        foreach ($user->persona->jefaturasucursalareas as $jefaturasucursalarea) {
+            $sucurJefAreaFis[] = $jefaturasucursalarea->sucursal_area->sucursal_id;
+        }
+        return $sucurJefAreaFis;
+    }
 }
