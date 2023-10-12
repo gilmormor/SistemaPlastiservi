@@ -10,6 +10,7 @@ class DteFac extends Model
     protected $fillable = [
         'dte_id',
         'hep',
+        'notped',
         'formapago_id',
         'fchvenc',
         'staverfacdesp'

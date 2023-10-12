@@ -89,6 +89,7 @@ class DteFacturaDirController extends Controller
         $dtefac = new DteFac();
         //$dtefac->dte_id = $dte_id;
         $dtefac->hep = $request->hep;
+        $dtefac->notped = $request->notped;
         $dtefac->formapago_id = $cliente->formapago_id;
         $dtefac->fchvenc =  date('Y-m-d', strtotime(date('Y-m-d') ."+ " . $cliente->plazopago->dias . " days"));
         $dte->dtefac = $dtefac;

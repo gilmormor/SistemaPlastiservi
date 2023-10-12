@@ -2961,6 +2961,15 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                 "<FchRef>$FchEmis</FchRef>" .
                 "</Referencia>";
             }
+            if($dte->dtefac->notped){
+                $i++;
+                $contenido .= "<Referencia>" .
+                "<NroLinRef>$i</NroLinRef>" .
+                "<TpoDocRef>802</TpoDocRef>" .
+                "<FolioRef>" . $dte->dtefac->notped . "</FolioRef>" .
+                "<FchRef>$FchEmis</FchRef>" .
+                "</Referencia>";
+            }
             $contenido .= "</Documento>" .
             "</DTE>";
         }

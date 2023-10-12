@@ -101,7 +101,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="form-group col-xs-12 col-sm-2">
+            <div class="form-group col-xs-12 col-sm-3">
                 <label for="vendedor_id" class="control-label requerido">Vendedor</label>
                 <select name="vendedor_id" id="vendedor_id" class="form-control select2 vendedor_id" data-live-search='true' required>
                     <option value="">Seleccione...</option>
@@ -117,7 +117,7 @@
                 </select>
             </div>
     
-            <div class="form-group col-xs-12 col-sm-2">
+            <div class="form-group col-xs-12 col-sm-3">
                 <label for="centroeconomico_id" class="control-label requerido">Centro Economico</label>
                 <select name="centroeconomico_id" id="centroeconomico_id" class="form-control select2 centroeconomico_id" data-live-search='true' required>
                     <option value="">Seleccione...</option>
@@ -132,8 +132,12 @@
                 </select>
             </div>
             <div class="form-group col-xs-12 col-sm-3">
-                <label for="hep" class="control-label" data-toggle='tooltip' title="Hoja de Entrada de Servicio HES">Hes</label>
+                <label for="hep" class="control-label" data-toggle='tooltip' title="Hoja de Entrada de Servicio CodRef:HES">Hes</label>
                 <input type="text" name="hep" id="hep" class="form-control" value="{{old('hep', $data->dtefac->hep ?? '')}}" maxlength="12"/>
+            </div>
+            <div class="form-group col-xs-12 col-sm-3">
+                <label for="notped" class="control-label" data-toggle='tooltip' title="Nota de Pedido CodRef:802">Nota Pedido</label>
+                <input type="text" name="notped" id="notped" class="form-control" value="{{old('notped', $data->dtefac->notped ?? '')}}" maxlength="12"/>
             </div>
 
             <div class="form-group col-xs-12 col-sm-4" style="display:none;">
