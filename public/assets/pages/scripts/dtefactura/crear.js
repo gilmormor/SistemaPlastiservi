@@ -141,6 +141,7 @@ function ajaxRequest(data,url,funcion) {
 					aux_oc_id = respuesta[0].oc_id;
 					for (i = 0; i < respuesta.length; i++) {
 						if(respuesta[i].oc_id != aux_oc_id){
+							/*
 							swal({
 								title: 'Orden de compra.',
 								text: "Solo puede facturar una orden de compra.",
@@ -149,12 +150,25 @@ function ajaxRequest(data,url,funcion) {
 									confirm: "Aceptar"
 								},				
 							})
-							$('#centroeconomico_id').val(""); // Select the option with a value of '1'
-							$('#vendedor_id').val(""); // Select the option with a value of '1'		
-							$('#tabla-data tbody').html("");
-							totalizar();
-							$('.select2').trigger('change'); // Notify any JS components that the value changed
-							return 0;
+							*/
+							swal({
+								title: "Orden de compra.",
+								text: "Quieres facturar Guias con diferente OC?",
+								icon: 'warning',
+								buttons: {
+									confirm: "Si",
+									cancel: "No"
+								},
+							}).then((value) => {
+								if (value == null) {
+									$('#centroeconomico_id').val(""); // Select the option with a value of '1'
+									$('#vendedor_id').val(""); // Select the option with a value of '1'		
+									$('#tabla-data tbody').html("");
+									totalizar();
+									$('.select2').trigger('change'); // Notify any JS components that the value changed
+									return 0;
+								}
+							});
 						}
 					}
 					if(aux_oc_id == "" || aux_oc_id == null){
