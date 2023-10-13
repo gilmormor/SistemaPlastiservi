@@ -64,8 +64,8 @@ $(document).ready(function () {
             "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
                 data.nrodocto +
             "</a>:" +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
-                data.nrodocto +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cedible: " + data.nrodocto + "' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
+                "<i class='fa fa-fw fa-file-pdf-o'></i>" +
             "</a>";
             $('td', row).eq(5).html(aux_text);
 

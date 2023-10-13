@@ -98,8 +98,8 @@ $(document).ready(function () {
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
                     + data.nrodocto +
                 "</a>:" +
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cedible' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")' style='padding-left: 0px;'>"+
-                    + data.nrodocto +
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cedible: "+ data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")' style='padding-left: 0px;'>"+
+                    "<i class='fa fa-fw fa-file-pdf-o'></i>" +
                 "</a>";
             }
             $('td', row).eq(8).html(aux_text);

@@ -142,8 +142,8 @@ $(document).ready(function () {
                     "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"\")'>" +
                         arr_nrodocto_guiadesp[i] +
                     "</a>:"+
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cedible' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"_cedible\")'>" +
-                        arr_nrodocto_guiadesp[i] +
+                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cedible: " + arr_nrodocto_guiadesp[i] + "' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"_cedible\")'>" +
+                        "<i class='fa fa-fw fa-file-pdf-o'></i>" +
                     "</a>";
                     if((i+1) < arr_nrodocto_guiadesp.length){
                         aux_text1 += ",";
@@ -186,8 +186,8 @@ $(document).ready(function () {
             "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
                 data.nrodocto_factura +
             "</a>:" +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
-                data.nrodocto_factura +
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cedible: " + data.nrodocto_factura + "' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
+                "<i class='fa fa-fw fa-file-pdf-o'></i>" +
             "</a>";
             $('td', row).eq(10).html(aux_text);
 

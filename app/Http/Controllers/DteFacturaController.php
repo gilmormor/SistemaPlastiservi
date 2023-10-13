@@ -104,7 +104,7 @@ class DteFacturaController extends Controller
         //dd($request);
         //BUSCO SI HUBO MODIFICACION EN LAS GUIAS DE DESPACHO 
         //SI LA FECHA UPDATE_AT ES DIFERENTE A LA QUE VIENE DE LAS GUIAS SELECCIONADAS DETIENE LA EJECUCION Y RETORNA AL INDEX dtefactura
-        foreach ($aux_arrayselgd as &$valor) {
+        foreach ($aux_arrayselgd as $valor) {
             $indice = array_search($valor,$request->dte_idGD,false);
             $dteguiadesp = Dte::findOrFail($valor);
             if($request->updated_atGD[$indice] != $dteguiadesp->updated_at){
@@ -149,7 +149,16 @@ class DteFacturaController extends Controller
         //$dtedtes = [];
         $dteguiausadas = [];
         $aux_nrolindet = 0;
-        foreach ($aux_arrayselgd as &$dter_id){
+        if(isset($request->oc_id) and !is_null($request->oc_id)){
+            $dteoc = new DteOC();
+            $dteoc->dte_id = "";
+            $dteoc->oc_id = $request->oc_id;
+            $dteoc->oc_folder = "oc";
+            $dteoc->oc_file = $request->oc_file;
+            $dte->dteocs[] = $dteoc;
+            //$dteoc->save();
+        }
+        foreach ($aux_arrayselgd as $dter_id){
             $dtedte = new DteDte();
             $dtedte->dte_id = ""; //$dte_id;
             $dtedte->dter_id = $dter_id;
@@ -158,21 +167,14 @@ class DteFacturaController extends Controller
             //$dtedte->save();
 
             $dteguiadesp = Dte::findOrFail($dter_id); //BUSCO LA GUIA ORIGEN
-            if($dteguiadesp->dteoc){
+            //DEBE EXISTIR EL REGISTRO EN DTEOC Y EL CAMPO OC_ID DEBE SER DIFERENTE DE NULL
+            //PARA LLENAR EL OBJETO $dteoc Y LUEGO ASIGNAR A LA FACTURA LA OC
+            if(isset($dteguiadesp->dteoc->oc_id)  and $dteguiadesp->dteoc->oc_id){
                 $dteoc = new DteOC();
                 $dteoc->dte_id = "";
-                $dteoc->oc_id = $request->ocnv_id;
+                $dteoc->oc_id = $dteguiadesp->dteoc->oc_id;
                 $dteoc->oc_folder = $dteguiadesp->dteoc->oc_folder;
                 $dteoc->oc_file = $dteguiadesp->dteoc->oc_file;
-                $dte->dteocs[] = $dteoc;
-                //$dteoc->save();
-            }
-            if(isset($request->oc_id) and !is_null($request->oc_id)){
-                $dteoc = new DteOC();
-                $dteoc->dte_id = "";
-                $dteoc->oc_id = $request->oc_id;
-                $dteoc->oc_folder = "oc";
-                $dteoc->oc_file = $request->oc_file;
                 $dte->dteocs[] = $dteoc;
                 //$dteoc->save();
             }
@@ -320,6 +322,7 @@ class DteFacturaController extends Controller
                 $notaventa->oc_id = $request->ocnv_id;
                 $notaventa->save();
             }
+            /*
             if($dteguiadesp->dteoc){
                 $dteoc->dte_id = $dteNew->id;
                 $dteoc->save();
@@ -334,6 +337,23 @@ class DteFacturaController extends Controller
                     }
                 }    
             }
+            */
+            //SI LAS OC VIENEN DE LA GUIA DESPACHO, SIEMPRE Y CUANDO LAS GUIAS TENGAS OC
+            foreach ($dte->dteocs as $dteoc) {
+                $dteoc->dte_id = $dteNew->id;
+                $dteoc->save();
+            }
+            //SI LA OC VIENE DIRECTAMENTE DE LA FACTURA, ES DECIR LA(S) GUIA(S) NO TIENE(N) OC, Y SE CARGO LA OC EN LA FACTURA
+            if(isset($request->oc_id) and !is_null($request->oc_id)){
+                $dteoc->dte_id = "";
+                $dteoc->oc_id = $request->oc_id;
+                $dteoc->oc_folder = "oc";
+                if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                    $dteoc->dte_id = $dteNew->id;
+                    $dteoc->oc_file = $foto;
+                    $dteoc->save();
+                }
+            }    
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             if($aux_foliosdisp <=20){
                 return redirect('dtefactura')->with([
