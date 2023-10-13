@@ -153,7 +153,7 @@ function ajaxRequest(data,url,funcion) {
 							*/
 							swal({
 								title: "Orden de compra.",
-								text: "Quieres facturar Guias con diferente OC?",
+								text: "Quieres facturar Guias con diferente Nro. de OC?",
 								icon: 'warning',
 								buttons: {
 									confirm: "Si",
