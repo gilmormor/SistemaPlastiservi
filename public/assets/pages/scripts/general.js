@@ -2223,8 +2223,12 @@ function llenarselectbodega(respuesta){
 
 function sumbod(i,y,aux_orig){
 	aux_stockcant = parseFloat($("#stockcantTD" + y).html());
-	if((aux_orig == "OD") && ($("#invcant" + y).val() > aux_stockcant)){
-		$("#invcant" + y).val(aux_stockcant);
+	if(aux_orig == "OD"){
+		if($("#invcant" + y).attr("stadespsinstock") == "0"){
+			if ($("#invcant" + y).val() > aux_stockcant){
+				$("#invcant" + y).val(aux_stockcant);
+			}	
+		}
 	}
 	totalSolDe = 0;
 	totalSolDeStock = 0;

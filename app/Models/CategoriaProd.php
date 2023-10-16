@@ -24,7 +24,8 @@ class CategoriaProd extends Model
         'mostunimed',
         'categoriaprodgrupo_id',
         'asoprodcli',
-        'stakilos'
+        'stakilos',
+        'stadespsinstock'
     ];
 
     public function productos()

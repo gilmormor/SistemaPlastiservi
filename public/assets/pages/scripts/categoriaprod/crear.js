@@ -49,6 +49,11 @@ $(document).ready(function () {
     }else{
         $("#aux_stakilos").prop("checked", false);    
     }
+    if($("#stadespsinstock").val() == '1'){
+        $("#aux_stadespsinstock").prop("checked", true);    
+    }else{
+        $("#aux_stadespsinstock").prop("checked", false);    
+    }
 
 });
 
@@ -80,6 +85,14 @@ $("#aux_stakilos").change(function() {
     $("#stakilos").val('0');
     if(estaSeleccionado){
         $("#stakilos").val('1');
+    }
+});
+
+$("#aux_stadespsinstock").change(function() {
+    estaSeleccionado = $("#aux_stadespsinstock").is(":checked");
+    $("#stadespsinstock").val('0');
+    if(estaSeleccionado){
+        $("#stadespsinstock").val('1');
     }
 });
 

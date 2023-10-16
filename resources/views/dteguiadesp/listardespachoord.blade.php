@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Pendiente Solicitud Orden Despacho
+Pendiente Orden Despacho
 @endsection
 <?php 
     $selecmultprod = true;

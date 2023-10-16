@@ -326,6 +326,11 @@
                                                             if ($invbodegaproducto->invbodega->sucursal_id == 3) {
                                                                 $colorSuc = "#00c3ff";
                                                             }
+                                                            //$stadespsinstock VARIABLE QUE ME PERMITE SABER SI EL PRODUCTO PERMITE HACER DESPACHO SIN EXISTENCIA
+                                                            $stadespsinstock = 0;
+                                                            if($invbodegaproducto->invbodega->tipo != 1 and $detalle->notaventadetalle->producto->categoriaprod->stadespsinstock == 1){
+                                                                $stadespsinstock=$detalle->notaventadetalle->producto->categoriaprod->stadespsinstock;
+                                                            }
                                                         ?>
                                                         @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->
                                                             <tr name="fbod{{$invbodegaproducto->id}}" id="fbod{{$invbodegaproducto->id}}">
@@ -346,7 +351,7 @@
                                                                     </div>
                                                                 </td>
                                                                 <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
-                                                                    @if ($aux_stock > 0)
+                                                                    @if ($aux_stock > 0 or $stadespsinstock == 1)
                                                                         @foreach($detalle->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto)
                                                                             @if ($despachoorddet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)
                                                                                 <?php 

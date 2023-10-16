@@ -718,6 +718,7 @@ class DespachoOrdController extends Controller
                                         $arrayExistencia = InvBodegaProducto::existencia($requestProd);
                                         $existencia = $arrayExistencia["stock"]["cant"];
                                         $existencia += $oddetbodprod->cant;
+                                        //dd($oddetbodprod->invbodegaproducto->producto->categoriaprod->stadespsinstock);
                                         //$aux_respuesta = InvBodegaProducto::validarExistenciaStock($despachoorddet->despachoorddet_invbodegaproductos,$aux_bodegadespacho_id);
                                         if($existencia < 0){
                                             //$aux_bandera = $aux_respuesta["bandera"];

@@ -146,13 +146,17 @@ class InvBodegaProducto extends Model
                     "invbodegaproducto_id" => $oddetbodprod->invbodegaproducto_id
                 ]);
                 $saldoStock = $arrayStock["stock"]["cant"] + $oddetbodprod->cant;
-                if($saldoStock < 0){
-                    return [
-                        'status' => "0",
-                        'title' => "Bodega sin stock!",
-                        'mensaje' => "Bodega: " . $oddetbodprod->invbodegaproducto->invbodega->nombre . ".\nSucursal: " . $oddetbodprod->invbodegaproducto->invbodega->sucursal->nombre . ".\nIdProd: " . $oddetbodprod->invbodegaproducto->producto_id . "\nNombre: " . $oddetbodprod->invbodegaproducto->producto->nombre. "\nCantidad movimiento: " . $oddetbodprod->cant . "\nStock actual: " . $arrayStock["stock"]["cant"],
-                        'tipo_alert' => 'error'
-                    ];
+                //SI EN CATEGORIA EL CAMPO stadespsinstock == 0 NO PERMITE MOVER EL INVENTARIO CON EXISTENCIA MENOR O IGUAL A 0
+                //SI stadespsinstock == 1 ENTONCES NO IMPORTA SI TIENE EXISTENCIA O NO
+                if($oddetbodprod->invbodegaproducto->producto->categoriaprod->stadespsinstock == 0){
+                    if($saldoStock < 0){
+                        return [
+                            'status' => "0",
+                            'title' => "Bodega sin stock!",
+                            'mensaje' => "Bodega: " . $oddetbodprod->invbodegaproducto->invbodega->nombre . ".\nSucursal: " . $oddetbodprod->invbodegaproducto->invbodega->sucursal->nombre . ".\nIdProd: " . $oddetbodprod->invbodegaproducto->producto_id . "\nNombre: " . $oddetbodprod->invbodegaproducto->producto->nombre. "\nCantidad movimiento: " . $oddetbodprod->cant . "\nStock actual: " . $arrayStock["stock"]["cant"],
+                            'tipo_alert' => 'error'
+                        ];    
+                    }
                 }
             }
         }
