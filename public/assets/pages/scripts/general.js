@@ -1470,7 +1470,7 @@ function verpdf2(nameFile,stareport,aux_venmodant = ""){
 			_token: $('input[name=_token]').val()
 		};
 		$.ajax({
-			url: '/generales_valpremiso',
+			url: '/generales_valpermiso',
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
@@ -1533,7 +1533,7 @@ function verpdf3(nameFile,stareport,ruta,aux_venmodant = ""){
 			_token: $('input[name=_token]').val()
 		};
 		$.ajax({
-			url: '/generales_valpremiso',
+			url: '/generales_valpermiso',
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
@@ -3215,4 +3215,167 @@ function ordentablaGen(aux_tabla){
         //$("#orden").val(ordenActual[0]); //Actualizo el valor del elemento orden para que lo envie a php    
     }
 	return aux_orden;
+}
+
+function descXMLfac1(nombreArchivo){ //GENERAR PDF Factura
+	/*
+	var data = {
+        nombreArchivo : nombreArchivo,
+		_token: $('input[name=_token]').val()
+    };
+	$.ajax({
+		url: '/dtefactura/descargar-xml',
+		type: 'POST',
+		data: data,
+		success: function() {
+			// La descarga se inicia automáticamente.
+		},
+		error: function() {
+			console.log("Error al descargar el archivo XML.");
+		}
+	});
+	*/
+	/*
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T33FE00000303.xml' + queryString);
+	$("#myModalpdf").modal('show');
+	*/
+	/*
+	var loc = window.location;
+	window.location = loc.protocol+"//"+loc.hostname+"/storage/facturacion/dte/procesados/DTE_T33FE00000303.xml";
+	*/
+	/*
+	var urlDescarga = 'dtefactura/descargar-xml?nombreArchivo=' + nombreArchivo; // Ajusta la URL según tu configuración
+    var a = document.createElement('a');
+    a.href = urlDescarga;
+    a.download = nombreArchivo;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+	*/
+
+	var form = document.getElementById('descargaForm');
+	var nombreArchivoInput = document.getElementById('nombreArchivo');
+	nombreArchivoInput.value = nombreArchivo;
+	
+	form.submit();
+
+}
+
+function descXML(nombreArchivo) {
+    var urlDescarga = '/dtefactura/descargar-xml'; // Ajusta la URL según tu configuración
+	var data = {
+        nombreArchivo : nombreArchivo,
+		_token: $('input[name=_token]').val()
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: urlDescarga,
+        data: data,
+		xhrFields: {
+            responseType: 'blob' // Establece responseType como blob
+        },
+        success: function(data, textStatus, jqXHR) {
+            var blob = data;
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            a.download = nombreArchivo;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+			if(errorThrown == "Not Found"){
+					errorThrown = 'Archivo no existe!';
+			}
+			swal({
+				title: "Error al descargar el archivo",
+				text: "Archivo no existe!",
+				icon: 'info',
+				buttons: {
+					confirm: "Aceptar"
+				},
+			});
+            console.log('Error al descargar el archivo: ' + errorThrown);
+        }
+    });
+}
+
+
+//FUNCION DESCARGAR ARCHIVO TXT XML
+function descArcTXT(nameFile,aux_venmodant = ""){ 
+	if(nameFile==""){
+		swal({
+			title: 'Falta nombre de archivo.',
+			text: "",
+			icon: 'error',
+			buttons: {
+				confirm: "Cerrar",
+			},
+		}).then((value) => {
+		});
+	}else{
+		var data = {
+			slug: 'descargar-xml',
+			_token: $('input[name=_token]').val()
+		};
+		$.ajax({
+			url: '/generales_valpermiso',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				//console.log(respuesta);
+				if(respuesta.resp){
+					var urlDescarga = '/dtefactura/descargar-xml'; // Ajusta la URL según tu configuración
+					var data = {
+						nombreArchivo : nameFile,
+						_token: $('input[name=_token]').val()
+					};
+					$.ajax({
+						type: 'POST',
+						url: urlDescarga,
+						data: data,
+						xhrFields: {
+							responseType: 'blob' // Establece responseType como blob
+						},
+						success: function(data, textStatus, jqXHR) {
+							var blob = data;
+							var a = document.createElement('a');
+							a.href = window.URL.createObjectURL(blob);
+							a.download = nameFile;
+							document.body.appendChild(a);
+							a.click();
+							document.body.removeChild(a);
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							if(errorThrown == "Not Found"){
+									errorThrown = 'Archivo no existe!';
+							}
+							swal({
+								title: "Error al descargar el archivo",
+								text: "Archivo no existe!",
+								icon: 'info',
+								buttons: {
+									confirm: "Aceptar"
+								},
+							});
+							console.log('Error al descargar el archivo: ' + errorThrown);
+						}
+					});
+				}else{
+					swal({
+						title: respuesta.mensaje,
+						text:  respuesta.mensaje2,
+						icon: 'error',
+						buttons: {
+							confirm: "Cerrar",
+						},
+					}).then((value) => {
+					});
+				}
+			}
+		});
+	}
 }

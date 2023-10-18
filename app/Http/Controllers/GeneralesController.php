@@ -11,12 +11,12 @@ class GeneralesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function generales_valpremiso(Request $request)
+    public function generales_valpermiso(Request $request)
     {
         $array_resp = [
             'resp' => false,
             'mensaje' => "Usuario no tiene permiso.",
-            'mensaje2' => "Pongase en contacto con el administrador del Sistema."
+            'mensaje2' => "Pongase en contacto con el administrador del Sistema. " . $request->slug
         ];
         if(can($request->slug,false)){
             $array_resp = [

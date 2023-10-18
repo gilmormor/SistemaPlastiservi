@@ -1062,6 +1062,41 @@ class DteFacturaController extends Controller
             abort(404);
         }
     }
+
+    public function descargarXml(Request $request)
+    {
+        can('descargar-xml');
+        //dd($request);
+        /*
+        dd($nombre_archivo);
+        $rutaArchivo = public_path("/storagefacturacion/dte/procesados/$nombre_archivo"); // Reemplaza con la ubicación real de tus archivos
+        
+        return response()->download($rutaArchivo, $nombre_archivo, ['Content-Type' => 'application/xml']);
+        */
+        $nombreArchivo = $request->input('nombreArchivo');
+        $rutaArchivo = public_path("storage\\facturacion\\dte\\procesados\\$nombreArchivo"); // Reemplaza con la ubicación real de tus archivos
+        //dd($rutaArchivo);
+        /*
+        if (file_exists($rutaArchivo)) {
+            $headers = [
+                'Content-Type' => 'application/xml',
+            ];
+
+            return response()->download($rutaArchivo, $nombreArchivo, $headers);
+        } else {
+            return response('El archivo no existe', 404);
+        }
+        */
+        if (file_exists($rutaArchivo)) {
+            $contenido = file_get_contents($rutaArchivo);
+            return response($contenido, 200)
+                ->header('Content-Type', 'text/plain')
+                ->header('Content-Disposition', 'attachment; filename=' . $nombreArchivo);
+        } else {
+            return response('El archivo no existe', 404);
+        }
+
+    }
 }
 
 

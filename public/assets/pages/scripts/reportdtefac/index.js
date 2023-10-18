@@ -145,30 +145,35 @@ $(document).ready(function () {
                     let arr_despachoord_id = data.despachoord_id.split(','); 
                     for (let i = 0; i < arr_despachoord_id.length; i++){
                         aux_text += 
-                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Orden Despacho' onclick='genpdfOD(" + arr_despachoord_id[i] + ",1)'>" +
-                            arr_despachoord_id[i] +
-                        "</a>";
+                        `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Orden Despacho" onclick="genpdfOD('${arr_despachoord_id[i]}',1)">
+                            ${arr_despachoord_id[i]}
+                        </a>`;
                         if((i+1) < arr_despachoord_id.length){
-                            aux_text += ",";
+                            aux_text += `,`;
                         }
                     }    
                 }
                 $('td', row).eq(8).html(aux_text);
     
-    
                 aux_text = "";
                 if(data.nrodocto_guiadesp != null){
                     let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
                     for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
+                        id_strgd = arr_nrodocto_guiadesp[i].toString();
+                        id_strgd = data.nombrepdf_guiadesp + id_strgd.padStart(8, "0");
                         aux_text += 
-                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"\")'>" +
-                            arr_nrodocto_guiadesp[i] +
-                        "</a>";
+                        `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia Despacho" onclick="genpdfGD('${arr_nrodocto_guiadesp[i]}','')">
+                            ${arr_nrodocto_guiadesp[i]}
+                        </a>
+                        <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Guia" onclick="descArcTXT('${id_strgd}.xml')">
+                            <i class="fa fa-fw fa-cloud-download"></i>
+                        </a>`;
                         if((i+1) < arr_nrodocto_guiadesp.length){
-                            aux_text += ",";
+                            aux_text += `,`;
                         }
-                    }    
+                    }
                 }
+                $('td', row).eq(9).attr("class","action-buttons");
                 $('td', row).eq(9).html(aux_text);
     
                 aux_text = "";
@@ -184,6 +189,7 @@ $(document).ready(function () {
                         }
                     }    
                 }
+                $('td', row).eq(10).attr("class","action-buttons");
                 $('td', row).eq(10).html(aux_text);
 
                 let id_str = data.nrodocto.toString();
@@ -196,8 +202,12 @@ $(document).ready(function () {
                     </a>
                     <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
                         <i class="fa fa-fw fa-file-pdf-o"></i>
+                    </a>
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="descArcTXT('${id_str}.xml')">
+                        <i class="fa fa-fw fa-cloud-download"></i>
                     </a>`;
                 }
+                $('td', row).eq(11).attr("class","action-buttons");
                 $('td', row).eq(11).html(aux_text);
                 aux_checkstaex = "";
                 if(data.staverfacdesp == 1){

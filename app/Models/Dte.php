@@ -866,6 +866,13 @@ class Dte extends Model
         ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
         WHERE dtedte1.dte_id = dte.id
         GROUP BY dtedte1.dte_id) AS nrodocto_guiadesp,
+        (SELECT GROUP_CONCAT(DISTINCT foliocontrolGD.nombrepdf) 
+        FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+        ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+        INNER JOIN foliocontrol AS foliocontrolGD
+        ON foliocontrolGD.id = dte1.foliocontrol_id AND ISNULL(foliocontrolGD.deleted_at)
+        WHERE dtedte1.dte_id = dte.id
+        GROUP BY dtedte1.dte_id) AS nombrepdf_guiadesp,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
         foliocontrol.tipodocto,foliocontrol.nombrepdf,
         dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at

@@ -890,7 +890,7 @@ Route::post('inventsalaprobar', 'InvEntSalAprobarController@guardar')->name('gua
 Route::post('inventsalaprobar/aprobar/{id}', 'InvEntSalAprobarController@aprobar')->name('inventsalaprobar_aprobar');
 
 /*RUTAS Generales*/
-Route::post('generales_valpremiso', 'GeneralesController@generales_valpremiso')->name('generales_valpremiso');
+Route::post('generales_valpermiso', 'GeneralesController@generales_valpermiso')->name('generales_valpermiso');
 
 /*RUTAS INV STOCK VENDEDORES*/
 Route::get('reportinvstockvend', 'ReportInvStockVendController@index')->name('reportinvstockvend');
@@ -1146,6 +1146,7 @@ Route::post('dtefactura/buscarfactura', 'DteFacturaController@buscarfactura')->n
 Route::post('dtefactura/estadoDTE', 'DteFacturaController@estadoDTE')->name('dtefactura_estadoDTE');
 Route::post('dtefactura/staverfacdesp', 'DteFacturaController@staverfacdesp')->name('dtefactura_staverfacdesp');
 Route::post('dtefactura/devolverguiadesp', 'DteFacturaController@devolverguiadesp')->name('dtefactura_devolverguiadesp');
+Route::post('dtefactura/descargar-xml', 'DteFacturaController@descargarXml')->name('dtefactura_descargarXml');
 
 /*RUTAS REPORTE DTE FACTURA*/
 Route::get('reportdtefac', 'ReportDTEFacController@index')->name('reportdtefac');

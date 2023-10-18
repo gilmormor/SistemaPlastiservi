@@ -296,7 +296,10 @@ DTE Facturacion
         </div>
     </div>
 </div>
-
+<form id="descargaForm" action="/dtefactura/descargar-xml" method="POST">
+    @csrf <!-- Asegúrate de incluir el token CSRF si estás utilizando Laravel -->
+    <input type="hidden" name="nombreArchivo" id="nombreArchivo">
+</form>
 
 @include('generales.buscarclientebd')
 @include('generales.modalpdf')
