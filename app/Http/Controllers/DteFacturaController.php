@@ -1074,7 +1074,7 @@ class DteFacturaController extends Controller
         return response()->download($rutaArchivo, $nombre_archivo, ['Content-Type' => 'application/xml']);
         */
         $nombreArchivo = $request->input('nombreArchivo');
-        $rutaArchivo = public_path("storage\\facturacion\\dte\\procesados\\$nombreArchivo"); // Reemplaza con la ubicación real de tus archivos
+        $rutaArchivo = public_path("storage/facturacion/dte/procesados/$nombreArchivo"); // Reemplaza con la ubicación real de tus archivos
         //dd($rutaArchivo);
         /*
         if (file_exists($rutaArchivo)) {
