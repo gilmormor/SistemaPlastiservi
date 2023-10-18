@@ -95,11 +95,26 @@ class InvBodegaProducto extends Model
             $request["cant"] = $inventsaldet->cant;
             $request["tipo"] = 2;
             $request["annomes"] = $annomes;
+            $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id);
+            $stadespsinstock = $invbodegaproducto->producto->categoriaprod->stadespsinstock;
             //$invbodegaproductoexistencia = $invbodegaproducto->consexistencia($request);
             $invbodegaproductoexistencia = InvBodegaProducto::existencia($request);
             //dd($invbodegaproductoexistencia);
-            $saldoexistencia =  $invbodegaproductoexistencia["stock"]["cant"] + $inventsaldet->cant; 
-            if($saldoexistencia < 0){
+            $saldoexistencia =  $invbodegaproductoexistencia["stock"]["cant"] + ($inventsaldet->cant + $inventsaldet->cantex); 
+            //dd($saldoexistencia);
+            //SI EL STATUS $inventsaldet->staex == 1 NO ENTRA EN LA VALIDACION DE SALDO NEGATIVO
+            //SI SE MARCA ESTE ESTATUS QUIERE DECIR QUE NO HACE FALTA VALIDAR QUE EL SALDO ESTA NEGATIVO
+            //PRIMERO VALIDO LA VARIABLE EXISTE $inventsaldet->staex, ESTO ES POR SI VIENE DE OTRO PROCESO Y LA VARIALBLE POSIBLEMENTE NO EXISTA
+            $aux_staex = 0;
+            if(isset($inventsaldet->staex)){
+                //NO IMPORTA EL STOCK MENOR A CERO SIEMPRE Y CUANDO $stadespsinstock=1, ES DECIR QUE PERMITA AVANZAR CON STOCK NEGATIVO
+                if($stadespsinstock == 1){
+                    $aux_staex = $inventsaldet->staex;
+                }
+            }
+            //dd($saldoexistencia);
+            if($saldoexistencia < 0 and $aux_staex == 0){
+            //if($saldoexistencia < 0){
                 $respuesta["bandera"] = false;
                 $respuesta["producto_id"] = $inventsaldet->invbodegaproducto->producto_id;
                 $respuesta["producto_nombre"] = "";
