@@ -82,8 +82,10 @@ $(document).ready(function () {
 
                 $('td', row).eq(1).attr('data-order',data.fechahora);
                 aux_fecha = new Date(data.fechahora);
-                $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+                $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha) + " " + data.fechahora.substr(11, 8));
+                $('td', row).eq(1).attr("style","font-size:12px");
 
+                $('td', row).eq(2).attr("style","font-size:13px");
     
                 if(data.oc_file != "" && data.oc_file != null){
                     aux_text = 
