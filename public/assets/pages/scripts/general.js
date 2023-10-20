@@ -1489,7 +1489,7 @@ function verpdf2(nameFile,stareport,aux_venmodant = "",aux_slug = "ver-pdf-orden
 						aux_folder = "notaventa";	
 					}
 					$('#contpdf').attr('src', '/storage/imagenes/' + aux_folder + '/'+aux_nameFile + queryString);
-					if((aux_nameFile.indexOf(".pdf") > -1) || (aux_nameFile.indexOf(".PDF") > -1) || (aux_nameFile.indexOf(".jpg") > -1) || (aux_nameFile.indexOf(".bmp") > -1) || (aux_nameFile.indexOf(".png") > -1)){
+					if((aux_nameFile.indexOf(".pdf") > -1) || (aux_nameFile.indexOf(".PDF") > -1) || (aux_nameFile.indexOf(".jpg") > -1) || (aux_nameFile.indexOf(".bmp") > -1) || (aux_nameFile.indexOf(".png") > -1) || (aux_nameFile.indexOf(".jpeg") > -1)){
 						$("#venmodant").val("");
 						if(aux_venmodant!=""){
 							$("#" + aux_venmodant).modal('hide');
