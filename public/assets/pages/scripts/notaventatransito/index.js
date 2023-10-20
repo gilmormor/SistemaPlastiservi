@@ -28,7 +28,7 @@ $(document).ready(function () {
             aux_mensaje= "";
             aux_icono = "";
             aux_color = "";
-            console.log(data.aprobstatus);
+            //console.log(data.aprobstatus);
             if (data.aprobstatus=='1'){
                 aux_mensaje = "Aprobado Vendedor";
                 aux_icono = "glyphicon glyphicon-thumbs-up";
@@ -51,7 +51,7 @@ $(document).ready(function () {
                     "<span class='"+aux_icono+"' style='bottom: 0px;top: 2px;'></span>"+
                 "</a>";
             $('td', row).eq(5).html(aux_text);
-            console.log(aux_text);
+            //console.log(aux_text);
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota Venta: " + data.id + "' onclick='genpdfNV(" + data.id + ",1)'>"+
                     "<i class='fa fa-fw fa-file-pdf-o'></i>"+
