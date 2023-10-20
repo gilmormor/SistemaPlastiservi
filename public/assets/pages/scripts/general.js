@@ -1453,7 +1453,7 @@ $("#precionetoM").blur(function(event){
 });
 
 //FUNCIONES VER DOCUMENTO ADJUNTO ODEN DE COMPRA
-function verpdf2(nameFile,stareport,aux_venmodant = ""){ 
+function verpdf2(nameFile,stareport,aux_venmodant = "",aux_slug = "ver-pdf-orden-de-compra"){ 
 	if(nameFile==""){
 		swal({
 			title: 'Archivo Orden de Compra no se Adjuntó a la Nota de Venta.',
@@ -1466,7 +1466,7 @@ function verpdf2(nameFile,stareport,aux_venmodant = ""){
 		});
 	}else{
 		var data = {
-			slug: 'ver-pdf-orden-de-compra',
+			slug: aux_slug,
 			_token: $('input[name=_token]').val()
 		};
 		$.ajax({
