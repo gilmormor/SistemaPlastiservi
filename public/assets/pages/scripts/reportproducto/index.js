@@ -60,8 +60,8 @@ $(document).ready(function () {
                             `<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
                                 <i class="fa fa-fw fa-photo"></i>
                             </a>`;
-                        $('td', row).eq(0).html(aux_text);
                     }
+                    $('td', row).eq(0).html(aux_text);
                     //$('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
                 }
                 $('td', row).eq(4).attr('style','text-align:center');
