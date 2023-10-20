@@ -339,7 +339,7 @@
                                     $aux_mostrarimagenat = "display:none;";
                                     $cliente_id = 0;
                                     if($data->cliente_id != 0 and $data->cliente_id != null){
-                                        $cliente_id = $clienteselec->id;
+                                        $cliente_id = $clienteselec[0]->id;
                                     }
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
