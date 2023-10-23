@@ -202,15 +202,17 @@ function ajaxRequest(data,url,funcion) {
 					aux_href = "";
 					aux_oc_id = "";
 					aux_ocArray.forEach(function(aux_ocArray, index) {
-						aux_href += "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' onclick='verpdf2(\"" + aux_ocArray.oc_file + "\",2)'>" + 
-										aux_ocArray.oc_id + 
-									"</a> ";						
-						aux_oc_id += aux_ocArray.oc_id + " ";
+						if(aux_ocArray.oc_id != null){
+							aux_href += "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' onclick='verpdf2(\"" + aux_ocArray.oc_file + "\",2)'>" + 
+											aux_ocArray.oc_id + 
+										"</a> ";						
+							aux_oc_id += aux_ocArray.oc_id + " ";
+						}
 					});
 					aux_oc_id = aux_oc_id.trim();
 					//console.log(aux_ocArray);
 					//if(aux_oc_id == "" || aux_oc_id == null){
-					if(aux_ocArray.length == 0){
+					if(aux_oc_id == ""){
 						$("#ocnv_id").val("");
 						$("#lblocnv_id").html("OC");
 						$("#ocnv_id").attr("disabled",true)
