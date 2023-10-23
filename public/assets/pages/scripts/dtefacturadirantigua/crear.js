@@ -369,7 +369,7 @@ function agregarFila() {
 			aux_nroitem +
 		'</td>' +
 		'<td style="text-align:center" name="producto_idTD' + aux_nfila + '" id="producto_idTD' + aux_nfila + '" >' +
-			'<input type="text" name="vlrcodigo[]" id="vlrcodigo' + aux_nfila + '" onblur="onBlurProducto_id(this)" class="form-control numerico itemrequerido" value="" maxlength="4" onkeyup="buscarProdKeyUp(this,event)" style="text-align:right" item="' + aux_nfila +'" title="Codigo Producto(Presione F2 para Buscar Producto)" placeholder="F2 Buscar"/>' +
+			'<input type="text" name="vlrcodigo[]" id="vlrcodigo' + aux_nfila + '" onblur="onBlurProducto_id(this)" class="form-control numerico itemrequerido" value="" maxlength="4" onkeyup="buscarProdKeyUp(this,event)" style="text-align:right" item="' + aux_nfila +'" title="Código Producto (Presione F2 para Buscar Producto)" placeholder="F2 Buscar"/>' +
 			'<input type="text" name="producto_id[]" id="producto_id' + aux_nfila + '" class="form-control numerico" value="" maxlength="4" onkeyup="buscarProdKeyUp(this,event)" style="text-align:right;display:none;"/>' +
 			'<input type="text" name="nrolindet[]" id="nrolindet' + aux_nfila + '" class="form-control" value="' + aux_nroitem + '" style="display:none;"/>' +
 		'</td>' +

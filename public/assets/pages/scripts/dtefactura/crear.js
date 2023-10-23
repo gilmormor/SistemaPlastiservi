@@ -137,6 +137,8 @@ function ajaxRequest(data,url,funcion) {
 			if(funcion=="listardtedet"){
 				//console.log(respuesta.length);
 				//console.log(respuesta);
+				$('#ocnv_id').removeAttr('disabled');
+				$("#ocnv_id").prop("readonly",false);
 				if(respuesta.length>0){
 					aux_oc_id = respuesta[0].oc_id;
 					for (i = 0; i < respuesta.length; i++) {
@@ -166,12 +168,49 @@ function ajaxRequest(data,url,funcion) {
 									$('#tabla-data tbody').html("");
 									totalizar();
 									$('.select2').trigger('change'); // Notify any JS components that the value changed
+									$('#lblocnv_id').html("OC");
+									$('#ocnv_id').val("");
 									return 0;
+								}else{
+									//$('#ocnv_id').attr('disabled','disabled');
+									$("#ocnv_id").prop("readonly",true);
 								}
 							});
 						}
 					}
-					if(aux_oc_id == "" || aux_oc_id == null){
+					//console.log(respuesta.length);
+					//console.log(respuesta);
+					aux_ocArray = [];
+					respuesta.forEach(function(respuesta, index) {
+						aux_ocEncontrado = false;
+						aux_ocArray.forEach(function(aux_ocArray, index) {
+							if(aux_ocArray.oc_id == respuesta.oc_id){
+								aux_ocEncontrado = true;
+							}						
+						});
+						if (aux_ocEncontrado == false){
+							var objeto =   {
+								oc_id : respuesta.oc_id,
+								oc_file: respuesta.oc_file
+							};				
+							aux_ocArray.push(objeto);
+						}
+	
+						//console.log("Respuesta: " + index + " | OC: " + respuesta.oc_id + " Producto: " + respuesta.nmbitem)
+						
+					});
+					aux_href = "";
+					aux_oc_id = "";
+					aux_ocArray.forEach(function(aux_ocArray, index) {
+						aux_href += "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' onclick='verpdf2(\"" + aux_ocArray.oc_file + "\",2)'>" + 
+										aux_ocArray.oc_id + 
+									"</a> ";						
+						aux_oc_id += aux_ocArray.oc_id + " ";
+					});
+					aux_oc_id = aux_oc_id.trim();
+					//console.log(aux_ocArray);
+					//if(aux_oc_id == "" || aux_oc_id == null){
+					if(aux_ocArray.length == 0){
 						$("#ocnv_id").val("");
 						$("#lblocnv_id").html("OC");
 						$("#ocnv_id").attr("disabled",true)
@@ -180,10 +219,16 @@ function ajaxRequest(data,url,funcion) {
 						$('#group_oc_file').show()
 					}else{
 						$("#ocnv_id").val(aux_oc_id);
+						/*
 						aux_href = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' onclick='verpdf2(\"" + respuesta[0].oc_file + "\",2)'>" + 
 										aux_oc_id + 
 									"</a>";
-						$("#ocnv_id").attr("disabled",false)
+						*/
+						$("#ocnv_id").attr("disabled",false);
+						$("#ocnv_id").attr("maxlength",15);
+						if(aux_ocArray.length > 1){
+							$("#ocnv_id").attr("maxlength",200);
+						}
 						$("#lblocnv_id").html("OC: " + aux_href);
 						$("#oc_id").attr("disabled", true);
 						$('#group_oc_file').hide();
@@ -314,7 +359,7 @@ $("#rut").blur(function(){
 							$("#formapago_desc").val(respuesta.cliente[0].formapago_desc);
 							$("#plazopago").val(respuesta.cliente[0].plazopago_dias);
 							$("#fchemis").change();
-							
+							$("#selectguiadesp").val("");
 							/*
 							$("#giro_id").val(respuesta.cliente[0].giro_id);
 							$("#giro_idD").val(respuesta.cliente[0].giro_id);
@@ -544,6 +589,7 @@ function blanquearDatos(){
 	$("#vendedor_id").val("");
 	$("#centroeconomico_id").val("");
 	$("#hep").val("");
+	$("#notped").val("");
 	//$("#foliocontrol_id").val("");
 	$("#obs").val("");
 	$('.select2').trigger('change');
