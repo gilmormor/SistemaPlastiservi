@@ -189,11 +189,13 @@ function ajaxRequest(data,url,funcion) {
 							}						
 						});
 						if (aux_ocEncontrado == false){
-							var objeto =   {
-								oc_id : respuesta.oc_id,
-								oc_file: respuesta.oc_file
-							};				
-							aux_ocArray.push(objeto);
+							if(respuesta.oc_id != "" || respuesta.oc_id != null){
+								var objeto =   {
+									oc_id : respuesta.oc_id,
+									oc_file: respuesta.oc_file
+								};				
+								aux_ocArray.push(objeto);
+							}
 						}
 	
 						//console.log("Respuesta: " + index + " | OC: " + respuesta.oc_id + " Producto: " + respuesta.nmbitem)
