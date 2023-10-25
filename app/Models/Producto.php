@@ -1027,4 +1027,38 @@ class Producto extends Model
         
     }
 
+    public static function atributosProducto($producto_id){
+        $producto = Producto::findOrFail($producto_id);
+        $aux_nombreprod = $producto->nombre;
+        if(isset($producto->acuerdotecnico)){
+            $at_ancho = $producto->acuerdotecnico->at_ancho;
+            $at_largo = $producto->acuerdotecnico->at_largo;
+            $at_espesor = $producto->acuerdotecnico->at_espesor;
+            $at_ancho = empty($at_ancho) ? "0,00" : $at_ancho;
+            $at_largo = empty($at_largo) ? "0,00" : $at_largo;
+            $at_espesor = empty($at_espesor) ? "0,00" : $at_espesor;
+            //$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
+
+            $AcuTec = $producto->acuerdotecnico;
+            $aux_formatofilm = $AcuTec->at_formatofilm > 0 ? " " . number_format($AcuTec->at_formatofilm, 2, ',', '.') . "Kg." : "";
+            $aux_color =  empty($AcuTec->color->descripcion) ? "" : " " . $AcuTec->color->descripcion;
+            $aux_at_complementonomprod = empty($AcuTec->at_complementonomprod) ? "" : " " . $AcuTec->at_complementonomprod;
+            $aux_atribAcuTec = $AcuTec->materiaprima->descfact . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+            //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+            $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
+        }else{
+            //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
+            $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_descripcion);
+            $aux_diametro = $producto->diametro > 0 ? " D:" . $producto->diametro : "";
+            $aux_long = $producto->long ? " L:" . $producto->long : "";
+            $aux_tipounion = "";
+            if(!($producto->tipounion === "S/C" or $producto->tipounion === "S/U")){
+                $aux_tipounion = $producto->tipounion;
+            }                                        
+            $aux_nombreprod = $aux_nombreprod . $aux_diametro . $aux_long . " " . $aux_cla_nombre. " " . $aux_tipounion;
+        }
+        return $aux_nombreprod;
+    }
+
+
 }

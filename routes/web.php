@@ -1418,3 +1418,10 @@ Route::get('dteguiadespusadaliberar/reporte', 'DteGuiaDespUsadaLiberarController
 Route::get('dteguiadespusadaliberar/exportPdf', 'DteGuiaDespUsadaLiberarController@exportPdf')->name('dteguiadespusadaliberar_exportPdf');
 Route::get('dteguiadespusadaliberar/totalizarindex', 'DteGuiaDespUsadaLiberarController@totalizarindex')->name('dteguiadespusadaliberar_totalizarindex');
 Route::post('dteguiadespusadaliberar/liberarguiadesp', 'DteGuiaDespUsadaLiberarController@liberarguiadesp')->name('dteguiadespusadaliberar_liberarguiadesp');
+
+/*RUTAS REPORTE Pendiente por Producto New*/
+Route::get('reportpendxprod', 'ReportPendXprodController@index')->name('reportpendxprod');
+Route::get('reportpendxprod/reportpendxprodpage', 'ReportPendXprodController@reportpendxprodpage')->name('reportpendxprodpage');
+Route::get('reportpendxprod/reporte', 'ReportPendXprodController@reporte')->name('reportpendxprod_reporte');
+Route::get('reportpendxprod/exportPdf', 'ReportPendXprodController@exportPdf')->name('reportpendxprod_exportPdf');
+Route::get('reportpendxprod/totalizarindex', 'ReportPendXprodController@totalizarindex')->name('reportpendxprod_totalizarindex');
