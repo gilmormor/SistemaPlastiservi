@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-DTE Guia Despacho
+Liberar Guia Despacho
 @endsection
 
 <?php
@@ -21,9 +21,9 @@ DTE Guia Despacho
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Reporte Guia Despacho</h3>
+                <h3 class="box-title">Liberar Guia Despacho</h3>
                 <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
             </div>
             @csrf
@@ -215,12 +215,27 @@ DTE Guia Despacho
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="nrofactura" data-toggle='tooltip' title="Nro Factura">Nro Factura:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <input type="text" name="nrofactura" id="nrofactura" class="form-control" maxlength="10"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="nrodocto" data-toggle='tooltip' title="Nro Guia Despacho">Nro Guia Desp:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <input type="text" name="nrodocto" id="nrodocto" class="form-control" maxlength="10"/>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
                             <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                            <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
-                                <i class='glyphicon glyphicon-print'></i> Reporte
-                            </button>
                         </div>
                     </form>
                 </div>

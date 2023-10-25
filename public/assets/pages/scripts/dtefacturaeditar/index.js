@@ -15,34 +15,42 @@ $(document).ready(function () {
     configurarTabla('#tabla-data-consulta');
 
     function configurarTabla(aux_tabla){
-        data = datosGDliberar();
+        data = datosFac();
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
+            'searching'   : true,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
-            'ajax'        : "/dteguiadespusadaliberar/dteguiadespusadaliberarpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
-            "order": [[ 0, "asc" ]],
+            "order"       : [[ 1, "asc" ],[ 11, "asc" ]],
+            'ajax'        : "/dtefacturaeditar/dtefacturaeditarpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             'columns'     : [
-                {data: 'id'},
-                {data: 'fchemis'},
-                {data: 'razonsocial'},
-                {data: 'comunanombre'},
-                {data: 'nvoc_id'},
-                {data: 'notaventa_id'},
-                {data: 'despachosol_id'},
-                {data: 'despachoord_id'},
-                {data: 'nrodocto'},
-                {data: 'fact_nrodocto'},
-                {data: 'fact_nrodocto'},
-                {data: 'nvoc_file',className:"ocultar"},
-                {data: 'icono',className:"ocultar"},
-                {data: 'dteanul_obs',className:"ocultar"},
-                {data: 'dteanulcreated_at',className:"ocultar"},
-                {data: 'fact_nombrepdf',className:"ocultar"},
+                {data: 'id'}, // 0
+                {data: 'fchemis'}, // 1
+                {data: 'rut'}, // 2
+                {data: 'razonsocial'}, // 3
+                {data: 'cotizacion_id'}, // 4
+                {data: 'oc_id'}, // 5
+                {data: 'notaventa_id'}, // 6
+                {data: 'despachosol_id'}, // 7
+                {data: 'despachoord_id'}, // 8
+                {data: 'nrodocto_guiadesp'}, // 9
+                {data: 'nrodocto_guiadesp'}, // 10
+                {data: 'nrodocto'}, // 11
+                {data: 'nombre_comuna'}, // 12
+                {data: 'nombre_comuna'}, // 13
+                {data: 'dteanul_obs',className:"ocultar"}, //14
+                {data: 'dteanulcreated_at',className:"ocultar"}, //15
+                {data: 'clientebloqueado_descripcion',className:"ocultar"}, //16
+                {data: 'oc_file',className:"ocultar"}, //17
+                {data: 'nombrepdf',className:"ocultar"}, //18
+                {data: 'staverfacdesp',className:"ocultar"}, //19
+                {data: 'updated_at',className:"ocultar"}, //20
+                {data: 'dtefac_updated_at',className:"ocultar"}, //21
+                {defaultContent : ""}
             ],
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -50,9 +58,8 @@ $(document).ready(function () {
             "createdRow": function ( row, data, index ) {
                 $(row).attr('id','fila' + data.id);
                 $(row).attr('name','fila' + data.id);
-                $(row).attr('dteupdated_at',data.dteupdated_at);
-                $(row).attr('dteguiausada_id',data.dteguiausada_id);
-                $(row).attr('dteguiausadaupdated_at',data.dteguiausadaupdated_at);
+                $(row).addClass("espaciadoletras-05");
+                //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
                 if (data.dteanul_obs != null) {
                     aux_fecha = new Date(data.dteanulcreated_at);
                     aux_text = data.id +
@@ -61,92 +68,180 @@ $(document).ready(function () {
                     "</a>";
                     $('td', row).eq(0).html(aux_text);
                 }
+                /*
+                aux_text = 
+                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='generarFactSii(" + data.id + ")' title='Generar DTE Factura SII'>"+
+                    + data.id + 
+                "</a>";
+                $('td', row).eq(0).html(aux_text);
+                */
                 $('td', row).eq(0).attr('data-order',data.id);
 
+    
                 $('td', row).eq(1).attr('data-order',data.fchemis);
                 aux_fecha = new Date(data.fchemis + " 00:00:00");
                 $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
 
-                if(data.nvoc_file != "" && data.nvoc_file != null){
-                    aux_text = 
-                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.nvoc_file + "\",2)'>" + 
-                            data.nvoc_id + 
+                $('td', row).eq(3).attr("style","font-size:12px");
+    
+                if(data.cotizacion_id != null){
+                    let arr_cotizacion_id = data.cotizacion_id.split(','); 
+                    aux_text = "";
+                    for (let i = 0; i < arr_cotizacion_id.length; i++) {
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion' onclick='genpdfCOT(" + arr_cotizacion_id[i] + ",1)'>" +
+                            arr_cotizacion_id[i] +
                         "</a>";
-                    $('td', row).eq(4).html(aux_text);
+                    }    
+                }else{
+                    aux_text = "";
                 }
+                $('td', row).eq(4).html(aux_text);
+    
                 aux_text = "";
-                if(data.notaventa_id != "" && data.notaventa_id != null){
-                    aux_text = 
-                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
-                            data.notaventa_id +
+                if(data.oc_file != "" && data.oc_file != null){
+                    let arr_oc_id = data.oc_id.split(','); 
+                    let arr_oc_file = data.oc_file.split(','); 
+                    for (let i = 0; i < arr_oc_file.length; i++) {
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"" + arr_oc_file[i] + "\",2)'>" + 
+                            arr_oc_id[i] + 
                         "</a>";
-                }
-                if(data.dteguiadespnv_notaventa_id != "" && data.dteguiadespnv_notaventa_id != null){
-                    aux_text = 
-                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.dteguiadespnv_notaventa_id + ",1)'>" +
-                            data.dteguiadespnv_notaventa_id +
-                        "</a>";
+                        if((i+1) < arr_oc_file.length){
+                            aux_text += ",";
+                        }
+                    }
                 }
                 $('td', row).eq(5).html(aux_text);
                 aux_text = "";
-                if(data.despachosol_id != "" && data.despachosol_id != null){
-                    aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" + 
-                        data.despachosol_id + 
-                    "</a>";
+                if(data.notaventa_id != "" && data.notaventa_id != null){
+                    let arr_notaventa_id = data.notaventa_id.split(','); 
+                    for (let i = 0; i < arr_notaventa_id.length; i++){
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + arr_notaventa_id[i] + ",1)'>" +
+                            arr_notaventa_id[i] +
+                        "</a>";
+                        if((i+1) < arr_notaventa_id.length){
+                            aux_text += ",";
+                        }
+                    }    
                 }
                 $('td', row).eq(6).html(aux_text);
+    
                 aux_text = "";
-                if(data.despachoord_id != "" && data.despachoord_id != null){
-                    aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden Despacho' onclick='genpdfOD(" + data.despachoord_id + ",1)'>" + 
-                        data.despachoord_id + 
-                    "</a>";
+                if(data.despachosol_id != "" && data.despachosol_id != null){
+                    let arr_despachosol_id = data.despachosol_id.split(','); 
+                    for (let i = 0; i < arr_despachosol_id.length; i++){
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Solicitud Despacho' onclick='genpdfSD(" + arr_despachosol_id[i] + ",1)'>" +
+                            arr_despachosol_id[i] +
+                        "</a>";
+                        if((i+1) < arr_despachosol_id.length){
+                            aux_text += ",";
+                        }
+                    }
                 }
                 $('td', row).eq(7).html(aux_text);
+    
                 aux_text = "";
-                if(data.nrodocto){
-                    aux_text = 
-                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','')">
-                            ${data.nrodocto}
-                        </a>
-                        <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','_cedible')" style="padding-left: 0px;">
-                            <i class="fa fa-fw fa-file-pdf-o"></i>
+                if(data.despachoord_id != "" && data.despachoord_id != null){
+                    let arr_despachoord_id = data.despachoord_id.split(','); 
+                    for (let i = 0; i < arr_despachoord_id.length; i++){
+                        aux_text += 
+                        `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Orden Despacho" onclick="genpdfOD('${arr_despachoord_id[i]}',1)">
+                            ${arr_despachoord_id[i]}
                         </a>`;
-                        if(data.guiaorigenprecio_nrodocto != null){
-                            aux_text +=
-                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="" data-original-title="Guia Despacho origen: ${data.guiaorigenprecio_nrodocto}" onclick="genpdfGD('${data.guiaorigenprecio_nrodocto}','')">
-                                <i class="fa fa-fw fa-question-circle text-aqua"></i>
-                            </a>`;
+                        if((i+1) < arr_despachoord_id.length){
+                            aux_text += `,`;
                         }
+                    }    
                 }
                 $('td', row).eq(8).html(aux_text);
-                aux_text = "";
-                if(data.fact_nrodocto != null){
-                    let id_str = data.fact_nrodocto.toString();
-                    id_str = data.fact_nombrepdf + id_str.padStart(8, "0");
     
+                aux_text = "";
+                if(data.nrodocto_guiadesp != null){
+                    let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
+                    for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
+                        id_strgd = arr_nrodocto_guiadesp[i].toString();
+                        id_strgd = data.nombrepdf_guiadesp + id_strgd.padStart(8, "0");
+                        aux_text += 
+                        `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia Despacho" onclick="genpdfGD('${arr_nrodocto_guiadesp[i]}','')">
+                            ${arr_nrodocto_guiadesp[i]}
+                        </a>
+                        <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Guia" onclick="descArcTXT('${id_strgd}.xml')">
+                            <i class="fa fa-fw fa-cloud-download"></i>
+                        </a>`;
+                        if((i+1) < arr_nrodocto_guiadesp.length){
+                            aux_text += `,`;
+                        }
+                    }
+                }
+                $('td', row).eq(9).attr("class","action-buttons");
+                $('td', row).eq(9).html(aux_text);
+    
+                aux_text = "";
+                if(data.nrodocto_guiadesp != null){
+                    let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
+                    for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
+                        aux_text += 
+                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + arr_nrodocto_guiadespced[i] + ",\"_cedible\")'>" +
+                            arr_nrodocto_guiadespced[i] +
+                        "</a>";
+                        if((i+1) < arr_nrodocto_guiadespced.length){
+                            aux_text += ",";
+                        }
+                    }    
+                }
+                $('td', row).eq(10).attr("class","action-buttons");
+                $('td', row).eq(10).html(aux_text);
+
+                let id_str = data.nrodocto.toString();
+                id_str = data.nombrepdf + id_str.padStart(8, "0");
+                aux_text = "";
+                if(data.nrodocto != null){
                     aux_text = 
                     `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFAC('${id_str}','')">
-                        ${data.fact_nrodocto}
+                        ${data.nrodocto}
                     </a>
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.fact_nrodocto}" onclick="genpdfFAC('${id_str}','_cedible')">
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
                         <i class="fa fa-fw fa-file-pdf-o"></i>
+                    </a>
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="descArcTXT('${id_str}.xml')">
+                        <i class="fa fa-fw fa-cloud-download"></i>
                     </a>`;
                 }
-                $('td', row).eq(9).html(aux_text);
+                $('td', row).eq(11).attr("class","action-buttons");
+                $('td', row).eq(11).html(aux_text);
+                $('td', row).eq(12).addClass("espaciadoletras-05");
+                /*
+                aux_checkstaex = "";
+                if(data.staverfacdesp == 1){
+                    aux_checkstaex = "checked";
+                }
+                aux_text = 
+                `<div class="checkbox">
+                    <label style="font-size: 1.2em;padding-left: 0px;">
+                        <input type="hidden" id="staverfacdesp${data.id}" name="staverfacdesp${data.id}" value="${data.staverfacdesp}">
+                        <input type="checkbox" class="checkstaex" id="aux_staverfacdesp${data.id}" name="aux_staverfacdesp${data.id}" onchange="clickstaverfacdesp(this)" item=${data.id} ${aux_checkstaex}>
+                        <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                    </label>
+                </div>`;
+                $('td', row).eq(12).html(aux_text);
+                */
+                aux_text = 
+                `<a href="dtefacturaeditar" class="btn-accion-tabla tooltipsC btnEditar" title="Editar este registro">
+                    <i class="fa fa-fw fa-pencil"></i>
+                </a>`;
+                $('td', row).eq(13).html(aux_text);
 
-                if (data.dteanul_obs == null) {
-                    aux_text = 
-                    `<a onclick="liberardteGuia(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Liberar Guia Despacho" data-toggle="tooltip">
-                        <button type="button" class="btn btn-default btn-xs">
-                            <i class="fa fa-rocket text-danger"></i>
-                        </button>
-                    </a>`;
-                    $('td', row).eq(10).html(aux_text);
-                }else{
-                    $('td', row).eq(10).html("");
-                }
+
+                $('td', row).eq(20).addClass('updated_at');
+                $('td', row).eq(20).attr('id','updated_at' + data.id);
+                $('td', row).eq(20).attr('name','updated_at' + data.id);
+
+                $('td', row).eq(21).addClass('dtefac_updated_at');
+                $('td', row).eq(21).attr('id','dtefac_updated_at' + data.id);
+                $('td', row).eq(21).attr('name','dtefac_updated_at' + data.id);
 
             }
         });
@@ -156,8 +251,8 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
-        data = datosGDliberar();
-        $('#tabla-data-consulta').DataTable().ajax.url( "/dteguiadespusadaliberar/dteguiadespusadaliberarpage/" + data.data2 ).load();
+        data = datosFac();
+        $('#tabla-data-consulta').DataTable().ajax.url( "/dtefacturaeditar/dtefacturaeditarpage/" + data.data2 ).load();
     });
 });
 
@@ -265,13 +360,26 @@ function ajaxRequest(data,url,funcion) {
                     $("#savefed" + aux_data.i).attr('updated_at',respuesta.updated_at);
                 }
             }
+            if(funcion=='staverfacdesp'){
+				if (respuesta.error == 0) {
+                    $("#dtefac_updated_at" + aux_data.dte_id).html(respuesta.dtefac_updated_at);
+				} else {
+                    estaSeleccionado = $("#aux_staverfacdesp" + aux_data.dte_id).is(":checked");
+                    if(estaSeleccionado){
+                        $("#aux_staverfacdesp" + aux_data.dte_id).prop('checked',false);
+                    }else{
+                        $("#aux_staverfacdesp" + aux_data.dte_id).prop('checked',true);
+                    }
+				}
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+            }
 		},
 		error: function () {
 		}
 	});
 }
 
-function datosGDliberar(){
+function datosFac(){
     var data1 = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -286,15 +394,32 @@ function datosGDliberar(){
         aprobstatus       : $("#aprobstatus").val(),
         aprobstatusdesc   : $("#aprobstatus option:selected").html(),
         comuna_id         : $("#comuna_id").val(),
-        guiadesp_id       : $("#guiadesp_id").val(),
+        dte_id            : $("#dte_id").val(),
         producto_id       : $("#producto_idPxP").val(),
         filtro            : 1,
-        dteguiausada      : 1,
-        dteguiausadaActasParaLiberar : 1,
-        nrofactura        : $("#nrofactura").val(),
         nrodocto          : $("#nrodocto").val(),
+        statusgen         : 1,
         _token            : $('input[name=_token]').val()
     };
+/*
+    var data1 = {
+        fechad            : $("#fechad").val(),
+        fechah            : $("#fechah").val(),
+        rut               : eliminarFormatoRutret($("#rut").val()),
+        vendedor_id       : $("#vendedor_id").val(),
+        oc_id             : $("#oc_id").val(),
+        giro_id           : $("#giro_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
+        tipoentrega_id    : $("#tipoentrega_id").val(),
+        notaventa_id      : $("#notaventa_id").val(),
+        aprobstatus       : $("#aprobstatus").val(),
+        comuna_id         : $("#comuna_id").val(),
+        dte_id       : $("#dte_id").val(),
+        producto_id       : $("#producto_idPxP").val(),
+        filtro            : 1,
+        _token            : $('input[name=_token]').val()
+    };
+*/
     var data2 = "?fechad="+data1.fechad +
     "&fechah="+data1.fechah +
     "&rut="+data1.rut +
@@ -308,13 +433,11 @@ function datosGDliberar(){
     "&aprobstatus="+data1.aprobstatus +
     "&aprobstatusdesc="+data1.aprobstatusdesc +
     "&comuna_id="+data1.comuna_id +
-    "&guiadesp_id="+data1.guiadesp_id +
+    "&dte_id="+data1.dte_id +
     "&producto_id="+data1.producto_id +
     "&filtro="+data1.filtro +
-    "&dteguiausada=" + data1.dteguiausada +
-    "&nrofactura=" + data1.nrofactura +
-    "&nrodocto=" + data1.nrodocto +
-    "&dteguiausadaActasParaLiberar=" + data1.dteguiausadaActasParaLiberar +
+    "&nrodocto="+data1.nrodocto +
+    "&statusgen="+data1.statusgen +
     "&_token="+data1._token
 
     var data = {
@@ -324,7 +447,6 @@ function datosGDliberar(){
     //console.log(data);
     return data;
 }
-
 function consultar(data){
     $.ajax({
         url: '/despachosol/reportesoldesp',
@@ -562,7 +684,7 @@ $(".requeridos").change(function(){
 function btnpdf(numrep){
     if(numrep==1){
         aux_titulo = 'Indicadores ' + $("#consulta_id option:selected").html();
-        data = datosGDliberar();
+        data = datosFac();
         cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
                 "&fechaestdesp=" + data.fechaestdesp +
                 "&rut=" + data.rut +
@@ -584,8 +706,8 @@ function btnpdf(numrep){
 $("#btnpdf2").click(function()
 {
     aux_titulo = 'Pendientes Solicitud Despacho';
-    data = datosGDliberar();
-    $('#contpdf').attr('src', '/dteguiadespusadaliberar/exportPdf/' + data.data2);
+    data = datosFac();
+    $('#contpdf').attr('src', '/dtefacturaeditar/exportPdf/' + data.data2);
     $("#myModalpdf").modal('show'); 
 });
 
@@ -663,29 +785,16 @@ function restbotoneditfeced(i){
     $(".datepicker").datepicker("refresh");
 }
 
-function liberardteGuia(id){
+function clickstaverfacdesp(obj){
+    let item = $(obj).attr("item");
     var data = {
-        dte_id : id,
-        nfila  : id,
-        dteupdated_at : $("#fila" + id).attr("dteupdated_at"),
-        dteguiausada_id : $("#fila" + id).attr("dteguiausada_id"),
-        dteguiausadaupdated_at : $("#fila" + id).attr("dteguiausadaupdated_at"),
-        _token: $('input[name=_token]').val()
+        dte_id : item,
+        updated_at : $("#updated_at" + item).html(),
+        dtefac_updated_at : $("#dtefac_updated_at" + item).html(),
+        staverfacdesp : $(obj).prop('checked'),
+        _token : $('input[name=_token]').val()
     };
-    var ruta = '/dteguiadespusadaliberar/liberarguiadesp';
-    //var ruta = '/guiadesp/dteguiadesp';
-    swal({
-        title: '¿ Liberar Guia Despacho ?',
-        text: "Esta acción no se puede deshacer!",
-        icon: 'warning',
-        buttons: {
-            cancel: "Cancelar",
-            confirm: "Aceptar"
-        },
-    }).then((value) => {
-        if (value) {
-            ajaxRequestGeneral(data,ruta,'liberarguiadesp');
-        }
-    });
+    var ruta = '/dtefactura/staverfacdesp'; //Guardar Fecha estimada de despacho
+    ajaxRequest(data,ruta,'staverfacdesp');
 
 }

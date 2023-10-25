@@ -1418,3 +1418,12 @@ Route::get('dteguiadespusadaliberar/reporte', 'DteGuiaDespUsadaLiberarController
 Route::get('dteguiadespusadaliberar/exportPdf', 'DteGuiaDespUsadaLiberarController@exportPdf')->name('dteguiadespusadaliberar_exportPdf');
 Route::get('dteguiadespusadaliberar/totalizarindex', 'DteGuiaDespUsadaLiberarController@totalizarindex')->name('dteguiadespusadaliberar_totalizarindex');
 Route::post('dteguiadespusadaliberar/liberarguiadesp', 'DteGuiaDespUsadaLiberarController@liberarguiadesp')->name('dteguiadespusadaliberar_liberarguiadesp');
+
+/*RUTAS DTE FACTURA EDITAR*/
+Route::get('dtefacturaeditar', 'DteFacturaEditarController@index')->name('dtefacturaeditar');
+Route::get('dtefacturaeditar/dtefacturaeditarpage', 'DteFacturaEditarController@dtefacturaeditarpage')->name('dtefacturaeditarpage');
+Route::get('dtefacturaeditar/reporte', 'DteFacturaEditarController@reporte')->name('dtefacturaeditar_reporte');
+Route::get('dtefacturaeditar/exportPdf', 'DteFacturaEditarController@exportPdf')->name('dtefacturaeditar_exportPdf');
+Route::get('dtefacturaeditar/totalizarindex', 'DteFacturaEditarController@totalizarindex')->name('dtefacturaeditar_totalizarindex');
+Route::get('dtefacturaeditar/{id}/editar', 'DteFacturaEditarController@editar')->name('editar_dtefacturaeditar');
+Route::put('dtefacturaeditar/{id}', 'DteFacturaEditarController@actualizar')->name('actualizar_dtefacturaeditar');
