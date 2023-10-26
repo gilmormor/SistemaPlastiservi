@@ -1030,6 +1030,12 @@ class Producto extends Model
     public static function atributosProducto($producto_id){
         $producto = Producto::findOrFail($producto_id);
         $aux_nombreprod = $producto->nombre;
+        $aux_cla_nombre = "";
+        $at_espesor = "";
+        $aux_tipounion = "";
+        $aux_atribAcuTec = "";
+        $at_anchoT = "";
+        $at_largoT = "";
         if(isset($producto->acuerdotecnico)){
             $at_ancho = $producto->acuerdotecnico->at_ancho;
             $at_largo = $producto->acuerdotecnico->at_largo;
@@ -1049,15 +1055,27 @@ class Producto extends Model
         }else{
             //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
             $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_descripcion);
-            $aux_diametro = $producto->diametro > 0 ? " D:" . $producto->diametro : "";
-            $aux_long = $producto->long ? " L:" . $producto->long : "";
+            $at_anchoT = $producto->diametro > 0 ? " D:" . $producto->diametro : "";
+            $at_largoT = $producto->long ? " L:" . $producto->long : "";
+            $at_ancho = $producto->diametro > 0 ? $producto->diametro : "";
+            $at_largo = $producto->long ? $producto->long : "";
             $aux_tipounion = "";
             if(!($producto->tipounion === "S/C" or $producto->tipounion === "S/U")){
                 $aux_tipounion = $producto->tipounion;
             }                                        
-            $aux_nombreprod = $aux_nombreprod . $aux_diametro . $aux_long . " " . $aux_cla_nombre. " " . $aux_tipounion;
+            $aux_nombreprod = $aux_nombreprod . $at_anchoT . $at_largoT . " " . $aux_cla_nombre. " " . $aux_tipounion;
         }
-        return $aux_nombreprod;
+        $atributoProducto = [
+            "nombre" => $aux_nombreprod,
+            "at_ancho" => $at_ancho,
+            "at_largo" => $at_largo,
+            "at_espesor" => $at_espesor,
+            "at_anchoT" => $at_anchoT,
+            "at_largoT" => $at_largoT,
+            "cla_nombre" => $aux_cla_nombre,
+            "tipounion" => $aux_tipounion
+        ];
+        return $atributoProducto;
     }
 
 

@@ -51,8 +51,143 @@ class ReportPendXprodController extends Controller
         //dd('entro');
         //$datas = GuiaDesp::reporteguiadesp($request);
         //dd($request);
-        $datas = consulta($request,2,1);
-       //$datas = Dte::reportdtefac($request);
+        $aux_AgruOrd = "group by notaventadetalle.producto_id
+                        order by notaventadetalle.producto_id";
+        $datas = consulta($request,2,1,$aux_AgruOrd);
+        //dd($datas);
+        $producto_id_array = [];
+        foreach ($datas as $key => &$data) {
+            $atributoProd = Producto::atributosProducto($data->producto_id);   
+            $producto = Producto::findOrFail($data->producto_id);
+            $request1 = new Request();
+            $request1["producto_id"] = $data->producto_id;
+            //dd($producto->invbodegaproductos);
+            $aux_invbodega_id = "";
+            foreach ($producto->invbodegaproductos as $invbodegaproducto) {
+                if($invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id and $invbodegaproducto->invbodega->tipo == 2){
+                    $aux_invbodega_id = $invbodegaproducto->invbodega_id; 
+                }
+            }
+            $request1["invbodega_id"] = $aux_invbodega_id;
+            $request1["tipo"] = 2;
+            $stockbpt = 0;
+            if(isset($invbodegaproducto)){
+                $existencia =  $invbodegaproducto::existencia($request1);
+                $stockbpt = $existencia["stock"]["cant"];    
+            }
+    
+            $request1 = new Request();
+            $request1["producto_id"] = $data->producto_id;
+            //dd($producto->invbodegaproductos);
+            $aux_invbodega_id = "";
+            foreach ($producto->invbodegaproductos as $invbodegaproducto) {
+                if($invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id and $invbodegaproducto->invbodega->tipo == 1){
+                    $aux_invbodega_id = $invbodegaproducto->invbodega_id; 
+                }
+            }
+            $request1["invbodega_id"] = $aux_invbodega_id;
+            $request1["tipo"] = 1;
+            $picking = 0;
+            if(isset($invbodegaproducto)){
+                $existencia =  $invbodegaproducto::existencia($request1);
+                $picking = $existencia["stock"]["cant"];    
+            }
+
+            $producto_id_array[$data->producto_id] = [
+                "nombre" => $atributoProd["nombre"],
+                "at_ancho" => $atributoProd["at_ancho"],
+                "at_largo" => $atributoProd["at_largo"],
+                "at_espesor" => $atributoProd["at_espesor"],
+                "cla_nombre" => $atributoProd["cla_nombre"],
+                "tipounion" => $atributoProd["tipounion"],
+                "stockbpt" => $stockbpt,
+                "picking" => $picking
+            ];
+        }
+        //dd($producto_id_array);
+
+        $aux_AgruOrd = "";
+        $datas = consulta($request,2,1,$aux_AgruOrd);
+
+        $total_sumacantdesp = 0;
+        $total_cantsaldo = 0;
+        $total_kgpend = 0;
+        $total_totalplata = 0;
+        $total_precioxkilo = 0;
+
+        foreach ($datas as &$data){
+            $id = $data->producto_id;
+            $data->nombre = $producto_id_array[$id]["nombre"];
+            $data->diametro = $producto_id_array[$id]["at_ancho"];
+            $data->long = $producto_id_array[$id]["at_largo"];
+            $data->at_espesor = $producto_id_array[$id]["at_espesor"];
+            $data->cla_nombre = $producto_id_array[$id]["cla_nombre"];
+            $data->tipounion = $producto_id_array[$id]["tipounion"];
+            $data->stockbpt = $producto_id_array[$id]["stockbpt"];
+            $data->picking = $producto_id_array[$id]["picking"];
+
+            //SUMA TOTAL DE SOLICITADO
+            /*************************/
+            $sql = "SELECT cantsoldesp
+            FROM vista_sumsoldespdet
+            WHERE notaventadetalle_id=$data->id";
+            $datasuma = DB::select($sql);
+            if(empty($datasuma)){
+                $sumacantsoldesp= 0;
+            }else{
+                $sumacantsoldesp= $datasuma[0]->cantsoldesp;
+            }
+            /*************************/
+            //SUMA TOTAL DESPACHADO
+            /*************************/
+            $sql = "SELECT cantdesp
+                FROM vista_sumorddespxnvdetid
+                WHERE notaventadetalle_id=$data->id";
+            $datasumadesp = DB::select($sql);
+            if(empty($datasumadesp)){
+                $sumacantdesp= 0;
+            }else{
+                $sumacantdesp= $datasumadesp[0]->cantdesp;
+            }
+            if(empty($data->oc_file)){
+                $aux_enlaceoc = $data->oc_id;
+            }else{
+                $aux_enlaceoc = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
+            }
+
+            //$aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
+            //$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
+            $aux_cantsaldo = $data->cant-$sumacantdesp;
+            $fila_cantdesp = number_format($sumacantdesp, 0, ",", ".");
+            if($sumacantdesp>0){
+                $fila_cantdesp = "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->notaventa_id,$data->producto_id)' title='Ver detalle despacho' data-toggle='tooltip'>"
+                                . number_format($sumacantdesp, 0, ",", ".") .
+                                "</a>";
+            }
+            $comuna = Comuna::findOrFail($data->comunaentrega_id);
+            $producto = Producto::findOrFail($data->producto_id);
+            //$notaventa = NotaVenta::findOrFail($data->notaventa_id);
+            $aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
+
+            $data->sumacantdesp = $sumacantdesp;
+            $data->cantsaldo = $aux_cantsaldo;
+            $data->kgpend = $aux_cantsaldo * $data->peso;
+            $data->subtotalplata = round($aux_subtotalplata,0);
+
+            $total_sumacantdesp += $data->sumacantdesp;
+            $total_cantsaldo += $data->cantsaldo;
+            $total_kgpend += $data->kgpend;
+            $total_totalplata += $data->subtotalplata;
+            $total_precioxkilo += $data->precioxkilo;
+        }
+        //$datas[]prueba = [];
+        $aux_contreg = count($datas)>0 ? count($datas) : 1;
+        $request["total_sumacantdesp"] = $total_sumacantdesp;
+        $request["total_cantsaldo"] = $total_cantsaldo;
+        $request["total_kgpend"] = round($total_kgpend);
+        $request["total_totalplata"] = $total_totalplata;
+        $request["prom_precioxkilo"] = $total_precioxkilo / $aux_contreg;
+
         return datatables($datas)->toJson();
     }
 
@@ -86,12 +221,11 @@ class ReportPendXprodController extends Controller
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 
-    }
-    
+    }    
 }
 
 
-function consulta($request,$aux_sql,$orden){
+function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
     //dd($request);
     if($orden==1){
         $aux_orden = "notaventadetalle.notaventa_id desc";
@@ -347,17 +481,23 @@ function consulta($request,$aux_sql,$orden){
     }
 
     if($aux_sql==2){
-        $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,notaventa.cliente_id,
-        notaventadetalle.cant,if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS cantdesp,
-        producto.nombre,cliente.razonsocial,notaventadetalle.id,
-        notaventadetalle.notaventa_id,oc_file,
-        producto.diametro,notaventa.oc_id,
-        claseprod.cla_nombre,producto.long,
-        if(producto.peso=0,notaventadetalle.totalkilos/notaventadetalle.cant,producto.peso) as peso,
-        producto.tipounion,
-        notaventadetalle.totalkilos,
-        subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
-        notaventadetalle.precioxkilo,comuna.nombre as comunanombre,acuerdotecnico.id as acuerdotecnico_id
+        $aux_campos = "";
+        if($aux_AgruOrd == ""){
+            $aux_campos = ",notaventa.fechahora,notaventa.cliente_id,
+            notaventadetalle.cant,if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS cantdesp,
+            producto.nombre,cliente.razonsocial,notaventadetalle.id,
+            notaventadetalle.notaventa_id,oc_file,
+            producto.diametro,notaventa.oc_id,
+            claseprod.cla_nombre,producto.long,
+            if(producto.peso=0,notaventadetalle.totalkilos/notaventadetalle.cant,producto.peso) as peso,
+            producto.tipounion,
+            notaventadetalle.totalkilos,
+            subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
+            notaventadetalle.precioxkilo,comuna.nombre as comunanombre,acuerdotecnico.id as acuerdotecnico_id,
+            '' as at_espesor,0 as stockbpt,0 as picking";
+        }
+
+        $sql = "SELECT notaventadetalle.producto_id $aux_campos ,notaventa.sucursal_id
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
@@ -392,16 +532,11 @@ function consulta($request,$aux_sql,$orden){
         AND isnull(notaventa.anulada)
         AND notaventadetalle.cant>if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
-        and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at));";
+        and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        $aux_AgruOrd;";
     }
     $datas = DB::select($sql);
-    foreach ($datas as $key => &$data) {
-                $atributosProducto = [
-                Producto::atributosProducto($data->producto_id)
-        ];
-        $data->nombre = Producto::atributosProducto($data->producto_id);
-    }
-    //dd($datas);
+
     return $datas;
     
 }
