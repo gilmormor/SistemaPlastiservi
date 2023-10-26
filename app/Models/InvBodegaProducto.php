@@ -100,7 +100,8 @@ class InvBodegaProducto extends Model
             //$invbodegaproductoexistencia = $invbodegaproducto->consexistencia($request);
             $invbodegaproductoexistencia = InvBodegaProducto::existencia($request);
             //dd($invbodegaproductoexistencia);
-            $saldoexistencia =  $invbodegaproductoexistencia["stock"]["cant"] + ($inventsaldet->cant + $inventsaldet->cantex); 
+            //$saldoexistencia =  $invbodegaproductoexistencia["stock"]["cant"] + ($inventsaldet->cant + $inventsaldet->cantex); 
+            $saldoexistencia =  $invbodegaproductoexistencia["stock"]["cant"] + ($inventsaldet->cant); 
             //dd($saldoexistencia);
             //SI EL STATUS $inventsaldet->staex == 1 NO ENTRA EN LA VALIDACION DE SALDO NEGATIVO
             //SI SE MARCA ESTE ESTATUS QUIERE DECIR QUE NO HACE FALTA VALIDAR QUE EL SALDO ESTA NEGATIVO

@@ -411,8 +411,8 @@ function ajaxRequest(data,url,funcion) {
             }
             if(funcion=='guardaranularguia'){
 				if (respuesta.mensaje == "ok") {
-                    console.log(datatemp);
-                    console.log("#fila" + datatemp.guiadesp_id);
+                    //console.log(datatemp);
+                    //console.log("#fila" + datatemp.guiadesp_id);
 					$("#fila" + datatemp.guiadesp_id).remove();
 					$("#myModalanularguiafact").modal('hide');
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');

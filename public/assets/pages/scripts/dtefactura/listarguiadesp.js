@@ -956,7 +956,7 @@ function consultaranularguiafact(guiadespacho){
 
 
 function anularguia(id,despachoord_id){
-    console.log("entro");
+    //console.log("entro");
     quitarvalidacioneach();
     $("#titeditarcampo").html("Observacion");
     $("#lbleditarcampo").html("Observacion: Anular Guia " + $("#fila" + id).attr("nrodocto1"));    

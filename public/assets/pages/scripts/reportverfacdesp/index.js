@@ -176,7 +176,7 @@ function cargarvistoFac(obj,id_str,cedible){
         cedible : cedible,
         _token : $('input[name=_token]').val()
     };
-    console.log(data);
+    //console.log(data);
     //return 0;
     var ruta = '/dtefactura/staverfacdesp'; //Guardar Fecha estimada de despacho
     ajaxRequest(data,ruta,'staverfacdesp');

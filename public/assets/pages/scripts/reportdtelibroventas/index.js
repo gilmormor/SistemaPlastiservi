@@ -417,7 +417,7 @@ function exportarExcel() {
         datosExcel.push(["","","","","","","","","","","",""]);
         datosExcel.push(["Suc","Doc","Fecha","Numero","FechaVenc","RUT","Razon Social","Vendedor","FormaPago","Neto","IVA","Total"]);
         data.datos.forEach(function(registro) {
-            console.log(registro);
+            //console.log(registro);
             aux_totalNeto += registro.mntneto;
             aux_totalIva += registro.iva;
             aux_total += registro.mnttotal_a;

@@ -28,6 +28,7 @@
 				<div class="round">
 					<span class="h3">Reporte Nota de Venta</span>
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
+					<p>Sucursal: {{$nombreSucursal}}</p>
 					<p>Area Producción: {{$nombreAreaproduccion}}</p>
 					<p>Vendedor: {{$nomvendedor}} </p>
 					<p>Giro: {{$nombreGiro}} </p>
@@ -107,13 +108,13 @@
 									$aux_cant -= $datas[0]->cantrec;
 								}    
 							}
-
-							if(in_array('5',$request->aprobstatus)){
+							$aux_aprobstatus = explode ( ",", $request->aprobstatus );
+							if(in_array('5',$aux_aprobstatus)){
 								if($aux_cant >= $notaventa->cant){
 									continue;
 								}
 							}
-							if(in_array('6',$request->aprobstatus)){
+							if(in_array('6',$aux_aprobstatus)){
 								if($notaventa->cant != $aux_cant){
 									continue;
 								}

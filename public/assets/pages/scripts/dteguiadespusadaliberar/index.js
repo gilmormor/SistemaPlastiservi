@@ -291,27 +291,10 @@ function datosGDliberar(){
         filtro            : 1,
         dteguiausada      : 1,
         dteguiausadaActasParaLiberar : 1,
+        nrofactura        : $("#nrofactura").val(),
+        nrodocto          : $("#nrodocto").val(),
         _token            : $('input[name=_token]').val()
     };
-/*
-    var data1 = {
-        fechad            : $("#fechad").val(),
-        fechah            : $("#fechah").val(),
-        rut               : eliminarFormatoRutret($("#rut").val()),
-        vendedor_id       : $("#vendedor_id").val(),
-        oc_id             : $("#oc_id").val(),
-        giro_id           : $("#giro_id").val(),
-        areaproduccion_id : $("#areaproduccion_id").val(),
-        tipoentrega_id    : $("#tipoentrega_id").val(),
-        notaventa_id      : $("#notaventa_id").val(),
-        aprobstatus       : $("#aprobstatus").val(),
-        comuna_id         : $("#comuna_id").val(),
-        guiadesp_id       : $("#guiadesp_id").val(),
-        producto_id       : $("#producto_idPxP").val(),
-        filtro            : 1,
-        _token            : $('input[name=_token]').val()
-    };
-*/
     var data2 = "?fechad="+data1.fechad +
     "&fechah="+data1.fechah +
     "&rut="+data1.rut +
@@ -329,6 +312,8 @@ function datosGDliberar(){
     "&producto_id="+data1.producto_id +
     "&filtro="+data1.filtro +
     "&dteguiausada=" + data1.dteguiausada +
+    "&nrofactura=" + data1.nrofactura +
+    "&nrodocto=" + data1.nrodocto +
     "&dteguiausadaActasParaLiberar=" + data1.dteguiausadaActasParaLiberar +
     "&_token="+data1._token
 

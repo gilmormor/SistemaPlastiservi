@@ -23,7 +23,7 @@ DTE Facturacion
             <div class="box-header with-border">
                 <h3 class="box-title">Reporte Facturacion</h3>
                 <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
             </div>
             @csrf
@@ -198,7 +198,7 @@ DTE Facturacion
                                 </div>
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="id" data-toggle='tooltip' title="DTE NroDocto">ID DTE:</label>
+                                        <label for="id" data-toggle='tooltip' title="Nro de Factura">Nro. Fact:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" name="nrodocto" id="nrodocto" class="form-control" maxlength="10"/>

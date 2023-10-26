@@ -337,11 +337,15 @@
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                     }
                                     $aux_mostrarimagenat = "display:none;";
+                                    $cliente_id = 0;
+                                    if($data->cliente_id != 0 and $data->cliente_id != null){
+                                        $cliente_id = $clienteselec[0]->id;
+                                    }
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$CotizacionDetalle->producto->categoriaprod_id}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
-                                            <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$CotizacionDetalle->acuerdotecnicotempunoauno->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
+                                            <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$CotizacionDetalle->acuerdotecnicotempunoauno->id}},{{$cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
                                                 {{$CotizacionDetalle->producto_id}}
                                             </a>
                                         @else

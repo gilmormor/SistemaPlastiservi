@@ -296,7 +296,7 @@ $("#btnpdf").click(function(event){
             "&comuna_id="+data.comuna_id + 
             "&producto_id="+data.producto_id +
             "&categoriaprod_id="+data.categoriaprod_id
-    console.log(cadena);
+    //console.log(cadena);
     $('#contpdf').attr('src', '/reportpendientexprod/exportPdf/'+cadena);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')

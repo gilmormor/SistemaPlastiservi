@@ -321,7 +321,23 @@ class Dte extends Model
             AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))))";
         }
 
-        //dd($aux_conddteguiausada);
+        if(!isset($request->nrodocto) or empty($request->nrodocto)){
+            $aux_condnrodocto = " true";
+        }else{
+            $aux_condnrodocto = "dte.nrodocto ='$request->nrodocto'";
+            $aux_condFecha = " true";
+        }
+        if(!isset($request->nrofactura) or empty($request->nrofactura)){
+            $aux_condnrofactura = " true";
+        }else{
+            $aux_condnrofactura = " $request->nrofactura in (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
+            FROM dtedte as dtedte1 INNER JOIN dte as dte1
+            ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+            WHERE dtedte1.dter_id = dte.id
+            AND (dte1.foliocontrol_id = 1) 
+            AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at)))";
+            $aux_condFecha = " true";
+        }
     
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,dte.mnttotal,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as nvoc_id,
@@ -404,6 +420,8 @@ class Dte extends Model
         and $aux_sucursal_idCond
         and $aux_conddteguiausada
         and $aux_conddteguiausadaActasParaLiberar
+        and $aux_condnrodocto
+        and $aux_condnrofactura
         GROUP BY dte.id
         ORDER BY dte.id asc;";
         //dd($sql);
@@ -723,8 +741,8 @@ class Dte extends Model
 
     public static function reportdtefac($request){
         $vendedorcond = " true ";
+        $user = Usuario::findOrFail(auth()->id());
         if(isset($request->vendedor_id)){
-            $user = Usuario::findOrFail(auth()->id());
             if(empty($request->vendedor_id)){
                 $sql= 'SELECT COUNT(*) AS contador
                     FROM vendedor INNER JOIN persona
@@ -765,6 +783,7 @@ class Dte extends Model
             $aux_condoc_id = " true";
         }else{
             $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
+            $aux_condFecha = " true";
         }
         if(!isset($request->giro_id) or empty($request->giro_id)){
             $aux_condgiro_id = " true";
@@ -780,6 +799,7 @@ class Dte extends Model
             $aux_condnotaventa_id = " true";
         }else{
             $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
+            $aux_condFecha = " true";
         }
     
         if(!isset($request->comuna_id) or empty($request->comuna_id)){
@@ -809,11 +829,13 @@ class Dte extends Model
             $aux_condnrodocto = " true";
         }else{
             $aux_condnrodocto = "dte.nrodocto = $request->nrodocto";
+            $aux_condFecha = " true";
         }
         if(!isset($request->dte_id) or empty($request->dte_id)){
             $aux_conddte_id = " true";
         }else{
             $aux_conddte_id = "dte.id = $request->dte_id";
+            $aux_condFecha = " true";
         }
 
         if(!isset($request->statusgen) or empty($request->statusgen)){
@@ -843,7 +865,6 @@ class Dte extends Model
             }
         }
         //dd($aux_condfoliocontrol_id);
-        $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
         $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
@@ -852,6 +873,12 @@ class Dte extends Model
         }else{
             $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
         }
+        if(!isset($request->vendedor_id) or empty($request->vendedor_id) or ($request->vendedor_id == "")){
+            $aux_vendedor_idCond = "true";
+        }else{
+            $aux_vendedor_idCond = "dte.vendedor_id in ($request->vendedor_id)";
+        }
+
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -910,6 +937,7 @@ class Dte extends Model
         AND $aux_condstatusgen
         AND $aux_aprobstatus
         AND $aux_condsucurArray
+        AND $aux_vendedor_idCond
         AND NOT ISNULL(dte.nrodocto)
         GROUP BY dte.id
         ORDER BY dte.id asc;";

@@ -1425,3 +1425,11 @@ Route::get('reportpendxprod/reportpendxprodpage', 'ReportPendXprodController@rep
 Route::get('reportpendxprod/reporte', 'ReportPendXprodController@reporte')->name('reportpendxprod_reporte');
 Route::get('reportpendxprod/exportPdf', 'ReportPendXprodController@exportPdf')->name('reportpendxprod_exportPdf');
 Route::get('reportpendxprod/totalizarindex', 'ReportPendXprodController@totalizarindex')->name('reportpendxprod_totalizarindex');
+/*RUTAS DTE FACTURA EDITAR*/
+Route::get('dtefacturaeditar', 'DteFacturaEditarController@index')->name('dtefacturaeditar');
+Route::get('dtefacturaeditar/dtefacturaeditarpage', 'DteFacturaEditarController@dtefacturaeditarpage')->name('dtefacturaeditarpage');
+Route::get('dtefacturaeditar/reporte', 'DteFacturaEditarController@reporte')->name('dtefacturaeditar_reporte');
+Route::get('dtefacturaeditar/exportPdf', 'DteFacturaEditarController@exportPdf')->name('dtefacturaeditar_exportPdf');
+Route::get('dtefacturaeditar/totalizarindex', 'DteFacturaEditarController@totalizarindex')->name('dtefacturaeditar_totalizarindex');
+Route::get('dtefacturaeditar/{id}/editar', 'DteFacturaEditarController@editar')->name('editar_dtefacturaeditar');
+Route::put('dtefacturaeditar/{id}', 'DteFacturaEditarController@actualizar')->name('actualizar_dtefacturaeditar');

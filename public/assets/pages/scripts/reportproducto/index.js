@@ -45,26 +45,24 @@ $(document).ready(function () {
                 }*/
                 $('td', row).eq(0).attr('style','text-align:center');
                 if(data.acuerdotecnico_id != null){
-                    aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico">
-                        ${data.producto_id}
-                    </a>`;
-                    $('td', row).eq(0).html(aux_text);
+                    //$('td', row).eq(0).html(aux_text);
                     if (data.hasOwnProperty('cliente_id')) {
                         aux_cliente_id = data.cliente_id;
                     } else {
                         aux_cliente_id = 0;
                     }
+                    aux_text = 
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${data.acuerdotecnico_id},${aux_cliente_id},"")'>
+                        ${data.producto_id}
+                    </a>`;
                     if(data.at_impresofoto != "" && data.at_impresofoto != null){
                         aux_text += 
-                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2(\"at/${data.at_impresofoto}\",2)'>
+                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
                                 <i class="fa fa-fw fa-photo"></i>
                             </a>`;
-                        $('td', row).eq(0).html(aux_text);
                     }
-        
-    
-                    $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
+                    $('td', row).eq(0).html(aux_text);
+                    //$('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
                 }
                 $('td', row).eq(4).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');

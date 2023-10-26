@@ -22,7 +22,7 @@ DTE Libro Ventas
             <div class="box-header with-border">
                 <h3 class="box-title">DTE Libro Ventas</h3>
                 <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
             </div>
             @csrf

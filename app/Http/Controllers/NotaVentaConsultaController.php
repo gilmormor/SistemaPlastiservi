@@ -13,6 +13,7 @@ use App\Models\Giro;
 use App\Models\NotaVenta;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -38,6 +39,11 @@ class NotaVentaConsultaController extends Controller
                     ];
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')
+        ->whereIn('sucursal.id', $sucurArray)
+        ->get();
         return view('notaventaconsulta.index', compact('giros','areaproduccions','tipoentregas','fechaServ','tablashtml'));
 
     }
@@ -59,7 +65,7 @@ class NotaVentaConsultaController extends Controller
 			<thead>
 				<tr>
 					<th>ID</th>
-					<th>Fecha</th>
+					<th class='tooltipsC' title='Fecha Hora Creacion'>Fecha</th>
 					<th>RUT</th>
                     <th>Razón Social</th>
                     <th>Comuna</th>
@@ -210,9 +216,9 @@ class NotaVentaConsultaController extends Controller
                     <td id='id$i' name='id$i'>$data->id
                         $aux_iconiInf
                     </td>
-                    <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                    <td style='font-size:12px' id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . date('d/m/Y H:i:s', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>
-                    <td id='razonsocial$i' name='razonsocial$i'>$data->razonsocial</td>
+                    <td id='razonsocial$i' name='razonsocial$i' style='font-size:12px'>$data->razonsocial</td>
                     <td id='comuna$i' name='comuna$i'>$comuna->nombre</td>
                     <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</a></td>
                     <td id='totalkilos$i' name='totalkilos$i' style='text-align:right' data-order='$data->totalkilos'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
@@ -318,8 +324,10 @@ class NotaVentaConsultaController extends Controller
         }
     }
 
-    public function exportPdf()
+    public function exportPdf(Request $request)
     {
+        //dd($request);
+        /*
         $request = new Request();
         $request->fechad = $_GET["fechad"];
         $request->fechah = $_GET["fechah"];
@@ -333,6 +341,8 @@ class NotaVentaConsultaController extends Controller
         $request->aprobstatus = explode ( ",", $_GET["aprobstatus"] );
         $request->producto_idM = $_GET["producto_idM"];
         $request->comuna_id = $_GET["comuna_id"];
+        $request->sucursal_id = $_GET["sucursal_id"];
+        */
 
         $notaventas = $this->consulta($request,1);
         $totalareaprods = $this->consulta($request,2); //Totales Area de produccion
@@ -362,17 +372,21 @@ class NotaVentaConsultaController extends Controller
             $tipoentrega = TipoEntrega::findOrFail($request->tipoentrega_id);
             $nombreTipoEntrega=$tipoentrega->nombre;
         }
-        
+        $nombreSucursal = "Todas";
+        if($request->sucursal_id){
+            $sucursal = Sucursal::findOrFail($request->sucursal_id);
+            $nombreSucursal=$sucursal->nombre;
+        }
         //return armarReportehtml($request);
         if($notaventas){
             
             if(env('APP_DEBUG')){
-                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+                return view('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request','nombreSucursal'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
-            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request'));
+            $pdf = PDF::loadView('notaventaconsulta.listado', compact('notaventas','totalareaprods','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','request','nombreSucursal'));
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteNotasVenta.pdf");
@@ -577,6 +591,12 @@ class NotaVentaConsultaController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
         $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
+
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $aux_sucursal_idCond = "true";
+        }else{
+            $aux_sucursal_idCond = "notaventa.sucursal_id = $request->sucursal_id";
+        }
     
         if($aux_consulta == 1){
             $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
@@ -611,6 +631,7 @@ class NotaVentaConsultaController extends Controller
             and $aux_condproducto_id
             and $aux_condcomuna_id
             and $aux_condsucursal_id
+            and $aux_sucursal_idCond
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
             GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -642,6 +663,7 @@ class NotaVentaConsultaController extends Controller
             and $aux_aprobstatus
             and $aux_condproducto_id
             and $aux_condcomuna_id
+            and $aux_sucursal_idCond
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
             GROUP BY areaproduccion_id,areaproduccion.nombre;";
         }

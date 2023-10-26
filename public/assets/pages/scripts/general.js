@@ -1453,7 +1453,7 @@ $("#precionetoM").blur(function(event){
 });
 
 //FUNCIONES VER DOCUMENTO ADJUNTO ODEN DE COMPRA
-function verpdf2(nameFile,stareport,aux_venmodant = ""){ 
+function verpdf2(nameFile,stareport,aux_venmodant = "",aux_slug = "ver-pdf-orden-de-compra"){ 
 	if(nameFile==""){
 		swal({
 			title: 'Archivo Orden de Compra no se Adjuntó a la Nota de Venta.',
@@ -1466,7 +1466,7 @@ function verpdf2(nameFile,stareport,aux_venmodant = ""){
 		});
 	}else{
 		var data = {
-			slug: 'ver-pdf-orden-de-compra',
+			slug: aux_slug,
 			_token: $('input[name=_token]').val()
 		};
 		$.ajax({
@@ -1489,7 +1489,7 @@ function verpdf2(nameFile,stareport,aux_venmodant = ""){
 						aux_folder = "notaventa";	
 					}
 					$('#contpdf').attr('src', '/storage/imagenes/' + aux_folder + '/'+aux_nameFile + queryString);
-					if((aux_nameFile.indexOf(".pdf") > -1) || (aux_nameFile.indexOf(".PDF") > -1) || (aux_nameFile.indexOf(".jpg") > -1) || (aux_nameFile.indexOf(".bmp") > -1) || (aux_nameFile.indexOf(".png") > -1)){
+					if((aux_nameFile.indexOf(".pdf") > -1) || (aux_nameFile.indexOf(".PDF") > -1) || (aux_nameFile.indexOf(".jpg") > -1) || (aux_nameFile.indexOf(".bmp") > -1) || (aux_nameFile.indexOf(".png") > -1) || (aux_nameFile.indexOf(".jpeg") > -1)){
 						$("#venmodant").val("");
 						if(aux_venmodant!=""){
 							$("#" + aux_venmodant).modal('hide');
@@ -2534,14 +2534,37 @@ function delguiadespfactdet(nrodocto,id,dte_id){ //Borrar guias de despacho del 
 	}).then((value) => {
 		if (value) {
 			$("." + nrodocto).remove();
-
 			llenarselectGD(0,dte_id,nrodocto)		
 
 			totalizar();
+			//SI EL NETO TOTAL DE FACTURA EN MENOR O IGUAL A CERO BORRO TODOS LOS DATOS
+			//SI EL NETO ES MAYOR A CERO ENTONCES VOELVO A EJECUTAR EL BOTON QUE AGREGA PRODUCTOS A LA FACTURA
+			if($("#tdneto").attr("valor") <= 0){
+				//**ELIMINAR VALORES EN FACTURA: VENDEDOR, CENTRO ECONOMICO,  HEP, notped */
+				$("#fchvenc").val("");
+				$("#vendedor_id").val("");
+				$("#centroeconomico_id").val("");
+				$("#hep").val("");
+				$("#notped").val("");
+				$("#obs").val("");
+				$("#lblocnv_id").html("OC");
+				$("#ocnv_id").val("");
+				$("#ocnv_id").attr("disabled", true);
+				$("#oc_id").attr("disabled", true);
+				$("#notaventa_id").val("");
+				$('#group_oc_file').hide()
+				$('.select2').trigger('change');
+				//** */
+			}else{
+				$("#btnaceptarGD").click();
+			}
+			/*
+			if($("#ocnv_id")){
+				$("#btnaceptarGD").click();
+			}
+			*/
 		}
 	});
-
-
 }
 
 function sumarDias(fecha, dias){

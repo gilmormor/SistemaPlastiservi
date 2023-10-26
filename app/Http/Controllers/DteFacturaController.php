@@ -170,12 +170,24 @@ class DteFacturaController extends Controller
             //DEBE EXISTIR EL REGISTRO EN DTEOC Y EL CAMPO OC_ID DEBE SER DIFERENTE DE NULL
             //PARA LLENAR EL OBJETO $dteoc Y LUEGO ASIGNAR A LA FACTURA LA OC
             if(isset($dteguiadesp->dteoc->oc_id)  and $dteguiadesp->dteoc->oc_id){
-                $dteoc = new DteOC();
-                $dteoc->dte_id = "";
-                $dteoc->oc_id = $dteguiadesp->dteoc->oc_id;
-                $dteoc->oc_folder = $dteguiadesp->dteoc->oc_folder;
-                $dteoc->oc_file = $dteguiadesp->dteoc->oc_file;
-                $dte->dteocs[] = $dteoc;
+                $aux_encontrado = false;
+                //PARA NO DUPLICAR LAS OC EN LA TABLA dteoc 
+                //PORQUE PUEDEN VENIR DE GUIAS DESP PARCIALIZADAS ENTONCES ME VA A REPETIR ESA GUIA EN dteoc
+                //PUEDEN VENIR 3 GUIAS CON LA MISMA ORDEN DE COMPRA
+                foreach ($dte->dteocs as $dteoc) {
+                    if($dteoc->oc_id == $dteguiadesp->dteoc->oc_id){
+                        $aux_encontrado = true;
+                        break;
+                    }
+                }
+                if($aux_encontrado == false){
+                    $dteoc = new DteOC();
+                    $dteoc->dte_id = "";
+                    $dteoc->oc_id = $dteguiadesp->dteoc->oc_id;
+                    $dteoc->oc_folder = $dteguiadesp->dteoc->oc_folder;
+                    $dteoc->oc_file = $dteguiadesp->dteoc->oc_file;
+                    $dte->dteocs[] = $dteoc;    
+                }
                 //$dteoc->save();
             }
     
@@ -219,6 +231,11 @@ class DteFacturaController extends Controller
             $dteguiausada->usuario_id = auth()->id();
             $dte->dteguiausadas[] = $dteguiausada;
             //$dteguiausada->save();
+        }
+        //POR EL MOMENTO SOLO MODIFICA EL NUMERO DE OC CUANDO ES UN SOLO NUMERO DE OC
+        //LUEGO MODIFICARE EL SISTEMA PARA QUE MUESTRE LAS OC INVOLUCRADAS EN UN GRID PARA QUE MODIFIQUEN LAS OC CORRESPONDIENTES.
+        if(count($dte->dteocs) == 1){
+            $dte->dteocs[0]->oc_id = $request->ocnv_id;
         }
         if($Tmntneto <= 0){
             return redirect('dtefactura')->with([

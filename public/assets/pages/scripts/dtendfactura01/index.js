@@ -269,7 +269,7 @@ function ajaxRequest(data,url,funcion) {
                 if (respuesta.id == "1") {
 					$("#fila" + datatemp.dte_id).remove();
                 }
-                console.log(respuesta);
+                //console.log(respuesta);
                 Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
             }
             if (funcion=='eliminar') { //Elimino desde aqui porque debo hacer previamente varias validaciones

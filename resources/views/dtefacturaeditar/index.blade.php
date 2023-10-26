@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Anular Facturacion
+Editar Factura
 @endsection
 
 <?php
@@ -9,8 +9,8 @@ Anular Facturacion
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/dtefacturaanular/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/dtefacturaeditar/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
@@ -19,11 +19,11 @@ Anular Facturacion
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
-        <div class="box box-primary box-primary">
+        <div class="box box-primary box-primary collapsed-box">
             <div class="box-header with-border">
-                <h3 class="box-title">Anular Factura</h3>
+                <h3 class="box-title">Editar Factura</h3>
                 <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>
             </div>
             @csrf
@@ -198,7 +198,7 @@ Anular Facturacion
                                 </div>
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="id" data-toggle='tooltip' title="DTE NroDocto">ID DTE:</label>
+                                        <label for="id" data-toggle='tooltip' title="Nro de Factura">Nro. Fact:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" name="nrodocto" id="nrodocto" class="form-control" maxlength="10"/>
@@ -259,7 +259,7 @@ Anular Facturacion
                             <th class='tooltipsC' title='Guia Despacho Cedible'>GDC</th>
                             <th class='tooltipsC' title='Factura'>Factura</th>
                             <th class='tooltipsC' title='Comuna'>Comuna</th>
-                            <th class="width70">Acción</th>
+                            <th class='tooltipsC' title='Accion'>Accion</th>
                             <th class="ocultar">dteanul_obs</th>
                             <th class="ocultar">dteanulcreated_at</th>
                             <th class="ocultar">Obs Bloqueo</th>
@@ -293,7 +293,10 @@ Anular Facturacion
         </div>
     </div>
 </div>
-
+<form id="descargaForm" action="/dtefactura/descargar-xml" method="POST">
+    @csrf <!-- Asegúrate de incluir el token CSRF si estás utilizando Laravel -->
+    <input type="hidden" name="nombreArchivo" id="nombreArchivo">
+</form>
 
 @include('generales.buscarclientebd')
 @include('generales.modalpdf')

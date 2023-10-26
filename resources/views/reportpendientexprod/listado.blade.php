@@ -7,6 +7,7 @@
 	use App\Models\Producto;
 	use App\Models\Comuna;
 	use App\Models\NotaVenta;
+	use Illuminate\Http\Request;
 ?>
 <div id="page_pdf">
 	<table id="factura_head">
@@ -123,16 +124,22 @@
 							$aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
 
 							$notaventa = NotaVenta::findOrFail($data->notaventa_id);
+							$request = new Request();
+							$request["producto_id"] = $data->producto_id;
+							//dd($producto->invbodegaproductos);
 							$aux_invbodega_id = "";
 							foreach ($producto->invbodegaproductos as $invbodegaproducto) {
-								if($invbodegaproducto->invbodega->sucursal_id == $notaventa->sucursal_id and $invbodegaproducto->invbodega->tipo = 2){
+								if($invbodegaproducto->invbodega->sucursal_id == $notaventa->sucursal_id and $invbodegaproducto->invbodega->tipo == 2){
 									$aux_invbodega_id = $invbodegaproducto->invbodega_id; 
 								}
 							}
 							$request["invbodega_id"] = $aux_invbodega_id;
 							$request["tipo"] = 2;
-							$existencia = $invbodegaproducto::existencia($request);
-							$stock = $existencia["stock"]["cant"];
+							$stock = 0;
+							if(isset($invbodegaproducto)){
+								$existencia =  $invbodegaproducto::existencia($request);
+								$stock = $existencia["stock"]["cant"];    
+							}
 
 							$aux_producto_id = $data->producto_id;
 							$aux_ancho = $producto->diametro;

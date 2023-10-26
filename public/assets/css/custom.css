@@ -454,3 +454,7 @@ td.highlight {
     .action-buttons {
         white-space: nowrap; /* Evita el salto de línea */
     }
+
+    .espaciadoletras-05 {
+        letter-spacing: -0.5px; /* Cambia el valor según tus preferencias */
+    }

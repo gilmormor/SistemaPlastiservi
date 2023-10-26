@@ -268,7 +268,7 @@ $("#btnGuardarGanul").click(function(event)
                     moddevgiadesp_id : "GD",
                     _token: $('input[name=_token]').val()
                 };
-                console.log(data);
+                //console.log(data);
                 var ruta = '/guardaranularguia';
                 respuesta = ajaxRequest(data,ruta,'guardaranularguia');
             }
@@ -302,8 +302,8 @@ function ajaxRequest(data,url,funcion) {
             if(funcion=='guardaranularguia'){
                 $("#myModalanularguiafact").modal('hide');
 				if (respuesta.mensaje == "ok") {
-                    console.log(datatemp);
-                    console.log("#fila" + datatemp.dte_id);
+                    //console.log(datatemp);
+                    //console.log("#fila" + datatemp.dte_id);
 					$("#fila" + datatemp.dte_id).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
