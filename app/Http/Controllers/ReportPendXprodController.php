@@ -181,14 +181,19 @@ class ReportPendXprodController extends Controller
             $total_precioxkilo += $data->precioxkilo;
         }
         //$datas[]prueba = [];
-        $aux_contreg = count($datas)>0 ? count($datas) : 1;
-        $request["total_sumacantdesp"] = $total_sumacantdesp;
-        $request["total_cantsaldo"] = $total_cantsaldo;
-        $request["total_kgpend"] = round($total_kgpend);
-        $request["total_totalplata"] = $total_totalplata;
-        $request["prom_precioxkilo"] = $total_precioxkilo / $aux_contreg;
+        if(count($datas)>0){
+            $aux_contreg = count($datas)>0 ? count($datas) : 1;
+            $datas[0]->datosAdicionales = [
+                'total_sumacantdesp' => $total_sumacantdesp,
+                'total_cantsaldo' => $total_cantsaldo,
+                'total_kgpend' => round($total_kgpend),
+                'total_totalplata' => $total_totalplata,
+                'prom_precioxkilo' => $total_precioxkilo / $aux_contreg
+            ];     
+        }
 
         return datatables($datas)->toJson();
+        //return datatables($datas)->toJson();
     }
 
     public function exportPdf(Request $request)

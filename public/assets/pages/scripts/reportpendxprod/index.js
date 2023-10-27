@@ -56,6 +56,11 @@ $(document).ready(function () {
                 "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             },
             "createdRow": function ( row, data, index ) {
+                if ('datosAdicionales' in data) {
+                    console.log(data);
+                    $("#prom_precioxkilo").html(MASKLA(data.datosAdicionales.prom_precioxkilo,2));
+                    $("#total_totalplata").html(MASKLA(data.datosAdicionales.total_totalplata,0));                
+                }
                 $(row).attr('id','fila' + data.id);
                 $(row).attr('name','fila' + data.id);
                 aux_text = 
@@ -398,13 +403,14 @@ function configurarTabla(aux_tabla){
         }
     });    
 }
-
+/*
 $('#tabla-data-consulta').on('draw.dt', function () {
     var api = $(this).DataTable();
     var data = api.ajax.json(); // Acceder a los datos de la respuesta JSON
   
     // Realizar acciones con los datos, por ejemplo:
-    //console.log(data.input.prom_precioxkilo); // Imprimir los datos en la consola
+//    console.log(data.input.prom_precioxkilo); // Imprimir los datos en la consola
+    console.log(data.input); // Imprimir los datos en la consola
     $("#prom_precioxkilo").html(MASKLA(data.input.prom_precioxkilo,2));
     $("#total_totalplata").html(MASKLA(data.input.total_totalplata,0));
 
@@ -414,6 +420,6 @@ $('#tabla-data-consulta').on('draw.dt', function () {
     });
   });
   
-  
+  */
   
   
