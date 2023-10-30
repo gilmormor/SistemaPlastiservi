@@ -23,7 +23,7 @@
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-7" classorig="col-xs-12 col-sm-7">
                                             <label for="at_desc" class="control-label tooltipsC requerido" data-original-title="Descripción Producto Acuerdo Técnico">Descripción</label>
-                                            <input type="text" name="at_desc" id="at_desc" class="form-control form_acutec valorrequerido" placeholder="Descripción Producto Acuerdo Técnico" tipoval="texto"/>
+                                            <input type="text" name="at_desc" id="at_desc" class="form-control form_acutec valorrequerido" placeholder="Descripción Producto Acuerdo Técnico" tipoval="texto" maxlength="100"/>
                                             <span class="help-block"></span>
                                         </div>
                                         <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
@@ -114,12 +114,12 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-5">
                                             <label for="at_materiaprimaobs" class="control-label" data-toggle='tooltip' title="Observación Materia Prima">Observación</label>
-                                            <input type="text" name="at_materiaprimaobs" id="at_materiaprimaobs" class="form-control form_acutec" placeholder="Observacion"/>
+                                            <input type="text" name="at_materiaprimaobs" id="at_materiaprimaobs" class="form-control form_acutec" placeholder="Observacion" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
-                                        <div class="col-xs-12 col-sm-4">
-                                            <label for="at_usoprevisto" class="control-label" data-toggle='tooltip' title="Uso Previsto">Uso Previsto</label>
-                                            <input type="text" name="at_usoprevisto" id="at_usoprevisto" class="form-control form_acutec" placeholder="Uso Previsto"/>
+                                        <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+                                            <label for="at_usoprevisto" class="control-label requerido" data-toggle='tooltip' title="Uso Previsto">Uso Previsto</label>
+                                            <input type="text" name="at_usoprevisto" id="at_usoprevisto" class="form-control form_acutec valorrequerido" placeholder="Uso Previsto" tipoval="texto" maxlength="50"/>
                                             <span class="help-block"></span>
                                         </div>
     
@@ -146,7 +146,7 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-9">
                                             <label for="at_uvobs" class="control-label" data-toggle='tooltip' title="Observación UV">Observación</label>
-                                            <input type="text" name="at_uvobs" id="at_uvobs" class="form-control form_acutec" placeholder="Observacion UV"/>
+                                            <input type="text" name="at_uvobs" id="at_uvobs" class="form-control form_acutec" placeholder="Observacion UV" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
@@ -162,7 +162,7 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-9">
                                             <label for="at_antideslizanteobs" class="control-label" data-toggle='tooltip' title="Observación Antideslizante">Observación</label>
-                                            <input type="text" name="at_antideslizanteobs" id="at_antideslizanteobs" class="form-control form_acutec" placeholder="Observacion Antideslizante"/>
+                                            <input type="text" name="at_antideslizanteobs" id="at_antideslizanteobs" class="form-control form_acutec" placeholder="Observacion Antideslizante" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
@@ -178,7 +178,7 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-9">
                                             <label for="at_antiestaticoobs" class="control-label" data-toggle='tooltip' title="Observación antiestatico">Observación</label>
-                                            <input type="text" name="at_antiestaticoobs" id="at_antiestaticoobs" class="form-control form_acutec" placeholder="Observacines Antiestatico"/>
+                                            <input type="text" name="at_antiestaticoobs" id="at_antiestaticoobs" class="form-control form_acutec" placeholder="Observacines Antiestatico" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
@@ -194,7 +194,7 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-9">
                                             <label for="at_antiblockobs" class="control-label" data-toggle='tooltip' title="Observación Antiblock">Observación</label>
-                                            <input type="text" name="at_antiblockobs" id="at_antiblockobs" class="form-control form_acutec" placeholder="Observacines Antiblock"/>
+                                            <input type="text" name="at_antiblockobs" id="at_antiblockobs" class="form-control form_acutec" placeholder="Observacines Antiblock" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
@@ -210,7 +210,7 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-9">
                                             <label for="at_aditivootroobs" class="control-label" data-toggle='tooltip' title="Observación Aditivos otros">Observación</label>
-                                            <input type="text" name="at_aditivootroobs" id="at_aditivootroobs" class="form-control form_acutec" placeholder="Observacines Aditivos otro"/>
+                                            <input type="text" name="at_aditivootroobs" id="at_aditivootroobs" class="form-control form_acutec" placeholder="Observacines Aditivos otro" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
@@ -412,7 +412,7 @@
                                     </div>            
                                     <div class="col-xs-12 col-sm-7">
                                         <label for="at_impresoobs" class="control-label" data-toggle='tooltip' title="Observación impreso">Observación</label>
-                                        <input type="text" name="at_impresoobs" id="at_impresoobs" class="form-control form_acutec" placeholder="Observación impreso"/>
+                                        <input type="text" name="at_impresoobs" id="at_impresoobs" class="form-control form_acutec" placeholder="Observación impreso" maxlength="60"/>
                                         <span class="help-block"></span>
                                     </div>
                                 </div>
@@ -450,7 +450,7 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-8">
                                             <label for="at_tiposelloobs" class="control-label" data-toggle='tooltip' title="Observación fondo">Observación</label>
-                                            <input type="text" name="at_tiposelloobs" id="at_tiposelloobs" class="form-control form_acutec" placeholder="Observación"/>
+                                            <input type="text" name="at_tiposelloobs" id="at_tiposelloobs" class="form-control form_acutec" placeholder="Observación" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
@@ -563,7 +563,7 @@
                                     </div>
                                     <div class="col-xs-12 col-sm-8">
                                         <label for="at_feunidxpaqobs" class="control-label" data-toggle='tooltip' title="Observacion Unidades por empaque">Observación</label>
-                                        <input type="text" name="at_feunidxpaqobs" id="at_feunidxpaqobs" class="form-control form_acutec embalaje" placeholder="Observación Unidades por empaque" disabled/>
+                                        <input type="text" name="at_feunidxpaqobs" id="at_feunidxpaqobs" class="form-control form_acutec embalaje" placeholder="Observación Unidades por empaque" maxlength="60" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-4">
@@ -573,7 +573,7 @@
                                     </div>
                                     <div class="col-xs-12 col-sm-8">
                                         <label for="at_feunidxcontobs" class="control-label" data-toggle='tooltip' title="Observacion Unidades por contenedor">Observación</label>
-                                        <input type="text" name="at_feunidxcontobs" id="at_feunidxcontobs" class="form-control form_acutec embalaje" placeholder="Observación Unidades por contenedor" disabled/>
+                                        <input type="text" name="at_feunidxcontobs" id="at_feunidxcontobs" class="form-control form_acutec embalaje" placeholder="Observación Unidades por contenedor" maxlength="60" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-4">
@@ -583,7 +583,7 @@
                                     </div>
                                     <div class="col-xs-12 col-sm-8">
                                         <label for="at_fecolorcontobs" class="control-label" data-toggle='tooltip' title="Observacion Color contenedor">Observación</label>
-                                        <input type="text" name="at_fecolorcontobs" id="at_fecolorcontobs" class="form-control form_acutec embalaje" placeholder="Observación Color contenedor" disabled/>
+                                        <input type="text" name="at_fecolorcontobs" id="at_fecolorcontobs" class="form-control form_acutec embalaje" placeholder="Observación Color contenedor" maxlength="60" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                     <div class="col-xs-12 col-sm-4">
@@ -593,7 +593,7 @@
                                     </div>
                                     <div class="col-xs-12 col-sm-8">
                                         <label for="at_feunitxpaletobs" class="control-label" data-toggle='tooltip' title="Observacion Unidades por palet">Observación</label>
-                                        <input type="text" name="at_feunitxpaletobs" id="at_feunitxpaletobs" class="form-control form_acutec embalaje" placeholder="Observación Unidades por palet" disabled/>
+                                        <input type="text" name="at_feunitxpaletobs" id="at_feunitxpaletobs" class="form-control form_acutec embalaje" placeholder="Observación Unidades por palet" maxlength="60" disabled/>
                                         <span class="help-block"></span>
                                     </div>
                                 </div>
@@ -617,19 +617,19 @@
                                         </div>            
                                         <div class="col-xs-12 col-sm-6">
                                             <label for="at_etiqplastiserviobs" class="control-label" data-toggle='tooltip' title="Observación Etiqueta Plastiservi">Observación</label>
-                                            <input type="text" name="at_etiqplastiserviobs" id="at_etiqplastiserviobs" class="form-control form_acutec" placeholder="Observación"/>
+                                            <input type="text" name="at_etiqplastiserviobs" id="at_etiqplastiserviobs" class="form-control form_acutec" placeholder="Observación" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-6">
                                             <label for="at_etiqotro" class="control-label" data-toggle='tooltip' title="Etiqueta Otro">Etiqueta otro</label>
-                                            <input type="text" name="at_etiqotro" id="at_etiqotro" class="form-control form_acutec" placeholder="Etiqueta otro"/>
+                                            <input type="text" name="at_etiqotro" id="at_etiqotro" class="form-control form_acutec" placeholder="Etiqueta otro" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
                                         <div class="col-xs-12 col-sm-6">
                                             <label for="at_etiqotroobs" class="control-label" data-toggle='tooltip' title="Observación Etiqueta Otro">Observación</label>
-                                            <input type="text" name="at_etiqotroobs" id="at_etiqotroobs" class="form-control form_acutec" placeholder="Observación"/>
+                                            <input type="text" name="at_etiqotroobs" id="at_etiqotroobs" class="form-control form_acutec" placeholder="Observación" maxlength="60"/>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
@@ -657,7 +657,7 @@
 
                                         <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6">
                                             <label for="at_otrocertificado" class="control-label" data-toggle='tooltip' title="Otro certificado">Otro certificado</label>
-                                            <input type="text" name="at_otrocertificado" id="at_otrocertificado" class="form-control form_acutec" placeholder="Otro certificado"/>
+                                            <input type="text" name="at_otrocertificado" id="at_otrocertificado" class="form-control form_acutec" placeholder="Otro certificado" maxlength="100"/>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
