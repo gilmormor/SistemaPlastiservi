@@ -119,11 +119,11 @@
                 <label for="hep" class="control-label" data-toggle='tooltip' title="Hoja de Entrada de Servicio CodRef:HES">Hes</label>
                 <input type="text" name="hep" id="hep" class="form-control" value="{{old('hep', $data->dtefac->hep ?? '')}}" maxlength="12"/>
             </div>
-            <div class="form-group col-xs-12 col-sm-3">
+            <div class="form-group col-xs-12 col-sm-2">
                 <label for="notped" class="control-label" data-toggle='tooltip' title="Nota de Pedido CodRef:802">Nota Pedido</label>
                 <input type="text" name="notped" id="notped" class="form-control" value="{{old('notped', $data->dtefac->notped ?? '')}}" maxlength="12"/>
             </div>
-            <div class="form-group col-xs-12 col-sm-2">
+            <div class="form-group col-xs-12 col-sm-3">
                 <label id="lblocnv_id" for="ocnv_id" class="control-label" data-toggle='tooltip' title="Orden de compra Nota de venta">OC</label>
                 <input type="text" name="ocnv_id" id="ocnv_id" class="form-control" value="" maxlength="18" disabled/>
             </div>

@@ -229,7 +229,7 @@ function ajaxRequest(data,url,funcion) {
 									"</a>";
 						*/
 						$("#ocnv_id").attr("disabled",false);
-						$("#ocnv_id").attr("maxlength",15);
+						$("#ocnv_id").attr("maxlength",18);
 						if(aux_ocArray.length > 1){
 							$("#ocnv_id").attr("maxlength",200);
 						}
