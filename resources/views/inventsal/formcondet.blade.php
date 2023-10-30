@@ -327,7 +327,7 @@
                         <div id="group_oc_id" class="form-group col-xs-12 col-sm-12">
                             <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label">Nro OrdenCompra</label>
                             <div class="input-group">
-                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="15" {{$enableCamposCot}}/>
+                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="18" {{$enableCamposCot}}/>
                                 <!--<span class="input-group-btn">
                                     <button class="btn btn-default" type="button" id="btnfotooc" name="btnfotooc" data-toggle='tooltip' title="Cargar Imagen OC" {{$enableCamposCot}}>Examinar...</button>
                                 </span>-->

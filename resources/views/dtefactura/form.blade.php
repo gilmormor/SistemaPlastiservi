@@ -125,7 +125,7 @@
             </div>
             <div class="form-group col-xs-12 col-sm-2">
                 <label id="lblocnv_id" for="ocnv_id" class="control-label" data-toggle='tooltip' title="Orden de compra Nota de venta">OC</label>
-                <input type="text" name="ocnv_id" id="ocnv_id" class="form-control" value="" maxlength="15" disabled/>
+                <input type="text" name="ocnv_id" id="ocnv_id" class="form-control" value="" maxlength="18" disabled/>
             </div>
 
             <div class="form-group col-xs-12 col-sm-4" style="display:none;">
@@ -190,7 +190,7 @@
                         <div id="group_oc_id" class="form-group col-xs-12 col-sm-12">
                             <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label {{$aux_labelRequerido}}">Nro OrdenCompra</label>
                             <div class="input-group">
-                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="" placeholder="Nro Orden de Compra" maxlength="15" disabled/>
+                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="" placeholder="Nro Orden de Compra" maxlength="18" disabled/>
                             </div>
                         </div>
                         <div id="group_oc_file" class="form-group col-xs-12 col-sm-12">

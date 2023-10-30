@@ -33,7 +33,7 @@ class CreateTableGuiadesp extends Migration
             $table->foreign('vendedor_id','fk_guiadesp_vendedor')->references('id')->on('vendedor')->onDelete('restrict')->onUpdate('restrict');
             $table->string('obs',200)->comment('Observaciones')->nullable();
             $table->string('ot',5)->comment('Orden de trabajo')->nullable();
-            $table->string('oc_id',10)->comment('Numero de Orden de Compra')->nullable();
+            $table->string('oc_id',18)->comment('Numero de Orden de Compra')->nullable();
             $table->string('oc_file',100)->comment('Archivo o imagen de Orden de Compra')->nullable();
             $table->string('tipodespacho',1)->comment('1: Despacho por cuenta del receptor del documento (cliente o vendedor en caso de Facturas de compra.) 2: Despacho por cuenta del emisor a instalaciones del cliente 3: Despacho por cuenta del emisor a otras instalaciones (Ejemplo: entrega en Obra)')->nullable();
             $table->string('indtraslado',1)->comment('Indicador Tipo de traslado de bienes 1: Operación constituye venta1 2: Ventas por efectuar 3: Consignaciones 4: Entrega gratuita 5: Traslados internos 6: Otros traslados no venta 7: Guía de devolución 8: Traslado para exportación. (no venta) 9: Venta para exportación')->nullable();

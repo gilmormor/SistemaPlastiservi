@@ -231,7 +231,7 @@
                         <div id="group_oc_id" class="form-group col-xs-12 col-sm-12">
                             <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label {{$aux_labelRequerido}}">Nro OrdenCompra</label>
                             <div class="input-group">
-                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="15" {{!is_null($data->oc_id) ? "disabled readonly" : ""}}/>
+                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="18" {{!is_null($data->oc_id) ? "disabled readonly" : ""}}/>
                             </div>
                         </div>
                         <div id="group_oc_file" class="form-group col-xs-12 col-sm-12">

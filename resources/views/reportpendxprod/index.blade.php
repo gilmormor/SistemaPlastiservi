@@ -109,7 +109,7 @@ Pendiente x Producto
                                         <label for="oc_id">OC:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id')}}" maxlength="12"/>
+                                        <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id')}}" maxlength="18"/>
                                     </div>
                                 </div>
                             </div>

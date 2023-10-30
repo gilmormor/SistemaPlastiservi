@@ -54,7 +54,7 @@ class CreateTableNotaventa extends Migration
             $table->float('neto',18,2)->comment('Total neto, Valor sin IVA');
             $table->float('iva',18,2)->comment('Total IVA');
             $table->float('total',18,2)->comment('Total incluye IVA');
-            $table->string('oc_id',10)->comment('Numero de Orden de Compra')->nullable();
+            $table->string('oc_id',18)->comment('Numero de Orden de Compra')->nullable();
             $table->string('oc_file',100)->comment('Archivo o imagen de Orden de Compra')->nullable();
             $table->unsignedBigInteger('usuario_id')->comment('Usuario quien creo el registro');
             $table->foreign('usuario_id','fk_notaventa_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
