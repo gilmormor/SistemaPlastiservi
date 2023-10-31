@@ -53,7 +53,7 @@
 						<td style='text-align:center'>{{$data->diametro}}</td>
 						<td style='text-align:center'>{{$data->cla_nombre}}</td>
 						<td style='text-align:center'>{{$data->long}}</td>
-						<td style='text-align:center'>{{$data->peso}}</td>
+						<td style='text-align:center'>{{round($data->peso,3)}}</td>
 						<td style='text-align:center'>{{$data->tipounion}}</td>
 						<td style='text-align:center'>{{$data->stock}}</td>
 						<td style='text-align:right'>{{number_format($data->stock * $data->peso, 2, ",", ".")}}</td>
