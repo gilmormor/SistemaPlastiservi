@@ -234,7 +234,7 @@ class DteFacturaController extends Controller
         }
         //POR EL MOMENTO SOLO MODIFICA EL NUMERO DE OC CUANDO ES UN SOLO NUMERO DE OC
         //LUEGO MODIFICARE EL SISTEMA PARA QUE MUESTRE LAS OC INVOLUCRADAS EN UN GRID PARA QUE MODIFIQUEN LAS OC CORRESPONDIENTES.
-        if(count($dte->dteocs) == 1){
+        if(count($dte->dteocs) == 1 and isset($request->ocnv_id) and !is_null($request->ocnv_id) and $request->ocnv_id != ""){
             $dte->dteocs[0]->oc_id = $request->ocnv_id;
         }
         if($Tmntneto <= 0){
