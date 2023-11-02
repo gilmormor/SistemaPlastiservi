@@ -69,15 +69,15 @@
 						<th colspan="7" style='text-align:left'>Nombre: {{$vendedor->persona->nombre . " " . $vendedor->persona->apellido}}</th>
 					</tr>
 					<tr>
-						<th style='text-align:center'>Doc</th>
-						<th style='text-align:center'>Tipo</th>
-						<th>Fecha</th>
-						<th>RUT</th>
-						<th style='text-align:left'>Razon Social</th>
-						<th style='text-align:left'>Producto</th>
-						<th style='text-align:right'>Monto</th>
-						<th style='text-align:right'>%</th>
-						<th style='text-align:right'>Comisión</th>
+						<th style='text-align:center;width: 30px !important'>Doc</th>
+						<th style='text-align:center;width: 30px !important'>Tipo</th>
+						<th style='width: 60px !important'>Fecha</th>
+						<th style='width: 60px !important'>RUT</th>
+						<th style='text-align:left;width: 200px !important'>Razon Social</th>
+						<th style='text-align:left;width: 150px !important'>Producto</th>
+						<th style='text-align:right;width: 70px !important'>Monto</th>
+						<th style='text-align:right;width: 40px !important'>%</th>
+						<th style='text-align:right;width: 70px !important'>Comisión</th>
 					</tr>
 				</thead>
 		@endif
@@ -87,8 +87,8 @@
 						<td style='text-align:center'>{{$data->foliocontrol_doc}}</td>
 						<td style='text-align:center'>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
 						<td style='text-align:center'>{{$data->rut}}</td>
-						<td style='text-align:left;font-size: 8px;'>{{$data->razonsocial}}</td>
-						<td style='text-align:left;font-size: 8px;'>{{$data->nmbitem}}</td>
+						<td style='text-align:left;font-size: 10px;'>{{substr($data->razonsocial, 0, 28)}}</td>
+						<td style='text-align:left;font-size: 10px;'>{{$data->nmbitem}}</td>
 						<td style='text-align:right'>{{number_format($data->montoitem, 0, ",", ".")}}</td>
 						<td style='text-align:right'>{{number_format($data->porc_comision, 2, ",", ".")}}</td>
 						<td style='text-align:right'>{{number_format(round($data->comision, 0), 0, ",", ".")}}&nbsp;&nbsp;</td>
