@@ -408,7 +408,7 @@
                                     <a id="producto_nombre{{$aux_nfila}}" name="producto_nombre{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Nombre Producto" data-toggle="tooltip" valor="{{$detalle->producto->nombre}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="producto_nombre">
                                         {{$aux_nombreprod}}
                                     </a>
-                                    <input type="text" name="nmbitem[]" id="nmbitem{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->nombre}}" style="display:none;"/>
+                                    <input type="text" name="nmbitem[]" id="nmbitem{{$aux_nfila}}" class="form-control" value="{{$aux_nombreprod}}" style="display:none;"/>
                                     <input type="text" name="dscitem[]" id="dscitem{{$aux_nfila}}" class="form-control" value="" style="display:none;"/>
                                 </td>
                                 <td style="text-align:right;"> 
