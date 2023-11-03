@@ -339,7 +339,8 @@ class Dte extends Model
             $aux_condFecha = " true";
         }
     
-        $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,dte.mnttotal,
+        $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dte.fchemisgen,dte.fechahora,cliente.rut,cliente.razonsocial,
+        dte.mnttotal,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as nvoc_id,
         if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as nvoc_file,
         dte.centroeconomico_id,dte.indtraslado,
