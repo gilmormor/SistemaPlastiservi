@@ -1504,9 +1504,6 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
         $despachoord = DespachoOrd::findOrFail($dteguiadesp->despachoord_id);
         $despachoord->guiadespacho = $dteNew->nrodocto;
         $despachoord->guiadespachofec = date("Y-m-d H:i:s");
-        if ($despachoord->save()) {
-            Event(new GuardarGuiaDespacho($despachoord));
-        }
         //CREAR REGISTRO DE ORDEN DE COMPRA
         $dteoc = new DteOC();
         $dteoc->dte_id = $dteNew->id;
@@ -1522,6 +1519,10 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
             //$dtedte->dtefac_id = "";
             $dtedte->save();
         }
+        if ($despachoord->save()) {
+            Event(new GuardarGuiaDespacho($despachoord,$dteNew));
+        }
+
         $foliocontrol->bloqueo = 0;
         $foliocontrol->ultfoliouti = $dteNew->nrodocto;
         $foliocontrol->save();

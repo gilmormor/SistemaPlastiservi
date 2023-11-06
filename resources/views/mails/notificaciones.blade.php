@@ -320,18 +320,26 @@
 </head>
 <body>
 
-    <p><b>Fecha:</b> {{ date("d-m-Y h:i:s A", strtotime($notificacion->created_at)) }}.</p>
-
-    <p>Datos usuario que generó el correo:</p>
-    <ul>
-        <li><b>Nombre:</b> {{session()->get('nombre_usuario') }}</li>
-        <li><b>Email:</b> {{Auth::user()->email}}</li>
-    </ul>
+    <div style='width:40% !important;'>
+        <span class='h3'>Datos usuario que generó el correo:</span>
+        <table id='info_factura'>
+            <tr>
+                <td colspan='7' class='textleft' width='40%'><span><strong>Nombre: </strong></span></td>
+                <td class='textleft' width='50%'><span>{{session()->get('nombre_usuario') }}</span></td>
+            </tr>
+            <tr>
+                <td colspan='7' class='textleft' width='40%'><span><strong>Email: </strong></span></td>
+                <td class='textleft' width='50%'><span>{{Auth::user()->email}}</span></td>
+            </tr>
+        </table>
+    </div>
     
     <?php
         echo $detalle;
     ?>
 
+    <br>
+    <br>
     <p>
         <b>Ingresar al Sistema:</b> 
         <a href="https://www.pl.plastiservi.cl">

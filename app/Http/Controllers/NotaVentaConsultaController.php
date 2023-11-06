@@ -402,7 +402,7 @@ class NotaVentaConsultaController extends Controller
         FROM despachoord JOIN despachoorddet 
         ON despachoord.id = despachoorddet.despachoord_id
         WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
-        and despachoord.numfactura is not null
+        and despachoord.guiadespacho is not null
         and despachoord.notaventa_id=$id
         and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
         group by despachoord.notaventa_id;";

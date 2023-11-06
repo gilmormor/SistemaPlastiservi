@@ -293,6 +293,7 @@ function datoslnv1(){
         comuna_id         : $("#comuna_id").val(),
         plazoentrega      : $("#plazoentrega").val(),
         producto_id       : $("#producto_idPxP").val(),
+        sucursal_id       : $("#sucursal_id").val(),
         filtro            : 0,
         _token            : $('input[name=_token]').val()
     };
@@ -311,6 +312,7 @@ function datoslnv1(){
             "&plazoentrega=" + data1.plazoentrega +
             "&filtro=" + data1.filtro +
             "&producto_id=" + data1.producto_id +
+            "&sucursal_id=" + data1.sucursal_id +
             "&aux_titulo=" + aux_titulo;
     
     var data = {
