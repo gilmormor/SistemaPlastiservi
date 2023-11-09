@@ -173,6 +173,17 @@ class Dte extends Model
     {
         return $this->hasMany(DespachoSolDTE::class,'dte_id');
     }
+
+    //RELACION INVERSA Sucursal
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class);
+    }    
+    //RELACION INVERSA Vendedor
+    public function vendedor()
+    {
+        return $this->belongsTo(Vendedor::class);
+    }    
     
     public static function reportguiadesppage($request){
         $user = Usuario::findOrFail(auth()->id());
