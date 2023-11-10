@@ -15,6 +15,7 @@ use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -66,211 +67,213 @@ class DteGuiaDespDirController extends Controller
      */
     public function guardar(Request $request)
     {
-        can('guardar-dte-guia-desp-directa');
-        //dd($request);
-        $cont_producto = count($request->producto_id);
-        if($cont_producto <=0 ){
-            return redirect('dteguiadespdir')->with([
-                'mensaje'=>'No hay items, no se guardó.',
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-
-        $cliente = Cliente::findOrFail($request->cliente_id);
-        foreach ($cliente->clientebloqueados as $clientebloqueado) {
-            return redirect('dteguiadespdir')->with([
-                'id' => 0,
-                'mensaje'=>'No es posible hacer Guia Despacho, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        $dte = new Dte();
-        //CREAR REGISTRO DE ORDEN DE COMPRA
-        if(!is_null($request->oc_id)){
-            $dteoc = new DteOC();
-            $dteoc->dte_id = "";
-            $dteoc->oc_id = $request->oc_id;
-            $dteoc->oc_folder = "oc";
-            $dteoc->oc_file = $request->oc_file;
-            $dte->dteocs[] = $dteoc;
-            //$dteoc->save();
-        }
-    
-        $Tmntneto = 0;
-        $Tiva = 0;
-        $Tmnttotal = 0;
-        $Tkgtotal = 0;
-        //$dtedtes = [];
-        $dteguiausadas = [];
-        $aux_nrolindet = 0;
-        for ($i=0; $i < $cont_producto ; $i++){
-            if(is_null($request->producto_id[$i])==false AND (is_null($request->qtyitem[$i])==false) OR $request->codref == 2){
-                if(cadVacia($request->producto_id[$i])){
-                    mensajeRespuesta([
-                        'mensaje' => "Campo producto_id no puede quedar Vacio, Item: " . strval($i + 1),
-                        'tipo_alert' => 'alert-error'
-                    ]);                    
-                }
-                if(cadVacia($request->vlrcodigo[$i])){
-                    mensajeRespuesta([
-                        'mensaje' => "Campo vlrcodigo no puede quedar Vacio, Item: " . strval($i + 1),
-                        'tipo_alert' => 'alert-error'
-                    ]);                    
-                }
-                if(cadVacia($request->nmbitem[$i])){
-                    mensajeRespuesta([
-                        'mensaje' => "Campo nmbitem no puede quedar Vacio, Item: " . strval($i + 1),
-                        'tipo_alert' => 'alert-error'
-                    ]);                    
-                }
-                if(cadVacia($request->qtyitem[$i])){
-                    mensajeRespuesta([
-                        'mensaje' => "Campo qtyitem no puede quedar Vacio, Item: " . strval($i + 1),
-                        'tipo_alert' => 'alert-error'
-                    ]);                    
-                }
-                if(cadVacia($request->unmditem[$i])){
-                    mensajeRespuesta([
-                        'mensaje' => "Campo unmditem no puede quedar Vacio, Item: " . strval($i + 1),
-                        'tipo_alert' => 'alert-error'
-                    ]);                    
-                }
-                if(cadVacia($request->prcitem[$i])){
-                    mensajeRespuesta([
-                        'mensaje' => "Campo prcitem no puede quedar Vacio, Item: " . strval($i + 1),
-                        'tipo_alert' => 'alert-error'
-                    ]);                    
-                }
-                if(cadVacia($request->montoitem[$i])){
-                    mensajeRespuesta([
-                        'mensaje' => "Campo montoitem no puede quedar Vacio, Item: " . strval($i + 1),
-                        'tipo_alert' => 'alert-error'
-                    ]);                    
-                }
-                //$producto = Producto::findOrFail($request->producto_id[$i]);
-                $unidadmedida = UnidadMedida::findOrFail($request->unmditem[$i]);
-                $dtedet = new DteDet();
-                $dtedet->dtedet_id = $request->dtedetorigen_id[$i];
-                $dtedet->producto_id = $request->producto_id[$i];
-                $dtedet->nrolindet = ($i + 1);
-                $dtedet->vlrcodigo = $request->producto_id[$i];
-                $dtedet->nmbitem = $request->nmbitem[$i];
-                //$dtedet->dscitem = $request->dscitem[$i]; este valor aun no lo uso
-                $dtedet->qtyitem = $request->qtyitem[$i];
-                $dtedet->unmditem = substr($unidadmedida->nombre, 0, 4);
-                $dtedet->unidadmedida_id = $request->unmditem[$i];
-                $dtedet->prcitem = $request->prcitem[$i]; //$request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
-                //$dtedet->montoitem = $request->montoitem[$i];
-                $dtedet->montoitem = round($dtedet->qtyitem * $dtedet->prcitem,0); //$request->montoitem[$i];
-                //$dtedet->obsdet = $request->obsdet[$i];
-                $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
-                $dtedet->itemkg = $aux_itemkg;
-                //$dtedet->save();
-                $dte->dtedets[] = $dtedet;
-                $dtedet_id = $dtedet->id;
-
-                $Tmntneto += $request->montoitem[$i];
-                $Tkgtotal += $aux_itemkg;
-            }
-        }
-        if($Tmntneto <= 0){
-            return redirect('dteguiadespdir')->with([
-                'mensaje'=> "Neto total de Guia debe ser mayor a cero" ,
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-
-        $empresa = Empresa::findOrFail(1);
-        if($request->foliocontrol_id == 2){
-            $Tiva = round(($empresa->iva/100) * $Tmntneto);
-            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);
-            $dte->tasaiva = $empresa->iva;
-            $dte->iva = $Tiva;
-            $dte->mnttotal = $Tmnttotal;        
-        }
-
-        $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
-        $hoy = date("Y-m-d H:i:s");
-        $dte->foliocontrol_id = $request->foliocontrol_id;
-        $dte->nrodocto = "";
-        $dte->fchemis = date('Y-m-d');
-        $dte->fchemisgen = $hoy;
-        $dte->fechahora = $hoy;
-        $dte->sucursal_id = $centroeconomico->sucursal_id;
-        $dte->cliente_id = $cliente->id;
-        $dte->comuna_id = $cliente->comunap_id;
-        $dte->vendedor_id = $request->vendedor_id;
-        $dte->obs = $request->obs;
-        $dte->tipodespacho = $request->tipodespacho;
-        $dte->indtraslado =  $request->indtraslado;
-        $dte->mntneto = $Tmntneto;
-        $dte->kgtotal = $Tkgtotal;
-        $dte->centroeconomico_id = $request->centroeconomico_id;
-        $dte->usuario_id = $request->usuario_id;
-
-        $dteguiadesp = new DteGuiaDesp();
-        $dteguiadesp->tipoentrega_id = $request->tipoentrega_id;
-        $dteguiadesp->comunaentrega_id = $request->comunaentrega_id;
-        $dteguiadesp->lugarentrega = $request->lugarentrega;
-        $dteguiadesp->ot = $request->ot;
-
-        $dte->dteguiadesp = $dteguiadesp;
-
-
-        $respuesta = Dte::generardteprueba($dte);
-        /*
-        $respuesta = response()->json([
-            'id' => 1
-        ]);
-        */
-        $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
-        if($respuesta->original["id"] == 1){
-            $dteNew = Dte::create($dte->toArray());
-            if(isset($dteoc)){
-                if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
-                    $dteoc->dte_id = $dteNew->id;
-                    $dteoc->oc_file = $foto;
-                    $dteoc->save();
-                }    
-            }
-            foreach ($dte->dtedets as $dtedet) {
-                $dtedet->dte_id = $dteNew->id;
-                $aux_dtedet = $dtedet->toArray();
-                $dtedetNew = DteDet::create($aux_dtedet);
-            }
-
-            $dteguiadesp->dte_id = $dteNew->id;
-            $dteguiadesp->save();
-
-            $foliocontrol->bloqueo = 0;
-            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-            $foliocontrol->save();
-            $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-            if($aux_foliosdisp <=100){
+        //dd(can('guardar-dte-guia-desp-directa'));
+        if(can('guardar-dte-guia-desp-directa') === true){
+            $cont_producto = count($request->producto_id);
+            if($cont_producto <=0 ){
                 return redirect('dteguiadespdir')->with([
-                    'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
+                    'mensaje'=>'No hay items, no se guardó.',
                     'tipo_alert' => 'alert-error'
                 ]);
-            }else{
-                return redirect('dteguiadespdir')->with([
-                    'mensaje'=>'Guia Despacho creada con exito.',
-                    'tipo_alert' => 'alert-success'
-                ]);    
             }
-/*
-            return redirect('dteguiadespdir')->with([
-                'mensaje'=>'Factura creada con exito.',
-                'tipo_alert' => 'alert-success'
+    
+            $cliente = Cliente::findOrFail($request->cliente_id);
+            foreach ($cliente->clientebloqueados as $clientebloqueado) {
+                return redirect('dteguiadespdir')->with([
+                    'id' => 0,
+                    'mensaje'=>'No es posible hacer Guia Despacho, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+            $dte = new Dte();
+            //CREAR REGISTRO DE ORDEN DE COMPRA
+            if(!is_null($request->oc_id)){
+                $dteoc = new DteOC();
+                $dteoc->dte_id = "";
+                $dteoc->oc_id = $request->oc_id;
+                $dteoc->oc_folder = "oc";
+                $dteoc->oc_file = $request->oc_file;
+                $dte->dteocs[] = $dteoc;
+                //$dteoc->save();
+            }
+        
+            $Tmntneto = 0;
+            $Tiva = 0;
+            $Tmnttotal = 0;
+            $Tkgtotal = 0;
+            //$dtedtes = [];
+            $dteguiausadas = [];
+            $aux_nrolindet = 0;
+            for ($i=0; $i < $cont_producto ; $i++){
+                if(is_null($request->producto_id[$i])==false AND (is_null($request->qtyitem[$i])==false) OR $request->codref == 2){
+                    if(cadVacia($request->producto_id[$i])){
+                        mensajeRespuesta([
+                            'mensaje' => "Campo producto_id no puede quedar Vacio, Item: " . strval($i + 1),
+                            'tipo_alert' => 'alert-error'
+                        ]);                    
+                    }
+                    if(cadVacia($request->vlrcodigo[$i])){
+                        mensajeRespuesta([
+                            'mensaje' => "Campo vlrcodigo no puede quedar Vacio, Item: " . strval($i + 1),
+                            'tipo_alert' => 'alert-error'
+                        ]);                    
+                    }
+                    if(cadVacia($request->nmbitem[$i])){
+                        mensajeRespuesta([
+                            'mensaje' => "Campo nmbitem no puede quedar Vacio, Item: " . strval($i + 1),
+                            'tipo_alert' => 'alert-error'
+                        ]);                    
+                    }
+                    if(cadVacia($request->qtyitem[$i])){
+                        mensajeRespuesta([
+                            'mensaje' => "Campo qtyitem no puede quedar Vacio, Item: " . strval($i + 1),
+                            'tipo_alert' => 'alert-error'
+                        ]);                    
+                    }
+                    if(cadVacia($request->unmditem[$i])){
+                        mensajeRespuesta([
+                            'mensaje' => "Campo unmditem no puede quedar Vacio, Item: " . strval($i + 1),
+                            'tipo_alert' => 'alert-error'
+                        ]);                    
+                    }
+                    if(cadVacia($request->prcitem[$i])){
+                        mensajeRespuesta([
+                            'mensaje' => "Campo prcitem no puede quedar Vacio, Item: " . strval($i + 1),
+                            'tipo_alert' => 'alert-error'
+                        ]);                    
+                    }
+                    if(cadVacia($request->montoitem[$i])){
+                        mensajeRespuesta([
+                            'mensaje' => "Campo montoitem no puede quedar Vacio, Item: " . strval($i + 1),
+                            'tipo_alert' => 'alert-error'
+                        ]);                    
+                    }
+                    //$producto = Producto::findOrFail($request->producto_id[$i]);
+                    $unidadmedida = UnidadMedida::findOrFail($request->unmditem[$i]);
+                    $dtedet = new DteDet();
+                    $dtedet->dtedet_id = $request->dtedetorigen_id[$i];
+                    $dtedet->producto_id = $request->producto_id[$i];
+                    $dtedet->nrolindet = ($i + 1);
+                    $dtedet->vlrcodigo = $request->producto_id[$i];
+                    $dtedet->nmbitem = $request->nmbitem[$i];
+                    //$dtedet->dscitem = $request->dscitem[$i]; este valor aun no lo uso
+                    $dtedet->qtyitem = $request->qtyitem[$i];
+                    $dtedet->unmditem = substr($unidadmedida->nombre, 0, 4);
+                    $dtedet->unidadmedida_id = $request->unmditem[$i];
+                    $dtedet->prcitem = $request->prcitem[$i]; //$request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
+                    //$dtedet->montoitem = $request->montoitem[$i];
+                    $dtedet->montoitem = round($dtedet->qtyitem * $dtedet->prcitem,0); //$request->montoitem[$i];
+                    //$dtedet->obsdet = $request->obsdet[$i];
+                    $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                    $dtedet->itemkg = $aux_itemkg;
+                    //$dtedet->save();
+                    $dte->dtedets[] = $dtedet;
+                    $dtedet_id = $dtedet->id;
+    
+                    $Tmntneto += $request->montoitem[$i];
+                    $Tkgtotal += $aux_itemkg;
+                }
+            }
+            if($Tmntneto <= 0){
+                return redirect('dteguiadespdir')->with([
+                    'mensaje'=> "Neto total de Guia debe ser mayor a cero" ,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+    
+            $empresa = Empresa::findOrFail(1);
+            if($request->foliocontrol_id == 2){
+                $Tiva = round(($empresa->iva/100) * $Tmntneto);
+                $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);
+                $dte->tasaiva = $empresa->iva;
+                $dte->iva = $Tiva;
+                $dte->mnttotal = $Tmnttotal;        
+            }
+    
+            $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
+            $hoy = date("Y-m-d H:i:s");
+            $dte->foliocontrol_id = $request->foliocontrol_id;
+            $dte->nrodocto = "";
+            $dte->fchemis = date('Y-m-d');
+            $dte->fchemisgen = $hoy;
+            $dte->fechahora = $hoy;
+            $dte->sucursal_id = $centroeconomico->sucursal_id;
+            $dte->cliente_id = $cliente->id;
+            $dte->comuna_id = $cliente->comunap_id;
+            $dte->vendedor_id = $request->vendedor_id;
+            $dte->obs = $request->obs;
+            $dte->tipodespacho = $request->tipodespacho;
+            $dte->indtraslado =  $request->indtraslado;
+            $dte->mntneto = $Tmntneto;
+            $dte->kgtotal = $Tkgtotal;
+            $dte->centroeconomico_id = $request->centroeconomico_id;
+            $dte->usuario_id = $request->usuario_id;
+    
+            $dteguiadesp = new DteGuiaDesp();
+            $dteguiadesp->tipoentrega_id = $request->tipoentrega_id;
+            $dteguiadesp->comunaentrega_id = $request->comunaentrega_id;
+            $dteguiadesp->lugarentrega = $request->lugarentrega;
+            $dteguiadesp->ot = $request->ot;
+    
+            $dte->dteguiadesp = $dteguiadesp;
+    
+    
+            $respuesta = Dte::generardteprueba($dte);
+            /*
+            $respuesta = response()->json([
+                'id' => 1
             ]);
-*/
-        }else{
-            $foliocontrol->bloqueo = 0;
-            $foliocontrol->save();
-            return redirect('dteguiadespdir')->with([
-                'mensaje'=>$respuesta->original["mensaje"] ,
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
+            */
+            $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
+            if($respuesta->original["id"] == 1){
+                $dteNew = Dte::create($dte->toArray());
+                if(isset($dteoc)){
+                    if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                        $dteoc->dte_id = $dteNew->id;
+                        $dteoc->oc_file = $foto;
+                        $dteoc->save();
+                    }    
+                }
+                foreach ($dte->dtedets as $dtedet) {
+                    $dtedet->dte_id = $dteNew->id;
+                    $aux_dtedet = $dtedet->toArray();
+                    $dtedetNew = DteDet::create($aux_dtedet);
+                }
+    
+                $dteguiadesp->dte_id = $dteNew->id;
+                $dteguiadesp->save();
+    
+                $foliocontrol->bloqueo = 0;
+                $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+                $foliocontrol->save();
+                $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+                if($aux_foliosdisp <=100){
+                    return redirect('dteguiadespdir')->with([
+                        'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
+                        'tipo_alert' => 'alert-error'
+                    ]);
+                }else{
+                    return redirect('dteguiadespdir')->with([
+                        'mensaje'=>'Guia Despacho creada con exito.',
+                        'tipo_alert' => 'alert-success'
+                    ]);    
+                }
+    /*
+                return redirect('dteguiadespdir')->with([
+                    'mensaje'=>'Factura creada con exito.',
+                    'tipo_alert' => 'alert-success'
+                ]);
+    */
+            }else{
+                $foliocontrol->bloqueo = 0;
+                $foliocontrol->save();
+                return redirect('dteguiadespdir')->with([
+                    'mensaje'=>$respuesta->original["mensaje"] ,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        };
+
     }
 
     public function procesar(Request $request)

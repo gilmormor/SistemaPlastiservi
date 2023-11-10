@@ -140,6 +140,11 @@
 			</tfoot>
 		</table>
 	</div>
+	<div>
+		@if (!is_null($despachoordrec->obs))
+			<p class="nota"><strong> <H2>Observaciones: {{$despachoordrec->obs}}</H2></strong></p>			
+		@endif
+	</div>
 	<br>
 	<div class="round1">
 		<span class="h3">Información</span>

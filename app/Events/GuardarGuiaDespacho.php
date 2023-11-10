@@ -15,14 +15,16 @@ class GuardarGuiaDespacho
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $despachoord;
+    public $dte;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($despachoord)
+    public function __construct($despachoord,$dte)
     {
         $this->despachoord = $despachoord;
+        $this->dte = $dte;
     }
 
     /**

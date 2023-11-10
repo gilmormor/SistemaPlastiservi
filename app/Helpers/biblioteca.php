@@ -31,15 +31,11 @@ if (!function_exists('canUser')) {
             $permisos = Permiso::whereHas('roles', function ($query) {
                 $query->where('rol_id', session()->get('rol_id'));
                 })->get()->pluck('slug')->toArray();
+            //dd($permisos);
             if (!in_array($permiso, $permisos)) {
                 if ($redirect) {
                     if (!request()->ajax())
-                        $permisoT = Permiso::where("slug",$permiso)->get();
-                        $nombre_permiso = "";
-                        if(count($permisoT) > 0){
-                            $nombre_permiso = ": " . $permisoT[0]->nombre;
-                        }
-                        return redirect()->route('inicio')->with('mensaje', 'No tienes permisos para entrar en este módulo' . $nombre_permiso)->send();
+                        return redirect()->route('inicio')->with('mensaje', 'No tienes permisos para entrar en este módulo' . nomPermiso($permiso))->send();
                     abort(403, 'No tiene permiso');
                 } else {
                     return false;
@@ -48,7 +44,7 @@ if (!function_exists('canUser')) {
             return true;
         }
     }
-}
+}   
 
 if (!function_exists('urlActual')) {
     function urlActual(){
@@ -257,4 +253,16 @@ if (!function_exists('sucFisXUsu')) {
         return $arraySuc;
     }
 }
+
+if (!function_exists('nomPermiso')) {
+    function nomPermiso($permiso){
+        $permisoT = Permiso::where("slug",$permiso)->get();
+        $nombre_permiso = "";
+        if(count($permisoT) > 0){
+            $nombre_permiso = ": " . $permisoT[0]->nombre;
+        }
+        return $nombre_permiso;
+    }
+}
+
 ?>

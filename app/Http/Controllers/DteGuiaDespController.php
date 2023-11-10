@@ -100,6 +100,13 @@ class DteGuiaDespController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        if(!is_null($data->guiadespacho) or $data->guiadespacho != ""){
+            return redirect('dteguiadesp/listarorddesp')->with([
+                'mensaje'=>"Guia de Despacho $data->guiadespacho fue generada por otro usuario!",
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
         $detalles = $data->despachoorddets;
         /*
         $dte = $data->guiadesp->whereNull('deleted_at');
@@ -133,11 +140,18 @@ class DteGuiaDespController extends Controller
     public function guardar(ValidarDTE $request)
     {
         can('guardar-dte-guia-despacho');
-        //dd($request);
         $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
         if($request->updated_at != $despachoord->updated_at){
             return redirect('dteguiadesp/listarorddesp')->with([
                 'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+        $despachoord->updated_at = date("Y-m-d H:i:s");
+        $despachoord->save();
+        if(!is_null($despachoord->guiadespacho) or $despachoord->guiadespacho != ""){
+            return redirect('dteguiadesp/listarorddesp')->with([
+                'mensaje'=>"Guia de Despacho $despachoord->guiadespacho fue generada por otro usuario!",
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -1504,9 +1518,6 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
         $despachoord = DespachoOrd::findOrFail($dteguiadesp->despachoord_id);
         $despachoord->guiadespacho = $dteNew->nrodocto;
         $despachoord->guiadespachofec = date("Y-m-d H:i:s");
-        if ($despachoord->save()) {
-            Event(new GuardarGuiaDespacho($despachoord));
-        }
         //CREAR REGISTRO DE ORDEN DE COMPRA
         $dteoc = new DteOC();
         $dteoc->dte_id = $dteNew->id;
@@ -1522,6 +1533,10 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
             //$dtedte->dtefac_id = "";
             $dtedte->save();
         }
+        if ($despachoord->save()) {
+            Event(new GuardarGuiaDespacho($despachoord,$dteNew));
+        }
+
         $foliocontrol->bloqueo = 0;
         $foliocontrol->ultfoliouti = $dteNew->nrodocto;
         $foliocontrol->save();
