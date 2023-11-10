@@ -67,7 +67,7 @@ class NotaVentaDetalle extends Model
     //RELACION DE UNO A MUCHOS DespachoSolDet
     public function despachosoldets()
     {
-        return $this->hasMany(DespachoSolDet::class);
+        return $this->hasMany(DespachoSolDet::class,"notaventadetalle_id");
     }
     //RELACION DE UNO A MUCHOS DespachoOrdDet
     public function despachoorddets()

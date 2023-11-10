@@ -697,6 +697,14 @@ class DespachoSolController extends Controller
             }
 
             $despachosol = DespachoSol::findOrFail($request->id);
+            if(isset($request->updated_at) and ($despachosol->updated_at != $request->updated_at)){
+                return response()->json([
+                    'status'=>'0',
+                    'mensaje' => 'Registro fue modificado por otro usuario',
+                    'tipo_alert' => 'error'
+                ]);
+            }
+    
             if($despachosol->aprorddesp != 1){
                 return response()->json([
                     'mensaje' => 'Registro fue modificado previamente.'
@@ -1417,6 +1425,183 @@ class DespachoSolController extends Controller
                             if($despachosol->notaventa->vendedor->persona->usuario){
                                 $aux_usuariodestino_id = $despachosol->notaventa->vendedor->persona->usuario->id;
                             }
+
+                            $aux_rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
+                            $aux_telefono = $despachosol->notaventa->cliente->telefono;
+                            $aux_razonSocial = $despachosol->notaventa->cliente->razonsocial;
+                            $aux_direccion = $despachosol->notaventa->cliente->direccion;
+                            $aux_contactonombre = $despachosol->notaventa->cliente->contactonombre;
+                            $aux_comunaNombre = $despachosol->notaventa->cliente->comuna->nombre;
+                            $aux_sucursalNombre = $despachosol->notaventa->sucursal->nombre;
+                            $aux_despachosol_id = str_pad($despachosol->id, 10, "0", STR_PAD_LEFT);
+                            $datehoy = date('d/m/Y h:i:s A');
+                            $dateSolDesp = date('d/m/Y H:i:s', strtotime($despachosol->fechahora));
+                            $fecha_objeto = date_create_from_format('Y-m-d', $despachosol->fechaestdesp);
+                            $aux_fechaestdesp = $fecha_objeto->format('d/m/Y'); // Formato d-m-Y
+                            $aux_tipoentrega = $despachosol->notaventa->tipoentrega->nombre;
+                            $aux_comunaentrega = $despachosol->comunaentrega->nombre;
+                            $aux_tipoguiadesp = "";
+                            if($despachosol->tipoguiadesp == "1"){
+                                $aux_tipoguiadesp = "Precio";
+                            }
+                            if($despachosol->tipoguiadesp == "6"){
+                                $aux_tipoguiadesp = "Traslado";
+                            }
+                            if($despachosol->tipoguiadesp == "20"){
+                                $aux_tipoguiadesp = "Traslado + Precio";
+                            }
+                            if($despachosol->tipoguiadesp == "30"){
+                                $aux_tipoguiadesp = "Traslado";
+                            }
+                
+                            
+                            
+                            $aux_vendedorNombre = $despachosol->notaventa->vendedor->persona->nombre . " " . $despachosol->notaventa->vendedor->persona->apellido;
+                            $aux_notaventa_id = str_pad($despachosol->notaventa_id, 10, "0", STR_PAD_LEFT);
+                            $aux_cotizacion_id = str_pad($despachosol->notaventa->cotizacion_id, 10, "0", STR_PAD_LEFT);
+                            $aux_oc_id = $despachosol->notaventa->oc_id;
+                            $aux_logo = asset("assets/lte/dist/img/LOGO-PLASTISERVI.png");
+                            $aux_despSoldet = 
+                            "
+                            <br>
+                            <span class='h3'>PASO PREVIO A PREPARACION DE DESPACHO</span>
+                            <br>
+                            <div id='page_pdf'>
+                                <table id='factura_head'>
+                                    <tr>
+                                        <td class='logo_factura'>
+                                            <div>
+                                                <img src='$aux_logo' style='max-width:100%;width:auto;height:auto;'>
+                                            </div>
+                                        </td>
+                                        <td class='info_empresa'>
+                                        </td>
+                                        <td class='info_factura'>
+                                            <div>
+                                                <span class='h3'>Solicitud Despacho / $aux_sucursalNombre</span>
+                                                <p><strong>Solicitud de Despacho Nro:</strong>$aux_despachosol_id</p>
+                                                <p><strong>Fecha:</strong> $dateSolDesp</p>
+                                                <p><strong>Vendedor:</strong> $aux_vendedorNombre</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div style='width:100% !important;'>
+                                    <span class='h3'>Cliente</span>
+                                    <table class='info_cliente'>
+                                        <tr>
+                                            <td><label><strong>Rut:</strong></label></td><td><p id='rutform' name='rutform'><p>$aux_rut</p></td>
+                                            <td><label><strong>Teléfono:</strong></label></td><td><p>$aux_telefono</p></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><strong>Nombre:</strong></label></td><td><p>$aux_razonSocial</p></td>
+                                            <td><label><strong>Dirección:</strong></label></td><td><p>$aux_direccion</p></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><strong>Contacto:</strong></label></td><td><p>$aux_contactonombre</p></td>
+                                            <td><label><strong>Comuna:</strong></label></td><td>$aux_comunaNombre<p></p></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <table id='factura_detalle'>
+                                    <thead>
+                                        <tr>
+                                            <th width='50px' style='text-align: center;'>Cod</th>
+                                            <th width='300px' style='text-align: left;'>Descripción</th>
+                                            <th width='50px' style='text-align: center;'>UN</th>
+                                            <th width='50px' style='text-align: center;' title='Cant. Nota de Venta: $aux_notaventa_id'>Cant NV</th>
+                                            <!--<th width='50px' style='text-align: center;' title='Cant. Solicitud Despacho Previo'>Prev</th>-->
+                                            <th width='50px' style='text-align: center;' title='Cant. Solicitud Despacho: $aux_despachosol_id'>SolDesp</th>
+                                            <th width='50px' style='text-align: center;' title='Picking'>Picking</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id='detalle_productos'>";
+
+                                    foreach ($despachosol->despachosoldets as $despachosoldet) {
+                                        /*************************/
+                                        //SUMA TOTAL SOLICITADO
+                                        /*************************/
+                                        /*
+                                        $sql = "SELECT cantsoldesp
+                                                FROM vista_sumsoldespdet
+                                                WHERE notaventadetalle_id=$despachosoldet->notaventadetalle_id";
+                                        $datasuma = DB::select($sql);
+                                        if(empty($datasuma)){
+                                            $sumacantsoldesp= 0;
+                                        }else{
+                                            $sumacantsoldesp= $datasuma[0]->cantsoldesp;
+                                        }
+                                        */
+                                        $aux_producto_id = $despachosoldet->notaventadetalle->producto_id;
+                                        $atributoProd = Producto::atributosProducto($aux_producto_id);
+                                        $aux_producto_nombre = $atributoProd["nombre"];
+                                        $aux_cantNV = number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".");
+                                        $aux_cantSD = number_format($despachosoldet->cantsoldesp, 0, ",", ".");
+                                        $aux_unimed = $despachosoldet->notaventadetalle->unidadmedida->nombre;
+                                        $aux_picking = $despachosoldet->despachosoldet_invbodegaproducto->cant * -1;
+                                        /*
+                                        $aux_cantSolPrev = $sumacantsoldesp - $aux_cantSD;
+                                        $aux_saldoNV = $aux_cantNV - $sumacantsoldesp;
+                                        */
+                                        $aux_despSoldet .=
+                                            "<tr class='headt' style='height:150%;'>
+                                                <td style='text-align: center;'>$aux_producto_id</td>
+                                                <td class='textleft'>$aux_producto_nombre</td>
+                                                <td style='text-align: center;'>$aux_unimed</td>
+                                                <td style='text-align: center;'>$aux_cantNV</td>
+                                                <td style='text-align: center;'>$aux_cantSD</td>
+                                                <td style='text-align: center;'>$aux_picking</td>
+                                            </tr>";
+                                    }
+                                    $aux_obs = "";
+                                    if (!is_null($despachosol->observacion)){
+                                        $aux_obs = $despachosol->observacion;
+                                    }
+                                    $aux_despSoldet .=
+                                    "</tbody>
+                                </table>
+                                <div class='round2'>
+                                    <p class='nota'><strong> <H3>Observaciones: $aux_obs</H3></strong></p>
+                                </div>
+                                <br>
+                                <div style='width:40% !important;'>
+                                    <span class='h3'>Informacion</span>
+                                    <table id='info_factura'>
+                                        <tr>
+                                            <td colspan='7' class='textleft' width='40%' title='Fecha Estimada de despacho'><span><strong>Fecha EstDesp: </strong></span></td>
+                                            <td class='textleft' width='50%' title='Fecha Estimada de despacho'><strong><span>$aux_fechaestdesp</span></strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan='7' class='textleft' width='40%' title='Tipo de entrega'><span><strong>Tipo entrega: </strong></span></td>
+                                            <td class='textleft' width='50%' title='Tipo de entrega'><span>$aux_tipoentrega</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan='7' class='textleft' width='40%' title='Comuna de entrega'><span><strong>Comuna entrega: </strong></span></td>
+                                            <td class='textleft' width='50%' title='Comuna de entrega'><span>$aux_comunaentrega</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan='7' class='textleft' width='40%' title='Tipo de Guia despacho'><span><strong>Tipo GuiaDesp: </strong></span></td>
+                                            <td class='textleft' width='50%' title='Tipo de Guia despacho'><span>$aux_tipoguiadesp</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan='7' class='textleft' width='40%'><span><strong>Orden de Compra: </strong></span></td>
+                                            <td class='textleft' width='50%'><span>$aux_oc_id</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan='7' class='textleft' width='40%'><span><strong>Cotizacion Nro: </strong></span></td>
+                                            <td class='textleft' width='50%'><span>$aux_cotizacion_id</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan='7' class='textleft' width='40%'><span><strong>Nota de Venta Nro: </strong></span></td>
+                                            <td class='textleft' width='50%'><span>$aux_notaventa_id</span></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>";
+
+                        
+                            //dd($aux_despSoldet);
+
                             Event(new Notificacion( //ENVIO ARRAY CON LOS DATOS PARA CREAR LA NOTIFICACION
                                 [
                                     'usuarioorigen_id' => auth()->id(),
@@ -1430,17 +1615,7 @@ class DespachoSolController extends Controller
                                     'accion' => 'Nueva Solicitud Despacho',
                                     'mensajetitle' => 'OD:'.$despachosol->id.' NV:'.$despachosol->notaventa_id,
                                     'icono' => 'fa fa-fw fa-male text-primary',
-                                    'detalle' => "
-                                        <p><b>Datos:</b></p>
-                                        <ul>
-                                            <li><b>PASO PREVIO A PREPARACION DE DESPACHO</b></li>
-                                            <li><b>Nro. Nota Venta: </b> $despachosol->notaventa_id </li>
-                                            <li><b>Nro. Solicitud Despacho: </b> $despachosol->id </li>
-                                            <li><b>RUT:</b> " . $despachosol->notaventa->cliente->rut . "</li>
-                                            <li><b>Razon Social:</b> " . $despachosol->notaventa->cliente->razonsocial . "</li>
-                                            <li><b>Vendedor:</b> " . $despachosol->notaventa->vendedor->persona->nombre . " " . $despachosol->notaventa->vendedor->persona->apellido . "</li>
-                                        </ul>                    
-                                    "
+                                    'detalle' => $aux_despSoldet
                                 ]
                             ));
                         }
@@ -2544,7 +2719,7 @@ function reportesoldesp1($request){
                         }
                     }
                     if($aux_bancDevSolDesp){
-                        $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' fila='$i' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip'>
+                        $nuevoOrdDesp .= "<a href='/despachosol/devolversoldesp' fila='$i' id='btndevsol$i' name='btndevsol$i' class='btn-accion-tabla btn-sm tooltipsC btndevsol' title='Devolver Solicitud Despacho' data-toggle='tooltip' updated_at='$data->updated_at'>
                                             <button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>
                                         </a>";
                     }
@@ -2568,7 +2743,7 @@ function reportesoldesp1($request){
                     </a>
                 </td>
                 <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . 
-                    date('d-m-Y', strtotime($data->fechahora)) . 
+                    date('d/m/Y', strtotime($data->fechahora)) . 
                 "</td>
                 <td id='fechaestdespTD$i' name='fechaestdespTD$i' data-order='$data->fechaestdesp'>" . 
                     "<a id='fechaestdesp$i' name='fechaestdesp$i' class='editfed'>" .

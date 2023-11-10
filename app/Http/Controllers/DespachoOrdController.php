@@ -1047,6 +1047,136 @@ class DespachoOrdController extends Controller
                 if($despachoord->notaventa->vendedor->persona->usuario){
                     $aux_usuariodestino_id = $despachoord->notaventa->vendedor->persona->usuario->id;
                 }
+                /* NOTIFICACION EN COMENTARIO POR DECISION EN REUNION LOS PINOS 07/11/2023
+                // SE DEFINIO QUE NO ES NECESARIO ENVIAR CORREO AL HACER ORDEN DE DESPACHO
+                $aux_rut = number_format( substr ( $despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoord->notaventa->cliente->rut, strlen($despachoord->notaventa->cliente->rut) -1 , 1 );
+                $aux_telefono = $despachoord->notaventa->cliente->telefono;
+                $aux_razonSocial = $despachoord->notaventa->cliente->razonsocial;
+                $aux_direccion = $despachoord->notaventa->cliente->direccion;
+                $aux_contactonombre = $despachoord->notaventa->cliente->contactonombre;
+                $aux_comunaNombre = $despachoord->notaventa->cliente->comuna->nombre;
+                $aux_sucursalNombre = $despachoord->notaventa->sucursal->nombre;
+                $aux_orddespnro = str_pad($despachoord->id, 10, "0", STR_PAD_LEFT);
+                $datehoy = date('d/m/Y h:i:s A');
+                $dateOrdDesp = date('d/m/Y h:i:s A', strtotime($despachoord->fechahora));
+                $aux_vendedorNombre = $despachoord->notaventa->vendedor->persona->nombre . " " . $despachoord->notaventa->vendedor->persona->apellido;
+                $aux_notaventa_id = str_pad($despachoord->notaventa_id, 10, "0", STR_PAD_LEFT);
+                $aux_cotizacion_id = str_pad($despachoord->notaventa->cotizacion_id, 10, "0", STR_PAD_LEFT);
+                $aux_oc_id = $despachoord->notaventa->oc_id;
+                $aux_despachosol_id = str_pad($despachoord->despachosol_id, 10, "0", STR_PAD_LEFT);
+                $aux_logo = asset("assets/lte/dist/img/LOGO-PLASTISERVI.png");
+                $aux_despOrddet = 
+                "
+                <br>
+                <span class='h3'>PEDIDO EN PREPARACION DE DESPACHO</span>
+                <br>
+                <div id='page_pdf'>
+                    <table id='factura_head'>
+                        <tr>
+                            <td class='logo_factura'>
+                                <div>
+                                    <img src='$aux_logo' style='max-width:100%;width:auto;height:auto;'>
+                                </div>
+                            </td>
+                            <td class='info_empresa'>
+                            </td>
+                            <td class='info_factura'>
+                                <div>
+                                    <span class='h3'>Orden de Despacho / $aux_sucursalNombre</span>
+                                    <p><strong>Orden Despacho Nro:</strong>$aux_orddespnro</p>
+                                    <p><strong>Fecha Actual:</strong> $datehoy</p>
+                                    <p><strong>Fecha OrdDesp:</strong> $dateOrdDesp</p>
+                                    <p><strong>Vendedor:</strong> $aux_vendedorNombre</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div style='width:100% !important;'>
+                        <span class='h3'>Cliente</span>
+                        <table class='info_cliente'>
+                            <tr>
+                                <td><label><strong>Rut:</strong></label></td><td><p id='rutform' name='rutform'><p>$aux_rut</p></td>
+                                <td><label><strong>Teléfono:</strong></label></td><td><p>$aux_telefono</p></td>
+                            </tr>
+                            <tr>
+                                <td><label><strong>Nombre:</strong></label></td><td><p>$aux_razonSocial</p></td>
+                                <td><label><strong>Dirección:</strong></label></td><td><p>$aux_direccion</p></td>
+                            </tr>
+                            <tr>
+                                <td><label><strong>Contacto:</strong></label></td><td><p>$aux_contactonombre</p></td>
+                                <td><label><strong>Comuna:</strong></label></td><td>$aux_comunaNombre<p></p></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <table id='factura_detalle'>
+                        <thead>
+                            <tr>
+                                <th width='50px' style='text-align: center;'>Cod</th>
+                                <th width='300px' style='text-align: left;'>Descripción</th>
+                                <th width='50px' style='text-align: center;'>UN</th>
+                                <th width='50px' style='text-align: center;' title='Cant. Nota de Venta: $aux_notaventa_id'>NV</th>
+                                <!--<th width='50px' style='text-align: center;' title='Cant. Solicitud Despacho: $aux_despachosol_id'>SolDesp</th>
+                                <th width='50px' style='text-align: center;' title='Cant. Orden Despacho Previo'>OrdDespPrev</th>-->
+                                <th width='50px' style='text-align: center;' title='Cant. Orden Despacho: $aux_orddespnro'>OrdDesp</th>
+                                <!--<th width='50px' style='text-align: center;' title='Cant. Saldo Nota Venta: $aux_notaventa_id'>Saldo NV</th>-->
+                            </tr>
+                        </thead>
+                        <tbody id='detalle_productos'>";
+
+                        foreach ($despachoord->despachoorddets as $despachoorddet) {
+
+                            $aux_producto_id = $despachoorddet->notaventadetalle->producto_id;
+                            $atributoProd = Producto::atributosProducto($aux_producto_id);
+                            $aux_producto_nombre = $atributoProd["nombre"];
+                            $aux_cantNV = number_format($despachoorddet->notaventadetalle->cant, 0, ",", ".");
+                            $aux_cantSD = number_format($despachoorddet->despachosoldet->cantsoldesp, 0, ",", ".");
+                            $aux_cantOD = number_format($despachoorddet->cantdesp, 0, ",", ".");
+                            $aux_unimed = $despachoorddet->notaventadetalle->unidadmedida->nombre;
+
+                            $aux_despOrddet .=
+                                "<tr class='headt' style='height:150%;'>
+                                    <td style='text-align: center;'>$aux_producto_id</td>
+                                    <td class='textleft'>$aux_producto_nombre</td>
+                                    <td style='text-align: center;'>$aux_unimed</td>
+                                    <td style='text-align: center;'>$aux_cantNV</td>
+                                    <td style='text-align: center;'>$aux_cantOD</td>
+                                </tr>";
+                        }
+                        $aux_obs = "";
+                        if (!is_null($despachoord->observacion)){
+                            $aux_obs = $despachoord->observacion;
+                        }
+                        $aux_despOrddet .=
+                        "</tbody>
+                    </table>
+                    <div class='round2'>
+                        <p class='nota'><strong> <H3>Observaciones: $aux_obs</H3></strong></p>
+                    </div>
+                    <br>
+                    <div style='width:40% !important;'>
+                        <span class='h3'>Informacion</span>
+                        <table id='info_factura'>
+                            <tr>
+                                <td colspan='7' class='textleft' width='40%'><span><strong>Orden de Compra: </strong></span></td>
+                                <td class='textleft' width='50%'><span>$aux_oc_id</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan='7' class='textleft' width='40%'><span><strong>Cotizacion Nro: </strong></span></td>
+                                <td class='textleft' width='50%'><span>$aux_cotizacion_id</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan='7' class='textleft' width='40%'><span><strong>Nota de Venta Nro: </strong></span></td>
+                                <td class='textleft' width='50%'><span>$aux_notaventa_id</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan='7' class='textleft' width='40%'><span><strong>Solicitud Despacho: </strong></span></td>
+                                <td class='textleft' width='50%'><span>$aux_despachosol_id</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>";
+
+
                 Event(new Notificacion( //ENVIO ARRAY CON LOS DATOS PARA CREAR LA NOTIFICACION
                     [
                         'usuarioorigen_id' => auth()->id(),
@@ -1060,19 +1190,10 @@ class DespachoOrdController extends Controller
                         'accion' => 'Nueva Orden Despacho',
                         'mensajetitle' => 'OD:'.$despachoord->id.' NV:'.$despachoord->notaventa_id,
                         'icono' => 'fa fa-fw fa-male text-primary',
-                        'detalle' => "
-                            <p><b>Datos:</b></p>
-                            <ul>
-                                <li><b>PEDIDO EN PREPARACION DE DESPACHO</b></li>
-                                <li><b>Nro. Nota Venta: </b> $despachoord->notaventa_id </li>
-                                <li><b>Nro. Orden Despacho: </b> $despachoord->id </li>
-                                <li><b>RUT:</b> " . $despachoord->notaventa->cliente->rut . "</li>
-                                <li><b>Razon Social:</b> " . $despachoord->notaventa->cliente->razonsocial . "</li>
-                                <li><b>Vendedor:</b> " . $despachoord->notaventa->vendedor->persona->nombre . " " . $despachoord->notaventa->vendedor->persona->apellido . "</li>
-                            </ul>                    
-                        "
+                        'detalle' => $aux_despOrddet
                     ]
                 ));
+                */
                 return response()->json([
                                         'status' => '1',
                                         'title' => "",
@@ -1196,6 +1317,8 @@ class DespachoOrdController extends Controller
                         </a>";
                         $aux_totalFact = number_format($dte->mnttotal, 0, ",", ".");
                     }
+                    $aux_fechaFact = $despachoord->fechafactura;
+                    $aux_fechaFact = $aux_fechaFact ? date('d/m/Y', strtotime($despachoord->fechafactura)) : "";
 
                     $tab1 .=
                         "<tr id='filaord$i' name='filaord$i'>
@@ -1207,7 +1330,7 @@ class DespachoOrdController extends Controller
                         <td id='fechahoraord$i' name='fechahoraord$i'>" . date('d/m/Y', strtotime($despachoord->created_at)) . "</td>
                         <td style='text-align:left'>". $despachoord->notaventa->cliente->razonsocial ."</td>
                         <td class='textcenter'>" . $aux_enlaceguia ." </td>
-                        <td class='textcenter'>" . date('d/m/Y', strtotime($despachoord->fechafactura)) . "</td>
+                        <td class='textcenter'>" . $aux_fechaFact . "</td>
                         <td class='textcenter'>" . $aux_enlacefactura . "</td>
                         <td style='text-align:right'>". $aux_totalFact ."</td>
                     </tr>";
@@ -1295,11 +1418,12 @@ class DespachoOrdController extends Controller
                             $aux_saldoentregado = $despachoorddet->cantdesp;
                             foreach ($despachoorddet->despachoordrecdets as $despachoordrecdet){
                                 //dd($despachoordrecdet->cantrec);
+                                $despachoordrec = $despachoordrecdet->despachoordrec;
                                 $tablaOrdTrab .= "
                                     <tr>
                                         <td>
-                                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Rechazo OD' onclick='genpdfODRec($despachoordrecdet->id,1)'>
-                                                $despachoordrecdet->id
+                                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Rechazo OD' onclick='genpdfODRec($despachoordrec->id,1,\"myModalTablaOD\")'>
+                                                $despachoordrec->id
                                             </a>
                                         </td>
                                         <td style='text-align:right'>$despachoordrecdet->cantrec</td>

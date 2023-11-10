@@ -25,8 +25,8 @@
     </ul>
     <p>
         <b>Ingresar al Sistema:</b> 
-        <a href="https://www.pl.plastiservi.cl">
-            https://www.pl.plastiservi.cl
+        <a href="{{urlRaiz()}}">
+            {{urlRaiz()}}
         </a>
     </p>
 </body>

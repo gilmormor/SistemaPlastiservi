@@ -128,7 +128,7 @@
 							</td>
 							<td><strong>Observación:</strong></td>
 							<td><p>{{$acuerdotecnico->at_materiaprimaobs}}</p></td>
-							<td><strong>Uso Previsto:</strong></td>
+							<td><strong>Uso Previsto:</strong> {{$acuerdotecnico->at_usoprevisto}}</td>
 						</tr>
 					</table>
 				</div>

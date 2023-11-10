@@ -1352,7 +1352,13 @@ function pdfSolDespPrev(id,stareport){ //GENERAR PDF Solicitud despacho previo
 	$("#myModalpdf").modal('show')
 }
 
-function genpdfODRec(id,stareport){ //GENERAR PDF Orden de Despacho Rechazo
+function genpdfODRec(id,stareport,aux_venmodant = ""){ //GENERAR PDF Orden de Despacho Rechazo
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+
 	if($("#myModalTablaOD")){
 		$("#myModalTablaOD").modal('hide');
 	}
@@ -1382,31 +1388,79 @@ function genpdfPESAJE(id,stareport){ //GENERAR PDF PESAJE
 	//console.log($('#contpdf'));
 	$("#myModalpdf").modal('show')
 }
-function genpdfGD(id,nombre,aux_venmodant = ""){ //GENERAR PDF Guia Despacho
-	$("#venmodant").val("");
-	if(aux_venmodant!=""){
-		$("#" + aux_venmodant).modal('hide');
-		$("#venmodant").val(aux_venmodant);
-	}
-	let id_str = id.toString();
-	id_str = id_str.padStart(8, "0");
-	let queryString = '?timestamp=' + new Date().getTime();
-	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T52FE'+id_str+nombre+'.pdf' + queryString);
-	$("#myModalpdf").modal('show');
+function genpdfGD(id,nombre,aux_venmodant = "",aux_slug = "ver-pdf-guia-despacho"){ //GENERAR PDF Guia Despacho
+	var data = {
+		slug: aux_slug,
+		_token: $('input[name=_token]').val()
+	};
+	$.ajax({
+		url: '/generales_valpermiso',
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			//console.log(respuesta);
+			if(respuesta.resp){
+				$("#venmodant").val("");
+				if(aux_venmodant!=""){
+					$("#" + aux_venmodant).modal('hide');
+					$("#venmodant").val(aux_venmodant);
+				}
+				let id_str = id.toString();
+				id_str = id_str.padStart(8, "0");
+				let queryString = '?timestamp=' + new Date().getTime();
+				$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/DTE_T52FE'+id_str+nombre+'.pdf' + queryString);
+				$("#myModalpdf").modal('show');
+			}else{
+				swal({
+					title: respuesta.mensaje,
+					text:  respuesta.mensaje2,
+					icon: 'error',
+					buttons: {
+						confirm: "Cerrar",
+					},
+				}).then((value) => {
+				});
+			}
+		}
+	});
 }
 
-function genpdfFAC(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura
-	$("#venmodant").val("");
-	if(aux_venmodant!=""){
-		$("#" + aux_venmodant).modal('hide');
-		$("#venmodant").val(aux_venmodant);
-	}
-	//let id_str = id.toString();
-	//id_str = id_str.padStart(8, "0");
-	//console.log(id);
-	let queryString = '?timestamp=' + new Date().getTime();
-	$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/'+id+nombre+'.pdf' + queryString);
-	$("#myModalpdf").modal('show');
+function genpdfFAC(id,nombre,aux_venmodant = "",aux_slug = "ver-pdf-factura"){ //GENERAR PDF Factura
+	var data = {
+		slug: aux_slug,
+		_token: $('input[name=_token]').val()
+	};
+	$.ajax({
+		url: '/generales_valpermiso',
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			//console.log(respuesta);
+			if(respuesta.resp){
+				$("#venmodant").val("");
+				if(aux_venmodant!=""){
+					$("#" + aux_venmodant).modal('hide');
+					$("#venmodant").val(aux_venmodant);
+				}
+				//let id_str = id.toString();
+				//id_str = id_str.padStart(8, "0");
+				//console.log(id);
+				let queryString = '?timestamp=' + new Date().getTime();
+				$('#contpdf').attr('src', '/storage/facturacion/dte/procesados/'+id+nombre+'.pdf' + queryString);
+				$("#myModalpdf").modal('show');			
+			}else{
+				swal({
+					title: respuesta.mensaje,
+					text:  respuesta.mensaje2,
+					icon: 'error',
+					buttons: {
+						confirm: "Cerrar",
+					},
+				}).then((value) => {
+				});
+			}
+		}
+	});
 }
 
 function genpdfNC(id,nombre,aux_venmodant = ""){ //GENERAR PDF Factura

@@ -57,7 +57,7 @@ class ReportPendXprodController extends Controller
         //dd($datas);
         $producto_id_array = [];
         foreach ($datas as $key => &$data) {
-            $atributoProd = Producto::atributosProducto($data->producto_id);   
+            $atributoProd = Producto::atributosProducto($data->producto_id);
             $producto = Producto::findOrFail($data->producto_id);
             $request1 = new Request();
             $request1["producto_id"] = $data->producto_id;

@@ -24,7 +24,7 @@
 			<td class="info_factura">
 				<div class="round">
 					<span class="h3">Pendiente por producto</span>
-					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
+					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
 					<p>Area Producción: {{$nombreAreaproduccion}}</p>
 					<p>Vendedor: {{$nomvendedor}} </p>
 					<p>Giro: {{$nombreGiro}} </p>
@@ -168,8 +168,8 @@
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td>{{$data->notaventa_id}}</td>
 							<td>{{$data->oc_id}}</td>
-							<td>{{date('d-m-Y', strtotime($data->fechahora))}}</td>
-							<td>{{date('d-m-Y', strtotime($data->plazoentrega))}}</td>
+							<td>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
+							<td>{{date('d/m/Y', strtotime($data->plazoentrega))}}</td>
 							<td style="font-size: 9px;">{{$aux_razonsocial}}</td>
 							<td style="font-size: 9px;">{{$comuna->nombre}}</td>
 							<td>{{$data->producto_id}}</td>
