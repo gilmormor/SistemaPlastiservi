@@ -11,7 +11,9 @@ use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\InvBodega;
 use App\Models\NotaVenta;
+use App\Models\NotaVentaDetalle;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
@@ -228,6 +230,7 @@ function reporte1($request){
                 <th>Peso<br>Espesor</th>
                 <th>TU</th>
                 <th style='text-align:right'>Stock</th>
+                <th style='text-align:right'>Picking</th>
                 <th style='text-align:right'>Cant</th>
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
                 <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>Cant<br>Pend</th>
@@ -248,6 +251,38 @@ function reporte1($request){
         $aux_totalprecio = 0;
         $i = 0;
         foreach ($datas as $data) {
+            //dd($data->id);
+            $notaventadetalle = NotaVentaDetalle::findOrFail($data->id);
+            $aux_picking = 0;
+            $detalles = $notaventadetalle->despachosoldets()->get();
+            $arrayBodegasPickings = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
+            foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
+                $aux_picking += $arrayBodegasPicking["stock"];
+            }
+            foreach ($notaventadetalle->despachosoldets as $despachosoldet) {
+                /*
+                foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+
+                    foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                        //dd($invmovdet_bodsoldesp->invmovdet->cant);
+                        $aux_picking += $invmovdet_bodsoldesp->invmovdet->cant;
+                    }
+                }
+                //dd($despachosoldet->despachoorddets);
+                foreach ($despachosoldet->despachoorddets as $despachoorddet) {
+                    foreach ($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto) {
+                        if($notaventadetalle->producto_id == 76){
+                            dd($despachoorddet_invbodegaproducto->invmovdet_bodorddesps);
+                        }
+                        foreach ($despachoorddet_invbodegaproducto->invmovdet_bodorddesps as $invmovdet_bodorddesp) {
+                            //dd($invmovdet_bodorddesp->invmovdet->cant);
+                            $aux_picking += $invmovdet_bodorddesp->invmovdet->cant;
+                        }
+                    }
+                }
+                */
+            }
+            //dd($aux_picking);
             //dd($data);
             //SUMA TOTAL DE SOLICITADO
             /*************************/
@@ -347,8 +382,8 @@ function reporte1($request){
                     </a>
                 </td>
                 <td>$aux_enlaceoc</td>
-                <td data-order='$data->fechahora'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
-                <td data-order='$data->plazoentrega'>" . date('d-m-Y', strtotime($data->plazoentrega)) . "</td>
+                <td data-order='$data->fechahora'>" . date('d/m/Y', strtotime($data->fechahora)) . "</td>
+                <td data-order='$data->plazoentrega'>" . date('d/m/Y', strtotime($data->plazoentrega)) . "</td>
                 <td>$data->razonsocial</td>
                 <td>$comuna->nombre</td>
                 <td>$aux_producto_id</td>
@@ -360,6 +395,7 @@ function reporte1($request){
                 <td data-order='" . $aux_espesor . "'>". number_format($aux_espesor, 4, ",", ".") ."</td>
                 <td>$data->tipounion</td>
                 <td style='text-align:right' data-order='$stock'>". number_format($stock, 0, ",", ".") ."</td>
+                <td style='text-align:right' data-order='$aux_picking'>". number_format($aux_picking, 0, ",", ".") ."</td>                
                 <td style='text-align:right' data-order='" . $data->cant . "'>". number_format($data->cant, 0, ",", ".") ."</td>
                 <td style='text-align:right' data-order='$sumacantdesp'>
                     $fila_cantdesp
@@ -390,7 +426,7 @@ function reporte1($request){
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='14' style='text-align:right'>TOTALES</th>
+                    <th colspan='15' style='text-align:right'>TOTALES</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>". number_format($aux_totalcantpend, 0, ",", ".") ."</th>
@@ -399,7 +435,7 @@ function reporte1($request){
                     <th style='text-align:right' class='tooltipsC' title='Total $'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
                 </tr>
                 <tr>
-                    <th colspan='14' style='text-align:right'>PROMEDIO</th>
+                    <th colspan='15' style='text-align:right'>PROMEDIO</th>
                     <th colspan='4' style='text-align:right'></th>
                     <th style='text-align:right' class='tooltipsC' title='Precio Kg Promedio'>". number_format($aux_promprecioxkilo, 2, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Total $ (Precio promedio)'>". number_format($aux_totalkilospend * $aux_promprecioxkilo, 2, ",", ".") ."</th>

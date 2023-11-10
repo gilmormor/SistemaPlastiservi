@@ -330,6 +330,7 @@ $(document).on("click", ".btndevsol", function(event){
     event.preventDefault();
     fila = $(this).closest("tr");
     form = $(this);
+    //console.log($(this).attr("updated_at"))
     id = fila.find('td:eq(0)').text();
     $('.modal-title').html('Devolver Solicitud Despacho');
     $("#despachosol_id").val(id);
@@ -338,6 +339,7 @@ $(document).on("click", ".btndevsol", function(event){
     $("#observacion").val("");
     $("#status").val("1");
     $("#boton").val("btndevsol");
+    $("#status").attr("updated_at",$(this).attr("updated_at"));
     quitarValidacion($(".requeridos").prop('name'),$(".requeridos").attr('tipoval'));
     $("#myModaldevsoldeps").modal('show');
     
@@ -378,11 +380,20 @@ $("#btnGuardarDSD").click(function(event){
             id = fila.find('td:eq(0)').text();
                 //alert(id);
             */
+            if ($("#status[updated_at]").length > 0) {
+                // El elemento con el atributo "updated_at" existe dentro de #status
+                // Puedes realizar acciones relacionadas con su existencia aquí
+                aux_updated_at = $("#status").attr("updated_at");
+            } else {
+                // El elemento con el atributo "updated_at" no existe dentro de #status
+                aux_updated_at = "";
+            }
             var data = {
                 id     : $("#despachosol_id").val(),
                 nfila  : $("#nfilaDel").val(),
                 obs    : $("#observacion").val(),
                 status : $("#status").val(),
+                updated_at : aux_updated_at,
                 _token : $('input[name=_token]').val()
             };
             //console.log($("#boton").val());
