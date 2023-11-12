@@ -1309,13 +1309,15 @@ class DespachoOrdController extends Controller
                     $aux_totalFact = "";
                     if(!is_null($despachoord->numfactura) and !empty($despachoord->numfactura)){
                         $dte = Dte::where("nrodocto",$despachoord->numfactura)->get();
-                        $dte = Dte::findOrFail($dte[0]->id);
-                        $aux_numfac = $despachoord->numfactura;
-                        $nrodocto_str = $dte->foliocontrol->nombrepdf . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT);
-                        $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFAC(\"$nrodocto_str\",\"\",\"myModalTablaOD\")' data-original-title='Factura'>
-                            $dte->nrodocto
-                        </a>";
-                        $aux_totalFact = number_format($dte->mnttotal, 0, ",", ".");
+                        if(count($dte) > 0){
+                            $dte = Dte::findOrFail($dte[0]->id);
+                            $aux_numfac = $despachoord->numfactura;
+                            $nrodocto_str = $dte->foliocontrol->nombrepdf . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT);
+                            $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFAC(\"$nrodocto_str\",\"\",\"myModalTablaOD\")' data-original-title='Factura'>
+                                $dte->nrodocto
+                            </a>";
+                            $aux_totalFact = number_format($dte->mnttotal, 0, ",", ".");    
+                        }
                     }
                     $aux_fechaFact = $despachoord->fechafactura;
                     $aux_fechaFact = $aux_fechaFact ? date('d/m/Y', strtotime($despachoord->fechafactura)) : "";
