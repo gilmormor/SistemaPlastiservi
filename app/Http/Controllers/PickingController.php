@@ -207,6 +207,42 @@ class PickingController extends Controller
         }
         $statusSalPicking = false;
         $statusEntPicking = false;
+        //VALIDAR EN EL CASO QUE EXISTAN 2 PRODUCTOS IGUALES EN LA NV 
+        //NO PUEDO PASARME DEL STOCK POR PRODUCTO
+        $array_exisInvbodegaproducto = [];
+        for ($i=0; $i < count($request->invbodegaproducto_id); $i++){
+            $statusSalPicking = true; //por lo menos hay un movimiento para salida de Picking
+            $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$i]);
+            $requestProd = new Request();
+            $requestProd["invbodegaproducto_id"] = $invbodegaproducto->id;
+            $requestProd["producto_id"] = $invbodegaproducto->producto_id;
+            $requestProd["invbodega_id"] = $invbodegaproducto->invbodega_id;
+            $arrayExistencia = InvBodegaProducto::existencia($requestProd);
+            $aux_existencia = $arrayExistencia["stock"]["cant"];
+            if(!isset($array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]])){
+                $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]] = [
+                    "stock" => $aux_existencia,
+                    "stockresto" => $aux_existencia,
+                    "cant" => 0
+                ];                    
+            }
+        }
+        for ($i=0; $i < count($request->invbodegaproducto_id); $i++){
+            $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$i]);
+            $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["stockresto"] -= $request->invcant[$i];
+            $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["cant"] += $request->invcant[$i];
+            $aux_stock = $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["stock"];
+            $aux_cant = $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["cant"];
+            $aux_saldostock = $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["stockresto"];
+            if($aux_saldostock < 0){
+                return redirect('/')->with([
+                    'mensaje'=> "Picking: Sin Stock Sucursal: " . $despachosol->notaventa->sucursal->nombre . ", Bodega: " . $invbodegaproducto->invbodega->nombre . ". Id: " . $invbodegaproducto->producto_id . ", Nombre: " . $invbodegaproducto->producto->nombre . ", Stock: " . $aux_stock . "  Estas tratando de hacer picking por: " . $aux_cant,
+                    'tipo_alert' => 'alert-error'
+                ]);    
+            }
+        }
+        //HASTA AQUI LA VALIDACION: EN EL CASO QUE EXISTAN 2 PRODUCTOS IGUALES EN LA NV 
+
         for ($i=0; $i < count($request->invbodegaproducto_id); $i++) {
             //PROCESO PARA MODIFICAR PICKING DE SOLICITUD DESPACHO EXISTENTE
             if($request->pickingPrevio[$i] > 0 and $request->pickingPrevio[$i] > $request->invcant[$i]){

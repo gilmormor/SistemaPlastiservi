@@ -272,8 +272,8 @@
                                                             //$aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
                                                             $aux_valueStock = ""; 
                                                             $despachosoldet_invbodegaproducto_id = $detalle->despachosoldet_invbodegaproducto->id;
-                                                            if(array_key_exists($invbodegaproducto->id, $arrayBodegasPicking)){
-                                                                $aux_stock = $arrayBodegasPicking[$invbodegaproducto->id]["stock"];
+                                                            if(array_key_exists($invbodegaproducto->id . "-" . $detalle->id, $arrayBodegasPicking)){
+                                                                $aux_stock = $arrayBodegasPicking[$invbodegaproducto->id . "-" . $detalle->id]["stock"];
                                                                 $aux_valueStock = $aux_stock == 0 ? "" : $aux_stock;
                                                             }else{
                                                                 //SI NO ESTA EN EL ARRAY DE $arrayBodegasPicking NO TIENE PICKING, ENTONCES LE ASIGNO 0
