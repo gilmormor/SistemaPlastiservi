@@ -186,8 +186,9 @@ class NotifyMailGuardarGuiaDespacho
                     $aux_producto_id = $notaventadetalle->producto_id;
                     $atributoProd = Producto::atributosProducto($aux_producto_id);
                     $aux_producto_nombre = $atributoProd["nombre"];
-                    $aux_cantGuiaDesp = number_format($aux_qtyitem, 0, ",", ".");
-                    $aux_nvcantsaldo = number_format($notaventadetalle_cant - $sumacantdesp, 0, ",", ".");
+                    $aux_cantGuiaDesp = $aux_qtyitem;
+                    $aux_nvcantsaldo = $notaventadetalle_cant - $sumacantdesp;
+                    $aux_nvcantsaldo = $aux_nvcantsaldo > 0 ? $aux_nvcantsaldo : 0;
                     $aux_unimed = $notaventadetalle->unidadmedida->nombre;
                     $aux_despachosol_cant = (isset($dtedets[$notaventadetalle_id]) ? $dtedets[$notaventadetalle_id]["despachosol_cant"] : 0);
         
