@@ -249,6 +249,7 @@ function reporte1($request){
         $aux_totalkilospend = 0;
         $aux_totalplata = 0;
         $aux_totalprecio = 0;
+        $aux_totalpicking = 0;
         $i = 0;
         foreach ($datas as $data) {
             //dd($data->id);
@@ -414,6 +415,7 @@ function reporte1($request){
             $aux_totalkilospend += ($aux_cantsaldo * $data->peso);
             $aux_totalplata += $aux_subtotalplata;
             $aux_totalprecio += $data->precioxkilo;
+            $aux_totalpicking += $aux_picking;
             $i++;
         }
         $aux_totalkilospend = round($aux_totalkilospend,2);
@@ -426,7 +428,8 @@ function reporte1($request){
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan='15' style='text-align:right'>TOTALES</th>
+                    <th colspan='14' style='text-align:right'>TOTALES</th>
+                    <th style='text-align:right' class='tooltipsC' title='Picking'>". number_format($aux_totalpicking, 0, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad'>". number_format($aux_totalcant, 0, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>". number_format($aux_totalcantdesp, 0, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Cantidad Pendiente'>". number_format($aux_totalcantpend, 0, ",", ".") ."</th>
@@ -435,8 +438,8 @@ function reporte1($request){
                     <th style='text-align:right' class='tooltipsC' title='Total $'>". number_format($aux_totalplata, 2, ",", ".") ."</th>
                 </tr>
                 <tr>
-                    <th colspan='15' style='text-align:right'>PROMEDIO</th>
-                    <th colspan='4' style='text-align:right'></th>
+                    <th colspan='14' style='text-align:right'>PROMEDIO</th>
+                    <th colspan='5' style='text-align:right'></th>
                     <th style='text-align:right' class='tooltipsC' title='Precio Kg Promedio'>". number_format($aux_promprecioxkilo, 2, ",", ".") ."</th>
                     <th style='text-align:right' class='tooltipsC' title='Total $ (Precio promedio)'>". number_format($aux_totalkilospend * $aux_promprecioxkilo, 2, ",", ".") ."</th>
                 </tr>
