@@ -1464,21 +1464,35 @@ class DespachoSolController extends Controller
                             $aux_despSoldet = 
                             "
                             <br>
-                            <span class='h3'>PASO PREVIO A PREPARACION DE DESPACHO</span>
+                            <span class='h3' style='font-family: 'BrixSansBlack';
+                            font-size: 12pt;
+                            display: block;
+                            background: rgb(0, 119, 255);
+                            color: #FFF;
+                            text-align: center;
+                            padding: 3px;
+                            margin-bottom: 5px;'>PASO PREVIO A PREPARACION DE DESPACHO</span>
                             <br>
                             <div id='page_pdf'>
-                                <table id='factura_head'>
+                                <table id='factura_head' style='width: 100%;margin-bottom: 10px;'>
                                     <tr>
-                                        <td class='logo_factura'>
+                                        <td class='logo_factura' style='width: 20%'>
                                             <div>
                                                 <img src='$aux_logo' style='max-width:100%;width:auto;height:auto;'>
                                             </div>
                                         </td>
-                                        <td class='info_empresa'>
+                                        <td class='info_empresa' style='width: 40%;text-align: center'>
                                         </td>
-                                        <td class='info_factura'>
+                                        <td class='info_factura' style='width: 40%;'>
                                             <div>
-                                                <span class='h3'>Solicitud Despacho / $aux_sucursalNombre</span>
+                                                <span class='h3' style='font-family: 'BrixSansBlack';
+                            font-size: 12pt;
+                            display: block;
+                            background: rgb(0, 119, 255);
+                            color: #FFF;
+                            text-align: center;
+                            padding: 3px;
+                            margin-bottom: 5px;'>Solicitud Despacho / $aux_sucursalNombre</span>
                                                 <p><strong>Solicitud de Despacho Nro:</strong>$aux_despachosol_id</p>
                                                 <p><strong>Fecha:</strong> $dateSolDesp</p>
                                                 <p><strong>Vendedor:</strong> $aux_vendedorNombre</p>
@@ -1487,8 +1501,15 @@ class DespachoSolController extends Controller
                                     </tr>
                                 </table>
                                 <div style='width:100% !important;'>
-                                    <span class='h3'>Cliente</span>
-                                    <table class='info_cliente'>
+                                    <span class='h3' style='font-family: 'BrixSansBlack';
+                            font-size: 12pt;
+                            display: block;
+                            background: rgb(0, 119, 255);
+                            color: #FFF;
+                            text-align: center;
+                            padding: 3px;
+                            margin-bottom: 5px;'>Cliente</span>
+                                    <table class='info_cliente' style='width: 100%;'>
                                         <tr>
                                             <td><label><strong>Rut:</strong></label></td><td><p id='rutform' name='rutform'><p>$aux_rut</p></td>
                                             <td><label><strong>Teléfono:</strong></label></td><td><p>$aux_telefono</p></td>
@@ -1503,7 +1524,7 @@ class DespachoSolController extends Controller
                                         </tr>
                                     </table>
                                 </div>
-                                <table id='factura_detalle'>
+                                <table id='factura_detalle' style='width: 100%;margin-bottom: 10px;'>
                                     <thead>
                                         <tr>
                                             <th width='50px' style='text-align: center;'>Cod</th>
@@ -1560,40 +1581,58 @@ class DespachoSolController extends Controller
                                     $aux_despSoldet .=
                                     "</tbody>
                                 </table>
-                                <div class='round2'>
-                                    <p class='nota'><strong> <H3>Observaciones: $aux_obs</H3></strong></p>
+                                <div class='round2' style='width:100% !important;
+                                border-radius: 10px;
+                                border: 1px solid #0a4661;
+                                overflow: hidden;
+                                padding-bottom: 15px;'>
+                                    <p class='nota' style='font-size: 8pt;'><strong> <H3>Observaciones: $aux_obs</H3></strong></p>
                                 </div>
                                 <br>
                                 <div style='width:40% !important;'>
-                                    <span class='h3'>Informacion</span>
+                                    <span class='h3' style='font-family: 'BrixSansBlack';
+                                    font-size: 12pt;
+                                    display: block;
+                                    background: rgb(0, 119, 255);
+                                    color: #FFF;
+                                    text-align: center;
+                                    padding: 3px;
+                                    margin-bottom: 5px;';
+                            font-size: 12pt;
+                            display: block;
+                            background: rgb(0, 119, 255);
+                            color: #FFF;
+                            text-align: center;
+                            padding: 3px;
+                            margin-bottom: 5px;'>Informacion</span>
                                     <table id='info_factura'>
                                         <tr>
-                                            <td colspan='7' class='textleft' width='40%' title='Fecha Estimada de despacho'><span><strong>Fecha EstDesp: </strong></span></td>
-                                            <td class='textleft' width='50%' title='Fecha Estimada de despacho'><strong><span>$aux_fechaestdesp</span></strong></td>
+                                            <td colspan='7' class='textleft' style='text-align: left;' width='40%' title='Fecha Estimada de despacho'><span><strong>Fecha EstDesp: </strong></span></td>
+                                            <td class='textleft' style='text-align: left;' width='50%' title='Fecha Estimada de despacho'><strong><span>$aux_fechaestdesp</span></strong></td>
                                         </tr>
                                         <tr>
-                                            <td colspan='7' class='textleft' width='40%' title='Tipo de entrega'><span><strong>Tipo entrega: </strong></span></td>
-                                            <td class='textleft' width='50%' title='Tipo de entrega'><span>$aux_tipoentrega</span></td>
+                                            <td colspan='7' class='textleft' style='text-align: left;' width='40%' title='Tipo de entrega'><span><strong>Tipo entrega: </strong></span></td>
+                                            <td class='textleft' style='text-align: left;' width='50%' title='Tipo de entrega'><span>$aux_tipoentrega</span></td>
                                         </tr>
                                         <tr>
-                                            <td colspan='7' class='textleft' width='40%' title='Comuna de entrega'><span><strong>Comuna entrega: </strong></span></td>
-                                            <td class='textleft' width='50%' title='Comuna de entrega'><span>$aux_comunaentrega</span></td>
+                                            <td colspan='7' class='textleft' style='text-align: left;' width='40%' title='Comuna de entrega'><span><strong>Comuna entrega: </strong></span></td>
+                                            <td class='textleft' style='text-align: left;' width='50%' title='Comuna de entrega'><span>$aux_comunaentrega</span></td>
                                         </tr>
                                         <tr>
-                                            <td colspan='7' class='textleft' width='40%' title='Tipo de Guia despacho'><span><strong>Tipo GuiaDesp: </strong></span></td>
-                                            <td class='textleft' width='50%' title='Tipo de Guia despacho'><span>$aux_tipoguiadesp</span></td>
+                                            <td colspan='7' class='textleft' style='text-align: left;' width='40%' title='Tipo de Guia despacho'><span><strong>Tipo GuiaDesp: </strong></span></td>
+                                            <td class='textleft' style='text-align: left;' width='50%' title='Tipo de Guia despacho'><span>$aux_tipoguiadesp</span></td>
                                         </tr>
                                         <tr>
-                                            <td colspan='7' class='textleft' width='40%'><span><strong>Orden de Compra: </strong></span></td>
-                                            <td class='textleft' width='50%'><span>$aux_oc_id</span></td>
+                                            <td colspan='7' class='textleft' style='text-align: left;' width='40%'><span><strong>Orden de Compra: </strong></span></td>
+                                            <td class='textleft' style='text-align: left;' width='50%'><span>$aux_oc_id</span></td>
                                         </tr>
                                         <tr>
-                                            <td colspan='7' class='textleft' width='40%'><span><strong>Cotizacion Nro: </strong></span></td>
-                                            <td class='textleft' width='50%'><span>$aux_cotizacion_id</span></td>
+                                            <td colspan='7' class='textleft' style='text-align: left;' width='40%'><span><strong>Cotizacion Nro: </strong></span></td>
+                                            <td class='textleft' style='text-align: left;' width='50%'><span>$aux_cotizacion_id</span></td>
                                         </tr>
                                         <tr>
-                                            <td colspan='7' class='textleft' width='40%'><span><strong>Nota de Venta Nro: </strong></span></td>
-                                            <td class='textleft' width='50%'><span>$aux_notaventa_id</span></td>
+                                            <td colspan='7' class='textleft' style='text-align: left;' width='40%'><span><strong>Nota de Venta Nro: </strong></span></td>
+                                            <td class='textleft' style='text-align: left;' width='50%'><span>$aux_notaventa_id</span></td>
                                         </tr>
                                     </table>
                                 </div>
