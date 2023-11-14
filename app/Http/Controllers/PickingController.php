@@ -606,7 +606,7 @@ function reportesoldesp1($request){
                         $data->id
                     </a>
                 </td>
-                <td id='fechahora$i' name='fechahora$i'>" . date('d-m-Y', strtotime($data->fechahora)) . "</td>
+                <td id='fechahora$i' name='fechahora$i'>" . date('d/m/Y', strtotime($data->fechahora)) . "</td>
                 <td>" . 
                     "<a id='fechaestdesp$i' name='fechaestdesp$i' class='editfed'>" .
                         date('d/m/Y', strtotime($data->fechaestdesp)) . 

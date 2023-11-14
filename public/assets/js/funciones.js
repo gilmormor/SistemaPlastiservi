@@ -1,3 +1,12 @@
+$(document).ready(function () {
+	$(document).on("contextmenu", function(e){
+		e.preventDefault();
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J'))) {
+            e.preventDefault();
+        }
+	});
+});
+
 var Biblioteca = function(){
     return {
         validacionGeneral: function(id,reglas,mensajes){

@@ -52,8 +52,9 @@ $(document).ready(function () {
     
                 if (data.dteanul_obs != null) {
                     aux_fecha = new Date(data.dteanulcreated_at);
+                    aux_fechaanulgd =  fechaddmmaaaa(aux_fecha) + " " + data.fechahora.substr(11, 8);
                     aux_text = data.id +
-                    "<a class='btn-accion-tabla tooltipsC' title='Anulada " + fechaddmmaaaa(aux_fecha) + "'>" +
+                    "<a class='btn-accion-tabla tooltipsC' title='Anulada " + aux_fechaanulgd + "\nObs:"  + data.dteanul_obs + "'>" +
                         "<small class='label label-danger'>A</small>" +
                     "</a>";
                     $('td', row).eq(0).html(aux_text);

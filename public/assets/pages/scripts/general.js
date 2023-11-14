@@ -1028,6 +1028,7 @@ function limpiarInputOT(){
 	$("#producto_idM").val('');
 	$("#codintprodM").val('');
 	$("#nombreprodM").val('');
+	$("#stockM").val('');
 	$("#cantM").val('');
 	$("#descuentoM").val('1');
 	$("#totalkilosM").val('');
@@ -1188,6 +1189,7 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 				if($("#invbodega_idM")){
 					llenarselectbodega(respuesta);
 					//console.log(respuesta);
+					llenarcampostockM(respuesta);
 					$("#invbodega_idM").val($("#invbodega_idTD"+i).val());
 					$("#invbodega_idM").selectpicker('refresh');
 					$("#stakilos").val(respuesta['stakilos']);
@@ -1710,11 +1712,6 @@ $("#producto_idM").blur(function(){
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
-				/*
-				console.log(respuesta['cont']);
-				*/
-				//console.log(respuesta);
-				//return 0;
 				if(respuesta['cont']>0){
 					if(respuesta['estado'] == 0){
 						swal({
@@ -1802,6 +1799,9 @@ $("#producto_idM").blur(function(){
 					activarCajasPreciokgUni();
 					mostrardatosadUniMed(respuesta);
 					llenarselectbodega(respuesta);
+
+					llenarcampostockM(respuesta);
+
 					$(".selectpicker").selectpicker('refresh');					
 					//$("#cantM").change();
 					quitarverificar();
@@ -3455,4 +3455,23 @@ function descArcTXT(nameFile,aux_venmodant = ""){
 			}
 		});
 	}
+}
+
+function llenarcampostockM(respuesta){
+	if ($('#sucursal_id').length) {
+		tuObjeto = respuesta["bodegas"];
+		for (var clave in tuObjeto) {
+			if (tuObjeto.hasOwnProperty(clave)) {
+				var objetoInterior = tuObjeto[clave];							
+				// Haces algo con el objetoInterior
+				//console.log(objetoInterior.id, objetoInterior.nombre, objetoInterior.desc);
+				if(objetoInterior.sucursal_id == $('#sucursal_id').val()){
+					$("#stockM").val(0);					
+					if(objetoInterior.stock >= 0){
+						$("#stockM").val(objetoInterior.stock);
+					}
+				}
+			}
+		}
+	}	
 }

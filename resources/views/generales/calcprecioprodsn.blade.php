@@ -33,9 +33,14 @@
                     <input type="text" name="codintprodM" id="codintprodM" class="form-control" value="{{old('codintprodM', $data->codintprodM ?? '')}}" placeholder="Cod Interno Prducto" disabled/>
                     <span class="help-block"></span>
                 </div>
-                <div class="col-xs-12 col-sm-7">
+                <div class="col-xs-12 col-sm-5">
                     <label for="nombreprodM" class="control-label" data-toggle='tooltip'>Nombre Prod</label>
                     <input type="text" name="nombreprodM" id="nombreprodM" class="form-control" value="{{old('nombreprodM', $data->nombreprodM ?? '')}}" placeholder="Nombre Producto" disabled/>
+                    <span class="help-block"></span>
+                </div>
+                <div class="col-xs-12 col-sm-2">
+                    <label for="stockM" class="control-label" data-toggle='tooltip'>Stock</label>
+                    <input type="text" name="stockM" id="stockM" class="form-control" style="text-align:right" value="{{old('stockM', $data->stockM ?? '')}}" placeholder="Stock" disabled/>
                     <span class="help-block"></span>
                 </div>
 
