@@ -59,6 +59,7 @@ $(document).ready(function () {
             'columns'     : [
                 {data: 'id'},
                 {data: 'fechahora'},
+                {data: 'notaventa_aprobfechahora'},
                 {data: 'razonsocial'},
                 {data: 'oc_id'},
                 {data: 'id'},
@@ -85,35 +86,41 @@ $(document).ready(function () {
                 $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha) + " " + data.fechahora.substr(11, 8));
                 $('td', row).eq(1).attr("style","font-size:12px");
 
-                $('td', row).eq(2).attr("style","font-size:13px");
+                $('td', row).eq(2).attr('data-order',data.notaventa_aprobfechahora);
+                aux_fecha = new Date(data.notaventa_aprobfechahora);
+                $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha) + " " + data.notaventa_aprobfechahora.substr(11, 8));
+                $('td', row).eq(2).attr("style","font-size:12px");
+
+
+                $('td', row).eq(3).attr("style","font-size:13px");
     
                 if(data.oc_file != "" && data.oc_file != null){
                     aux_text = 
                         "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
                             data.oc_id + 
                         "</a>";
-                    $('td', row).eq(3).html(aux_text);
+                    $('td', row).eq(4).html(aux_text);
                 }
 
                 aux_text = 
                 `<a class="btn-accion-tabla btn-sm tooltipsC" title="Precio x Kg" onclick="genpdfNV(${data.id},2)">
                     <i class="fa fa-fw fa-file-pdf-o"></i>
                 </a>`;
-                $('td', row).eq(4).html(aux_text);
+                $('td', row).eq(5).html(aux_text);
 
                 aux_kgpend = data.totalkilos - data.totalkgsoldesp;
                 aux_dinpend = data.subtotal - data.totalsubtotalsoldesp;
-                $('td', row).eq(6).attr('class', "kgpend");
-                $('td', row).eq(6).attr('data-order',aux_kgpend);
-                $('td', row).eq(6).attr('data-search',aux_kgpend);
-                $('td', row).eq(6).attr('style','text-align:right');
-                $('td', row).eq(6).html(MASKLA(aux_kgpend,2));
-
-                $('td', row).eq(7).attr('class', "dinpend");
-                $('td', row).eq(7).attr('data-order',aux_dinpend);
-                $('td', row).eq(7).attr('data-search',aux_dinpend);
+                $('td', row).eq(7).attr('class', "kgpend");
+                $('td', row).eq(7).attr('data-order',aux_kgpend);
+                $('td', row).eq(7).attr('data-search',aux_kgpend);
                 $('td', row).eq(7).attr('style','text-align:right');
-                $('td', row).eq(7).html(MASKLA(aux_dinpend,0));
+                $('td', row).eq(7).html(MASKLA(aux_kgpend,2));
+
+                $('td', row).eq(8).attr('class', "dinpend");
+                $('td', row).eq(8).attr('data-order',aux_dinpend);
+                $('td', row).eq(8).attr('data-search',aux_dinpend);
+                $('td', row).eq(8).attr('style','text-align:right');
+                $('td', row).eq(8).html(MASKLA(aux_dinpend,0));
 
                 aux_text = 
                 `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa SD" onclick="pdfSolDespPrev(${data.id},2)">
@@ -138,7 +145,7 @@ $(document).ready(function () {
                     aux_title = "Anulada Fecha: " + data.anulada;
                     //$nuevoSolDesp = "";
                 }
-                $('td', row).eq(8).html(aux_text);
+                $('td', row).eq(9).html(aux_text);
             }
         });
     }

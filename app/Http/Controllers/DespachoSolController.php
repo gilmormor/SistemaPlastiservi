@@ -2199,7 +2199,8 @@ function consulta($request,$aux_sql,$orden){
             WHERE dteoc.oc_id = notaventa.oc_id
             AND isnull(dteguiadesp.notaventa_id)
             AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
-        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
+        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp,
+        notaventa.aprobfechahora as notaventa_aprobfechahora
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp

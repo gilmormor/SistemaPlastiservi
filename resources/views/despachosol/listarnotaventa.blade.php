@@ -235,7 +235,8 @@ Notas de Venta
                     <thead>
                         <tr>
                             <th class='tooltipsC' title='Nota de Venta PDF'>NV</th>
-                            <th>Fecha</th>
+                            <th class='tooltipsC' title='Fecha creación Nota de Venta'>Fecha Creación</th>
+                            <th class='tooltipsC' title='Fecha aprobación Nota de Venta'>Fecha Aprobado</th>
                             <th>Razón Social</th>
                             <th class='tooltipsC' title='Orden de Compra'>OC</th>
                             <th class='tooltipsC' title='Precio x Kg'>$ x Kg</th>
@@ -250,14 +251,14 @@ Notas de Venta
                 </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan='6' style='text-align:right'>Total página</th>
+                            <th colspan='7' style='text-align:right'>Total página</th>
                             <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                             <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
                             <th style='text-align:right'></th>
                         </tr>
             
                         <tr>
-                            <th colspan='6' style='text-align:right'>TOTAL GENERAL</th>
+                            <th colspan='7' style='text-align:right'>TOTAL GENERAL</th>
                             <th style='text-align:right' id='totalgenkg' name='totalgenkg'>0,00</th>
                             <th style='text-align:right' id='totalgendin' name='totalgendin'>0,00</th>
                             <th style='text-align:right'></th>

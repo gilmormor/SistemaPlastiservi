@@ -1,3 +1,4 @@
+/*
 $(document).ready(function () {
 	$(document).on("contextmenu", function(e){
 		e.preventDefault();
@@ -6,7 +7,7 @@ $(document).ready(function () {
         }
 	});
 });
-
+*/
 var Biblioteca = function(){
     return {
         validacionGeneral: function(id,reglas,mensajes){
