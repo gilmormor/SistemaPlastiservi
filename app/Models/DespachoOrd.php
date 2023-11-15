@@ -93,6 +93,13 @@ class DespachoOrd extends Model
         return $this->belongsToMany(InvMov::class, 'despachoord_invmov','despachoord_id','invmov_id')->withTimestamps();
     }
 
+    //RELACION DE UNO A MUCHOS dteguiadesp
+    public function dteguiadesps()
+    {
+        return $this->hasMany(DteGuiaDesp::class,'despachoord_id');
+    }
+    
+
     public static function consultaOrdDespxAsigGuiaDesp($request){
         if(!isset($request->notaventa_id) or empty($request->notaventa_id)){
             $aux_notaventa_idCodn = "true";

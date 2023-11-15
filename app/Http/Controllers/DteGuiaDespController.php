@@ -669,13 +669,65 @@ class DteGuiaDespController extends Controller
     {
         $dte = Dte::findOrFail($request->guiadesp_id);
         if($request->updated_at != $dte->updated_at){
+            /*
             return redirect('dteguiadesp')->with([
                 'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
                 'tipo_alert' => 'alert-error'
             ]);
+            */
+            return [
+                'status' => 0,
+                'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
+                'tipo_alert' => 'error'
+            ];
+
         }
+        //VALIDAR SI YA FUE ANULADA LA GUIA
+        if(isset($dte->dteanul)){
+            return [
+                'status' => 0,
+                'mensaje'=>'Guia despacho ya fue anulada, actualiza la pagina F5.',
+                'tipo_alert' => 'error'
+            ];
+        }
+        /*
         $request->request->add(['usuario_id' => auth()->id()]);
         $dteanul = DteAnul::create($request->all());
+        */
+
+        if($dte->dteguiadesp){
+            //dd($dte->dteguiadesp->despachoord_id);
+            if(isset($dte->dteguiadesp->despachoord)){
+                $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
+                //dd($despachoord->dteguiadesps);
+                //ANULO LAS GUIAS ASOCIADAS A LA ORDEN DE DESPACHO
+                foreach ($despachoord->dteguiadesps as $dteguiadesp) {
+                    if(!isset($dteguiadesp->dte->dteanul)){
+                        $arraydteguiadesp = [
+                            "dte_id" => $dteguiadesp->dte_id,
+                            "despachoord_id" => $request->despachoord_id,
+                            "obs" => $request->obs,
+                            "motanul_id" => $request->motanul_id,
+                            "moddevgiadesp_id" => $request->moddevgiadesp_id,
+                            "usuario_id" => auth()->id()
+                        ];
+                        $dteanul = DteAnul::create($arraydteguiadesp);
+                    }
+                }    
+            }else{
+                //ENTRA AQUI CUANDO LA GUIA ES DIRECTA,
+                //NO TIENE OD ASOCIADA
+                $arraydteguiadesp = [
+                    "dte_id" => $request->dte_id,
+                    "despachoord_id" => $request->despachoord_id,
+                    "obs" => "Guia directa GI",
+                    "motanul_id" => 5,
+                    "moddevgiadesp_id" => "GI", //Guia Directa
+                    "usuario_id" => auth()->id()
+                ];
+                $dteanul = DteAnul::create($arraydteguiadesp);        
+            }
+        }
         $dte->updated_at = date("Y-m-d H:i:s");
         if($dte->save()){
             //SI LA GUIA DESPACHO ES DIRECTA ES DECIR NO VIENE DE UNA ORDEN DE DESPACHO
@@ -692,10 +744,18 @@ class DteGuiaDespController extends Controller
             return response()->json(['mensaje' => 'ok']);
         }
         //SI NO EJECUTA EL RETURN ANTERIOR, EJECUTA ESTE RETURN
+        /*
         return redirect('dteguiadesp')->with([
             'mensaje'=>'No se actualizaron los datos, ocurrio un error al intentar guardar!',
             'tipo_alert' => 'alert-error'
         ]);
+        */
+        return [
+            'status' => 0,
+            'mensaje'=>'No se actualizaron los datos, ocurrio un error al intentar guardar!',
+            'tipo_alert' => 'error'
+        ];
+
     }
 
     public function guiadespanulsininv(Request $request)
