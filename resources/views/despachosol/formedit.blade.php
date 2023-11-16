@@ -637,7 +637,7 @@
                                                                         }
                                                                     }
                                                                 ?>
-                                                                <td class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !importan"  title="Cant a despachar">
+                                                                <td class="width90 tooltipsC" name="cantorddespFInput{{$invbodegaproducto->id}}" id="cantorddespFInput{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !importan"  title="Cant a despachar">
                                                                     <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD')" style="text-align:right;" value="{{$aux_invcant}}" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}"/>
                                                                 </td>
                                                                 <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;' class='tooltipsC' title='Marcar para no usar Stock'>

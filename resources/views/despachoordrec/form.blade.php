@@ -212,7 +212,7 @@
                                                                             {{$existencia["stock"]["cant"]}}
                                                                         </div>        
                                                                     </td>
-                                                                    <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;" title='Cant a despachar'>
+                                                                    <td  class="width90 tooltipsC" name="cantorddespFInput{{$invbodegaproducto->id}}" id="cantorddespFInput{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;" title='Cant a despachar'>
                                                                         <?php $bandera = false; ?>
                                                                         @if(isset($despachoordrecdets))
                                                                             @foreach($despachoordrecdets as $despachoordrecdet)

@@ -350,7 +350,7 @@
                                                                         {{$aux_stock}}
                                                                     </div>
                                                                 </td>
-                                                                <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
+                                                                <td class="width90" name="cantorddespFInput{{$invbodegaproducto->id}}" id="cantorddespFInput{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
                                                                     @if ($aux_stock > 0 or $stadespsinstock == 1)
                                                                         @foreach($detalle->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto)
                                                                             @if ($despachoorddet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)

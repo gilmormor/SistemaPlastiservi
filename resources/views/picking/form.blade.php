@@ -313,7 +313,7 @@
                                                                         {{$aux_stock}}
                                                                     </div>
                                                                 </td>
-                                                                <td class="width90" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
+                                                                <td class="width90" name="cantorddespFInput{{$invbodegaproducto->id}}" id="cantorddespFInput{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
                                                                     <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{$aux_valueStock}}" title='Cant a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
                                                                 </td>
                                                             </tr>
