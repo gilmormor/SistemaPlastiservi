@@ -32,7 +32,8 @@
                                             <input type="text" name="at_complementonomprod" id="at_complementonomprod" class="form-control form_acutec" placeholder="Complemento nombre Producto" maxlength="70"/>
                                             <span class="help-block"></span>
                                         </div>
-
+                                    </div>
+                                    <div class="row">
                                         <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
                                             <label for="at_entmuestra" class="control-label requerido" data-toggle='tooltip' title="Entrega Muestra?">Entrega muestra?</label>
                                             <select name="at_entmuestra" id="at_entmuestra"  class="selectpicker form-control entmuestra form_acutec valorrequerido" tipoval="combobox">

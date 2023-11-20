@@ -143,6 +143,7 @@ function validacion(campo,tipo)
 				$("#glypcn"+campo).remove();
 				$('#'+campo).parent().attr("class", columnas+" has-error has-feedback");
 				$('#'+campo).parent().children('span').text("Campo obligatorio").show();
+				$('#'+campo + "-error").hide();
 				$('#'+campo).parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-remove form-control-feedback check'></span>");
 				$('#'+campo).focus();
 				return false;
