@@ -1025,7 +1025,7 @@ Route::put('clienteproducto/{id}', 'ClienteProductoController@actualizar')->name
 Route::get('clienteproducto/{id}/productobuscarpage', 'ProductoController@productobuscarpage')->name('productobuscarpage');
 
 
-/*RUTAS FORMA DE PAGO*/
+/*RUTAS CENTRO ECONOMICO*/
 Route::get('centroeconomico', 'CentroEconomicoController@index')->name('centroeconomico');
 Route::get('centroeconomicopage', 'CentroEconomicoController@centroeconomicopage')->name('centroeconomicopage');
 Route::get('centroeconomico/crear', 'CentroEconomicoController@crear')->name('crear_centroeconomico');
@@ -1034,7 +1034,7 @@ Route::get('centroeconomico/{id}/editar', 'CentroEconomicoController@editar')->n
 Route::put('centroeconomico/{id}', 'CentroEconomicoController@actualizar')->name('actualizar_centroeconomico');
 Route::delete('centroeconomico/{id}', 'CentroEconomicoController@eliminar')->name('eliminar_centroeconomico');
 
-/*RUTAS FORMA DE PAGO*/
+/*RUTAS FOLIO CONTROL*/
 Route::get('foliocontrol', 'FoliocontrolController@index')->name('foliocontrol');
 Route::get('foliocontrolpage', 'FoliocontrolController@foliocontrolpage')->name('foliocontrolpage');
 Route::get('foliocontrol/crear', 'FoliocontrolController@crear')->name('crear_foliocontrol');
@@ -1433,3 +1433,6 @@ Route::get('dtefacturaeditar/exportPdf', 'DteFacturaEditarController@exportPdf')
 Route::get('dtefacturaeditar/totalizarindex', 'DteFacturaEditarController@totalizarindex')->name('dtefacturaeditar_totalizarindex');
 Route::get('dtefacturaeditar/{id}/editar', 'DteFacturaEditarController@editar')->name('editar_dtefacturaeditar');
 Route::put('dtefacturaeditar/{id}', 'DteFacturaEditarController@actualizar')->name('actualizar_dtefacturaeditar');
+
+/*RUTAS PERMISO GUIA DIRECTA*/
+Route::get('permisoguiadirecta', 'PermisoGuiaDirectaController@index')->name('permisoguiadirecta');
