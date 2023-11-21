@@ -31,6 +31,9 @@ $("#permisoT").click(function(event)
         data.estado = 0
     }
     ajaxRequestI('/admin/menu-rol', data,"PermisoMenu");
+    data.menu_id = 145;
+    ajaxRequestI('/admin/menu-rol', data,"PermisoMenu");
+
 
     permiso_rol("358id7",358,7)
     permiso_rol("359id7",359,7)
