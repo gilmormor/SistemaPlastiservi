@@ -229,7 +229,7 @@
         </div>
         <div class="form-group col-xs-12 col-sm-2">
             <label id="lblmoneda_id" name="lblmoneda_id" for="moneda_id" class="control-label requerido">Moneda</label>
-            <select name="moneda_id" id="moneda_id" class="form-control select2 moneda_id" data-live-search='true' required>
+            <select name="moneda_id" id="moneda_id" class="form-control select2 moneda_id" data-live-search='true' required  {{$disabledReadOnly}}>
                 <option value=''>Seleccione...</option>
                     @foreach($tablas['moneda'] as $moneda)
                         <option

@@ -2477,7 +2477,9 @@ function crearEditarAcuTec(i){
 				$("#" + property).val(acuerdotecnico[property]);
 			}	
 		}else{
-			$("#at_id").val(acuerdotecnico[property]);
+			if(property == 'id'){
+				$("#at_id").val(acuerdotecnico[property]);
+			}
 		}
 	}
 	$("#at_anchoum_id").val(1);
@@ -3474,4 +3476,12 @@ function llenarcampostockM(respuesta){
 			}
 		}
 	}	
+}
+
+function formDataToObject(formData) {
+    var object = {};
+    formData.forEach(function(value, key){
+        object[key] = value;
+    });
+    return object;
 }

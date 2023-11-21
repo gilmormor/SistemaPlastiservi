@@ -1077,12 +1077,13 @@ function limpiarCampos(){
 $("#btnaprobarM").click(function(event)
 {
 	event.preventDefault();
-	//alert($('input[name=_token]').val());
+	aux_arrayATs = arrayAcuerdoTecnico();
 	var data = {
 		id    : $("#id").val(),
 		valor : 3,
 		obs   : $("#aprobobs").val(),
-        _token: $('input[name=_token]').val()
+		arrayATs : aux_arrayATs,
+		_token: $('input[name=_token]').val()
 	};
 	var ruta = '/cotizacion/aprobarcotsup/'+data['id'];
 	swal({
@@ -1095,10 +1096,41 @@ $("#btnaprobarM").click(function(event)
 		},
 	}).then((value) => {
 		if (value) {
-			$("#myModalaprobcot").modal('hide');
-			ajaxRequest(data,ruta,'aprobarcotsup');
+			//alert($('input[name=_token]').val());
+			aux_continuar = true;
+			for(var i=0;i<aux_arrayATs.length;i++){
+				//Recorrer array de AT para verificar si fue modificado alguno
+				if(aux_arrayATs[i].at_id != undefined){
+					//Esta campo dentro del array se crea cuando se modifica el AT
+					//
+					aux_continuar = false;
+				}
+			} 
+			if(aux_continuar){
+				$("#myModalaprobcot").modal('hide');
+				ajaxRequest(data,ruta,'aprobarcotsup');	
+			}else{
+				swal({
+					title: 'Se ha detectado modificación en AT, desea continuar ?',
+					text: "Esta acción no se puede deshacer!",
+					icon: 'warning',
+					buttons: {
+						cancel: "Cancelar",
+						confirm: "Aceptar"
+					},
+				}).then((value) => {
+					if (value) {
+						$("#myModalaprobcot").modal('hide');
+						ajaxRequest(data,ruta,'aprobarcotsup');	
+					}
+				});
+			}
+
 		}
 	});
+
+
+
 });
 
 $("#btnrechazarM").click(function(event)
@@ -1634,4 +1666,25 @@ function embalajePlastiservi(){
 	}else{
 		$(".embalaje").prop("disabled", false);
 	}
+}
+
+function arrayAcuerdoTecnico(){
+	var aux_nfila = $("#tabla-data tbody tr").length - 3;
+	//aux_nfila++;
+	var miArray = [];
+	$("#itemcompletos").val("1");
+	for (i = 1; i <= aux_nfila; i++) {
+		if($("#tipoprod" + i).val() == 1){
+			if($("#acuerdotecnico" + i).val() == 0 || $("#acuerdotecnico" + i).val() == "null"  || $("#acuerdotecnico" + i).val() == ""){
+				i = aux_nfila+1;
+				$("#lblitemcompletos").html("Acuerdo técnico item:" + j);
+				$("#itemcompletos").val("");
+				break;
+			}
+			let acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
+			// Añadir el objeto al array
+			miArray.push(acuerdotecnico);
+		}
+	}
+	return miArray;
 }
