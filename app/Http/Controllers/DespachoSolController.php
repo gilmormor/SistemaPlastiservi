@@ -1258,7 +1258,7 @@ class DespachoSolController extends Controller
                     WHERE despachosol.id = $request->id
                     AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
                     AND isnull(despachosol.deleted_at)
-                    AND ISNULL(despachoord.deleted_at)";
+                    AND ISNULL(despachoord.deleted_at);";
                 $cont = DB::select($sql);
                 //if($despachosol->despachoords->count() == 0){
                 if($cont[0]->cont == 0){
@@ -1638,7 +1638,27 @@ class DespachoSolController extends Controller
                         ]);
                     }
                 }else{
-                    return response()->json(['mensaje' => 'hijo']);
+                    $sql = "SELECT despachoord.*
+                        FROM despachosol INNER JOIN despachoord
+                        ON despachosol.id=despachoord.despachosol_id
+                        WHERE despachosol.id = $request->id
+                        AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+                        AND isnull(despachosol.deleted_at)
+                        AND ISNULL(despachoord.deleted_at);";
+                    $despachoords = DB::select($sql);
+                    $arraydespachoord_id = [];
+                    $arraydteguiadespnrodoc = [];
+                    foreach ($despachoords as $despachoord) {
+                        $arraydespachoord_id[] = $despachoord->id;
+                        if($despachoord->guiadespacho != "" and $despachoord->guiadespacho != null){
+                            $arraydteguiadespnrodoc[] = $despachoord->guiadespacho;
+                        }
+                    }
+                    return response()->json([
+                        'id' => 0,
+                        'mensaje' => 'Registro tiene Ordenes de despacho activas: ' . implode(",", $arraydespachoord_id) . ($arraydteguiadespnrodoc ? " Guia despacho: "  . implode(",", $arraydteguiadespnrodoc) : "") . ". Previamente deben ser anuladas." ,
+                        'tipo_alert' => 'error'
+                    ]);
                 }
             }else{
                 return response()->json([
