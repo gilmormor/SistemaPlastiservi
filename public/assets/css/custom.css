@@ -458,3 +458,7 @@ td.highlight {
     .espaciadoletras-05 {
         letter-spacing: -0.5px; /* Cambia el valor según tus preferencias */
     }
+
+    .elementosjuntos {
+        display:flex;  
+    }

@@ -296,6 +296,8 @@
                                 </select>
                             </div>
                         @endif
+                    </div>
+                    <div class="row">
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="tipoguiadesp" class="control-label requerido" data-toggle='tooltip' title="Tipo Guia Despacho">Tipo Guia Despacho</label>
                             <select name="tipoguiadesp" id="tipoguiadesp" class="form-control select2  tipoguiadesp" data-live-search='true' value="{{old('tipoguiadesp', isset($data) ? $data->tipoguiadesp : '')}}" required>

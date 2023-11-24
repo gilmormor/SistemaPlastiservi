@@ -380,8 +380,10 @@ class Dte extends Model
         ON dte.id=dtedet.dte_id and isnull(dte.deleted_at) and isnull(dtedet.deleted_at)
         INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id and isnull(dteguiadesp.deleted_at)
+        LEFT JOIN dteguiadespnv
+        ON dteguiadespnv.dte_id = dte.id
         LEFT JOIN notaventa
-        ON notaventa.id=dteguiadesp.notaventa_id and isnull(notaventa.deleted_at)
+        ON (notaventa.id=dteguiadesp.notaventa_id or notaventa.id=dteguiadespnv.notaventa_id) and isnull(notaventa.deleted_at)
         LEFT JOIN dtedet_despachoorddet
         ON dtedet_despachoorddet.dtedet_id = dtedet.id and isnull(dtedet_despachoorddet.deleted_at)
         LEFT JOIN notaventadetalle
@@ -412,8 +414,6 @@ class Dte extends Model
         ON dtedte_rel_guia.dte_id = dte.id AND isnull(dtedte_rel_guia.deleted_at)
         LEFT JOIN dte as dte_rel_guia
         ON dtedte_rel_guia.dter_id = dte_rel_guia.id AND (dte_rel_guia.foliocontrol_id = 2)  AND isnull(dte_rel_guia.deleted_at)
-        LEFT JOIN dteguiadespnv
-        ON dteguiadespnv.dte_id = dte.id
         LEFT JOIN dteguiausada
         ON dteguiausada.dte_id = dte.id AND isnull(dteguiausada.deleted_at)
         WHERE $aux_condproducto_id
@@ -538,24 +538,33 @@ class Dte extends Model
         }else{
             $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
         }
+        $aux_condindtraslado = "true";
+        if(isset($request->aux_condindtraslado) and $request->aux_condindtraslado != "" and $request->aux_condindtraslado != null){
+            $aux_condindtraslado = $request->aux_condindtraslado;
+        }
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
-        despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,
-        cliente.razonsocial,cliente.rut,cliente.razonsocial,
+        despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.indtraslado,
+        cliente.razonsocial,cliente.rut,cliente.razonsocial,despachosol.notaventa_id as notaventa_id,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as oc_id,
         if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as oc_file,
-        dteguiadesp.notaventa_id,
+        if(isnull(dteguiadesp.notaventa_id),despachosol.notaventa_id,dteguiadesp.notaventa_id) as notaventa_id,
         '' as notaventaxk,comuna.nombre as comuna_nombre,
         tipoentrega.nombre as tipoentrega_nombre,'  ' as te,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
         dte.kgtotal as aux_totalkg,
         dte.mnttotal as subtotal,
         dte.updated_at,despachoord.updated_at as despordupdated_at,'' as rutacrear,
-        dteoc.oc_id as dteoc_oc_id,dteoc.oc_file as dteoc_oc_file
+        dteoc.oc_id as dteoc_oc_id,dteoc.oc_file as dteoc_oc_file,tipodespacho,
+        dteguiadespnv.notaventa_id as dteguiadespnv_notaventa_id
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
+        LEFT JOIN dteguiadespnv
+        ON dteguiadespnv.dte_id = dte.id
         LEFT JOIN despachoord
         ON dteguiadesp.despachoord_id = despachoord.id AND ISNULL(despachoord.deleted_at)
+        LEFT JOIN despachosol
+        ON despachoord.despachosol_id = despachosol.id AND ISNULL(despachosol.deleted_at)
         LEFT JOIN notaventa
-        ON notaventa.id = dteguiadesp.notaventa_id and isnull(notaventa.deleted_at)
+        ON (notaventa.id = dteguiadesp.notaventa_id or notaventa.id=dteguiadespnv.notaventa_id) and isnull(notaventa.deleted_at)
         INNER JOIN cliente
         ON cliente.id = dte.cliente_id AND isnull(cliente.deleted_at)
         LEFT JOIN comuna
@@ -582,7 +591,6 @@ class Dte extends Model
         AND dte.statusgen = 1
         AND $aux_condindtraslado
         AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
-        AND indtraslado != 6
         AND $aux_condsucurArray
         AND $aux_sucursal_idCond
         order BY dte.nrodocto;";
@@ -898,6 +906,7 @@ class Dte extends Model
         GROUP_CONCAT(DISTINCT if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id)) AS oc_id,
         GROUP_CONCAT(DISTINCT if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file)) AS oc_file,
         GROUP_CONCAT(DISTINCT dteguiadesp.notaventa_id) AS notaventa_id,
+        dteguiadespnv.notaventa_id as dteguiadespnv_notaventa_id,
         GROUP_CONCAT(DISTINCT despachoord.despachosol_id) AS despachosol_id,
         GROUP_CONCAT(DISTINCT dteguiadesp.despachoord_id) AS despachoord_id,
         (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) 
@@ -919,10 +928,12 @@ class Dte extends Model
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         LEFT JOIN dteguiadesp
         ON dtedte.dter_id = dteguiadesp.dte_id and isnull(dteguiadesp.deleted_at)
+        LEFT JOIN dteguiadespnv
+        ON dteguiadespnv.dte_id =dtedte.dter_id
         LEFT JOIN despachoord
         ON despachoord.id = dteguiadesp.despachoord_id and isnull(despachoord.deleted_at)
         LEFT JOIN notaventa
-        ON notaventa.id = despachoord.notaventa_id and isnull(notaventa.deleted_at)
+        ON (notaventa.id = despachoord.notaventa_id or notaventa.id=dteguiadespnv.notaventa_id) and isnull(notaventa.deleted_at)
         INNER JOIN cliente
         ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
         INNER JOIN comuna

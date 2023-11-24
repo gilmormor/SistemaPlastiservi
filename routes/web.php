@@ -1436,3 +1436,8 @@ Route::put('dtefacturaeditar/{id}', 'DteFacturaEditarController@actualizar')->na
 
 /*RUTAS PERMISO GUIA DIRECTA*/
 Route::get('permisoguiadirecta', 'PermisoGuiaDirectaController@index')->name('permisoguiadirecta');
+
+/*RUTAS ANULAR GUIA DIRECTA*/
+Route::get('dteguiadespdiranular', 'DteGuiaDespDirAnularController@index')->name('dteguiadespdiranular');
+Route::get('dteguiadespdiranularpage', 'DteGuiaDespDirAnularController@dteguiadespdiranularpage')->name('dteguiadespdiranularpage');
+Route::get('dteguiadespdiranular/totalizarindex', 'DteGuiaDespDirAnularController@totalizarindex')->name('dteguiadespdir_totalizarindex');

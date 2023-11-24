@@ -117,11 +117,20 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 if($request->procesoorigen == "AnularDTE"){
                     $dte = Dte::findOrFail($request->dte_id);
                     if($request->updated_at != $dte->updated_at){
-                        return redirect('dteguiadesp')->with([
-                            'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario! dteguiadesp',
-                            'tipo_alert' => 'alert-error'
+                        return response()->json([
+                            'status'=>'0',
+                            'error' => '1',
+                            'title' => '',            
+                            'mensaje'=> "No se actualizaron los datos, registro fue modificado por otro usuario! dteguiadesp",
+                            'tipo_alert' => 'error',
+                            'id' => $request->dte_id,
+                            'nfila' => $request->dte_id,
                         ]);
-                    }/*
+                    }
+                    if(isset($request->despachoord_id) and $request->despachoord_id != null and $request->despachoord_id !=""){
+                        $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
+                    }
+                    /*
                     $data = DespachoOrd::findOrFail($request->despachoord_id);
                     if($request->despordupdated_at != $data->updated_at){
                         return response()->json([
@@ -130,17 +139,19 @@ class DespachoOrdAnulGuiaFactController extends Controller
                         ]);
                     }
                     */
-
                     $request->request->add(['usuario_id' => auth()->id()]);
                     $dteanul = DteAnul::create($request->all());
                     $dte->updated_at = date("Y-m-d H:i:s");
                     if($dte->save()){
-                        $despachoord = DespachoOrd::findOrFail($dte->dteguiadesp->despachoord_id);
-                        $despachoord->updated_at = date("Y-m-d H:i:s");
-                        if(!$despachoord->save()){
+                        if(!isset($dte->dteguiadesp->despachoord_id)){
                             return response()->json([
-                                'mensaje' => 'Error al guardar!',
-                                'tipo_alert' => 'error'
+                                'status'=>'1',
+                                'error' => '0',
+                                'title' => '',            
+                                'mensaje'=> "ok",
+                                'tipo_alert' => 'success',
+                                'id' => $request->dte_id,
+                                'nfila' => $request->dte_id,
                             ]);
                         }
                     }else{
@@ -163,31 +174,33 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 }
             }
             if(!isset($request->despordupdated_at)){ //ESTA VARIABLE LA CREE EN INDEX DTEGUIADESP PARA TENER SOLO EL UPDATE DE DESPACHOORD, SI NO EXISTE HACE LA VALIDACION
-                $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
-                //EN COMENTARIO PORQUE DEBO REVISAR SI REGISTRO YA FUE EDITADOR POR OTRO USUARIO
-                //TENGO QUE REVISAR PORQUE POSE ESTA CONDICION if(isset($request->procesoorigen) and $request->procesoorigen == 1)
-                //if(isset($request->procesoorigen) and $request->procesoorigen == 1){
-                    if($request->updated_at != $despachoord->updated_at){
-                        return response()->json([
-                            'status' => 0,
-                            'id' => 0,
-                            'error' => '0',
-                            'title' => '',
-                            'mensaje' => 'Registro fué modificado por otro usuario.',
-                            'tipo_alert' => 'error'
-                        ]);
-                    }    
-                //}
-                if(isset($request->pantalla_origen) and $request->pantalla_origen == 2){
-                    if($request->updated_at != $despachoord->updated_at){
-                        return response()->json([
-                            'status' => 0,
-                            'id' => 0,
-                            'error' => '0',
-                            'title' => '',
-                            'mensaje' => 'Registro fué modificado por otro usuario.',
-                            'tipo_alert' => 'error'
-                        ]);
+                if(isset($request->despachoord_id) and $request->despachoord_id != ""){
+                    $despachoord = DespachoOrd::findOrFail($request->despachoord_id);
+                    //EN COMENTARIO PORQUE DEBO REVISAR SI REGISTRO YA FUE EDITADOR POR OTRO USUARIO
+                    //TENGO QUE REVISAR PORQUE POSE ESTA CONDICION if(isset($request->procesoorigen) and $request->procesoorigen == 1)
+                    //if(isset($request->procesoorigen) and $request->procesoorigen == 1){
+                        if($request->updated_at != $despachoord->updated_at){
+                            return response()->json([
+                                'status' => 0,
+                                'id' => 0,
+                                'error' => '0',
+                                'title' => '',
+                                'mensaje' => 'Registro fué modificado por otro usuario.',
+                                'tipo_alert' => 'error'
+                            ]);
+                        }    
+                    //}
+                    if(isset($request->pantalla_origen) and $request->pantalla_origen == 2){
+                        if($request->updated_at != $despachoord->updated_at){
+                            return response()->json([
+                                'status' => 0,
+                                'id' => 0,
+                                'error' => '0',
+                                'title' => '',
+                                'mensaje' => 'Registro fué modificado por otro usuario.',
+                                'tipo_alert' => 'error'
+                            ]);
+                        }    
                     }    
                 }
     

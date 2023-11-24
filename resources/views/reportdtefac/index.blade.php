@@ -261,7 +261,6 @@ DTE Facturacion
                             <th class='tooltipsC' title='Guia Despacho'>GD</th>
                             <th class='tooltipsC' title='Guia Despacho Cedible'>GDC</th>
                             <th class='tooltipsC' title='Factura'>Factura</th>
-                            <th class='tooltipsC' title='Marcar para mostrar factura en despacho'>V</th>
                             <th class='tooltipsC' title='Comuna'>Comuna</th>
                             <th class="ocultar">dteanul_obs</th>
                             <th class="ocultar">dteanulcreated_at</th>

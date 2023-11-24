@@ -16,6 +16,7 @@ $(document).ready(function () {
         'columns'     : [
             {data: 'id'},
             {data: 'fchemis'},
+            {data: 'rut'},
             {data: 'razonsocial'},
             {data: 'cotizacion_id'},
             {data: 'oc_id'},
@@ -58,7 +59,7 @@ $(document).ready(function () {
 				"onclick='genpdfCOT(\"" + data.cotizacion_id + "\",1)'>" + data.cotizacion_id + 
 				"</a>";
 			}
-			$('td', row).eq(3).html(aux_text);
+			$('td', row).eq(4).html(aux_text);
 
 
             if(data.oc_file != "" && data.oc_file != null){
@@ -75,7 +76,7 @@ $(document).ready(function () {
                     data.notaventa_id +
                 "</a>";
             }
-            $('td', row).eq(5).html(aux_text);
+            $('td', row).eq(6).html(aux_text);
             aux_text = "";
             if(data.despachosol_id != "" && data.despachosol_id != null){
                 aux_text = 
@@ -83,7 +84,7 @@ $(document).ready(function () {
                         data.despachosol_id + 
                     "</a>";
             }
-            $('td', row).eq(6).html(aux_text);
+            $('td', row).eq(7).html(aux_text);
             aux_text = "";
             if(data.despachoord_id != "" && data.despachoord_id != null){
                 aux_text = 
@@ -91,7 +92,7 @@ $(document).ready(function () {
                     + data.despachoord_id +
                 "</a>";
             }
-            $('td', row).eq(7).html(aux_text);
+            $('td', row).eq(8).html(aux_text);
             aux_text = "";
             if(data.nrodocto != "" && data.nrodocto != null){
                 aux_text = 
@@ -102,20 +103,20 @@ $(document).ready(function () {
                     "<i class='fa fa-fw fa-file-pdf-o'></i>" +
                 "</a>";
             }
-            $('td', row).eq(8).html(aux_text);
+            $('td', row).eq(9).html(aux_text);
 
 
-            $('td', row).eq(10).attr('data-order',data.aux_totalkg);
-            $('td', row).eq(10).attr('style','text-align:right');
+            $('td', row).eq(11).attr('data-order',data.aux_totalkg);
+            $('td', row).eq(11).attr('style','text-align:right');
             aux_text = MASKLA(data.aux_totalkg,2);
-            $('td', row).eq(10).html(aux_text);
-            $('td', row).eq(10).addClass('subtotalkg');
+            $('td', row).eq(11).html(aux_text);
+            $('td', row).eq(11).addClass('subtotalkg');
 
             
             aux_text = 
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
-            $('td', row).eq(11).html(aux_text);
-            $('td', row).eq(11).attr('style','text-align:center');
+            $('td', row).eq(12).html(aux_text);
+            $('td', row).eq(12).attr('style','text-align:center');
 
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
@@ -140,13 +141,13 @@ $(document).ready(function () {
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
             }
-            $('td', row).eq(16).addClass('updated_at');
-            $('td', row).eq(16).attr('id','updated_at' + data.id);
-            $('td', row).eq(16).attr('name','updated_at' + data.id);
-
             $('td', row).eq(17).addClass('updated_at');
-            $('td', row).eq(17).attr('id','despordupdated_at' + data.id);
-            $('td', row).eq(17).attr('name','despordupdated_at' + data.id);
+            $('td', row).eq(17).attr('id','updated_at' + data.id);
+            $('td', row).eq(17).attr('name','updated_at' + data.id);
+
+            $('td', row).eq(18).addClass('updated_at');
+            $('td', row).eq(18).attr('id','despordupdated_at' + data.id);
+            $('td', row).eq(18).attr('name','despordupdated_at' + data.id);
             aux_text = /*"<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Factura: " + data.tipoentrega_nombre + "'>" +
                             "<button type='button' class='btn btn-default btn-xs'>" +
                                 "<i class='fa fa-fw " + data.icono + "'></i>"+
@@ -163,7 +164,7 @@ $(document).ready(function () {
                                 <i class='fa fa-fw fa-close'></i>
                             </button>
                         </a>`;
-            $('td', row).eq(18).html(aux_text);
+            $('td', row).eq(19).html(aux_text);
         }
     });
 

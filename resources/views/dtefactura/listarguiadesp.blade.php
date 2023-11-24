@@ -214,6 +214,7 @@ Guia Despacho por Facturar
                             <tr>
                                 <th class='tooltipsC' title="ID">ID</th>
                                 <th>Fecha</th>
+                                <th>RUT</th>
                                 <th>Razón Social</th>
                                 <th class='tooltipsC' title="Cotizacion">Cot</th>
                                 <th class='tooltipsC' title="Orden de Compra">OC</th>

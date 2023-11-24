@@ -2746,7 +2746,7 @@ function reportesoldesp1($request){
                 <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . 
                     date('d/m/Y', strtotime($data->fechahora)) . 
                 "</td>
-                <td id='fechaestdespTD$i' name='fechaestdespTD$i' data-order='$data->fechaestdesp'>" . 
+                <td id='fechaestdespTD$i' name='fechaestdespTD$i' data-order='$data->fechaestdesp'  class='elementosjuntos'>" . 
                     "<a id='fechaestdesp$i' name='fechaestdesp$i' class='editfed'>" .
                         date('d/m/Y', strtotime($data->fechaestdesp)) . 
                     "</a>
@@ -2783,7 +2783,7 @@ function reportesoldesp1($request){
                         <i class='fa fa-fw fa-file-pdf-o'></i>
                     </a>
                 </td>
-                <td>
+                <td class='elementosjuntos'>
                     $nuevoOrdDesp
                 </td>
             </tr>";

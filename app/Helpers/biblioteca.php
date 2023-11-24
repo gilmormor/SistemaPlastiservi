@@ -265,4 +265,65 @@ if (!function_exists('nomPermiso')) {
     }
 }
 
+if (!function_exists('dtetipotraslado')) {
+    function dtetipotraslado($indtraslado){
+        $arraytipotraslado = "";
+        if($indtraslado == 1){
+            $arraytipotraslado = [
+                "desc" => "Venta",
+                "letra" => "V"
+            ];
+        }
+        if($indtraslado == 2){
+            $arraytipotraslado = [
+                "desc" => "Ventas por efectuar",
+                "letra" => "VPE"
+            ];
+        }
+        if($indtraslado == 3){
+            $arraytipotraslado = [
+                "desc" => "Consignaciones",
+                "letra" => "C"
+            ];
+        }
+        if($indtraslado == 4){
+            $arraytipotraslado = [
+                "desc" => "Entrega gratuita",
+                "letra" => "C"
+            ];
+        }
+        if($indtraslado == 5){
+            $arraytipotraslado = [
+                "desc" => "Traslados internos",
+                "letra" => "TI"
+            ];
+        }
+        if($indtraslado == 6){
+            $arraytipotraslado = [
+                "desc" => "Traslado",
+                "letra" => "T"
+            ];
+        }
+        if($indtraslado == 7){
+            $arraytipotraslado = [
+                "desc" => "Guía de devolución",
+                "letra" => "GDev"
+            ];
+        }
+        if($indtraslado == 8){
+            $arraytipotraslado = [
+                "desc" => "Traslado para exportación",
+                "letra" => "TExp"
+            ];
+        }
+        if($indtraslado == 9){
+            $arraytipotraslado = [
+                "desc" => "Venta para exportación",
+                "letra" => "VExp"
+            ];
+        }
+        return $arraytipotraslado;
+    }
+}
+
 ?>

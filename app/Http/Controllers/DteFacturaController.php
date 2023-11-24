@@ -457,6 +457,7 @@ class DteFacturaController extends Controller
     }
 
     public function listarguiadesppage(Request $request){
+        $request->merge(['aux_condindtraslado' => "indtraslado != 6"]);
         $datas = Dte::consultalistarguiadesppage($request);
         //dd($datas);
         return datatables($datas)->toJson();

@@ -99,11 +99,16 @@ $(document).ready(function () {
 			aux_text = 
 			"<a onclick='numfactura(" + data.id + "," + data.id + ",1)' class='btn btn-primary btn-xs' title='Factura' data-toggle='tooltip'>" +
 				"Fact" +
-			"</a>" +
+			"</a>";
+			/*
+			//EN COMENTARIO PORQUE YA NO ES NECESARIO ANULAR O DEVOLVER GUIA POR AQUI
+			//PARA ANULAR GUIA DESPACHO SE HACE POR FACTURAR GUIA dtefactura/listarguiadesp 
+			//PARA ANULAR GUIA DESPACHO TRASLADO SE HACE POR ANULAR GUIA DESPACHO dteguiadespanular
 			"|" +
 			"<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn btn-danger btn-xs' title='Anular Guia o Factura' data-toggle='tooltip'>" +
 				"Anular" +
 			"</a>";
+			*/
 			$('td', row).eq(16).addClass('updated_at');
             $('td', row).eq(16).attr('item',data.id);
             $('td', row).eq(16).attr('id','updated_at'+data.id);

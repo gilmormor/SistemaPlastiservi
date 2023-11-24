@@ -50,6 +50,13 @@ class DteGuiaDespAnularController extends Controller
     }
 
     public function listarguiadesppage(Request $request){
+        $request->merge([
+            'aux_condindtraslado' => "indtraslado = 6 and 
+                dte.nrodocto in (SELECT despachoord.guiadespacho FROM despachoord where 
+                despachoord.id not in (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at)) 
+                AND 
+                ISNULL(despachoord.deleted_at)) "
+        ]);
         $datas = Dte::consultalistarguiadesppage($request);
         //dd($datas);
         return datatables($datas)->toJson();

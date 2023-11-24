@@ -1301,8 +1301,38 @@ class DespachoOrdController extends Controller
                     $aux_enlaceguia = "";
                     if(!is_null($despachoord->guiadespacho) and !empty($despachoord->guiadespacho)){
                         $aux_numguia = $despachoord->guiadespacho;
-                        $aux_enlaceguia = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfGD($aux_numguia,\"\",\"myModalTablaOD\")' data-original-title='Guia Despacho'>
-                            $aux_numguia
+                        //SI LA GUIA ES ORIGINADA DE OTRA GUIA
+                        //ES DECIR QUE SE HIZO UNA GUIA PREVIA DE VENTA QUE SE ORIGINO DESDE UNA NOTA DE VENTA Y LUEGO SE DESPACHO CON UNA GUIA DE TRASLADO
+                        //SE HACE UNA GUIA DE TRASLADO PORQUE SE SUPONE QUE YA SE HIZO PREVIAMENTE UNA GUIA DE VENTA
+                        //$enlaceDteOrigen EN ESTA VARIABLE ALMACENO LA GUIA PREVIA
+                        $sql = "SELECT dte.id,dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,dte.indtraslado,
+                            dte_rel_guia.indtraslado as indtrasladoorigen
+                            FROM dte 
+                            LEFT JOIN dtedte as dtedte_rel_guia
+                            ON dtedte_rel_guia.dte_id = dte.id AND isnull(dtedte_rel_guia.deleted_at)
+                            LEFT JOIN dte as dte_rel_guia
+                            ON dtedte_rel_guia.dter_id = dte_rel_guia.id AND (dte_rel_guia.foliocontrol_id = 2)  AND isnull(dte_rel_guia.deleted_at)
+                            WHERE dte.nrodocto = $aux_numguia 
+                            AND isnull(dte.deleted_at)
+                            AND dte.id not in (SELECT dteanul.dte_id from dteanul WHERE  isnull(dteanul.deleted_at));";
+                        $dte = DB::select($sql);
+                        $enlaceDteOrigen = "";
+                        if(count($dte) > 0 and $dte[0]->guiaorigenprecio_nrodocto != null){
+                            $guiaorigenprecio_nrodocto = $dte[0]->guiaorigenprecio_nrodocto;
+                            $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtrasladoorigen);
+                            $tipotrasladoDesc = $arrayDTEtipotraslado["desc"];
+                            $enlaceDteOrigen = "<a class='btn-accion-tabla btn-sm tooltipsC' title='' data-original-title='Guia Despacho origen: $guiaorigenprecio_nrodocto $tipotrasladoDesc' onclick='genpdfGD($guiaorigenprecio_nrodocto,\"\",\"myModalTablaOD\")'>
+                                <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                            </a>";
+                        }
+                        $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtraslado);
+                        $tipotrasladoDesc = $arrayDTEtipotraslado["desc"];
+                        $tipotrasladoLetra = $arrayDTEtipotraslado["letra"];
+
+                        $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtraslado);
+
+                        $aux_enlaceguia = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfGD($aux_numguia,\"\",\"myModalTablaOD\")' data-original-title='Guia Despacho $tipotrasladoDesc'>
+                            $aux_numguia $tipotrasladoLetra $enlaceDteOrigen
                         </a>";
                     }
                     $aux_enlacefactura = "";

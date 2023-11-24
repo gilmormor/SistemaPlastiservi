@@ -40,16 +40,15 @@ $(document).ready(function () {
                 {data: 'nrodocto_guiadesp'}, // 9
                 {data: 'nrodocto_guiadesp'}, // 10
                 {data: 'nrodocto'}, // 11
-                {data: 'nrodocto'}, // 12
-                {data: 'nombre_comuna'}, // 13
-                {data: 'dteanul_obs',className:"ocultar"}, //14
-                {data: 'dteanulcreated_at',className:"ocultar"}, //15
-                {data: 'clientebloqueado_descripcion',className:"ocultar"}, //16
-                {data: 'oc_file',className:"ocultar"}, //17
-                {data: 'nombrepdf',className:"ocultar"}, //18
-                {data: 'staverfacdesp',className:"ocultar"}, //19
-                {data: 'updated_at',className:"ocultar"}, //20
-                {data: 'dtefac_updated_at',className:"ocultar"}, //21
+                {data: 'nombre_comuna'}, // 12
+                {data: 'dteanul_obs',className:"ocultar"}, //13
+                {data: 'dteanulcreated_at',className:"ocultar"}, //14
+                {data: 'clientebloqueado_descripcion',className:"ocultar"}, //15
+                {data: 'oc_file',className:"ocultar"}, //16
+                {data: 'nombrepdf',className:"ocultar"}, //17
+                {data: 'staverfacdesp',className:"ocultar"}, //18
+                {data: 'updated_at',className:"ocultar"}, //19
+                {data: 'dtefac_updated_at',className:"ocultar"}, //20
                 {defaultContent : ""}
             ],
             "language": {
@@ -123,6 +122,13 @@ $(document).ready(function () {
                         }
                     }    
                 }
+                if(data.dteguiadespnv_notaventa_id != "" && data.dteguiadespnv_notaventa_id != null){
+                    aux_text = 
+                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.dteguiadespnv_notaventa_id + ",1)'>" +
+                            data.dteguiadespnv_notaventa_id +
+                        "</a>";
+                }
+
                 $('td', row).eq(6).html(aux_text);
     
                 aux_text = "";
@@ -213,6 +219,7 @@ $(document).ready(function () {
                 if(data.staverfacdesp == 1){
                     aux_checkstaex = "checked";
                 }
+                /*
                 aux_text = 
                 `<div class="checkbox">
                     <label style="font-size: 1.2em;padding-left: 0px;">
@@ -222,14 +229,15 @@ $(document).ready(function () {
                     </label>
                 </div>`;
                 $('td', row).eq(12).html(aux_text);
+                */
 
-                $('td', row).eq(20).addClass('updated_at');
-                $('td', row).eq(20).attr('id','updated_at' + data.id);
-                $('td', row).eq(20).attr('name','updated_at' + data.id);
+                $('td', row).eq(19).addClass('updated_at');
+                $('td', row).eq(19).attr('id','updated_at' + data.id);
+                $('td', row).eq(19).attr('name','updated_at' + data.id);
 
-                $('td', row).eq(21).addClass('dtefac_updated_at');
-                $('td', row).eq(21).attr('id','dtefac_updated_at' + data.id);
-                $('td', row).eq(21).attr('name','dtefac_updated_at' + data.id);
+                $('td', row).eq(20).addClass('dtefac_updated_at');
+                $('td', row).eq(20).attr('id','dtefac_updated_at' + data.id);
+                $('td', row).eq(20).attr('name','dtefac_updated_at' + data.id);
 
             }
         });

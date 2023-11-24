@@ -66,26 +66,40 @@ $(document).ready(function () {
                     "</a>";
                 $('td', row).eq(4).html(aux_text);
             }
-            aux_text = 
+            codigo = data.notaventa_id;
+			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
+				aux_text = "";
+			}else{
+                aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de Venta' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
                     data.notaventa_id +
                 "</a>";
+			}
             $('td', row).eq(5).html(aux_text);
-            aux_text = 
+            codigo = data.despachosol_id;
+			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
+				aux_text = "";
+			}else{
+                aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD(" + data.despachosol_id + ",1)'>" + 
                     data.despachosol_id + 
                 "</a>";
+			}
             $('td', row).eq(6).html(aux_text);
-
-            aux_text = 
+            codigo = data.despachoord_id;
+			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
+				aux_text = "";
+			}else{
+                aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden despacho: " + data.despachoord_id + "' onclick='genpdfOD(" + data.despachoord_id + ",1)'>"+
-                    + data.despachoord_id +
+                    + data.despachoord_id
                 "</a>";
+			}
             $('td', row).eq(7).html(aux_text);
-
+            aux_indtra = indtrasladoObj(data.indtraslado);
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
-                    + data.nrodocto +
+                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: " + data.nrodocto + " " +  aux_indtra.desc +  "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
+                    + data.nrodocto +  " " + aux_indtra.letra +
                 "</a>";
             $('td', row).eq(8).html(aux_text);
 
@@ -105,10 +119,13 @@ $(document).ready(function () {
             $('td', row).eq(16).addClass('updated_at');
             $('td', row).eq(16).attr('id','updated_at' + data.id);
             $('td', row).eq(16).attr('name','updated_at' + data.id);
+            $('td', row).eq(16).attr('despordupdated_at',data.despordupdated_at);
 
-            aux_text = "<a onclick='anularguiaDTE(" + data.id + "," + data.despachoord_id + ")' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro y devolver a Orden de Despacho' data-toggle='tooltip'>"+
-                            "<span class='glyphicon glyphicon-remove text-danger'></span>"
-                        "</a>";
+            aux_text = `<a onclick='anularguiaDTE(${data.id},${data.despachoord_id})' class='btn-accion-tabla btn-sm tooltipsC' title='Anular registro y devolver a Orden de Despacho' data-toggle='tooltip'>
+                            <button type="button" class="btn btn-xs">
+                                <span class='glyphicon glyphicon-remove text-danger'></span>
+                            </button>
+                        </a>`;
             $('td', row).eq(17).html(aux_text);
         }
     });
@@ -255,9 +272,11 @@ $("#btnGuardarGanul").click(function(event)
             if (value) {
                 var data = {
                     id              : $("#idanul").val(),
+                    nfila           : $("#guiadesp_id").val(),
                     despachoord_id  : $("#idanul").val(),
                     dte_id          : $("#guiadesp_id").val(),
                     updated_at      : $("#updated_at").val(),
+                    despordupdated_at : $("#updated_at" + $("#guiadesp_id").val()).attr("despordupdated_at"),
                     pantalla_origen : 2,
                     statusM         : 2,
                     procesoorigen   : "AnularDTE",
@@ -301,11 +320,11 @@ function ajaxRequest(data,url,funcion) {
 		success: function (respuesta) {
             if(funcion=='guardaranularguia'){
                 $("#myModalanularguiafact").modal('hide');
-				if (respuesta.mensaje == "ok") {
+				if (respuesta.error == "0") {
                     //console.log(datatemp);
                     //console.log("#fila" + datatemp.dte_id);
 					$("#fila" + datatemp.dte_id).remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
                     //redirigirARuta("dteguiadespanular/listarguiadesp"); //Muestra el mensaje de registro modificado y luego espera 2.5 seg y recarga pagina

@@ -3485,3 +3485,17 @@ function formDataToObject(formData) {
     });
     return object;
 }
+
+function indtrasladoObj(indtraslado){
+	data = {
+		desc : "Venta",
+		letra : "V"
+	}
+	if(indtraslado == 6){
+		data = {
+			desc : "Traslado",
+			letra : "T"
+		}
+	}
+	return data;
+}

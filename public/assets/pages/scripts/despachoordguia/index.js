@@ -132,10 +132,15 @@ $(document).ready(function () {
 			aux_text = 
 			`<a onclick="guiadesp(${data.id},${data.id},1)" class="btn btn-primary btn-xs tooltipsC" title="Guia de despacho">
 				Guia
-			</a> | 
+			</a>`
+			/*
+			//EN COMENTARIO PORQUE YA NO ES NECESARIO ANULAR O DEVOLVER ORDEN DESPACHO POR AQUI
+			//PARA ANULAR ORDEN DESPACHO SE HACE POR ORDEN DE DESPACHO despachoord 
+			| 
 			<a onclick="anularguiafact(${data.id},${data.id})" class="btn btn-danger btn-xs" title="Anular Guia" data-toggle="tooltip">
 				Anular
 			</a>`;
+			*/
 			/*
 			aux_text = aux_text +
             "<a href='despachoord' class='btn-accion-tabla btn-sm btnAnular tooltipsC' title='Anular Orden Despacho' data-toggle='tooltip'>"+

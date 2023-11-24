@@ -52,7 +52,7 @@ $(document).ready(function () {
     
                 if (data.dteanul_obs != null) {
                     aux_fecha = new Date(data.dteanulcreated_at);
-                    aux_fechaanulgd =  fechaddmmaaaa(aux_fecha) + " " + data.fechahora.substr(11, 8);
+                    aux_fechaanulgd =  fechaddmmaaaa(aux_fecha) + " " + data.dteanulcreated_at.substr(11, 8);
                     aux_text = data.id +
                     "<a class='btn-accion-tabla tooltipsC' title='Anulada " + aux_fechaanulgd + "\nObs:"  + data.dteanul_obs + "'>" +
                         "<small class='label label-danger'>A</small>" +
@@ -107,9 +107,10 @@ $(document).ready(function () {
                 $('td', row).eq(7).html(aux_text);
                 aux_text = "";
                 if(data.nrodocto){
+                    aux_indtra = indtrasladoObj(data.indtraslado);
                     aux_text = 
-                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','')">
-                            ${data.nrodocto}
+                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto} ${aux_indtra.desc}" onclick="genpdfGD('${data.nrodocto}','')">
+                            ${data.nrodocto} ${aux_indtra.letra}
                         </a>
                         <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','_cedible')" style="padding-left: 0px;">
                             <i class="fa fa-fw fa-file-pdf-o"></i>
