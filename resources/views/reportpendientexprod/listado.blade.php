@@ -7,6 +7,8 @@
 	use App\Models\Producto;
 	use App\Models\Comuna;
 	use App\Models\NotaVenta;
+	use App\Models\NotaVentaDetalle;
+	use App\Models\InvBodega;
 	use Illuminate\Http\Request;
 ?>
 <div id="page_pdf">
@@ -42,19 +44,20 @@
 					<tr>
 						<th class='width30'>NV</th>
 						<th class='width40'>OC</th>
-						<th class='width50'>Fecha</th>
-						<th class='width50'>Plazo<br>Entrega</th>
+						<th style="font-size: 10px;" class='width40'>Fecha</th>
+						<th style="font-size: 10px;" class='width40'>Plazo<br>Entrega</th>
 						<th class='width180'>Razón Social</th>
 						<th class='width50'>Comuna</th>
 						<th style='text-align:left' class='width10'>Cod</th>
 						<th style='text-align:left' class='width90'>Descripción</th>
-						<th style='text-align:left' class='width40'>Clase<br>Sello</th>
+						<th style="font-size: 10px;" style='text-align:left' class='width30'>Clase<br>Sello</th>
 						<th style='text-align:left' class='width30'>Diam<br>Ancho</th>
 						<th style='text-align:left' class='width10'>L</th>
 						<th style='text-align:left' class='width30'>Peso<br>Esp</th>
 						<th style='text-align:left' class='width10'>TU</th>
-						<th style='text-align:right' class='width30'>Stock</th>
-						<th style='text-align:right' class='width40'>Cant</th>
+						<th style="font-size: 10px;" style='text-align:right' class='width20'>Stock</th>
+						<th style="font-size: 10px;" style='text-align:right' class='width20'>Picking</th>
+						<th style="font-size: 10px;" style='text-align:right' class='width40'>Cant</th>
 						<!--
 						<th style='text-align:right'>Kilos</th>
 						-->
@@ -71,7 +74,6 @@
 						<th style='text-align:right' class='width50'>$</th>
 						<th class='width30'></th>
 						<th class='width30'></th>
-						<th class='width30'></th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
@@ -85,10 +87,19 @@
 						$aux_totalkilospend = 0;
 						$aux_totalplata = 0;
 						$aux_totalprecio = 0;
+						$aux_totalpicking = 0;
 						$i = 0;
 					?>
 					@foreach($datas as $data)
 						<?php
+						    $notaventadetalle = NotaVentaDetalle::findOrFail($data->id);
+							$aux_picking = 0;
+							$detalles = $notaventadetalle->despachosoldets()->get();
+							$arrayBodegasPickings = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
+							foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
+								$aux_picking += $arrayBodegasPicking["stock"];
+							}
+
 							//SUMA TOTAL DE SOLICITADO
 							/*************************/
 							$sql = "SELECT cantsoldesp
@@ -121,7 +132,8 @@
 							$producto = Producto::findOrFail($data->producto_id);
 							$aux_razonsocial = ucwords(strtolower($data->razonsocial));
 							$aux_razonsocial = ucwords($aux_razonsocial,".");
-							$aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
+							//$aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
+							$aux_subtotalplata = $aux_cantsaldo * $data->preciounit;
 
 							$notaventa = NotaVenta::findOrFail($data->notaventa_id);
 							$request = new Request();
@@ -142,9 +154,9 @@
 							}
 
 							$aux_producto_id = $data->producto_id;
-							$aux_ancho = $producto->diametro;
+							$aux_ancho = $producto->diametro > 0 ? $producto->diametro : "";
 							$aux_espesor = $data->peso;
-							$aux_largo = $data->long . "Mts";
+							$aux_largo = $data->long > 0 ? $data->long . "Mts" : "";
 							$aux_cla_sello_nombre = $data->cla_nombre;
 							$aux_producto_nombre = $data->nombre;
 							//$aux_categoria_nombre = $data->producto->categoriaprod->nombre;
@@ -168,18 +180,19 @@
 						<tr class='btn-accion-tabla tooltipsC'>
 							<td>{{$data->notaventa_id}}</td>
 							<td>{{$data->oc_id}}</td>
-							<td>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
-							<td>{{date('d/m/Y', strtotime($data->plazoentrega))}}</td>
+							<td style="font-size: 10px;">{{date('d/m/Y', strtotime($data->fechahora))}}</td>
+							<td style="font-size: 10px;">{{date('d/m/Y', strtotime($data->plazoentrega))}}</td>
 							<td style="font-size: 9px;">{{$aux_razonsocial}}</td>
 							<td style="font-size: 9px;">{{$comuna->nombre}}</td>
-							<td>{{$data->producto_id}}</td>
+							<td style='text-align:center'>{{$data->producto_id}}</td>
 							<td style="font-size: 9px;">{{$data->nombre}}</td>
-							<td>{{$aux_cla_sello_nombre}}</td>
-							<td>{{$aux_ancho}}</td>
-							<td>{{$aux_largo}}</td>
-							<td>{{number_format($aux_espesor, 4, ",", ".")}}</td>
-							<td>{{$data->tipounion}}</td>
+							<td style="font-size: 10px;text-align:center;">{{$aux_cla_sello_nombre}}</td>
+							<td style='font-size: 10px;text-align:center'>{{$aux_ancho}}</td>
+							<td style='font-size: 10px;text-align:center'>{{$aux_largo}}</td>
+							<td style='font-size: 10px;text-align:right'>{{$aux_espesor > 0 ? number_format($aux_espesor, 4, ",", ".") : ""}}</td>
+							<td style='font-size: 10px;text-align:center'>{{$data->tipounion}}</td>
 							<td style='text-align:right'>{{$stock}}</td>
+							<td style='text-align:right'>{{$aux_picking}}</td>
 							<td style='text-align:right'>{{number_format($data->cant, 0, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($sumacantdesp, 0, ",", ".")}}</td>
 							<td style='text-align:right'>{{number_format($aux_cantsaldo, 0, ",", ".")}}</td>
@@ -198,6 +211,7 @@
 							$aux_totalkilospend += ($aux_cantsaldo * $data->peso);
 							$aux_totalplata += $aux_subtotalplata;
 							$aux_totalprecio += $data->precioxkilo;
+							$aux_totalpicking += $aux_picking;
 							$i++;
 						?>
 					@endforeach
@@ -209,6 +223,7 @@
 				<tfoot id="detalle_totales">
 					<tr>
 						<th colspan='14' style='text-align:right'>TOTALES</th>
+						<th style='text-align:right'>{{number_format($aux_totalpicking, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalcant, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalcantdesp, 0, ",", ".")}}</th>
 						<th style='text-align:right'>{{number_format($aux_totalcantpend, 0, ",", ".")}}</th>
@@ -219,7 +234,7 @@
 					</tr>
 					<tr>
 						<th colspan='14' style='text-align:right'>PROMEDIO</th>
-						<th colspan='4' style='text-align:right'></th>
+						<th colspan='5' style='text-align:right'></th>
 						<th style='text-align:right'>{{number_format($aux_promprecioxkilo, 2, ",", ".")}}</th>
 						<th style='text-align:right'>&nbsp;{{number_format($aux_totalkilospend * $aux_promprecioxkilo, 2, ",", ".")}}</th>
 					</tr>	

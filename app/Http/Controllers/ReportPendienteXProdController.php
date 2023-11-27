@@ -187,7 +187,7 @@ class ReportPendienteXProdController extends Controller
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportpendientexprod.listado', compact('request','datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'));
+                //return view('reportpendientexprod.listado', compact('request','datas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega','aux_plazoentregad','aux_plazoentregah'));
             }
             
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
@@ -260,8 +260,8 @@ function reporte1($request){
             foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
                 $aux_picking += $arrayBodegasPicking["stock"];
             }
+            /*
             foreach ($notaventadetalle->despachosoldets as $despachosoldet) {
-                /*
                 foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
 
                     foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
@@ -281,8 +281,8 @@ function reporte1($request){
                         }
                     }
                 }
-                */
             }
+            */
             //dd($aux_picking);
             //dd($data);
             //SUMA TOTAL DE SOLICITADO
@@ -326,7 +326,18 @@ function reporte1($request){
             $comuna = Comuna::findOrFail($data->comunaentrega_id);
             $producto = Producto::findOrFail($data->producto_id);
             $notaventa = NotaVenta::findOrFail($data->notaventa_id);
-            $aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
+            /*
+            if($data->peso > 0){
+                $aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;    
+            }else{
+                $aux_subtotalplata = $aux_cantsaldo * $data->precioxkilo;
+            }
+            if($data->producto_id == 810){
+                dd($data->precioxkilo);
+
+            }
+            */
+            $aux_subtotalplata = $aux_cantsaldo * $data->preciounit;
 
             //$aux_peso = $data->peso == 0 ? $data->totalkilos/ :
 
@@ -716,7 +727,7 @@ function consulta($request,$aux_sql,$orden){
         producto.tipounion,
         notaventadetalle.totalkilos,
         subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
-        notaventadetalle.precioxkilo
+        notaventadetalle.precioxkilo,notaventadetalle.preciounit
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
