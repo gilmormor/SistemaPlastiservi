@@ -361,7 +361,10 @@ class CotizacionController extends Controller
     public function editar($id)
     {
         session(['editaracutec' => '1']);
-        session(['aux_aprocot' => '0']);
+        session([
+            'aux_aprocot' => '0',
+            'aux_paginaredirect' => 'cotizacion'
+        ]);
         return editar($id);
         /*
         can('editar-cotizacion');
@@ -879,6 +882,13 @@ class CotizacionController extends Controller
         //dd($request);
         can('guardar-cotizacion');
         if ($request->ajax()) {
+            $cotizacion = Cotizacion::findOrFail($request->id);
+            if($cotizacion->updated_at != $request->updated_at){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => 'Registro fue modificado por otro usuario.'
+                ]);
+            }
             if($request->valor == "3"){ //SI ES APROBACION ENTRA AQUI
                 //RECORRO LOS ACUERDOS TECNICOS PARA VERIFICAR QUE FUERON EDITADOS PARA LUEGO UPDATE
                 if($request->arrayATs){
@@ -950,7 +960,7 @@ class CotizacionController extends Controller
                 }
             }
 
-            $cotizacion = Cotizacion::findOrFail($request->id);
+            //$cotizacion = Cotizacion::findOrFail($request->id);
             //dd($cotizacion);
             $cotizacion->aprobobs = $request->obs;
             if($cotizacion->aprobstatus == "2"){ //Aprobar o rechazar por precio menor al de tabla
@@ -1196,6 +1206,7 @@ function consultabuscarcot($id,$aux_condvend,$aux_condaprobstatus){
 
 function editar($id){
     can('editar-cotizacion');
+        //dd(session('aux_paginaredirect'));
         $data = Cotizacion::findOrFail($id);
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $cotizacionDetalles = $data->cotizaciondetalles()->get();

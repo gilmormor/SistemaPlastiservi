@@ -618,8 +618,16 @@ function ajaxRequest(data,url,funcion) {
 					// ****************************** 
 				} else {
 					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no puso se actualizado.', 'Plastiservi', 'error');
+						Biblioteca.notificaciones('Registro no fue actualizado.', 'Plastiservi', 'error');
 					}else{
+						if (respuesta && respuesta.id !== undefined && respuesta.id !== null) {
+							if(respuesta.id == 0){
+								Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
+								var loc = window.location;
+								aux_paginaredirect = $("#aux_paginaredirect").val();
+								window.location = loc.protocol+"//"+loc.hostname+"/" + aux_paginaredirect;
+							}
+						}
 						if($("#aprobstatus").val()== "5"){
 							if(respuesta.id !== undefined && respuesta.id == 0){
 								swal({
@@ -1082,6 +1090,7 @@ $("#btnaprobarM").click(function(event)
 		id    : $("#id").val(),
 		valor : 3,
 		obs   : $("#aprobobs").val(),
+		updated_at : $("#updated_at").val(),
 		arrayATs : aux_arrayATs,
 		_token: $('input[name=_token]').val()
 	};

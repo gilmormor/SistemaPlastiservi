@@ -26,6 +26,7 @@
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
 
 <input type="hidden" name="aux_aprocot" id="aux_aprocot" value="{{old('aux_aprocot', session('aux_aprocot') ?? '')}}">
+<input type="hidden" name="aux_paginaredirect" id="aux_paginaredirect" value="{{old('aux_paginaredirect', session('aux_paginaredirect') ?? '')}}">
 <?php
     $selecmultprod = false;
 ?>

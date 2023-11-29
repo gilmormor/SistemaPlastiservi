@@ -177,7 +177,10 @@ class CotizacionAprobarController extends Controller
     public function editar($id)
     {
         session(['editaracutec' => '0']);
-        session(['aux_aprocot' => '1']);
+        session([
+            'aux_aprocot' => '1',
+            'aux_paginaredirect' => 'cotizacionaprobar'
+        ]);
         return editar($id);
         /*
         can('editar-cotizacion');
@@ -256,7 +259,14 @@ class CotizacionAprobarController extends Controller
 
 function editar($id){
     can('editar-cotizacion');
+        //dd(session('aux_paginaredirect'));
         $data = Cotizacion::findOrFail($id);
+        if($data->aprobstatus != 2){
+            return redirect('cotizacionaprobar')->with([
+                'mensaje'=>'Cotizacion fue modificada por otro usuario.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $cotizacionDetalles = $data->cotizaciondetalles()->get();
 

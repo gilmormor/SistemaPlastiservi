@@ -44,7 +44,12 @@ class CotizacionAprobarAcuTecController extends Controller
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
 
-        session(['aux_aprocot' => '5']);
+        //session(['aux_aprocot' => '5']);
+        session([
+            'aux_aprocot' => '5',
+            'paginaredirect' => 'cotizacionaprobaracutec'
+        ]);
+
         $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
                     concat(persona.nombre, ' ' ,persona.apellido) as vendedor_nombre,
@@ -150,7 +155,19 @@ class CotizacionAprobarAcuTecController extends Controller
 
 function editar($id){
     can('editar-cotizacion');
+        session([
+            'aux_aprocot' => '5',
+            'aux_paginaredirect' => 'cotizacionaprobaracutec'
+        ]);
+
+        //dd(session('aux_paginaredirect'));
         $data = Cotizacion::findOrFail($id);
+        if($data->aprobstatus != 5){
+            return redirect('cotizacionaprobaracutec')->with([
+                'mensaje'=>'Cotizacion fue modificada por otro usuario.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $cotizacionDetalles = $data->cotizaciondetalles()->get();
 
