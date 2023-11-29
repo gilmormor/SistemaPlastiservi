@@ -881,68 +881,70 @@ class CotizacionController extends Controller
         if ($request->ajax()) {
             if($request->valor == "3"){ //SI ES APROBACION ENTRA AQUI
                 //RECORRO LOS ACUERDOS TECNICOS PARA VERIFICAR QUE FUERON EDITADOS PARA LUEGO UPDATE
-                foreach ($request->arrayATs as $arrayAT) {
-                    //dd($arrayAT);
-                    if(isset($arrayAT["at_id"])){
-                        $acuerdotecnicotemp = AcuerdoTecnicoTemp::findOrFail($arrayAT["at_id"]);
-                        $acuerdoOrigArray = $acuerdotecnicotemp->toArray();
-                        //dd($acuerdoOrigArray);
-                        
-                        $hayDiferencias = false;
-                        // Comparar campo a campo
-                        foreach ($arrayAT as $clave => $valor1) {
-                            if (array_key_exists($clave, $acuerdoOrigArray)){
-                                $valor2 = $acuerdoOrigArray[$clave];
-                                // Comparar valores
-                                if ($valor1 != $valor2) {
-                                    $hayDiferencias = true;
-                                    break; // Salir del bucle si hay alguna diferencia
-                                }    
-                            }
-                        }
-                        //dd($hayDiferencias);
-                        if($hayDiferencias){
-                            $aux_at_id = $arrayAT["at_id"];
-                            unset($arrayAT["id"]);
-                            unset($arrayAT["at_id"]);
-                            unset($arrayAT["deleted_at"]);
-                            unset($arrayAT["created_at"]);
-                            unset($arrayAT["updated_at"]);
-                            unset($arrayAT["usuariodel_id"]);
-                            unset($arrayAT["tiposello"]);
-                            unset($arrayAT["materiaprima"]);
-                            unset($arrayAT["largounidadmedida"]);
-                            unset($arrayAT["claseprod"]);
-                            unset($arrayAT["cotizaciondetalle"]);
-                            unset($arrayAT["anchounidadmedida"]);
-                            unset($arrayAT["color"]);
-                            $arrayAT["usuarioedit_id"] = auth()->id(); //ID USUARIO SUPERVISOR QUE EDITÓ EL REGISTRO
-                            AcuerdoTecnicoTemp::where("id","=",$aux_at_id)
-                            ->update($arrayAT);
-
-                            $acuerdoOrigArray["acuerdotecnicotemp_id"] = $acuerdoOrigArray["id"];
-                            $acuerdoOrigArray["at_status"] = 1;
-                            $acuerdoOrigArray["usuarioedit_id"] = auth()->id();
-                            $arrayAT["acuerdotecnicotemp_id"] = $acuerdoOrigArray["id"];
-                            $arrayAT["at_cotizaciondetalle_id"] = $acuerdoOrigArray["at_cotizaciondetalle_id"];
-                            $arrayAT["at_status"] = 2;
-
-                            unset($acuerdoOrigArray["id"]);
-                            unset($acuerdoOrigArray["at_id"]);
-                            unset($acuerdoOrigArray["deleted_at"]);
-                            unset($acuerdoOrigArray["created_at"]);
-                            unset($acuerdoOrigArray["updated_at"]);
-                            unset($acuerdoOrigArray["usuariodel_id"]);
-                            unset($acuerdoOrigArray["tiposello"]);
-                            unset($acuerdoOrigArray["materiaprima"]);
-                            unset($acuerdoOrigArray["largounidadmedida"]);
-                            unset($acuerdoOrigArray["claseprod"]);
-                            unset($acuerdoOrigArray["cotizaciondetalle"]);
-                            unset($acuerdoOrigArray["anchounidadmedida"]);
-                            unset($acuerdoOrigArray["color"]);
+                if($request->arrayATs){
+                    foreach ($request->arrayATs as $arrayAT) {
+                        //dd($arrayAT);
+                        if(isset($arrayAT["at_id"])){
+                            $acuerdotecnicotemp = AcuerdoTecnicoTemp::findOrFail($arrayAT["at_id"]);
+                            $acuerdoOrigArray = $acuerdotecnicotemp->toArray();
+                            //dd($acuerdoOrigArray);
                             
-                            $acuerdotecnicotempedit = AcuerdoTecnicoTempEdit::create($acuerdoOrigArray);
-                            $acuerdotecnicotempedit = AcuerdoTecnicoTempEdit::create($arrayAT);
+                            $hayDiferencias = false;
+                            // Comparar campo a campo
+                            foreach ($arrayAT as $clave => $valor1) {
+                                if (array_key_exists($clave, $acuerdoOrigArray)){
+                                    $valor2 = $acuerdoOrigArray[$clave];
+                                    // Comparar valores
+                                    if ($valor1 != $valor2) {
+                                        $hayDiferencias = true;
+                                        break; // Salir del bucle si hay alguna diferencia
+                                    }    
+                                }
+                            }
+                            //dd($hayDiferencias);
+                            if($hayDiferencias){
+                                $aux_at_id = $arrayAT["at_id"];
+                                unset($arrayAT["id"]);
+                                unset($arrayAT["at_id"]);
+                                unset($arrayAT["deleted_at"]);
+                                unset($arrayAT["created_at"]);
+                                unset($arrayAT["updated_at"]);
+                                unset($arrayAT["usuariodel_id"]);
+                                unset($arrayAT["tiposello"]);
+                                unset($arrayAT["materiaprima"]);
+                                unset($arrayAT["largounidadmedida"]);
+                                unset($arrayAT["claseprod"]);
+                                unset($arrayAT["cotizaciondetalle"]);
+                                unset($arrayAT["anchounidadmedida"]);
+                                unset($arrayAT["color"]);
+                                $arrayAT["usuarioedit_id"] = auth()->id(); //ID USUARIO SUPERVISOR QUE EDITÓ EL REGISTRO
+                                AcuerdoTecnicoTemp::where("id","=",$aux_at_id)
+                                ->update($arrayAT);
+    
+                                $acuerdoOrigArray["acuerdotecnicotemp_id"] = $acuerdoOrigArray["id"];
+                                $acuerdoOrigArray["at_status"] = 1;
+                                $acuerdoOrigArray["usuarioedit_id"] = auth()->id();
+                                $arrayAT["acuerdotecnicotemp_id"] = $acuerdoOrigArray["id"];
+                                $arrayAT["at_cotizaciondetalle_id"] = $acuerdoOrigArray["at_cotizaciondetalle_id"];
+                                $arrayAT["at_status"] = 2;
+    
+                                unset($acuerdoOrigArray["id"]);
+                                unset($acuerdoOrigArray["at_id"]);
+                                unset($acuerdoOrigArray["deleted_at"]);
+                                unset($acuerdoOrigArray["created_at"]);
+                                unset($acuerdoOrigArray["updated_at"]);
+                                unset($acuerdoOrigArray["usuariodel_id"]);
+                                unset($acuerdoOrigArray["tiposello"]);
+                                unset($acuerdoOrigArray["materiaprima"]);
+                                unset($acuerdoOrigArray["largounidadmedida"]);
+                                unset($acuerdoOrigArray["claseprod"]);
+                                unset($acuerdoOrigArray["cotizaciondetalle"]);
+                                unset($acuerdoOrigArray["anchounidadmedida"]);
+                                unset($acuerdoOrigArray["color"]);
+                                
+                                $acuerdotecnicotempedit = AcuerdoTecnicoTempEdit::create($acuerdoOrigArray);
+                                $acuerdotecnicotempedit = AcuerdoTecnicoTempEdit::create($arrayAT);
+                            }
                         }
                     }
                 }
