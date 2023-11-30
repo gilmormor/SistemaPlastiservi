@@ -1703,8 +1703,14 @@ $("#producto_idM").blur(function(){
 	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
 	{
 		//totalizar();
+		aux_actionform = $("#form-general").attr("action");
+		aux_mostrarTodo = 1; // BUSCO TODOS LOS PRODUCTOS
+		if(aux_actionform.includes("notaventa")){
+			aux_mostrarTodo = 0; // BUSCO SOLO LOS PRODUCTOS tipoprod = 0
+		}
 		var data = {
 			id: $("#producto_idM").val(),
+			mostrarTodo : aux_mostrarTodo,
 			_token: $('input[name=_token]').val()
 		};
 		$.ajax({

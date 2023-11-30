@@ -262,12 +262,24 @@ class ProductoController extends Controller
     public function buscarUnProducto(Request $request)
     {
         if($request->ajax()){
+            //$request->mostrarTodo VIENE DEL FORMULARIO, SI NO EXISTE $mostrarTodo LE ASIGNO POR DEFECTO TRUE, BUSCA TODOS LOS PRODUCTOS
+            //SI $request->mostrarTodo EXISTE Y PASA POR EL PRIMER IF Y ES IGUAL A 0 $mostrasTodo = false, ES DECIR QUE SOLO BUSCA LOS PRODUCTOS QUE SEAN tipoprod = 0 PRODUCTOS NORMALES
+            $mostrarTodo = true;
+            if(isset($request->mostrarTodo) and $request->mostrarTodo != null and $request->mostrarTodo != ""){
+                if($request->mostrarTodo == "0"){
+                    $mostrarTodo = false;
+                }
+            }
             // BUscar un producto dependiendo si el usuario tiene acceso a dicho producto. Por la sucursal del Usuario y producto
             $users = Usuario::findOrFail(auth()->id());
             $sucurArray = $users->sucursales->pluck('id')->toArray();
             //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
             //******************* */
             $productos = CategoriaProd::where('producto.id',$request->id)
+            ->when(!$mostrarTodo,function ($query) {
+                // Si $mostrarTodo es falso, agrega la condición para tipoprod=0
+                return $query->where('producto.tipoprod', 0);
+            })
             ->join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
             ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')
             ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
