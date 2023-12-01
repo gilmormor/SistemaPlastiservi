@@ -1441,3 +1441,12 @@ Route::get('permisoguiadirecta', 'PermisoGuiaDirectaController@index')->name('pe
 Route::get('dteguiadespdiranular', 'DteGuiaDespDirAnularController@index')->name('dteguiadespdiranular');
 Route::get('dteguiadespdiranularpage', 'DteGuiaDespDirAnularController@dteguiadespdiranularpage')->name('dteguiadespdiranularpage');
 Route::get('dteguiadespdiranular/totalizarindex', 'DteGuiaDespDirAnularController@totalizarindex')->name('dteguiadespdir_totalizarindex');
+
+/*RUTAS CODIGO*/
+Route::get('codigo', 'CodigoController@index')->name('codigo');
+Route::get('codigopage', 'CodigoController@codigopage')->name('codigopage');
+Route::get('codigo/crear', 'CodigoController@crear')->name('crear_codigo');
+Route::post('codigo', 'CodigoController@guardar')->name('guardar_codigo');
+Route::get('codigo/{id}/editar', 'CodigoController@editar')->name('editar_codigo');
+Route::put('codigo/{id}', 'CodigoController@actualizar')->name('actualizar_codigo');
+Route::delete('codigo/{id}', 'CodigoController@eliminar')->name('eliminar_codigo');

@@ -28,7 +28,9 @@ Notas de Venta Cerradas
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
+                            <th class='tooltipsC' title='Fecha y hora de creacion'>Fecha</th>
                             <th>Observación</th>
+                            <th>Motivo cierre</th>
                             <th class="width100">NotaVenta</th>
                             <th class="width30">Acción</th>
                         </tr>

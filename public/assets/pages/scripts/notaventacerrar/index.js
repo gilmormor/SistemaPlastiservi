@@ -13,7 +13,9 @@ $(document).ready(function () {
         "order": [[ 0, "desc" ]],
         'columns'     : [
             {data: 'id'},
+            {data: 'created_at'},
             {data: 'observacion'},
+            {data: 'descdet'},
             {data: 'notaventa_id'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent :  "<a href='notaventacerrada' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>" +
@@ -28,6 +30,10 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
+            aux_fecha = new Date(data.created_at);
+            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha) + " " + data.created_at.substr(11, 8));
+            $('td', row).eq(1).html(aux_text);
+
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Nota de venta: " + data.notaventa_id + "' onclick='genpdfNV(" + data.notaventa_id + ",1)'>" +
                     data.notaventa_id + "<i class='fa fa-fw fa-file-pdf-o'></i>" +
@@ -39,9 +45,5 @@ $(document).ready(function () {
 
         }
       });
-
-    //{data: 'motcierre_id'},
-
-
 });
 

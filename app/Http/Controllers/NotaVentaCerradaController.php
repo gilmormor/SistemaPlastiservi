@@ -8,6 +8,7 @@ use App\Models\CategoriaProd;
 use App\Models\Cliente;
 use App\Models\ClienteBloqueado;
 use App\Models\ClienteSucursal;
+use App\Models\CodigoDet;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
 use App\Models\DespachoSol;
@@ -40,11 +41,13 @@ class NotaVentaCerradaController extends Controller
         return datatables()
             ->eloquent(NotaVentaCerrada::query()
             ->join('notaventa','notaventacerrada.notaventa_id','=','notaventa.id')
+            ->join('codigodet','notaventacerrada.codigodet_id','=','codigodet.id')
             ->select([
                 'notaventacerrada.id',
+                'notaventacerrada.created_at',
                 'notaventacerrada.notaventa_id',
                 'notaventacerrada.observacion',
-                'notaventacerrada.motcierre_id'
+                'codigodet.descdet'
                 ])
             ->whereIn('notaventa.sucursal_id', $sucurArray)
             )
@@ -80,8 +83,11 @@ class NotaVentaCerradaController extends Controller
                     ];
         $productos = Producto::productosxUsuario();
         $comunas = Comuna::orderBy('id')->get();
+        $codigodets = CodigoDet::orderBy('id')
+                    ->where('codigodet.codigo_id', 1)
+                    ->get();
         $aux_editar = 0;
-        return view('notaventacerrar.crear', compact('aux_editar','clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaServ','productos','comunas'));
+        return view('notaventacerrar.crear', compact('aux_editar','clientes','vendedores','vendedores1','giros','areaproduccions','tipoentregas','fechaServ','productos','comunas','codigodets'));
     }
 
     /**
@@ -154,8 +160,11 @@ class NotaVentaCerradaController extends Controller
     {
         can('editar-cerrar-nota-venta');
         $data = NotaVentaCerrada::findOrFail($id);
+        $codigodets = CodigoDet::orderBy('id')
+            ->where('codigodet.codigo_id', 1)
+            ->get();
         $aux_editar = 1;
-        return view('notaventacerrar.editar', compact('data','aux_editar'));
+        return view('notaventacerrar.editar', compact('data','aux_editar','codigodets'));
     }
 
     /**

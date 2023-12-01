@@ -5,22 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class NotaVentaCerrada extends Model
+class CodigoDet extends Model
 {
     use SoftDeletes;
-    protected $table = "notaventacerrada";
+    protected $table = "codigodet";
     protected $fillable = [
-        'notaventa_id',
-        'observacion',
-        'codigodet_id',
+        'codigo_id',
+        'descdet',
         'usuario_id',
         'usuariodel_id'
     ];
 
     //RELACION INVERSA NotaVenta
-    public function notaventa()
+    public function codigo()
     {
-        return $this->belongsTo(NotaVenta::class);
+        return $this->belongsTo(Codigo::class);
     }
     //RELACION INVERSA User
     public function user()
@@ -32,9 +31,5 @@ class NotaVentaCerrada extends Model
     {
         return $this->belongsTo(Usuario::class);
     }   
-    //RELACION INVERSA CodigoDet
-    public function codigodet()
-    {
-        return $this->belongsTo(CodigoDet::class);
-    }   
+
 }

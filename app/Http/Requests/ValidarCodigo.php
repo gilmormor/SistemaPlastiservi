@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ValidarNotaVentaCerrada extends FormRequest
+class ValidarCodigo extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,7 @@ class ValidarNotaVentaCerrada extends FormRequest
     public function rules()
     {
         return [
-            'observacion' => 'max:200',
-            'notaventa_id' => 'required',
-            'codigodet_id' => 'required',
+            'desc' => 'required|max:60|unique:codigo,desc,' . $this->route('id')
         ];
     }
 }
