@@ -40,7 +40,7 @@ $(document).ready(function () {
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg: " + data.notaventa_id + "' onclick='genpdfNV(" + data.notaventa_id + ",2)'>" +
                     "<i class='fa fa-fw fa-file-pdf-o'></i>" +
                 "</a>";
-            $('td', row).eq(2).html(aux_text);
+            $('td', row).eq(4).html(aux_text);
 
         }
       });
