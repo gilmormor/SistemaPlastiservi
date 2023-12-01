@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarCodigo;
-use App\Models\codigo;
+use App\Models\Codigo;
 use Illuminate\Http\Request;
 
 class CodigoController extends Controller
