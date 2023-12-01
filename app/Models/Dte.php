@@ -865,10 +865,11 @@ class Dte extends Model
         }
         //dd($request->foliocontrol_id);
         if(!isset($request->foliocontrol_id) or empty($request->foliocontrol_id)){
-            $aux_condfoliocontrol_id = " dte.foliocontrol_id=1 ";
+            $aux_condfoliocontrol_id = " (dte.foliocontrol_id=1 or dte.foliocontrol_id=7) ";
         }else{
             $aux_condfoliocontrol_id = " dte.foliocontrol_id in $request->foliocontrol_id";
         }
+        //dd($aux_condfoliocontrol_id);
         if(!isset($request->aprobstatus) or empty($request->aprobstatus)){
             $aux_aprobstatus = " true";
         }else{
