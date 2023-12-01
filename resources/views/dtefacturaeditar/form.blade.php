@@ -165,7 +165,7 @@
                                     {{$dtede->producto_id}}
                                 </td>
                                 <td>
-                                    {{$dtede->dtedet->dte->nrodocto}}
+                                    {{$dtede->dte->nrodocto}}
                                 </td>
                                 <td style="text-align:right;">
                                     {{$dtede->qtyitem}}
