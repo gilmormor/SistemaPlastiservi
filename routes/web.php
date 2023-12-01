@@ -1450,3 +1450,6 @@ Route::post('codigo', 'CodigoController@guardar')->name('guardar_codigo');
 Route::get('codigo/{id}/editar', 'CodigoController@editar')->name('editar_codigo');
 Route::put('codigo/{id}', 'CodigoController@actualizar')->name('actualizar_codigo');
 Route::delete('codigo/{id}', 'CodigoController@eliminar')->name('eliminar_codigo');
+
+/*RUTAS PERMISO GUIA DIRECTA*/
+Route::get('permisoguiadirectase', 'PermisoGuiaDirectaSEController@index')->name('permisoguiadirectase');
