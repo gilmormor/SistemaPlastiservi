@@ -104,7 +104,14 @@ class DteNDFacturaController extends Controller
                 //$dtedet->montoitem = $request->montoitem[$i];
                 $dtedet->montoitem = round($dtedet->qtyitem * $dtedet->prcitem,0); //$request->montoitem[$i];
                 //$dtedet->obsdet = $request->obsdet[$i];
-                $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                //$aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                $dtedetorigen = DteDet::findOrFail($request->dtedetorigen_id[$i]);
+                if(is_numeric($dtedetorigen->itemkg) and $dtedetorigen->itemkg > 0){
+                    $aux_itemkg = ($dtedetorigen->itemkg / $dtedetorigen->qtyitem) * $request->qtyitem[$i];
+                }else{
+                    $aux_itemkg = 0;    
+                }
+
                 $dtedet->itemkg = $aux_itemkg;
                 $dte->dtedets[] = $dtedet;
                 
@@ -237,7 +244,14 @@ class DteNDFacturaController extends Controller
                 $dtedet->prcitem = $request->prcitem[$i]; //$request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
                 $dtedet->montoitem = round($request->montoitem[$i],0);
                 //$dtedet->obsdet = $request->obsdet[$i];
-                $dtedet->itemkg = $request->itemkg[$i];
+                $dtedetorigen = DteDet::findOrFail($request->dtedetorigen_id[$i]);
+                if(is_numeric($dtedetorigen->itemkg) and $dtedetorigen->itemkg > 0){
+                    $aux_itemkg = ($dtedetorigen->itemkg / $dtedetorigen->qtyitem) * $request->qtyitem[$i];
+                }else{
+                    $aux_itemkg = 0;    
+                }
+                //$dtedet->itemkg = $request->itemkg[$i];
+                $dtedet->itemkg = $aux_itemkg;
                 $dtedet->save();
                 $dtedet_id = $dtedet->id;
 

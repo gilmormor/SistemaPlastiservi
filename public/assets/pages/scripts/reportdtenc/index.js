@@ -63,10 +63,12 @@ $(document).ready(function () {
         
                 aux_text = "";
                 if(data.dteorigen_nrodocto != null){
+                    let id_str = data.dteorigen_nrodocto.toString();
+                    id_str = data.nombrepdf + id_str.padStart(8, "0");
                     aux_text = 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='PDF Origen' onclick='genpdfFAC(" + data.dteorigen_nrodocto + ",\"\")'>" +
-                        data.doc + " " + data.dteorigen_nrodocto +
-                    "</a>";
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="PDF Origen" onclick="genpdfFAC('${id_str}','')">
+                        ${data.doc} ${data.dteorigen_nrodocto}
+                    </a>`;
                 }
                 $('td', row).eq(5).html(aux_text);
 

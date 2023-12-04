@@ -1761,7 +1761,7 @@ class Dte extends Model
         }
         $sql = "SELECT dte.id,dte.fechahora,dte.nrodocto,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,
-        dteorigen.id as dteorigen_id,dteorigen.nrodocto as dteorigen_nrodocto,foliocontrol.doc,
+        dteorigen.id as dteorigen_id,dteorigen.nrodocto as dteorigen_nrodocto,foliocontrol.doc,foliocontrol.nombrepdf,
         dte.updated_at, dteorigen.updated_at as dteorigen_updated_at,dte.mnttotal,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
         FROM dte INNER JOIN dtedte
