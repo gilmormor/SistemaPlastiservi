@@ -37,21 +37,16 @@ class NotaVentaCerradaController extends Controller
     public function notaventacerradapage(){
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
-        
-        return datatables()
-            ->eloquent(NotaVentaCerrada::query()
-            ->join('notaventa','notaventacerrada.notaventa_id','=','notaventa.id')
-            ->join('codigodet','notaventacerrada.codigodet_id','=','codigodet.id')
-            ->select([
-                'notaventacerrada.id',
-                'notaventacerrada.created_at',
-                'notaventacerrada.notaventa_id',
-                'notaventacerrada.observacion',
-                'codigodet.descdet'
-                ])
-            ->whereIn('notaventa.sucursal_id', $sucurArray)
-            )
-            ->toJson();        
+        $sucurcadena = implode(",", $sucurArray);
+        $sql = "SELECT notaventacerrada.id,notaventacerrada.created_at,notaventacerrada.notaventa_id,
+                    notaventacerrada.observacion,codigodet.descdet
+                    FROM notaventacerrada INNER JOIN notaventa
+                    ON notaventacerrada.notaventa_id=notaventa.id AND ISNULL(notaventacerrada.deleted_at) AND  ISNULL(notaventa.deleted_at)
+                    INNER JOIN codigodet
+                    ON codigodet.id = notaventacerrada.codigodet_id AND ISNULL(codigodet.deleted_at)
+                    WHERE notaventa.sucursal_id IN ($sucurcadena);";
+        $datas = DB::select($sql);
+        return datatables($datas)->toJson();       
     }
 
     /**
@@ -100,27 +95,44 @@ class NotaVentaCerradaController extends Controller
     {
         can('guardar-cerrar-nota-venta');
         $despachosolcontroller = New DespachoSolController();
-        $cont_soldesp = count($despachosolcontroller->consultarSolDesp($request));
+        $despachosolAGDs = $despachosolcontroller->consultarSolDesp($request);
+        $cont_soldesp = count($despachosolAGDs);
         if($cont_soldesp > 0){
+            $aux_arraySolesp = [];
+            foreach ($despachosolAGDs as $despachosolAGD) {
+                $aux_arraySolesp[] = $despachosolAGD->id;
+            }
+            $aux_soldesp_id = implode(",", $aux_arraySolesp);
             return redirect('notaventacerrada')->with([
-                'mensaje'=>'NV No fue cerrada, existen solicitudes activas, debe cerrarlas.',
-                'tipo_alert' => 'alert-error'
+                'mensaje' => "NV No fue cerrada, existen solicitudes activas (Id:$aux_soldesp_id), debe cerrarlas.",
+                'tipo_alert' => "alert-error"
             ]);
         }
-        $despachoordAGD = DespachoOrd::consultaOrdDespxAsigGuiaDesp($request);
-        $cont_orddesp = count($despachoordAGD);
+        $despachoordAGDs = DespachoOrd::consultaOrdDespxAsigGuiaDesp($request);
+        $cont_orddesp = count($despachoordAGDs);
         if($cont_orddesp > 0){
+            $aux_arrayOrdDesp = [];
+            foreach ($despachoordAGDs as $despachoordAGD) {
+                $aux_arrayOrdDesp[] = $despachoordAGD->id;
+            }
+            $aux_orddesp_id = implode(",", $aux_arrayOrdDesp);
             return redirect('notaventacerrada')->with([
-                'mensaje'=>'NV No fue cerrada, existen Ordenes de Despacho por asignar Guia de despacho.',
-                'tipo_alert' => 'alert-error'
+                'mensaje'=> "NV No fue cerrada, existen Ordenes de Despacho (Id:$aux_orddesp_id) por asignar Guia de despacho.",
+                'tipo_alert' => "alert-error"
             ]);
         }
-        $despachoordAF = DespachoOrd::consultaOrdDespxAsigFact($request);
-        $cont_orddesp = count($despachoordAF);
+        $despachoordAFs = DespachoOrd::consultaOrdDespxAsigFact($request);
+        //dd($despachoordAFs);
+        $cont_orddesp = count($despachoordAFs);
         if($cont_orddesp > 0){
+            $aux_arrayOrdDesp = [];
+            foreach ($despachoordAFs as $despachoordAF) {
+                $aux_arrayOrdDesp[] = $despachoordAF->id;
+            }
+            $aux_orddesp_id = implode(",", $aux_arrayOrdDesp);
             return redirect('notaventacerrada')->with([
-                'mensaje'=>'NV No fue cerrada, existen Ordenes de Despacho por asignar Factura.',
-                'tipo_alert' => 'alert-error'
+                'mensaje' => "NV No fue cerrada, existen Ordenes de Despacho (Id:$aux_orddesp_id) por asignar Factura.",
+                'tipo_alert' => "alert-error"
             ]);
         }
         $sql = "SELECT COUNT(*) as cont
