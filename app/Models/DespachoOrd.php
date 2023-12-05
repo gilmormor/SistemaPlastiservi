@@ -112,7 +112,7 @@ class DespachoOrd extends Model
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
         SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
         sum(round((despachoorddet.cantdesp * notaventadetalle.preciounit) * ((notaventa.piva+100)/100))) as subtotal,
-        despachoord.updated_at
+        despachoord.updated_at,despachoord.aprguiadesp
         FROM despachoord INNER JOIN notaventa
         ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
         INNER JOIN cliente
@@ -183,7 +183,7 @@ class DespachoOrd extends Model
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
         SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
         sum(round((despachoorddet.cantdesp * notaventadetalle.preciounit) * ((notaventa.piva+100)/100))) as subtotal,
-        despachoord.updated_at
+        despachoord.updated_at,despachoord.aprguiadesp,dte.aprobstatus
         FROM despachoord INNER JOIN notaventa
         ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
         INNER JOIN cliente
@@ -198,6 +198,8 @@ class DespachoOrd extends Model
         ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
         LEFT JOIN clientebloqueado
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+        LEFT JOIN dte
+        ON despachoord.guiadespacho = dte.nrodocto
         WHERE despachoord.aprguiadesp='1' and NOT isnull(despachoord.guiadespacho) and isnull(despachoord.numfactura)
         AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
         AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))

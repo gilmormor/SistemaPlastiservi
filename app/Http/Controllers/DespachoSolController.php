@@ -3148,7 +3148,8 @@ function consultasoldesp($request){
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
             AND isnull(dteguiadesp.notaventa_id)
-            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
+            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+            despachosol.aprorddesp
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
