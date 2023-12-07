@@ -2457,7 +2457,7 @@ function dtefactura($id,$Folio,$tipoArch,$request){
     $contacto = strtoupper(sanear_string(substr(trim($dte->cliente->contactonombre . " Telf:" . $dte->cliente->contactotelef),0,40)));
     $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
     $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
-    $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,42)));
+    $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
     $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
     $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
     $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
@@ -2700,7 +2700,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         }
         $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
         $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
-        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,42)));
+        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
         $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
         $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
         $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
@@ -2850,7 +2850,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         $contacto = strtoupper(sanear_string(substr(trim($dte->cliente->contactonombre . " Telf:" . $dte->cliente->contactotelef),0,40)));
         $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
         $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
-        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,42)));
+        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
         $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
         $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
         $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
@@ -3049,7 +3049,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         $contacto = strtoupper(sanear_string(substr(trim($dte->cliente->contactonombre . " Telf:" . $dte->cliente->contactotelef),0,40)));
         $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
         $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
-        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,42)));
+        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
         $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
         $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
         $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
