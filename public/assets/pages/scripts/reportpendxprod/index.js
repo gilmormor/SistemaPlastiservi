@@ -59,7 +59,7 @@ $(document).ready(function () {
                 if ('datosAdicionales' in data) {
                     console.log(data);
                     $("#prom_precioxkilo").html(MASKLA(data.datosAdicionales.prom_precioxkilo,2));
-                    $("#total_totalplata").html(MASKLA(data.datosAdicionales.total_totalplata,0));                
+                    $("#prom_totalplata").html(MASKLA(data.datosAdicionales.prom_totalplata,0));                
                 }
                 $(row).attr('id','fila' + data.id);
                 $(row).attr('name','fila' + data.id);
@@ -421,5 +421,243 @@ $('#tabla-data-consulta').on('draw.dt', function () {
   });
   
   */
+
+    $("#btnpdfJS").click(function()
+    {
+        data = datosPentxProd();
+        consultarJS(data);
+    });
+
   
+    function sumarColumna(columna) {
+        return datos.reduce(function (total, fila) {
+            return total + parseFloat(fila[columna] || 0);
+        }, 0);
+    }
+
+    function promediarColumna(columna) {
+        return sumarColumna(columna) / datos.length;
+    }
+
+  function consultarJS(data){
+    
+    $.ajax({
+        url: '/reportpendxprod/reportpendxprodpage',
+        type: 'GET',
+        data: data.data1,
+        success: function (datos) {
+            pdf = pdfjs(datos);
+            pdf.save('reporte.pdf');
+            return 0;
+            var datosExcel = [];
+            //datosExcel.push(["NV", "OC", "Fecha", "Plazo Entrega", "Razón Social", "Comuna", "Cod", "Descripción", "Clase Sello", "Diam Ancho", "L", "Peso Esp", "TU", "Stock", "Picking", "Cant", "Cant Desp", "Cant Pend", "Kilos Pend", "Precio Kg", "$"]);
+            console.log(datos);
+            count = 0;
+            datos.data.forEach(function(registro) {
+                aux_fecha = new Date(registro.fechahora);
+                var filaExcel = [
+                    registro.notaventa_id,
+                    registro.oc_id,
+                    fechaddmmaaaa(aux_fecha),
+                    registro.plazoentrega,
+                    registro.razonsocial,
+                    registro.comunanombre,
+                    registro.producto_id,
+                    registro.nombre,
+                    registro.cla_nombre,
+                    registro.diametro,
+                    registro.long,
+                    registro.peso,
+                    registro.tipounion,
+                    registro.stockbpt,
+                    registro.picking,
+                    registro.cant,
+                    registro.cantdesp,
+                    registro.cantsaldo,
+                    registro.kgpend,
+                    registro.precioxkilo,
+                    registro.subtotalplata
+                ];
+                count++;
+    
+                datosExcel.push(filaExcel);
+            });
+            console.log(datosExcel);
+
+            // Suponiendo que recibes los datos en el objeto 'datosDesdePHP'
+
+            // Crear un nuevo documento PDF
+            var pdf = new jsPDF('landscape');  // Orientación horizontal
+
+            // Definir la posición y tamaño del encabezado
+            var headerX = 10;
+            var headerY = 10;
+            var headerWidth = pdf.internal.pageSize.width - 20;
+            var headerHeight = 30;
+
+            // Dibujar el encabezado
+            pdf.rect(headerX, headerY, headerWidth, headerHeight);
+            pdf.text("Logo", headerX + 10, headerY + 20);  // Reemplazar con el logo de la empresa
+            pdf.text("Nombre de la empresa", headerX + 50, headerY + 20);  // Reemplazar con el nombre de la empresa
+            // Otros detalles del encabezado...
+
+            // Crear la tabla
+            var columns = ["NV", "OC", "Fecha", "Plazo Entrega", "Razón Social", "Comuna", "Cod", "Descripción", "Clase Sello", "Diam Ancho", "L", "Peso Esp", "TU", "Stock", "Picking", "Cant", "Cant Desp", "Cant Pend", "Kilos Pend", "Precio Kg", "$"];
+            var rows = datosExcel;  // Supongamos que los datos se encuentran en un arreglo
+
+            /* pdf.autoTable({
+                head: [columns],
+                body: rows,
+                startY: headerY + headerHeight + 10,  // Posición de inicio de la tabla
+            }); */
+
+            // Calcular totales
+            // ...
+
+            // Dibujar totales y promedios
+            // ...
+
+            // Guardar el PDF
+            pdf.save('reporte.pdf');
+
+        }
+    });
+}
+
+function headRows() {
+    return [
+      { nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", clase: "ClaSello", diam: "Diam Anch", l: "L", pesoesp: "Peso Esp", tu: "TU", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
+    ]
+}
+
+function bodyRows(datos) {
+    var body = []
+    datos.data.forEach(function(registro) {
+        aux_fecha = new Date(registro.fechahora);
+        body.push({
+            nv: registro.notaventa_id,
+            oc: registro.oc_id,
+            fecha: fechaddmmaaaa(aux_fecha),
+            plazoentrega: registro.plazoentrega,
+            razonsocial: registro.razonsocial,
+            comuna: registro.comunanombre,
+            cod: registro.producto_id,
+            desc: registro.nombre,
+            clase: registro.cla_nombre,
+            diam: registro.diametro,
+            l: registro.long,
+            pesoesp: MASKLA(registro.peso,3),
+            tu: registro.tipounion,
+            stock: registro.stockbpt,
+            picking: registro.picking,
+            cant: registro.cant,
+            cantdesp: registro.cantdesp,
+            cantpend: registro.cantsaldo,
+            kilos: MASKLA(registro.kgpend,2),
+            preciokg: MASKLA(registro.precioxkilo,2),
+            pesos: MASKLA(registro.subtotalplata,0)
+        })
+    });
+    return body
+}
+
+function pdfjs(datos) {
+    
+    var base64Img, coinBase64Img;
+    imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI1.png', function(base64) {
+        base64Img = base64;
+        imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI1.png', function(base64) {
+            coinBase64Img = base64;
+            update();
+        });
+    });
+
+    var doc = new jsPDF('l')
+    var totalPagesExp = '{total_pages_count_string}'
   
+    doc.autoTable({
+      startY: 25,
+      head: headRows(),
+      body: bodyRows(datos),
+      theme: 'grid',
+      styles: {
+        fontSize: 6, // Tamaño de letra para los encabezados
+      },
+      columnStyles: {
+        0: { cellWidth: 10 },  // Ancho de la primera columna
+        1: { cellWidth: 20 },  // Ancho de la segunda columna
+        2: { cellWidth: 15 },  // Ancho de la segunda columna
+        3: { cellWidth: 15 },  // Ancho de la segunda columna
+        4: { cellWidth: 20 },  // Ancho de la segunda columna
+        5: { cellWidth: 20 },  // Ancho de la segunda columna
+        6: { cellWidth: 8 },  // Ancho de la segunda columna
+        7: { cellWidth: 40 },  // Ancho de la segunda columna
+        8: { cellWidth: 13 },  // Ancho de la segunda columna
+        9: { cellWidth: 10 },  // Ancho de la segunda columna
+        10: { cellWidth: 4 },  // Ancho de la segunda columna
+        11: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        12: { cellWidth: 4, halign: 'right' },  // Ancho de la segunda columna
+        13: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        14: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        15: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        16: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        17: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        18: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
+        19: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
+        20: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
+        // ... especifica el ancho de las demás columnas
+      },
+      willDrawPage: function (data) {
+        // Header
+        doc.setFontSize(15)
+        doc.setTextColor(20)
+        if (base64Img) {
+          doc.addImage(base64Img, 'JPEG', data.settings.margin.left, 15, 10, 10)
+        }
+        doc.text('Report', data.settings.margin.left + 15, 22)
+      },
+      didDrawPage: function (data) {
+        // Footer
+        var str = 'Page ' + doc.internal.getNumberOfPages()
+        // Total page number plugin only available in jspdf v1.0+
+        if (typeof doc.putTotalPages === 'function') {
+          str = str + ' of ' + totalPagesExp
+        }
+        doc.setFontSize(7)
+  
+        // jsPDF 1.4+ uses getHeight, <1.4 uses .height
+        var pageSize = doc.internal.pageSize
+        var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
+        doc.text(str, data.settings.margin.left, pageHeight - 10)
+      },
+      margin: { top: 30 },
+    })
+  
+    // Total page number plugin only available in jspdf v1.0+
+    if (typeof doc.putTotalPages === 'function') {
+      doc.putTotalPages(totalPagesExp)
+    }
+  
+    return doc
+}
+
+function imgToBase64(src, callback) {
+    var outputFormat = src.substr(-3) === 'png' ? 'image/png' : 'image/jpeg';
+    var img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = function() {
+        var canvas = document.createElement('CANVAS');
+        var ctx = canvas.getContext('2d');
+        var dataURL;
+        canvas.height = this.naturalHeight;
+        canvas.width = this.naturalWidth;
+        ctx.drawImage(this, 0, 0);
+        dataURL = canvas.toDataURL(outputFormat);
+        callback(dataURL);
+    };
+    img.src = src;
+    if (img.complete || img.complete === undefined) {
+        img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+        img.src = src;
+    }
+}

@@ -244,6 +244,7 @@ Pendiente x Producto
                         <div class="col-xs-12 col-md-3 col-sm-12">
                             <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
                             <button type="button" id="btnpdf" name="btnpdf" class="btn btn-success tooltipsC" title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                            <button type="button" id="btnpdfJS" name="btnpdfJS" class="btn btn-success tooltipsC" title="Reporte PDF JS"><i class='glyphicon glyphicon-print'></i> ReporteJS</button>
                         </div>
                     </form>
                 </div>
@@ -296,7 +297,7 @@ Pendiente x Producto
                             <th colspan="15" style="text-align:right">PROMEDIO</th>
                             <th colspan="4" style="text-align:right"></th>
                             <th id="prom_precioxkilo" name="prom_precioxkilo" style="text-align:right" class="tooltipsC" title="Precio Kg Promedio">0</th>
-                            <th id="total_totalplata" name="total_totalplata" style="text-align:right" class="tooltipsC" title="Total $ (Precio promedio)">0</th>
+                            <th id="prom_totalplata" name="prom_totalplata" style="text-align:right" class="tooltipsC" title="Total $ (Precio promedio)">0</th>
                         </tr>
                     </tfoot>        
                 </table>
