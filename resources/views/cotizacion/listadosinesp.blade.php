@@ -120,7 +120,7 @@
 						</td>
 						<td class="textright">{{$CotizacionDetalle->producto->long}} mts</td>
 						<td class="textcenter">{{$CotizacionDetalle->producto->tipounion}}</td>
-						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 0, ",", ".")}}</td>
+						<td class="textright">{{number_format($CotizacionDetalle->preciounit, $aux_monedaLocal ? 2 : 3, ",", ".")}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 0, ",", ".")}}</td>
 					</tr>
 				@endforeach

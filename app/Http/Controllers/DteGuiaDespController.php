@@ -28,6 +28,7 @@ use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovModulo;
 use App\Models\NotaVentaCerrada;
+use App\Models\NotaVentaDetalle;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
@@ -183,7 +184,23 @@ class DteGuiaDespController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
-    
+
+        if(!empty($request->despachoord_id)){
+            if($cont_producto>0){
+                for ($i=0; $i < $cont_producto ; $i++){
+                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                        $producto = Producto::findOrFail($request->producto_id[$i]);
+                        $montoitem = round($request->montoitem[$i],0);
+                        if($montoitem < 1){
+                            return redirect('dteguiadesp/listarorddesp')->with([
+                                'mensaje'=> 'SubTotal menor a uno (1). Producto ID:' . $producto->id . ' Nombre: ' . $producto->nombre,
+                                'tipo_alert' => 'alert-error'
+                            ]);                
+                        }
+                    }
+                }
+            }
+        }
         $aux_indtraslado = $request->tipoguiadesp;
         if($aux_indtraslado == 30){ //ESTO ES TEMPORAL POR EL MES DE AGOSTO 2023 PARA QUE PUEDAN HACER GUIA DE TRASLADO DE LAS GUIAS HECHAS POR EPROPLAS
             $aux_indtraslado = 6;
@@ -1466,9 +1483,15 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
                     $dtedet->qtyitem = $request->qtyitem[$i];
                     $dtedet->unmditem = $request->unmditem[$i];
                     $dtedet->unidadmedida_id = $request->unidadmedida_id[$i];
-                    $dtedet->prcitem = $request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
+                    if($request->moneda_id == 1){
+                        $dtedet->prcitem = $request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
+                        $dtedet->montoitem = round($request->montoitem[$i],0);
+                    }else{
+                        $notaventadetalle = NotaVentaDetalle::findOrFail($request->notaventadetalle_id[$i]);
+                        $dtedet->prcitem = round($notaventadetalle->preciounit * $request->dolarobser,4);
+                        $dtedet->montoitem = round($dtedet->prcitem * $request->qtyitem[$i],0);
+                    }
                     //$dtedet->montoitem = $request->montoitem[$i];
-                    $dtedet->montoitem = round($request->montoitem[$i],0);
                     if($aux_indtraslado == 6){
                         $dtedet->prcitem = 1; //$request->prcitem[$i];
                         $dtedet->montoitem = round($request->qtyitem[$i],0);

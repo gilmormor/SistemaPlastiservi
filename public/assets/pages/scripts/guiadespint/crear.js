@@ -55,7 +55,7 @@ $(document).ready(function () {
 	});
 	*/
 	$("#cantM").numeric();
-	$("#precioM").numeric({decimalPlaces: 2});
+	$("#precioM").numeric({decimalPlaces: 3});
 	$(".numerico").numeric();
 	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
@@ -250,13 +250,13 @@ function insertarTabla(){
 				'<input type="text" name="descuentoval[]" id="descuentoval'+ aux_nfila + '" class="form-control" value="'+ $("#descuentoM option:selected").attr('value') +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="preciounitTD'+ aux_nfila + '" id="preciounitTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASKLA($("#precionetoM").attr("valor"),0) + //MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
+				MASKLA($("#precionetoM").attr("valor"),3) + //MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="preciounit[]" id="preciounit'+ aux_nfila + '" class="form-control" value="'+ $("#precionetoM").attr("valor") +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="precioxkiloTD'+ aux_nfila + '" id="precioxkiloTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASKLA(aux_precioxkilo,0) + //MASK(0, aux_precioxkilo, '-##,###,##0.00',1)+
+				MASKLA(aux_precioxkilo,3) + //MASK(0, aux_precioxkilo, '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="precioxkilo[]" id="precioxkilo'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkilo +'" style="display:none;"/>'+

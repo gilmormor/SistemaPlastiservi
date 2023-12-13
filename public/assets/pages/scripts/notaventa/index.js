@@ -392,8 +392,8 @@ $("#cotizacion_idM").blur(function(){
 			data: data,
 			success: function (respuesta) {
 				//console.log(respuesta);
-				console.log(respuesta.cotizaciones)
-				console.log(respuesta.cotizaciones["length"]);
+				//console.log(respuesta.cotizaciones)
+				//console.log(respuesta.cotizaciones["length"]);
 				if(respuesta.cotizaciones["length"]>0){
 					if(respuesta.cotizaciones[0]['descripbloqueo']==null){
 						$("#razonsocialM").val(respuesta.cotizaciones[0]['razonsocial']);

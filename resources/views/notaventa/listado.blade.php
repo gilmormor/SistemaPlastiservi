@@ -1,18 +1,6 @@
 <link rel="stylesheet" href="{{asset("assets/css/factura.css")}}">
 
 <!--<img class="anulada" src="img/anulado.png" alt="Anulada">-->
-<?php
-	$aux_monedaLocal = true;
-	$aux_modena_nombre = "";
-	$aux_modena_desc = "";
-	$aux_modena_simb = "";
-	if($empresa[0]['moneda_id'] != $notaventa->moneda_id){
-		$aux_monedaLocal = false;
-		$aux_modena_nombre = $notaventa->moneda->nombre;
-		$aux_modena_desc = $notaventa->moneda->desc;
-		$aux_modena_simb = $notaventa->moneda->simbolo;
-	}
-?>
 <br>
 <br>
 <div id="page_pdf">
@@ -86,8 +74,8 @@
 					<th class="textcenter">Ancho</th>
 					<th class="textcenter">Largo</th>
 					<th class="textcenter">Espesor</th>
-					<th class="textright" width="50px">Precio<br>Neto {{$aux_modena_desc}}</th>
-					<th class="textright" width="70px">Total<br>Neto {{$aux_modena_desc}}</th>
+					<th class="textright" width="50px">Precio<br>Neto {{$datosArray["modena_desc"]}}</th>
+					<th class="textright" width="70px">Total<br>Neto {{$datosArray["modena_desc"]}}</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -130,7 +118,7 @@
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{$aux_espesor}}</td>
-						<td class="textright">{{number_format($notaventaDetalle->preciounit, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($notaventaDetalle->preciounit, $datosArray["monedaLocal"] ? 2 : 3, ",", ".")}}</td>
 						<td class="textright">{{number_format($notaventaDetalle->subtotal, 0, ",", ".")}}&nbsp;</td>
 					</tr>
 				@endforeach
@@ -148,7 +136,7 @@
 				<td class="textright" width="10%"><span><strong>{{number_format($notaventa->iva, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 			<tr>
-				<td colspan="9" class="textright" width="90%"><span><strong>TOTAL {{$aux_modena_desc}}</strong></span></td>
+				<td colspan="9" class="textright" width="90%"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($notaventa->total, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 		</table>
@@ -210,8 +198,8 @@
 	<br>
 	<div>
 		<p class="nota">
-			@if ($aux_monedaLocal == false)
-				<br><br>Valores en dólares americanos {{$aux_modena_desc}}. Tipo de cambio: dólar observado.
+			@if ($datosArray["monedaLocal"] == false)
+				<br><br>Valores en dólares americanos {{$datosArray["modena_desc"]}}. Tipo de cambio: dólar observado.
 			@endif
 			<br><br>Si usted tiene preguntas sobre esta Nota de Venta, <br>pongase en contacto con nombre, teléfono y Email
 		</p>

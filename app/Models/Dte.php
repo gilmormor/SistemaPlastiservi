@@ -1519,8 +1519,8 @@ class Dte extends Model
         }else{
             return response()->json([
                 'id' => 0,
-                'mensaje'=>'Error: ' . $Solicitar_Folio,
-                'tipo_alert' => 'error'                
+                'mensaje'=> nl2br("Error: Texto contiene letras acentuadas o caracteres especiales. POR FAVOR REVISAR DATOS DEL CLIENTE \n\n") . $Carga_TXTDTE,
+                'tipo_alert' => "error"
             ]);
         }
     }
@@ -2701,6 +2701,9 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
         $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
         $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
+/*         $string = Str::ascii(substr(trim($dte->cliente->giro),0,40));
+        $string = preg_replace('/[^A-Za-z0-9 ]/', '', $string);
+        dd("Original: " . substr(trim($dte->cliente->giro),0,40) . "\nCambio: " . $GiroRecep . "\nNuevo valor: " . $string); */
         $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
         $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
         $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));

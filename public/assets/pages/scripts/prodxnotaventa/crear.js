@@ -259,9 +259,9 @@ function modificarTabla(i){
 	$("#descuentoTD"+i).html($("#descuentoM option:selected").html());
 	$("#descuento"+i).val($("#descuentoM option:selected").attr('porc'));
 	$("#descuentoval"+i).val($("#descuentoM option:selected").attr('value'));
-	$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
+	$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.000',1));
 	$("#preciounit"+i).val($("#precionetoM").attr('valor'));
-	$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").attr('valor'), '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
+	$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").attr('valor'), '-##,###,##0.000',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
 	$("#precioxkilo"+i).val($("#precioM").attr('valor'));
 	$("#totalkilosTD"+i).html(MASK(0, $("#totalkilosM").attr('valor'), '-##,###,##0.00',1));
 	$("#totalkilos"+i).val($("#totalkilosM").attr('valor'));
@@ -362,13 +362,13 @@ function insertarTabla(){
 				'<input type="text" name="descuentoval[]" id="descuentoval'+ aux_nfila + '" class="form-control" value="'+ $("#descuentoM option:selected").attr('value') +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="preciounitTD'+ aux_nfila + '" id="preciounitTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
+				MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.000',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="preciounit[]" id="preciounit'+ aux_nfila + '" class="form-control" value="'+ $("#precionetoM").attr("valor") +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="precioxkiloTD'+ aux_nfila + '" id="precioxkiloTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASK(0, $("#precioM").attr("valor"), '-##,###,##0.00',1)+
+				MASK(0, $("#precioM").attr("valor"), '-##,###,##0.000',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="precioxkilo[]" id="precioxkilo'+ aux_nfila + '" class="form-control" value="'+ $("#precioM").attr("valor") +'" style="display:none;"/>'+

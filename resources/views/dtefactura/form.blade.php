@@ -214,7 +214,7 @@
     <div class="box-header with-border">
         <h3 class="box-title" id="titulo-detalle">Detalle</h3>
         <div class="box-tools pull-right">
-            <a id="botonNewGuia" name="botonNewGuia" href="#" class="btn btn-block btn-success btn-sm" style="{{isset($data) ? "" : "display:none;" }}">
+            <a id="botonNewGuia" name="botonNewGuia" class="btn btn-block btn-success btn-sm" style="{{isset($data) ? "" : "display:none;" }}">
                 <i class="fa fa-fw fa-plus-circle"></i> Seleccionar Guia
             </a>
         </div>                    

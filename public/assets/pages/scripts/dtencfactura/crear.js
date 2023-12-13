@@ -21,7 +21,7 @@ $(document).ready(function () {
 	aux_sta = $("#aux_sta").val();
 	//$("#rut").numeric();
 	$("#cantM").numeric();
-	$("#precioM").numeric({decimalPlaces: 2});
+	$("#precioM").numeric({decimalPlaces: 3});
 	$(".numerico").numeric();
 	//$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});

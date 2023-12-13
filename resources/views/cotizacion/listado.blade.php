@@ -167,7 +167,7 @@
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{number_format($aux_espesor, 3, ',', '.')}}</td>
-						<td class="textright">{{number_format($CotizacionDetalle->preciounit, 2, ",", ".")}}</td>
+						<td class="textright">{{number_format($CotizacionDetalle->preciounit, $aux_monedaLocal ? 2 : 3, ",", ".")}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 0, ",", ".")}}&nbsp;</td>
 					</tr>
 				@endforeach

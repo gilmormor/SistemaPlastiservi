@@ -27,7 +27,7 @@ $(document).ready(function () {
 	aux_sta = $("#aux_sta").val();
 	//$("#rut").numeric();
 	$("#cantM").numeric();
-	$("#precioM").numeric({decimalPlaces: 2});
+	$("#precioM").numeric({decimalPlaces: 3});
 	$(".numerico").numeric();
 	$("#auxeditcampoN").numeric(
 		{
@@ -316,15 +316,17 @@ $(".caltotal").keyup(function(){
 		valorOrig = $(this).attr("valueorig");
 		item = $(this).attr("item");
 		aux_cant = $("#qtyitem" + item).val();
-		if(valorDolarObser <= 1){
+		/* if(valorDolarObser <= 1){
 			valorUni = valorOrig * valorDolarObser;
-			valorSubTotal = valorUni * aux_cant;	
+			valorSubTotal = valorUni * aux_cant;
 		}else{
 			valorUni = Math.round(valorOrig * valorDolarObser);
 			valorSubTotal = Math.round(valorUni * aux_cant);	
-		}
+		} */
+		valorUni = valorOrig * valorDolarObser;
+		valorSubTotal = Math.round(valorUni * aux_cant);
 
-		$("#txtprcitem" + item).html(MASKLA(valorUni,2));
+		$("#txtprcitem" + item).html(MASKLA(valorUni,0));
 		$("#txtmontoitem" + item).html(MASKLA(valorSubTotal,0));
 
 		$("#preciounit" + item).val(valorUni);

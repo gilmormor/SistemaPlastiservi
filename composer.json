@@ -11,6 +11,7 @@
         "php": "^7.2",
         "barryvdh/laravel-debugbar": "^3.2",
         "barryvdh/laravel-dompdf": "^0.8.5",
+        "doctrine/dbal": "^2.13",
         "fideloper/proxy": "^4.0",
         "intervention/image": "^2.5",
         "laravel/framework": "^6.0",

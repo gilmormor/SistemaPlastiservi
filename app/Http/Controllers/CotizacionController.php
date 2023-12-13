@@ -1126,11 +1126,9 @@ class CotizacionController extends Controller
             //$rut = number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 );
             //dd($empresa[0]['iva']);
             //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
-            /*
             if(env('APP_DEBUG')){
                 return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
             }
-            */
             //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
             if($aux_staacutec){
                 $pdf = PDF::loadView('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));

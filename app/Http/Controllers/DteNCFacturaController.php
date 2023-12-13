@@ -523,6 +523,6 @@ function consultaindex($dte_id){
     AND $aux_conddte_id
     GROUP BY dte.id
     ORDER BY dte.id desc;";
-    dd($sql);
+    //dd($sql);
     return DB::select($sql);
 }

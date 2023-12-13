@@ -9,7 +9,7 @@ $(document).ready(function () {
 	
 	//$("#rut").numeric();
 	$("#cantM").numeric();
-	$("#precioM").numeric({decimalPlaces: 2});
+	$("#precioM").numeric({decimalPlaces: 3});
 	//$(".numerico").numeric();
 	$(".cantsum").numeric({ negative : false });
 

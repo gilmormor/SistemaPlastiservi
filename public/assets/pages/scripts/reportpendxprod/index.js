@@ -57,7 +57,7 @@ $(document).ready(function () {
             },
             "createdRow": function ( row, data, index ) {
                 if ('datosAdicionales' in data) {
-                    console.log(data);
+                    //console.log(data);
                     $("#prom_precioxkilo").html(MASKLA(data.datosAdicionales.prom_precioxkilo,2));
                     $("#total_totalplata").html(MASKLA(data.datosAdicionales.total_totalplata,0));                
                 }
