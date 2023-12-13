@@ -1339,17 +1339,15 @@ class DespachoOrdController extends Controller
                             $enlaceDteOrigen = "<a class='btn-accion-tabla btn-sm tooltipsC' title='' data-original-title='Guia Despacho origen: $guiaorigenprecio_nrodocto $tipotrasladoDesc' onclick='genpdfGD($guiaorigenprecio_nrodocto,\"\",\"myModalTablaOD\")'>
                                 <i class='fa fa-fw fa-question-circle text-aqua'></i>
                             </a>";
-                            $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtraslado);
-                            $tipotrasladoDesc = $arrayDTEtipotraslado["desc"];
-                            $tipotrasladoLetra = $arrayDTEtipotraslado["letra"];
-    
-                            $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtraslado);
-    
-                            $aux_enlaceguia = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfGD($aux_numguia,\"\",\"myModalTablaOD\")' data-original-title='Guia Despacho $tipotrasladoDesc'>
-                                $aux_numguia $tipotrasladoLetra $enlaceDteOrigen
-                            </a>";    
                         }
                     }
+                    $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtraslado);
+                    $tipotrasladoDesc = $arrayDTEtipotraslado["desc"];
+                    $tipotrasladoLetra = $arrayDTEtipotraslado["letra"];
+                    $aux_enlaceguia = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfGD($aux_numguia,\"\",\"myModalTablaOD\")' data-original-title='Guia Despacho $tipotrasladoDesc'>
+                        $aux_numguia $tipotrasladoLetra $enlaceDteOrigen
+                    </a>";
+
                     $aux_enlacefactura = "";
                     $aux_totalFact = "";
                     if(!is_null($despachoord->numfactura) and !empty($despachoord->numfactura)){
