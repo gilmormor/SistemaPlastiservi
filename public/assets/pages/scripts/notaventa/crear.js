@@ -260,6 +260,16 @@ $(document).ready(function () {
 		$("#vendedor_id").val($("#vendedor_idD").val());
 	});
 
+	fecha = charToDate($("#fechahora").val());
+	$("#plazoentrega").datepicker({
+		language: "es",
+		autoclose: true,
+        clearBtn : true,
+		startDate: fecha,
+		todayHighlight: true
+	}).datepicker("setDate");
+
+
 /*
 	$("#oc_file").fileinput({
 		autoReplace: true,
@@ -1155,3 +1165,12 @@ $(".form-horizontal").on("submit", function(event){
 	}
 });
 */
+
+function charToDate(fechachar){
+    var arregloFecha = fechachar.split("/");
+    var anio = arregloFecha[2];
+    var mes = arregloFecha[1] - 1;
+    var dia = arregloFecha[0];
+    var fecha = new Date(anio, mes, dia); 
+    return fecha;
+}

@@ -1369,6 +1369,24 @@ class DespachoOrdController extends Controller
                     $aux_fechaFact = $despachoord->fechafactura;
                     $aux_fechaFact = $aux_fechaFact ? date('d/m/Y', strtotime($despachoord->fechafactura)) : "";
 
+                    //**** */
+                    //MOSTRAR LOS DATOS DE GUIA DE DESPACHO Y FACTURA ANTES DEL 01/09/2023 
+                    //PORQUE NO ESTABA EL MODULO GUIAS DE DESPACHO Y FACTURACION
+                    if($despachoord->guiadespachofec < "2023-09-01 00:00:00"){
+                        if($despachoord->guiadespacho != "" and $despachoord->guiadespacho != null){
+                            $aux_enlaceguia = $despachoord->guiadespacho;
+                        }
+                    }
+                    if($despachoord->numfacturafec < "2023-09-01 00:00:00"){
+                        if($despachoord->numfactura != "" and $despachoord->numfactura != null){
+                            $aux_fechaFact = date('d/m/Y', strtotime($despachoord->fechafactura));
+                            $aux_enlacefactura = $despachoord->numfactura;
+                            $aux_totalFact = "";
+                        }
+
+                    }
+                    //**** */
+
                     $tab1 .=
                         "<tr id='filaord$i' name='filaord$i'>
                         <td id='id$i' name='id$i'>

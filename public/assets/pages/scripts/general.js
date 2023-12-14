@@ -707,18 +707,19 @@ function totalizarItem(aux_estprec){
 		$("#descuentoM").val('1');
 		$(".selectpicker").selectpicker('refresh');
 	}
-	if($("#precionetoM").prop("disabled")){
-		$("#precionetoM").val(precioneto);
-	}else{
-		$("#precionetoM").val(Math.round(precioneto));
-	}
+		if($("#precionetoM").prop("disabled")){
+			$("#precionetoM").val(precioneto);
+		}else{
+			$("#precionetoM").val(Math.round(precioneto));
+		}	
 	//alert(aux_peso);
 	aux_tk = $("#cantM").val() * aux_peso;
 	if($("#pesoM").val()>0){	
 		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(4), '-##,###,##0.00',1));
 		$("#totalkilosM").attr('valor',aux_tk.toFixed(4));
 	}else{
-		if($("#unidadmedida_idM option:selected").attr('value') == 7){
+		//if($("#unidadmedida_idM option:selected").attr('value') == 7){
+		if($("#unidadmedida_idM").val() == 7){
 			aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
 			$("#totalkilosM").val(aux_cant);
 			$("#totalkilosM").attr('valor',$("#cantM").val());
@@ -738,17 +739,16 @@ function totalizarItem(aux_estprec){
 //	$("#precioM").val(MASK(0, aux_precdesc, '-##,###,##0.00',1));
 	$("#precioM").val(aux_precdesc);
 	$("#precioM").attr('valor',aux_precdesc);
-
-	/* EN COMENTARIO DESDE EL 12/12/2023, PARA EVITAR QUE CAMBIE EL VALOR DE precionetoM
+	//EN COMENTARIO DESDE EL 12/12/2023, PARA EVITAR QUE CAMBIE EL VALOR DE precionetoM
 	aux_precioUnit = aux_precdesc * aux_peso;
 	//$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
- 	if($("#precionetoM").prop("disabled")){
+		if($("#precionetoM").prop("disabled")){
 		$("#precionetoM").val(aux_precioUnit);
 		$("#precionetoM").attr('valor',aux_precioUnit);
 	}else{
 		$("#precionetoM").val(Math.round(aux_precioUnit));
-		$("#precionetoM").attr('valor',Math.round(aux_precioUnit));	
-	} */
+		$("#precionetoM").attr('valor',Math.round(aux_precioUnit));		
+	}	
 }
 
 function insertarModificar(){
@@ -1183,6 +1183,7 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 		success: function (respuesta) {
 			if(respuesta['cont']>0){
 				mostrardatosadUniMed(respuesta);
+				$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id'])
 				if($("#invbodega_idM")){
 					llenarselectbodega(respuesta);
 					//console.log(respuesta);
@@ -1193,6 +1194,10 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 				}
 				$("#producto_idM").attr("acuerdotecnico_id",respuesta.acuerdotecnico_id ? respuesta.acuerdotecnico_id : 0);
 				if(respuesta.acuerdotecnico_id != null){
+					console.log(respuesta["acuerdotecnico"]["at_unidadmedida_id"]);
+					$("#unidadmedida_idM").val(respuesta["acuerdotecnico"]["at_unidadmedida_id"]);
+					$("#at_unidadmedida_idM").val(respuesta["acuerdotecnico"]["at_unidadmedida_id"]);
+					$(".selectpicker").selectpicker('refresh');
 					$("#unidadmedida_idM").attr("disabled",true);
 					$("#unidadmedida_idM").attr("readonly");
 					if($("#unidadmedida_idM").val() == 7){
@@ -1208,6 +1213,8 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 					$("#totalkilosM").prop("disabled", true);	
 					$("#totalkilosM").prop("readonly", true);	
 				}
+				$(".selectpicker").selectpicker('refresh');
+				activarCajasPreciokgUni();
 			}
 		}
 	});
@@ -1927,6 +1934,7 @@ function mostrardatosadUniMed(respuesta){
 		$("#mostunimed1").css({'display':'block'});
 	}
 	$("#unidadmedida_textoM").val(respuesta['unidadmedidanombre']);	
+	$(".selectpicker").selectpicker('refresh');
 }
 
 $("#selectmultprod").click(function(event){
@@ -3260,6 +3268,8 @@ function validarInputRut(event) {
 
 
 function activarCajasPreciokgUni(){
+	console.log("entro cambio unidad");
+	$(".selectpicker").selectpicker('refresh');
 	$("#precioM").prop("disabled", false);
 	$("#precionetoM").prop("disabled", false);
 	$("#precioM").attr('staAT',0);
@@ -3275,6 +3285,7 @@ function activarCajasPreciokgUni(){
 	if(aux_staAT > 0 || aux_tipoProd == 1){
 		if(aux_staAT > 0){
 			$("#unidadmedida_idM").prop("disabled", true);
+			console.log($("#at_unidadmedida_idM").val());
 			$("#unidadmedida_idM").val($("#at_unidadmedida_idM").val())
 			if($("#at_unidadmedida_idM").val() != 7){
 				$("#totalkilosM").prop("disabled", false);
@@ -3283,10 +3294,12 @@ function activarCajasPreciokgUni(){
 		}else{
 			$("#unidadmedida_idM").prop("disabled", false);
 		}
-		aux_UM = $("#unidadmedida_idM").val();
+		aux_UM = $("#unidadmedida_idM").val(); 
 		$("#precioM").attr('staAT',1);
 		if(aux_UM == 7){
-			$("#precionetoM").prop("disabled", true);
+			if($("#pesoM").val() == 0){
+				$("#precionetoM").prop("disabled", true);
+			}
 			$("#totalkilosM").prop("disabled", true);	
 			$("#totalkilosM").prop("readonly", true);	
 		}else{
