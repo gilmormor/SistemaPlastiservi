@@ -74,8 +74,8 @@
 						<th class="textright">Peso</th>
 						<th class="textright">$ x Kg</th>
 						<th class="textright">Total Kg</th>
-						<th class="textright" width="90px">Precio Unit</th>
-						<th class="textright" width="90px">Total Neto</th>
+						<th class="textright" width="90px">Precio Unit {{$datosArray["modena_desc"]}}</th>
+						<th class="textright" width="90px">Total Neto {{$datosArray["modena_desc"]}}</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
@@ -129,7 +129,7 @@
 							<td class="textright">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 0, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->totalkilos, 2, ",", ".")}}</td>
-							<td class="textright">{{number_format($notaventaDetalle->preciounit, 0, ",", ".")}}</td>
+							<td class="textright">{{number_format($notaventaDetalle->preciounit,  $datosArray["monedaLocal"] ? 2 : 3, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->subtotal, 0, ",", ".")}}</td>
 						</tr>
 					@endforeach
@@ -147,7 +147,7 @@
 						<td class="textright"><span><strong>{{number_format($notaventa->iva, 0, ",", ".")}}</strong></span></td>
 					</tr>
 					<tr>
-						<td colspan="11" class="textright"><span><strong>TOTAL</strong></span></td>
+						<td colspan="11" class="textright"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($notaventa->total, 0, ",", ".")}}</strong></span></td>
 					</tr>
 		
@@ -228,4 +228,11 @@
 		@endif
 	</div>
 	<br>
+	@if ($datosArray["monedaLocal"] == false)
+		<div>
+			<p class="nota">
+				<br><br>Valores en dólares americanos {{$datosArray["modena_desc"]}}. Tipo de cambio: dólar observado.
+			</p>
+		</div>
+	@endif
 </div>

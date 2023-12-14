@@ -327,7 +327,7 @@ function modificarTabla(i){
 	$("#descuentoTD"+i).html($("#descuentoM option:selected").html());
 	$("#descuento"+i).val($("#descuentoM option:selected").attr('porc'));
 	$("#descuentoval"+i).val($("#descuentoM option:selected").attr('value'));
-	$("#preciounitTD"+i).html(MASKLA($("#precionetoM").attr('valor'),0)); //$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
+	$("#preciounitTD"+i).html(MASKLA($("#precionetoM").attr('valor'),3)); //$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
 	$("#preciounit"+i).val($("#precionetoM").attr('valor'));
 	$("#precioxkiloTD"+i).html(MASKLA($("#precioM").attr('valor'),0)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").attr('valor'), '-##,###,##0.00',1)); //$("#precioxkiloTD"+i).html(MASK(0, $("#precioM").val(), '-##,###,##0.00',1));
 	$("#precioxkilo"+i).val($("#precioM").attr('valor'));

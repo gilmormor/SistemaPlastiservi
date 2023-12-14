@@ -430,12 +430,12 @@
                                     <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                 </td>
                                 <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right;"> 
-                                    {{number_format($detalle->preciounit, 0, ',', '.')}}
+                                    {{number_format($detalle->preciounit, 3, ',', '.')}}
                                     <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$detalle->preciounit}}" style="display:none;"/>
                                     <input type="text" name="prcitem[]" id="prcitem{{$aux_nfila}}" class="form-control" value="{{$detalle->preciounit}}" style="display:none;"/>
                                 </td>
                                 <td style="display:none;" name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
-                                    {{number_format($detalle->precioxkilo, 0, ',', '.')}}                                    
+                                    {{number_format($detalle->precioxkilo, 3, ',', '.')}}                                    
                                 </td>
                                 <td style="text-align:right;display:none;"> 
                                     <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$detalle->precioxkilo}}" style="display:none;"/>

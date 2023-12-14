@@ -24,7 +24,7 @@ $(document).ready(function () {
 	aux_sta = $("#aux_sta").val();
 	//$("#rut").numeric();
 	$("#cantM").numeric();
-	$("#precioM").numeric({decimalPlaces: 2});
+	$("#precioM").numeric({decimalPlaces: 3});
 	$(".numerico").numeric();
 	//$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
@@ -187,7 +187,7 @@ $("#rut").blur(function(){
 							$("#comuna_idD").val(respuesta.cliente[0].comunap_id);
 
 							$("#vendedor_idD").val(respuesta.cliente[0].vendedor_id);
-							console.log(respuesta.cliente[0].vendedor_id);
+							//console.log(respuesta.cliente[0].vendedor_id);
 							/*
 							$("#giro_id").val(respuesta.cliente[0].giro_id);
 							$("#giro_idD").val(respuesta.cliente[0].giro_id);

@@ -715,7 +715,7 @@ function totalizarItem(aux_estprec){
 	//alert(aux_peso);
 	aux_tk = $("#cantM").val() * aux_peso;
 	if($("#pesoM").val()>0){	
-		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(4), '-##,###,##0.0000',4));
+		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(4), '-##,###,##0.00',1));
 		$("#totalkilosM").attr('valor',aux_tk.toFixed(4));
 	}else{
 		if($("#unidadmedida_idM option:selected").attr('value') == 7){
@@ -723,8 +723,10 @@ function totalizarItem(aux_estprec){
 			$("#totalkilosM").val(aux_cant);
 			$("#totalkilosM").attr('valor',$("#cantM").val());
 		}else{
-			$("#totalkilosM").val(0.00);
-			$("#totalkilosM").attr('valor','0.00');
+			if ($("#producto_idM").attr("acuerdotecnico_id") == 0){
+				$("#totalkilosM").val(0.00);
+				$("#totalkilosM").attr('valor','0.00');	
+			}
 		}
 	}
 	//aux_total = ($("#cantM").val() * aux_peso * $("#precioM").val()) * ($("#descuentoM").val());
@@ -737,21 +739,16 @@ function totalizarItem(aux_estprec){
 	$("#precioM").val(aux_precdesc);
 	$("#precioM").attr('valor',aux_precdesc);
 
+	/* EN COMENTARIO DESDE EL 12/12/2023, PARA EVITAR QUE CAMBIE EL VALOR DE precionetoM
 	aux_precioUnit = aux_precdesc * aux_peso;
 	//$("#precionetoM").val(MASK(0, Math.round(aux_precioUnit), '-##,###,##0.00',1));
-	if($("#precionetoM").prop("disabled")){
+ 	if($("#precionetoM").prop("disabled")){
 		$("#precionetoM").val(aux_precioUnit);
 		$("#precionetoM").attr('valor',aux_precioUnit);
 	}else{
 		$("#precionetoM").val(Math.round(aux_precioUnit));
 		$("#precionetoM").attr('valor',Math.round(aux_precioUnit));	
-	}
-	/*
-	else{
-		$("#totalkilosM").val(0.00);
-		$("#totalkilosM").attr('valor',0.00);
-	}*/
-
+	} */
 }
 
 function insertarModificar(){
@@ -816,7 +813,7 @@ function modificarTabla(i){
 	$("#descuentoTD"+i).html($("#descuentoM option:selected").html());
 	$("#descuento"+i).val($("#descuentoM option:selected").attr('porc'));
 	$("#descuentoval"+i).val($("#descuentoM option:selected").attr('value'));
-	$("#preciounitTD"+i).html(MASKLA($("#precionetoM").attr('valor'),0)); //$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
+	$("#preciounitTD"+i).html(MASKLA($("#precionetoM").attr('valor'),3)); //$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
 	$("#preciounit"+i).val($("#precionetoM").attr('valor'));
 	aux_precioxkilo = $("#precioM").attr("valor");
 	if($("#pesoM").val()==0)
@@ -1193,6 +1190,23 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 					$("#invbodega_idM").val($("#invbodega_idTD"+i).val());
 					$("#invbodega_idM").selectpicker('refresh');
 					$("#stakilos").val(respuesta['stakilos']);
+				}
+				$("#producto_idM").attr("acuerdotecnico_id",respuesta.acuerdotecnico_id ? respuesta.acuerdotecnico_id : 0);
+				if(respuesta.acuerdotecnico_id != null){
+					$("#unidadmedida_idM").attr("disabled",true);
+					$("#unidadmedida_idM").attr("readonly");
+					if($("#unidadmedida_idM").val() == 7){
+						$("#totalkilosM").prop("disabled", true);
+						$("#totalkilosM").prop("readonly", true);
+					}else{
+						$("#totalkilosM").prop("disabled", false);	
+						$("#totalkilosM").prop("readonly", false);		
+					}
+				}else{
+					$("#unidadmedida_idM").attr("disabled",false);
+					$("#unidadmedida_idM").attr("readonly",false);	
+					$("#totalkilosM").prop("disabled", true);	
+					$("#totalkilosM").prop("readonly", true);	
 				}
 			}
 		}
@@ -1719,6 +1733,7 @@ $("#producto_idM").blur(function(){
 			data: data,
 			success: function (respuesta) {
 				if(respuesta['cont']>0){
+					$("#producto_idM").attr("acuerdotecnico_id",respuesta.acuerdotecnico_id ? respuesta.acuerdotecnico_id : 0);
 					if(respuesta['estado'] == 0){
 						swal({
 							title: 'Producto inactivo.',

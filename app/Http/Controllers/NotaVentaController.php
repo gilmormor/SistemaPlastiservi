@@ -1133,15 +1133,30 @@ class NotaVentaController extends Controller
                     break;
                 }
             }
-    
+            $aux_monedaLocal = true;
+            $aux_modena_nombre = "";
+            $aux_modena_desc = "";
+            $aux_modena_simb = "";
+            if($empresa[0]['moneda_id'] != $notaventa->moneda_id){
+                $aux_monedaLocal = false;
+                $aux_modena_nombre = $notaventa->moneda->nombre;
+                $aux_modena_desc = $notaventa->moneda->desc;
+                $aux_modena_simb = $notaventa->moneda->simbolo;
+            }
+            $datosArray = [
+                "monedaLocal" => $aux_monedaLocal,
+                "modena_nombre" => $aux_modena_nombre,
+                "modena_desc" => $aux_modena_desc,
+                "modena_simb" => $aux_modena_simb
+            ];    
             if($stareport == '1'){
                 if(env('APP_DEBUG')){
-                    //return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
+                    return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                 }
                 if($aux_staacutec){
-                    $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa'));
+                    $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                 }else{
-                    $pdf = PDF::loadView('notaventa.listadosinesp', compact('notaventa','notaventaDetalles','empresa'));
+                    $pdf = PDF::loadView('notaventa.listadosinesp', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                 }
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
@@ -1149,12 +1164,12 @@ class NotaVentaController extends Controller
             }else{
                 if($stareport == '2'){
                     if(env('APP_DEBUG')){
-                        //return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                        return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                     }
                     if($aux_staacutec){
-                        $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa'));
+                        $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                     }else{
-                        $pdf = PDF::loadView('notaventa.listado1sinesp', compact('notaventa','notaventaDetalles','empresa'));
+                        $pdf = PDF::loadView('notaventa.listado1sinesp', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                     }
             
                     //return $pdf->download('cotizacion.pdf');

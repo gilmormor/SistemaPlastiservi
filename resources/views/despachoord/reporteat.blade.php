@@ -79,8 +79,8 @@
 					<th width="20px" class="textcenter">Ancho</th>
 					<th width="20px" class="textcenter">Largo</th>
 					<th width="20px" class="textcenter">Esp</th>
-					<th class="textright" width="50px">Precio Unit</th>
-					<th class="textright" width="60px">Total Neto</th>
+					<th class="textright" width="50px">Precio Unit {{$datosArray["modena_desc"]}}</th>
+					<th class="textright" width="60px">Total Neto {{$datosArray["modena_desc"]}}</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -139,23 +139,23 @@
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
 						<td class="textcenter">{{$aux_espesor}}</td>
-						<td class="textright">{{number_format($despachoorddet->notaventadetalle->preciounit, 2, ",", ".")}}</td>
-						<td class="textright">{{number_format($subtotal, 0, ",", ".")}}</td>
+						<td class="textright">{{number_format($despachoorddet->notaventadetalle->preciounit,  $datosArray["monedaLocal"] ? 2 : 3, ",", ".")}}</td>
+						<td class="textright">{{number_format($subtotal, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</td>
 					</tr>
 				@endforeach
 			</tbody>
 			<tfoot>
 				<tr class="headt">
 					<td colspan="10" class="textright" width="90%"><span><strong>NETO</strong></span></td>
-					<td class="textright" width="10%"><span><strong>{{number_format($neto, 0, ",", ".")}}</strong></span></td>
+					<td class="textright" width="10%"><span><strong>{{number_format($neto, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr class="headt">
 					<td colspan="10" class="textright" width="90%"><span><strong>IVA {{$despachoord->notaventa->piva}}%</strong></span></td>
-					<td class="textright" width="10%"><span><strong>{{number_format(round(($neto * $despachoord->notaventa->piva)/100), 0, ",", ".")}}</strong></span></td>
+					<td class="textright" width="10%"><span><strong>{{number_format(($neto * $despachoord->notaventa->piva)/100, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr class="headt">
-					<td colspan="10" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
-					<td class="textright" width="10%"><span><strong>{{number_format(round($neto * ($despachoord->notaventa->piva+100)/100), 0, ",", ".")}}</strong></span></td>
+					<td colspan="10" class="textright" width="90%"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
+					<td class="textright" width="10%"><span><strong>{{number_format($neto * ($despachoord->notaventa->piva+100)/100, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 				</tr>
 			</tfoot>
 		</table>
@@ -227,4 +227,12 @@
 			</tr>
 		</table>
 	</div>
+	<br>
+	@if ($datosArray["monedaLocal"] == false)
+		<div>
+			<p class="nota">
+					<br><br>Valores en dólares americanos {{$datosArray["modena_desc"]}}. Tipo de cambio: dólar observado.
+			</p>
+		</div>
+	@endif
 </div>

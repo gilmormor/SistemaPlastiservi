@@ -1238,28 +1238,43 @@ class DespachoOrdController extends Controller
                     break;
                 }
             }
-
+            $aux_monedaLocal = true;
+            $aux_modena_nombre = "";
+            $aux_modena_desc = "";
+            $aux_modena_simb = "";
+            if($empresa[0]['moneda_id'] != $despachoord->notaventa->moneda_id){
+                $aux_monedaLocal = false;
+                $aux_modena_nombre = $despachoord->notaventa->moneda->nombre;
+                $aux_modena_desc = $despachoord->notaventa->moneda->desc;
+                $aux_modena_simb = $despachoord->notaventa->moneda->simbolo;
+            }
+            $datosArray = [
+                "monedaLocal" => $aux_monedaLocal,
+                "modena_nombre" => $aux_modena_nombre,
+                "modena_desc" => $aux_modena_desc,
+                "modena_simb" => $aux_modena_simb
+            ];    
             //dd($empresa[0]['iva']);
             if($stareport == '1'){
                 if(env('APP_DEBUG')){
                     if($aux_staacutec == false){
-                        return view('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
+                        return view('despachoord.reporte', compact('despachoord','despachoorddets','empresa','datosArray'));
                     }else{
-                        return view('despachoord.reporteat', compact('despachoord','despachoorddets','empresa'));
+                        return view('despachoord.reporteat', compact('despachoord','despachoorddets','empresa','datosArray'));
                     }
                 }
                 if($aux_staacutec == false){
-                    $pdf = PDF::loadView('despachoord.reporte', compact('despachoord','despachoorddets','empresa'));
+                    $pdf = PDF::loadView('despachoord.reporte', compact('despachoord','despachoorddets','empresa','datosArray'));
                 }else{
-                    $pdf = PDF::loadView('despachoord.reporteat', compact('despachoord','despachoorddets','empresa'));
+                    $pdf = PDF::loadView('despachoord.reporteat', compact('despachoord','despachoorddets','empresa','datosArray'));
                 }
 
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($despachoord->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachoord->notaventa->cliente->razonsocial . '.pdf');
             }else{
                 if($stareport == '2'){
-                    return view('despachoord.listado1', compact('despachoord','despachoorddets','empresa'));        
-                    $pdf = PDF::loadView('despachoord.listado1', compact('despachoord','despachoorddets','empresa'));
+                    return view('despachoord.listado1', compact('despachoord','despachoorddets','empresa','datosArray'));        
+                    $pdf = PDF::loadView('despachoord.listado1', compact('despachoord','despachoorddets','empresa','datosArray'));
                     //return $pdf->download('cotizacion.pdf');
                     return $pdf->stream(str_pad($despachoord->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachoord->notaventa->cliente->razonsocial . '.pdf');
                 }
@@ -1300,6 +1315,9 @@ class DespachoOrdController extends Controller
                 if(!isset($despachoord->despachoordanul)){
                     $aux_enlaceguia = "";
                     if(!is_null($despachoord->guiadespacho) and !empty($despachoord->guiadespacho)){
+                        $tipotrasladoDesc = "";
+                        $tipotrasladoLetra = "";
+                        $enlaceDteOrigen = "";
                         $aux_numguia = $despachoord->guiadespacho;
                         //SI LA GUIA ES ORIGINADA DE OTRA GUIA
                         //ES DECIR QUE SE HIZO UNA GUIA PREVIA DE VENTA QUE SE ORIGINO DESDE UNA NOTA DE VENTA Y LUEGO SE DESPACHO CON UNA GUIA DE TRASLADO
@@ -1316,7 +1334,6 @@ class DespachoOrdController extends Controller
                             AND isnull(dte.deleted_at)
                             AND dte.id not in (SELECT dteanul.dte_id from dteanul WHERE  isnull(dteanul.deleted_at));";
                         $dte = DB::select($sql);
-                        $enlaceDteOrigen = "";
                         if(count($dte) > 0 and $dte[0]->guiaorigenprecio_nrodocto != null){
                             $guiaorigenprecio_nrodocto = $dte[0]->guiaorigenprecio_nrodocto;
                             $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtrasladoorigen);
@@ -1325,15 +1342,15 @@ class DespachoOrdController extends Controller
                                 <i class='fa fa-fw fa-question-circle text-aqua'></i>
                             </a>";
                         }
-                        $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtraslado);
-                        $tipotrasladoDesc = $arrayDTEtipotraslado["desc"];
-                        $tipotrasladoLetra = $arrayDTEtipotraslado["letra"];
+                        if(count($dte) > 0){
+                            $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtraslado);
+                            $tipotrasladoDesc = $arrayDTEtipotraslado["desc"];
+                            $tipotrasladoLetra = $arrayDTEtipotraslado["letra"];
+                            $aux_enlaceguia = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfGD($aux_numguia,\"\",\"myModalTablaOD\")' data-original-title='Guia Despacho $tipotrasladoDesc'>
+                                                $aux_numguia $tipotrasladoLetra $enlaceDteOrigen
+                                                </a>";
 
-                        $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtraslado);
-
-                        $aux_enlaceguia = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfGD($aux_numguia,\"\",\"myModalTablaOD\")' data-original-title='Guia Despacho $tipotrasladoDesc'>
-                            $aux_numguia $tipotrasladoLetra $enlaceDteOrigen
-                        </a>";
+                        }
                     }
                     $aux_enlacefactura = "";
                     $aux_totalFact = "";

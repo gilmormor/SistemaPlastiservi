@@ -176,7 +176,7 @@ $("#btnbuscarproducto").click(function(event){
 		valor = $(this).attr("valor");
 		ArrayProdId.push(valor);
 	});
-	console.log(ArrayProdId.toString());
+	//console.log(ArrayProdId.toString());
 	txtProdId = ArrayProdId.toString();
 	if(txtProdId === ""){
 		txtProdId = "0";

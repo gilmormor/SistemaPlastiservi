@@ -42,7 +42,7 @@ $(document).ready(function () {
 	aux_sta = $("#aux_sta").val();
 	//$("#rut").numeric();
 	$("#cantM").numeric();
-	$("#precioM").numeric({decimalPlaces: 2});
+	$("#precioM").numeric({decimalPlaces: 3});
 	$(".numerico").numeric();
 	//$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
@@ -522,7 +522,7 @@ function llenarItemFact(data){
 				'<input type="text" name="descuentoval[]" id="descuentoval' + (i+1) + '" class="form-control" value="0" style="display:none;"/>' +
 			'</td>' +
 			'<td name="preciounitTD' + (i+1) + '" id="preciounitTD' + (i+1) + '" style="text-align:right;">' +
-				MASKLA(data[i].prcitem,0) +
+				MASKLA(data[i].prcitem,3) +
 				'<input type="text" name="preciounit[]" id="preciounit' + (i+1) + '" class="form-control" value="' + data[i].prcitem +'" style="display:none;"/>' +
 				'<input type="text" name="prcitem[]" id="prcitem' + (i+1) + '" class="form-control" value="' + data[i].prcitem + '" style="display:none;"/>' +
 			'</td>' +

@@ -238,7 +238,7 @@
             <h3 class="box-title">Detalle</h3>
             @if (session('aux_aprocot')=='0') <!--Estatus en 0 si puede incluir -->
                 <div class="box-tools pull-right">
-                    <a id="botonNewProd" name="botonNewProd" href="#" class="btn btn-block btn-success btn-sm">
+                    <a id="botonNewProd" name="botonNewProd" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i> Nuevo Producto
                     </a>
                 </div>                    
@@ -362,13 +362,13 @@
                                             <input type="text" name="descuentoval[]" id="descuentoval{{$aux_nfila}}" class="form-control" value="{{$aux_descVal}}" style="display:none;"/>
                                         </td>
                                         <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
-                                            {{number_format($CotizacionDetalle->preciounit, 2, '.', ',')}}
+                                            {{number_format($CotizacionDetalle->preciounit, 3, '.', ',')}}
                                         </td>
                                         <td style="text-align:right;display:none;"> 
                                             <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->preciounit}}" style="display:none;"/>
                                         </td>
                                         <td name="precioxkiloTD{{$aux_nfila}}" id="precioxkiloTD{{$aux_nfila}}" style="text-align:right"> 
-                                            {{number_format($CotizacionDetalle->precioxkilo, 2, '.', ',')}}
+                                            {{number_format($CotizacionDetalle->precioxkilo, 3, '.', ',')}}
                                         </td>
                                         <td style="text-align:right;display:none;"> 
                                             <input type="text" name="precioxkilo[]" id="precioxkilo{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->precioxkilo}}" style="display:none;"/>
