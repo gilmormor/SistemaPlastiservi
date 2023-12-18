@@ -1147,10 +1147,13 @@ $("#btnrechazarM").click(function(event)
 	event.preventDefault();
 	if(verificarAproRech())
 	{
-		var data = {
+		aux_arrayATs = arrayAcuerdoTecnico();
+		var data = {	
 			id    : $("#id").val(),
 			valor : 4,
 			obs   : $("#aprobobs").val(),
+			updated_at : $("#updated_at").val(),
+			arrayATs : aux_arrayATs,
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/cotizacion/aprobarcotsup/'+data['id'];
