@@ -50,8 +50,8 @@ class ReportDTEGuiaDespController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $datas = Dte::reportguiadesppage($request);
         //dd($request);
+        $datas = Dte::reportguiadesppage($request);
         //dd($datas);
 
         $empresa = Empresa::orderBy('id')->get();
@@ -64,20 +64,27 @@ class ReportDTEGuiaDespController extends Controller
             $request->merge(['sucursal_nombre' => $sucursal->nombre]);
         }
         if($datas){
-            
-            if(env('APP_DEBUG')){
-                return view('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'));
+            if(isset($request->mostrarkg) and $request->mostrarkg == "1"){
+                if(env('APP_DEBUG')){
+                    return view('reportdteguiadesp.listadokg', compact('datas','empresa','usuario','request'));
+                }                
+                $pdf = PDF::loadView('reportdteguiadesp.listadokg', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
+                return $pdf->stream("reportdteguiadesp.pdf");    
+            }else{
+                if(env('APP_DEBUG')){
+                    return view('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'));
+                }
+                
+                //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
+                
+                //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
+                //$pdf = PDF::loadView('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'));
+                $pdf = PDF::loadView('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
+    
+                //return $pdf->download('cotizacion.pdf');
+                //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
+                return $pdf->stream("reportdteguiadesp.pdf");    
             }
-            
-            //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
-            
-            //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-            //$pdf = PDF::loadView('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'));
-            $pdf = PDF::loadView('reportdteguiadesp.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
-
-            //return $pdf->download('cotizacion.pdf');
-            //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
-            return $pdf->stream("reportdteguiadesp.pdf");
         }else{
             dd('Ningún dato disponible en esta consulta.');
         } 

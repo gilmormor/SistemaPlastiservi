@@ -590,6 +590,15 @@ $("#btnpdf2").click(function()
     $("#myModalpdf").modal('show'); 
 });
 
+$("#btnpdf3").click(function()
+{
+    aux_titulo = 'Pendientes Solicitud Despacho';
+    data = datosGD();
+    data.data2 += "&mostrarkg=1";
+    $('#contpdf').attr('src', '/reportdteguiadesp/exportPdf/' + data.data2);
+    $("#myModalpdf").modal('show'); 
+});
+
 
 var eventFired = function ( type ) {
 	total = 0;

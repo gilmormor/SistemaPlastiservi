@@ -221,6 +221,9 @@ DTE Guia Despacho
                             <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
                                 <i class='glyphicon glyphicon-print'></i> Reporte
                             </button>
+                            <button type='button' id='btnpdf3' name='btnpdf3' class='btn btn-success tooltipsC' title="Reporte PDF con Kg">
+                                <i class='glyphicon glyphicon-print'></i> Kg
+                            </button>
                         </div>
                     </form>
                 </div>

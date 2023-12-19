@@ -351,7 +351,7 @@ class Dte extends Model
         }
     
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dte.fchemisgen,dte.fechahora,cliente.rut,cliente.razonsocial,
-        dte.mnttotal,
+        dte.mnttotal,dte.kgtotal,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as nvoc_id,
         if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as nvoc_file,
         dte.centroeconomico_id,dte.indtraslado,
