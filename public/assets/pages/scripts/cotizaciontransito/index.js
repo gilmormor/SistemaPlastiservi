@@ -97,7 +97,7 @@ $(document).ready(function () {
                         <i class="fa fa-fw fa-reply"></i>
                     </button>
                 </a>
-                <a href="cotizacion" class="btn-accion-tabla btnEliminar tooltipsC" title="Eliminar este registro">
+                <a href="cotizacion" class="btn-accion-tabla btnEliminar tooltipsC" title="Eliminar Cotización">
                     <button type="button" class="btn btn-danger btn-xs">
                         <i class="fa fa-fw fa-trash"></i>
                     </button>
