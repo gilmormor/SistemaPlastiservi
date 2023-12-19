@@ -142,10 +142,14 @@ class CotizacionConsultaController extends Controller
                         $aux_color = "btn btn-success";
                     }
                 }
+                /* <a href='" . route('exportPdf_cotizacion', ['id' => $data->id]) . "' class='btn-accion-tabla tooltipsC' title='PDF' target='_blank'>
+                    <i class='fa fa-fw fa-file-pdf-o'></i>                                 
+                </a> */
+
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i'  style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle'>
                     <td id='id$i' name='id$i'>$data->id</td>
-                    <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>".date('d-m-Y', strtotime($data->fechahora)). "</td>
+                    <td id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>".date('d/m/Y', strtotime($data->fechahora)). "</td>
                     <td id='contacto$i' name='contacto$i'>$rut</td>
                     <td id='contacto$i' name='contacto$i'>$data->razonsocial</td>
                     <td>
@@ -153,11 +157,12 @@ class CotizacionConsultaController extends Controller
                             <span id='glypcnbtnInicioServ1' class='$aux_icono' style='bottom: 0px;top: 2px;'></span>
                         </a>
                     </td>
-                    <td class='textright' align='right' id='contacto$i' name='contacto$i'>".number_format($data->total, 2, ",", ".") ."</td>
+                    <td class='textright' align='right' id='contacto$i' name='contacto$i'>".number_format($data->total, 0, ",", ".") ."</td>
                     <td>
-                        <a href='" . route('exportPdf_cotizacion', ['id' => $data->id]) . "' class='btn-accion-tabla tooltipsC' title='PDF' target='_blank'>
-                            <i class='fa fa-fw fa-file-pdf-o'></i>                                 
+                        <a class='btn-accion-tabla btn-sm tooltipsC action-buttons' title='Cotizacion: " . $data->id . "' onclick='genpdfCOT(" . $data->id . ",1)'>
+                            <i class='fa fa-fw fa-file-pdf-o'></i>
                         </a>
+        
                     </td>
 
                 </tr>";
@@ -174,7 +179,7 @@ class CotizacionConsultaController extends Controller
                         <th></th>
                         <th></th>
                         <th style='text-align:right'></th>
-                        <th style='text-align:right'>". number_format($aux_total, 2, ",", ".") ."</th>
+                        <th style='text-align:right'>". number_format($aux_total, 0, ",", ".") ."</th>
                         <th style='text-align:right'></th>
                     </tr>
                 </tfoot>
@@ -327,6 +332,11 @@ function consulta($request){
     }else{
         $aux_condrut = "cliente.rut='$request->rut'";
     }
+    if(empty($request->cotizacion_id)){
+        $aux_condcotizacion_id = " true ";
+    }else{
+        $aux_condcotizacion_id = "cotizacion.id='$request->cotizacion_id'";
+    }
 
     $sql = "SELECT cotizacion.*,if(isnull(cliente.razonsocial),clientetemp.rut,cliente.rut) as rut,
             if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
@@ -342,7 +352,9 @@ function consulta($request){
         where $aux_condFecha
         and $vendedorcond
         and $aux_condrut
+        and $aux_condcotizacion_id
         and cotizacion.deleted_at is null;";
+    //dd($sql);
     $datas = DB::select($sql);
     //dd($datas);
     return $datas;

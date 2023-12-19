@@ -111,6 +111,7 @@ $(document).on("click", ".btnaprobar", function(event){
 
 
 function ajaxRequest(data,url,funcion,form = false) {
+    dataIni = data;
     $.ajax({
         url: url,
         type: 'POST',
@@ -187,6 +188,14 @@ function ajaxRequest(data,url,funcion,form = false) {
                 }
     
             }
+            if(funcion == "pregunta"){
+                if (respuesta.respuesta == 1) {
+                    if(dataIni.removerItem){
+                        form.parents('tr').remove();
+                    }
+                }
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+            }
         },
         error: function () {
         }
@@ -202,4 +211,33 @@ $(".ver-usuario").click(function(event)
     }
     ajaxRequest(data,url,'verUsuario');
     //$("#myModal").modal('show');
+});
+
+$(document).on("click", ".btnVar", function(event){
+    event.preventDefault();
+    swal({
+        title: '¿ Desea continuar ?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        fila = $(this).closest("tr");
+        form = $(this);
+        accion = form.attr("accion") ? form.attr("accion") : "pregunta";
+        aux_updated_at = form.attr("updated_at");
+        id = fila.find('td:eq(0)').text();
+        var data = {
+            id          : id,
+            updated_at  : aux_updated_at,
+            removerItem : true,
+            _token      : $('input[name=_token]').val()
+        };
+        if (value) {
+            ajaxRequest(data,form.attr('href'),accion,form);
+        }
+    });
+    
 });

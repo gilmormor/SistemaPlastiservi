@@ -1,7 +1,7 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
 
-
+    $("#cotizacion_id").numeric();
     $("#btnconsultar").click(function()
     {
         consultar($("#fechad").val(),$("#fechah").val(),$("#rut").val(),$("#vendedor_id").val());
@@ -74,6 +74,7 @@ function consultar(fechad,fechah,rut,vendedor_id){
         fechah: fechah,
         rut: eliminarFormatoRutret(rut),
         vendedor_id: vendedor_id,
+        cotizacion_id : $("#cotizacion_id").val(),
         _token: $('input[name=_token]').val()
     };
     $.ajax({
@@ -189,7 +190,8 @@ function btnpdf(){
     cadena = "?fechad=" + $("#fechad").val() +
             "&fechah="+$("#fechah").val() +
             "&rut="+$("#rut").val() +
-            "&vendedor_id=" + $("#vendedor_id").val()
+            "&vendedor_id=" + $("#vendedor_id").val() +
+            "&cotizacion_id=" + $("#cotizacion_id").val()
     $('#contpdf').attr('src', '/cotizacionconsulta/exportPdf/'+cadena);
     $("#myModalpdf").modal('show');
 }

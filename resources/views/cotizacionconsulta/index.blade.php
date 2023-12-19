@@ -69,6 +69,16 @@ Cotización
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-md-3 col-sm-3 text-left">
+                                        <label for="cotizacion_id" data-toggle='tooltip' title="Número Cotización">Cotización:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-9 col-sm-9">
+                                        <input type="text" name="cotizacion_id" id="cotizacion_id" class="form-control" value="{{old('cotizacion_id')}}" maxlength="12"/>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-xs-12 col-md-4 col-sm-4">
                             <div class="col-xs-12 col-md-12 col-sm-12">

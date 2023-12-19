@@ -222,11 +222,11 @@
 		</table>
 	</div>
 	<br>
-	<div>
-		@if (!is_null($notaventa->observacion))
+	@if (!is_null($notaventa->observacion))
+		<div>
 			<p class="nota"><strong> <H2>Observaciones: {{$notaventa->observacion}}</H2></strong></p>			
-		@endif
-	</div>
+		</div>
+	@endif
 	<br>
 	@if ($datosArray["monedaLocal"] == false)
 		<div>

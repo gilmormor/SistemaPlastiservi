@@ -33,6 +33,7 @@ Cotización
                                 <th class="ocultar">updated_at</th>
                                 <th class="width30">Estado</th>
                                 <th>PDF</th>
+                                <th>Accion</th>
                             </tr>
                         </thead>
                         <tbody>

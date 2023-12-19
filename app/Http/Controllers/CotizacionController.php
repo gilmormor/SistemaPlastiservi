@@ -733,32 +733,35 @@ class CotizacionController extends Controller
     public function eliminar(Request $request,$id)
     {
         can('eliminar-cotizacion');
-        //dd($request);
         if ($request->ajax()) {
             //dd($id);
-            $inventsal = Cotizacion::findOrFail($id);
-            if($request->updated_at == $inventsal->updated_at){
-                if (Cotizacion::destroy($id)) {
-                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                    $cotizacion = Cotizacion::withTrashed()->findOrFail($id);
-                    $cotizacion->usuariodel_id = auth()->id();
-                    $cotizacion->save();
-                    //Eliminar detalle de cotizacion
-                    CotizacionDetalle::where('cotizacion_id', $id)->update(['usuariodel_id' => auth()->id()]);
-                    CotizacionDetalle::where('cotizacion_id', '=', $id)->delete();
-                    return response()->json(['mensaje' => 'ok']);
-                } else {
-                    return response()->json(['mensaje' => 'ng']);
-                }    
-            }else{
+            $cotizacion = Cotizacion::findOrFail($id);
+            if($cotizacion->updated_at != $request->updated_at){
                 return response()->json([
-                    'id' => 0,
-                    'mensaje'=>'Registro no puede ser eliminado, fué modificado por otro usuario.',
-                    'tipo_alert' => 'error'
+                        "respuesta" => 0,
+                        "mensaje" => "No se pudo eliminar. Registro modificado por otro usuario.",
+                        "tipo_alert" => "error"
+                ]);    
+            }
+            if(count($cotizacion->notaventa) > 0){
+                return response()->json([
+                    "id" => 0,
+                    "mensaje" => "No se pudo eliminar. Cotizacion ya fue usada en Nota de Venta Nro." . $cotizacion->notaventa[0]->id,
+                    "tipo_alert" => "error"
                 ]);
             }
-
-
+            if (Cotizacion::destroy($id)) {
+                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                $cotizacion = Cotizacion::withTrashed()->findOrFail($id);
+                $cotizacion->usuariodel_id = auth()->id();
+                $cotizacion->save();
+                //Eliminar detalle de cotizacion
+                CotizacionDetalle::where('cotizacion_id', $id)->update(['usuariodel_id' => auth()->id()]);
+                CotizacionDetalle::where('cotizacion_id', '=', $id)->delete();
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json(['mensaje' => 'ng']);
+            }
         } else {
             abort(404);
         }
@@ -1164,6 +1167,44 @@ class CotizacionController extends Controller
         }
     }
 
+    public function devolveracrecot(Request $request){
+        //dd($request);
+        if($request->ajax()){
+            can('guardar-cotizacion');
+            $cotizacion = Cotizacion::findOrFail($request->id);
+            if($cotizacion->updated_at != $request->updated_at){
+                return [
+                        "respuesta" => 0,
+                        "mensaje" => "No se pudo devolver. Registro modificado por otro usuario.",
+                        "tipo_alert" => "error"
+                    ];    
+            }
+            if(count($cotizacion->notaventa) > 0){
+                return [
+                    "respuesta" => 0,
+                    "mensaje" => "No se pudo devolver. Cotizacion ya fue usada en Nota de Venta Nro." . $cotizacion->notaventa[0]->id,
+                    "tipo_alert" => "error"
+                ];    
+            }
+            $cotizacion->aprobstatus = null;
+            $cotizacion->aprobusu_id = null;
+            $cotizacion->aprobfechahora = null;
+            $cotizacion->aprobobs = null;
+            if($cotizacion->save()){
+                return [
+                    "respuesta" => 1,
+                    "mensaje" => "Registro fue devuelto a Crear Cotizacion",
+                    "tipo_alert" => "success"
+                ];
+            }else{
+                return [
+                    "respuesta" => 0,
+                    "mensaje" => "Error al guardar",
+                    "tipo_alert" => "error"
+                ];
+            }
+        }
+    }
 }
 
 /**Sumar dias habiles a fecha */

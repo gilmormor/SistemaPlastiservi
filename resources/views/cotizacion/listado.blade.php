@@ -203,9 +203,11 @@
 			</tr>
 		</table>
 	</div>
-	<div class="round" style="margin-bottom: 3px;">
-		<p class="nota"><strong>Observaciones: {{$cotizacion->observacion}}</strong></p>
-	</div>
+	@if (!is_null($cotizacion->observacion))
+		<div class="round" style="margin-bottom: 3px;">
+			<p class="nota"><strong>Observaciones: {{$cotizacion->observacion}}</strong></p>
+		</div>
+	@endif
 	<div>
 		<table width="100%">
 			<tr>

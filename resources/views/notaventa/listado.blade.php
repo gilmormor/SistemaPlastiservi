@@ -141,11 +141,11 @@
 			</tr>
 		</table>
 	</div>
-	<div class="round" style="margin-bottom: 3px;">
-		@if (!is_null($notaventa->observacion))
-			<p class="nota"><strong> <H2>Observaciones: {{$notaventa->observacion}}</H2></strong></p>			
-		@endif
-	</div>
+	@if (!is_null($notaventa->observacion))
+		<div class="round" style="margin-bottom: 3px;">
+				<p class="nota"><strong> <H2>Observaciones: {{$notaventa->observacion}}</H2></strong></p>			
+		</div>
+	@endif
 	<div class="round1" style="padding-bottom: 0px;">
 		<span class="h3">Información</span>
 		<table id="factura_detalle">

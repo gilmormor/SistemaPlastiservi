@@ -956,13 +956,37 @@ function consultaranularguiafact(guiadespacho){
 }
 
 
-function anularguia(id,despachoord_id){
-    //console.log("entro");
-    quitarvalidacioneach();
-    $("#titeditarcampo").html("Observacion");
-    $("#lbleditarcampo").html("Observacion: Anular Guia " + $("#fila" + id).attr("nrodocto1"));    
-    $("#auxeditcampoT").attr('fila_id',id);
-    $("#myModalEditarCampoTex").modal('show');
+function anularguia(id,despachoord_id,aux_slug = "anular-guia-desp-sin-dev-a-orden-sin-afectar-inv"){
+    var data = {
+		slug: aux_slug,
+		_token: $('input[name=_token]').val()
+	};
+    $.ajax({
+		url: '/generales_valpermiso',
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			//console.log(respuesta);
+			if(respuesta.resp){
+                //console.log("entro");
+                quitarvalidacioneach();
+                $("#titeditarcampo").html("Observacion");
+                $("#lbleditarcampo").html("Observacion: Anular Guia " + $("#fila" + id).attr("nrodocto1"));    
+                $("#auxeditcampoT").attr('fila_id',id);
+                $("#myModalEditarCampoTex").modal('show');
+            }else{
+				swal({
+					title: respuesta.mensaje,
+					text:  respuesta.mensaje2,
+					icon: 'error',
+					buttons: {
+						confirm: "Cerrar",
+					},
+				}).then((value) => {
+				});
+			}
+		}
+	});
 }
 
 $("#btnaceptarMT").click(function(event){
