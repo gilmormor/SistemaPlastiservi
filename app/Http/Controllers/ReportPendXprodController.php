@@ -167,7 +167,9 @@ class ReportPendXprodController extends Controller
             $comuna = Comuna::findOrFail($data->comunaentrega_id);
             $producto = Producto::findOrFail($data->producto_id);
             //$notaventa = NotaVenta::findOrFail($data->notaventa_id);
-            $aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
+            //$aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
+            $aux_subtotalplata = ($aux_cantsaldo) * $data->preciounit;
+
 
             $data->sumacantdesp = $sumacantdesp;
             $data->cantsaldo = $aux_cantsaldo;
@@ -188,7 +190,8 @@ class ReportPendXprodController extends Controller
                 'total_cantsaldo' => $total_cantsaldo,
                 'total_kgpend' => round($total_kgpend),
                 'total_totalplata' => $total_totalplata,
-                'prom_precioxkilo' => $total_precioxkilo / $aux_contreg
+                'prom_precioxkilo' => $total_precioxkilo / $aux_contreg,
+                'prom_totalplata' => round($total_totalplata / $aux_contreg,2),
             ];     
         }
 
@@ -498,7 +501,8 @@ function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
             producto.tipounion,
             notaventadetalle.totalkilos,
             subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
-            notaventadetalle.precioxkilo,comuna.nombre as comunanombre,acuerdotecnico.id as acuerdotecnico_id,
+            notaventadetalle.preciounit,notaventadetalle.precioxkilo,
+            comuna.nombre as comunanombre,acuerdotecnico.id as acuerdotecnico_id,
             '' as at_espesor,0 as stockbpt,0 as picking";
         }
 

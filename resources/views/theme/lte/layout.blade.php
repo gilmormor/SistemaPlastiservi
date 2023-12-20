@@ -45,6 +45,8 @@
     @yield("styles")
 
     <link rel="stylesheet" href="{{autoVer("assets/css/custom.css")}}">
+    <link rel="stylesheet" href="{{autoVer("assets/css/jspdf/pure-min.css")}}">
+    <link rel="stylesheet" href="{{autoVer("assets/css/jspdf/grids-responsive-min.css")}}">
 
 
 
@@ -175,7 +177,13 @@
         <!--<script src="{{asset("assets/js/funciones.js")}}"></script>-->
         <script src="{{autoVer("assets/js/funciones.js")}}"></script>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+        <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>-->
+
+        <script src="{{autoVer("assets/js/jspdf/dist/libs/jspdf.umd.js")}}"></script>
+        <script>if (!window.jsPDF) window.jsPDF = window.jspdf.jsPDF</script>
+        <script src="{{autoVer("assets/js/jspdf/dist/libs/mitubachi-normal.js")}}"></script>
+
+        <script src="{{autoVer("assets/js/jspdf/dist/dist/jspdf.plugin.autotable.js")}}"></script>
         @yield('scripts')
 
     </body>
