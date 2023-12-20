@@ -682,7 +682,6 @@ function exportarExcel() {
         type: 'POST',
         dataType: 'json',
         success: function(data) {
-        console.log(data.data);
         //return 0;
         if(data.data.length == 0){
             swal({
