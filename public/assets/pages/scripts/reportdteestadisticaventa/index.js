@@ -527,10 +527,10 @@ function exportarExcelLosPinos() {
     data = datosFac(orderby,1);
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
-      url: "/reportdteestadisticaventa/reportdteestadisticaventapage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
-      type: 'POST',
-      dataType: 'json',
-      success: function(data) {
+        url: "/reportdteestadisticaventa/reportdteestadisticaventapage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+        type: 'POST',
+        dataType: 'json',
+        success: function(data) {
         if(data.datos.length == 0){
             swal({
                 title: 'Información no encontrada!',
@@ -551,7 +551,7 @@ function exportarExcelLosPinos() {
         var datosExcel = [];
         // Agregar los datos de la tabla al arreglo
         aux_vendedor_id = "";
-		count = 0;
+        count = 0;
 
         cellLengthRazonSoc = 0;
         cellLengthProducto = 0;

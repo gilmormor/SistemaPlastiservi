@@ -307,11 +307,14 @@ class Dte extends Model
                     break;
             }
         }
-    
         if(!isset($request->comuna_id) or empty($request->comuna_id)){
-            $aux_condcomuna_id = " true";
+            $aux_condcomuna_id = "true";
         }else{
-            $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
+            $aux_condcomuna_id = $request->comuna_id;
+            if(is_array($request->comuna_id)){
+                $aux_condcomuna_id = implode(",", $request->comuna_id);
+            }
+            $aux_condcomuna_id = " notaventa.comunaentrega_id in ($aux_condcomuna_id) ";
         }
 
         $aux_conddteguiausada = " true";

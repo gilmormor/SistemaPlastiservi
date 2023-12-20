@@ -2657,18 +2657,6 @@ function sumarDias(fecha, dias){
 	return fecha;
 }
 
-function fechaddmmaaaa(f){
-    dia = f.getDate();
-    d = dia.toString();
-    d = d.padStart(2, 0);
-    mes = f.getMonth();
-    m = f.toLocaleString('es', { month: '2-digit' }); //mes.toString();
-    m = m.padStart(2, 0);
-    fecha = d + "/" + m + "/" + f.getFullYear();
-    
-    return fecha; 
-}
-
 
 $("#VerAcuTec").change(function(){
 	cargardatospantprod();
@@ -3532,4 +3520,22 @@ function indtrasladoObj(indtraslado){
 		}
 	}
 	return data;
+}
+
+function fechaactual(){
+	// Obtén la fecha actual
+	var fechaActual = new Date();
+
+	// Obtiene el día, mes y año
+	var dia = fechaActual.getDate();
+	var mes = fechaActual.getMonth() + 1; // Los meses comienzan desde cero, por lo que se suma 1
+	var anio = fechaActual.getFullYear();
+
+	// Formatea el día y el mes para asegurarse de que tengan dos dígitos
+	dia = (dia < 10) ? '0' + dia : dia;
+	mes = (mes < 10) ? '0' + mes : mes;
+
+	// Crea la cadena de fecha en el formato deseado
+	var fechaFormateada = dia + '/' + mes + '/' + anio;
+	return fechaFormateada;
 }

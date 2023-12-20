@@ -8,6 +8,8 @@ DTE Guia Despacho
 ?>
 
 @section("scripts")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportdteguiadesp/index.js")}}" type="text/javascript"></script>
@@ -216,14 +218,25 @@ DTE Guia Despacho
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-md-3 col-sm-12 text-center">
-                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                            <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
-                                <i class='glyphicon glyphicon-print'></i> Reporte
-                            </button>
-                            <button type='button' id='btnpdf3' name='btnpdf3' class='btn btn-success tooltipsC' title="Reporte PDF con Kg">
-                                <i class='glyphicon glyphicon-print'></i> Kg
-                            </button>
+                        <div class="col-xs-12 col-md-3 col-sm-12">
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                            </div>
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                                    <i class='glyphicon glyphicon-print'></i> Reporte
+                                </button>
+                            </div>
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type='button' id='btnpdf3' name='btnpdf3' class='btn btn-success tooltipsC' title="Reporte PDF con Kg">
+                                    <i class='glyphicon glyphicon-print'></i> Kg
+                                </button>
+                            </div>
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()" style="margin-top: 4px;">
+                                    <i class='fa fa-fw fa-file-excel-o'> </i> Excel
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>

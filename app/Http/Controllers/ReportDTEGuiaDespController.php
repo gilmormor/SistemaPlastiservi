@@ -14,6 +14,7 @@ use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportDTEGuiaDespController extends Controller
 {
