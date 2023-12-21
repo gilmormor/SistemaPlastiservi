@@ -1033,9 +1033,9 @@ function exportarExcelDTEDet() {
                         aux_estado = `Guia Fac (${registro.fact_nrodocto})`;
                     }
                 }
-                /* if(registro.dteanul_obs != null){
+                if(registro.dteanul_obs != null){
                     aux_estado = "Anulada";
-                } */
+                }
                 datosExcel.push([
                                 registro.nrodocto,
                                 fechaddmmaaaa(aux_fecha),
