@@ -234,7 +234,12 @@ DTE Guia Despacho
                             </div>
                             <div class="col-xs-12 col-md-4 col-sm-4">
                                 <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()" style="margin-top: 4px;">
-                                    <i class='fa fa-fw fa-file-excel-o'> </i> Excel
+                                    <i class='fa fa-fw fa-file-excel-o'> </i>    Total
+                                </button>
+                            </div>
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type="button" id="btnexportarExcelDet" name="btnexportarExcelDet" class="btn btn-success tooltipsC" title="Exportar Excel Detalle" onclick="exportarExcelDTEDet()" style="margin-top: 4px;">
+                                    <i class='fa fa-fw fa-file-excel-o'> </i>  Detalle
                                 </button>
                             </div>
                         </div>
