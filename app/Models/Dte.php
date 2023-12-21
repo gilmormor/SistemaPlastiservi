@@ -696,6 +696,7 @@ class Dte extends Model
         $aux_aprobstatus = " true";
         $unionOtrasTablas = "";
         $otrosCampos = "";
+        $aux_sucursal_idCond =" true";
         if(isset($request->filtroguiasusadas)){
             $filtroNoMostrarGuiasUsadas = "true";
             $filtroNoMostrarDTeAnuladas = "true";
@@ -737,7 +738,14 @@ class Dte extends Model
                         break;
                 }
             }
-    
+            $sucurArray = $user->sucursales->pluck('id')->toArray();
+            $sucurcadena = implode(",", $sucurArray);
+            $aux_condsucurArray = "dte.sucursal_id  in ($sucurcadena)";
+            if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+                $aux_sucursal_idCond = "true";
+            }else{
+                $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
+            }
         }
 
         $user = Usuario::findOrFail(auth()->id());
@@ -806,6 +814,7 @@ class Dte extends Model
         AND $filtroNoMostrarGuiasUsadas
         AND $filtroNoMostrarDTeAnuladas
         AND $aux_aprobstatus
+        AND $aux_sucursal_idCond
         order BY dte.nrodocto,dtedet.id;";
         //dd($sql);
         $arrays = DB::select($sql);
