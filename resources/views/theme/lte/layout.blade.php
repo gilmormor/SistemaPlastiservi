@@ -45,8 +45,10 @@
     @yield("styles")
 
     <link rel="stylesheet" href="{{autoVer("assets/css/custom.css")}}">
+    <!--
     <link rel="stylesheet" href="{{autoVer("assets/css/jspdf/pure-min.css")}}">
     <link rel="stylesheet" href="{{autoVer("assets/css/jspdf/grids-responsive-min.css")}}">
+    -->
 
 
 
