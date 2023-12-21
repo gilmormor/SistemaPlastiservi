@@ -1120,6 +1120,7 @@ Route::get('reportdteguiadesp/reportdteguiadesppage', 'ReportDTEGuiaDespControll
 Route::get('reportdteguiadesp/reporte', 'ReportDTEGuiaDespController@reporte')->name('reportdteguiadesp_reporte');
 Route::get('reportdteguiadesp/exportPdf', 'ReportDTEGuiaDespController@exportPdf')->name('reportdteguiadesp_exportPdf');
 Route::get('reportdteguiadesp/totalizarindex', 'ReportDTEGuiaDespController@totalizarindex')->name('reportdteguiadesp_totalizarindex');
+Route::get('reportdteguiadesp/listardtedet', 'ReportDTEGuiaDespController@listardtedet')->name('reportdteguiadesp_listardtedet');
 
 
 /*RUTAS FACTURA*/

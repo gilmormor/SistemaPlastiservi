@@ -691,14 +691,31 @@ class Dte extends Model
             $aux_conddtedet = "dte.id IN ($request->strdte_id)";
         }
 
+        $filtroguiasusadas = "dte.id NOT IN (SELECT dteguiausada.dte_id FROM dteguiausada WHERE ISNULL(dteguiausada.deleted_at))";
+        $unionOtrasTablas = "";
+        $otrosCampos = "";
+        if(isset($request->filtroguiasusadas)){
+            $filtroguiasusadas = "true";
+            $otrosCampos = ",dtedte.dter_id,
+                            (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
+                            FROM dtedte as dtedte1 INNER JOIN dte as dte1
+                            ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+                            WHERE dtedte1.dter_id = dte.id
+                            AND (dte1.foliocontrol_id = 1) 
+                            AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto
+             ";
+            $unionOtrasTablas = " LEFT JOIN dtedte
+                                    ON dtedte.dter_id = dte.id AND isnull(dtedte.deleted_at)
+                                    ";
+        }
 
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
-    
+        
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.centroeconomico_id,
-        cliente.razonsocial,
+        cliente.rut,cliente.razonsocial,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as oc_id,
         if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as oc_file,
         dteguiadesp.notaventa_id,
@@ -711,7 +728,10 @@ class Dte extends Model
         dtedet.producto_id,dtedet.nrolindet,dtedet.vlrcodigo,dtedet.nmbitem,dtedet.dscitem,dtedet.qtyitem,dtedet.unmditem,
         dtedet.unidadmedida_id,dtedet.prcitem,dtedet.montoitem,dtedet.obsdet,dtedet.itemkg,
         notaventadetalle.precioxkilo,notaventadetalle.precioxkiloreal,
-        dte.vendedor_id
+        dte.mnttotal,dte.kgtotal,
+        dte.vendedor_id,persona.rut as vendedor_rut,concat(persona.nombre, ' ' ,persona.apellido) AS vendedor_nombre,
+        dte.indtraslado
+        $otrosCampos
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
         LEFT JOIN despachoord
@@ -734,6 +754,11 @@ class Dte extends Model
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
         LEFT JOIN dteoc
         ON dteoc.dte_id=dte.id and isnull(dteoc.deleted_at)
+        LEFT JOIN vendedor
+        ON dte.vendedor_id=vendedor.id and isnull(vendedor.deleted_at)
+        LEFT JOIN persona
+        ON vendedor.persona_id=persona.id and isnull(persona.deleted_at)
+        $unionOtrasTablas
         WHERE $vendedorcond
         AND $aux_condFecha
         AND $aux_condrut
@@ -747,7 +772,7 @@ class Dte extends Model
         AND NOT ISNULL(dte.fchemis)
         AND $aux_conddtenotnull
         AND $aux_conddtedet
-        and dte.id NOT IN (SELECT dteguiausada.dte_id FROM dteguiausada WHERE ISNULL(dteguiausada.deleted_at))
+        AND $filtroguiasusadas
         AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
         order BY dte.nrodocto;";
         //dd($sql);

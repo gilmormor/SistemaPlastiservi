@@ -237,6 +237,13 @@ DTE Guia Despacho
                                     <i class='fa fa-fw fa-file-excel-o'> </i> Excel
                                 </button>
                             </div>
+                            <!--
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type="button" id="btnexportarExcelDet" name="btnexportarExcelDet" class="btn btn-success tooltipsC" title="Exportar Excel Detalle" onclick="exportarExcelDTEDet()" style="margin-top: 4px;">
+                                    <i class='fa fa-fw fa-file-excel-o'> </i> Excel
+                                </button>
+                            </div>
+                            -->
                         </div>
                     </form>
                 </div>

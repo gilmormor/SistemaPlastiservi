@@ -15,7 +15,7 @@ $(document).ready(function () {
     configurarTabla('#tabla-data-consulta');
 
     function configurarTabla(aux_tabla){
-        data = datosGD();
+        data = datosGD(1);
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
@@ -262,12 +262,16 @@ function ajaxRequest(data,url,funcion) {
 	});
 }
 
-function datosGD(){
+function datosGD(filtro = 0){
+    aux_sucursal_id = $("#sucursal_id").val();
+    if(filtro == 1){
+        aux_sucursal_id = -1;
+    }
     var data1 = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
-        sucursal_id       : $("#sucursal_id").val(),
+        sucursal_id       : aux_sucursal_id,
         vendedor_id       : $("#vendedor_id").val(),
         oc_id             : $("#oc_id").val(),
         giro_id           : $("#giro_id").val(),
@@ -683,6 +687,7 @@ function exportarExcel() {
         dataType: 'json',
         success: function(data) {
         //return 0;
+        //console.log(data);
         if(data.data.length == 0){
             swal({
                 title: 'Información no encontrada!',
@@ -716,7 +721,7 @@ function exportarExcel() {
         aux_totalkgtotal = 0;
         aux_totalmnttotal = 0;
         datosExcel.push(["","","","","","","","",""]);
-        datosExcel.push(["NDoc","Fecha","RUT","Razon Social","Comuna","Kg","Monto","Estado","OC"]);
+        datosExcel.push(["NDoc","Fecha","RUT","Razon Social","Comuna","Kg","Monto","Estado","OC","NV"]);
         data.data.forEach(function(registro) {
             aux_totalkgtotal += registro.kgtotal;
             aux_totalmnttotal += registro.mnttotal;
@@ -746,7 +751,8 @@ function exportarExcel() {
                 registro.kgtotal, //"Producto",
                 registro.mnttotal, //"Ancho"
                 aux_estado, //,"Largo"
-                registro.oc_id //,"Espesor",
+                registro.oc_id, //,"Espesor",
+                registro.notaventa_id
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -754,7 +760,7 @@ function exportarExcel() {
             datosExcel.push(filaExcel);
         });
         if(aux_totalkgtotal > 0){
-            datosExcel.push(["","","","","Total: ",aux_totalkgtotal,aux_totalmnttotal,"",""]);
+            datosExcel.push(["","","","","Total: ",aux_totalkgtotal,aux_totalmnttotal,"","",""]);
         }
 
         createExcel(datosExcel);
@@ -950,4 +956,361 @@ function ajustarcolumnaexcel(worksheet,columna){
         }
     });
     columnB.width = maxLengthB < 10 ? 10 : maxLengthB;
+}
+
+function exportarExcelDTEDet() {
+    data = datosGD();
+    // Obtener todos los registros mediante una solicitud AJAX
+    $.ajax({
+        url: "/reportdteguiadesp/listardtedet/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+        type: 'POST',
+        dataType: 'json',
+        success: function(data) {
+        console.log(data.datos);
+        //return 0;
+        if(data.datos.length == 0){
+            swal({
+                title: 'Información no encontrada!',
+                text: "",
+                icon: 'warning',
+                buttons: {
+                    confirm: "Aceptar"
+                },
+            }).then((value) => {
+                if (value) {
+                    //ajaxRequest(data,ruta,'accionnotaventa');
+                }
+            });
+            return 0;
+        }
+        //console.log(data);
+        // Crear una matriz para los datos de Excel
+        var datosExcel = [];
+        // Agregar los datos de la tabla al arreglo
+        aux_nrodocto = "";
+        count = 0;
+
+        cellLengthRazonSoc = 0;
+        cellLengthProducto = 0;
+        filainifusionar = -1
+        arrayfusionarCelNomVend = [];
+        //console.log(data);
+        aux_sucursalNombre = $("#sucursal_id option:selected").html();
+        aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
+        datosExcel.push(["Guias de Despacho","","","","","","","",fechaactual()]);
+        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
+        aux_totalkgtotal = 0;
+        aux_totalmnttotal = 0;
+        datosExcel.push(["","","","","","","","",""]);
+        datosExcel.push(["NDoc","Fecha","RUT Razon Social","","Comuna","Kg","","Monto","Estado","OC","Vendedor"]);
+        data.datos.forEach(function(registro) {
+            if (registro.nrodocto != aux_nrodocto){
+                filainifusionar += 3;
+                if(aux_nrodocto != ""){
+                    datosExcel.push(["","","","","","","","","",""]);
+                }
+                /*
+                if(aux_vendedor_id == ""){
+                    datosExcel.push(["","","","","","","","","","",""]);
+                }else{
+                    datosExcel.push(["","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
+                }*/
+                aux_totalMonto = 0;
+                aux_totalComision = 0;        
+                //datosExcel.push(["","","","","","","","","",""]);
+                aux_fecha = new Date(registro.fchemis + " 00:00:00");
+                aux_estado = "";
+                if(registro.indtraslado == "6"){
+                    aux_estado = "Guia solo traslado";
+                }
+                if(registro.indtraslado == "1"){
+                    if(registro.dter_id == null){
+                        aux_estado = "Pendiente de Fac";
+                    }else{
+                        aux_estado = `Guia Fac (${registro.fact_nrodocto})`;
+                    }
+                }
+                /* if(registro.dteanul_obs != null){
+                    aux_estado = "Anulada";
+                } */
+                datosExcel.push([
+                                registro.nrodocto,
+                                fechaddmmaaaa(aux_fecha),
+                                registro.rut + " " + registro.razonsocial.substring(0, 35),
+                                "",
+                                registro.comunanombre,
+                                registro.kgtotal,
+                                "",
+                                registro.mnttotal,
+                                aux_estado,
+                                registro.oc_id,
+                                registro.vendedor_rut + " - " + registro.vendedor_nombre
+                            ]);
+                arrayfusionarCelNomVend.push(filainifusionar);
+                datosExcel.push(["Ln","CodPro","Producto","Cant","Unid","Kg","P/U","Monto","Desc","",""]);
+                aux_ln = 1;
+
+            }
+
+            aux_totalkgtotal += registro.kgtotal;
+            aux_totalmnttotal += registro.mnttotal;
+            filainifusionar++;
+
+            var filaExcel = [
+                aux_ln++, //"Ln",
+                registro.producto_id, //"CodPro",
+                registro.nmbitem, //"Producto",
+                registro.qtyitem, //"Cant",
+                registro.unmditem, //"Unid",
+                registro.itemkg, //"Kg",
+                registro.prcitem, //"P/U"
+                registro.montoitem, //"Monto"
+                "" //,"Desc",
+            ];
+            aux_nrodocto = registro.nrodocto;
+            count++;
+
+            datosExcel.push(filaExcel);
+        });
+        /*
+        if(aux_totalkgtotal > 0){
+            datosExcel.push(["","","","","Total: ",aux_totalkgtotal,aux_totalmnttotal,"",""]);
+        }*/
+
+        createExcelDet(datosExcel);
+
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+
+
+    // Llamar a la función para crear el archivo Excel
+
+}
+
+function createExcelDet(datosExcel) {
+    // Crear un nuevo libro de trabajo y una nueva hoja
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Datos");
+
+    // Insertar los datos en la hoja de trabajo
+    worksheet.addRows(datosExcel);
+
+    // Establecer negrita en la celda A1
+    //worksheet.getCell("A5").font = { bold: true };
+
+
+    // Ajustar automáticamente el ancho de la columna B al contenido
+    ajustarcolumnaexcel(worksheet,"B");
+    ajustarcolumnaexcel(worksheet,"C");
+    ajustarcolumnaexcel(worksheet,"D");
+    ajustarcolumnaexcel(worksheet,"E");
+    ajustarcolumnaexcel(worksheet,"F");
+    ajustarcolumnaexcel(worksheet,"G");
+    ajustarcolumnaexcel(worksheet,"H");
+    ajustarcolumnaexcel(worksheet,"I");
+    ajustarcolumnaexcel(worksheet,"J");
+    ajustarcolumnaexcel(worksheet,"K");
+    ajustarcolumnaexcel(worksheet,"L");
+    ajustarcolumnaexcel(worksheet,"M");
+
+    // Combinar celdas desde [4,0] hasta [4,2]
+    arrayfusionarCelNomVend.forEach(function(fila) {
+        /*
+        // Establecer negrita a totales
+        row = worksheet.getRow(fila + 2 -2);
+        for (let i = 1; i <= 10; i++) {
+            cell = row.getCell(i);
+            cell.font = { bold: true };
+            cell.alignment = { horizontal: "right" };
+            cell.numFmt = "#,##0";
+        }
+
+        row = worksheet.getRow(datosExcel.length);
+        for (let i = 1; i <= 10; i++) {
+            cell = row.getCell(i);
+            cell.font = { bold: true };
+            cell.alignment = { horizontal: "right" };
+            cell.numFmt = "#,##0";
+        }
+
+        // Establecer negrita en la celda de Vendedor
+        const row5 = worksheet.getRow(fila + 2);
+        const cellA5 = row5.getCell(1);
+        cellA5.font = { bold: true };
+        */
+        //Establecer negrita a todos los titulos del detalle
+        const row6 = worksheet.getRow(fila);
+        for (let i = 1; i <= 9; i++) {
+            cell = row6.getCell(i);
+            cell.font = { bold: true };
+        }
+
+        //Establecer alineacion a la derecha de titulos de detalle desde la columna 4 a la 8
+        const row7 = worksheet.getRow(fila);
+        for (let i = 4; i <= 8; i++) {
+            cell = row7.getCell(i);
+            cell.alignment = { horizontal: "right" };
+        }
+        //Fusionar celdas de vendedor
+        const startCol = 0;
+        const endCol = 4;
+        worksheet.mergeCells(fila + 2, startCol, fila + 2, endCol);
+        
+        // Establecer el formato de negrita en la celda superior izquierda del rango fusionado
+    });
+
+
+    //Establecer negrilla a titulo de columnas Fila 4
+    const row6 = worksheet.getRow(4);
+    for (let i = 1; i <= 10; i++) {
+        cell = row6.getCell(i);
+        cell.font = { bold: true };
+        cell.autosize = true;
+    }
+
+    // Obtén el objeto de la columna y establece la propiedad hidden en true
+    /* columnhidden = worksheet.getColumn("H");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("I");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("J");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("K");
+    columnhidden.hidden = true; */
+    /*
+    columnhidden = worksheet.getColumn("N");
+    columnhidden.hidden = true;
+    */
+
+    //AJUSTAR EL TEXTO CELDAS A4:AI4
+    // Supongamos que deseas ajustar el texto en la fila 4 y hacer que las celdas en negrita
+    fila = 4;
+
+    // Iterar a través de las celdas en la fila y configurar el formato
+    for (let i = 1; i <= 10; i++) {
+        columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
+        const celda = worksheet.getCell(`${columna}${fila}`);
+        celda.alignment = { wrapText: true, vertical: 'middle' };
+        celda.autosize = true;
+    }    
+
+
+    // Recorrer la columna 7 y dar formato con punto para separar los miles
+    const columnG = worksheet.getColumn(6);
+    columnG.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Recorrer la columna R y dar formato con punto para separar los miles
+    const columnR = worksheet.getColumn(7);
+    columnR.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Recorrer la columna R y dar formato con punto para separar los miles
+    const columnH = worksheet.getColumn(8);
+    columnH.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+    
+    // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
+    for (let i = 4; i <= datosExcel.length; i++) {
+        /*
+        const cell8 = worksheet.getCell(i, 8);
+        cell8.alignment = { horizontal: "center", vertical: "middle" };
+        */
+        const cell9 = worksheet.getCell(i, 9);
+        cell9.alignment = { horizontal: "center", vertical: "middle" };
+        const cell10 = worksheet.getCell(i, 10);
+        cell10.alignment = { horizontal: "center", vertical: "middle" };
+
+        const cell = worksheet.getCell(i, 13);
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    }
+
+
+    //Negrita Columna Titulo
+    const row1 = worksheet.getRow(1);
+    cell = row1.getCell(1);
+    cell.font = { bold: true, size: 20 };
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+
+    //Titulo Kg
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(6);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    //Titulo Monto
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(7);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    
+
+    //Fecha Reporte
+    const row2 = worksheet.getRow(1);
+    cell = row2.getCell(9);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+
+    //Fusionar celdas de Titulo
+    const startCol = 0;
+    const endCol = 8;
+    worksheet.mergeCells(1, startCol, 1, endCol);
+
+    //Negrita Columna Sucursal
+    const row3 = worksheet.getRow(2);
+    cell = row3.getCell(1);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    
+    //Fusionar celdas Sucursal
+    const startCol1 = 0;
+    const endCol1 = 8;
+    worksheet.mergeCells(2, startCol1, 2, endCol1);
+
+    // Establecer negrita a totales
+    row = worksheet.getRow(datosExcel.length);
+    for (let i = 1; i <= 6; i++) {
+        cell = row.getCell(i);
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: "right" };
+        cell.numFmt = "#,##0.00";
+    }
+/*
+    cell = row.getCell(7);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0.00";
+
+    cell = row.getCell(8);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+*/
+
+    // Guardar el archivo
+    workbook.xlsx.writeBuffer().then(function(buffer) {
+      // Crear un objeto Blob para el archivo Excel
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+      // Crear un enlace de descarga
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "guiasdespacho.xlsx";
+      a.click();
+
+      // Limpiar el objeto Blob
+      window.URL.revokeObjectURL(url);
+    });
 }
