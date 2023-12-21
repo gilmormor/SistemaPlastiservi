@@ -691,22 +691,53 @@ class Dte extends Model
             $aux_conddtedet = "dte.id IN ($request->strdte_id)";
         }
 
-        $filtroguiasusadas = "dte.id NOT IN (SELECT dteguiausada.dte_id FROM dteguiausada WHERE ISNULL(dteguiausada.deleted_at))";
+        $filtroNoMostrarGuiasUsadas = "dte.id NOT IN (SELECT dteguiausada.dte_id FROM dteguiausada WHERE ISNULL(dteguiausada.deleted_at))";
+        $filtroNoMostrarDTeAnuladas = "dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))";
+        $aux_aprobstatus = " true";
         $unionOtrasTablas = "";
         $otrosCampos = "";
         if(isset($request->filtroguiasusadas)){
-            $filtroguiasusadas = "true";
+            $filtroNoMostrarGuiasUsadas = "true";
+            $filtroNoMostrarDTeAnuladas = "true";
             $otrosCampos = ",dtedte.dter_id,
                             (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
                             FROM dtedte as dtedte1 INNER JOIN dte as dte1
                             ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
                             WHERE dtedte1.dter_id = dte.id
                             AND (dte1.foliocontrol_id = 1) 
-                            AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto
+                            AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
+                            dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
              ";
             $unionOtrasTablas = " LEFT JOIN dtedte
-                                    ON dtedte.dter_id = dte.id AND isnull(dtedte.deleted_at)
-                                    ";
+                                ON dtedte.dter_id = dte.id AND isnull(dtedte.deleted_at)
+                                LEFT JOIN dteanul
+                                ON dteanul.dte_id=dte.id and isnull(dteanul.deleted_at)
+                            ";
+
+            $aux_aprobstatus = " true";
+            if(!empty($request->aprobstatus)){
+                switch ($request->aprobstatus) {
+                    case 0:
+                        $aux_aprobstatus = " true";
+                        break;
+                    case 1:
+                        $aux_aprobstatus = " isnull(dteanul.obs)";
+                        break;    
+                    case 2:
+                        $aux_aprobstatus = " not isnull(dteanul.obs)";
+                        break;
+                    case 3:
+                        $aux_aprobstatus = " dte.id in (SELECT dter_id from dtedte where isnull(dtedte.deleted_at))";
+                        break;
+                    case 4:
+                        $aux_aprobstatus = " dte.indtraslado = 1 AND dte.id not in (SELECT dter_id from dtedte where isnull(dtedte.deleted_at)) and isnull(dteanul.obs)";
+                        break;
+                    case 5:
+                        $aux_aprobstatus = " dte.indtraslado = 6";
+                        break;
+                }
+            }
+    
         }
 
         $user = Usuario::findOrFail(auth()->id());
@@ -772,8 +803,9 @@ class Dte extends Model
         AND NOT ISNULL(dte.fchemis)
         AND $aux_conddtenotnull
         AND $aux_conddtedet
-        AND $filtroguiasusadas
-        AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
+        AND $filtroNoMostrarGuiasUsadas
+        AND $filtroNoMostrarDTeAnuladas
+        AND $aux_aprobstatus
         order BY dte.nrodocto,dtedet.id;";
         //dd($sql);
         $arrays = DB::select($sql);
