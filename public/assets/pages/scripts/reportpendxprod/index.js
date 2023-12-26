@@ -440,14 +440,25 @@ $('#tabla-data-consulta').on('draw.dt', function () {
     }
 
   function consultarJS(data){
+    /*
+    // Ejemplo de uso
+    var rutaArchivo = 'assets/lte/dist/img/LOGO-PLASTISERVI1x.jpg';
     
+    verificarArchivo(rutaArchivo, function(existe) {
+        if (existe) {
+        console.log('El archivo existe en la ruta especificada.');
+        } else {
+        console.log('El archivo no existe en la ruta especificada.');
+        }
+    });
+    return 0;*/
     $.ajax({
         url: '/reportpendxprod/reportpendxprodpage',
         type: 'GET',
         data: data.data1,
         success: function (datos) {
             pdf = pdfjs(datos);
-            pdf.save('reporte.pdf');
+            pdf.save('PendXProd.pdf');
             return 0;
             var datosExcel = [];
             //datosExcel.push(["NV", "OC", "Fecha", "Plazo Entrega", "Razón Social", "Comuna", "Cod", "Descripción", "Clase Sello", "Diam Ancho", "L", "Peso Esp", "TU", "Stock", "Picking", "Cant", "Cant Desp", "Cant Pend", "Kilos Pend", "Precio Kg", "$"]);
@@ -526,7 +537,8 @@ $('#tabla-data-consulta').on('draw.dt', function () {
 
 function headRows() {
     return [
-      { nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", clase: "ClaSello", diam: "Diam Anch", l: "L", pesoesp: "Peso Esp", tu: "TU", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
+      //{ nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", clase: "ClaSello", diam: "Diam Anch", l: "L", pesoesp: "Peso Esp", tu: "TU", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
+      { nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
     ]
 }
 
@@ -534,7 +546,8 @@ function bodyRows(datos) {
     var body = []
     datos.data.forEach(function(registro) {
         aux_fecha = new Date(registro.fechahora);
-        body.push({
+        aux_plazoentrega = new Date(registro.plazoentrega + " 00:00:00")
+        /* body.push({
             nv: registro.notaventa_id,
             oc: registro.oc_id,
             fecha: fechaddmmaaaa(aux_fecha),
@@ -556,22 +569,46 @@ function bodyRows(datos) {
             kilos: MASKLA(registro.kgpend,2),
             preciokg: MASKLA(registro.precioxkilo,2),
             pesos: MASKLA(registro.subtotalplata,0)
+        }) */
+        aux_productonomb = registro.nombre.replace(/&quot;/g, '"');
+        aux_productonomb = aux_productonomb.replace(/&#039;/g, "'");
+        body.push({
+            nv: registro.notaventa_id,
+            oc: registro.oc_id,
+            fecha: fechaddmmaaaa(aux_fecha),
+            plazoentrega: fechaddmmaaaa(aux_plazoentrega),
+            razonsocial: registro.razonsocial,
+            comuna: registro.comunanombre,
+            cod: registro.producto_id,
+            desc: cadenaSinEntidad = aux_productonomb,
+            stock: registro.stockbpt,
+            picking: registro.picking,
+            cant: registro.cant,
+            cantdesp: registro.cantdesp,
+            cantpend: registro.cantsaldo,
+            kilos: MASKLA(registro.kgpend,2),
+            preciokg: MASKLA(registro.precioxkilo,2),
+            pesos: MASKLA(registro.subtotalplata,0)
         })
+
     });
     return body
 }
 
 function pdfjs(datos) {
     
-    var base64Img, coinBase64Img;
-    imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI1.png', function(base64) {
+    /*
+    imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI1.jpg', function(base64) {
         base64Img = base64;
         imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI1.png', function(base64) {
             coinBase64Img = base64;
             update();
         });
-    });
+    });*/
 
+    var base64Img, coinBase64Img;
+    base64Img = imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI1.jpg');
+ 
     var doc = new jsPDF('l')
     var totalPagesExp = '{total_pages_count_string}'
   
@@ -584,7 +621,7 @@ function pdfjs(datos) {
         fontSize: 6, // Tamaño de letra para los encabezados
       },
       columnStyles: {
-        0: { cellWidth: 10 },  // Ancho de la primera columna
+        /* 0: { cellWidth: 10 },  // Ancho de la primera columna
         1: { cellWidth: 20 },  // Ancho de la segunda columna
         2: { cellWidth: 15 },  // Ancho de la segunda columna
         3: { cellWidth: 15 },  // Ancho de la segunda columna
@@ -604,24 +641,42 @@ function pdfjs(datos) {
         17: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
         18: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
         19: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
-        20: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
+        20: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna */
+
+        0: { cellWidth: 10 },  // Ancho de la primera columna
+        1: { cellWidth: 20 },  // Ancho de la segunda columna
+        2: { cellWidth: 14 },  // Ancho de la segunda columna
+        3: { cellWidth: 14 },  // Ancho de la segunda columna
+        4: { cellWidth: 32 },  // Ancho de la segunda columna
+        5: { cellWidth: 20 },  // Ancho de la segunda columna
+        6: { cellWidth: 8 },  // Ancho de la segunda columna
+        7: { cellWidth: 60 },  // Ancho de la segunda columna
+        8: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        9: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        10: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        11: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        12: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        13: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
+        14: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
+        15: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
+
         // ... especifica el ancho de las demás columnas
       },
       willDrawPage: function (data) {
         // Header
-        doc.setFontSize(15)
+        doc.setFontSize(8)
         doc.setTextColor(20)
         if (base64Img) {
-          doc.addImage(base64Img, 'JPEG', data.settings.margin.left, 15, 10, 10)
+          doc.addImage(base64Img, 'JPEG', data.settings.margin.left, 15, 30, 10)
         }
-        doc.text('Report', data.settings.margin.left + 15, 22)
+        doc.text('Pendiente por Producto', data.settings.margin.left + 110, 22)
       },
       didDrawPage: function (data) {
         // Footer
-        var str = 'Page ' + doc.internal.getNumberOfPages()
+        var str = 'Pag ' + doc.internal.getNumberOfPages()
         // Total page number plugin only available in jspdf v1.0+
         if (typeof doc.putTotalPages === 'function') {
-          str = str + ' of ' + totalPagesExp
+          str = str + ' de ' + totalPagesExp
         }
         doc.setFontSize(7)
   
@@ -653,11 +708,48 @@ function imgToBase64(src, callback) {
         canvas.width = this.naturalWidth;
         ctx.drawImage(this, 0, 0);
         dataURL = canvas.toDataURL(outputFormat);
-        callback(dataURL);
+        //callback(dataURL);
     };
     img.src = src;
     if (img.complete || img.complete === undefined) {
         img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
         img.src = src;
+    }
+    return img;
+    console.log(img);
+}
+
+function verificarArchivo(url, callback) {
+    fetch(url, { method: 'HEAD' })
+      .then(response => {
+        if (response.ok) {
+          // El archivo existe
+          callback(true);
+        } else {
+          // El archivo no existe
+          callback(false);
+        }
+      })
+      .catch(error => {
+        // Error en la solicitud (puede ser por CORS u otros problemas)
+        callback(false);
+      });
+  }
+  
+
+  function update(shouldDownload) {
+    var funcStr = window.location.hash.replace(/#/g, '') || 'basic';
+    var doc = window.examples[funcStr]();
+
+    doc.setProperties({
+        title: 'Example: ' + funcStr,
+        subject: 'A jspdf-autotable example pdf (' + funcStr + ')'
+    });
+
+    if (shouldDownload) {
+        doc.save('table.pdf');
+    } else {
+        //document.getElementById("output").src = doc.output('datauristring');
+        document.getElementById("output").data = doc.output('datauristring');
     }
 }

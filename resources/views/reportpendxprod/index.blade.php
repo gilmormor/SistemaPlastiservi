@@ -243,8 +243,8 @@ Pendiente x Producto
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12">
                             <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                            <button type="button" id="btnpdf" name="btnpdf" class="btn btn-success tooltipsC" title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>
-                            <button type="button" id="btnpdfJS" name="btnpdfJS" class="btn btn-success tooltipsC" title="Reporte PDF JS"><i class='glyphicon glyphicon-print'></i> ReporteJS</button>
+                            <!--<button type="button" id="btnpdf" name="btnpdf" class="btn btn-success tooltipsC" title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>-->
+                            <button type="button" id="btnpdfJS" name="btnpdfJS" class="btn btn-success tooltipsC" title="Reporte PDF JS"><i class='glyphicon glyphicon-print'></i> Reporte</button>
                         </div>
                     </form>
                 </div>

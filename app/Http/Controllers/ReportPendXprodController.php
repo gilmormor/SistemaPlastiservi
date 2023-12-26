@@ -132,6 +132,7 @@ class ReportPendXprodController extends Controller
         //dd($producto_id_array);
         $aux_AgruOrd = "";
         $datas = consulta($request,2,1,$aux_AgruOrd);
+        //dd($datas);
         $total_sumacantdesp = 0;
         $total_cantsaldo = 0;
         $total_kgpend = 0;
@@ -394,8 +395,8 @@ function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
     $user = Usuario::findOrFail(auth()->id());
     $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
     if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
-        //$aux_condsucursal_id = " true ";
-        $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray)";
+        $aux_condsucursal_id = " false ";
+        //$aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray)";
     }else{
         if(is_array($request->sucursal_id)){
             $aux_sucursal = implode ( ',' , $request->sucursal_id);
@@ -533,12 +534,6 @@ function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
             subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
             notaventadetalle.preciounit,notaventadetalle.precioxkilo,
             comuna.nombre as comunanombre,acuerdotecnico.id as acuerdotecnico_id,
-            (SELECT if(isnull(cantsoldesp),0,cantsoldesp)
-            FROM vista_sumsoldespdet
-            WHERE notaventadetalle_id=notaventadetalle.id) as cantsoldesp,
-            (SELECT if(isnull(cantdesp),0,cantdesp)
-            FROM vista_sumorddespxnvdetid
-            WHERE notaventadetalle_id=notaventadetalle.id) as cantdesp,
             '' as at_espesor,0 as stockbpt,0 as picking";
         }
 
