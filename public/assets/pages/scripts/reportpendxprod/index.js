@@ -607,7 +607,7 @@ function pdfjs(datos) {
     });*/
 
     var base64Img, coinBase64Img;
-    base64Img = imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI1.jpg');
+    base64Img = imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI.jpg');
  
     var doc = new jsPDF('l')
     var totalPagesExp = '{total_pages_count_string}'
