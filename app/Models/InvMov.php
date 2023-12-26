@@ -154,15 +154,21 @@ class InvMov extends Model
     public static function stocksql($request,$agrupar = "invbodegaproducto_id"){
         //dd($request->tipobodega);
         $aux_annomes = CategoriaGrupoValMes::annomes($request->mesanno);
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+        $aux_condsucursal_id = " categoriaprodsuc.sucursal_id in ($sucurArray) ";
 
         if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "x")){
             $aux_sucursal_idCond = "false";
         }else{
-            $aux_sucursal_idCond = "invbodega.sucursal_id = $request->sucursal_id";
+            if(is_array($request->sucursal_id)){
+                $aux_sucursal = implode ( ',' , $request->sucursal_id);
+            }else{
+                $aux_sucursal = $request->sucursal_id;
+            }    
+            $aux_sucursal_idCond = " (invbodega.sucursal_id in ($aux_sucursal) and invbodega.sucursal_id in ($sucurArray))";
+    
         }
-        $user = Usuario::findOrFail(auth()->id());
-        $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
-        $aux_condsucursal_id = " categoriaprodsuc.sucursal_id in ($sucurArray) ";
     
         if(!isset($request->tipobodega) or empty($request->tipobodega)){
             $aux_tipobodegaCond = "true";

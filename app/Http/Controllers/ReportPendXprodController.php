@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CategoriaGrupoValMes;
 use App\Models\CategoriaProd;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\InvMov;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
@@ -47,14 +49,36 @@ class ReportPendXprodController extends Controller
 
     }
     public function reportpendxprodpage(Request $request){
+        
+        
         //can('reporte-guia_despacho');
         //dd('entro');
         //$datas = GuiaDesp::reporteguiadesp($request);
-        //dd($request);
         $aux_AgruOrd = "group by notaventadetalle.producto_id
                         order by notaventadetalle.producto_id";
         $datas = consulta($request,2,1,$aux_AgruOrd);
-        //dd($datas);
+        if($request->producto_id == null){
+            $arreglo_producto_id = array_map(function ($elemento) {
+                return $elemento->producto_id;
+            }, $datas);
+            
+            //dd($arreglo_resultante);
+            //$request->producto_id = (implode ( ',' , $arreglo_producto_id));
+            $request->merge(['producto_id' => implode ( ',' , $arreglo_producto_id)]);
+        }
+        //dd($request->producto_id);
+        $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Ym"));
+        $request->merge(['mesanno' => $aux_mesanno]);
+        $request->merge(['tipobodega' => "1,2"]);
+        
+        //dd($request);
+        $datas = InvMov::stocksql($request,"producto.id");
+        $arreglo_ProdStock = [];
+        foreach ($datas as $elemento) {
+            $arreglo_ProdStock[$elemento->producto_id] = $elemento;
+        }
+        //dd($arreglo_ProdStock);
+        /*
         $producto_id_array = [];
         foreach ($datas as $key => &$data) {
             $atributoProd = Producto::atributosProducto($data->producto_id);
@@ -104,11 +128,10 @@ class ReportPendXprodController extends Controller
                 "picking" => $picking
             ];
         }
+        */
         //dd($producto_id_array);
-
         $aux_AgruOrd = "";
         $datas = consulta($request,2,1,$aux_AgruOrd);
-
         $total_sumacantdesp = 0;
         $total_cantsaldo = 0;
         $total_kgpend = 0;
@@ -117,18 +140,24 @@ class ReportPendXprodController extends Controller
 
         foreach ($datas as &$data){
             $id = $data->producto_id;
-            $data->nombre = $producto_id_array[$id]["nombre"];
-            $data->diametro = $producto_id_array[$id]["at_ancho"];
-            $data->long = $producto_id_array[$id]["at_largo"];
-            $data->at_espesor = $producto_id_array[$id]["at_espesor"];
-            $data->cla_nombre = $producto_id_array[$id]["cla_nombre"];
-            $data->tipounion = $producto_id_array[$id]["tipounion"];
-            $data->stockbpt = $producto_id_array[$id]["stockbpt"];
-            $data->picking = $producto_id_array[$id]["picking"];
+            $atributoProd = Producto::atributosProducto($id);
+            $data->nombre = $atributoProd["nombre"];
+            $data->diametro = $atributoProd["at_ancho"];
+            $data->long = $atributoProd["at_largo"];
+            $data->at_espesor = $atributoProd["at_espesor"];
+            $data->cla_nombre = $atributoProd["cla_nombre"];
+            $data->tipounion = $atributoProd["tipounion"];
+            if(isset($arreglo_ProdStock[$id])){
+                $data->stockbpt = $arreglo_ProdStock[$id]->stock;
+                $data->picking = $arreglo_ProdStock[$id]->stockPiking;    
+            }else{
+                $data->stockbpt = 0;
+                $data->picking = 0;
+            }
 
             //SUMA TOTAL DE SOLICITADO
             /*************************/
-            $sql = "SELECT cantsoldesp
+            /* $sql = "SELECT cantsoldesp
             FROM vista_sumsoldespdet
             WHERE notaventadetalle_id=$data->id";
             $datasuma = DB::select($sql);
@@ -136,11 +165,11 @@ class ReportPendXprodController extends Controller
                 $sumacantsoldesp= 0;
             }else{
                 $sumacantsoldesp= $datasuma[0]->cantsoldesp;
-            }
+            } */
             /*************************/
             //SUMA TOTAL DESPACHADO
             /*************************/
-            $sql = "SELECT cantdesp
+            /* $sql = "SELECT cantdesp
                 FROM vista_sumorddespxnvdetid
                 WHERE notaventadetalle_id=$data->id";
             $datasumadesp = DB::select($sql);
@@ -148,7 +177,7 @@ class ReportPendXprodController extends Controller
                 $sumacantdesp= 0;
             }else{
                 $sumacantdesp= $datasumadesp[0]->cantdesp;
-            }
+            } */
             if(empty($data->oc_file)){
                 $aux_enlaceoc = $data->oc_id;
             }else{
@@ -157,11 +186,11 @@ class ReportPendXprodController extends Controller
 
             //$aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
             //$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
-            $aux_cantsaldo = $data->cant-$sumacantdesp;
-            $fila_cantdesp = number_format($sumacantdesp, 0, ",", ".");
-            if($sumacantdesp>0){
+            $aux_cantsaldo = $data->cant-$data->cantdesp;
+            $fila_cantdesp = number_format($data->cantdesp, 0, ",", ".");
+            if($data->cantdesp>0){
                 $fila_cantdesp = "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->notaventa_id,$data->producto_id)' title='Ver detalle despacho' data-toggle='tooltip'>"
-                                . number_format($sumacantdesp, 0, ",", ".") .
+                                . number_format($data->cantdesp, 0, ",", ".") .
                                 "</a>";
             }
             $comuna = Comuna::findOrFail($data->comunaentrega_id);
@@ -171,7 +200,7 @@ class ReportPendXprodController extends Controller
             $aux_subtotalplata = ($aux_cantsaldo) * $data->preciounit;
 
 
-            $data->sumacantdesp = $sumacantdesp;
+            $data->sumacantdesp = $data->cantdesp;
             $data->cantsaldo = $aux_cantsaldo;
             $data->kgpend = $aux_cantsaldo * $data->peso;
             $data->subtotalplata = round($aux_subtotalplata,0);
@@ -182,6 +211,7 @@ class ReportPendXprodController extends Controller
             $total_totalplata += $data->subtotalplata;
             $total_precioxkilo += $data->precioxkilo;
         }
+        //dd($datas);
         //$datas[]prueba = [];
         if(count($datas)>0){
             $aux_contreg = count($datas)>0 ? count($datas) : 1;
@@ -194,7 +224,7 @@ class ReportPendXprodController extends Controller
                 'prom_totalplata' => round($total_totalplata / $aux_contreg,2),
             ];     
         }
-
+        //dd($datas);
         return datatables($datas)->toJson();
         //return datatables($datas)->toJson();
     }
@@ -503,6 +533,12 @@ function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
             subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
             notaventadetalle.preciounit,notaventadetalle.precioxkilo,
             comuna.nombre as comunanombre,acuerdotecnico.id as acuerdotecnico_id,
+            (SELECT if(isnull(cantsoldesp),0,cantsoldesp)
+            FROM vista_sumsoldespdet
+            WHERE notaventadetalle_id=notaventadetalle.id) as cantsoldesp,
+            (SELECT if(isnull(cantdesp),0,cantdesp)
+            FROM vista_sumorddespxnvdetid
+            WHERE notaventadetalle_id=notaventadetalle.id) as cantdesp,
             '' as at_espesor,0 as stockbpt,0 as picking";
         }
 
