@@ -1156,6 +1156,7 @@ Route::get('reportdtefac/reportdtefacpage', 'ReportDTEFacController@reportdtefac
 Route::get('reportdtefac/reporte', 'ReportDTEFacController@reporte')->name('reportdtefac_reporte');
 Route::get('reportdtefac/exportPdf', 'ReportDTEFacController@exportPdf')->name('reportdtefac_exportPdf');
 Route::get('reportdtefac/totalizarindex', 'ReportDTEFacController@totalizarindex')->name('reportdtefac_totalizarindex');
+Route::get('reportdtefac/listardtedet', 'ReportDTEFacController@listardtedet')->name('reportdtefac_listardtedet');
 
 
 /*RUTAS ACUERDO TECNICO*/

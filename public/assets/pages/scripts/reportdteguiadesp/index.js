@@ -715,6 +715,9 @@ function exportarExcel() {
         filainifusionar = -1
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
+        if(aux_sucursalNombre == "Seleccione..."){
+            aux_sucursalNombre = "";
+        }
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
         datosExcel.push(["Guias de Despacho","","","","","","","",fechaactual()]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
@@ -996,6 +999,9 @@ function exportarExcelDTEDet() {
         arrayTituloDetalle = [];
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
+        if(aux_sucursalNombre == "Seleccione..."){
+            aux_sucursalNombre = "";
+        }
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
         datosExcel.push(["Informe Guias Despacho Emitidas","","","","","","","","","","Fecha: "+fechaactual()]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);

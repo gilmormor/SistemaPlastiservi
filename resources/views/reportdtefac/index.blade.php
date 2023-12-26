@@ -8,6 +8,8 @@ DTE Facturacion
 ?>
 
 @section("scripts")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportdtefac/index.js")}}" type="text/javascript"></script>
@@ -228,10 +230,25 @@ DTE Facturacion
 
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
-                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
-                            <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
-                                <i class='glyphicon glyphicon-print'></i> Reporte
-                            </button>
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                            </div>
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                                    <i class='glyphicon glyphicon-print'></i> Reporte
+                                </button>
+                            </div>
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">
+                                    <i class='fa fa-fw fa-file-excel-o'> </i> Excel
+                                </button>
+                            </div>
+                            <!--
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type="button" id="btnexportarExcelDet" name="btnexportarExcelDet" class="btn btn-success tooltipsC" title="Exportar Excel Detalle" onclick="exportarExcelDTEDet()">
+                                    <i class='fa fa-fw fa-file-excel-o'> </i>  Detalle
+                                </button>
+                            </div>-->
                         </div>
                     </form>
                 </div>

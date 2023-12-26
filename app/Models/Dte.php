@@ -970,7 +970,7 @@ class Dte extends Model
         }
 
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
-        clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,
+        clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,dte.kgtotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
         GROUP_CONCAT(DISTINCT if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id)) AS oc_id,

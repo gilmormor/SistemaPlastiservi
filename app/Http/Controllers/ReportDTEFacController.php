@@ -47,6 +47,15 @@ class ReportDTEFacController extends Controller
         return datatables($datas)->toJson();
     }
 
+    public function listardtedet(Request $request){
+        //$request->merge(['filtroguiasusadas' => "1"]);
+        $datas = Dte::consultadtedet($request);
+        $respuesta["datos"] = $datas;
+        $respuesta["fechaact"] = date("d/m/Y"); 
+        return $respuesta;
+    }
+
+
     public function exportPdf(Request $request)
     {
         $datas = Dte::reportdtefac($request);
