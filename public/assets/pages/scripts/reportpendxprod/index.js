@@ -648,14 +648,14 @@ function pdfjs(datos) {
         2: { cellWidth: 14 },  // Ancho de la segunda columna
         3: { cellWidth: 14 },  // Ancho de la segunda columna
         4: { cellWidth: 32 },  // Ancho de la segunda columna
-        5: { cellWidth: 20 },  // Ancho de la segunda columna
+        5: { cellWidth: 17 },  // Ancho de la segunda columna
         6: { cellWidth: 8 },  // Ancho de la segunda columna
         7: { cellWidth: 60 },  // Ancho de la segunda columna
-        8: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        9: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        10: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        11: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        12: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
+        8: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
+        9: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
+        10: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
+        11: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
+        12: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
         13: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
         14: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
         15: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
