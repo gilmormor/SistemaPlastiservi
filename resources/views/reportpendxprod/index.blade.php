@@ -89,9 +89,12 @@ Pendiente x Producto
                                         <label>Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <?php
-                                            echo $tablashtml['vendedores'];
-                                        ?>
+                                        <select name='vendedor_id' id='vendedor_id' class='selectpicker form-control vendedor_id'  data-live-search='true' data-actions-box='true'>"
+                                            <option value="">Todos</option>
+                                            @foreach($tablashtml['vendedores'] as $vendedor)
+                                                <option value="{{$vendedor->id}}">{{$vendedor->nombre}} {{$vendedor->apellido}}</option>";
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -227,14 +230,13 @@ Pendiente x Producto
                                         <label for="sucursal_id" class="control-label">Sucursal:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="sucursal_id[]" id="sucursal_id" multiple class='selectpicker form-control' data-live-search='true' multiple data-actions-box='true'>
+                                        <select name="sucursal_id" id="sucursal_id" class='selectpicker form-control' data-live-search='true' data-actions-box='true'>
+                                            <option value="">Seleccione...</option>
                                             @foreach($tablashtml['sucursales'] as $sucursal)
                                                 <option
                                                     value="{{$sucursal->id}}"
                                                     {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
-                                                    >
-                                                    {{$sucursal->nombre}}
-                                                </option>
+                                                    >{{$sucursal->nombre}}</option>
                                             @endforeach
                                         </select>            
                                     </div>

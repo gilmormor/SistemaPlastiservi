@@ -35,7 +35,12 @@ class ReportPendXprodController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
-        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $tablashtml['vendedores'] = Vendedor::vendedores();
+        $tablashtml['vendedores'] = $tablashtml['vendedores']['vendedores'];
+        //dd($tablashtml['vendedores']);
+        foreach ($tablashtml['vendedores'] as $vendedor){
+            //dd($vendedor);
+        }
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];

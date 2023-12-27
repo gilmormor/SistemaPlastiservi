@@ -457,8 +457,24 @@ $('#tabla-data-consulta').on('draw.dt', function () {
         type: 'GET',
         data: data.data1,
         success: function (datos) {
-            pdf = pdfjs(datos);
-            pdf.save('PendXProd.pdf');
+            //console.log(datos);
+            if (datos.recordsTotal <= 0) {
+                aux_text = "Verifique los filtros";
+                if(data.data1.sucursal_id == ""){
+                    aux_text = "Debe seleccionar la Sucursal";
+                }
+                swal({
+                    title: 'Informacion no encontrada.',
+                    text: aux_text,
+                        icon: 'warning',
+                    buttons: {
+                        confirm: "Aceptar"
+                    },
+                });    
+            }else{
+                pdf = pdfjs(datos);
+                pdf.save('PendXProd.pdf');    
+            }
             return 0;
             var datosExcel = [];
             //datosExcel.push(["NV", "OC", "Fecha", "Plazo Entrega", "Razón Social", "Comuna", "Cod", "Descripción", "Clase Sello", "Diam Ancho", "L", "Peso Esp", "TU", "Stock", "Picking", "Cant", "Cant Desp", "Cant Pend", "Kilos Pend", "Precio Kg", "$"]);
@@ -621,28 +637,6 @@ function pdfjs(datos) {
         fontSize: 6, // Tamaño de letra para los encabezados
       },
       columnStyles: {
-        /* 0: { cellWidth: 10 },  // Ancho de la primera columna
-        1: { cellWidth: 20 },  // Ancho de la segunda columna
-        2: { cellWidth: 15 },  // Ancho de la segunda columna
-        3: { cellWidth: 15 },  // Ancho de la segunda columna
-        4: { cellWidth: 20 },  // Ancho de la segunda columna
-        5: { cellWidth: 20 },  // Ancho de la segunda columna
-        6: { cellWidth: 8 },  // Ancho de la segunda columna
-        7: { cellWidth: 40 },  // Ancho de la segunda columna
-        8: { cellWidth: 13 },  // Ancho de la segunda columna
-        9: { cellWidth: 10 },  // Ancho de la segunda columna
-        10: { cellWidth: 4 },  // Ancho de la segunda columna
-        11: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        12: { cellWidth: 4, halign: 'right' },  // Ancho de la segunda columna
-        13: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        14: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        15: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        16: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        17: { cellWidth: 10, halign: 'right' },  // Ancho de la segunda columna
-        18: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
-        19: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
-        20: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna */
-
         0: { cellWidth: 10 },  // Ancho de la primera columna
         1: { cellWidth: 20 },  // Ancho de la segunda columna
         2: { cellWidth: 14 },  // Ancho de la segunda columna
@@ -664,12 +658,24 @@ function pdfjs(datos) {
       },
       willDrawPage: function (data) {
         // Header
-        doc.setFontSize(8)
+        doc.setFontSize(12)
         doc.setTextColor(20)
         if (base64Img) {
-          doc.addImage(base64Img, 'JPEG', data.settings.margin.left, 15, 30, 10)
+          doc.addImage(base64Img, 'JPEG', data.settings.margin.left, 6, 30, 10)
         }
-        doc.text('Pendiente por Producto', data.settings.margin.left + 110, 22)
+        doc.text('Pendiente por Producto', data.settings.margin.left + 110, 12);
+        doc.setFontSize(8)
+        doc.text('Sucursal: ' + $("#sucursal_id option:selected").html(), data.settings.margin.left + 120, 16);
+        doc.text('Fecha: ' + fechaactual(), data.settings.margin.left + 220, 5);
+        doc.text('Area Producción: ' + $("#areaproduccion_id option:selected").html(), data.settings.margin.left + 220, 8);
+        doc.text('Vendedor: ' + $("#vendedor_id option:selected").html(), data.settings.margin.left + 220, 11);
+        doc.text('Giro: ' + $("#giro_id option:selected").html() + ' Estatus: ' + $("#aprobstatus option:selected").html(), data.settings.margin.left + 220, 14);
+        doc.text('Nota Venta Desde: ' + $("#fechad").val() + " al " + $("#fechah").val(), data.settings.margin.left + 220, 17);
+        doc.text('Plazo de Entrega: ' + $("#plazoentregad").val() + " al " + $("#plazoentregah").val(), data.settings.margin.left + 220, 20);
+
+        var startY = 21; // Ajusta según sea necesario
+        data.cursor.y = startY;
+
       },
       didDrawPage: function (data) {
         // Footer
@@ -685,7 +691,7 @@ function pdfjs(datos) {
         var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
         doc.text(str, data.settings.margin.left, pageHeight - 10)
       },
-      margin: { top: 30 },
+      margin: { top: 20},
     })
   
     // Total page number plugin only available in jspdf v1.0+
