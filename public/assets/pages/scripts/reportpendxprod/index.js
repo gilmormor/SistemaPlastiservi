@@ -27,7 +27,7 @@ $(document).ready(function () {
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
-            "order"       : [[ 1, "asc" ],[ 11, "asc" ]],
+            "order"       : [[ 0, "desc" ]],
             'ajax'        : "/reportpendxprod/reportpendxprodpage/" + datax.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             'columns'     : [
                 {data: 'notaventa_id'}, // 0
