@@ -648,7 +648,7 @@ function bodyRows(datos) {
             razonsocial: "",
             comuna: "",
             cod: "",
-            desc: "",
+            desc: "Total ítems: " + aux_contreg,
             stock: "Prom",
             picking: "",
             cant: "",
