@@ -584,6 +584,7 @@ function bodyRows(datos) {
     total_cantsaldo = 0;
     total_kgpend = 0;
     total_totalplata = 0;
+    total_precioxkilo = 0;
     aux_contreg = 0;
     datos.data.forEach(function(registro) {
         aux_fecha = new Date(registro.fechahora);
@@ -614,6 +615,7 @@ function bodyRows(datos) {
         total_cantsaldo += registro.cantsaldo;
         total_kgpend += registro.kgpend;
         total_totalplata += registro.subtotalplata;
+        total_precioxkilo += registro.precioxkilo;
         aux_contreg++;
     });
     if(total_totalplata > 0){
