@@ -222,8 +222,9 @@ var eventFired = function ( type ) {
 
 function datosPentxProd(aux_filtro = 0){
     aux_rut = eliminarFormatoRutret($("#rut").val());
+    aux_sucursal_id = $("#sucursal_id").val();
     if(aux_filtro != 0){
-        aux_rut = -1;
+        aux_sucursal_id = -1;
     }
     var data1 = {
         fechad            : $("#fechad").val(),
@@ -242,7 +243,7 @@ function datosPentxProd(aux_filtro = 0){
         comuna_id         : $("#comuna_id").val(),
         producto_id       : $("#producto_idPxP").val(),
         categoriaprod_id  : $("#categoriaprod_id").val(),
-        sucursal_id       : $("#sucursal_id").val(),
+        sucursal_id       : aux_sucursal_id,
         filtro            : 0,
         _token            : $('input[name=_token]').val()
     };
@@ -689,23 +690,32 @@ function pdfjs(datos) {
       styles: {
         fontSize: 6, // Tamaño de letra para los encabezados
       },
+      headStyles: { 
+        fillColor: '#0077FF', // Color de fondo azul
+        textColor: '#FFFFFF', //texto blanco solo para el encabezado
+        valign: 'middle' // Centrar verticalmente los títulos en el encabezado
+      },
+      rowStyles: { //NO FUNCIONA ESTA PROPIEDAD, LA DEJE PARA TENER LA REFERENCIA
+        // Asumiendo que la fila que contiene el signo "$" es la primera fila (15)
+        15: { halign: 'center' }  // Centrar horizontalmente la primera fila del encabezado en la columna 15
+      },
       columnStyles: {
-        0: { cellWidth: 10 },  // Ancho de la primera columna
-        1: { cellWidth: 18 },  // Ancho de la segunda columna
-        2: { cellWidth: 14 },  // Ancho de la segunda columna
-        3: { cellWidth: 14 },  // Ancho de la segunda columna
-        4: { cellWidth: 32 },  // Ancho de la segunda columna
-        5: { cellWidth: 17 },  // Ancho de la segunda columna
-        6: { cellWidth: 8 },  // Ancho de la segunda columna
-        7: { cellWidth: 58 },  // Ancho de la segunda columna
-        8: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
-        9: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
-        10: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
-        11: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
-        12: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
-        13: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
-        14: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
-        15: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
+        0: { cellWidth: 10 },  // Ancho columna
+        1: { cellWidth: 18 },  // Ancho columna
+        2: { cellWidth: 14 },  // Ancho columna
+        3: { cellWidth: 14 },  // Ancho columna
+        4: { cellWidth: 32 },  // Ancho columna
+        5: { cellWidth: 17 },  // Ancho columna
+        6: { cellWidth: 8, halign: 'center'  },  // Ancho columna
+        7: { cellWidth: 58 },  // Ancho columna
+        8: { cellWidth: 12, halign: 'right' },  // Ancho columna
+        9: { cellWidth: 12, halign: 'right' },  // Ancho columna
+        10: { cellWidth: 12, halign: 'right' },  // Ancho columna
+        11: { cellWidth: 12, halign: 'right' },  // Ancho columna
+        12: { cellWidth: 12, halign: 'right' },  // Ancho columna
+        13: { cellWidth: 15, halign: 'right' },  // Ancho columna
+        14: { cellWidth: 15, halign: 'right' },  // Ancho columna
+        15: { cellWidth: 15, halign: 'right' },  // Ancho columna
 
         // ... especifica el ancho de las demás columnas
       },
