@@ -58,8 +58,15 @@ $(document).ready(function () {
             "createdRow": function ( row, data, index ) {
                 if ('datosAdicionales' in data) {
                     //console.log(data);
+                    $("#subpicking").html(MASKLA(data.datosAdicionales.total_sumapicking,0))
+                    $("#subcant").html(MASKLA(data.datosAdicionales.total_sumacant,0))
+                    $("#subsumacantdesp").html(MASKLA(data.datosAdicionales.total_sumacantdesp,0))
+                    $("#subcantsaldo").html(MASKLA(data.datosAdicionales.total_cantsaldo,0))
+                    $("#subkgpend").html(MASKLA(data.datosAdicionales.total_kgpend,0))
+                    $("#subtotalplata").html(MASKLA(data.datosAdicionales.total_totalplata,0))
+                
                     $("#prom_precioxkilo").html(MASKLA(data.datosAdicionales.prom_precioxkilo,2));
-                    $("#prom_totalplata").html(MASKLA(data.datosAdicionales.prom_totalplata,0));                
+                    $("#prom_totalplata").html(MASKLA(data.datosAdicionales.prom_totalplata,2));                
                 }
                 $(row).attr('id','fila' + data.id);
                 $(row).attr('name','fila' + data.id);
@@ -97,8 +104,12 @@ $(document).ready(function () {
 
                 style='text-align:right' 
                 $('td', row).eq(13).attr('style','text-align:right');
+                $('td', row).eq(13).attr('data-order',data.stockbpt);
+                $('td', row).eq(13).addClass('stock');
                 $('td', row).eq(13).html(MASKLA(data.stockbpt,0));
                 $('td', row).eq(14).attr('style','text-align:right');
+                $('td', row).eq(14).attr('data-order',data.picking);
+                $('td', row).eq(14).addClass('picking');
                 $('td', row).eq(14).html(MASKLA(data.picking,0));
                 $('td', row).eq(15).attr('style','text-align:right');
                 $('td', row).eq(15).attr('data-order',data.cant);
@@ -134,7 +145,7 @@ $(document).ready(function () {
         });
     }
 
-    totalizar();
+    //totalizar();
 
     $("#btnconsultar").click(function()
     {
@@ -166,6 +177,7 @@ function totalizar(){
 }
 
 var eventFired = function ( type ) {
+    subpicking = 0;
 	total = 0;
     var subcant = 0;
     var subsumacantdesp = 0;
@@ -173,11 +185,15 @@ var eventFired = function ( type ) {
     subkgpend = 0;
     subtotalplata = 0;
 	$("#tabla-data-consulta tr").each(function() {
+        var picking = parseFloat($(this).find(".picking").attr("data-order"));
         var cant = parseFloat($(this).find(".cant").attr("data-order"));
         var sumacantdesp = parseFloat($(this).find(".sumacantdesp").attr("data-order"));
         var cantsaldo = parseFloat($(this).find(".cantsaldo").attr("data-order"));
         var kgpend = parseFloat($(this).find(".kgpend").attr("data-order"));
         var totalplata = parseFloat($(this).find(".totalplata").attr("data-order"));        
+        if (!isNaN(picking)) {
+            subpicking += picking;
+        }
         if (!isNaN(cant)) {
             subcant += cant;
         }
@@ -195,6 +211,7 @@ var eventFired = function ( type ) {
         }
 
 	});
+    $("#subpicking").html(MASKLA(subpicking,0))
     $("#subcant").html(MASKLA(subcant,0))
     $("#subsumacantdesp").html(MASKLA(subsumacantdesp,0))
     $("#subcantsaldo").html(MASKLA(subcantsaldo,0))
@@ -560,32 +577,17 @@ function headRows() {
 
 function bodyRows(datos) {
     var body = []
+    total_sumapicking = 0;
+    total_sumacant = 0;
+    total_sumacantdesp = 0;
+    total_cantsaldo = 0;
+    total_kgpend = 0;
+    total_totalplata = 0;
+    total_precioxkilo = 0;
+    aux_contreg = 0;
     datos.data.forEach(function(registro) {
         aux_fecha = new Date(registro.fechahora);
         aux_plazoentrega = new Date(registro.plazoentrega + " 00:00:00")
-        /* body.push({
-            nv: registro.notaventa_id,
-            oc: registro.oc_id,
-            fecha: fechaddmmaaaa(aux_fecha),
-            plazoentrega: registro.plazoentrega,
-            razonsocial: registro.razonsocial,
-            comuna: registro.comunanombre,
-            cod: registro.producto_id,
-            desc: registro.nombre,
-            clase: registro.cla_nombre,
-            diam: registro.diametro,
-            l: registro.long,
-            pesoesp: MASKLA(registro.peso,3),
-            tu: registro.tipounion,
-            stock: registro.stockbpt,
-            picking: registro.picking,
-            cant: registro.cant,
-            cantdesp: registro.cantdesp,
-            cantpend: registro.cantsaldo,
-            kilos: MASKLA(registro.kgpend,2),
-            preciokg: MASKLA(registro.precioxkilo,2),
-            pesos: MASKLA(registro.subtotalplata,0)
-        }) */
         aux_productonomb = registro.nombre.replace(/&quot;/g, '"');
         aux_productonomb = aux_productonomb.replace(/&#039;/g, "'");
         body.push({
@@ -606,8 +608,59 @@ function bodyRows(datos) {
             preciokg: MASKLA(registro.precioxkilo,2),
             pesos: MASKLA(registro.subtotalplata,0)
         })
-
+        total_sumapicking += registro.picking;
+        total_sumacant += registro.cant;
+        total_sumacantdesp += registro.cantdesp;
+        total_cantsaldo += registro.cantsaldo;
+        total_kgpend += registro.kgpend;
+        total_totalplata += registro.subtotalplata;
+        total_precioxkilo += registro.precioxkilo;
+        aux_contreg++;
     });
+    if(total_totalplata > 0){
+        body.push({
+            nv: "",
+            oc: "",
+            fecha: "",
+            plazoentrega: "",
+            razonsocial: "",
+            comuna: "",
+            cod: "",
+            desc: "",
+            stock: "Totales",
+            picking: total_sumapicking,
+            cant: total_sumacant,
+            cantdesp: total_sumacantdesp,
+            cantpend: total_cantsaldo,
+            kilos: MASKLA(total_kgpend,2),
+            preciokg: MASKLA(total_precioxkilo,2),
+            pesos: MASKLA(total_totalplata,0)
+        })
+        prom_precioxkg = total_precioxkilo / aux_contreg;
+        prom_precioxkg = parseFloat(prom_precioxkg.toFixed(2));
+        prom_precio = total_totalplata / aux_contreg;
+        prom_precio = parseFloat(prom_precio.toFixed(2));
+        body.push({
+            nv: "",
+            oc: "",
+            fecha: "",
+            plazoentrega: "",
+            razonsocial: "",
+            comuna: "",
+            cod: "",
+            desc: "",
+            stock: "Prom",
+            picking: "",
+            cant: "",
+            cantdesp: "",
+            cantpend: "",
+            kilos: "",
+            preciokg: MASKLA(prom_precioxkg,2),
+            pesos: MASKLA(prom_precio,2)
+        })
+    
+    }
+
     return body
 }
 
@@ -638,20 +691,20 @@ function pdfjs(datos) {
       },
       columnStyles: {
         0: { cellWidth: 10 },  // Ancho de la primera columna
-        1: { cellWidth: 20 },  // Ancho de la segunda columna
+        1: { cellWidth: 18 },  // Ancho de la segunda columna
         2: { cellWidth: 14 },  // Ancho de la segunda columna
         3: { cellWidth: 14 },  // Ancho de la segunda columna
         4: { cellWidth: 32 },  // Ancho de la segunda columna
         5: { cellWidth: 17 },  // Ancho de la segunda columna
         6: { cellWidth: 8 },  // Ancho de la segunda columna
-        7: { cellWidth: 60 },  // Ancho de la segunda columna
+        7: { cellWidth: 58 },  // Ancho de la segunda columna
         8: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
         9: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
         10: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
         11: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
         12: { cellWidth: 12, halign: 'right' },  // Ancho de la segunda columna
-        13: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
-        14: { cellWidth: 13, halign: 'right' },  // Ancho de la segunda columna
+        13: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
+        14: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
         15: { cellWidth: 15, halign: 'right' },  // Ancho de la segunda columna
 
         // ... especifica el ancho de las demás columnas

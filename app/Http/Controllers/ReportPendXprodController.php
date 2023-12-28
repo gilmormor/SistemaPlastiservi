@@ -10,7 +10,9 @@ use App\Models\Comuna;
 use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\Giro;
+use App\Models\InvBodega;
 use App\Models\InvMov;
+use App\Models\NotaVentaDetalle;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
@@ -138,6 +140,8 @@ class ReportPendXprodController extends Controller
         $aux_AgruOrd = "";
         $datas = consulta($request,2,1,$aux_AgruOrd);
         //dd($datas);
+        $total_sumapicking = 0;
+        $total_sumacant = 0;
         $total_sumacantdesp = 0;
         $total_cantsaldo = 0;
         $total_kgpend = 0;
@@ -153,13 +157,26 @@ class ReportPendXprodController extends Controller
             $data->at_espesor = $atributoProd["at_espesor"];
             $data->cla_nombre = $atributoProd["cla_nombre"];
             $data->tipounion = $atributoProd["tipounion"];
+            $data->stockbpt = 0;
+            $data->picking = 0;
+            $aux_picking = 0;
             if(isset($arreglo_ProdStock[$id])){
-                $data->stockbpt = $arreglo_ProdStock[$id]->stock;
-                $data->picking = $arreglo_ProdStock[$id]->stockPiking;    
+                $data->stockbpt = $arreglo_ProdStock[$id]->stockBodProdTerm;
+                //$data->picking = $arreglo_ProdStock[$id]->stockPiking;
+                if($arreglo_ProdStock[$id]->stockPiking > 0){
+                    $notaventadetalle = NotaVentaDetalle::findOrFail($data->id);
+                    $detalles = $notaventadetalle->despachosoldets()->get();
+                    $arrayBodegasPickings = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
+                    foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
+                        $aux_picking += $arrayBodegasPicking["stock"];
+                    }
+                    $data->picking = $aux_picking;
+                }
             }else{
-                $data->stockbpt = 0;
-                $data->picking = 0;
+                //$data->stockbpt = 0;
+                //$data->picking = 0;
             }
+
 
             //SUMA TOTAL DE SOLICITADO
             /*************************/
@@ -211,6 +228,8 @@ class ReportPendXprodController extends Controller
             $data->kgpend = $aux_cantsaldo * $data->peso;
             $data->subtotalplata = round($aux_subtotalplata,0);
 
+            $total_sumapicking += $data->picking;
+            $total_sumacant += $data->cant;
             $total_sumacantdesp += $data->sumacantdesp;
             $total_cantsaldo += $data->cantsaldo;
             $total_kgpend += $data->kgpend;
@@ -222,12 +241,14 @@ class ReportPendXprodController extends Controller
         if(count($datas)>0){
             $aux_contreg = count($datas)>0 ? count($datas) : 1;
             $datas[0]->datosAdicionales = [
+                'total_sumapicking' => $total_sumapicking,
+                'total_sumacant' => $total_sumacant,
                 'total_sumacantdesp' => $total_sumacantdesp,
                 'total_cantsaldo' => $total_cantsaldo,
                 'total_kgpend' => round($total_kgpend),
                 'total_totalplata' => $total_totalplata,
-                'prom_precioxkilo' => $total_precioxkilo / $aux_contreg,
-                'prom_totalplata' => round($total_totalplata / $aux_contreg,2),
+                'prom_precioxkilo' => round($total_precioxkilo / $aux_contreg,2),
+                'prom_totalplata' => round($total_totalplata / $aux_contreg,2)
             ];     
         }
         //dd($datas);
@@ -540,6 +561,10 @@ function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
             notaventadetalle.preciounit,notaventadetalle.precioxkilo,
             comuna.nombre as comunanombre,acuerdotecnico.id as acuerdotecnico_id,
             '' as at_espesor,0 as stockbpt,0 as picking";
+            //SE ORDENA DE FORMA DESENDENTE PARA ENVIAR EN EL 1er REGISTRO LOS TOTALES Y LLEGUEN A LA TABLA PARA PODER TOTALIZAR
+            //SI SE CAMBIA O ELIMINA ESTE ORDEN NO VA A TOTALIZAR EN LA CONSULTA POR PANTALLA
+            $aux_AgruOrd = "order by notaventadetalle.notaventa_id desc";
+
         }
 
         $sql = "SELECT notaventadetalle.producto_id $aux_campos ,notaventa.sucursal_id
