@@ -248,7 +248,7 @@ class ReportPendXprodController extends Controller
                 'total_kgpend' => round($total_kgpend),
                 'total_totalplata' => $total_totalplata,
                 'prom_precioxkilo' => round($total_precioxkilo / $aux_contreg,2),
-                'prom_totalplata' => round($total_totalplata / $aux_contreg,2)
+                'prom_totalplata' => round($total_totalplata / $aux_contreg,0)
             ];     
         }
         //dd($datas);

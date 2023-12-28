@@ -66,7 +66,7 @@ $(document).ready(function () {
                     $("#subtotalplata").html(MASKLA(data.datosAdicionales.total_totalplata,0))
                 
                     $("#prom_precioxkilo").html(MASKLA(data.datosAdicionales.prom_precioxkilo,2));
-                    $("#prom_totalplata").html(MASKLA(data.datosAdicionales.prom_totalplata,2));                
+                    $("#prom_totalplata").html(MASKLA(data.datosAdicionales.prom_totalplata,0));                
                 }
                 $(row).attr('id','fila' + data.id);
                 $(row).attr('name','fila' + data.id);
