@@ -639,7 +639,7 @@ function bodyRows(datos) {
         prom_precioxkg = total_precioxkilo / aux_contreg;
         prom_precioxkg = parseFloat(prom_precioxkg.toFixed(2));
         prom_precio = total_totalplata / aux_contreg;
-        prom_precio = parseFloat(prom_precio.toFixed(2));
+        prom_precio = parseFloat(prom_precio.toFixed(0));
         body.push({
             nv: "",
             oc: "",
@@ -656,7 +656,7 @@ function bodyRows(datos) {
             cantpend: "",
             kilos: "",
             preciokg: MASKLA(prom_precioxkg,2),
-            pesos: MASKLA(prom_precio,2)
+            pesos: MASKLA(prom_precio,0)
         })
     
     }
