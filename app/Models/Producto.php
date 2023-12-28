@@ -1059,6 +1059,7 @@ class Producto extends Model
             $at_largoT = $producto->long ? " L:" . $producto->long : "";
             $at_ancho = $producto->diametro > 0 ? $producto->diametro : "";
             $at_largo = $producto->long ? $producto->long : "";
+            $at_espesor = $producto->peso;
             $aux_tipounion = "";
             if(!($producto->tipounion === "S/C" or $producto->tipounion === "S/U")){
                 $aux_tipounion = $producto->tipounion;
