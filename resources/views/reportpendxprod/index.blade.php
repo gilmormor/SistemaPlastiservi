@@ -231,7 +231,7 @@ Pendiente x Producto
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sucursal_id" id="sucursal_id" class='selectpicker form-control' data-live-search='true' data-actions-box='true'>
-                                            <option value="">Seleccione...</option>
+                                            <option value="">Todos</option>
                                             @foreach($tablashtml['sucursales'] as $sucursal)
                                                 <option
                                                     value="{{$sucursal->id}}"
