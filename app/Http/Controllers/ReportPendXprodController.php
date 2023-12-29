@@ -47,6 +47,7 @@ class ReportPendXprodController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
+        //dd(count($tablashtml['sucursales']));
         $areaproduccions = AreaProduccion::areaproduccionxusuario();
         //dd($areaproduccions);
         //$areaproduccions = AreaProduccion::orderBy('id')->get();
@@ -421,7 +422,7 @@ function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
     $user = Usuario::findOrFail(auth()->id());
     $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
     if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
-        $aux_condsucursal_id = " true ";
+        $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
         //$aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray)";
     }else{
         if(is_array($request->sucursal_id)){

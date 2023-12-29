@@ -89,10 +89,14 @@ Pendiente x Producto
                                         <label>Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name='vendedor_id' id='vendedor_id' class='selectpicker form-control vendedor_id'  data-live-search='true' data-actions-box='true'>"
+                                        <select name='vendedor_id' id='vendedor_id' class='selectpicker form-control vendedor_id'  data-live-search='true' data-actions-box='true' {{(count($tablashtml['vendedores']) == 1) ? "disabled" : ""}}>"
                                             <option value="">Todos</option>
                                             @foreach($tablashtml['vendedores'] as $vendedor)
-                                                <option value="{{$vendedor->id}}">{{$vendedor->nombre}} {{$vendedor->apellido}}</option>";
+                                                <option value="{{$vendedor->id}}"
+                                                    @if (count($tablashtml['vendedores']) == 1)
+                                                        {{'selected'}}
+                                                    @endif
+                                                >{{$vendedor->nombre}} {{$vendedor->apellido}}</option>";
                                             @endforeach
                                         </select>
                                     </div>
@@ -230,12 +234,16 @@ Pendiente x Producto
                                         <label for="sucursal_id" class="control-label">Sucursal:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="sucursal_id" id="sucursal_id" class='selectpicker form-control' data-live-search='true' data-actions-box='true'>
+                                        <select name="sucursal_id" id="sucursal_id" class='selectpicker form-control' data-live-search='true' data-actions-box='true' {{(count($tablashtml['sucursales']) == 1) ? "disabled" : ""}}>
                                             <option value="">Todos</option>
                                             @foreach($tablashtml['sucursales'] as $sucursal)
                                                 <option
                                                     value="{{$sucursal->id}}"
-                                                    {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
+                                                    @if (count($tablashtml['sucursales']) == 1)
+                                                        {{'selected'}}
+                                                    @else
+                                                        {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
+                                                    @endif
                                                     >{{$sucursal->nombre}}</option>
                                             @endforeach
                                         </select>            
