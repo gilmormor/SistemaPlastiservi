@@ -764,10 +764,10 @@ function verificarArchivo(url, callback) {
 
 function exportarExcel() {
     orderby = " order by foliocontrol.doc,dte.id ";
-    data = datosFac();
+    data = datosPentxProd();
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
-        url: "/reportdtefac/reportdtefacpage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+        url: "/reportpendxprod/reportpendxprodpage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
         type: 'POST',
         dataType: 'json',
         success: function(data) {
@@ -793,7 +793,6 @@ function exportarExcel() {
         var datosExcel = [];
         // Agregar los datos de la tabla al arreglo
         aux_vendedor_id = "";
-        count = 0;
 
         cellLengthRazonSoc = 0;
         cellLengthProducto = 0;
@@ -804,51 +803,61 @@ function exportarExcel() {
             aux_sucursalNombre = "";
         }
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Facturas Emitidas","","","","","","","","",fechaactual()]);
+        datosExcel.push(["Pendiente por Producto","","","","","","","","","","","","","","",fechaactual()]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
+        aux_cont = 0;
+        aux_totalPicking = 0;
+        aux_totalCant = 0;
+        aux_totalCantDesp = 0;
+        aux_totalCantPend = 0;
+        aux_totalkgPend = 0;
+        aux_totalPreciokg = 0;
+        aux_totalMonto = 0;
         aux_totalkgtotal = 0;
         aux_totalmnttotal = 0;
         datosExcel.push(["","","","","","","","",""]);
-        datosExcel.push(["NDoc","Fecha","RUT","Razon Social","Comuna","Kg","Monto","Estado","OC","NV"]);
+        datosExcel.push(["NV","OC","Fecha","PlazoEnt","Razon Social","Comuna","CodProd","Descripcion","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$"]);
         data.data.forEach(function(registro) {
-            aux_totalkgtotal += registro.kgtotal;
-            aux_totalmnttotal += registro.mnttotal;
-            filainifusionar++;
-            aux_fecha = new Date(registro.fchemis + " 00:00:00");
+            aux_cont++;
+            aux_totalPicking += registro.picking;
+            aux_totalCant += registro.cant;
+            aux_totalCantDesp += registro.cantdesp;
+            aux_totalCantPend += registro.cantsaldo;
+            aux_totalkgPend += registro.kgpend;
+            aux_totalPreciokg += registro.precioxkilo;
+            aux_totalMonto += registro.subtotalplata;
 
-            aux_estado = "";
-            if(registro.indtraslado == "6"){
-                aux_estado = "Guia solo traslado";
-            }
-            if(registro.indtraslado == "1"){
-                if(registro.dter_id == null){
-                    aux_estado = "Pendiente de Fac";
-                }else{
-                    aux_estado = `Guia Fac (${registro.fact_nrodocto})`;
-                }
-            }
-            if(registro.dteanul_obs != null){
-                aux_estado = "Anulada";
-            }
+            aux_fecha = new Date(registro.fechahora);
+            aux_plazoentrega = new Date(registro.plazoentrega + " 00:00:00")
+            aux_productonomb = registro.nombre.replace(/&quot;/g, '"');
+            aux_productonomb = aux_productonomb.replace(/&#039;/g, "'");
             var filaExcel = [
-                registro.nrodocto, //"NDoc",
-                fechaddmmaaaa(aux_fecha), //"Fecha",
-                registro.rut, //"RUT",
-                registro.razonsocial, //"Cliente",
-                registro.nombre_comuna, //"CodProd",
-                registro.kgtotal, //"Producto",
-                registro.mnttotal, //"Ancho"
-                aux_estado, //,"Largo"
-                registro.oc_id, //,"Espesor",
-                registro.notaventa_id
+                registro.notaventa_id,
+                registro.oc_id,
+                fechaddmmaaaa(aux_fecha),
+                fechaddmmaaaa(aux_plazoentrega),
+                registro.razonsocial,
+                registro.comunanombre,
+                registro.producto_id,
+                cadenaSinEntidad = aux_productonomb,
+                registro.stockbpt,
+                registro.picking,
+                registro.cant,
+                registro.cantdesp,
+                registro.cantsaldo,
+                registro.kgpend,
+                registro.precioxkilo,
+                registro.subtotalplata
             ];
-            aux_vendedor_id = registro.vendedor_id;
-            count++;
+            //aux_vendedor_id = registro.vendedor_id;
 
             datosExcel.push(filaExcel);
         });
-        if(aux_totalkgtotal > 0){
-            datosExcel.push(["","","","","Total: ",aux_totalkgtotal,aux_totalmnttotal,"","",""]);
+        if(aux_totalMonto > 0){
+            prom_preciokg = (aux_totalPreciokg/aux_cont);
+            prom_Monto = (aux_totalMonto/aux_cont);
+            datosExcel.push(["","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto]);
+            datosExcel.push(["","","","","","","","","Promedio:","","","","","",prom_preciokg,prom_Monto]);
         }
 
         createExcel(datosExcel);
@@ -889,7 +898,7 @@ function createExcel(datosExcel) {
 
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 16; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -914,25 +923,64 @@ function createExcel(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 16; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
         celda.autosize = true;
     }    
 
+    const columnI = worksheet.getColumn(9);
+    columnI.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
 
-    // Recorrer la columna 7 y dar formato con punto para separar los miles
-    const columnG = worksheet.getColumn(6);
-    columnG.eachCell({ includeEmpty: true }, (cell) => {
+    const columnJ = worksheet.getColumn(10);
+    columnJ.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    const columnK = worksheet.getColumn(11);
+    columnK.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    const columnL = worksheet.getColumn(12);
+    columnL.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    const columnM = worksheet.getColumn(13);
+    columnM.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    const columnN = worksheet.getColumn(14);
+    columnN.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0.00";
         }
     });
 
-    // Recorrer la columna R y dar formato con punto para separar los miles
-    const columnR = worksheet.getColumn(7);
-    columnR.eachCell({ includeEmpty: true }, (cell) => {
+    const columnO = worksheet.getColumn(15);
+    columnO.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    const columnP = worksheet.getColumn(16);
+    columnP.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
@@ -940,8 +988,34 @@ function createExcel(datosExcel) {
 
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
     for (let i = 4; i <= datosExcel.length; i++) {
-        const cell8 = worksheet.getCell(i, 8);
-        cell8.alignment = { horizontal: "center", vertical: "middle" };
+        const cell7 = worksheet.getCell(i, 7);
+        cell7.alignment = { horizontal: "center", vertical: "middle" };
+
+        const cell9 = worksheet.getCell(i, 9);
+        cell9.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        const cell10 = worksheet.getCell(i, 10);
+        cell10.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        const cell11 = worksheet.getCell(i, 11);
+        cell11.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        const cell12 = worksheet.getCell(i, 12);
+        cell12.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        const cell13 = worksheet.getCell(i, 13);
+        cell13.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        const cell14 = worksheet.getCell(i, 14);
+        cell14.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        const cell15 = worksheet.getCell(i, 15);
+        cell15.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        const cell16 = worksheet.getCell(i, 16);
+        cell16.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        /*
         const cell9 = worksheet.getCell(i, 9);
         cell9.alignment = { horizontal: "center", vertical: "middle" };
         const cell10 = worksheet.getCell(i, 10);
@@ -949,6 +1023,7 @@ function createExcel(datosExcel) {
 
         const cell = worksheet.getCell(i, 13);
         cell.alignment = { horizontal: "center", vertical: "middle" };
+        */
 
     }
 
@@ -977,9 +1052,73 @@ function createExcel(datosExcel) {
     cell.alignment = { horizontal: "center", vertical: "middle" };
 
 
+    row = worksheet.getRow(datosExcel.length-1);
+    cell = row.getCell(8);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+
+    cell = row.getCell(9);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    cell = row.getCell(10);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    cell = row.getCell(11);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    cell = row.getCell(12);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    cell = row.getCell(13);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    cell = row.getCell(14);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0.00";
+
+    cell = row.getCell(15);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    cell = row.getCell(16);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    row = worksheet.getRow(datosExcel.length);
+    cell = row.getCell(9);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+
+    cell = row.getCell(15);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0.00";
+
+    cell = row.getCell(16);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    ajustarcolumnaexcel(worksheet,"N");
+    ajustarcolumnaexcel(worksheet,"P");
+
+
     //Fusionar celdas de Titulo
     const startCol = 0;
-    const endCol = 9;
+    const endCol = 15;
     worksheet.mergeCells(1, startCol, 1, endCol);
 
     //Negrita Columna Sucursal
@@ -989,10 +1128,11 @@ function createExcel(datosExcel) {
     
     //Fusionar celdas Sucursal
     const startCol1 = 0;
-    const endCol1 = 9;
+    const endCol1 = 15;
     worksheet.mergeCells(2, startCol1, 2, endCol1);
 
     // Establecer negrita a totales
+    /*
     row = worksheet.getRow(datosExcel.length);
     for (let i = 1; i <= 6; i++) {
         cell = row.getCell(i);
@@ -1000,11 +1140,8 @@ function createExcel(datosExcel) {
         cell.alignment = { horizontal: "right" };
         cell.numFmt = "#,##0.00";
     }
+    */
 
-    cell = row.getCell(7);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
 
 
     // Guardar el archivo
@@ -1016,7 +1153,7 @@ function createExcel(datosExcel) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "facturasEmitidas.xlsx";
+      a.download = "PendxProd.xlsx";
       a.click();
 
       // Limpiar el objeto Blob

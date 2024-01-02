@@ -378,7 +378,8 @@ class Dte extends Model
         AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nombrepdf,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
         dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,dte.updated_at as dteupdated_at,
-        dteguiausada.id as dteguiausada_id,dteguiausada.updated_at as dteguiausadaupdated_at
+        dteguiausada.id as dteguiausada_id,dteguiausada.updated_at as dteguiausadaupdated_at,
+        dte.usuario_id,usuario.usuario
         FROM dte INNER JOIN dtedet
         ON dte.id=dtedet.dte_id and isnull(dte.deleted_at) and isnull(dtedet.deleted_at)
         INNER JOIN dteguiadesp
@@ -419,6 +420,8 @@ class Dte extends Model
         ON dtedte_rel_guia.dter_id = dte_rel_guia.id AND (dte_rel_guia.foliocontrol_id = 2)  AND isnull(dte_rel_guia.deleted_at)
         LEFT JOIN dteguiausada
         ON dteguiausada.dte_id = dte.id AND isnull(dteguiausada.deleted_at)
+        LEFT JOIN usuario
+        ON dte.usuario_id=usuario.id
         WHERE $aux_condproducto_id
         and $aux_condguiadesp_id
         and $vendedorcond
@@ -769,7 +772,7 @@ class Dte extends Model
         notaventadetalle.precioxkilo,notaventadetalle.precioxkiloreal,
         dte.mnttotal,dte.kgtotal,
         dte.vendedor_id,persona.rut as vendedor_rut,concat(persona.nombre, ' ' ,persona.apellido) AS vendedor_nombre,
-        dte.indtraslado
+        dte.indtraslado,dte.usuario_id,usuario.usuario
         $otrosCampos
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
@@ -797,6 +800,8 @@ class Dte extends Model
         ON dte.vendedor_id=vendedor.id and isnull(vendedor.deleted_at)
         LEFT JOIN persona
         ON vendedor.persona_id=persona.id and isnull(persona.deleted_at)
+        LEFT JOIN usuario
+        ON dte.usuario_id=usuario.id
         $unionOtrasTablas
         WHERE $vendedorcond
         AND $aux_condFecha

@@ -724,7 +724,7 @@ function exportarExcel() {
         aux_totalkgtotal = 0;
         aux_totalmnttotal = 0;
         datosExcel.push(["","","","","","","","",""]);
-        datosExcel.push(["NDoc","Fecha","RUT","Razon Social","Comuna","Kg","Monto","Estado","OC","NV"]);
+        datosExcel.push(["NDoc","Fecha","RUT","Razon Social","Comuna","Kg","Monto","Estado","OC","NV","Fact","Usuario"]);
         data.data.forEach(function(registro) {
             aux_totalkgtotal += registro.kgtotal;
             aux_totalmnttotal += registro.mnttotal;
@@ -755,7 +755,9 @@ function exportarExcel() {
                 registro.mnttotal, //"Ancho"
                 aux_estado, //,"Largo"
                 registro.oc_id, //,"Espesor",
-                registro.notaventa_id
+                registro.notaventa_id,
+                registro.fact_nrodocto,
+                registro.usuario
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -803,7 +805,7 @@ function createExcel(datosExcel) {
 
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 12; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -828,7 +830,7 @@ function createExcel(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 12; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
@@ -860,7 +862,12 @@ function createExcel(datosExcel) {
         cell9.alignment = { horizontal: "center", vertical: "middle" };
         const cell10 = worksheet.getCell(i, 10);
         cell10.alignment = { horizontal: "center", vertical: "middle" };
-
+        const cell11 = worksheet.getCell(i, 11);
+        cell11.alignment = { horizontal: "center", vertical: "middle" };
+        /*
+        const cell12 = worksheet.getCell(i, 12);
+        cell12.alignment = { horizontal: "center", vertical: "middle" };
+        */
         const cell = worksheet.getCell(i, 13);
         cell.alignment = { horizontal: "center", vertical: "middle" };
 
