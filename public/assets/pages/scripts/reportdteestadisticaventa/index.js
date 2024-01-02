@@ -508,19 +508,6 @@ function createExcelSantaEster(datosExcel) {
     });
 }
 
-function ajustarcolumnaexcel(worksheet,columna){
-    const columnB = worksheet.getColumn(columna);
-    let maxLengthB = 0;
-    columnB.eachCell({ includeEmpty: true }, (cell) => {
-      const length = cell.value ? cell.value.toString().length : 0;
-      if (length > maxLengthB) {
-        maxLengthB = length;
-      }
-    });
-    columnB.width = maxLengthB < 10 ? 10 : maxLengthB;
-
-}
-
 function exportarExcelLosPinos() {
     var tabla = $('#tabla-data-consulta').DataTable();
     orderby = " order by foliocontrol.doc,dte.id ";
@@ -962,13 +949,3 @@ function createExcelLosPinos(datosExcel) {
       window.URL.revokeObjectURL(url);
     });
 }
-
-function getColumnLetter(columnIndex) {
-    let columnLetter = '';
-    while (columnIndex > 0) {
-      const remainder = (columnIndex - 1) % 26;
-      columnLetter = String.fromCharCode(65 + remainder) + columnLetter;
-      columnIndex = Math.floor((columnIndex - 1) / 26);
-    }
-    return columnLetter;
-  }

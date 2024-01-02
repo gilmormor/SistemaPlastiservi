@@ -81,6 +81,7 @@ class ReportPendXprodController extends Controller
         
         //dd($request);
         $datas = InvMov::stocksql($request,"producto.id");
+        //dd($datas);
         $arreglo_ProdStock = [];
         foreach ($datas as $elemento) {
             $arreglo_ProdStock[$elemento->producto_id] = $elemento;
@@ -422,7 +423,8 @@ function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
     $user = Usuario::findOrFail(auth()->id());
     $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
     if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
-        $aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
+        $aux_condsucursal_id = "false";
+        //$aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray) ";
         //$aux_condsucursal_id = " notaventa.sucursal_id in ($sucurArray)";
     }else{
         if(is_array($request->sucursal_id)){

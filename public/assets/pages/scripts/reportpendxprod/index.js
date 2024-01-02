@@ -493,78 +493,6 @@ $('#tabla-data-consulta').on('draw.dt', function () {
                 pdf = pdfjs(datos);
                 pdf.save('PendXProd.pdf');    
             }
-            return 0;
-            var datosExcel = [];
-            //datosExcel.push(["NV", "OC", "Fecha", "Plazo Entrega", "Razón Social", "Comuna", "Cod", "Descripción", "Clase Sello", "Diam Ancho", "L", "Peso Esp", "TU", "Stock", "Picking", "Cant", "Cant Desp", "Cant Pend", "Kilos Pend", "Precio Kg", "$"]);
-            console.log(datos);
-            count = 0;
-            datos.data.forEach(function(registro) {
-                aux_fecha = new Date(registro.fechahora);
-                var filaExcel = [
-                    registro.notaventa_id,
-                    registro.oc_id,
-                    fechaddmmaaaa(aux_fecha),
-                    registro.plazoentrega,
-                    registro.razonsocial,
-                    registro.comunanombre,
-                    registro.producto_id,
-                    registro.nombre,
-                    registro.cla_nombre,
-                    registro.diametro,
-                    registro.long,
-                    registro.peso,
-                    registro.tipounion,
-                    registro.stockbpt,
-                    registro.picking,
-                    registro.cant,
-                    registro.cantdesp,
-                    registro.cantsaldo,
-                    registro.kgpend,
-                    registro.precioxkilo,
-                    registro.subtotalplata
-                ];
-                count++;
-    
-                datosExcel.push(filaExcel);
-            });
-            console.log(datosExcel);
-
-            // Suponiendo que recibes los datos en el objeto 'datosDesdePHP'
-
-            // Crear un nuevo documento PDF
-            var pdf = new jsPDF('landscape');  // Orientación horizontal
-
-            // Definir la posición y tamaño del encabezado
-            var headerX = 10;
-            var headerY = 10;
-            var headerWidth = pdf.internal.pageSize.width - 20;
-            var headerHeight = 30;
-
-            // Dibujar el encabezado
-            pdf.rect(headerX, headerY, headerWidth, headerHeight);
-            pdf.text("Logo", headerX + 10, headerY + 20);  // Reemplazar con el logo de la empresa
-            pdf.text("Nombre de la empresa", headerX + 50, headerY + 20);  // Reemplazar con el nombre de la empresa
-            // Otros detalles del encabezado...
-
-            // Crear la tabla
-            var columns = ["NV", "OC", "Fecha", "Plazo Entrega", "Razón Social", "Comuna", "Cod", "Descripción", "Clase Sello", "Diam Ancho", "L", "Peso Esp", "TU", "Stock", "Picking", "Cant", "Cant Desp", "Cant Pend", "Kilos Pend", "Precio Kg", "$"];
-            var rows = datosExcel;  // Supongamos que los datos se encuentran en un arreglo
-
-            /* pdf.autoTable({
-                head: [columns],
-                body: rows,
-                startY: headerY + headerHeight + 10,  // Posición de inicio de la tabla
-            }); */
-
-            // Calcular totales
-            // ...
-
-            // Dibujar totales y promedios
-            // ...
-
-            // Guardar el PDF
-            pdf.save('reporte.pdf');
-
         }
     });
 }
@@ -821,4 +749,267 @@ function verificarArchivo(url, callback) {
         //document.getElementById("output").src = doc.output('datauristring');
         document.getElementById("output").data = doc.output('datauristring');
     }
+}
+
+
+function exportarExcel() {
+    orderby = " order by foliocontrol.doc,dte.id ";
+    data = datosFac();
+    // Obtener todos los registros mediante una solicitud AJAX
+    $.ajax({
+        url: "/reportdtefac/reportdtefacpage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+        type: 'POST',
+        dataType: 'json',
+        success: function(data) {
+        //return 0;
+        //console.log(data);
+        if(data.data.length == 0){
+            swal({
+                title: 'Información no encontrada!',
+                text: "",
+                icon: 'warning',
+                buttons: {
+                    confirm: "Aceptar"
+                },
+            }).then((value) => {
+                if (value) {
+                    //ajaxRequest(data,ruta,'accionnotaventa');
+                }
+            });
+            return 0;
+        }
+        //console.log(data);
+        // Crear una matriz para los datos de Excel
+        var datosExcel = [];
+        // Agregar los datos de la tabla al arreglo
+        aux_vendedor_id = "";
+        count = 0;
+
+        cellLengthRazonSoc = 0;
+        cellLengthProducto = 0;
+        filainifusionar = -1
+        //console.log(data);
+        aux_sucursalNombre = $("#sucursal_id option:selected").html();
+        if(aux_sucursalNombre == "Seleccione..."){
+            aux_sucursalNombre = "";
+        }
+        aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
+        datosExcel.push(["Facturas Emitidas","","","","","","","","",fechaactual()]);
+        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
+        aux_totalkgtotal = 0;
+        aux_totalmnttotal = 0;
+        datosExcel.push(["","","","","","","","",""]);
+        datosExcel.push(["NDoc","Fecha","RUT","Razon Social","Comuna","Kg","Monto","Estado","OC","NV"]);
+        data.data.forEach(function(registro) {
+            aux_totalkgtotal += registro.kgtotal;
+            aux_totalmnttotal += registro.mnttotal;
+            filainifusionar++;
+            aux_fecha = new Date(registro.fchemis + " 00:00:00");
+
+            aux_estado = "";
+            if(registro.indtraslado == "6"){
+                aux_estado = "Guia solo traslado";
+            }
+            if(registro.indtraslado == "1"){
+                if(registro.dter_id == null){
+                    aux_estado = "Pendiente de Fac";
+                }else{
+                    aux_estado = `Guia Fac (${registro.fact_nrodocto})`;
+                }
+            }
+            if(registro.dteanul_obs != null){
+                aux_estado = "Anulada";
+            }
+            var filaExcel = [
+                registro.nrodocto, //"NDoc",
+                fechaddmmaaaa(aux_fecha), //"Fecha",
+                registro.rut, //"RUT",
+                registro.razonsocial, //"Cliente",
+                registro.nombre_comuna, //"CodProd",
+                registro.kgtotal, //"Producto",
+                registro.mnttotal, //"Ancho"
+                aux_estado, //,"Largo"
+                registro.oc_id, //,"Espesor",
+                registro.notaventa_id
+            ];
+            aux_vendedor_id = registro.vendedor_id;
+            count++;
+
+            datosExcel.push(filaExcel);
+        });
+        if(aux_totalkgtotal > 0){
+            datosExcel.push(["","","","","Total: ",aux_totalkgtotal,aux_totalmnttotal,"","",""]);
+        }
+
+        createExcel(datosExcel);
+
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+
+
+    // Llamar a la función para crear el archivo Excel
+
+}
+
+function createExcel(datosExcel) {
+    // Crear un nuevo libro de trabajo y una nueva hoja
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Datos");
+
+    // Insertar los datos en la hoja de trabajo
+    worksheet.addRows(datosExcel);
+
+    // Establecer negrita en la celda A1
+    //worksheet.getCell("A5").font = { bold: true };
+
+
+    // Ajustar automáticamente el ancho de la columna B al contenido
+    ajustarcolumnaexcel(worksheet,"B");
+    ajustarcolumnaexcel(worksheet,"C");
+    ajustarcolumnaexcel(worksheet,"D");
+    ajustarcolumnaexcel(worksheet,"E");
+    ajustarcolumnaexcel(worksheet,"F");
+    ajustarcolumnaexcel(worksheet,"G");
+    ajustarcolumnaexcel(worksheet,"H");
+    ajustarcolumnaexcel(worksheet,"I");
+    ajustarcolumnaexcel(worksheet,"J");
+
+    //Establecer negrilla a titulo de columnas Fila 4
+    const row6 = worksheet.getRow(4);
+    for (let i = 1; i <= 10; i++) {
+        cell = row6.getCell(i);
+        cell.font = { bold: true };
+        cell.autosize = true;
+    }
+
+    // Obtén el objeto de la columna y establece la propiedad hidden en true
+    /* columnhidden = worksheet.getColumn("H");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("I");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("J");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("K");
+    columnhidden.hidden = true; */
+    /*
+    columnhidden = worksheet.getColumn("N");
+    columnhidden.hidden = true;
+    */
+
+    //AJUSTAR EL TEXTO CELDAS A4:AI4
+    // Supongamos que deseas ajustar el texto en la fila 4 y hacer que las celdas en negrita
+    fila = 4;
+
+    // Iterar a través de las celdas en la fila y configurar el formato
+    for (let i = 1; i <= 10; i++) {
+        columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
+        const celda = worksheet.getCell(`${columna}${fila}`);
+        celda.alignment = { wrapText: true, vertical: 'middle' };
+        celda.autosize = true;
+    }    
+
+
+    // Recorrer la columna 7 y dar formato con punto para separar los miles
+    const columnG = worksheet.getColumn(6);
+    columnG.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Recorrer la columna R y dar formato con punto para separar los miles
+    const columnR = worksheet.getColumn(7);
+    columnR.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
+    for (let i = 4; i <= datosExcel.length; i++) {
+        const cell8 = worksheet.getCell(i, 8);
+        cell8.alignment = { horizontal: "center", vertical: "middle" };
+        const cell9 = worksheet.getCell(i, 9);
+        cell9.alignment = { horizontal: "center", vertical: "middle" };
+        const cell10 = worksheet.getCell(i, 10);
+        cell10.alignment = { horizontal: "center", vertical: "middle" };
+
+        const cell = worksheet.getCell(i, 13);
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    }
+
+
+    //Negrita Columna Titulo
+    const row1 = worksheet.getRow(1);
+    cell = row1.getCell(1);
+    cell.font = { bold: true, size: 20 };
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+
+    //Titulo Kg
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(6);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    //Titulo Monto
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(7);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    
+
+    //Fecha Reporte
+    const row2 = worksheet.getRow(1);
+    cell = row2.getCell(10);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+
+    //Fusionar celdas de Titulo
+    const startCol = 0;
+    const endCol = 9;
+    worksheet.mergeCells(1, startCol, 1, endCol);
+
+    //Negrita Columna Sucursal
+    const row3 = worksheet.getRow(2);
+    cell = row3.getCell(1);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    
+    //Fusionar celdas Sucursal
+    const startCol1 = 0;
+    const endCol1 = 9;
+    worksheet.mergeCells(2, startCol1, 2, endCol1);
+
+    // Establecer negrita a totales
+    row = worksheet.getRow(datosExcel.length);
+    for (let i = 1; i <= 6; i++) {
+        cell = row.getCell(i);
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: "right" };
+        cell.numFmt = "#,##0.00";
+    }
+
+    cell = row.getCell(7);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+
+    // Guardar el archivo
+    workbook.xlsx.writeBuffer().then(function(buffer) {
+      // Crear un objeto Blob para el archivo Excel
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+      // Crear un enlace de descarga
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "facturasEmitidas.xlsx";
+      a.click();
+
+      // Limpiar el objeto Blob
+      window.URL.revokeObjectURL(url);
+    });
 }

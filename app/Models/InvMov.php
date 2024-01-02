@@ -256,8 +256,9 @@ class InvMov extends Model
         group by $agrupar 
         having SUM(cant) != 0 
         order by invbodegaproducto.producto_id asc, invbodega.orden ASC;";
-
+        //dd($sql);
         $datas = DB::select($sql);
+        //dd($datas);
         return $datas;
 
     }

@@ -642,16 +642,3 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
       window.URL.revokeObjectURL(url);
     });
 }
-
-function ajustarcolumnaexcel(worksheet,columna){
-    const columnB = worksheet.getColumn(columna);
-    let maxLengthB = 0;
-    columnB.eachCell({ includeEmpty: true }, (cell) => {
-      const length = cell.value ? cell.value.toString().length : 0;
-      if (length > maxLengthB) {
-        maxLengthB = length;
-      }
-    });
-    columnB.width = maxLengthB < 10 ? 10 : maxLengthB;
-
-}
