@@ -223,6 +223,16 @@ var eventFired = function ( type ) {
 function datosPentxProd(aux_filtro = 0){
     aux_rut = eliminarFormatoRutret($("#rut").val());
     aux_sucursal_id = $("#sucursal_id").val();
+    if(aux_sucursal_id == "" && aux_filtro == 0 ){
+        swal({
+            title: 'Debes seleccionar Sucursal',
+            icon: 'error',
+            buttons: {
+                confirm: "Cerrar",
+            },
+        });
+        aux_sucursal_id = -1;
+    }
     if(aux_filtro != 0){
         aux_sucursal_id = -1;
     }

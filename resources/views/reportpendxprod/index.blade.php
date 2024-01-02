@@ -235,7 +235,7 @@ Pendiente x Producto
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sucursal_id" id="sucursal_id" class='selectpicker form-control' data-live-search='true' data-actions-box='true' {{(count($tablashtml['sucursales']) == 1) ? "disabled" : ""}}>
-                                            <option value="">Todos</option>
+                                            <option value="">Seleccione...</option>
                                             @foreach($tablashtml['sucursales'] as $sucursal)
                                                 <option
                                                     value="{{$sucursal->id}}"
@@ -259,12 +259,13 @@ Pendiente x Producto
                             <div class="col-xs-12 col-md-4 col-sm-4">
                                 <button type="button" id="btnpdfJS" name="btnpdfJS" class="btn btn-success tooltipsC" title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>
                             </div>
+                            <!--
                             <div class="col-xs-12 col-md-4 col-sm-4">
                                 <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">
                                     <i class='fa fa-fw fa-file-excel-o'> </i> Excel
                                 </button>
                             </div>
-
+                            -->
                         </div>
                     </form>
                 </div>
