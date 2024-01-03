@@ -187,7 +187,8 @@ class NotaVentaConsultaController extends Controller
                     $aux_icodespachoNew = "fa-star-o";
                     $aux_obsdespachoNew = "Inicio despacho";
                     $aux_obsdespacho = "";
-                    if($data->cant == $aux_cantdesp){
+                    //>= PORQUE EN SANTA ESTER SE PUEDE DESPACHAR MAS DE LO QUE DICE LA NOTA DE VENTA
+                    if($aux_cantdesp >= $data->cant){
                         $aux_icodespachoNew = " fa-star";
                         $aux_obsdespachoNew = "Fin despacho";
                     }
