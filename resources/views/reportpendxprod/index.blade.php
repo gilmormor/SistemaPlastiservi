@@ -255,14 +255,16 @@ Pendiente x Producto
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12">
                             <div class="col-xs-12 col-md-4 col-sm-4">
-                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar" onclick="ejecutarConsulta(1)">Consultar</button>
                             </div>
                             <!--<button type="button" id="btnpdf" name="btnpdf" class="btn btn-success tooltipsC" title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>-->
                             <div class="col-xs-12 col-md-4 col-sm-4">
-                                <button type="button" id="btnpdfJS" name="btnpdfJS" class="btn btn-success tooltipsC" title="Reporte PDF"><i class='glyphicon glyphicon-print'></i> Reporte</button>
+                                <button type="button" id="btnpdfJS" name="btnpdfJS" class="btn btn-success tooltipsC" title="Reporte PDF" onclick="ejecutarConsulta(2)">
+                                    <i class='glyphicon glyphicon-print'></i> Reporte
+                                </button>
                             </div>
                             <div class="col-xs-12 col-md-4 col-sm-4">
-                                <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">
+                                <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="ejecutarConsulta(3)">
                                     <i class='fa fa-fw fa-file-excel-o'> </i> Excel
                                 </button>
                             </div>

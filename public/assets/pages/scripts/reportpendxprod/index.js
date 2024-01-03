@@ -146,15 +146,51 @@ $(document).ready(function () {
     }
 
     //totalizar();
-
+/*
     $("#btnconsultar").click(function()
     {
         data = datosPentxProd();
-        $('#tabla-data-consulta').DataTable().ajax.url( "/reportpendxprod/reportpendxprodpage/" + data.data2 ).load();
+        if(data.data1.sucursal_id == ""){
+            swal({
+                title: 'Debes seleccionar Sucursal',
+                icon: 'error',
+                buttons: {
+                    confirm: "Cerrar",
+                },
+            });
+            aux_sucursal_id = -1;
+        }else{
+            $('#tabla-data-consulta').DataTable().ajax.url( "/reportpendxprod/reportpendxprodpage/" + data.data2 ).load();
+        }
+    
     });
-
+*/
 
 });
+
+function ejecutarConsulta(aux_cod){
+    data = datosPentxProd();
+    if(data.data1.sucursal_id == ""){
+        swal({
+            title: 'Debes seleccionar Sucursal',
+            icon: 'error',
+            buttons: {
+                confirm: "Cerrar",
+            },
+        });
+    }else{
+        if(aux_cod == 1){
+            $('#tabla-data-consulta').DataTable().ajax.url( "/reportpendxprod/reportpendxprodpage/" + data.data2 ).load();
+        }
+        if(aux_cod == 2){
+            consultarJS(data);    
+        }
+        if(aux_cod == 3){
+            exportarExcel();    
+        }
+    }
+
+}
 
 function totalizar(){
     let  table = $('#tabla-data-consulta').DataTable();
@@ -223,6 +259,7 @@ var eventFired = function ( type ) {
 function datosPentxProd(aux_filtro = 0){
     aux_rut = eliminarFormatoRutret($("#rut").val());
     aux_sucursal_id = $("#sucursal_id").val();
+    /*
     if(aux_sucursal_id == "" && aux_filtro == 0 ){
         swal({
             title: 'Debes seleccionar Sucursal',
@@ -233,8 +270,9 @@ function datosPentxProd(aux_filtro = 0){
         });
         aux_sucursal_id = -1;
     }
+    */
     if(aux_filtro != 0){
-        aux_sucursal_id = -1;
+        aux_rut = -1;
     }
     var data1 = {
         fechad            : $("#fechad").val(),
@@ -449,13 +487,13 @@ $('#tabla-data-consulta').on('draw.dt', function () {
   });
   
   */
-
+    /*
     $("#btnpdfJS").click(function()
     {
         data = datosPentxProd();
         consultarJS(data);
     });
-
+    */
   
     function sumarColumna(columna) {
         return datos.reduce(function (total, fila) {
