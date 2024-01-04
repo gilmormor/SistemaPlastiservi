@@ -79,7 +79,8 @@ class ReportInvStockController extends Controller
 
     public function totalizarindex(Request $request){
         $respuesta = array();
-        $datas = InvMov::stock($request)->get();
+        //$datas = InvMov::stock($request)->get();
+        $datas = InvMov::stocksql($request);
         $aux_totalkg = 0;
         foreach ($datas as $data) {
             //$aux_totalkg += $data->stockkg;

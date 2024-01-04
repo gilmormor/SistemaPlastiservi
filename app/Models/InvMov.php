@@ -67,7 +67,10 @@ class InvMov extends Model
             ->whereNull("acuerdotecnico.deleted_at")
             ->where(function($query) use ($request)  {
                 if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
-                    true;
+                    $user = Usuario::findOrFail(auth()->id());
+                    $sucurArray = $user->sucursales->pluck('id')->toArray();
+                    $query->whereIn('invbodega.sucursal_id', $sucurArray);
+                    //true;
                 }else{
                     $query->where("invbodega.sucursal_id","=",$request->sucursal_id);
                 }
