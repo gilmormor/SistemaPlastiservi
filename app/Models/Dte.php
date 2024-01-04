@@ -2416,7 +2416,10 @@ class Dte extends Model
         unidadmedida.nombre as unidadmedida_nombre,at_formatofilm,
         sum(DISTINCT dtedet.qtyitem * foliocontrol.signo) as qtyitem,sum(DISTINCT dtedet.itemkg * foliocontrol.signo) as itemkg,sucursal.nombre as sucursal_nombre,
         sum(DISTINCT dtedet.prcitem * foliocontrol.signo) as prcitem,
-        grupoprod.gru_nombre,categoriagrupovalmes.costo
+        grupoprod.gru_nombre,categoriagrupovalmes.costo,
+        dteorigen.id as dteorigen_id,dteorigen.fchemis as dteorigen_fchemis,dteorigen.nrodocto as dteorigen_nrodocto,
+        dteorigen.updated_at as dteorigen_updated_at,
+        foliocontrolorigen.doc as foliocontrolorigen_doc,foliocontrolorigen.nombrepdf as foliocontrolorigen_nombrepdf
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dtedet
@@ -2463,6 +2466,10 @@ class Dte extends Model
         ON producto.grupoprod_id = grupoprod.id
         LEFT JOIN categoriagrupovalmes
         ON categoriagrupovalmes.grupoprod_id = grupoprod.id and categoriagrupovalmes.annomes = '$fechaannomes' and isnull(categoriagrupovalmes.deleted_at)
+        LEFT JOIN dte as dteorigen
+        ON dtedte.dter_id = dteorigen.id and isnull(dteorigen.deleted_at)
+        LEFT JOIN foliocontrol as foliocontrolorigen
+        ON dteorigen.foliocontrol_id = foliocontrolorigen.id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond

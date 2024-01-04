@@ -22,9 +22,10 @@
 			<td class="info_factura">
 				<div class="round">
 					<span class="h3">Clientes</span>
-					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
+					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
 					<p>{{$datosv['bloqueado']}} </p>
 					<p>Vendedor: {{$datosv['nomvendedor']}} </p>
+					<p>Sucursal: {{$datosv['SucursalNombre']}} </p>
 					<p>Giro: {{$datosv['nombreGiro']}} </p>
 					<p>Fecha creación: {{$datosv['aux_fdesde']}} Hasta: {{$datosv['aux_fhasta']}}</p>
 				</div>

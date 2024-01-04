@@ -103,6 +103,7 @@ function datosRepCli(){
         comuna_id         : $("#comuna_id").val(),
         bloqueado         : $("#bloqueado").val(),
         vendedor_id       : $("#vendedor_id").val(),
+        sucursal_id       : $("#sucursal_id").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -202,7 +203,8 @@ $("#btnpdf").click(function(event){
     cadena = "?fechad="+data.fechad+"&fechah="+data.fechah +
             "&rut=" + data.rut + "&giro_id="+data.giro_id +
             "&comuna_id="+data.comuna_id + "&bloqueado="+data.bloqueado +
-            "&vendedor_id=" + data.vendedor_id
+            "&vendedor_id=" + data.vendedor_id +
+            "&sucursal_id=" + data.sucursal_id
     $('#contpdf').attr('src', '/reportclientes/exportPdf/'+cadena);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')

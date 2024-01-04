@@ -77,7 +77,17 @@ function consultarpage(aux_data){
                     <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible:${data.nrodocto}" onclick="genpdfFAC('${id_str}','_cedible')">
                         <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>`;
-                }    
+                }
+                if(data.dteorigen_nrodocto != null && (data.foliocontrol_doc == "NCVE" || data.foliocontrol_doc == "NDVE")){
+                    let id_str = data.dteorigen_nrodocto.toString();
+                    id_str = data.foliocontrolorigen_nombrepdf + id_str.padStart(8, "0");
+                    aux_text += 
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="DTE Origen" onclick="genpdfFAC('${id_str}','')">
+                        ${data.foliocontrolorigen_doc} ${data.dteorigen_nrodocto}
+                    </a>`;
+                }
+                //$('td', row).eq(5).html(aux_text);
+
             }
             $('td', row).eq(1).html(aux_text);
 
@@ -322,7 +332,7 @@ function exportarExcelSantaEster() {
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Formato","Kg","Neto"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Formato","Kg","Neto","DocOrigen","NDocOrigen","FechaOrigen"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
             aux_totalComision += registro.comision;
@@ -335,7 +345,16 @@ function exportarExcelSantaEster() {
             if(aux_length > cellLengthProducto){
                 cellLengthProducto = aux_length;
             }
-            
+
+            aux_dteorigen_fchemis = "";
+            aux_dteorigen_nrodocto = "";
+            aux_foliocontrolorigen_doc = "";            
+            if(registro.dteorigen_nrodocto != null && (registro.foliocontrol_doc == "NCVE" || registro.foliocontrol_doc == "NDVE")){
+                aux_dteorigen_fchemis = new Date(registro.dteorigen_fchemis + " 00:00:00");
+                aux_dteorigen_fchemis = fechaddmmaaaa(aux_dteorigen_fchemis),
+                aux_dteorigen_nrodocto = registro.dteorigen_nrodocto;
+                aux_foliocontrolorigen_doc = registro.foliocontrolorigen_doc;
+            }
             aux_fecha = new Date(registro.fchemis + " 00:00:00");
             var filaExcel = [
                 registro.foliocontrol_doc,
@@ -353,7 +372,10 @@ function exportarExcelSantaEster() {
                 registro.unidadmedida_nombre,
                 registro.at_formatofilm,
                 registro.itemkg,
-                registro.montoitem
+                registro.montoitem,
+                aux_foliocontrolorigen_doc,
+                aux_dteorigen_nrodocto,
+                aux_dteorigen_fchemis
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -410,10 +432,14 @@ function createExcelSantaEster(datosExcel) {
     ajustarcolumnaexcel(worksheet,"G");
     ajustarcolumnaexcel(worksheet,"H");
     ajustarcolumnaexcel(worksheet,"I");
+    ajustarcolumnaexcel(worksheet,"P");
+    ajustarcolumnaexcel(worksheet,"Q");
+    ajustarcolumnaexcel(worksheet,"R");
+    ajustarcolumnaexcel(worksheet,"S");
     
 
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 19; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
     }
@@ -436,8 +462,10 @@ function createExcelSantaEster(datosExcel) {
         const cell10 = worksheet.getCell(i, 10);
         cell10.alignment = { horizontal: "center", vertical: "middle" };
 
-        const cell = worksheet.getCell(i, 13);
-        cell.alignment = { horizontal: "center", vertical: "middle" };
+        const cell13 = worksheet.getCell(i, 13);
+        cell13.alignment = { horizontal: "center", vertical: "middle" };
+        const cell17 = worksheet.getCell(i, 17);
+        cell17.alignment = { horizontal: "center", vertical: "middle" };
     }
 
     /*
@@ -551,7 +579,7 @@ function exportarExcelLosPinos() {
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Doc Origen","NDoc Origen","Fecha Origen"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
             aux_totalComision += registro.comision;
@@ -568,6 +596,15 @@ function exportarExcelLosPinos() {
             if(registro.itemkg>0){
                 aux_precioxkg = registro.montoitem/registro.itemkg;
 
+            }
+            aux_dteorigen_fchemis = "";
+            aux_dteorigen_nrodocto = "";
+            aux_foliocontrolorigen_doc = "";            
+            if(registro.dteorigen_nrodocto != null && (registro.foliocontrol_doc == "NCVE" || registro.foliocontrol_doc == "NDVE")){
+                aux_dteorigen_fchemis = new Date(registro.dteorigen_fchemis + " 00:00:00");
+                aux_dteorigen_fchemis = fechaddmmaaaa(aux_dteorigen_fchemis),
+                aux_dteorigen_nrodocto = registro.dteorigen_nrodocto;
+                aux_foliocontrolorigen_doc = registro.foliocontrolorigen_doc;
             }
             aux_fecha = new Date(registro.fchemis + " 00:00:00");
 
@@ -606,7 +643,10 @@ function exportarExcelLosPinos() {
                 registro.costo, //"Costo Formula Nom",
                 0, //"Margen x Unid Nom",
                 0, //"Margen Total Nom"
-                0 //"Margen % peso Nom"
+                0, //"Margen % peso Nom"
+                aux_foliocontrolorigen_doc,
+                aux_dteorigen_nrodocto,
+                aux_dteorigen_fchemis
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -652,10 +692,13 @@ function createExcelLosPinos(datosExcel) {
     ajustarcolumnaexcel(worksheet,"I");
     ajustarcolumnaexcel(worksheet,"N");
     ajustarcolumnaexcel(worksheet,"Q");
+    ajustarcolumnaexcel(worksheet,"AJ");
+    ajustarcolumnaexcel(worksheet,"AK");
+    ajustarcolumnaexcel(worksheet,"AL");
     
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 35; i++) {
+    for (let i = 1; i <= 38; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -680,7 +723,7 @@ function createExcelLosPinos(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 35; i++) {
+    for (let i = 1; i <= 38; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
@@ -848,9 +891,13 @@ function createExcelLosPinos(datosExcel) {
         const cell10 = worksheet.getCell(i, 10);
         cell10.alignment = { horizontal: "center", vertical: "middle" };
 
-        const cell = worksheet.getCell(i, 13);
-        cell.alignment = { horizontal: "center", vertical: "middle" };
+        const cell13 = worksheet.getCell(i, 13);
+        cell13.alignment = { horizontal: "center", vertical: "middle" };
 
+        const cell36 = worksheet.getCell(i, 36);
+        cell36.alignment = { horizontal: "center", vertical: "middle" };
+        const cell38 = worksheet.getCell(i, 38);
+        cell38.alignment = { horizontal: "center", vertical: "middle" };
     }
 
     for (let i = 5; i <= datosExcel.length-1; i++) {

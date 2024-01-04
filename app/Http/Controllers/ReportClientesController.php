@@ -9,6 +9,7 @@ use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\Vendedor;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
@@ -28,7 +29,11 @@ class ReportClientesController extends Controller
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablashtml['sucursales'] = Sucursal::orderBy('id')
+                        ->whereIn('sucursal.id', $sucurArray)
+                        ->get();
         return view('reportclientes.index',compact('giros','fechaAct','tablashtml'));
     }
 
@@ -102,6 +107,7 @@ class ReportClientesController extends Controller
         $request->comuna_id = $_GET["comuna_id"];
         $request->bloqueado = $_GET["bloqueado"];
         $request->vendedor_id = $_GET["vendedor_id"];
+        $request->sucursal_id = $_GET["sucursal_id"];
         
 
         $datas = consulta($request);
@@ -128,18 +134,25 @@ class ReportClientesController extends Controller
         }
         $datosv['nombreGiro'] = "Todos";
         //$nombreGiro = "Todos";
-        if($request->giro_id){
+        if(!empty($request->giro_id)){
             $giro = Giro::findOrFail($request->giro_id);
-            $datosv['nombreGiro'] = $nombreGiro=$giro->nombre;
+            $datosv['nombreGiro'] = $giro->nombre;
             //$nombreGiro=$giro->nombre;
         }
-        $datosv['bloqueado'] = "Clientes: Todos";
-        //$bloqueado = "Clientes: Todos";
+        $datosv['SucursalNombre'] = "Todos";
+        if(!empty($request->sucursal_id)){
+            $sucursal = Sucursal::findOrFail($request->sucursal_id);
+            $datosv['SucursalNombre'] = $sucursal->nombre;
+            //$nombreGiro=$giro->nombre;
+        }
+
+        $datosv['bloqueado'] = "Estatus: Todos";
+        //$bloqueado = "Estatus: Todos";
         if($request->bloqueado){
-            $datosv['bloqueado'] = "Clientes: Activos";
-            //$bloqueado = "Clientes: Activos";
+            $datosv['bloqueado'] = "Estatus: Activos";
+            //$bloqueado = "Estatus: Activos";
             if($request->bloqueado=='1'){
-                $datosv['bloqueado'] = "Clientes: Bloqueados";
+                $datosv['bloqueado'] = "Estatus: Bloqueados";
                 //$bloqueado = "Clientes: Bloqueados";
             }
         }
@@ -246,6 +259,21 @@ function consulta($request){
         $aux_bloqueado .= " (SELECT cliente_id from clientebloqueado where isnull(clientebloqueado.deleted_at))";
     }
 
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = implode ( ',' , $user->sucursales->pluck('id')->toArray());
+    if(!isset($request->sucursal_id) or empty($request->sucursal_id)){
+        //$aux_condsucursal_id = " true ";
+        $aux_condsucursal_id = " cliente_sucursal.sucursal_id in ($sucurArray)";
+    }else{
+        if(is_array($request->sucursal_id)){
+            $aux_sucursal = implode ( ',' , $request->sucursal_id);
+        }else{
+            $aux_sucursal = $request->sucursal_id;
+        }
+        $aux_condsucursal_id = " (cliente_sucursal.sucursal_id in ($aux_sucursal) and cliente_sucursal.sucursal_id in ($sucurArray))";
+    }
+
+
     $sql = "SELECT cliente.*,comuna.nombre as nombrecomuna, clientebloqueado.descripcion as clientebloqueadodesc
     FROM cliente inner join comuna
     on cliente.comunap_id=comuna.id
@@ -253,12 +281,15 @@ function consulta($request){
     on cliente.id=cliente_vendedor.cliente_id
     left join clientebloqueado
     on cliente.id=clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
+    INNER JOIN cliente_sucursal
+    on cliente.id=cliente_sucursal.cliente_id and isnull(cliente_sucursal.deleted_at)
     WHERE $vendedorcond
     and $aux_condFecha
     and $aux_condrut
     and $aux_condgiro_id
     and $aux_condcomuna_id
     and $aux_bloqueado
+    AND $aux_condsucursal_id
     AND isnull(cliente.deleted_at)
     group by cliente.id;";
 
