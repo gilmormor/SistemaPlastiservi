@@ -28,7 +28,7 @@ class ReportProductoController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
-        $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
+        $tablashtml['areaproduccions'] =  AreaProduccion::areaproduccionxusuario();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $selecmultprod = 1;
         return view('reportproducto.index', compact('tablashtml','selecmultprod'));

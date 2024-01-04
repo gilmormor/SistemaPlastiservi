@@ -70,7 +70,7 @@ class NotaVentaCerradaController extends Controller
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $fechaServ = [
                     'fecha1erDiaMes' => date("01/m/Y"),

@@ -20,7 +20,7 @@ class UpdateGuiaFactController extends Controller
     {
         can('listar-despacho-cerradas-edit-guia-fact');
         $giros = $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::areaproduccionxusuario();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $aux_verestado='3'; //3 muestra boton de editar Num Guia y Num Fact 

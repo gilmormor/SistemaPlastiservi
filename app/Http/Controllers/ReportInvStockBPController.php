@@ -31,7 +31,16 @@ class ReportInvStockBPController extends Controller
         $tablashtml['invbodegas'] = InvBodega::orderBy('id')
                                     ->where("tipo","=",2)
                                     ->get();
-        $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
+        $tablashtml['areaproduccions'] = AreaProduccion::join('areaproduccionsuc', function ($join) use ($sucurArray) {
+                $join->on('areaproduccion.id', '=', 'areaproduccionsuc.areaproduccion_id')
+                ->whereIn('areaproduccionsuc.sucursal_id', $sucurArray);
+            })
+            ->select([
+                'areaproduccion.*',
+            ])
+            ->orderBy('areaproduccion.id')
+            ->groupBy("areaproduccion.id")
+            ->get();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $selecmultprod = 1;
         return view('reportinvstockbp.index', compact('tablashtml','selecmultprod'));
@@ -51,8 +60,9 @@ class ReportInvStockBPController extends Controller
     public function exportPdf(Request $request)
     {
         can('reporte-stock-bodegapicking');
-        $datas = InvMov::stock($request,"producto.id");
-        $datas = $datas->get();
+        /* $datas = InvMov::stock($request,"producto.id");
+        $datas = $datas->get(); */
+        $datas = InvMov::stocksql($request,"producto.id");
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());

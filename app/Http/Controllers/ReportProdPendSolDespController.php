@@ -28,7 +28,7 @@ class ReportProdPendSolDespController extends Controller
     {
         can('producto-pendiente-soldesp');
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaAct = date("d/m/Y");

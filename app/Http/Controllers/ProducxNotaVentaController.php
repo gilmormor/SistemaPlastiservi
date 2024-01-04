@@ -29,7 +29,7 @@ class ProducxNotaVentaController extends Controller
         can('reporte-productos-x-nota-venta');
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $fechaServ = [
                     'fechaAct' => date("d/m/Y"),
                     'fecha1erDiaMes' => date("01/m/Y")

@@ -57,7 +57,7 @@ class NVIndicadorxVendController extends Controller
             ->get();
         */
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y")
                     ];

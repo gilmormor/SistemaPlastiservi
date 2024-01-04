@@ -31,7 +31,7 @@ class NotaVentaConsultaController extends Controller
     {
         can('consulta-nota-de-venta');
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();;
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $fechaServ = [
                     'fecha1erDiaMes' => date("01/m/Y"),

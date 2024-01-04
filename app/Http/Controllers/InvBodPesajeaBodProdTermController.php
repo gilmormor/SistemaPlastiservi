@@ -35,7 +35,7 @@ class InvBodPesajeaBodProdTermController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablashtml['invbodegas'] = InvBodega::orderBy('id')->where("tipo",6)->get();
-        $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
+        $tablashtml['areaproduccions'] =  AreaProduccion::areaproduccionxusuario();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $selecmultprod = 1;
         return view('invbodpesajeabodprodterm.index', compact('tablashtml','selecmultprod'));
@@ -53,8 +53,9 @@ class InvBodPesajeaBodProdTermController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $datas = InvMov::stock($request);
-        $datas = $datas->get();
+        /* $datas = InvMov::stock($request);
+        $datas = $datas->get(); */
+        $datas = InvMov::stocksql($request);
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
@@ -85,7 +86,8 @@ class InvBodPesajeaBodProdTermController extends Controller
 
     public function totalizarindex(Request $request){
         $respuesta = array();
-        $datas = InvMov::stock($request)->get();
+        //$datas = InvMov::stock($request)->get();
+        $datas = InvMov::stocksql($request);
         $aux_totalkg = 0;
         foreach ($datas as $data) {
             //$aux_totalkg += $data->stockkg;

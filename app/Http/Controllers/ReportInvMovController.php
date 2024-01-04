@@ -29,7 +29,7 @@ class ReportInvMovController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablashtml['sucursales'] = $sucursales;
-        $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
+        $tablashtml['areaproduccions'] =  AreaProduccion::areaproduccionxusuario();
         $tablashtml['invbodegas'] = InvBodega::orderBy('id')->get();
         $selecmultprod = 1;
         return view('reportinvmov.index', compact('tablashtml','selecmultprod'));

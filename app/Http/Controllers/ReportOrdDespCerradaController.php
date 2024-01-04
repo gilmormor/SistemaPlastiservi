@@ -46,7 +46,7 @@ class ReportOrdDespCerradaController extends Controller
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
 
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaServ = [

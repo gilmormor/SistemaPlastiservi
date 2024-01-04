@@ -33,7 +33,7 @@ class IndicadoresController extends Controller
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y")
                     ];
@@ -55,7 +55,7 @@ class IndicadoresController extends Controller
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::areaproduccionxusuario();
         $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y"),
                     'anno' => date('Y')
@@ -79,7 +79,7 @@ class IndicadoresController extends Controller
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
         $vendedores = Vendedor::orderBy('id')->where('sta_activo',1)->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::areaproduccionxusuario();
         $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),
                     'fechaAct' => date("d/m/Y"),
                     'anno' => date('Y')
@@ -92,7 +92,7 @@ class IndicadoresController extends Controller
         can('listar-reporte-kilos-x-tipo-entrega');
         $giros = Giro::orderBy('id')->get();
         $categoriaprods = CategoriaProd::categoriasxUsuario();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions = AreaProduccion::areaproduccionxusuario();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
 
         $fechaServ = ['fecha1erDiaMes' => date("01/m/Y"),

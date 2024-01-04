@@ -335,8 +335,9 @@
                             $aux_request->sucursal_id = $invbodegaproducto->invbodega->sucursal_id;
                             $aux_request->producto_id = $invbodegaproducto->producto_id;
                             $aux_request->invbodega_id = $invbodegaproducto->invbodega_id;
-                            $aux_stock = InvMov::stock($aux_request);
-                            $aux_stock = $aux_stock->get();
+                            //$aux_stock = InvMov::stock($aux_request);
+                            //$aux_stock = $aux_stock->get();
+                            $aux_stock = InvMov::stocksql($aux_request);
                             $aux_stockValor = sizeof($aux_stock) > 0 ? $aux_stock[0]->stock : 0;
                             $totalStockinvbodega += $aux_stockValor;
                         ?>

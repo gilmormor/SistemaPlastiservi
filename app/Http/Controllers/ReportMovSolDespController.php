@@ -7,6 +7,7 @@ use App\Models\Cliente;
 use App\Models\Comuna;
 use App\Models\DespachoSol;
 use App\Models\Giro;
+use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ class ReportMovSolDespController extends Controller
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
 
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaServ = [

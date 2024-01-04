@@ -26,7 +26,7 @@ class ReportNVPendientesController extends Controller
     {
         can('reporte-notas-de-ventas-pendientes');
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();

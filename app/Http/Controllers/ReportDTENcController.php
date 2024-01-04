@@ -26,7 +26,7 @@ class ReportDTENcController extends Controller
         can('listar-dte-nota-credito-reporte');
 
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();

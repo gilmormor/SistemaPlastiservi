@@ -8,6 +8,7 @@ use App\Models\Comuna;
 use App\Models\Giro;
 use App\Models\GuiaDesp;
 use App\Models\Producto;
+use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class ReportGuiaDespController extends Controller
         can('listar-orden-despacho');
 
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();

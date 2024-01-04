@@ -40,7 +40,7 @@ class ReportOrdDespController extends Controller
         $clientevendedorArray = $arrayvend['clientevendedorArray'];
 
         $giros = Giro::orderBy('id')->get();
-        $areaproduccions = AreaProduccion::orderBy('id')->get();
+        $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
         $fechaServ = [
