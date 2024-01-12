@@ -209,9 +209,13 @@ function llenarComuna(obj,i){
 }
 */
 $('#comunap_id').on('change', function () {
+	$("#ciudad_id").val($('#comunap_id option:selected').attr("ciudad_id"));
 	$("#regionp_id").val($('#comunap_id option:selected').attr("region_id"));
 	$("#provinciap_id").val($('#comunap_id option:selected').attr("provincia_id"));
 	$(".selectpicker").selectpicker('refresh');
+	$('#ciudad_id').trigger('change'); // Actualizar select2
+	$("#aux_provincianombre").val($('#comunap_id option:selected').attr("provincia_nombre"))
+	$("#aux_regionnombre").val($('#comunap_id option:selected').attr("region_nombre"))
 });
 
 $('#comuna_idM').on('change', function () {

@@ -60,7 +60,8 @@ class CotizacionAprobarClienteController extends Controller
                 where isnull(cliente_id)
                 and (aprobstatus=1 or aprobstatus=2 or aprobstatus=3)
                 and cotizacion.deleted_at is null
-                AND cotizacion.sucursal_id in ($sucurcadena);";
+                AND cotizacion.sucursal_id in ($sucurcadena)
+                GROUP BY cotizacion.id;";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);

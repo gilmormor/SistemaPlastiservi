@@ -48,9 +48,7 @@
                 <option
                     value="{{$vendedor->id}}"
                     {{is_array(old('vendedor_id')) ? (in_array($vendedor->id, old('vendedor_id')) ? 'selected' : '') : (isset($data) ? ($data->vendedores->firstWhere('id', $vendedor->id) ? 'selected' : '') : '')}}
-                    >
-                    {{$vendedor->nombre}}
-                </option>
+                    >{{$vendedor->nombre}}</option>
             @endforeach
         </select>
     </div>
@@ -66,9 +64,7 @@
                     @if (($aux_sta==2) and ($data->giro_id==$giro->id))
                         {{'selected'}}
                     @endif
-                    >
-                    {{$giro->nombre}}
-                </option>
+                    >{{$giro->nombre}}</option>
             @endforeach
         </select>
     </div>
@@ -87,13 +83,16 @@
                 <option
                     value="{{$id}}"
                     {{is_array(old('sucursalp_id')) ? (in_array($id, old('sucursalp_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $id) ? 'selected' : '') : '')}}
-                    >
-                    {{$nombre}}
-                </option>
+                    >{{$nombre}}</option>
             @endforeach
         </select>
     </div>
-    <div class="form-group col-xs-12 col-sm-3">
+    <?php 
+        $aux_provincianombre = "";
+        $aux_regionnombre = "";
+    ?>
+
+    <div class="form-group col-xs-12 col-sm-2">
         <label for="comunap_id" class="col-form-label requerido">Comuna</label>
         <select name="comunap_id" id="comunap_id" class="select2 form-control comunap_id" title='Seleccione...' required>
             <option value="">Seleccione...</option>
@@ -101,19 +100,46 @@
                 <option
                     value="{{$comuna->id}}"
                     region_id="{{$comuna->provincia->region_id}}"
+                    region_nombre="{{$comuna->provincia->region->nombre}}"
                     provincia_id="{{$comuna->provincia_id}}"
+                    provincia_nombre="{{$comuna->provincia->nombre}}"
+                    ciudad_id="{{$comuna->ciudad_id}}"
+                    ciudad_nombre="{{$comuna->ciudad->nombre}}"
                     @if (($aux_sta==2) and ($data->comunap_id==$comuna->id))
                         {{'selected'}}
+                        <?php 
+                            $aux_provincianombre = $comuna->provincia->nombre;
+                            $aux_regionnombre = $comuna->provincia->region->nombre;
+                        ?>                
                     @endif
-                    >
-                    <!--{{$comuna->id}} - {{$comuna->nombre}}-->
-                    {{$comuna->nombre}}
-                </option>
+                    >{{$comuna->nombre}}</option>
             @endforeach
         </select>
     </div>
-
+    <div class="form-group col-xs-12 col-sm-2">
+        <label for="ciudad_id" class="col-form-label requerido">Ciudad</label>
+        <select name="ciudad_id" id="ciudad_id" class="select2 form-control ciudad_id" title='Seleccione...' required>
+            <option value="">Seleccione...</option>
+            @foreach($ciudades as $ciudad)
+                <option
+                    value="{{$ciudad->id}}"
+                    @if (($aux_sta==2) and ($data->ciudad_id==$ciudad->id))
+                        {{'selected'}}
+                    @endif
+                    >{{$ciudad->nombre}}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="form-group col-xs-12 col-sm-2">
+        <label for="aux_provincianombre" class="control-label requerido" data-toggle='tooltip' title="Descripción Provincia">Provincia</label>
+        <input type="text" name="aux_provincianombre" id="aux_provincianombre" class="form-control" value="{{old('aux_provincianombre', $aux_provincianombre ?? '')}}" maxlength="40" required readonly/>
+    </div>
     <div class="form-group col-xs-12 col-sm-3">
+        <label for="aux_regionnombre" class="control-label requerido" data-toggle='tooltip' title="Descripción Region">Region</label>
+        <input type="text" name="aux_regionnombre" id="aux_regionnombre" class="form-control" value="{{old('aux_regionnombre', $aux_regionnombre ?? '')}}" maxlength="40" required readonly/>
+    </div>
+
+    <div class="form-group col-xs-12 col-sm-2" style="display:none;">
         <label for="provinciap_id" class="col-form-label requerido">Provincia</label>
         <select name="provinciap_id" id="provinciap_id" class="selectpicker form-control provinciap_id" title='Seleccione...' readonly>
             @foreach($provincias as $provincia)
@@ -122,15 +148,12 @@
                     @if (($aux_sta==2) and ($data->provinciap_id==$provincia->id))
                         {{'selected'}}
                     @endif
-                    >
-                    <!--{{$provincia->id}} - {{$provincia->nombre}}-->
-                    {{$provincia->nombre}}
-                </option>
+                    >{{$provincia->nombre}}</option>
             @endforeach  
         </select>
         <span class="help-block"></span>
     </div>
-    <div class="form-group col-xs-12 col-sm-3">
+    <div class="form-group col-xs-12 col-sm-3" style="display:none;">
         <label for="regionp_id" class="col-form-label requerido">Región</label>
         <select name="regionp_id" id="regionp_id" class="selectpicker form-control regionp_id" title='Seleccione...' readonly>
             @foreach($regiones as $region)
@@ -139,10 +162,7 @@
                     @if (($aux_sta==2) and ($data->regionp_id==$region->id))
                         {{'selected'}}
                     @endif
-                    >
-                    <!--{{$region->id}} - {{$region->nombre}}-->
-                    {{$region->nombre}}
-                </option>
+                    >{{$region->nombre}}</option>
             @endforeach
         </select>
         <span class="help-block"></span>
@@ -176,17 +196,15 @@
                     @if (($aux_sta==2) and ($data->plazopago_id==$plazopago->id))
                         {{'selected'}}
                     @endif
-                    >
-                    {{$plazopago->descripcion}}
-                </option>
+                    >{{$plazopago->descripcion}}</option>
             @endforeach
         </select>
         <span class="help-block"></span>
     </div>
-    <div class="form-group col-xs-12 col-sm-4">
+    <div class="form-group col-xs-12 col-sm-4" style="display:none;">
         <br>
         <div class='checkbox'>
-            <label style='font-size: 1.2em' data-toggle='tooltip' title='Permiso Insertar'>
+            <label style='font-size: 1.2em' data-toggle='tooltip' title=''>
                 <input type='checkbox' id='mostrarguiasfacturasT' name='mostrarguiasfacturasT'>
                 <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                 Mostrar Guias Factura
@@ -362,10 +380,12 @@
                                 <option
                                     value="{{$comuna->id}}"
                                     region_id="{{$comuna->provincia->region_id}}"
+                                    region_nombre="{{$comuna->provincia->region->nombre}}"
                                     provincia_id="{{$comuna->provincia_id}}"
-                                    >
-                                    {{$comuna->nombre}}
-                                </option>
+                                    provincia_nombre="{{$comuna->provincia->nombre}}"
+                                    ciudad_id="{{$comuna->ciudad_id}}"
+                                    ciudad_nombre="{{$comuna->ciudad->nombre}}"
+                                    >{{$comuna->nombre}}</option>
                             @endforeach                
                         </select>
                         <span class="help-block"></span>
@@ -377,9 +397,8 @@
                         <select name="region_idM" id="region_idM" class="selectpicker form-control region_id" data-live-search='true' title='Seleccione...' disabled readonly>
                             @foreach($regiones as $region)
                                 <option
-                                    value="{{$region->id}}">
-                                    {{$region->nombre}}
-                                </option>
+                                    value="{{$region->id}}"
+                                >{{$region->nombre}}</option>
                             @endforeach
                         </select>
                         <span class="help-block"></span>
@@ -391,9 +410,8 @@
                         <select name="provincia_idM" id="provincia_idM" class="selectpicker form-control" data-live-search='true' title='Seleccione...' disabled readonly>
                             @foreach($provincias as $provincia)
                                 <option
-                                    value="{{$provincia->id}}">
-                                    {{$provincia->nombre}}
-                                </option>
+                                    value="{{$provincia->id}}"
+                                >{{$provincia->nombre}}</option>
                             @endforeach  
                         </select>
                         <span class="help-block"></span>

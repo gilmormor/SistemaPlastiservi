@@ -143,6 +143,7 @@ class DteNCFacturaController extends Controller
         $dte->sucursal_id = $centroeconomico->sucursal_id;
         $dte->cliente_id = $dtefac->cliente_id;
         $dte->comuna_id = $dtefac->comuna_id;
+        $dte->ciudad_id = $dtefac->cliente->ciudad_id;
         $dte->vendedor_id = $dtefac->vendedor_id;
         $dte->obs = $request->obs;
         $dte->tipodespacho = $dtefac->tipodespacho;

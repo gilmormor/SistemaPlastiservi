@@ -1456,3 +1456,12 @@ Route::delete('codigo/{id}', 'CodigoController@eliminar')->name('eliminar_codigo
 
 /*RUTAS PERMISO GUIA DIRECTA*/
 Route::get('permisoguiadirectase', 'PermisoGuiaDirectaSEController@index')->name('permisoguiadirectase');
+
+/*RUTAS CIUDAD*/
+Route::get('ciudad', 'CiudadController@index')->name('ciudad');
+Route::get('ciudad/crear', 'CiudadController@crear')->name('crear_ciudad');
+Route::post('ciudad', 'CiudadController@guardar')->name('guardar_ciudad');
+Route::get('ciudad/{id}/editar', 'CiudadController@editar')->name('editar_ciudad');
+Route::put('ciudad/{id}', 'CiudadController@actualizar')->name('actualizar_ciudad');
+Route::delete('ciudad/{id}', 'CiudadController@eliminar')->name('eliminar_ciudad');
+Route::get('ciudad/actualizardatoscomuna', 'CiudadController@actualizardatoscomuna')->name('actualizardatoscomuna_ciudad');

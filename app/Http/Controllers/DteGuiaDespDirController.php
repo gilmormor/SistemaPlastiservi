@@ -200,6 +200,7 @@ class DteGuiaDespDirController extends Controller
             $dte->sucursal_id = $centroeconomico->sucursal_id;
             $dte->cliente_id = $cliente->id;
             $dte->comuna_id = $cliente->comunap_id;
+            $dte->ciudad_id = $cliente->ciudad_id;
             $dte->vendedor_id = $request->vendedor_id;
             $dte->obs = $request->obs;
             $dte->tipodespacho = $request->tipodespacho;

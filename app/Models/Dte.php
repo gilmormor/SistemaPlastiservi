@@ -26,6 +26,7 @@ class Dte extends Model
         'sucursal_id',
         'cliente_id',
         'comuna_id',
+        'ciudad_id',
         'vendedor_id',    
         'obs',
         'tipodespacho',
@@ -62,6 +63,18 @@ class Dte extends Model
         return $this->belongsTo(Cliente::class);
     }
 
+    //RELACION INVERSA Comuna
+    public function comuna()
+    {
+        return $this->belongsTo(Comuna::class);
+    }
+    
+    //RELACION INVERSA Ciudad
+    public function ciudad()
+    {
+        return $this->belongsTo(Ciudad::class);
+    }    
+    
     //RELACION DE UNO A MUCHOS DteOC
     public function dteocs()
     {
@@ -183,7 +196,7 @@ class Dte extends Model
     public function vendedor()
     {
         return $this->belongsTo(Vendedor::class);
-    }    
+    }
     
     public static function reportguiadesppage($request){
         $user = Usuario::findOrFail(auth()->id());
@@ -2541,7 +2554,7 @@ function dtefactura($id,$Folio,$tipoArch,$request){
     $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
     $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
     $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
-    $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
+    $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->ciudad->nombre),0,20)));
     if($dte->foliocontrol_id == 1){
         $FchVenc = $dte->dtefac->fchvenc;
         $formapago_desc = $dte->dtefac->formapago->descripcion;
@@ -2787,7 +2800,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         dd("Original: " . substr(trim($dte->cliente->giro),0,40) . "\nCambio: " . $GiroRecep . "\nNuevo valor: " . $string); */
         $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
         $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
-        $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
+        $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->ciudad->nombre),0,20)));
     
         $FolioRef = "";
         if(isset($dte->dteguiadesp->notaventa->oc_id)){
@@ -2937,7 +2950,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
         $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
         $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
-        $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
+        $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->ciudad->nombre),0,20)));
         $formapago_desc = $dte->dtefac->formapago->descripcion;
         $FchVenc = $dte->dtefac->fchvenc;
         if($dte->dtefac->formapago_id == 2 or $dte->dtefac->formapago_id == 3){
@@ -3136,7 +3149,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
         $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
         $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
-        $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->provincia->nombre),0,20)));
+        $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->ciudad->nombre),0,20)));
         if($dte->foliocontrol_id == 1 or $dte->foliocontrol_id == 7){
             $FchVenc = $dte->dtefac->fchvenc;
             $formapago_desc = $dte->dtefac->formapago->descripcion;

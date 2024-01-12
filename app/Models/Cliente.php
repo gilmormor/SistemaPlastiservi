@@ -24,6 +24,7 @@ class Cliente extends Model
         'regionp_id',
         'provinciap_id',
         'comunap_id',
+        'ciudad_id',
         'formapago_id',
         'plazopago_id',
         'contactonombre',
@@ -92,6 +93,12 @@ class Cliente extends Model
     {
         return $this->belongsTo(Comuna::class,'comunap_id');
     }
+    //Relacion inversa a Ciudad
+    public function ciudad()
+    {
+        return $this->belongsTo(Ciudad::class);
+    }
+    
     //RELACION INVERSA FORMAPAGO
     public function formapago()
     {

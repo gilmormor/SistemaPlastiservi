@@ -1532,6 +1532,7 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     $dte->sucursal_id = $despachoord->notaventa->sucursal_id;
     $dte->cliente_id = $despachoord->notaventa->cliente_id;
     $dte->comuna_id = $despachoord->notaventa->comuna_id;
+    $dte->ciudad_id = $despachoord->notaventa->cliente->ciudad_id;
     $dte->vendedor_id = $despachoord->notaventa->vendedor_id;
     $dte->obs = $request->obs;
     if(isset($despachoord->despachosol->despachosoldte)){

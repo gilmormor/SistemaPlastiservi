@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarCliente;
+use App\Models\Ciudad;
 use App\Models\Cliente;
 use App\Models\ClienteDirec;
 use App\Models\ClienteSucursal;
@@ -93,9 +94,10 @@ class ClienteController extends Controller
         $giros = Giro::orderBy('id')->get();
         $provincias = Provincia::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
+        $ciudades = Ciudad::orderBy('id')->get();
         //dd($comunas);
         $aux_sta=1;
-        return view('cliente.crear',compact('regiones','sucursales','formapagos','plazopagos','vendedores','giros','provincias','comunas','aux_sta'));
+        return view('cliente.crear',compact('regiones','sucursales','formapagos','plazopagos','vendedores','giros','provincias','comunas','ciudades','aux_sta'));
     }
 
     /**
@@ -205,6 +207,7 @@ class ClienteController extends Controller
             $provincias = Provincia::orderBy('id')->get();
             //$comunas = Comuna::where('provincia_id',$data->provincia_id)->orderBy('id')->get();
             $comunas = Comuna::orderBy('id')->get();
+            $ciudades = Ciudad::orderBy('id')->get();
             //dd($regiones);
             $formapagos = FormaPago::orderBy('id')->get();
             $plazopagos = PlazoPago::orderBy('dias')->get();
@@ -248,7 +251,7 @@ class ClienteController extends Controller
             $aux_cont=(count($clientedirecs));
             $aux_sta=2;
             //dd($clientedirec);
-            return view('cliente.editar', compact('data','sucursales','regiones','provincias','comunas','formapagos','plazopagos','clientedirecs','sucursalclientedirec','vendedores','aux_vecsuc','giros','aux_sta','aux_cont'));
+            return view('cliente.editar', compact('data','sucursales','regiones','provincias','comunas','formapagos','plazopagos','clientedirecs','sucursalclientedirec','vendedores','aux_vecsuc','giros','aux_sta','aux_cont','ciudades'));
         }else{
             return redirect('cliente')->with('mensaje','No tiene permiso para ver este cliente.');
         }
@@ -474,7 +477,9 @@ class ClienteController extends Controller
 
     public function guardarclientetemp(Request $request){
         if($request->ajax()){
-            //dd($request);
+            $comuna = Comuna::findOrFail($request->comunap_id);
+            $request->merge(['ciudad_id' => $comuna->ciudad_id]); //INSERTAR CAMPO EN REQUEST
+            // dd($request);
             $cliente = Cliente::create($request->all());
             $clienteid = $cliente->id; //Tomo el id de cliente
             $clienteDireccion = new ClienteDirec; //Crear el registro en direccion

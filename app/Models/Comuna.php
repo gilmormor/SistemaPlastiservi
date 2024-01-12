@@ -9,8 +9,17 @@ class Comuna extends Model
 {
     use SoftDeletes;
     protected $table = "comuna";
-    protected $fillable = ['nombre','provincia_id','usuariodel_id'];
-
+    protected $fillable = [
+            'nombre',
+            'provincia_id',
+            'ciudad_id',
+            'usuariodel_id'
+    ];
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function ciudad()
+    {
+        return $this->belongsTo(Ciudad::class);
+    }
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function provincia()
     {

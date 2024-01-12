@@ -35,6 +35,7 @@ class ValidarCliente extends FormRequest
             'regionp_id' => 'required',
             'provinciap_id' => 'required',
             'comunap_id' => 'required',
+            'ciudad_id' => 'required',
             'formapago_id' => 'required',
             'plazopago_id' => 'required',
             'contactonombre' => 'required|max:50',
@@ -43,7 +44,7 @@ class ValidarCliente extends FormRequest
             'finanzascontacto' => 'required|max:50',
             'finanzanemail' => 'required|max:50',
             'finanzastelefono' => 'required|max:50',
-            'mostrarguiasfacturas' => 'boolean'
+            //'mostrarguiasfacturas' => 'boolean'
         ];
     }
 }
