@@ -27,8 +27,8 @@ class ValidarDTE extends FormRequest
             'nrodocto' => 'max:20',
             'obs' => 'max:200',
             'tipodespacho' => 'required|max:1',
-            'comuna_id' => 'required',
-            'ciudad_id' => 'required',
+            /* 'comuna_id' => 'required',
+            'ciudad_id' => 'required', */
             'centroeconomico_id' => 'required|max:20',
             'usuario_id' => 'required'
         ];
