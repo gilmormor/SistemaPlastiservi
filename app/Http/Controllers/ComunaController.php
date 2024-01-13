@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ValidarCiudad;
+use App\Http\Requests\ValidarComuna;
 use App\Models\Ciudad;
-use App\Models\Cliente;
 use App\Models\Comuna;
 use App\Models\Provincia;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use ReflectionClass;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
-class CiudadController extends Controller
+class ComunaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,14 +17,14 @@ class CiudadController extends Controller
      */
     public function index()
     {
-        can('listar-ciudad');
+        can('listar-comuna');
         //$datas = FormaPago::orderBy('id')->get();
-        return view('ciudad.index');
+        return view('comuna.index');
     }
 
-    public function ciudadpage(){
+    public function comunapage(){
         return datatables()
-            ->eloquent(Ciudad::query())
+            ->eloquent(Comuna::query())
             ->toJson();
     }
 
@@ -40,8 +36,10 @@ class CiudadController extends Controller
      */
     public function crear()
     {
-        can('crear-ciudad');
-        return view('ciudad.crear');
+        can('crear-comuna');
+        $provincias = Provincia::orderBy('id')->get();
+        $ciudades = Ciudad::orderBy('id')->get();
+        return view('comuna.crear',compact('provincias','ciudades'));
     }
 
     /**
@@ -50,11 +48,11 @@ class CiudadController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function guardar(ValidarCiudad $request)
+    public function guardar(ValidarComuna $request)
     {
-        can('guardar-ciudad');
-        Ciudad::create($request->all());
-        return redirect('ciudad')->with('mensaje','Ciudad creado con exito');
+        can('guardar-comuna');
+        Comuna::create($request->all());
+        return redirect('comuna')->with('mensaje','Comuna creada con exito');
     }
 
     /**
@@ -76,9 +74,11 @@ class CiudadController extends Controller
      */
     public function editar($id)
     {
-        can('editar-ciudad');
-        $data = Ciudad::findOrFail($id);
-        return view('ciudad.editar', compact('data'));
+        can('editar-comuna');
+        $data = Comuna::findOrFail($id);
+        $provincias = Provincia::orderBy('id')->get();
+        $ciudades = Ciudad::orderBy('id')->get();
+        return view('comuna.editar', compact('data','provincias','ciudades'));
     }
 
     /**
@@ -88,10 +88,10 @@ class CiudadController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function actualizar(ValidarCiudad $request, $id)
+    public function actualizar(ValidarComuna $request, $id)
     {
-        Ciudad::findOrFail($id)->update($request->all());
-        return redirect('ciudad')->with('mensaje','Ciudad actualizado con exito');
+        Comuna::findOrFail($id)->update($request->all());
+        return redirect('comuna')->with('mensaje','Comuna actualizado con exito');
     }
 
     /**
@@ -102,20 +102,20 @@ class CiudadController extends Controller
      */
     public function eliminar(Request $request, $id)
     {
-        if(can('eliminar-ciudad',false)){
+        if(can('eliminar-comuna',false)){
             if ($request->ajax()) {
-                $ciudad = Ciudad::findOrFail($request->id);
+                $comuna = Comuna::findOrFail($request->id);
                 $aux_regAso = false;
                 $aux_tabla = [];
-                if(count($ciudad->comunas) > 0){
+                if(count($comuna->comunas) > 0){
                     $aux_regAso = true;
                     $aux_tabla[] = "Comuna";
                 }
-                if(count($ciudad->clientes) > 0){
+                if(count($comuna->clientes) > 0){
                     $aux_regAso = true;
                     $aux_tabla[] = "Cliente";
                 }
-                if(count($ciudad->dtes) >0){
+                if(count($comuna->dtes) >0){
                     $aux_regAso = true;
                     $aux_tabla[] = "DTE";
                 }
@@ -126,12 +126,12 @@ class CiudadController extends Controller
                         'tipo_alert' => "error"
                     ]);
                 }
-                if (Ciudad::destroy($request->id)) {
+                if (Comuna::destroy($request->id)) {
                     //dd('entro');
                     //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                    $ciudad = Ciudad::withTrashed()->findOrFail($request->id);
-                    $ciudad->usuariodel_id = auth()->id();
-                    $ciudad->save();
+                    $comuna = Comuna::withTrashed()->findOrFail($request->id);
+                    $comuna->usuariodel_id = auth()->id();
+                    $comuna->save();
                     return response()->json(['mensaje' => 'ok']);
                 } else {
                     return response()->json(['mensaje' => 'ng']);
