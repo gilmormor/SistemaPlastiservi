@@ -73,7 +73,8 @@ class ReportInvStockVendController extends Controller
         }
 
         if($datas){
-            
+            $sucursal = Sucursal::findOrFail($request->sucursal_id);
+            $request->request->add(['sucursal_nombre' => $sucursal->nombre]);                        
             if(env('APP_DEBUG')){
                 return view('reportinvstockvend.listado', compact('datas','empresa','usuario','request'));
             }

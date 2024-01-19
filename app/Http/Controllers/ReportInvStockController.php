@@ -68,9 +68,9 @@ class ReportInvStockController extends Controller
             $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
             $nombreAreaproduccion=$areaProduccion->nombre;
         }
-        
         if($datas){
-            
+            $sucursal = Sucursal::findOrFail($request->sucursal_id);
+            $request->request->add(['sucursal_nombre' => $sucursal->nombre]);                        
             if(env('APP_DEBUG')){
                 return view('reportinvstock.listado', compact('datas','empresa','usuario','request'));
             }

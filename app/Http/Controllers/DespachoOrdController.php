@@ -35,6 +35,7 @@ use App\Models\InvMovDet_BodSolDesp;
 use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
+use App\Models\NotaVentaDetalle;
 use App\Models\PlazoPago;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
@@ -276,7 +277,57 @@ class DespachoOrdController extends Controller
     {
         can('guardar-orden-despacho');
         //dd($request);
-        //dd(session('aux_fecinicreOD'));
+        ////VALIDAR CUANDO EXSISTEN VARIOS ITEM DE UN MISMO PRODUCTO
+        ////LA CANTIDAD DEL COD DE PRODUCTO REPETIDO LO AGRUPO EN UNO Y LO COMPARO CON EL STOCK DEL PRODUCTO
+        ///INICIO DE VALIDACION DE STOCK
+        $invbodegaproducto_arrays = [];
+        $cont_invbodegaproducto = count($request->invbodegaproducto_id);
+        if($cont_invbodegaproducto > 0){
+            for ($i=0; $i < $cont_invbodegaproducto ; $i++){
+                $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$i]);
+                //VALIDAR SI EL PRODUCTO PERMITE AVANZAR SIN IMPORTAR EL STOCK
+                if($invbodegaproducto->producto->categoriaprod->stadespsinstock == 0){
+                    $aux_cant = $request->invcant[$i] ? $request->invcant[$i] : 0;
+                    if(isset($invbodegaproducto_arrays[$request->invbodegaproducto_id[$i]])){
+                        $aux_cant += $invbodegaproducto_arrays[$request->invbodegaproducto_id[$i]]["cant"];
+                    }
+                    $invbodegaproducto_arrays[$request->invbodegaproducto_id[$i]] = [
+                        "notaventadetalle_id" => $request->invbodegaproductoNVdet_id[$i],
+                        "invbodegaproducto_id" => $request->invbodegaproducto_id[$i],
+                        "producto_id" => $invbodegaproducto->producto_id,
+                        "tipo" => $invbodegaproducto->invbodega->tipo,
+                        "stock" => 0,
+                        "cant" => $aux_cant,
+                    ];    
+                }    
+            }
+        }
+        foreach ($invbodegaproducto_arrays as &$invbodegaproducto_array) {
+            if($invbodegaproducto_array["tipo"] != 1) {
+                $arrayStock = InvBodegaProducto::existencia([
+                    "invbodegaproducto_id" => $invbodegaproducto_array["invbodegaproducto_id"]
+                ]);
+                $invbodegaproducto_array["stock"] = $arrayStock["stock"]["cant"];    
+            }else{
+                $despachosoldet = DespachoSolDet::findOrFail($invbodegaproducto_array["notaventadetalle_id"]);
+                $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
+                $detalles = $notaventadetalle->despachosoldets()->get();
+                $arrayBodegasPickings = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
+                $aux_picking = 0;
+                foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
+                    $aux_picking += $arrayBodegasPicking["stock"];
+                }
+                $invbodegaproducto_array["stock"] = $aux_picking;    
+            }
+            //$data->picking = $aux_picking;
+            if($invbodegaproducto_array["cant"] > $invbodegaproducto_array["stock"]){
+                return redirect('despachoord')->with([
+                    'mensaje'=>'Producto ID:' . $invbodegaproducto_array["producto_id"] . ', Cantidad ' . $invbodegaproducto_array["cant"] . ' es mayor al Stock ' . $invbodegaproducto_array["stock"],
+                    'tipo_alert' => 'alert-error'
+                ]); 
+            }
+        }
+        ///FIN DE VALIDACION DE STOCK
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
         //dd($notaventacerrada);
         if(count($notaventacerrada) == 0){

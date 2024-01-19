@@ -767,6 +767,13 @@ class Dte extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
+
+        $aux_condproducto_id = " true";
+        if(!empty($request->producto_id)){
+            $aux_codprod = explode(",", $request->producto_id);
+            $aux_codprod = implode ( ',' , $aux_codprod);
+            $aux_condproducto_id = "dtedet.producto_id in ($aux_codprod)";
+        }
         
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.centroeconomico_id,
@@ -833,6 +840,7 @@ class Dte extends Model
         AND $filtroNoMostrarDTeAnuladas
         AND $aux_aprobstatus
         AND $aux_sucursal_idCond
+        AND $aux_condproducto_id
         order BY dte.nrodocto,dtedet.id;";
         //dd($sql);
         $arrays = DB::select($sql);
@@ -1051,7 +1059,7 @@ class Dte extends Model
         AND $aux_vendedor_idCond
         AND NOT ISNULL(dte.nrodocto)
         GROUP BY dte.id
-        ORDER BY dte.id asc;";
+        ORDER BY dte.nrodocto asc;";
 
         //dd($sql);
         

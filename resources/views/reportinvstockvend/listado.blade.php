@@ -19,6 +19,7 @@
 				<div class="round">
 					<span class="h3">Stock Productos</span>
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
+					<p>Sucursal: {{$request->sucursal_nombre}}</p>
 					<p>Mes Stock: {{$request->mesanno}}</p>
 				</div>
 			</td>

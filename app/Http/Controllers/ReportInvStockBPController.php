@@ -72,7 +72,13 @@ class ReportInvStockBPController extends Controller
             $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
             $nombreAreaproduccion=$areaProduccion->nombre;
         }
-
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $request->merge(['sucursal_nombre' => "Todos"]);
+        }else{
+            $sucursal = Sucursal::findOrFail($request->sucursal_id);
+            $aux_sucursalNombre = $sucursal->nombre;
+            $request->merge(['sucursal_nombre' => $sucursal->nombre]);
+        }
         if($datas){
             
             if(env('APP_DEBUG')){

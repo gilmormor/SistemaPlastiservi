@@ -151,6 +151,7 @@ class InvBodegaProducto extends Model
     }
 
     public static function existenciaxSolDespOrdDesp($despachosolorddets){
+        $invbodegaproductoCants = [];
         foreach ($despachosolorddets as $despachoSolOrddet) { //RECIBO EL OBJETO DE SOLICITUD U ORDEN DE DESPACHO
             if($despachoSolOrddet->despachosoldet_invbodegaproductos){ //SI ES SOLICITUD DE DESPACHO ASIGNO EL DETALLE DE LAS BODEGAS INVOLUCRADAS EN CADA ITEN DEL DETALLE DE LA SOLICITUD DE DESPACHO
                 $despachoSolOrddet_invbodegaproductos = $despachoSolOrddet->despachosoldet_invbodegaproductos;
@@ -158,24 +159,43 @@ class InvBodegaProducto extends Model
                 $despachoSolOrddet_invbodegaproductos = $despachoSolOrddet->despachoorddet_invbodegaproductos;
             }
             foreach ($despachoSolOrddet_invbodegaproductos as $oddetbodprod) {
-                $arrayStock = InvBodegaProducto::existencia([
+                /* $arrayStock = InvBodegaProducto::existencia([
                     "invbodegaproducto_id" => $oddetbodprod->invbodegaproducto_id
-                ]);
-                $saldoStock = $arrayStock["stock"]["cant"] + $oddetbodprod->cant;
-                //SI EN CATEGORIA EL CAMPO stadespsinstock == 0 NO PERMITE MOVER EL INVENTARIO CON EXISTENCIA MENOR O IGUAL A 0
-                //SI stadespsinstock == 1 ENTONCES NO IMPORTA SI TIENE EXISTENCIA O NO
-                if($oddetbodprod->invbodegaproducto->producto->categoriaprod->stadespsinstock == 0){
-                    if($saldoStock < 0){
-                        return [
-                            'status' => "0",
-                            'title' => "Bodega sin stock!",
-                            'mensaje' => "Bodega: " . $oddetbodprod->invbodegaproducto->invbodega->nombre . ".\nSucursal: " . $oddetbodprod->invbodegaproducto->invbodega->sucursal->nombre . ".\nIdProd: " . $oddetbodprod->invbodegaproducto->producto_id . "\nNombre: " . $oddetbodprod->invbodegaproducto->producto->nombre. "\nCantidad movimiento: " . $oddetbodprod->cant . "\nStock actual: " . $arrayStock["stock"]["cant"],
-                            'tipo_alert' => 'error'
-                        ];    
-                    }
+                ]); */
+                //SI EXISTE EN LA ORDEN DE DESPACHO O SOLICITUD DE DESPACHO UN PRODUCTO MAS DE 1 VEZ
+                //RECORRO ESTOS PRODUCTOS Y AGRUPO POR invbodegaproducto_id 
+                //TOTALIZO ESE MISMO PRODUCTO EN UN SOLO REGISTRO, CLARO SOLO AGRUPO LOS PRODUCTOS QUE ESTEN EN LA MISMA BODEGA
+                $aux_cant = $oddetbodprod->cant ? $oddetbodprod->cant : 0;
+                $aux_cant = $aux_cant * ($aux_cant < 0 ? -1 : 1);
+                if(isset($invbodegaproductoCants[$oddetbodprod->invbodegaproducto_id])){
+                    $aux_cant += $invbodegaproductoCants[$oddetbodprod->invbodegaproducto_id]["cant"];
+                }
+                $invbodegaproductoCants[$oddetbodprod->invbodegaproducto_id] = [
+                    "invbodegaproducto_id" => $oddetbodprod->invbodegaproducto_id,
+                    "cant" => $aux_cant,
+                ];
+            }
+        }
+        foreach ($invbodegaproductoCants as $invbodegaproductoCant) {
+            $arrayStock = InvBodegaProducto::existencia([
+                "invbodegaproducto_id" => $invbodegaproductoCant["invbodegaproducto_id"]
+            ]);
+            $saldoStock = $arrayStock["stock"]["cant"] - $invbodegaproductoCant["cant"];
+            //SI EN CATEGORIA EL CAMPO stadespsinstock == 0 NO PERMITE MOVER EL INVENTARIO CON EXISTENCIA MENOR O IGUAL A 0
+            //SI stadespsinstock == 1 ENTONCES NO IMPORTA SI TIENE EXISTENCIA O NO
+            $invbodegaproducto = InvBodegaProducto::findOrFail($invbodegaproductoCant["invbodegaproducto_id"]);
+            if($invbodegaproducto->producto->categoriaprod->stadespsinstock == 0){
+                if($saldoStock < 0){
+                    return [
+                        'status' => "0",
+                        'title' => "Bodega sin stock!",
+                        'mensaje' => "Bodega: " . $invbodegaproducto->invbodega->nombre . ".\nSucursal: " . $invbodegaproducto->invbodega->sucursal->nombre . ".\nIdProd: " . $invbodegaproducto->producto_id . "\nNombre: " . $invbodegaproducto->producto->nombre. "\nCantidad movimiento: " . $invbodegaproductoCant["cant"] . "\nStock actual: " . $arrayStock["stock"]["cant"],
+                        'tipo_alert' => 'error'
+                    ];    
                 }
             }
         }
+        //dd($invbodegaproductoCants);
         return [
             'status' => "1",
         ];
