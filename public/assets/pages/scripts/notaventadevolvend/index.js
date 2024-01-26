@@ -32,6 +32,9 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
+            $(row).attr('id','fila' + data.id);
+            $(row).attr('name','fila' + data.id);
+            $(row).attr('updated_at',data.updated_at);
             codigo = data.cotizacion_id;
             if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
                 aux_text = "";
@@ -101,6 +104,7 @@ function devNVvend(id,nfila){
         if (value) {
             var data = {
                 id: id,
+                updated_at: $("#fila" + id).attr("updated_at"),
                 _token: $('input[name=_token]').val()
             };
         
@@ -117,7 +121,7 @@ function devNVvend(id,nfila){
                         if (respuesta.mensaje == "sp"){
                             Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
                         }else{
-                            Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                            Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
                         }
                     }
                 }

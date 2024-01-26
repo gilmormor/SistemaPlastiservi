@@ -114,10 +114,32 @@ class NotaVentaDevolVendController extends Controller
     {
         can('guardar-devolver-nota-venta-vendedor');
         if ($request->ajax()) {
+            $notaventa = NotaVenta::findOrFail($request->id);
+            if($notaventa->updated_at != $request->updated_at){
+                return [
+                    'mensaje' => 'No se pudo modificar. Registro Editado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
+                    'tipo_alert' => 'alert-error'
+                ];
+            }
+            $sql = "SELECT notaventa_id 
+                        FROM despachosol 
+                        where notaventa_id = $request->id
+                        AND isnull(despachosol.deleted_at) and despachosol.id 
+                        not in (SELECT despachosolanul.despachosol_id 
+                                from despachosolanul 
+                                where isnull(despachosolanul.deleted_at)
+                                );";
+            $datas = DB::select($sql);
+            if(count($datas) > 0){
+                return [
+                    'mensaje' => 'No se pudo modificar. Registro Editado por otro usuario. Tiene Solicitud de Despacho asociado a Nota de Venta.',
+                    'tipo_alert' => 'alert-error'
+                ];
+            }
+
             $datas = consulta($request->id);
             //dd(count($datas));
 
-            $notaventa = NotaVenta::findOrFail($request->id);
             $notaventa->aprobstatus = null;
             $notaventa->aprobusu_id = null;
             $notaventa->aprobfechahora = null;
@@ -178,7 +200,8 @@ function consulta($id){
                 (SELECT COUNT(*) 
                 FROM notaventadetalle 
                 WHERE notaventadetalle.notaventa_id=notaventa.id and 
-                notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
+                notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador,
+            notaventa.updated_at
             FROM notaventa inner join cliente
             on notaventa.cliente_id = cliente.id
             inner join vendedor
@@ -200,8 +223,8 @@ function consulta($id){
                                     )
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(notaventa.deleted_at)
+            and notaventa.id not in (select notaventa_id from dteguiadespnv)
             order by notaventa.id desc;";
-        //dd($sql);
     $datas = DB::select($sql);
     return $datas;
 
