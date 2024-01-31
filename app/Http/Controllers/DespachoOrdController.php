@@ -320,12 +320,12 @@ class DespachoOrdController extends Controller
                 $invbodegaproducto_array["stock"] = $aux_picking;    
             }
             //$data->picking = $aux_picking;
-            if($invbodegaproducto_array["cant"] > $invbodegaproducto_array["stock"]){
+/*             if($invbodegaproducto_array["cant"] > $invbodegaproducto_array["stock"]){
                 return redirect('despachoord')->with([
                     'mensaje'=>'Producto ID:' . $invbodegaproducto_array["producto_id"] . ', Cantidad ' . $invbodegaproducto_array["cant"] . ' es mayor al Stock ' . $invbodegaproducto_array["stock"],
                     'tipo_alert' => 'alert-error'
                 ]); 
-            }
+            } */
         }
         ///FIN DE VALIDACION DE STOCK
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
