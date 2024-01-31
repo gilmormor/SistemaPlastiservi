@@ -287,6 +287,32 @@ class DespachoOrdController extends Controller
                 $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$i]);
                 //VALIDAR SI EL PRODUCTO PERMITE AVANZAR SIN IMPORTAR EL STOCK
                 if($invbodegaproducto->producto->categoriaprod->stadespsinstock == 0){
+                    //INICIO: VALIDANDO EL STOCK DE CADA ITEM 
+                    $aux_Stock = 0;
+                    if($invbodegaproducto->invbodega->tipo == 1){
+                        $despachosoldet = DespachoSolDet::findOrFail($request->invbodegaproductoNVdet_id[$i]);
+                        $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
+                        $detalles = $notaventadetalle->despachosoldets()->get();
+                        $arrayBodegasPickings = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
+                        $aux_Stock = 0;
+                        foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
+                            $aux_Stock += $arrayBodegasPicking["stock"];
+                        }   
+                    }else{
+                        $arrayStock = InvBodegaProducto::existencia([
+                            "invbodegaproducto_id" => $request->invbodegaproducto_id[$i]
+                        ]);
+                        $aux_Stock = $arrayStock["stock"]["cant"];
+                    }
+                    if($request->invcant[$i]>0){
+                        if($request->invcant[$i] > $aux_Stock){
+                            return redirect('despachoord')->with([
+                                'mensaje'=>'Producto ID:' . $invbodegaproducto->producto_id . ', Cantidad ' . $request->invcant[$i] . ' es mayor al Stock ' . $aux_Stock,
+                                'tipo_alert' => 'alert-error'
+                            ]); 
+                        }
+                    }
+                    //FIN: VALIDANDO EL STOCK DE CADA ITEM 
                     $aux_cant = $request->invcant[$i] ? $request->invcant[$i] : 0;
                     if(isset($invbodegaproducto_arrays[$request->invbodegaproducto_id[$i]])){
                         $aux_cant += $invbodegaproducto_arrays[$request->invbodegaproducto_id[$i]]["cant"];
@@ -307,8 +333,18 @@ class DespachoOrdController extends Controller
                 $arrayStock = InvBodegaProducto::existencia([
                     "invbodegaproducto_id" => $invbodegaproducto_array["invbodegaproducto_id"]
                 ]);
-                $invbodegaproducto_array["stock"] = $arrayStock["stock"]["cant"];    
+                $invbodegaproducto_array["stock"] = $arrayStock["stock"]["cant"];
+                if($invbodegaproducto_array["cant"] > $invbodegaproducto_array["stock"]){
+                    return redirect('despachoord')->with([
+                        'mensaje'=>'Producto ID:' . $invbodegaproducto_array["producto_id"] . ', Cantidad ' . $invbodegaproducto_array["cant"] . ' es mayor al Stock ' . $invbodegaproducto_array["stock"],
+                        'tipo_alert' => 'alert-error'
+                    ]); 
+                }    
             }else{
+                //HICE ESTO PATRA VALIDAR TAMBIEN EL PIKING, PERO CON EL PICKING NO HAY PROBLEMA
+                //YA QUE EL PICKING ESTA GUARDADO POR CLIENTE Y POR ITEM
+                //ES DECIR QUE EL STOCK DEL PICKING ES INDIVIDUAL DE CADA ITEM, ASI QUE NO HAY PROBLEMA CON RESPECTO AL STOCK
+                //IGUAL DEBO VALIDAR EL STOCK DEL LADO DEL SERVIDOR, ESO QUEDA PENDIENTE
                 $despachosoldet = DespachoSolDet::findOrFail($invbodegaproducto_array["notaventadetalle_id"]);
                 $notaventadetalle = NotaVentaDetalle::findOrFail($despachosoldet->notaventadetalle_id);
                 $detalles = $notaventadetalle->despachosoldets()->get();
@@ -320,12 +356,6 @@ class DespachoOrdController extends Controller
                 $invbodegaproducto_array["stock"] = $aux_picking;    
             }
             //$data->picking = $aux_picking;
-/*             if($invbodegaproducto_array["cant"] > $invbodegaproducto_array["stock"]){
-                return redirect('despachoord')->with([
-                    'mensaje'=>'Producto ID:' . $invbodegaproducto_array["producto_id"] . ', Cantidad ' . $invbodegaproducto_array["cant"] . ' es mayor al Stock ' . $invbodegaproducto_array["stock"],
-                    'tipo_alert' => 'alert-error'
-                ]); 
-            } */
         }
         ///FIN DE VALIDACION DE STOCK
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
