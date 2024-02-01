@@ -72,10 +72,16 @@ class DteFacturaEditarController extends Controller
         $tablas['vendedores'] = $vendedor['vendedores'];
         $tablas['foliocontrol'] = Foliocontrol::orderBy('id')->get();
         $tablas['empresa'] = Empresa::findOrFail(1);
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
 
         $centroeconomicos = CentroEconomico::orderBy('id')->get();
+        $tablas['sucursales'] = Sucursal::orderBy('id')
+            ->whereIn('sucursal.id', $sucurArray)
+            ->get();
 
-        return view('dtefacturaeditar.editar', compact('data','tablas','centroeconomicos'));
+
+        return view('dtefacturaeditar.editar', compact('data','tablas'));
     }
 
     /**

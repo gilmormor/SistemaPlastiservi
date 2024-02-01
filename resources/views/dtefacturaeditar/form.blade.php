@@ -89,16 +89,16 @@
             </div>
     
             <div class="form-group col-xs-12 col-sm-2">
-                <label for="centroeconomico_id" class="control-label requerido">Centro Economico</label>
-                <select name="centroeconomico_id" id="centroeconomico_id" class="form-control select2 centroeconomico_id" data-live-search='true' required>
+                <label for="sucursal_id" class="control-label requerido">Sucursal</label>
+                <select name="sucursal_id" id="sucursal_id" class="form-control select2 sucursal_id" data-live-search='true' required>
                     <option value="">Seleccione...</option>
-                    @foreach($centroeconomicos as $centroeconomico)
+                    @foreach($tablas['sucursales'] as $sucursal)
                         <option
-                            value="{{$centroeconomico->id}}"
-                            @if (isset($data) and $data->centroeconomico_id==$centroeconomico->id) 
+                            value="{{$sucursal->id}}"
+                            @if (isset($data) and $data->sucursal_id==$sucursal->id) 
                                 {{'selected'}}
                             @endif
-                            >{{$centroeconomico->nombre}}</option>
+                            >{{$sucursal->nombre}}</option>
                     @endforeach
                 </select>
             </div>

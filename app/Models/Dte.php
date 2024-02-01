@@ -2364,13 +2364,6 @@ class Dte extends Model
         }else{
             $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
         }
-        $aux_condCentroEconomicoArray = "dte.centroeconomico_id  in ($sucurcadena)";
-        if(!isset($request->centroeconomico_id) or empty($request->centroeconomico_id) or ($request->centroeconomico_id == "")){
-            $aux_centroeconomico_idCond = "true";
-        }else{
-            $aux_centroeconomico_idCond = "dte.centroeconomico_id = $request->centroeconomico_id";
-        }
-
         if(!isset($request->groupby) or empty($request->groupby)){
             $aux_groupby = "";
         }else{
@@ -2511,8 +2504,6 @@ class Dte extends Model
         AND $aux_condsucurArray
         AND $aux_condsucurJefAreaFis
         AND $aux_condareaproduccion_id
-        AND $aux_centroeconomico_idCond
-        AND $aux_condCentroEconomicoArray
         AND NOT ISNULL(dte.nrodocto)
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
         $aux_groupby

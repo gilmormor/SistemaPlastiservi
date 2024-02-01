@@ -25,7 +25,7 @@ class ValidarDTEFacturaEditar extends FormRequest
     {
         return [
             'vendedor_id' => 'required',
-            'centroeconomico_id' => 'required',
+            //'centroeconomico_id' => 'required',
         ];
     }
 }

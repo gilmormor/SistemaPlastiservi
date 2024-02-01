@@ -28,9 +28,6 @@ class ReportDTEComisionxVendController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablas['vendedores'] = Vendedor::selectvendedores();
-        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')
-                        ->whereIn('centroeconomico.id', $sucurArray)
-                        ->get();
         return view('reportdtecomisionxvend.index', compact('tablas'));
     }
 
