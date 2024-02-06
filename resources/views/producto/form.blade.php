@@ -306,7 +306,7 @@
     </div>
 
 </div>
-
+<!-- EN COMENTARIO PORQUE ES LENTO LA CARGA DEL STOCK
 <div class="col-md-8 col-md-offset-2">
     <div class="box box-primary">
         <div class="box-header with-border">
@@ -324,11 +324,13 @@
             <tbody id="tbody">
                 <?php 
                     $aux_nfila = 0; 
+                    $aux_stockValor = 0;
                     $totalStockinvbodega = 0;
                 ?>
                 @if ($aux_sta==2)
                     @foreach ($invbodegaproductos->get() as $invbodegaproducto)
                         <?php 
+                        /*
                             $aux_nfila++; 
                             $aux_request = new Request();
                             $aux_request->mesanno = $aux_mesanno;
@@ -340,6 +342,7 @@
                             $aux_stock = InvMov::stocksql($aux_request);
                             $aux_stockValor = sizeof($aux_stock) > 0 ? $aux_stock[0]->stock : 0;
                             $totalStockinvbodega += $aux_stockValor;
+                        */
                         ?>
                         <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                             <td>
@@ -367,3 +370,4 @@
         </table>
     </div>
 </div>
+-->
