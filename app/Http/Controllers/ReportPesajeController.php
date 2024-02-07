@@ -37,6 +37,7 @@ class ReportPesajeController extends Controller
             'fechaAct' => date("d/m/Y"),
             ];
         //dd($tablashtml);
+        $tablashtml['categoriaprods'] = CategoriaProd::categoriasxUsuario();
         $selecmultprod = 1;
         return view('reportpesaje.index', compact('tablashtml','selecmultprod'));
 

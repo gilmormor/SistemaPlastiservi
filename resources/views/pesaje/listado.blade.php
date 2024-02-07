@@ -4,25 +4,24 @@
 <br>
 <br>
 <div id="page_pdf">
-	<table id="factura_head">
+	<table id="factura_head" style="width: 100%;border-collapse: collapse;">
 		<tr>
-			<td class="logo_factura">
+			<td class="logo_factura" style="width: 150px;">
 				<div>
 					<img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png")}}" style="max-width:1400%;width:auto;height:auto;">
-					<p>{{$empresa[0]['nombre']}}</p>
 					<p>RUT: {{$empresa[0]['rut']}}</p>
 					<p>{{$datas->sucursal->direccion}}</p>
 					<p>Teléfono: {{$datas->sucursal->telefono1}}</p>
-					<!--<p>Email: {{$datas->sucursal->email}}</p>-->
 				</div>
 			</td>
-			<td class="info_empresa">
+			<td class="info_empresa" style="width: 40px;">
 			</td>
-			<td class="info_factura">
+			<td class="info_factura" style="width: 100px;">
 				<div class="round" style="padding-bottom: 3px;">
 					<span class="h3">Pesaje</span>
 					<p>Nro: <strong> {{ str_pad($datas->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
 					<p>Fecha: {{date('d/m/Y', strtotime($datas->fechahora))}}</p>
+					<p>Usuario: {{$datas->usuario->nombre}}</p>
 					<p>Estado: 
 						@switch($datas->staaprob)
 							@case(0)
@@ -47,9 +46,9 @@
 	<table id="factura_cliente">
 		<tr>
 			<td class="info_cliente">
-				<div class="round">
-					<span class="h3">Datos</span>
-					<table class="datos_cliente">
+				<div class="round" style="padding-bottom: 0px;">
+					<span class="h3" style="padding-bottom: 0px;margin-bottom: 0px;">Datos</span>
+					<table class="datos_cliente" style="padding-top: 0px;">
 						<!--<tr class="headt">-->
 						<tr class="headt">
 							<td style="width:10%">Descripción: </td><td style="width:100%">{{$datas->desc}}</td>

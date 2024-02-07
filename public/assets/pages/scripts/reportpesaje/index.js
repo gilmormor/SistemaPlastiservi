@@ -265,6 +265,7 @@ function datospesaje(aux_statusSumPeriodo,agruFecha){
         tipobodega        : $("#tipobodega").val(),
         agrurep_id        : $("#agrurep_id").val(),
         agruFecha         : agruFecha,
+        categoriaprod_desc  : descripElementoSelectMult("categoriaprod_id"),
         _token            : $("input[name=_token]").val()
     };
 
@@ -279,8 +280,8 @@ function datospesaje(aux_statusSumPeriodo,agruFecha){
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&tipobodega="+data1.tipobodega +
     "&agrurep_id="+data1.agrurep_id +
-    "&agruFecha="+data1.agruFecha
-
+    "&agruFecha="+data1.agruFecha +
+    "&categoriaprod_desc="+data1.categoriaprod_desc
 
     var data = {
         data1 : data1,
@@ -324,7 +325,6 @@ function copiar_codprod(id,codintprod){
 
 $("#btnpdf").click(function(event){
     data = datospesaje(0,0);
-    //alert(cadena);
     $('#contpdf').attr('src', '/reportpesaje/exportPdf/'+data.data2);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')

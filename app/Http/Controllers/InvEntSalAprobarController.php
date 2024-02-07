@@ -112,9 +112,11 @@ function consultaindex(){
     //CON ESTA INSTRUCCION SQL VALIDO QUE LAS SUCURSALES QUE TIENE USUARIO CREADOR DEL REGISTRO
     //ESTEN CONTENIDAS EN LAS SUCURSALES QUE TIENE EL USUARIO QUE VA A VALIDAR.
     //ES DECIR QUE AL USUARIO QUE VA A VALIDAR SE FILTREN SOLO LOS REGISTROS QUE CONTENGAN SU SUCURSAL SOLO LE SALGAN LOS REGISTROS QUE CONTENGAN SU MISMA SUCURSAL
-    $sql = "SELECT *
+    $sql = "SELECT inventsal.*,vista_sucfisxusu.*,usuario.nombre as usuario_nombre
         FROM inventsal INNER JOIN vista_sucfisxusu
         ON inventsal.usuario_id = vista_sucfisxusu.usuario_id
+        INNER JOIN usuario
+        ON inventsal.usuario_id = usuario.id
         WHERE staaprob = 1
         and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu) 
         and isnull(inventsal.deleted_at)

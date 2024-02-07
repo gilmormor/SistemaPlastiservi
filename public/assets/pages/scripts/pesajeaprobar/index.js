@@ -15,6 +15,7 @@ $(document).ready(function () {
 			{data: 'id'},
 			{data: 'fechahora'},
 			{data: 'desc'},
+			{data: 'usuario_nombre'},
 			{data: 'id'},
 			{data: 'updated_at',className:"ocultar"},
             {defaultContent : 
@@ -41,18 +42,18 @@ $(document).ready(function () {
 			"<a class='btn-accion-tabla btn-sm btngenpdfPESAJE tooltipsC' title='PDF Entrada Inv Pesaje'>" +
 				"<i class='fa fa-fw fa-file-pdf-o'></i>" +
 			"</a>";
-			$('td', row).eq(3).html(aux_text);
+			$('td', row).eq(4).html(aux_text);
 
-			$('td', row).eq(4).html(data.updated_at);
-			$('td', row).eq(4).attr("id","updated_at"+data.id);
-			$('td', row).eq(4).attr("name","updated_at"+data.id);
-			$('td', row).eq(4).addClass("updated_at");
+			$('td', row).eq(5).html(data.updated_at);
+			$('td', row).eq(5).attr("id","updated_at"+data.id);
+			$('td', row).eq(5).attr("name","updated_at"+data.id);
+			$('td', row).eq(5).addClass("updated_at");
 
 			aux_text = 
 			"<a class='btn-accion-tabla btn-sm tooltipsC' title='Aprobar Entrada Salida Inv' onclick='aprobrecPesaje(" + data.id + ")'>" +
 				"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
 			"</a>"
-			$('td', row).eq(5).html(aux_text);
+			$('td', row).eq(6).html(aux_text);
 
 		}
 	});

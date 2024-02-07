@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pesaje;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PesajeAprobarController extends Controller
 {
@@ -20,6 +21,10 @@ class PesajeAprobarController extends Controller
     }
 
     public function pesajeaprobarpage(){
+        $datas = consultaindex();
+        return datatables($datas)->toJson();
+
+
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         return datatables()
@@ -96,4 +101,24 @@ class PesajeAprobarController extends Controller
     {
         //
     }
+}
+
+function consultaindex(){
+    $user = Usuario::findOrFail(auth()->id());
+    $sucurArray = $user->sucursales->pluck('id')->toArray();
+    $sucurArray = implode(",", $sucurArray);
+    $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
+    //dd($arraySucPerUsu);
+    //CON ESTA INSTRUCCION SQL VALIDO QUE LAS SUCURSALES QUE TIENE USUARIO CREADOR DEL REGISTRO
+    //ESTEN CONTENIDAS EN LAS SUCURSALES QUE TIENE EL USUARIO QUE VA A VALIDAR.
+    //ES DECIR QUE AL USUARIO QUE VA A VALIDAR SE FILTREN SOLO LOS REGISTROS QUE CONTENGAN SU SUCURSAL SOLO LE SALGAN LOS REGISTROS QUE CONTENGAN SU MISMA SUCURSAL
+    $sql = "SELECT pesaje.*,usuario.nombre as usuario_nombre
+        FROM pesaje INNER JOIN vista_sucfisxusu
+        ON pesaje.usuario_id = vista_sucfisxusu.usuario_id
+        INNER JOIN usuario
+        ON pesaje.usuario_id = usuario.id
+        WHERE pesaje.staaprob = 1
+        and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu) 
+        and isnull(pesaje.deleted_at);";
+    return DB::select($sql);
 }

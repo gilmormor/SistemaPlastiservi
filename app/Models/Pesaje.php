@@ -102,6 +102,19 @@ class Pesaje extends Model
             $aux_orderby = "ORDER BY pesaje.fechahora ASC";
         }
 
+        if(empty($request->categoriaprod_id)){
+            $aux_condcategoriaprod_id = " true";
+        }else{
+    
+            if(is_array($request->categoriaprod_id)){
+                $aux_categoriaprodid = implode ( ',' , $request->categoriaprod_id);
+            }else{
+                $aux_categoriaprodid = $request->categoriaprod_id;
+            }
+            $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprodid) ";
+        }
+    
+
         $sql = "SELECT pesaje.*,pesajedet.*,producto.nombre AS producto_nombre,producto.diametro,claseprod.cla_nombre,
         producto.long,producto.tipounion,pesajecarro.nombre AS pesajecarro_nombre,
         areaproduccionsuclinea.nombre AS areaproduccionsuclinea_nombre,turno.nombre AS turno_nombre,
@@ -132,6 +145,7 @@ class Pesaje extends Model
         AND $aux_producto_idCodn
         AND $aux_condFecha
         AND $aux_categoriaprodgrupo_idCond
+        AND $aux_condcategoriaprod_id
         $aux_groupby
         $aux_orderby;";
         //dd($sql);

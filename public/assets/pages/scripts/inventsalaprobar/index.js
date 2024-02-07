@@ -15,6 +15,7 @@ $(document).ready(function () {
 			{data: 'id'},
 			{data: 'fechahora'},
 			{data: 'desc'},
+			{data: 'usuario_nombre'},
 			{data: 'id'},
             {defaultContent : 
 				""
@@ -36,18 +37,19 @@ $(document).ready(function () {
 			$('td', row).eq(1).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
 			aux_text = 
 			"<a class='btn-accion-tabla btn-sm btngenpdfINVENTSAL tooltipsC' title='PDF Entrada Salida Inv'>" +
 				"<i class='fa fa-fw fa-file-pdf-o'></i>" +
 			"</a>";
-			$('td', row).eq(3).html(aux_text);
+			$('td', row).eq(4).html(aux_text);
 
 
 			aux_text = 
 			"<a class='btn-accion-tabla btn-sm tooltipsC' title='Aprobar Entrada Salida Inv' onclick='aprobrecentsalinv(" + data.id + ")'>" +
 				"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
 			"</a>"
-			$('td', row).eq(4).html(aux_text);
+			$('td', row).eq(5).html(aux_text);
 
 		}
 	});

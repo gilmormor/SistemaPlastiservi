@@ -26,6 +26,7 @@ Aprobar entrada inv Pesaje
                                 <th class="width30">ID</th>
                                 <th class="width30">Fecha</th>
                                 <th title='Descripción'>Descripción</th>
+                                <th title='Usuario que creo el Registro'>Usuario</th>
                                 <th class="width150">PDF</th>
                                 <th class="ocultar">updated_at</th>
                                 <th class="width150">Acciones</th>

@@ -4,26 +4,25 @@
 <br>
 <br>
 <div id="page_pdf">
-	<table id="factura_head">
+	<table id="factura_head" style="width: 100%;border-collapse: collapse;">
 		<tr>
-			<td class="logo_factura">
+			<td class="logo_factura" style="width: 150px;">
 				<div>
 					<img src="{{asset("assets/$theme/dist/img/LOGO-PLASTISERVI.png")}}" style="max-width:1400%;width:auto;height:auto;">
-					<p>{{$empresa[0]['nombre']}}</p>
 					<p>RUT: {{$empresa[0]['rut']}}</p>
 					<p>{{$sucursal->direccion}}</p>
 					<p>Teléfono: {{$sucursal->telefono1}}</p>
-					<!--<p>Email: {{$sucursal->email}}</p>-->
 				</div>
 			</td>
-			<td class="info_empresa">
+			<td class="info_empresa" style="width: 40px;">
 			</td>
-			<td class="info_factura">
+			<td class="info_factura" style="width: 100px;">
 				<div class="round" style="padding-bottom: 3px;">
 					<span class="h3">Pesaje</span>
 					<p>Fecha emision: {{date("d-m-Y h:i:s A")}}</p>
 					<p>Sucursal: {{$sucursal->nombre}}</p>
 					<p>Grupo: {{$request->categoriaprodgrupo_nombre}}</p>
+					<p>Categoria: {{$request->categoriaprod_desc}}</p>
 					<p>Período: {{$request->fechad}} al {{$request->fechah}}</p>
 				</div>
 			</td>

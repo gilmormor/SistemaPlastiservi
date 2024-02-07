@@ -3561,3 +3561,16 @@ function getColumnLetter(columnIndex) {
     }
     return columnLetter;
 }
+
+function descripElementoSelectMult(id){
+	var selectedOptions = $("#" + id +" option:selected")
+	.map(function(){ return $(this).text().trim(); })
+		.get();
+	var seleccionados;
+	if(selectedOptions.length === 0) {
+		seleccionados = "Todos";
+	} else {
+		seleccionados = selectedOptions.join(", ");
+	}
+	return seleccionados;
+}

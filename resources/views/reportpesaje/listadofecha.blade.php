@@ -24,6 +24,7 @@
 					<p>Fecha emision: {{date("d-m-Y h:i:s A")}}</p>
 					<p>Sucursal: {{$sucursal->nombre}}</p>
 					<p>Grupo: {{$request->categoriaprodgrupo_nombre}}</p>
+					<p>Categoria: {{$request->categoriaprod_desc}}</p>
 					<p>Período: {{$request->fechad}} al {{$request->fechah}}</p>
 				</div>
 			</td>
