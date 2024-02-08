@@ -366,6 +366,12 @@ class Dte extends Model
             $aux_condFecha = " true";
         }
     
+        $aux_verguias = can('ver-guias-de-despacho-de-todos-los-usuarios',false);
+        $aux_condFiltrarxUsuario = " true ";
+        if(!$aux_verguias){
+            $aux_condFiltrarxUsuario = " dte.usuario_id = $user->id ";
+        }
+
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dte.fchemisgen,dte.fechahora,cliente.rut,cliente.razonsocial,
         dte.mnttotal,dte.kgtotal,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as nvoc_id,
@@ -453,6 +459,7 @@ class Dte extends Model
         and $aux_conddteguiausadaActasParaLiberar
         and $aux_condnrodocto
         and $aux_condnrofactura
+        and $aux_condFiltrarxUsuario
         GROUP BY dte.id
         ORDER BY dte.id asc;";
         //dd($sql);
@@ -774,6 +781,13 @@ class Dte extends Model
             $aux_codprod = implode ( ',' , $aux_codprod);
             $aux_condproducto_id = "dtedet.producto_id in ($aux_codprod)";
         }
+
+        $aux_verguias = can('ver-dte-detalle-todos-los-usuarios',false);
+        $aux_condFiltrarxUsuario = " true ";
+        if(!$aux_verguias){
+            $aux_condFiltrarxUsuario = " dte.usuario_id = $user->id ";
+        }
+    
         
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.centroeconomico_id,
@@ -841,6 +855,7 @@ class Dte extends Model
         AND $aux_aprobstatus
         AND $aux_sucursal_idCond
         AND $aux_condproducto_id
+        AND $aux_condFiltrarxUsuario
         order BY dte.nrodocto,dtedet.id;";
         //dd($sql);
         $arrays = DB::select($sql);
@@ -995,6 +1010,12 @@ class Dte extends Model
             $aux_vendedor_idCond = "dte.vendedor_id in ($request->vendedor_id)";
         }
 
+        $aux_verFacturas = can('ver-facturas-de-todos-los-usuarios',false);
+        $aux_condFiltrarxUsuario = " true ";
+        if(!$aux_verFacturas){
+            $aux_condFiltrarxUsuario = " dte.usuario_id = $user->id ";
+        }
+
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,dte.kgtotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -1057,6 +1078,7 @@ class Dte extends Model
         AND $aux_aprobstatus
         AND $aux_condsucurArray
         AND $aux_vendedor_idCond
+        AND $aux_condFiltrarxUsuario
         AND NOT ISNULL(dte.nrodocto)
         GROUP BY dte.id
         ORDER BY dte.nrodocto asc;";

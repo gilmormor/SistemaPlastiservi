@@ -41,7 +41,7 @@ $("#notaventa_id").focus(function(){
 });
                     
 
-
+/*
 $("#notaventa_id").blur(function(){
     eliminarFormatoRut($(this));
 	codigo = $("#notaventa_id").val();
@@ -58,14 +58,6 @@ $("#notaventa_id").blur(function(){
             data: data,
             success: function (respuesta) {
                 if(respuesta.mensaje=="ok"){
-                    //alert(respuesta[0]['vendedor_id']);
-                    //$("#rut").val(respuesta[0]['rut']);
-                    /*
-                    formato_rut($("#rut"));
-                    $("#razonsocial").val(respuesta[0]['razonsocial']);
-                    $("#cliente_id").val(respuesta[0]['id']);
-                    $("#descripcion").focus();
-                    */
                     $("#observacion").focus();
                     $("#vpnv1").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
                     $("#vpnv2").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
@@ -87,6 +79,45 @@ $("#notaventa_id").blur(function(){
                     }).then((value) => {
                         if (value) {
                             //ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+                            $("#notaventa_id").focus();
+                        }
+                    });
+                }
+            }
+        });
+	}
+});
+*/
+$("#notaventa_id").blur(function(){
+    eliminarFormatoRut($(this));
+	codigo = $("#notaventa_id").val();
+	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
+	{
+		//totalizar();
+        var data = {
+            id: codigo,
+            _token: $('input[name=_token]').val()
+        };
+        $.ajax({
+            url: '/notaventa/buscarNVActiva',
+            type: 'POST',
+            data: data,
+            success: function (respuesta) {
+                if(respuesta.id=="1"){
+                    $("#observacion").focus();
+                    $("#vpnv1").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
+                    $("#vpnv2").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
+                    $('#vistaprevNV').show();
+                }else{
+                    swal({
+                        title: respuesta.title,
+                        text: "",
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            confirm: "Aceptar"
+                        },
+                    }).then((value) => {
+                        if (value) {
                             $("#notaventa_id").focus();
                         }
                     });

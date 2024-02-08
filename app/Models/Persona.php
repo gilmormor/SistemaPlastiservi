@@ -59,6 +59,9 @@ class Persona extends Model
     public static function sucursalFisica($usuario_id){
         $user = Usuario::findOrFail($usuario_id);
         $sucurJefAreaFis = [];
+        if(!isset($user->persona->jefaturasucursalareas)){
+            return redirect()->route('inicio')->with('mensaje', 'Se bede asignar en Menu: Archivos Maestros->Personas, la Tabla jefaturaSucursalAreas a Usuario ' . $user->usuario)->send();
+        }
         foreach ($user->persona->jefaturasucursalareas as $jefaturasucursalarea) {
             $sucurJefAreaFis[] = $jefaturasucursalarea->sucursal_area->sucursal_id;
         }

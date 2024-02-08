@@ -375,6 +375,7 @@ Route::get('notaventa/productobuscarpage', 'NotaVentaController@productobuscarpa
 Route::get('notaventa/clientebuscarpage', 'NotaVentaController@clientebuscarpage')->name('clientebuscarpage_notaventa');
 Route::get('notaventa/{id}/productobuscarpage', 'NotaVentaController@productobuscarpageid')->name('productobuscarpageid_notaventa');
 Route::get('notaventa/{id}/clientebuscarpage', 'NotaVentaController@clientebuscarpageid')->name('clientebuscarpageid_notaventa');
+Route::post('notaventa/buscarNVActiva', 'NotaVentaController@buscarNVActiva')->name('buscarNVActiva_notaventa');
 
 
 /*RUTAS CONSULTAR NOTA DE VENTA*/

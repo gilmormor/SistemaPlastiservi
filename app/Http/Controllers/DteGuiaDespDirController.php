@@ -325,6 +325,11 @@ function consultaindex($dte_id){
         $aux_conddte_id = "dte.id = $dte_id";
     }
 
+    $aux_verguias = can('ver-guias-de-despacho-de-todos-los-usuarios',false);
+    $aux_condFiltrarxUsuario = " true ";
+    if(!$aux_verguias){
+        $aux_condFiltrarxUsuario = " dte.usuario_id = $user->id ";
+    }
     $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,
     comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
@@ -349,6 +354,7 @@ function consultaindex($dte_id){
     AND ISNULL(dte.statusgen)
     AND !ISNULL(dte.nrodocto)
     AND $aux_conddte_id
+    AND $aux_condFiltrarxUsuario
     GROUP BY dte.id
     ORDER BY dte.id desc;";
 

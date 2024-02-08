@@ -1546,6 +1546,60 @@ class NotaVentaController extends Controller
         }
     }
 
+    public function buscarNVActiva(Request $request){
+        $sql = "SELECT notaventa.`*`,SUM(notaventadetalle.cant - (SELECT cantsoldesp
+                    FROM vista_sumsoldespdet
+                    WHERE notaventadetalle_id=notaventadetalle.id)) AS pendDesp,
+                notaventacerrada.observacion as notaventacerrada_observacion
+                FROM notaventa inner join notaventadetalle
+                ON notaventa.id = notaventadetalle.notaventa_id
+                LEFT JOIN notaventacerrada
+                ON notaventa.id = notaventacerrada.notaventa_id and isnull(notaventacerrada.deleted_at)
+                WHERE notaventadetalle.notaventa_id = $request->id
+                and isnull(notaventa.deleted_at)
+                GROUP BY notaventadetalle.notaventa_id;";
+        $datas = DB::select($sql);
+        //dd($datas[0]);
+        if(count($datas) > 0){
+            if($datas[0]->pendDesp <= 0){
+                return [
+                    "id" => 0,
+                    "title" => "Nota de venta despachada en su totalidad. ",
+                    "mensaje" => "",
+                    "tipo_alert" => 'warning'
+                ];
+
+    
+            }else{
+                if($datas[0]->notaventacerrada_observacion != null){
+                    return [
+                        "id" => 0,
+                        "title" => "Nota de Venta cerrada. Obs: " . $datas[0]->notaventacerrada_observacion,
+                        "mensaje" => "",
+                        "tipo_alert" => 'warning'
+                    ];    
+    
+                }
+                return [
+                    "id" => 1,
+                    "title" => "",
+                    "mensaje" => "",
+                    "tipo_alert" => ''
+                ];    
+            }
+
+        }else{
+            return [
+                "id" => 0,
+                "title" => "Nota de venta no existe. ",
+                "mensaje" => "",
+                "tipo_alert" => 'error'
+            ];
+        }
+
+
+    }
+
     public function actualizarFileOC(Request $request){
         if ($foto = NotaVenta::setFotonotaventa($request->oc_file,$request->id,$request)){
             $request->request->add(['oc_file' => $foto]);
