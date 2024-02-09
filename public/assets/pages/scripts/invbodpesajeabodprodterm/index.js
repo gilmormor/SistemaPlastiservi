@@ -1,5 +1,6 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
+    $("#ProcesarPesaje").hide();
     $('.date-picker').datepicker({
         language: "es",
         format: "MM yyyy",
@@ -77,10 +78,11 @@ $(document).ready(function () {
                 aux_text = 
                     `<div class="checkbox" style="padding-top: 0px;">
                         <label style="font-size: 1.0em">
-                            <input type="checkbox" class="checkboxsel" id="llenarselProd${data.producto_id}" name="llenarselProd[]" ${aux_checked}>
+                            <input type="checkbox" class="checkboxsel" id="llenarselProd${data.producto_id}" name="llenarselProd[]" ${aux_checked} onclick="marcarcheckpesaje(${data.producto_id})">
                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                             <input type="text" name="producto_id[]" id="producto_id${data.producto_id}" value="${data.producto_id}" item="${data.producto_id}" style="display:none;"/>
                             <input type="text" name="stock[]" id="stock${data.stock}" value="${data.stock}" item="${data.stock}" style="display:none;"/>
+                            <input type="text" name="checksel[]" id="checksel${data.producto_id}" item="${data.producto_id}" value="0" style="display:none;"/>
                         </label>
                     </div>`;
 
@@ -109,12 +111,16 @@ $(document).ready(function () {
     $("#btnconsultar").click(function()
     {
         data = datosinvstockPesaje();
+        $("#selectprod").val(null)
+        $("#ProcesarPesaje").hide();
         $('#tabla-data-invstock').DataTable().ajax.url( "invcontrolpage/" + data.data2 ).load();
         totalizar();
     });
 
-});
+    $("#ProcesarPesaje").prop('disabled', false);    
 
+});
+aux_prodselarray = [];
 function totalizar(){
     let  table = $('#tabla-data-invstock').DataTable();
     //console.log(table);
@@ -128,6 +134,10 @@ function totalizar(){
         type: 'GET',
         success: function (datos) {
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
+            $("#ProcesarPesaje").hide();
+            if(datos.aux_totalstock > 0){
+                $("#ProcesarPesaje").show();
+            }
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
     });
@@ -162,7 +172,6 @@ function datosinvstockPesaje(){
     "&categoriaprod_id="+data1.categoriaprod_id +
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&tipobodega="+data1.tipobodega
-
 
     var data = {
         data1 : data1,
@@ -254,6 +263,71 @@ $("#marcarTodo").change(function() {
             $(this).prop('checked',true);
         }else{
             $(this).prop('checked',false);
+        }
+    });
+});
+
+function marcarcheckpesaje(producto_id){
+    estaSeleccionado = $("#llenarselProd" + producto_id).is(":checked");
+    if(estaSeleccionado){
+        aux_prodselarray.push(producto_id)    
+    }else{
+        var indiceAEliminar = aux_prodselarray.indexOf(producto_id); // Obtener el índice del valor a eliminar
+        if (indiceAEliminar !== -1) { // Verificar si el valor existe en el array
+            aux_prodselarray.splice(indiceAEliminar, 1); // Eliminar el elemento en el índice encontrado
+        }
+    }
+    $("#selectprod").val(aux_prodselarray.join(','))
+    //console.log(aux_prodselarray);
+    /* console.log($("#llenarselProd" + producto_id).prop('checked'));
+    console.log($("#checksel" + producto_id).val());
+    console.log(producto_id);
+    aux_prodselarray.push(producto_id); */
+}
+
+$('#form-general').submit(function(event) {
+    event.preventDefault();
+    aux_productos_id = $("#selectprod").val()
+    if(aux_productos_id == null || aux_productos_id == ""){
+        aux_productos_id = "Todos";
+    }
+    swal({
+        title: '¿Desea continuar?',
+        text: "Productos seleccionados: " + aux_productos_id,
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            if($("#selectprod").val() == null || $("#selectprod").val() == ""){
+                swal({
+                    title: '¿Desea procesar todos registros?',
+                    text: "Esta acción no se puede deshacer!",
+                    icon: 'warning',
+                    buttons: {
+                        cancel: "Cancelar",
+                        confirm: "Aceptar"
+                    },
+                }).then((value) => {
+                    if (value) {
+                        // Si el usuario confirma, ejecutar el submit del formulario
+                        $("#ProcesarPesaje").prop('disabled', true);
+                        this.submit();
+                    } else {
+                        // Si el usuario cancela, no hacer nada
+                        return false;
+                    }
+                });
+            }else{
+                // Si el usuario confirma, ejecutar el submit del formulario
+                $("#ProcesarPesaje").prop('disabled', true);
+                this.submit();
+            }
+        } else {
+            // Si el usuario cancela, no hacer nada
+            return false;
         }
     });
 });

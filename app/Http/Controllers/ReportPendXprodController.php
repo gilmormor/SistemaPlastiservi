@@ -57,8 +57,6 @@ class ReportPendXprodController extends Controller
 
     }
     public function reportpendxprodpage(Request $request){
-        
-        
         //can('reporte-guia_despacho');
         //dd('entro');
         //$datas = GuiaDesp::reporteguiadesp($request);

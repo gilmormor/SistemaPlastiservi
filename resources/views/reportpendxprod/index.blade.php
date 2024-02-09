@@ -91,7 +91,7 @@ Pendiente x Producto
                                         <label>Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name='vendedor_id' id='vendedor_id' class='selectpicker form-control vendedor_id'  data-live-search='true' data-actions-box='true' {{(count($tablashtml['vendedores']) == 1) ? "disabled" : ""}}>"
+                                        <select name='vendedor_id' id='vendedor_id' class='selectpicker form-control vendedor_id' data-live-search='true' data-actions-box='true' multiple {{(count($tablashtml['vendedores']) == 1) ? "disabled" : ""}}>"
                                             <option value="">Todos</option>
                                             @foreach($tablashtml['vendedores'] as $vendedor)
                                                 <option value="{{$vendedor->id}}"

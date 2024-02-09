@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Stock Inventario
+Bod Pesaje->BodProdTerm
 @endsection
 
 @section("scripts")
@@ -17,17 +17,16 @@ Stock Inventario
 @section('contenido')
 <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
 <input type="hidden" name="tipo" id="tipo" value="">
-<input type="hidden" name="selectprod" id="selectprod" value="">
 
 <form action="{{route('guardar_invbodpesajeabodprodterm')}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
     @csrf
-
+    <input type="hidden" name="selectprod" id="selectprod" value="">
     <div class="row">
         <div class="col-lg-12">
             @include('includes.mensaje')
             <div class="box box-primary box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Stock Inventario</h3>
+                    <h3 class="box-title">Traslado Bodega Pesaje a Bodega Prod Terminado</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                     </div>
@@ -144,13 +143,14 @@ Stock Inventario
                                 <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF">
                                     <i class='glyphicon glyphicon-print'></i> Reporte
                                 </button>
+                                <!--
                                 <div class='checkbox'>
                                     <label style='font-size: 1.2em'>
                                         <input type='checkbox' id='marcarTodo' name='marcarTodo'>
                                         <span class='cr'><i class='cr-icon fa fa-check'></i></span>
                                     </label>
                                 </div>
-        
+                                -->
                             </div>
                         </div>
                     </div>
@@ -164,7 +164,7 @@ Stock Inventario
                     <div class="box-header with-border">
                         <h3 class="box-title">Detalle</h3>
                         <div class="box-tools pull-right">
-                            <button type="submit" class="btn btn-success">Guardar</button>
+                            <button id="ProcesarPesaje" name="ProcesarPesaje" type="submit" class="btn btn-success" style="display:none;">Procesar</button>
                         </div>
                         <div class="box-body">
                             <div class="table-responsive">

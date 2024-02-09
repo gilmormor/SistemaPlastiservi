@@ -89,11 +89,14 @@ class InvBodPesajeaBodProdTermController extends Controller
         //$datas = InvMov::stock($request)->get();
         $datas = InvMov::stocksql($request);
         $aux_totalkg = 0;
+        $aux_totalstock = 0;
         foreach ($datas as $data) {
             //$aux_totalkg += $data->stockkg;
             $aux_totalkg += $data->stock * $data->peso;
+            $aux_totalstock += $data->stock;
         }
         $respuesta['aux_totalkg'] = $aux_totalkg;
+        $respuesta['aux_totalstock'] = $aux_totalstock;
         return $respuesta;
     }
 
@@ -117,11 +120,13 @@ class InvBodPesajeaBodProdTermController extends Controller
         }
 
         $request["mesanno"] = $request->annomes;
-        $request["producto_id"] = null;
+        //$request["producto_id"] = null;
+        $request["producto_id"] = $request->selectprod;
         $request["tipobodega"] = 6;
         //dd($request);
         $aux_contador = 0;
         $datas = InvMov::stocksql($request);
+        //dd($datas);
         foreach ($datas as $data) {
             $requestProd = new Request();
             $requestProd["annomespredef"] = true;
@@ -216,8 +221,12 @@ class InvBodPesajeaBodProdTermController extends Controller
                 }
             }
         }
+        $aux_producto_id = $request->selectprod;
+        if($request->selectprod == null or $request->selectprod == ""){
+            $aux_producto_id = "Todos";
+        }
         return redirect('invbodpesajeabodprodterm')->with([
-            'mensaje'=> "Se ejecuto el Traslado a Bodega producto Terminado con exito!",
+            'mensaje'=> "Se ejecuto el Traslado a Bodega producto Terminado con exito! Productos procesados: " . $aux_producto_id,
         ]);
     }
 
