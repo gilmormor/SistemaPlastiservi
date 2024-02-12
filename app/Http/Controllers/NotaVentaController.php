@@ -1559,9 +1559,8 @@ class NotaVentaController extends Controller
                 and isnull(notaventa.deleted_at)
                 GROUP BY notaventadetalle.notaventa_id;";
         $datas = DB::select($sql);
-        //dd($datas[0]);
         if(count($datas) > 0){
-            if($datas[0]->pendDesp <= 0){
+            if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp != null)){
                 return [
                     "id" => 0,
                     "title" => "Nota de venta despachada en su totalidad. ",
