@@ -1547,7 +1547,7 @@ class NotaVentaController extends Controller
     }
 
     public function buscarNVActiva(Request $request){
-        $sql = "SELECT notaventa.`*`,SUM(notaventadetalle.cant - (SELECT cantsoldesp
+        $sql = "SELECT notaventa.*,SUM(notaventadetalle.cant - (SELECT cantsoldesp
                     FROM vista_sumsoldespdet
                     WHERE notaventadetalle_id=notaventadetalle.id)) AS pendDesp,
                 notaventacerrada.observacion as notaventacerrada_observacion
