@@ -1560,7 +1560,7 @@ class NotaVentaController extends Controller
                 GROUP BY notaventadetalle.notaventa_id;";
         $datas = DB::select($sql);
         if(count($datas) > 0){
-            if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp != null)){
+            if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp !== null)){
                 return [
                     "id" => 0,
                     "title" => "Nota de venta despachada en su totalidad. ",
