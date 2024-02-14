@@ -33,7 +33,6 @@ class ReportPesajeGrupoController extends Controller
 
     }
     public function reportpesajegrupopage(Request $request){
-        //dd($request);
         can('listar-reporte-pesaje-grupo');
         $request->statusSumPeriodo = 1;
         $datas = Pesaje::pesajeDet($request);

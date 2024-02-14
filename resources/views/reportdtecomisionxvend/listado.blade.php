@@ -69,7 +69,7 @@
 						<th colspan="7" style='text-align:left'>Nombre: {{$vendedor->persona->nombre . " " . $vendedor->persona->apellido}}</th>
 					</tr>
 					<tr>
-						<th style='text-align:center;width: 30px !important'>Doc</th>
+						<th style='text-align:center;width: 40px !important'>Doc</th>
 						<th style='text-align:center;width: 30px !important'>Tipo</th>
 						<th style='width: 60px !important'>Fecha</th>
 						<th style='width: 60px !important'>RUT</th>
@@ -77,7 +77,7 @@
 						<th style='text-align:left;width: 150px !important'>Producto</th>
 						<th style='text-align:right;width: 70px !important'>Monto</th>
 						<th style='text-align:right;width: 40px !important'>%</th>
-						<th style='text-align:right;width: 70px !important'>Comisión</th>
+						<th style='text-align:right;width: 70px !important'>Comisión&nbsp;&nbsp;</th>
 					</tr>
 				</thead>
 		@endif

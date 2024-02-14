@@ -82,19 +82,6 @@
                             </div>            
                         @endif
                         <div class="form-group col-xs-12 col-sm-3">
-                <!--
-                            <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
-                            <div class="input-group">
-                            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" title="F2 Buscar" placeholder="F2 Buscar" required {{$disabledReadOnly}}/>
-                                <span class="input-group-btn">
-                                    @if (session('aux_aproNV')=='0')
-                                        <a id="btnbuscarcliente" name="btnbuscarcliente" href="#" class="btn btn-flat" data-toggle='tooltip' title="Buscar">
-                                            <i class="fa fa-search"></i>
-                                        </a>
-                                    @endif
-                                </span>
-                            </div>
-                -->
                             <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT sin puntos ni guión">RUT</label>
                             <div class="input-group">
                                 <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" onkeyup="llevarMayus(this);" title="F2 Buscar" placeholder="F2 Buscar"  maxlength="12" oninput="validarInputRut(event)" onkeyup="llevarMayus(this);" required {{$disabledReadOnly}} {{$disabledcliente}}/>

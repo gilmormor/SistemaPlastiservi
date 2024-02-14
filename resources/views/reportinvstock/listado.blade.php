@@ -48,6 +48,7 @@
 				</thead>
 				<tbody id="detalle_productos">
 					<?php 
+						$aux_totalstock = 0;
 						$aux_totalstockkg = 0;
 					?>
 					@foreach($datas as $data)
@@ -70,17 +71,19 @@
 							<td style='text-align:center'>{{$data->stockini}}</td>
 							<td style='text-align:center'>{{$data->mov_in}}</td>
 							<td style='text-align:center'>{{$data->mov_out}}</td>
-							<td style='text-align:center'>{{$data->stock}}</td>
+							<td style='text-align:right'>{{$data->stock}}</td>
 							<td style='text-align:right'>{{number_format($data->stock * $data->peso, 2, ",", ".")}}</td>
 						</tr>
 						<?php 
+							$aux_totalstock += $data->stock;
 							$aux_totalstockkg += $data->stock * $data->peso;
 						?>
 					@endforeach
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr class="headt">
-						<th colspan="13" style='text-align:right'>TOTAL</th>
+						<th colspan="12" style='text-align:right'>TOTAL</th>
+						<th class="textright">{{number_format($aux_totalstock, 0, ",", ".")}}</th>
 						<th class="textright">{{number_format($aux_totalstockkg, 2, ",", ".")}}</th>
 					</tr>
 				</tfoot>

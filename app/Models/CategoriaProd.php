@@ -67,17 +67,19 @@ class CategoriaProd extends Model
         return $this->belongsToMany(InvBodega::class, 'categoriaprod_invbodega','categoriaprod_id','invbodega_id')->withTimestamps();
     }
 
-
+ 
     public static function categoriasxUsuario($sucursal_id = false){
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join)  use ($sucursal_id) {
             $user = Usuario::findOrFail(auth()->id());
+            $arraySucFisxUsu = sucFisXUsu($user->persona);
+            //dd($arraySucFisxUsu);
             if($sucursal_id){
                 $sucurArray = $user->sucursales->where('id','=',$sucursal_id)->pluck('id')->toArray();
             }else{
                 $sucurArray = $user->sucursales->pluck('id')->toArray();
             }
             $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-            ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
+            ->whereIn('categoriaprodsuc.sucursal_id', $arraySucFisxUsu);
                     })
             ->select([
                 'categoriaprod.id',

@@ -102,8 +102,8 @@ class Pesaje extends Model
             $aux_orderby = "ORDER BY pesaje.fechahora ASC";
         }
 
-        if(empty($request->categoriaprod_id)){
-            $aux_condcategoriaprod_id = " true";
+        if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
+            $aux_condcategoriaprod_id = "true";
         }else{
     
             if(is_array($request->categoriaprod_id)){

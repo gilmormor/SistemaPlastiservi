@@ -31,16 +31,7 @@ class ReportInvStockBPController extends Controller
         $tablashtml['invbodegas'] = InvBodega::orderBy('id')
                                     ->where("tipo","=",2)
                                     ->get();
-        $tablashtml['areaproduccions'] = AreaProduccion::join('areaproduccionsuc', function ($join) use ($sucurArray) {
-                $join->on('areaproduccion.id', '=', 'areaproduccionsuc.areaproduccion_id')
-                ->whereIn('areaproduccionsuc.sucursal_id', $sucurArray);
-            })
-            ->select([
-                'areaproduccion.*',
-            ])
-            ->orderBy('areaproduccion.id')
-            ->groupBy("areaproduccion.id")
-            ->get();
+        $tablashtml['areaproduccions'] =  AreaProduccion::areaproduccionxusuario();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $selecmultprod = 1;
         return view('reportinvstockbp.index', compact('tablashtml','selecmultprod'));

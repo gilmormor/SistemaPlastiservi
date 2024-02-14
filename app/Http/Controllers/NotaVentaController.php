@@ -342,7 +342,7 @@ class NotaVentaController extends Controller
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['moneda'] = Moneda::orderBy('id')->get();
         session(['editaracutec' => '0']);
-    
+        session(['aux_aproNV' => '0']);
         //dd($vendedor_id);
         return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant','tablas'));
     }
@@ -1547,7 +1547,7 @@ class NotaVentaController extends Controller
     }
 
     public function buscarNVActiva(Request $request){
-        $sql = "SELECT notaventa.`*`,SUM(notaventadetalle.cant - (SELECT cantsoldesp
+        $sql = "SELECT notaventa.*,SUM(notaventadetalle.cant - (SELECT cantsoldesp
                     FROM vista_sumsoldespdet
                     WHERE notaventadetalle_id=notaventadetalle.id)) AS pendDesp,
                 notaventacerrada.observacion as notaventacerrada_observacion
@@ -1559,9 +1559,8 @@ class NotaVentaController extends Controller
                 and isnull(notaventa.deleted_at)
                 GROUP BY notaventadetalle.notaventa_id;";
         $datas = DB::select($sql);
-        //dd($datas[0]);
         if(count($datas) > 0){
-            if($datas[0]->pendDesp <= 0){
+            if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp !== null)){
                 return [
                     "id" => 0,
                     "title" => "Nota de venta despachada en su totalidad. ",

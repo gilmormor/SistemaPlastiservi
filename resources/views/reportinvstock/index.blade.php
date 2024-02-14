@@ -104,6 +104,11 @@ Stock Inventario
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name='categoriaprod_id' id='categoriaprod_id' class='selectpicker form-control categoriaprod_id' data-live-search='true' multiple data-actions-box='true'>
+                                            @foreach($tablashtml['categoriaprod'] as $categoriaprod)
+                                                <option value="{{$categoriaprod->id}}">
+                                                    {{$categoriaprod->nombre}}
+                                                </option>";
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -165,11 +170,13 @@ Stock Inventario
                         <tr>
                         </tr>
                         <tr>
-                            <th colspan='13' style='text-align:right'>Total página</th>
+                            <th colspan='12' style='text-align:right'>Total página</th>
+                            <th id='subtotalstock' name='subtotalstock' style='text-align:right'>0</th>
                             <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
                         </tr>
                         <tr>
-                            <th colspan='13' style='text-align:right'>TOTAL GENERAL</th>
+                            <th colspan='12' style='text-align:right'>TOTAL GENERAL</th>
+                            <th id='totalstock' name='totalstock' style='text-align:right'>0</th>
                             <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                         </tr>
                     </tfoot>

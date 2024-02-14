@@ -63,7 +63,12 @@ $(document).ready(function () {
                 $('td', row).eq(9).attr('style','text-align:center');
                 $('td', row).eq(10).attr('style','text-align:center');
                 $('td', row).eq(11).attr('style','text-align:center');
-                $('td', row).eq(12).attr('style','text-align:center');
+                $('td', row).eq(12).attr('style','text-align:right');
+                $('td', row).eq(12).attr('data-order',data.stock);
+                $('td', row).eq(12).attr('data-search',data.stock);
+                $('td', row).eq(12).html(MASKLA(data.stock,0));
+                $('td', row).eq(12).addClass('subtotalstock');
+
                 $('td', row).eq(13).attr('style','text-align:right');
                 //$('td', row).eq(13).html(MASK(0, data.stockkg, '-###,###,###,##0.00',1));
                 if(data.peso <= 0){
@@ -141,6 +146,7 @@ function totalizar(){
         url: '/reportinvstock/totalizarindex/' + data.data2,
         type: 'GET',
         success: function (datos) {
+            $("#totalstock").html(MASKLA(datos.aux_totalstock,0));
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
@@ -148,6 +154,14 @@ function totalizar(){
 }
 
 var eventFired = function ( type ) {
+    subtotalstock = 0
+    $("#tabla-data-invstock tr .subtotalstock").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		subtotalstock += valorNum;
+	});
+    $("#subtotalstock").html(MASKLA(subtotalstock,0))
+
 	total = 0;
 	$("#tabla-data-invstock tr .subtotalkg").each(function() {
 		valor = $(this).attr('data-order') ;

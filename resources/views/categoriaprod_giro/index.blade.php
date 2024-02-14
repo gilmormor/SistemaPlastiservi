@@ -1,11 +1,11 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Giro
+Categoria Producto Giro
 @endsection
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/giro/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/categoriaprod_giro/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -14,12 +14,7 @@ Giro
         @include('includes.mensaje')
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Giro</h3>
-                <div class="box-tools pull-right">
-                    <a href="{{route('crear_giro')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo registro
-                    </a>
-                </div>
+                <h3 class="box-title">Categoria Producto Giro</h3>
             </div>
             <div class="box-body">
                 <table class="table table-striped table-bordered table-hover" id="tabla-data">

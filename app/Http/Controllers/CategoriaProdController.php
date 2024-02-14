@@ -25,51 +25,24 @@ class CategoriaProdController extends Controller
     public function index()
     {
         can('listar-categoriaprod');
-        $datas = CategoriaProd::orderBy('id')->get();
-        $datas = CategoriaProd::join('categoriaprodsuc', function ($join) {
-            $user = Usuario::findOrFail(auth()->id());
-            $sucurArray = $user->sucursales->pluck('id')->toArray();
-            $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-            ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
-                    })
-        ->select([
-            'categoriaprod.id',
-            'categoriaprod.nombre',
-            'categoriaprod.descripcion',
-            'categoriaprod.precio',
-            'categoriaprod.areaproduccion_id',
-            'categoriaprod.sta_precioxkilo',
-            'categoriaprod.unidadmedida_id',
-            'categoriaprod.unidadmedidafact_id'
-        ])
-        ->get();
-
         return view('categoriaprod.index');
-        //return view('categoriaprod.index', compact('datas'));
     }
 
     public function categoriaprodpage(){
-        return datatables()
-            ->eloquent(CategoriaProd::query()
-            ->join('categoriaprodsuc', function ($join) {
-                $user = Usuario::findOrFail(auth()->id());
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-                $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-                ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray);
-                        })
-            ->select([
-                'categoriaprod.id',
-                'categoriaprod.nombre',
-                'categoriaprod.descripcion',
-                'categoriaprod.precio',
-                'categoriaprod.areaproduccion_id',
-                'categoriaprod.sta_precioxkilo',
-                'categoriaprod.unidadmedida_id',
-                'categoriaprod.unidadmedidafact_id'
-            ])
-            ->groupBy('categoriaprod.id')
-            )
-            ->toJson();
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+        $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
+        $sql = "SELECT categoriaprod.id,categoriaprod.nombre,categoriaprod.descripcion,categoriaprod.precio,
+                categoriaprod.areaproduccion_id,categoriaprod.sta_precioxkilo,categoriaprod.unidadmedida_id,
+                categoriaprod.unidadmedidafact_id
+                FROM categoriaprod INNER JOIN categoriaprodsuc
+                ON categoriaprod.id=categoriaprodsuc.categoriaprod_id AND ISNULL(categoriaprod.deleted_at)
+                WHERE categoriaprodsuc.sucursal_id IN ($sucurcadena)
+                AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu)
+                GROUP BY categoriaprod.id;";
+        $datas =  DB::select($sql);
+        return datatables($datas)->toJson();
     }
 
 

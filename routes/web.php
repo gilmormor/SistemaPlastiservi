@@ -144,7 +144,7 @@ Route::put('jefaturaAreaSuc/{id}', 'JefaturaAreaSucController@actualizar')->name
 Route::post('jefaturaAreaSuc/asignarjefej', 'JefaturaAreaSucController@asignarjefej')->name('asignarjefe_jefaturaAreaSucj');
 Route::post('jefaturaAreaSuc/asignarjefe', 'JefaturaAreaSucController@asignarjefe')->name('asignarjefe_jefaturaAreaSuc');
 
-/*RUTAS CATEGORIA*/
+/*RUTAS CATEGORIA PRODUCTO*/
 Route::get('categoriaprod', 'CategoriaProdController@index')->name('categoriaprod');
 Route::get('categoriaprodpage', 'CategoriaProdController@categoriaprodpage')->name('categoriaprodpage');
 Route::get('categoriaprod/crear', 'CategoriaProdController@crear')->name('crear_categoriaprod');
@@ -336,6 +336,7 @@ Route::get('cotizacionaprobar/{id}/clientebuscarpage', 'CotizacionAprobarControl
 
 /*RUTAS GIRO*/
 Route::get('giro', 'GiroController@index')->name('giro');
+Route::get('giropage', 'GiroController@giropage')->name('giropage');
 Route::get('giro/crear', 'GiroController@crear')->name('crear_giro');
 Route::post('giro', 'GiroController@guardar')->name('guardar_giro');
 Route::get('giro/{id}/editar', 'GiroController@editar')->name('editar_giro');
@@ -1475,3 +1476,10 @@ Route::post('comuna', 'ComunaController@guardar')->name('guardar_comuna');
 Route::get('comuna/{id}/editar', 'ComunaController@editar')->name('editar_comuna');
 Route::put('comuna/{id}', 'ComunaController@actualizar')->name('actualizar_comuna');
 Route::delete('comuna/{id}', 'ComunaController@eliminar')->name('eliminar_comuna');
+
+/*RUTAS CATEGORIAPRODUCTO GIRO*/
+Route::get('categoriaprod_giro', 'CategoriaProd_GiroController@index')->name('categoriaprod_giro');
+Route::get('categoriaprod_giropage', 'CategoriaProd_GiroController@categoriaprod_giropage')->name('categoriaprod_giropage');
+Route::get('categoriaprod_giro/{id}/editar', 'CategoriaProd_GiroController@editar')->name('editar_categoriaprod_giro');
+Route::put('categoriaprod_giro/{id}', 'CategoriaProd_GiroController@actualizar')->name('actualizar_categoriaprod_giro');
+Route::post('categoriaprod_giro/categoriaprod_giroArray', 'CategoriaProd_GiroController@categoriaprod_giroArray')->name('categoriaprod_giroArray');

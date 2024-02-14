@@ -31,17 +31,7 @@ class ReportInvStockBPPendxProdController extends Controller
         $tablashtml['invbodegas'] = InvBodega::orderBy('id')
                                     ->where("tipo","=",2)
                                     ->get();
-        $tablashtml['areaproduccions'] = AreaProduccion::join('areaproduccionsuc', function ($join) use ($sucurArray) {
-                $join->on('areaproduccion.id', '=', 'areaproduccionsuc.areaproduccion_id')
-                ->whereIn('areaproduccionsuc.sucursal_id', $sucurArray);
-            })
-            ->select([
-                'areaproduccion.*',
-            ])
-            ->orderBy('areaproduccion.id')
-            ->groupBy("areaproduccion.id")
-            ->get();
-                        
+        $tablashtml['areaproduccions'] =  AreaProduccion::areaproduccionxusuario();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $selecmultprod = 1;
         return view('reportinvstockbppendxprod.index', compact('tablashtml','selecmultprod'));
@@ -66,6 +56,8 @@ class ReportInvStockBPPendxProdController extends Controller
         //dd($producto_id);
         //dd($arrego_pendientexprod);
 
+        $request->request->add(['MostrarStockCero' => true]);
+        $datas1 = [];
         $datas = InvMov::stocksql($request,"producto.id");
         foreach ($datas as &$data) {
             if(isset($arrego_pendientexprod[$data->producto_id])){ //SIE EL ELEMENTO EXISTE EL ARREGLO ENTRA.
@@ -74,9 +66,12 @@ class ReportInvStockBPPendxProdController extends Controller
             }else{
                 $data->difcantpend = $data->stock;
             }
+            if($data->difcantpend != 0){
+                $datas1[] = $data;
+            }
         }
         //dd($datas);
-        return datatables($datas)->toJson();
+        return datatables($datas1)->toJson();
 /*
         return datatables()
         ->eloquent(InvMov::stock($request,"producto.id"))

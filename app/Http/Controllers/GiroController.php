@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarGiro;
 use App\Models\Giro;
+use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GiroController extends Controller
 {
@@ -16,9 +18,17 @@ class GiroController extends Controller
     public function index()
     {
         can('listar-giro');
-        $datas = Giro::orderBy('id')->get();
-        return view('giro.index', compact('datas'));
+        return view('giro.index');
     }
+
+    public function giropage(){
+        $sql = "SELECT *
+                FROM giro
+                WHERE ISNULL(giro.deleted_at);";
+        $datas =  DB::select($sql);
+        return datatables($datas)->toJson();
+    }
+
 
     /**
      * Show the form for creating a new resource.

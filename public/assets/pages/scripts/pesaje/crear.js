@@ -437,8 +437,13 @@ async function buscarDatosProdPesaje(producto_id){
 	codigo = producto_id.val();
 	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
 	{
+		aux_cliente_id = null;
+		if($("#cliente_id").val()){
+			aux_cliente_id = $("#cliente_id").val();
+		}
 		var data = {
 			id: codigo,
+			cliente_id : aux_cliente_id,
 			_token: $('input[name=_token]').val()
 		};
 		return resul = await $.ajax({

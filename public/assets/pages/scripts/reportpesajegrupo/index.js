@@ -129,8 +129,6 @@ function datospesaje(aux_statusSumPeriodo){
         mesanno           : $("#annomes").val(),
         sucursal_id       : $("#sucursal_id").val(),
         producto_id       : $("#producto_idPxP").val(),
-        categoriaprod_id  : $("#categoriaprod_id").val(),
-        areaproduccion_id : $("#areaproduccion_id").val(),
         tipobodega        : $("#tipobodega").val(),
         agrurep_id        : $("#agrurep_id").val(),
         _token            : $("input[name=_token]").val()
@@ -142,8 +140,6 @@ function datospesaje(aux_statusSumPeriodo){
     "&fechah="+data1.fechah +
     "&sucursal_id="+data1.sucursal_id +
     "&producto_id="+data1.producto_id +
-    "&categoriaprod_id="+data1.categoriaprod_id +
-    "&areaproduccion_id="+data1.areaproduccion_id +
     "&tipobodega="+data1.tipobodega +
     "&agrurep_id="+data1.agrurep_id
 

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarProducto;
 use App\Models\AreaProduccionSucLinea;
 use App\Models\CategoriaProd;
+use App\Models\CategoriaProd_Giro;
 use App\Models\ClaseProd;
+use App\Models\Cliente;
 use App\Models\Color;
 use App\Models\Empresa;
 use App\Models\GrupoProd;
@@ -330,6 +332,18 @@ class ProductoController extends Controller
             $respuesta = array();
             if(count($array_productos) > 0){
                 $respuesta = $array_productos[0];
+                //dd($respuesta);
+                if($request->cliente_id){
+                    $cliente = Cliente::findOrFail($request->cliente_id);
+                    $categoriaprod_giro = CategoriaProd_Giro::where('categoriaprod_id', $array_productos[0]["categoriaprod_id"])
+                        ->where('giro_id', $cliente->giro_id)
+                        ->where('preciokg','>',0)
+                        ->get();
+                    if(count($categoriaprod_giro) > 0){
+                        $respuesta["precio"] = $categoriaprod_giro[0]->preciokg;
+                    }
+                }
+                //dd($respuesta);
                 $producto = Producto::findOrFail($request->id);
                 $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->where('activo','=',1)->toArray();
                 //$respuesta['areaproduccion'] = $producto->categoriaprod->areaproduccion->toArray();

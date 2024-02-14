@@ -102,7 +102,7 @@ $(document).ready(function () {
         $('#tabla-data-reporte-stockpicking').DataTable().ajax.url( "reportinvstockbppage/" + data.data2 ).load();
         totalizar();
     });
-    tablascolsultainv($("#sucursal_id").val());
+    //tablascolsultainv($("#sucursal_id").val());
 
 });
 
@@ -201,7 +201,7 @@ $("#btnpdf").click(function(event){
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 });
-
+/* 
 $("#sucursal_id").change(function(){
     tablascolsultainv($("#sucursal_id").val());
 });
@@ -230,4 +230,4 @@ function tablascolsultainv(id){
     }else{
         $(".selectpicker").selectpicker('refresh');
     }
-}
+} */

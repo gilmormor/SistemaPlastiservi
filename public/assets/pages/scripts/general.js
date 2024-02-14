@@ -676,6 +676,7 @@ function mmAPg(aux_valor){
 
 //FUNCIONES DE COTIZACION Y NOTA DE VENTA
 function totalizarItem(aux_estprec){
+	$("#precioM").attr("valor",$("#precioM").val());
 	if($("#pesoM").val()==0){
 		aux_peso = 1;
 	}else{
@@ -737,6 +738,15 @@ function totalizarItem(aux_estprec){
 	$("#subtotalM").attr('valor',aux_total.toFixed(2));
 	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();
 //	$("#precioM").val(MASK(0, aux_precdesc, '-##,###,##0.00',1));
+
+	if($("#pesoM").val()>0 && $("#precioM").attr('preciokgini')>0){
+		aux_preciounitarioini = Math.round($("#precioM").attr('preciokgini') * $("#pesoM").val());
+		console.log(aux_preciounitarioini);
+		if(aux_preciounitarioini == $("#precionetoM").val()){
+			aux_precdesc = $("#precioM").attr('preciokgini');
+		}
+	}
+
 	$("#precioM").val(aux_precdesc);
 	$("#precioM").attr('valor',aux_precdesc);
 	//EN COMENTARIO DESDE EL 12/12/2023, PARA EVITAR QUE CAMBIE EL VALOR DE precionetoM
@@ -1171,9 +1181,13 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 	$("#tipoprodM").attr('valor',$("#tipoprod"+i).val())
 
 	$("#invmovtipo_idM").val($("#invmovtipo_idTD"+i).val());
-
+	aux_cliente_id = null;
+	if($("#cliente_id").val()){
+		aux_cliente_id = $("#cliente_id").val();
+	}
 	var data = {
 		id: $("#producto_idM").val(),
+		cliente_id : aux_cliente_id,
 		_token: $('input[name=_token]').val()
 	};
 	$.ajax({
@@ -1729,8 +1743,13 @@ $("#producto_idM").blur(function(){
 		if(aux_actionform.includes("notaventa")){
 			aux_mostrarTodo = 0; // BUSCO SOLO LOS PRODUCTOS tipoprod = 0
 		}
+		aux_cliente_id = null;
+		if($("#cliente_id").val()){
+			aux_cliente_id = $("#cliente_id").val();
+		}	
 		var data = {
 			id: $("#producto_idM").val(),
+			cliente_id : aux_cliente_id,
 			mostrarTodo : aux_mostrarTodo,
 			_token: $('input[name=_token]').val()
 		};
@@ -1785,6 +1804,7 @@ $("#producto_idM").blur(function(){
 					$("#tipounionM").val(respuesta['tipounion']);
 					$("#precioM").val(respuesta['precio']);
 					$("#precioM").attr('valor',respuesta['precio']);
+					$("#precioM").attr('preciokgini',respuesta['precio']);
 					$("#precioxkilorealM").val(respuesta['precio']);
 					$("#precioxkilorealM").attr('valor',respuesta['precio']);
 					$("#precionetoM").val(respuesta['precioneto']);
@@ -2845,8 +2865,13 @@ async function buscarDatosProd(producto_id){
 	codigo = producto_id.val();
 	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
 	{
+		aux_cliente_id = null;
+		if($("#cliente_id").val()){
+			aux_cliente_id = $("#cliente_id").val();
+		}	
 		var data = {
 			id: codigo,
+			cliente_id : aux_cliente_id,
 			_token: $('input[name=_token]').val()
 		};
 		return resul = await $.ajax({
@@ -3256,7 +3281,6 @@ function validarInputRut(event) {
 
 
 function activarCajasPreciokgUni(){
-	console.log("entro cambio unidad");
 	$(".selectpicker").selectpicker('refresh');
 	$("#precioM").prop("disabled", false);
 	$("#precionetoM").prop("disabled", false);

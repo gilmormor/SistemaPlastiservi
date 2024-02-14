@@ -29,17 +29,7 @@ class ReportInvStockController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablashtml['invbodegas'] = InvBodega::orderBy('id')->get();
-        $tablashtml['areaproduccions'] = AreaProduccion::join('areaproduccionsuc', function ($join) use ($sucurArray) {
-                $join->on('areaproduccion.id', '=', 'areaproduccionsuc.areaproduccion_id')
-                ->whereIn('areaproduccionsuc.sucursal_id', $sucurArray);
-            })
-            ->select([
-                'areaproduccion.*',
-            ])
-            ->orderBy('areaproduccion.id')
-            ->groupBy("areaproduccion.id")
-            ->get();
-
+        $tablashtml['areaproduccions'] =  AreaProduccion::areaproduccionxusuario();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $selecmultprod = 1;
         return view('reportinvstock.index', compact('tablashtml','selecmultprod'));
@@ -91,15 +81,18 @@ class ReportInvStockController extends Controller
         $respuesta = array();
         //$datas = InvMov::stock($request)->get();
         $datas = InvMov::stocksql($request);
+        $aux_totalstock = 0;
         $aux_totalkg = 0;
         foreach ($datas as $data) {
             //$aux_totalkg += $data->stockkg;
+            $aux_totalstock += $data->stock;
             if($data->peso <= 0){
                 $aux_totalkg += $data->stockkg;
             }else{
                 $aux_totalkg += $data->stock * $data->peso;
             }
         }
+        $respuesta['aux_totalstock'] = $aux_totalstock;
         $respuesta['aux_totalkg'] = $aux_totalkg;
         return $respuesta;
     }
