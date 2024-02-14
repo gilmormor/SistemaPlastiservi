@@ -215,6 +215,12 @@ class InvMov extends Model
             }
             $aux_areaproduccion_idCond = " categoriaprod.areaproduccion_id in ($aux_areaproduccionid) ";
         }
+
+        if(!isset($request->MostrarStockCero) or empty($request->MostrarStockCero)){
+            $aux_MostrarStockCero_Cond = "having SUM(cant) != 0";
+        }else{
+            $aux_MostrarStockCero_Cond = "";
+        }        
         $aux_areaproduccion_idSucursalCond = " categoriaprod.areaproduccion_id in (SELECT areaproduccion_id from areaproduccionsuc where sucursal_id in ($sucurArray)) ";
         $sql = "SELECT invbodegaproducto.producto_id, CONCAT(producto.nombre,'',IF(!isnull(at_unidadmedida.nombre),CONCAT(': ',at_unidadmedida.nombre),'')) as producto_nombre, 
         if(isnull(acuerdotecnico.id),producto.diametro,at_ancho) as diametro,
@@ -257,7 +263,7 @@ class InvMov extends Model
         and $aux_areaproduccion_idCond
         and $aux_areaproduccion_idSucursalCond
         group by $agrupar 
-        having SUM(cant) != 0 
+        $aux_MostrarStockCero_Cond 
         order by invbodegaproducto.producto_id asc, invbodega.orden ASC;";
         //dd($sql);
         $datas = DB::select($sql);

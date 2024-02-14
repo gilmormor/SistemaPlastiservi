@@ -66,6 +66,7 @@ class ReportInvStockBPPendxProdController extends Controller
         //dd($producto_id);
         //dd($arrego_pendientexprod);
 
+        $request->request->add(['MostrarStockCero' => true]);
         $datas = InvMov::stocksql($request,"producto.id");
         foreach ($datas as &$data) {
             if(isset($arrego_pendientexprod[$data->producto_id])){ //SIE EL ELEMENTO EXISTE EL ARREGLO ENTRA.
