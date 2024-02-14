@@ -68,6 +68,7 @@ class ReportInvStockBPPendxProdController extends Controller
 
         $request->request->add(['MostrarStockCero' => true]);
         $datas = InvMov::stocksql($request,"producto.id");
+        $datas1 = [];
         foreach ($datas as &$data) {
             if(isset($arrego_pendientexprod[$data->producto_id])){ //SIE EL ELEMENTO EXISTE EL ARREGLO ENTRA.
                 $data->cantpend = $arrego_pendientexprod[$data->producto_id]->cant - $arrego_pendientexprod[$data->producto_id]->cantdesp;
@@ -75,9 +76,12 @@ class ReportInvStockBPPendxProdController extends Controller
             }else{
                 $data->difcantpend = $data->stock;
             }
+            if($data->difcantpend != 0){
+                $datas1[] = $data;
+            }
         }
         //dd($datas);
-        return datatables($datas)->toJson();
+        return datatables($datas1)->toJson();
 /*
         return datatables()
         ->eloquent(InvMov::stock($request,"producto.id"))
