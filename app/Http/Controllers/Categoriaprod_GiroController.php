@@ -4,14 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\CategoriaProd;
 use App\Models\CategoriaProd_Giro;
-use App\Models\Giro;
-use App\Models\InvBodegaProducto;
 use App\Models\Seguridad\Usuario;
-use App\Models\Sucursal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class Categoriaprod_GiroController extends Controller
+class CategoriaProd_GiroController extends Controller
 {
     /**
      * Display a listing of the resource.
