@@ -1483,3 +1483,7 @@ Route::get('categoriaprod_giropage', 'CategoriaProd_GiroController@categoriaprod
 Route::get('categoriaprod_giro/{id}/editar', 'CategoriaProd_GiroController@editar')->name('editar_categoriaprod_giro');
 Route::put('categoriaprod_giro/{id}', 'CategoriaProd_GiroController@actualizar')->name('actualizar_categoriaprod_giro');
 Route::post('categoriaprod_giro/categoriaprod_giroArray', 'CategoriaProd_GiroController@categoriaprod_giroArray')->name('categoriaprod_giroArray');
+
+/*RUTAS REPORTE CATEGORIAPROD_GIRO*/
+Route::get('reportcategoriaprod_giro', 'ReportCategoriaProd_GiroController@index')->name('reportcategoriaprod_giro');
+Route::get('reportcategoriaprod_giro/reportcategoriaprod_giropage', 'ReportCategoriaProd_GiroController@reportcategoriaprod_giropage')->name('reportcategoriaprod_giropage');
