@@ -19,16 +19,16 @@
                     <table class="table table-striped table-bordered table-hover" id="tabla-data">
                         <thead>
                             <tr>
-                                <th  style="width: 10% !important;">ID</th>
-                                <th  style="width: 70% !important;">Nombre</th>
-                                <th  style="width: 10% !important;text-align:right;">Precio</th>
+                                <th style='display:none;'>ID</th>
+                                <th style="width: 70% !important;">Nombre</th>
+                                <th style="width: 10% !important;text-align:right;">Precio</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($giros as $giro)
                                 <input type="text" id="giro_id" name="giro_id[]" value="{{old('giro_id', $giro->giro_id ?? '')}}" style="display:none;"/>
                                 <tr>
-                                    <td>{{$giro->giro_id}}</td>
+                                    <td style='display:none;'>{{$giro->giro_id}}</td>
                                     <td>{{$giro->nombre}}</td>
                                     <td style="text-align:right"><input class="numericopositivosindec" type="text" style="text-align:right" id="preciokg" name="preciokg[]" value="{{number_format(old('preciokg', $giro->preciokg ?? ''), 2, ".", "")}}"/></td>
                                 </tr>

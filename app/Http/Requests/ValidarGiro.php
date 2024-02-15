@@ -25,7 +25,8 @@ class ValidarGiro extends FormRequest
     {
         return [
             'nombre' => 'required|max:100|unique:giro,nombre,' . $this->route('id'),
-            'descripcion' => 'required|max:100'
+            'descripcion' => 'required|max:100',
+            'orden' => 'required|max:3'
         ];
     }
 }

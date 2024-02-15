@@ -9,7 +9,13 @@ class Giro extends Model
 {
     use SoftDeletes;
     protected $table = "giro";
-    protected $fillable = ['nombre','descripcion','usuariodel_id'];
+    protected $fillable = [
+        'nombre',
+        'descripcion',
+        'orden',
+        'usuario_id',
+        'usuariodel_id'
+    ];
 
     //RELACION DE UNO A VARIOS
     public function clientes()

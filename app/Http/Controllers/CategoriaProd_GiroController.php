@@ -52,7 +52,8 @@ class CategoriaProd_GiroController extends Controller
                 FROM giro LEFT JOIN categoriaprod_giro
                 ON giro.id = categoriaprod_giro.giro_id AND ISNULL(categoriaprod_giro.deleted_at)
                 AND categoriaprod_giro.categoriaprod_id = $id
-                WHERE giro.id > 0;";
+                WHERE giro.id > 0
+                order by orden;";
         $giros =  DB::select($sql);
         //dd($giros);
         return view('categoriaprod_giro.editar', compact('data','giros'));
