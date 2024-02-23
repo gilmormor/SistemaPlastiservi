@@ -406,30 +406,46 @@
                                     <input type="text" name="producto_id[]" id="producto_id{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->producto_id : $NVDet->producto_id}}" style="display:none;"/>
                                 </td>
                                 <td name="cantTD{{$aux_nfila}}" id="cantTD{{$aux_nfila}}" style="text-align:right">
-                                    <a id="qtyitemlbl{{$aux_nfila}}" name="qtyitemlbl{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar valor" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->qtyitem : $detalle->cantdesp}}"  fila="{{$aux_nfila}}" nomcampo="qtyitemlbl">
+                                    @if ($detalle->notaventadetalle->categoriaprod->stadespsinstock == 1) <!--ESTO SE MUESTRA SOLO A LOS PRODUCTOS QUE PERMITE STOCK <= 0 -->
+                                        <a id="qtyitemlbl{{$aux_nfila}}" name="qtyitemlbl{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar valor" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->qtyitem : $detalle->cantdesp}}"  fila="{{$aux_nfila}}" nomcampo="qtyitemlbl">
+                                            {{isset($dteguiadesp) ? $detalle->qtyitem : $detalle->cantdesp}}
+                                        </a>                                        
+                                    @else
                                         {{isset($dteguiadesp) ? $detalle->qtyitem : $detalle->cantdesp}}
-                                    </a>
+                                    @endif
                                     <input type="text" name="cant[]" id="cant{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->qtyitem : $detalle->cantdesp}}" style="display:none;"/>
                                     <input type="text" name="qtyitem[]" id="qtyitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->qtyitem : $detalle->cantdesp}}" style="display:none;"/>
                                 </td>
                                 <td name="unidadmedida_nombre{{$aux_nfila}}" id="unidadmedida_nombre{{$aux_nfila}}">
-                                    <a id="unmditemlbl{{$aux_nfila}}" name="unmditemlbl{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Unidad Medida" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->unmditem : $NVDet->unidadmedida->nombre}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="unmditemlbl">
+                                    @if ($detalle->notaventadetalle->categoriaprod->stadespsinstock == 1) <!--ESTO SE MUESTRA SOLO A LOS PRODUCTOS QUE PERMITE STOCK <= 0 -->
+                                        <a id="unmditemlbl{{$aux_nfila}}" name="unmditemlbl{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Unidad Medida" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->unmditem : $NVDet->unidadmedida->nombre}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="unmditemlbl">
+                                            {{isset($dteguiadesp) ? $detalle->unmditem : $NVDet->unidadmedida->nombre}}
+                                        </a>                                        
+                                    @else
                                         {{isset($dteguiadesp) ? $detalle->unmditem : $NVDet->unidadmedida->nombre}}
-                                    </a>
+                                    @endif
                                     <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->unidadmedida_id : $NVDet->unidadmedida_id}}" style="display:none;"/>
                                     <input type="text" name="unmditem[]" id="unmditem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->unmditem : $NVDet->unidadmedida->nombre}}" style="display:none;"/>
                                 </td>
                                 <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
-                                    <a id="producto_nombre{{$aux_nfila}}" name="producto_nombre{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Nombre Producto" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="producto_nombre">
-                                        {{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}
-                                    </a>
+                                    @if ($detalle->notaventadetalle->categoriaprod->stadespsinstock == 1) <!--ESTO SE MUESTRA SOLO A LOS PRODUCTOS QUE PERMITE STOCK <= 0 -->
+                                        <a id="producto_nombre{{$aux_nfila}}" name="producto_nombre{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Nombre Producto" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="producto_nombre">
+                                            {{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}
+                                        </a>
+                                    @else
+                                        {{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}                                        
+                                    @endif
                                     <input type="text" name="nmbitem[]" id="nmbitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}" style="display:none;"/>
                                     <input type="text" name="dscitem[]" id="dscitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->dscitem : ''}}" style="display:none;"/>
                                 </td>
                                 <td style="text-align:right;"> 
-                                    <a id="aux_kilos{{$aux_nfila}}" name="aux_kilos{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar Kilos" data-toggle="tooltip" valor={{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}} fila="{{$aux_nfila}}" tipocampo="numerico" nomcampo="aux_kilos">
-                                        {{number_format(isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos, 2, ',', '.')}}
-                                    </a>
+                                    @if ($detalle->notaventadetalle->categoriaprod->stadespsinstock == 1) <!--ESTO SE MUESTRA SOLO A LOS PRODUCTOS QUE PERMITE STOCK <= 0 -->
+                                        <a id="aux_kilos{{$aux_nfila}}" name="aux_kilos{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar Kilos" data-toggle="tooltip" valor={{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}} fila="{{$aux_nfila}}" tipocampo="numerico" nomcampo="aux_kilos">
+                                            {{number_format(isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos, 2, ',', '.')}}
+                                        </a>                                        
+                                    @else
+                                        {{number_format(isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos, 2, ',', '.')}}                                        
+                                    @endif
                                     <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}}" style="display:none;" valor={{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}} fila="{{$aux_nfila}}"/>
                                     <input type="text" name="itemkg[]" id="itemkg{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}}" style="display:none;"/>
                                 </td>

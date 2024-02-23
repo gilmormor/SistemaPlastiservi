@@ -91,4 +91,11 @@ class NotaVentaDetalle extends Model
     {
         return $this->hasOne(NotaVentaDetalleExt::class,"notaventadetalle_id");
     }
+
+    //Relacion inversa a CategoriaProd
+    public function categoriaprod()
+    {
+        return $this->belongsTo(CategoriaProd::class);
+    }
+    
 }
