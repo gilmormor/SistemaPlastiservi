@@ -72,10 +72,6 @@ class ReportInvStockBPPendxProdController extends Controller
         }
         //dd($datas);
         return datatables($datas1)->toJson();
-/*
-        return datatables()
-        ->eloquent(InvMov::stock($request,"producto.id"))
-        ->toJson();*/
     }
 
     public function exportPdf(Request $request)
@@ -95,7 +91,8 @@ class ReportInvStockBPPendxProdController extends Controller
         $producto_id = implode(",", $arrego_producto_id);
         //$request->request->add(['producto_id' => $producto_id]);
         //dd($producto_id);
-
+        $request->request->add(['MostrarStockCero' => true]);
+        $datas1 = [];
         $datas = InvMov::stocksql($request,"producto.id");
         foreach ($datas as &$data) {
             if(isset($arrego_pendientexprod[$data->producto_id])){ //SIE EL ELEMENTO EXISTE EL ARREGLO ENTRA.
@@ -103,6 +100,9 @@ class ReportInvStockBPPendxProdController extends Controller
                 $data->difcantpend = $data->stock - $data->cantpend; //DIFERENCIA ENTRE STOCK Y CANTPEND=CANTIDAD PENDIENTE                
             }else{
                 $data->difcantpend = $data->stock;
+            }
+            if($data->difcantpend != 0){
+                $datas1[] = $data;
             }
         }
         //dd($datas);
@@ -117,7 +117,7 @@ class ReportInvStockBPPendxProdController extends Controller
             $areaProduccion = AreaProduccion::findOrFail($request->areaproduccion_id);
             $nombreAreaproduccion=$areaProduccion->nombre;
         }
-
+        $datas = $datas1;
         if($datas){
             $sucursal = Sucursal::findOrFail($request->sucursal_id);
             $request->request->add(['sucursal_nombre' => $sucursal->nombre]);

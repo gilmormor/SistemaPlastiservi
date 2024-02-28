@@ -121,6 +121,18 @@ class Vendedor extends Model
         return $respuesta;
     }
 
+    public static function selectvendedoresTodos(){
+        $vendedores1 = Vendedor::vendedoresTodos();
+         $respuesta = "
+            <select name='vendedor_id' id='vendedor_id' class='selectpicker form-control vendedor_id'  data-live-search='true' multiple data-actions-box='true'>";
+        foreach($vendedores1['vendedores'] as $vendedor){
+            $respuesta .= "
+                <option value='$vendedor->id'>$vendedor->nombre $vendedor->apellido</option>";
+        }
+        $respuesta .= "</select>";
+        return $respuesta;
+    }
+
     public static function vendedor_id(){
         $respuesta = array();
         $user = Usuario::findOrFail(auth()->id());
@@ -149,6 +161,60 @@ class Vendedor extends Model
     public function productos()
     {
         return $this->belongsToMany(Cliente::class, 'producto_vendedor');
+    }
+
+    public static function vendedoresTodos(){
+        $respuesta = array();
+        $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id
+            WHERE usuario.id=' . auth()->id();
+        $counts = DB::select($sql);
+        $vendedor_id = '0';
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+            $vendedores = Usuario::join('sucursal_usuario', function ($join) {
+                $user = Usuario::findOrFail(auth()->id());
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                        })
+                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+                ->join('vendedor','persona.id', '=', 'vendedor.persona_id')
+                ->select([
+                    'vendedor.id',
+                    'persona.nombre',
+                    'persona.apellido'
+                ])
+                ->where('vendedor.id','=',$vendedor_id)
+                ->groupBy('vendedor.id')
+                ->get();
+        }else{
+            $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            $vendedores = Usuario::join('sucursal_usuario', function ($join) {
+                $user = Usuario::findOrFail(auth()->id());
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+                $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
+                ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+                        })
+                ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
+                ->join('vendedor','persona.id', '=', 'vendedor.persona_id')
+                ->select([
+                    'vendedor.id',
+                    'persona.nombre',
+                    'persona.apellido'
+                ])
+                ->groupBy('vendedor.id')
+                ->get();
+        }
+        $respuesta['vendedor_id'] = $vendedor_id;
+        $respuesta['vendedores'] = $vendedores;
+        $respuesta['clientevendedorArray'] = $clientevendedorArray;
+        return $respuesta;
     }
 
 

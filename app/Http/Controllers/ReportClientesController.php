@@ -28,7 +28,7 @@ class ReportClientesController extends Controller
         $giros = Giro::orderBy('id')->get();
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
-        $tablashtml['vendedores'] = Vendedor::selectvendedores();
+        $tablashtml['vendedores'] = Vendedor::selectvendedoresTodos();
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
