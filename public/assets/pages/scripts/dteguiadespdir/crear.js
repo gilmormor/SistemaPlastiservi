@@ -463,6 +463,7 @@ function calsubtotalitem(name){
 	}
 
 	let aux_subtotal = qtyitem * prcitem;
+	aux_subtotal = Math.round(aux_subtotal);
 	$("#qtyitem" + i).attr("valor",$("#qtyitem" + i).val());
 	$("#cantTD" + i).attr("valor",$("#qtyitem" + i).val());
 	$("#prcitem" + i).attr("valor",$("#prcitem" + i).val());

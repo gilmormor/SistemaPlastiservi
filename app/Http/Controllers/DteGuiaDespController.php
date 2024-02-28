@@ -383,7 +383,7 @@ class DteGuiaDespController extends Controller
                         $dtedet->obsdet = $request->obsdet[$i];
                         $dtedet->itemkg = $request->itemkg[$i];
 
-                        $Tmntneto += $request->montoitem[$i];
+                        $Tmntneto += $dtedet->montoitem; //$request->montoitem[$i];
                         $Tkgtotal += $request->itemkg[$i];
 
                         $dtedet->save();

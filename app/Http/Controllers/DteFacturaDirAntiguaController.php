@@ -187,7 +187,7 @@ class DteFacturaDirAntiguaController extends Controller
                 $dte->dtedets[] = $dtedet;
                 $dtedet_id = $dtedet->id;
 
-                $Tmntneto += $request->montoitem[$i];
+                $Tmntneto += $dtedet->montoitem; //$request->montoitem[$i];
                 $Tkgtotal += $aux_itemkg;
             }
         }
