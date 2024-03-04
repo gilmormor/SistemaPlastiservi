@@ -452,9 +452,10 @@ function exportarExcel() {
 
             datosExcel.push(filaExcel);
         });
-        if(aux_totalNeto != 0){
+        /* if(aux_totalNeto != 0){
             datosExcel.push(["","","","","","","","","Total: ",aux_totalNeto,aux_totalIva,aux_total]);
-        }
+        } */
+        datosExcel.push(["","","","","","","","","Total: ",aux_totalNeto,aux_totalIva,aux_total]);
 
         createExcel(datosExcel);
 

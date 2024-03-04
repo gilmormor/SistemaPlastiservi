@@ -382,9 +382,10 @@ function exportarExcelSantaEster() {
 
             datosExcel.push(filaExcel);
         });
-        if(aux_totalMonto != 0){
+        /* if(aux_totalMonto != 0){
             datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto]);
-        }
+        } */
+        datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto]);
 
         createExcelSantaEster(datosExcel);
 
@@ -653,9 +654,10 @@ function exportarExcelLosPinos() {
 
             datosExcel.push(filaExcel);
         });
-        if(aux_totalMonto != 0){
+        /* if(aux_totalMonto != 0){
             datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto,""]);
-        }
+        } */
+        datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto,""]);
 
         createExcelLosPinos(datosExcel);
 
