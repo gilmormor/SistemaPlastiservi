@@ -884,7 +884,7 @@ function exportarExcel() {
 
             datosExcel.push(filaExcel);
         });
-        if(aux_totalkgtotal > 0){
+        if(aux_totalkgtotal != 0){
             datosExcel.push(["","","","","Total: ",aux_totalkgtotal,aux_totalmnttotal,"","",""]);
         }
 

@@ -371,7 +371,7 @@ function exportarExcel() {
 
             datosExcel.push(filaExcel);
         });
-        if(aux_totalMonto > 0){
+        if(aux_totalMonto != 0){
             prom_preciokg = (aux_totalPreciokg/aux_cont);
             prom_Monto = (aux_totalMonto/aux_cont);
             datosExcel.push(["","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto]);

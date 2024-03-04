@@ -426,9 +426,10 @@ function exportarExcel() {
 
             datosExcel.push(filaExcel);
         });
-        if(aux_totalMonto > 0){
+        /* if(aux_totalMonto != 0){
             datosExcel.push(["","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
-        }
+        } */
+        datosExcel.push(["","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
 
 /*
         // Crear el libro de Excel
