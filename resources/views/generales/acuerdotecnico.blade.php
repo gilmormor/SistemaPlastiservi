@@ -381,8 +381,8 @@
                                             <div class="box-body">
                                                 <div class="row">
                                                     <div class="col-xs-12 col-sm-12" classorig="col-xs-12 col-sm-12">
-                                                        <label for="at_formatofilm" class="control-label at_formatofilm requerido" data-toggle='tooltip' title="Formato Film Strech en Kg">Formato Film Strech Kg.</label>
-                                                        <a class="btn-sm tooltipsC" data-original-title="Formato Film Strech en Kg" aria-describedby="tooltip202998"><i class="fa fa-fw fa-question-circle text-aqua"></i></a>
+                                                        <label for="at_formatofilm" class="control-label at_formatofilm requerido" data-toggle='tooltip' title="Formato Film Stretch en Kg">Formato Film Stretch Kg.</label>
+                                                        <a class="btn-sm tooltipsC" data-original-title="Formato Film Stretch en Kg" aria-describedby="tooltip202998"><i class="fa fa-fw fa-question-circle text-aqua"></i></a>
                                                         <input type="text" name="at_formatofilm" id="at_formatofilm" class="form-control form_acutec numerico" tipoval="texto"/>
                                                         <span class="help-block"></span>
                                                     </div>

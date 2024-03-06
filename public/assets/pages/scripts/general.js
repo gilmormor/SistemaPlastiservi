@@ -2462,7 +2462,7 @@ function crearEditarAcuTec(i){
     $("#at_claseprod_id").append("<option value=''>Seleccione...</option>");
     //alert($(this).val());
 	var palabraEnVariable = $("#nombreProdTD"  + i).attr("categoriaprod_nombre");
-	var palabraBuscada = "Film Strech";
+	var palabraBuscada = "Film Stretch";
 	// Convertir ambas palabras a minúsculas antes de comparar
 	if (palabraEnVariable.toLowerCase().includes(palabraBuscada.toLowerCase())) {
 		// Agregar una clase al elemento
