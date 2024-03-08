@@ -426,15 +426,12 @@
                                 </td>
                                 <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
                                     @if ($detalle->notaventadetalle->categoriaprod->stadespsinstock == 1) <!--ESTO SE MUESTRA SOLO A LOS PRODUCTOS QUE PERMITE STOCK <= 0 -->
-                                        <!-- En comentario para no permitir cambiar la descripcion del producto 07/03/2024
-                                            <a id="producto_nombre{{$aux_nfila}}" name="producto_nombre{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Nombre Producto" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="producto_nombre">
+                                        <a id="producto_nombre{{$aux_nfila}}" name="producto_nombre{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoTex" title="Editar Nombre Producto" data-toggle="tooltip" valor="{{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}"  fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="producto_nombre">
                                             {{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}
                                         </a>
-                                        -->
                                     @else
-                                        <!--{{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}-->
+                                        {{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}
                                     @endif
-                                    {{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}
                                     <input type="text" name="nmbitem[]" id="nmbitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->nmbitem : $aux_nombreprod}}" style="display:none;"/>
                                     <input type="text" name="dscitem[]" id="dscitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->dscitem : ''}}" style="display:none;"/>
                                 </td>
