@@ -536,7 +536,7 @@ function pdfjs(datos) {
         if (base64Img) {
           doc.addImage(base64Img, 'JPEG', data.settings.margin.left, 6, 30, 10)
         }
-        doc.text('Total Notas de Venta Agrupada x Cliente', data.settings.margin.left + 55, 12);
+        doc.text('Notas de Venta Agrupada x Cliente', data.settings.margin.left + 55, 12);
         doc.setFontSize(8)
         doc.text('Sucursal: ' + $("#sucursal_id option:selected").html(), data.settings.margin.left + 73, 16);
         doc.text('Fecha: ' + fechaactual(), data.settings.margin.left + 220, 5);
@@ -676,7 +676,7 @@ function exportarExcel() {
             aux_sucursalNombre = "";
         }
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Total Notas de Venta Agrupada x Cliente","","","","","",fechaactual()]);
+        datosExcel.push(["Notas de Venta Agrupada x Cliente","","","","","",fechaactual()]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Periodo: " + aux_rangofecha + " Vendedor: " + descripElementoSelectMult("vendedor_id"),"","","","","","","",""]);
         aux_cont = 0;
         pvckg = 0;

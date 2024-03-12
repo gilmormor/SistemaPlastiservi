@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Total Notas de Venta Agrupada x Cliente
+Notas de Venta Agrupada x Cliente
 @endsection
 
 <?php
@@ -23,7 +23,7 @@ Total Notas de Venta Agrupada x Cliente
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Total Notas de Venta Agrupada x Cliente</h3>
+                <h3 class="box-title">Notas de Venta Agrupada x Cliente</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
