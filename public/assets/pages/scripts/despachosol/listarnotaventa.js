@@ -134,7 +134,7 @@ $(document).ready(function () {
                         </a>`;
                 }else{
                     aux_text +=
-                    `<a href="${data.rutanuevasoldesp}" class="btn-accion-tabla tooltipsC" title="Hacer solicitud despacho: ${data.tipentnombre}">
+                    `<a href="${data.rutanuevasoldesp}" class="btn-accion-tabla tooltipsC enlace-soldesp" title="Hacer solicitud despacho: ${data.tipentnombre}">
                         <i class="fa fa-fw ${data.icono}"></i>
                     </a>`;
                 }
@@ -519,3 +519,28 @@ function btnpdf(numrep){
     $("#myModalpdf").modal('show');
 }
 
+$(document).on("click", ".enlace-soldesp", function(event){
+    // Detenemos el comportamiento predeterminado del enlace
+    event.preventDefault();
+    // Aquí puedes obtener el href del enlace actual
+    var href = $(this).attr("href");
+
+    // Ejecutamos tu consulta jQuery aquí
+    // Por ejemplo, aquí podrías hacer una consulta AJAX
+    
+    // Simulando una consulta AJAX
+    swal({
+        title: '¿Desea continuar?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        // Si el usuario hace clic en "Aceptar", redirigimos
+        if (value) {
+            window.location.href = href;
+        }
+    });
+});

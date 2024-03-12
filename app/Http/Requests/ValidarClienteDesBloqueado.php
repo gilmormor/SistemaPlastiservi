@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ValidarEmpresa extends FormRequest
+class ValidarClienteDesBloqueado extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,8 @@ class ValidarEmpresa extends FormRequest
     public function rules()
     {
         return [
-            'nombre' => 'required|max:150',
-            'rut' => 'required|max:14',
-            'iva' => 'required|max:13',
-            'sucursal_id' => 'required|max:13',
-            'actsiscob' => 'required|max:1'
+            'cliente_id' => 'required|max:6|unique:clientedesbloqueado,cliente_id,' . $this->route('id'). ',id,deleted_at,NULL',
+            'obs' => 'required|max:100'
         ];
     }
 }

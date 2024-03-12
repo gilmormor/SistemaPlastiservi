@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use SoapClient;
+use SoapFault;
 
 class SoapController extends Controller
 {
@@ -188,4 +189,60 @@ class SoapController extends Controller
             return $e->getMessage();
         }
     }
+
+    public function Comando01CargaDocumentos($cadenaxml){
+        try {
+            $soapClient = new SoapClient(env('APP_URLMANAGER'));
+            $response = $soapClient->Comando01CargaDocumentos([
+                "Codigo" => "0mpPWcXj8AC312v",
+                "XMlIngreso" => $cadenaxml
+            ]);
+            return $response->Comando01CargaDocumentosResult;
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    public function Comando03CreaClientes($cadenaxml)
+    {
+        try {
+            $soapClient = new SoapClient(env('APP_URLMANAGER'));
+            $response = $soapClient->Comando03CreaClientes([
+                "Codigo" => "0mpPWcXj8AC312v",
+                "XMlIngreso" => $cadenaxml
+            ]);
+            return $response->Comando03CreaClientesResult;
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    public function Comando02ListaPendientes($RutCliente)
+    {
+        try {
+            //$soapClient = new SoapClient("https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?wsdl");
+            $soapClient = new SoapClient(env('APP_URLMANAGER'));
+            $response = $soapClient->Comando02ListaPendientes([
+                "Codigo" => "0mpPWcXj8AC312v",
+                "RutCliente" => $RutCliente
+            ]);
+            return $response->Comando02ListaPendientesResult->Contenido->any;
+        } catch (SoapFault $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        /*
+        try{
+            $soapclient = new SoapClient('https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?op=Comando02ListaPendientes');
+            $response = $soapclient->Comando02ListaPendientes([
+                "Codigo" => "0mpPWcXj8AC312v",
+                "RutCliente" => $RutCliente
+            ]);
+            dd($RutCliente);
+            return ($response->Comando02ListaPendientesResponse);
+        }catch(Exception $e){
+            return $e->getMessage();
+        }
+        */
+    }
+
 }

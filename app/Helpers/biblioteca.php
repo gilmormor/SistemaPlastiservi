@@ -2,6 +2,9 @@
 
 use App\Models\Admin\Menu;
 use App\Models\Admin\Permiso;
+use App\Models\Cliente;
+use App\Models\Dte;
+use App\Models\Empresa;
 use Illuminate\Database\Eloquent\Builder;
 
 if (!function_exists('getMenuActivo')) {
@@ -326,4 +329,34 @@ if (!function_exists('dtetipotraslado')) {
     }
 }
 
+if (!function_exists('clienteBloqueado')) {
+    function clienteBloqueado($cliente_id){
+        $cliente = Cliente::findOrFail($cliente_id);
+        //dd($cliente);
+        $staBloqueo = [];
+        $staBloqueo ["bloqueo"] = null;
+        if(isset($cliente->clientebloqueado)){
+            $staBloqueo ["bloqueo"]= $cliente->clientebloqueado->descripcion;
+        }else{
+            $empresa = Empresa::findOrFail(1);
+            if($empresa->stabloxdeusiscob == 1){
+                $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
+                //dd($dataCobranza);
+                $staBloqueo["datacobranza"] = $dataCobranza;
+                if($dataCobranza["TDeuda"] > 0 and $dataCobranza["TDeuda"] >= $dataCobranza["limitecredito"]){
+                    $staBloqueo ["bloqueo"]= "Supero limite de Crédito: " . number_format($dataCobranza["limitecredito"], 0, ',', '.') . "\nDeuda: " . number_format($dataCobranza["TDeuda"], 0, ',', '.');
+                }else{
+                    if($dataCobranza["TDeudaFec"] > 0){
+                        $staBloqueo ["bloqueo"]=  "Facturas Vencidas:\n" . $dataCobranza["NroFacDeu"] . ".";
+                    }
+                }
+            }
+        }
+        $staBloqueo["bloqueoreal"] = $staBloqueo ["bloqueo"];
+        if($cliente->clientedesbloqueado){
+            $staBloqueo ["bloqueo"]= null;
+        }
+        return $staBloqueo;
+    }
+}
 ?>
