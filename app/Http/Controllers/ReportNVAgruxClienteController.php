@@ -32,7 +32,7 @@ class ReportNVAgruxClienteController extends Controller
      */
     public function index()
     {
-        can('reporte-pendiente-por-producto');
+        can('reporte-nota-venta-agrupada-x-cliente');
         $giros = Giro::orderBy('id')->get();
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
