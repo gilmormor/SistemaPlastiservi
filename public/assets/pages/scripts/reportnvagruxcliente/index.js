@@ -180,11 +180,9 @@ function datosPentxProd(aux_filtro = 0){
         plazoentregah     : $("#plazoentregah").val(),
         rut               : aux_rut,
         vendedor_id       : $("#vendedor_id").val(),
-        oc_id             : $("#oc_id").val(),
         giro_id           : $("#giro_id").val(),
         areaproduccion_id : $("#areaproduccion_id").val(),
         tipoentrega_id    : $("#tipoentrega_id").val(),
-        notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
         aprobstatusdesc   : $("#aprobstatus option:selected").html(),
         comuna_id         : $("#comuna_id").val(),
@@ -202,11 +200,9 @@ function datosPentxProd(aux_filtro = 0){
     "&plazoentregah="+data1.plazoentregah +
     "&rut="+data1.rut +
     "&vendedor_id="+data1.vendedor_id +
-    "&oc_id="+data1.oc_id +
     "&giro_id="+data1.giro_id +
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&tipoentrega_id="+data1.tipoentrega_id +
-    "&notaventa_id="+data1.notaventa_id +
     "&aprobstatus="+data1.aprobstatus +
     "&aprobstatusdesc="+data1.aprobstatusdesc +
     "&comuna_id="+data1.comuna_id +

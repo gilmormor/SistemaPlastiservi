@@ -87,24 +87,6 @@ Notas de Venta Agrupada x Cliente
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Nota de Venta">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="notaventa_id">NotaVenta:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{old('notaventa_id')}}" maxlength="12"/>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Orden de Compra">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="oc_id">OC:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id')}}" maxlength="18"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label >Area Prod:</label>
@@ -174,7 +156,7 @@ Notas de Venta Agrupada x Cliente
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Comuna">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Comuna de entrega">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Comuna:</label>
                                     </div>
@@ -266,7 +248,7 @@ Notas de Venta Agrupada x Cliente
                             <th>ID</th>
                             <th>RUT</th>
                             <th>Razón Social</th>
-                            <th>Comuna</th>
+                            <th class='tooltipsC' title='Comuna de entrega'>Comuna</th>
                             <th style='text-align:right' class='tooltipsC' title='KG PVC'>Kg PVC</th>
                             <th style='text-align:right' class='tooltipsC' title='KG '>Kg </th>
                             <th style='text-align:right' class='tooltipsC' title='Dinero'>$</th>

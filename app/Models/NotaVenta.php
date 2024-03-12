@@ -220,7 +220,7 @@ class NotaVenta extends Model
             $aux_rut = str_replace("-","",$aux_rut);
             $aux_condrut = "cliente.rut='$aux_rut'";
         }
-        if(empty($request->oc_id)){
+        if(!isset($request->oc_id) or empty($request->oc_id)){
             $aux_condoc_id = " true";
         }else{
             $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
@@ -241,7 +241,7 @@ class NotaVenta extends Model
         }else{
             $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$request->tipoentrega_id'";
         }
-        if(empty($request->notaventa_id)){
+        if(!isset($request->notaventa_id) or empty($request->notaventa_id)){
             $aux_condnotaventa_id = " true";
         }else{
             $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
@@ -315,6 +315,12 @@ class NotaVenta extends Model
             $aux_condproducto_id = str_replace("-","",$aux_condproducto_id);
             $aux_condproducto_id = "notaventadetalle.producto_id='$aux_condproducto_id'";
         }
+        if(isset($request->producto_id) or !empty($request->producto_id)){   
+            $aux_codprod = explode(",", $request->producto_id);
+            $aux_codprod = implode ( ',' , $aux_codprod);
+            $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
+        }
+    
 /*
         if(empty($request->comuna_id)){
             $aux_condcomuna_id = " true";
@@ -380,7 +386,7 @@ class NotaVenta extends Model
             INNER JOIN cliente
             ON cliente.id=notaventa.cliente_id
             INNER JOIN comuna
-            ON comuna.id=notaventa.comuna_id
+            ON comuna.id=notaventa.comunaentrega_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
