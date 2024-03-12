@@ -1494,3 +1494,4 @@ Route::get('reportnvagruxcliente/reportnvagruxclientepage', 'ReportNVAgruxClient
 Route::get('reportnvagruxcliente/reporte', 'ReportNVAgruxClienteController@reporte')->name('reportnvagruxcliente_reporte');
 Route::get('reportnvagruxcliente/exportPdf', 'ReportNVAgruxClienteController@exportPdf')->name('reportnvagruxcliente_exportPdf');
 Route::get('reportnvagruxcliente/totalizarindex', 'ReportNVAgruxClienteController@totalizarindex')->name('reportnvagruxcliente_totalizarindex');
+Route::get('reportnvagruxcliente/totalizarRep', 'ReportNVAgruxClienteController@totalizarRep')->name('reportnvagruxcliente_totalizarRep');

@@ -342,14 +342,20 @@ class NotaVenta extends Model
         }else{
             $aux_sucursal_idCond = "notaventa.sucursal_id = $request->sucursal_id";
         }
-        if(!isset($request->agrupar) or empty($request->agrupar) or ($request->agrupar == "")){
-            $cond_agrupar = "notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+        if(!isset($request->group) or empty($request->group) or ($request->group == "")){
+            $cond_group = "GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho";
         }else{
-            $cond_agrupar = $request->agrupar;
+            $cond_group = $request->group;
         }
-    
+        if(!isset($request->order) or empty($request->order) or ($request->order == "")){
+            $cond_order = "";
+        }else{
+            $cond_order = $request->order;
+        }
+
+        
         if($aux_consulta == 1){
             $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -389,7 +395,9 @@ class NotaVenta extends Model
             and $aux_condsucursal_id
             and $aux_sucursal_idCond
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
-            GROUP BY $cond_agrupar;";
+            $cond_group
+            $cond_order;";
+            //dd($sql);
         }
                 //and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
         if($aux_consulta == 2){

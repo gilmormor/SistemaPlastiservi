@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Pendiente x Producto
+Total Notas de Venta Agrupada x Cliente
 @endsection
 
 <?php
@@ -23,7 +23,7 @@ Pendiente x Producto
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Pendientes por Producto</h3>
+                <h3 class="box-title">Total Notas de Venta Agrupada x Cliente</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
@@ -42,7 +42,7 @@ Pendiente x Producto
                                         <label for="fecha">Fecha Ini:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required readonly>
+                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" value="{{old('fechad', date("01/m/Y") ?? '')}}" placeholder="DD/MM/AAAA" required readonly>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final">
@@ -51,24 +51,6 @@ Pendiente x Producto
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" class="form-control datepicker" name="fechah" id="fechah" value="{{old('fechah', $fechaAct ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Plazo Entrega Inicial">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="fecha">Plazo EntIni:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" bsDaterangepicker class="form-control datepicker" name="plazoentregad" id="plazoentregad" placeholder="DD/MM/AAAA" required readonly>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Plazo Entrega Final">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="dep_fecha">Plazo EntFin:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control datepicker" name="plazoentregah" id="plazoentregah" value="{{old('fechah', $fechaAct ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
                             </div>

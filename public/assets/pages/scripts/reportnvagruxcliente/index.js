@@ -13,9 +13,9 @@ $(document).ready(function () {
         eliminarFormatoRut($(this));
     });
 
-    configurarTabla1('#tabla-data-consulta');
+    configurarTabla('#tabla-data-consulta');
 
-    function configurarTabla1(aux_tabla){
+    function configurarTabla(aux_tabla){
         datax = datosPentxProd(1);
         $(aux_tabla).DataTable({
             'paging'      : true, 
@@ -59,6 +59,7 @@ $(document).ready(function () {
                 $('td', row).eq(6).html(MASKLA(data.total,0));
             }
         });
+        totalizar(datax);
     }
 
     //totalizar();
@@ -97,6 +98,7 @@ function ejecutarConsulta(aux_cod){
     }else{
         if(aux_cod == 1){
             $('#tabla-data-consulta').DataTable().ajax.url( "/reportnvagruxcliente/reportnvagruxclientepage/" + data.data2 ).load();
+            totalizar(data)
         }
         if(aux_cod == 2){
             consultarJS(data);    
@@ -108,24 +110,18 @@ function ejecutarConsulta(aux_cod){
 
 }
 
-function totalizar(){
-    let  table = $('#tabla-data-consulta').DataTable();
-    //console.log(table);
-    table
-        .on('draw', function () {
-            eventFired( 'Page' );
-        });
-        /*
-    data = datosPentxProd();
+function totalizar(data){
     $.ajax({
-        url: '/reportinvstock/totalizarindex/' + data.data2,
+        url: '/reportnvagruxcliente/totalizarRep/' + data.data2,
         type: 'GET',
         success: function (datos) {
+            //console.log(datos);
+            $("#totalkgpvc").html(MASKLA(datos.aux_totalkgpvc,2));
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
-            //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
+            $("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
     });
-    */
+
 }
 
 var eventFired = function ( type ) {
@@ -135,14 +131,14 @@ var eventFired = function ( type ) {
         valorNum = parseFloat(valor);
         total += valorNum;
     });
-    $("#subkgpvc").html(MASKLA(total,0))
+    $("#subkgpvc").html(MASKLA(total,2))
     total = 0;
     $("#tabla-data-consulta tr .cankg").each(function() {
         valor = $(this).attr('data-order') ;
         valorNum = parseFloat(valor);
         total += valorNum;
     });
-    $("#subkg").html(MASKLA(total,0))
+    $("#subkg").html(MASKLA(total,2))
     total = 0;
     $("#tabla-data-consulta tr .total").each(function() {
         valor = $(this).attr('data-order') ;
@@ -390,13 +386,6 @@ $('#tabla-data-consulta').on('draw.dt', function () {
   });
   
   */
-    /*
-    $("#btnpdfJS").click(function()
-    {
-        data = datosPentxProd();
-        consultarJS(data);
-    });
-    */
   
     function sumarColumna(columna) {
         return datos.reduce(function (total, fila) {
@@ -422,7 +411,7 @@ $('#tabla-data-consulta').on('draw.dt', function () {
     });
     return 0;*/
     $.ajax({
-        url: '/reportpendxprod/reportpendxprodpage',
+        url: '/reportnvagruxcliente/reportnvagruxclientepage',
         type: 'GET',
         data: data.data1,
         success: function (datos) {
@@ -442,7 +431,7 @@ $('#tabla-data-consulta').on('draw.dt', function () {
                 });    
             }else{
                 pdf = pdfjs(datos);
-                pdf.save('PendXProd.pdf');    
+                pdf.save('NVAgruxCliente.pdf');    
             }
         }
     });
@@ -450,95 +439,46 @@ $('#tabla-data-consulta').on('draw.dt', function () {
 
 function headRows() {
     return [
-      //{ nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", clase: "ClaSello", diam: "Diam Anch", l: "L", pesoesp: "Peso Esp", tu: "TU", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
-      { nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
+      //{ id: "NV", cliente_rut: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", clase: "ClaSello", diam: "Diam Anch", l: "L", pesoesp: "Peso Esp", tu: "TU", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
+      { id: "ID", cliente_rut: "RUT", razonsocial: "Razón Social", comuna: "Comuna", pvckg: "Kg PVC", cankg: "Kg", total: "Total"},
     ]
 }
 
 function bodyRows(datos) {
     var body = []
-    total_sumapicking = 0;
-    total_sumacant = 0;
-    total_sumacantdesp = 0;
-    total_cantsaldo = 0;
-    total_kgpend = 0;
-    total_totalplata = 0;
-    total_precioxkilo = 0;
     aux_contreg = 0;
+    pvckg = 0;
+    cankg = 0;
+    total = 0;
     datos.data.forEach(function(registro) {
-        aux_fecha = new Date(registro.fechahora);
+        /* aux_fecha = new Date(registro.fechahora);
         aux_plazoentrega = new Date(registro.plazoentrega + " 00:00:00")
         aux_productonomb = registro.nombre.replace(/&quot;/g, '"');
-        aux_productonomb = aux_productonomb.replace(/&#039;/g, "'");
+        aux_productonomb = aux_productonomb.replace(/&#039;/g, "'"); */
         body.push({
-            nv: registro.notaventa_id,
-            oc: registro.oc_id,
-            fecha: fechaddmmaaaa(aux_fecha),
-            plazoentrega: fechaddmmaaaa(aux_plazoentrega),
+            id: registro.cliente_id,
+            cliente_rut: registro.rut,
             razonsocial: registro.razonsocial,
             comuna: registro.comunanombre,
-            cod: registro.producto_id,
-            desc: cadenaSinEntidad = aux_productonomb,
-            stock: registro.stockbpt,
-            picking: registro.picking,
-            cant: registro.cant,
-            cantdesp: registro.cantdesp,
-            cantpend: registro.cantsaldo,
-            kilos: MASKLA(registro.kgpend,2),
-            preciokg: MASKLA(registro.precioxkilo,2),
-            pesos: MASKLA(registro.subtotalplata,0)
+            pvckg: MASKLA(registro.pvckg,2),
+            cankg: MASKLA(registro.cankg,2),
+            total: MASKLA(registro.total,0),
         })
-        total_sumapicking += registro.picking;
-        total_sumacant += registro.cant;
-        total_sumacantdesp += registro.cantdesp;
-        total_cantsaldo += registro.cantsaldo;
-        total_kgpend += registro.kgpend;
-        total_totalplata += registro.subtotalplata;
-        total_precioxkilo += registro.precioxkilo;
+        pvckg += registro.pvckg;
+        cankg += registro.cankg;
+        total += registro.total;
         aux_contreg++;
     });
-    if(total_totalplata > 0){
+    if(total > 0){
         body.push({
-            nv: "",
-            oc: "",
-            fecha: "",
-            plazoentrega: "",
+            id: "",
+            cliente_rut: "",
             razonsocial: "",
-            comuna: "",
-            cod: "",
-            desc: "",
-            stock: "Totales",
-            picking: total_sumapicking,
-            cant: total_sumacant,
-            cantdesp: total_sumacantdesp,
-            cantpend: total_cantsaldo,
-            kilos: MASKLA(total_kgpend,2),
-            preciokg: "",
-            pesos: MASKLA(total_totalplata,0)
-        })
-        prom_precioxkg = total_precioxkilo / aux_contreg;
-        prom_precioxkg = parseFloat(prom_precioxkg.toFixed(2));
-        prom_precio = total_totalplata / aux_contreg;
-        prom_precio = parseFloat(prom_precio.toFixed(0));
-        body.push({
-            nv: "",
-            oc: "",
-            fecha: "",
-            plazoentrega: "",
-            razonsocial: "",
-            comuna: "",
-            cod: "",
-            desc: "Total ítems: " + aux_contreg,
-            stock: "Prom",
-            picking: "",
-            cant: "",
-            cantdesp: "",
-            cantpend: "",
-            kilos: "",
-            preciokg: MASKLA(prom_precioxkg,2),
-            pesos: MASKLA(prom_precio,0)
-        })
-    
+            comuna: "Total",
+            pvckg: MASKLA(pvckg,2),
+            cankg: MASKLA(cankg,2),
+            total: MASKLA(total,0)
+        })    
     }
 
     return body
@@ -558,7 +498,7 @@ function pdfjs(datos) {
     var base64Img, coinBase64Img;
     base64Img = imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI.jpg');
  
-    var doc = new jsPDF('l')
+    var doc = new jsPDF()
     var totalPagesExp = '{total_pages_count_string}'
   
     doc.autoTable({
@@ -581,20 +521,11 @@ function pdfjs(datos) {
       columnStyles: {
         0: { cellWidth: 10 },  // Ancho columna
         1: { cellWidth: 18 },  // Ancho columna
-        2: { cellWidth: 14 },  // Ancho columna
-        3: { cellWidth: 14 },  // Ancho columna
-        4: { cellWidth: 32 },  // Ancho columna
-        5: { cellWidth: 17 },  // Ancho columna
-        6: { cellWidth: 8, halign: 'center'  },  // Ancho columna
-        7: { cellWidth: 58 },  // Ancho columna
-        8: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        9: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        10: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        11: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        12: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        13: { cellWidth: 15, halign: 'right' },  // Ancho columna
-        14: { cellWidth: 15, halign: 'right' },  // Ancho columna
-        15: { cellWidth: 15, halign: 'right' },  // Ancho columna
+        2: { cellWidth: 70 },  // Ancho columna
+        3: { cellWidth: 20 },  // Ancho columna
+        4: { cellWidth: 20, halign: 'right' },  // Ancho columna
+        5: { cellWidth: 20, halign: 'right' },  // Ancho columna
+        6: { cellWidth: 20, halign: 'right' },  // Ancho columna
 
         // ... especifica el ancho de las demás columnas
       },
@@ -605,16 +536,16 @@ function pdfjs(datos) {
         if (base64Img) {
           doc.addImage(base64Img, 'JPEG', data.settings.margin.left, 6, 30, 10)
         }
-        doc.text('Pendiente por Producto', data.settings.margin.left + 110, 12);
+        doc.text('Total Notas de Venta Agrupada x Cliente', data.settings.margin.left + 55, 12);
         doc.setFontSize(8)
-        doc.text('Sucursal: ' + $("#sucursal_id option:selected").html(), data.settings.margin.left + 120, 16);
+        doc.text('Sucursal: ' + $("#sucursal_id option:selected").html(), data.settings.margin.left + 73, 16);
         doc.text('Fecha: ' + fechaactual(), data.settings.margin.left + 220, 5);
-        doc.text('Area Producción: ' + $("#areaproduccion_id option:selected").html(), data.settings.margin.left + 220, 8);
-        //doc.text('Vendedor: ' + $("#vendedor_id option:selected").html(), data.settings.margin.left + 220, 11);
-        doc.text('Vendedor: ' + descripElementoSelectMult("vendedor_id"), data.settings.margin.left + 220, 11);
-        doc.text('Giro: ' + $("#giro_id option:selected").html() + ' Estatus: ' + $("#aprobstatus option:selected").html(), data.settings.margin.left + 220, 14);
-        doc.text('Nota Venta Desde: ' + $("#fechad").val() + " al " + $("#fechah").val(), data.settings.margin.left + 220, 17);
-        doc.text('Plazo de Entrega: ' + $("#plazoentregad").val() + " al " + $("#plazoentregah").val(), data.settings.margin.left + 220, 20);
+        doc.text('Area Producción: ' + $("#areaproduccion_id option:selected").html(), data.settings.margin.left + 140, 8);
+        //doc.text('Vendedor: ' + $("#vendedor_id option:selected").html(), data.settings.margin.left + 140, 11);
+        doc.text('Vendedor: ' + descripElementoSelectMult("vendedor_id"), data.settings.margin.left + 140, 11);
+        doc.text('Giro: ' + $("#giro_id option:selected").html() + ' Estatus: ' + $("#aprobstatus option:selected").html(), data.settings.margin.left + 140, 14);
+        doc.text('Período: ' + $("#fechad").val() + " al " + $("#fechah").val(), data.settings.margin.left + 140, 17);
+        //doc.text('Plazo de Entrega: ' + $("#plazoentregad").val() + " al " + $("#plazoentregah").val(), data.settings.margin.left + 220, 20);
 
         var startY = 21; // Ajusta según sea necesario
         data.cursor.y = startY;
@@ -709,7 +640,7 @@ function exportarExcel() {
     data = datosPentxProd();
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
-        url: "/reportpendxprod/reportpendxprodpage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+        url: "/reportnvagruxcliente/reportnvagruxclientepage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
         type: 'POST',
         dataType: 'json',
         success: function(data) {
@@ -745,65 +676,40 @@ function exportarExcel() {
             aux_sucursalNombre = "";
         }
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Pendiente por Producto","","","","","","","","","","","","","","",fechaactual()]);
-        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
+        datosExcel.push(["Total Notas de Venta Agrupada x Cliente","","","","","",fechaactual()]);
+        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Periodo: " + aux_rangofecha + " Vendedor: " + descripElementoSelectMult("vendedor_id"),"","","","","","","",""]);
         aux_cont = 0;
-        aux_totalPicking = 0;
-        aux_totalCant = 0;
-        aux_totalCantDesp = 0;
-        aux_totalCantPend = 0;
-        aux_totalkgPend = 0;
-        aux_totalPreciokg = 0;
-        aux_totalMonto = 0;
-        aux_totalkgtotal = 0;
-        aux_totalmnttotal = 0;
-        datosExcel.push(["","","","","","","","",""]);
-        datosExcel.push(["NV","OC","Fecha","PlazoEnt","Razon Social","Comuna","CodProd","Descripcion","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$"]);
+        pvckg = 0;
+        cankg = 0;
+        total = 0;    
+        datosExcel.push(["","","","","","","                   "]);
+        datosExcel.push(["ID","RUT","Razón Social","Comuna","Total $","Kg PVC","Kg"]);
         data.data.forEach(function(registro) {
             aux_cont++;
-            aux_totalPicking += registro.picking;
-            aux_totalCant += registro.cant;
-            aux_totalCantDesp += registro.cantdesp;
-            aux_totalCantPend += registro.cantsaldo;
-            aux_totalkgPend += registro.kgpend;
-            aux_totalPreciokg += registro.precioxkilo;
-            aux_totalMonto += registro.subtotalplata;
-
-            aux_fecha = new Date(registro.fechahora);
+            /* aux_fecha = new Date(registro.fechahora);
             aux_plazoentrega = new Date(registro.plazoentrega + " 00:00:00")
             aux_productonomb = registro.nombre.replace(/&quot;/g, '"');
-            aux_productonomb = aux_productonomb.replace(/&#039;/g, "'");
+            aux_productonomb = aux_productonomb.replace(/&#039;/g, "'"); */
             var filaExcel = [
-                registro.notaventa_id,
-                registro.oc_id,
-                fechaddmmaaaa(aux_fecha),
-                fechaddmmaaaa(aux_plazoentrega),
+                registro.cliente_id,
+                registro.rut,
                 registro.razonsocial,
                 registro.comunanombre,
-                registro.producto_id,
-                cadenaSinEntidad = aux_productonomb,
-                registro.stockbpt,
-                registro.picking,
-                registro.cant,
-                registro.cantdesp,
-                registro.cantsaldo,
-                registro.kgpend,
-                registro.precioxkilo,
-                registro.subtotalplata
+                registro.pvckg,
+                registro.cankg,
+                registro.total
             ];
+            pvckg += registro.pvckg;
+            cankg += registro.cankg;
+            total += registro.total;
             //aux_vendedor_id = registro.vendedor_id;
 
             datosExcel.push(filaExcel);
         });
-        if(aux_totalMonto > 0){
-            prom_preciokg = (aux_totalPreciokg/aux_cont);
-            prom_Monto = (aux_totalMonto/aux_cont);
-            datosExcel.push(["","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto]);
-            datosExcel.push(["","","","","","","","","Promedio:","","","","","",prom_preciokg,prom_Monto]);
+        if(total > 0){
+            datosExcel.push(["","","","Total:",pvckg,cankg,total]);
         }
-
         createExcel(datosExcel);
-
       },
       error: function(xhr, status, error) {
         console.log(error);
@@ -834,16 +740,21 @@ function createExcel(datosExcel) {
     ajustarcolumnaexcel(worksheet,"E");
     ajustarcolumnaexcel(worksheet,"F");
     ajustarcolumnaexcel(worksheet,"G");
-    ajustarcolumnaexcel(worksheet,"H");
-    ajustarcolumnaexcel(worksheet,"I");
-    ajustarcolumnaexcel(worksheet,"J");
 
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 7; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
-        cell.autosize = true;
+        //cell.autosize = true;
+    }
+
+    row = worksheet.getRow(datosExcel.length);
+    for (let i = 1; i <= 7; i++) {
+        cell = row.getCell(i);
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: "right" };
+        //cell.numFmt = "#,##0";
     }
 
     // Obtén el objeto de la columna y establece la propiedad hidden en true
@@ -865,71 +776,37 @@ function createExcel(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 7; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
         celda.autosize = true;
     }    
 
-    const columnI = worksheet.getColumn(9);
+    const columnI = worksheet.getColumn(5);
     columnI.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
-        cell.numFmt = "#,##0";
+        cell.numFmt = "#,##0.00";
         }
     });
 
-    const columnJ = worksheet.getColumn(10);
+    const columnJ = worksheet.getColumn(6);
     columnJ.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
-        cell.numFmt = "#,##0";
+        cell.numFmt = "#,##0.00";
         }
     });
 
-    const columnK = worksheet.getColumn(11);
+    const columnK = worksheet.getColumn(7);
     columnK.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
     });
 
-    const columnL = worksheet.getColumn(12);
-    columnL.eachCell({ includeEmpty: true }, (cell) => {
-        if (cell.value !== null && typeof cell.value === "number") {
-        cell.numFmt = "#,##0";
-        }
-    });
-
-    const columnM = worksheet.getColumn(13);
-    columnM.eachCell({ includeEmpty: true }, (cell) => {
-        if (cell.value !== null && typeof cell.value === "number") {
-        cell.numFmt = "#,##0";
-        }
-    });
-
-    const columnN = worksheet.getColumn(14);
-    columnN.eachCell({ includeEmpty: true }, (cell) => {
-        if (cell.value !== null && typeof cell.value === "number") {
-        cell.numFmt = "#,##0.00";
-        }
-    });
-
-    const columnO = worksheet.getColumn(15);
-    columnO.eachCell({ includeEmpty: true }, (cell) => {
-        if (cell.value !== null && typeof cell.value === "number") {
-        cell.numFmt = "#,##0.00";
-        }
-    });
-
-    const columnP = worksheet.getColumn(16);
-    columnP.eachCell({ includeEmpty: true }, (cell) => {
-        if (cell.value !== null && typeof cell.value === "number") {
-        cell.numFmt = "#,##0";
-        }
-    });
 
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
-    for (let i = 4; i <= datosExcel.length; i++) {
+    /* for (let i = 4; i <= datosExcel.length; i++) {
         const cell7 = worksheet.getCell(i, 7);
         cell7.alignment = { horizontal: "center", vertical: "middle" };
 
@@ -957,17 +834,7 @@ function createExcel(datosExcel) {
         const cell16 = worksheet.getCell(i, 16);
         cell16.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
-        /*
-        const cell9 = worksheet.getCell(i, 9);
-        cell9.alignment = { horizontal: "center", vertical: "middle" };
-        const cell10 = worksheet.getCell(i, 10);
-        cell10.alignment = { horizontal: "center", vertical: "middle" };
-
-        const cell = worksheet.getCell(i, 13);
-        cell.alignment = { horizontal: "center", vertical: "middle" };
-        */
-
-    }
+    } */
 
 
     //Negrita Columna Titulo
@@ -977,12 +844,17 @@ function createExcel(datosExcel) {
     cell.alignment = { horizontal: "center", vertical: "middle" };
 
 
+    //Titulo Kg PVC
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(5);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
     //Titulo Kg
     rowX = worksheet.getRow(4);
     cell = rowX.getCell(6);
     cell.alignment = { horizontal: "center", vertical: "middle" };
-
-    //Titulo Monto
+    
+    //Titulo Total
     rowX = worksheet.getRow(4);
     cell = rowX.getCell(7);
     cell.alignment = { horizontal: "center", vertical: "middle" };
@@ -993,74 +865,9 @@ function createExcel(datosExcel) {
     cell = row2.getCell(10);
     cell.alignment = { horizontal: "center", vertical: "middle" };
 
-
-    row = worksheet.getRow(datosExcel.length-1);
-    cell = row.getCell(8);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-
-    cell = row.getCell(9);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
-
-    cell = row.getCell(10);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
-
-    cell = row.getCell(11);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
-
-    cell = row.getCell(12);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
-
-    cell = row.getCell(13);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
-
-    cell = row.getCell(14);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0.00";
-
-    cell = row.getCell(15);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
-
-    cell = row.getCell(16);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
-
-    row = worksheet.getRow(datosExcel.length);
-    cell = row.getCell(9);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-
-    cell = row.getCell(15);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0.00";
-
-    cell = row.getCell(16);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
-
-    ajustarcolumnaexcel(worksheet,"N");
-    ajustarcolumnaexcel(worksheet,"P");
-
-
     //Fusionar celdas de Titulo
     const startCol = 0;
-    const endCol = 15;
+    const endCol = 6;
     worksheet.mergeCells(1, startCol, 1, endCol);
 
     //Negrita Columna Sucursal
@@ -1070,7 +877,7 @@ function createExcel(datosExcel) {
     
     //Fusionar celdas Sucursal
     const startCol1 = 0;
-    const endCol1 = 15;
+    const endCol1 = 6;
     worksheet.mergeCells(2, startCol1, 2, endCol1);
 
     // Establecer negrita a totales
@@ -1095,7 +902,7 @@ function createExcel(datosExcel) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "PendxProd.xlsx";
+      a.download = "NVAgruxCliente.xlsx";
       a.click();
 
       // Limpiar el objeto Blob
