@@ -683,7 +683,7 @@ function exportarExcel() {
         cankg = 0;
         total = 0;    
         datosExcel.push(["","","","","","","                   "]);
-        datosExcel.push(["ID","RUT","Razón Social","Comuna","Total $","Kg PVC","Kg"]);
+        datosExcel.push(["ID","RUT","Razón Social","Comuna","Kg PVC","Kg","Total $"]);
         data.data.forEach(function(registro) {
             aux_cont++;
             /* aux_fecha = new Date(registro.fechahora);
