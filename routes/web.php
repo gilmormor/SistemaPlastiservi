@@ -1487,3 +1487,11 @@ Route::post('categoriaprod_giro/categoriaprod_giroArray', 'CategoriaProd_GiroCon
 /*RUTAS REPORTE CATEGORIAPROD_GIRO*/
 Route::get('reportcategoriaprod_giro', 'ReportCategoriaProd_GiroController@index')->name('reportcategoriaprod_giro');
 Route::get('reportcategoriaprod_giro/reportcategoriaprod_giropage', 'ReportCategoriaProd_GiroController@reportcategoriaprod_giropage')->name('reportcategoriaprod_giropage');
+
+/*RUTAS REPORTE Notas de Venta Agrupadas por Cliente*/
+Route::get('reportnvagruxcliente', 'ReportNVAgruxClienteController@index')->name('reportnvagruxcliente');
+Route::get('reportnvagruxcliente/reportnvagruxclientepage', 'ReportNVAgruxClienteController@reportnvagruxclientepage')->name('reportnvagruxclientepage');
+Route::get('reportnvagruxcliente/reporte', 'ReportNVAgruxClienteController@reporte')->name('reportnvagruxcliente_reporte');
+Route::get('reportnvagruxcliente/exportPdf', 'ReportNVAgruxClienteController@exportPdf')->name('reportnvagruxcliente_exportPdf');
+Route::get('reportnvagruxcliente/totalizarindex', 'ReportNVAgruxClienteController@totalizarindex')->name('reportnvagruxcliente_totalizarindex');
+Route::get('reportnvagruxcliente/totalizarRep', 'ReportNVAgruxClienteController@totalizarRep')->name('reportnvagruxcliente_totalizarRep');
