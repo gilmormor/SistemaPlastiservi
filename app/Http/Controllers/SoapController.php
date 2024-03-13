@@ -219,7 +219,8 @@ class SoapController extends Controller
 
     public function Comando02ListaPendientes($RutCliente)
     {
-        $soapClient = new SoapClient(env('APP_URLMANAGER'));
+        $soapClient = new SoapClient("https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?wsdl");
+        //$soapClient = new SoapClient(env('APP_URLMANAGER'));
         $response = $soapClient->Comando02ListaPendientes([
             "Codigo" => "0mpPWcXj8AC312v",
             "RutCliente" => "77026694-7"
