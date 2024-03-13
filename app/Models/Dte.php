@@ -2711,6 +2711,7 @@ class Dte extends Model
         $ArrayFact = "";
         foreach ($clientes as $cliente) {
             $ListaPendientes1 = $soap->Comando02ListaPendientes(formatearRUT($cliente->rut));
+            dd($ListaPendientes1);
             $ListaPendientes = '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
             <soap:Body>
                 <Comando02ListaPendientesResponse xmlns="https://aplicaciones.sigetec.cl/WSPlastiServi/">
@@ -2831,7 +2832,7 @@ class Dte extends Model
                 break;
             } */
         }
-        dd($ArrayFact);
+        //dd($ArrayFact);
         return $ArrayFact;
     }
 }
