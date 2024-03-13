@@ -231,10 +231,10 @@ class SoapController extends Controller
             return $response->Comando02ListaPendientesResult->Contenido->any;
         } catch (SoapFault $e) {
             // Capturar errores específicos de SOAP
-            dd("Error SOAP: " . $e->getMessage());
+            dd("Error 01: " . $e->getMessage());
         } catch (Exception $e) {
             // Capturar otros errores
-            dd("Error: " . $e->getMessage());
+            dd("Error 02: " . $e->getMessage());
         }
     }
 
