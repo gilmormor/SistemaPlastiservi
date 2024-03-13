@@ -2831,7 +2831,7 @@ class Dte extends Model
                 break;
             } */
         }
-        //dd($ArrayFact);
+        dd($ArrayFact);
         return $ArrayFact;
     }
 }
