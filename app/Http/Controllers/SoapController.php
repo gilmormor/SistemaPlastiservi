@@ -199,7 +199,7 @@ class SoapController extends Controller
             ]);
             return $response->Comando01CargaDocumentosResult;
         } catch (Exception $e) {
-            echo "Error: " . $e->getMessage();
+            return "Error: " . $e->getMessage();
         }
     }
 
@@ -213,29 +213,12 @@ class SoapController extends Controller
             ]);
             return $response->Comando03CreaClientesResult;
         } catch (Exception $e) {
-            echo "Error: " . $e->getMessage();
+            return "Error: " . $e->getMessage();
         }
     }
 
     public function Comando02ListaPendientes($RutCliente)
     {
-        try {
-            $soapClient = new SoapClient("https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?wsdl");
-            //$soapClient = new SoapClient(env('APP_URLMANAGER'));
-            $response = $soapClient->Comando02ListaPendientes([
-                "Codigo" => "0mpPWcXj8AC312v",
-                "RutCliente" => "77026694-7"
-            ]);
-            //dd($response->Comando02ListaPendientesResult->Contenido->any);
-            return $response->Comando02ListaPendientesResult->Contenido->any;
-        } catch (Exception $e) {
-            echo "Error 01: " . $e->getMessage();
-        }
-
-        dd($response->Comando02ListaPendientesResult);
-        return $response->Comando02ListaPendientesResult->Contenido->any;
-
-        dd($RutCliente);
         try {
             //$soapClient = new SoapClient("https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?wsdl");
             $soapClient = new SoapClient(env('APP_URLMANAGER'));
@@ -243,10 +226,10 @@ class SoapController extends Controller
                 "Codigo" => "0mpPWcXj8AC312v",
                 "RutCliente" => $RutCliente
             ]);
-            dd($response->Comando02ListaPendientesResult->Contenido->any);
+            //dd($response->Comando02ListaPendientesResult->Contenido->any);
             return $response->Comando02ListaPendientesResult->Contenido->any;
         } catch (Exception $e) {
-            echo "Error 01: " . $e->getMessage();
+            return "Error: " . $e->getMessage();
         }
         /*
         try{
