@@ -224,7 +224,7 @@ class SoapController extends Controller
             "Codigo" => "0mpPWcXj8AC312v",
             "RutCliente" => "77026694-7"
         ]);
-        dd($response->Comando02ListaPendientesResult->Contenido->any);
+        dd($response->Comando02ListaPendientesResult);
         return $response->Comando02ListaPendientesResult->Contenido->any;
 
         dd($RutCliente);
