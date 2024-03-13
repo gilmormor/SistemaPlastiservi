@@ -1495,3 +1495,23 @@ Route::get('reportnvagruxcliente/reporte', 'ReportNVAgruxClienteController@repor
 Route::get('reportnvagruxcliente/exportPdf', 'ReportNVAgruxClienteController@exportPdf')->name('reportnvagruxcliente_exportPdf');
 Route::get('reportnvagruxcliente/totalizarindex', 'ReportNVAgruxClienteController@totalizarindex')->name('reportnvagruxcliente_totalizarindex');
 Route::get('reportnvagruxcliente/totalizarRep', 'ReportNVAgruxClienteController@totalizarRep')->name('reportnvagruxcliente_totalizarRep');
+/*RUTAS ClienteDesBloqueado Cliente */
+/*RUTAS Bloquear Cliente */
+Route::get('clientedesbloqueado', 'ClienteDesBloqueadoController@index')->name('clientedesbloqueado');
+Route::get('clientedesbloqueadopage', 'ClienteDesBloqueadoController@clientedesbloqueadopage')->name('clientedesbloqueadopage');
+Route::get('clientedesbloqueado/crear', 'ClienteDesBloqueadoController@crear')->name('crear_clientedesbloqueado');
+Route::post('clientedesbloqueado', 'ClienteDesBloqueadoController@guardar')->name('guardar_clientedesbloqueado');
+Route::get('clientedesbloqueado/{id}/editar', 'ClienteDesBloqueadoController@editar')->name('editar_clientedesbloqueado');
+Route::put('clientedesbloqueado/{id}', 'ClienteDesBloqueadoController@actualizar')->name('actualizar_clientedesbloqueado');
+Route::delete('clientedesbloqueado/{id}', 'ClienteDesBloqueadoController@eliminar')->name('eliminar_clientedesbloqueado');
+Route::post('clientedesbloqueado/buscarclibloq', 'ClienteDesBloqueadoController@buscarclibloq')->name('buscarclibloq');
+
+/*RUTAS REPORTE DEUDA CLIENTE SISTEMA COBRANZA*/
+Route::get('reportdeudaclientesiscob', 'ReportDeudaClienteSisCobController@index')->name('reportdeudaclientesiscob');
+Route::get('reportdeudaclientesiscob/reportdeudaclientesiscobpage', 'ReportDeudaClienteSisCobController@reportdeudaclientesiscobpage')->name('reportdeudaclientesiscobpage');
+Route::get('reportdeudaclientesiscob/reporte', 'ReportDeudaClienteSisCobController@reporte')->name('reportdeudaclientesiscob_reporte');
+Route::get('reportdeudaclientesiscob/exportPdf', 'ReportDeudaClienteSisCobController@exportPdf')->name('reportdeudaclientesiscob_exportPdf');
+Route::get('reportdeudaclientesiscob/totalizarindex', 'ReportDeudaClienteSisCobController@totalizarindex')->name('reportdeudaclientesiscob_totalizarindex');
+Route::get('reportdeudaclientesiscob/listardtedet', 'ReportDeudaClienteSisCobController@listardtedet')->name('reportdeudaclientesiscob_listardtedet');
+
+Route::post('reportdeudaclientesiscob/consulta', 'ReportDeudaClienteSisCobController@consulta')->name('reportdeudaclientesiscob_consulta');

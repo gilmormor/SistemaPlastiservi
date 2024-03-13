@@ -12,6 +12,7 @@ use App\Models\AcuerdoTecnico_Cliente;
 use App\Models\CategoriaProd;
 use App\Models\Certificado;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteDirec;
 use App\Models\ClienteProducto;
 use App\Models\ClienteSucursal;
@@ -600,6 +601,15 @@ class NotaVentaController extends Controller
                     $acuerdotecnico->save();
                 }*/
             }    
+        }
+        if($notaventa->cliente->clientedesbloqueado){
+            $clientedesbloqueado_id = $notaventa->cliente->clientedesbloqueado->id;
+            if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                $clientedesbloqueado->usuariodel_id = auth()->id();
+                $clientedesbloqueado->save();
+            }
         }
 
         return redirect('notaventa')->with([

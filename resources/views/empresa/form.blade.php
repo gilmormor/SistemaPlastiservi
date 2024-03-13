@@ -35,3 +35,33 @@
         </select>
     </div>
 </div>
+
+<div class="form-group">
+    <label for="diasprorrogacob" class="col-lg-3 control-label requerido">Dias Prorroga Cobranza</label>
+    <div class="col-lg-8">
+    <input type="text" name="diasprorrogacob" id="diasprorrogacob" class="form-control" value="{{old('diasprorrogacob', $data->diasprorrogacob ?? '')}}"  min="0" max="30" step="1" maxlength="2" required/>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_actsiscob" name="aux_actsiscob">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Actualizar informacion en Sistema externo de Cobranza?
+        </label>
+    </div>
+</div>
+<input type="hidden" name="actsiscob" id="actsiscob" value="{{old('actsiscob', $data->actsiscob ?? '0')}}">
+
+<div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_stabloxdeusiscob" name="aux_stabloxdeusiscob">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Activar consulta Deuda y limite de Credito en Sistema Cobranza (Manager)?
+        </label>
+    </div>
+</div>
+
+<input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{old('stabloxdeusiscob', $data->stabloxdeusiscob ?? '0')}}">

@@ -1,11 +1,11 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Cliente Bloqueado
+Cliente Desbloqueado
 @endsection
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/clientebloqueado/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/clientedesbloqueado/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -14,10 +14,10 @@ Cliente Bloqueado
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Cliente Bloqueado</h3>
+                <h3 class="box-title">Cliente Desbloqueado</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('crear_clientebloqueado')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo Bloqueo
+                    <a href="{{route('crear_clientedesbloqueado')}}" class="btn btn-block btn-success btn-sm">
+                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo Desbloqueo
                     </a>
                 </div>
             </div>
@@ -26,9 +26,10 @@ Cliente Bloqueado
                     <thead>
                         <tr>
                             <th class="width30">ID</th>
-                            <th class="width70">Cod Cliente</th>
+                            <th class="width70">CodCli</th>
+                            <th class="width70">RUT</th>
                             <th>Nombre</th>
-                            <th>Descripción</th>
+                            <th>Obs</th>
                             <th class="width70">Acción</th>
                         </tr>
                     </thead>

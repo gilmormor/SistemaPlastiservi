@@ -10,6 +10,7 @@ use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\Cotizacion;
+use App\Models\Dte;
 use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\PlazoPago;
@@ -737,7 +738,7 @@ class ClienteController extends Controller
             $sql= "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.telefono,cliente.email,
             cliente.direccion,cliente.vendedor_id,cliente.contactonombre,cliente.formapago_id,
             cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
-            clientebloqueado.descripcion
+            clientebloqueado.descripcion,clientebloqueado.descripcion as clientebloqueado_descripcion
             FROM cliente left JOIN clientebloqueado
             ON cliente.id=clientebloqueado.cliente_id and isnull(cliente.deleted_at) and isnull(clientebloqueado.deleted_at)
             WHERE cliente.rut='$request->rut'
@@ -745,6 +746,8 @@ class ClienteController extends Controller
             and $aux_clientesvendedorCond;";
             $cliente = DB::select($sql);
             //dd($cliente);
+            valBloqCliSisCob($cliente,$request);
+
             $respuesta['cliente'] = $cliente;
 
             $sql= "SELECT sucursal.id,sucursal.nombre
@@ -762,4 +765,28 @@ class ClienteController extends Controller
         }
     }
 
+}
+
+function valBloqCliSisCob(&$cliente,$request){
+    if(count($cliente) > 0){
+        $staBloqueo = clienteBloqueado($cliente[0]->id);
+        $cliente[0]->descripcion = $staBloqueo ["bloqueo"];
+        /* $clientebus = Cliente::findOrFail($cliente[0]->id);
+        if($clientebus->clientedesbloqueado){
+            $cliente[0]->descripcion = null;
+        }else{
+            if(is_null($cliente[0]->clientebloqueado_descripcion)){
+                $rut = isset($request->rut) ? $request->rut : null;
+                $datCobranza = Dte::deudaClienteSisCobranza($rut);
+                //dd($datCobranza);
+                if($datCobranza["TDeuda"] > 0 and $datCobranza["TDeuda"] >= $datCobranza["limitecredito"]){
+                    $cliente[0]->descripcion = "Supero limite de Crédito: " . number_format($datCobranza["limitecredito"], 0, ',', '.') . "\nDeuda: " . number_format($datCobranza["TDeuda"], 0, ',', '.');
+                }else{
+                    if($datCobranza["TDeudaFec"] > 0){
+                        $cliente[0]->descripcion = "Facturas Vencidas: " . $datCobranza["NroFacDeu"];
+                    }
+                }
+            }    
+        } */
+    }
 }

@@ -126,8 +126,16 @@ class Cliente extends Model
     {
         return $this->hasMany(AcuerdoTecnicoTemp_Cliente::class);
     }
-    
-    
+    //RELACION UNO A UNO clientedesbloqueado
+    public function clientedesbloqueado()
+    {
+        return $this->hasOne(ClienteDesBloqueado::class);
+    }
+    //RELACION UNO A UNO clientebloqueado
+    public function clientebloqueado()
+    {
+        return $this->hasOne(ClienteBloqueado::class);
+    }
 
     public static function clientesxUsuario($vendedor_id = '0',$cliente_id = 0){
         $respuesta = array();
@@ -232,7 +240,6 @@ class Cliente extends Model
                 and cliente_sucursal.sucursal_id in ($sucurcadena)
                 GROUP BY cliente.id
                 ORDER BY cliente.id;";
-
         $datas = DB::select($sql);
         return $datas;
     }

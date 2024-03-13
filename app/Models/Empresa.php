@@ -18,6 +18,9 @@ class Empresa extends Model
         'sucursal_id',
         'acteco',
         'moneda_id',
+        'actsiscob',
+        'stabloxdeusiscob',
+        'diasprorrogacob',
         'usuariodel_id'
     ];
 
