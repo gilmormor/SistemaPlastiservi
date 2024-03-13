@@ -221,11 +221,13 @@ class SoapController extends Controller
     {
         try {
             //$soapClient = new SoapClient("https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?wsdl");
+            dd(env('APP_URLMANAGER'));
             $soapClient = new SoapClient(env('APP_URLMANAGER'));
             $response = $soapClient->Comando02ListaPendientes([
                 "Codigo" => "0mpPWcXj8AC312v",
                 "RutCliente" => $RutCliente
             ]);
+            //dd($response->Comando02ListaPendientesResult->Contenido->any);
             return $response->Comando02ListaPendientesResult->Contenido->any;
         } catch (SoapFault $e) {
             echo "Error: " . $e->getMessage();
