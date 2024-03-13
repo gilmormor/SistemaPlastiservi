@@ -222,7 +222,7 @@ class SoapController extends Controller
         $soapClient = new SoapClient(env('APP_URLMANAGER'));
         $response = $soapClient->Comando02ListaPendientes([
             "Codigo" => "0mpPWcXj8AC312v",
-            "RutCliente" => $RutCliente
+            "RutCliente" => "77026694-7"
         ]);
         dd($response->Comando02ListaPendientesResult->Contenido->any);
         return $response->Comando02ListaPendientesResult->Contenido->any;
