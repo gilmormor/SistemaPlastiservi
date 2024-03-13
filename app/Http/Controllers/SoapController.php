@@ -226,6 +226,7 @@ class SoapController extends Controller
                 "Codigo" => "0mpPWcXj8AC312v",
                 "RutCliente" => $RutCliente
             ]);
+            dd($response->Comando02ListaPendientesResult->Contenido->any);
             return $response->Comando02ListaPendientesResult->Contenido->any;
         } catch (SoapFault $e) {
             echo "Error: " . $e->getMessage();
