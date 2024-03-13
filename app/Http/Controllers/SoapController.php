@@ -221,6 +221,7 @@ class SoapController extends Controller
     {
         try {
             //$soapClient = new SoapClient("https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?wsdl");
+            //dd(env('APP_URLMANAGER'));
             $soapClient = new SoapClient(env('APP_URLMANAGER'));
             $response = $soapClient->Comando02ListaPendientes([
                 "Codigo" => "0mpPWcXj8AC312v",
@@ -228,22 +229,13 @@ class SoapController extends Controller
             ]);
             //dd($response->Comando02ListaPendientesResult->Contenido->any);
             return $response->Comando02ListaPendientesResult->Contenido->any;
+        } catch (SoapFault $e) {
+            // Capturar errores específicos de SOAP
+            dd("Error SOAP: " . $e->getMessage());
         } catch (Exception $e) {
+            // Capturar otros errores
             dd("Error: " . $e->getMessage());
         }
-        /*
-        try{
-            $soapclient = new SoapClient('https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?op=Comando02ListaPendientes');
-            $response = $soapclient->Comando02ListaPendientes([
-                "Codigo" => "0mpPWcXj8AC312v",
-                "RutCliente" => $RutCliente
-            ]);
-            dd($RutCliente);
-            return ($response->Comando02ListaPendientesResponse);
-        }catch(Exception $e){
-            return $e->getMessage();
-        }
-        */
     }
 
 }
