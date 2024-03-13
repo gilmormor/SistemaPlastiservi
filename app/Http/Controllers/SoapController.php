@@ -229,7 +229,7 @@ class SoapController extends Controller
             //dd($response->Comando02ListaPendientesResult->Contenido->any);
             return $response->Comando02ListaPendientesResult->Contenido->any;
         } catch (Exception $e) {
-            return "Error: " . $e->getMessage();
+            dd("Error: " . $e->getMessage());
         }
         /*
         try{
