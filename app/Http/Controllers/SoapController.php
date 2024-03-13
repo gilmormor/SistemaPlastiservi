@@ -228,7 +228,7 @@ class SoapController extends Controller
             ]);
             //dd($response->Comando02ListaPendientesResult->Contenido->any);
             return $response->Comando02ListaPendientesResult->Contenido->any;
-        } catch (SoapFault $e) {
+        } catch (Exception $e) {
             echo "Error 01: " . $e->getMessage();
         }
         /*
