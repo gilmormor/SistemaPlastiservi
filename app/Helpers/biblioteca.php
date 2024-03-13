@@ -340,7 +340,7 @@ if (!function_exists('clienteBloqueado')) {
             //$dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
         }
         if(isset($cliente->clientebloqueado)){
-            
+            $staBloqueo ["bloqueo"]= $cliente->clientebloqueado->descripcion;
         }else{
             $empresa = Empresa::findOrFail(1);
             if($empresa->stabloxdeusiscob == 1){
