@@ -337,7 +337,7 @@ if (!function_exists('clienteBloqueado')) {
         $staBloqueo ["bloqueo"] = null;
         if($aux_consultadeuda == 1){
             datacobranza($staBloqueo,$cliente);
-            $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
+            //$dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
         }
         if(isset($cliente->clientebloqueado)){
             
