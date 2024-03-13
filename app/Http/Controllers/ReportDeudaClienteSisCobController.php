@@ -50,7 +50,8 @@ class ReportDeudaClienteSisCobController extends Controller
     public function consulta(Request $request){
         $data = Cliente::findOrFail($request->id);
         //dd($data);
-        $datacobranza = clienteBloqueado($request->id);
+        $aux_consultadeuda = 1;
+        $datacobranza = clienteBloqueado($request->id,$aux_consultadeuda);
         $data->datacobranza = $datacobranza["datacobranza"];
         if(count($data->datacobranza) > 0){
             //dd($data->datacobranza["datosFacDeuda"][0]->nombrepdf);

@@ -330,17 +330,24 @@ if (!function_exists('dtetipotraslado')) {
 }
 
 if (!function_exists('clienteBloqueado')) {
-    function clienteBloqueado($cliente_id){
+    function clienteBloqueado($cliente_id,$aux_consultadeuda = 0){
         $cliente = Cliente::findOrFail($cliente_id);
         //dd($cliente);
         $staBloqueo = [];
         $staBloqueo ["bloqueo"] = null;
+        if($aux_consultadeuda == 1){
+            datacobranza($staBloqueo,$cliente);
+            $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
+        }
         if(isset($cliente->clientebloqueado)){
-            $staBloqueo ["bloqueo"]= $cliente->clientebloqueado->descripcion;
+            
         }else{
             $empresa = Empresa::findOrFail(1);
             if($empresa->stabloxdeusiscob == 1){
-                $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
+                if($aux_consultadeuda == 0){
+                    datacobranza($staBloqueo,$cliente);
+                }
+                /* $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
                 //dd($dataCobranza);
                 $staBloqueo["datacobranza"] = $dataCobranza;
                 if($dataCobranza["TDeuda"] > 0 and $dataCobranza["TDeuda"] >= $dataCobranza["limitecredito"]){
@@ -349,7 +356,7 @@ if (!function_exists('clienteBloqueado')) {
                     if($dataCobranza["TDeudaFec"] > 0){
                         $staBloqueo ["bloqueo"]=  "Facturas Vencidas:\n" . $dataCobranza["NroFacDeu"] . ".";
                     }
-                }
+                } */
             }
         }
         $staBloqueo["bloqueoreal"] = $staBloqueo ["bloqueo"];
@@ -359,4 +366,20 @@ if (!function_exists('clienteBloqueado')) {
         return $staBloqueo;
     }
 }
+
+if (!function_exists('datacobranza')) {
+    function datacobranza(&$staBloqueo,$cliente){
+        $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
+        //dd($dataCobranza);
+        $staBloqueo["datacobranza"] = $dataCobranza;
+        if($dataCobranza["TDeuda"] > 0 and $dataCobranza["TDeuda"] >= $dataCobranza["limitecredito"]){
+            $staBloqueo ["bloqueo"]= "Supero limite de Crédito: " . number_format($dataCobranza["limitecredito"], 0, ',', '.') . "\nDeuda: " . number_format($dataCobranza["TDeuda"], 0, ',', '.');
+        }else{
+            if($dataCobranza["TDeudaFec"] > 0){
+                $staBloqueo ["bloqueo"]=  "Facturas Vencidas:\n" . $dataCobranza["NroFacDeu"] . ".";
+            }
+        }
+    }
+}
+
 ?>
