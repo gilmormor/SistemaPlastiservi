@@ -219,12 +219,19 @@ class SoapController extends Controller
 
     public function Comando02ListaPendientes($RutCliente)
     {
-        $soapClient = new SoapClient("https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?wsdl");
-        //$soapClient = new SoapClient(env('APP_URLMANAGER'));
-        $response = $soapClient->Comando02ListaPendientes([
-            "Codigo" => "0mpPWcXj8AC312v",
-            "RutCliente" => "77026694-7"
-        ]);
+        try {
+            $soapClient = new SoapClient("https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?wsdl");
+            //$soapClient = new SoapClient(env('APP_URLMANAGER'));
+            $response = $soapClient->Comando02ListaPendientes([
+                "Codigo" => "0mpPWcXj8AC312v",
+                "RutCliente" => "77026694-7"
+            ]);
+            dd($response->Comando02ListaPendientesResult->Contenido->any);
+            return $response->Comando02ListaPendientesResult->Contenido->any;
+        } catch (Exception $e) {
+            echo "Error 01: " . $e->getMessage();
+        }
+
         dd($response->Comando02ListaPendientesResult);
         return $response->Comando02ListaPendientesResult->Contenido->any;
 
