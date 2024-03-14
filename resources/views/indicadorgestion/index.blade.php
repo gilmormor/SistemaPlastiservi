@@ -97,8 +97,7 @@ Productos Notas de Venta
                                         <label>Categoría:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="categoriaprod_id" id="categoriaprod_id" class="form-control selectpicker categoriaprod_id">
-                                            <option value="">Todos</option>
+                                        <select name="categoriaprod_id" id="categoriaprod_id" class="form-control selectpicker categoriaprod_id" data-live-search='true' multiple data-actions-box='true'>
                                             @foreach($categoriaprods as $categoriaprod)
                                                 <option
                                                     value="{{$categoriaprod->id}}">

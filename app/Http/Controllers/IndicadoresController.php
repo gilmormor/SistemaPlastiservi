@@ -1887,7 +1887,14 @@ function consulta($request){
     if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";
     }else{
-        $aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+        //$aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+        if(is_array($request->categoriaprod_id)){
+            $aux_categoriaprod_id = implode ( ',' , $request->categoriaprod_id);
+        }else{
+            $aux_categoriaprod_id = $request->categoriaprod_id;
+        }
+        $aux_condcategoriaprod_id = " categoriaprod.id in ($aux_categoriaprod_id) ";
+
     }
     if(empty($request->giro_id)){
         $aux_condgiro_id = " true";
@@ -2292,7 +2299,13 @@ function consultaODcerrada($request){
     if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";
     }else{
-        $aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+        //$aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+        if(is_array($request->categoriaprod_id)){
+            $aux_categoriaprod_id = implode ( ',' , $request->categoriaprod_id);
+        }else{
+            $aux_categoriaprod_id = $request->categoriaprod_id;
+        }
+        $aux_condcategoriaprod_id = " categoriaprod.id in ($aux_categoriaprod_id) ";
     }
     if(empty($request->giro_id)){
         $aux_condgiro_id = " true";
@@ -2890,7 +2903,14 @@ function consultakilostipoentrega($request){
     if(empty($request->categoriaprod_id)){
         $aux_condcategoriaprod_id = " true";
     }else{
-        $aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+        //$aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+        if(is_array($request->categoriaprod_id)){
+            $aux_categoriaprod_id = implode ( ',' , $request->categoriaprod_id);
+        }else{
+            $aux_categoriaprod_id = $request->categoriaprod_id;
+        }
+        $aux_condcategoriaprod_id = " categoriaprod.id in ($aux_categoriaprod_id) ";
+
     }
     if(empty($request->giro_id)){
         $aux_condgiro_id = " true";
