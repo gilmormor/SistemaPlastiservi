@@ -277,12 +277,13 @@ class DteFacturaController extends Controller
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
 
-        $respuesta = Dte::generardteprueba($dte);
-        /*
+        //$respuesta = Dte::generardteprueba($dte);
+        
         $respuesta = response()->json([
             'id' => 1
         ]);
-        */
+        
+        $dte->nrodocto = 200;
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
