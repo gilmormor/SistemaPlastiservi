@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-    Sucursal
+    Empresa
 @endsection
 
 @section('scripts')

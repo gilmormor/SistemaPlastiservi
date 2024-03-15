@@ -22,6 +22,7 @@ use App\Models\DespachoSolAnul;
 use App\Models\DespachoSolDet;
 use App\Models\DespachoSolDet_InvBodegaProducto;
 use App\Models\DespachoSolDTE;
+use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
@@ -107,6 +108,11 @@ class DespachoSolController extends Controller
     {
         can('crear-solicitud-despacho');
         $data = NotaVenta::findOrFail($id);
+        /* return redirect('despachosol/listarnv')->with([
+            'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: ',
+            'tipo_alert' => 'alert-error'
+        ]); */
+
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $detalles = $data->notaventadetalles()->get();
         $clienteselec = $data->cliente()->get();

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Http\Controllers\SoapController;
 use App\Models\Seguridad\Usuario;
+use DOMDocument;
+use DOMXPath;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +14,8 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Str;
 use SplFileInfo;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Support\SimpleXMLElement;
+use SimpleXMLElement as GlobalSimpleXMLElement;
 
 class Dte extends Model
 {
@@ -2561,6 +2565,263 @@ class Dte extends Model
         }
     }
 
+    public static function subirSisCobranza($dte){
+        $tipodocto = $dte->foliocontrol->tipodocto;
+        if($tipodocto == 33 or $tipodocto == 34 or $tipodocto == 61 or $tipodocto == 56){
+            $empresa = Empresa::findOrFail(1);
+            if($empresa->actsiscob == 1){
+                //dd("entro en obser DteFac");
+                $soap = new SoapController();
+                $xmlcliente = Dte::xmlClienteSisCobranza($dte);
+                //dd($xmlcliente);
+                $comando03creaclientes = $soap->Comando03CreaClientes($xmlcliente);
+                //dd($comando03creaclientes);
+                $xmlcobranza = Dte::xmlDocSisCobranza($dte);
+                $cargadocumentoscobranza = $soap->Comando01CargaDocumentos($xmlcobranza);
+                //dd($cargadocumentoscobranza);
+            }    
+        }
+    }
+
+    public static function xmlClienteSisCobranza($dte){
+        $rutrecep = $dte->cliente->rut;
+        $rutrecep = number_format( substr ( $rutrecep, 0 , -1 ) , 0, "", "") . '-' . substr ( $rutrecep, strlen($rutrecep) -1 , 1 );
+
+        $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
+        $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
+        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
+        $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
+        $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
+        $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->ciudad->nombre),0,20)));
+        $telefonoRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->telefono),0,20)));
+        $telefonoRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->telefono),0,20)));
+        $plazopagoRecep = strtoupper(sanear_string(substr(trim($dte->cliente->plazopago->descripcion),0,20)));    
+
+        $contenido = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>
+        <Raiz>
+            <Cliente RUT=\"$rutrecep\" NOMFANTASIA=\"$RznSocRecep\" RAZONSOCIAL=\"$RznSocRecep\" GIRO=\"$GiroRecep\"
+            DIRECCION=\"$DirRecep\"
+            COMUNA=\"$CmnaRecep\" CIUDAD=\"$CiudadRecep\" FONO=\"$telefonoRecep\" VENDEDOR=\"$dte->vendedor_id\" GLOSAPAGO=\"$plazopagoRecep\"
+            CREDITOAPROBADO=\"0\" DIRECCIONDESPACHO=\"$DirRecep\" >
+            </Cliente>
+        </Raiz>";
+        return $contenido;
+    }
+
+    public static function xmlDocSisCobranza($dte){
+        $rutrecep = $dte->cliente->rut;
+        $rutrecep = number_format( substr ( $rutrecep, 0 , -1 ) , 0, "", "") . '-' . substr ( $rutrecep, strlen($rutrecep) -1 , 1 );
+
+        $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
+        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
+        $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
+        $CiuRecep = strtoupper(sanear_string(substr(trim($dte->cliente->ciudad->nombre),0,70)));
+        $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
+        $telefono = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->telefono),0,20)));
+        
+        $TipoDTE = $dte->foliocontrol->tipodocto;
+
+        $aux_neto = $dte->mntneto;
+        $aux_tasaiva = $dte->tasaiva;
+        $aux_iva = $dte->iva;
+        $aux_mnttotal = $dte->mnttotal;
+        $FchEmis = date('d-m-Y', strtotime($dte->fchemis));
+        $numfv = "";
+        if($TipoDTE == 33 or $TipoDTE == 34){
+            $vencimie = date('d-m-Y', strtotime($dte->dtefac->fchvenc));
+            $codtipodoc = "FAV";
+            $formapago_id = $dte->dtefac->formapago_id;
+        }
+        if($TipoDTE == 61){
+            $vencimie = $FchEmis;
+            $codtipodoc = "NCRV";
+            $formapago_id = $dte->dtedte->dtefac->dtefac->formapago_id;
+            $numfv = $dte->dtedte->dtefac->nrodocto;
+        }
+        if($TipoDTE == 56){
+            $vencimie = $FchEmis;
+            $codtipodoc = "NDV";
+            $formapago_id = $dte->dtedte->dtefac->dtefac->formapago_id;
+            $numfv = $dte->dtedte->dtefac->nrodocto;
+        }
+
+        if($formapago_id == 1 or $formapago_id == 3){
+            $codformpago = "Contado";
+        }
+        if($formapago_id == 2){
+            $codformpago = "Cheque a Fecha";
+        }
+        if($formapago_id == 5){
+            $codformpago = "Crédito";
+        }
+
+        $contenido = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>
+        <Raiz>
+            <EncabezadoDOC
+                NUMFACT=\"$dte->nrodocto\" NUMREG=\"0\" FECHA=\"$FchEmis\" VENCIMIE=\"$vencimie\" RUTFACT=\"$rutrecep\"
+                RAZSOC2=\"$RznSocRecep\" GIRO=\"$GiroRecep\"
+                DIR=\"$DirRecep\" COMUNA=\"$CmnaRecep\" CIUDAD=\"$CiuRecep\" FONO=\"$telefono\"
+                CODCOMIS=\"\" COMISION=\"0\" CODCODVEND=\"$dte->vendedor_id\" GLOSACON=\"\" NUMGUIAF=\"$numfv\" 
+                CODFORMPAGO=\"$codformpago\"
+                GARANTIA=\"0\" STOCK=\"1\" NULA=\"0\" CANCELA=\"0\" CODTIPODOC=\"$codtipodoc\"
+                VENTA=\"1\" NDIASF=\"0\" NUMCORR=\"0\"
+                CODTIPOVTA=\"\" NUMFV=\"0\" NOTAOBS=\"\"
+                FECHCONT=\"$FchEmis\" AFECTO=\"0\" EXENTO=\"0\"
+                DCTOTIPO=\"1\" DCTOPJE=\"0.00\" CODSUCUR=\"1\"
+                TOTNETO=\"$aux_neto\" IVA=\"$aux_tasaiva\" TOTIVA=\"$aux_iva\"
+                IMP1=\"0\" IMP2=\"0\" TOTAL=\"$aux_mnttotal\"
+                MONEDA=\"$\" TASACBIO=\"1\"
+                NUMCOT=\"0\" ABONO=\"0\" CODCTA=\"110401\" CODCC=\"1002\"
+                SINANALIS=\"0\" ESELECTR=\"1\" E_ENVIADO=\"0\" FPAGELE=\"\"
+                MPAGELE=\"\" RAZONREF=\"\" REFELE=\"\"
+                OBRA=\"\" NUMORDENC=\"0\" NROPEDIDO=\"\" FCHPEDIDO=\"\"
+                REFELE2=\"\" RAZONREF2=\"\"
+                CONCIVAFP=\"\" CAJERO=\"0\" NROHESCODE=\"\"
+                FECHAHES=\"\" PATENTE=\"\" NOMBRECHOFER=\"\" ENTREGAR=\"\" >
+            </EncabezadoDOC>
+            <Detalles>
+                <DetalleDOC
+                CODIGOPROD=\"1000\" DESCRIP=\"Producto\"
+                    CANTIDAD=\"1\" PRECUNIT=\"$aux_neto\" DESCTO=\"0\" FECHENTR=\"\"
+                    CODCTACTBLEDET=\"310101\" CODCENCOSTODET=\"1002\" ITEM=\"1\" FACTORIMP=\"0\"
+                    NSERIE=\"\" CODBODEGA=\"B1\" TAX=\"0\" LOT_IDE=\"\" VENCE=\"\" TIP_TAX=\"0\">
+                </DetalleDOC>
+            </Detalles>
+        </Raiz>";
+        return $contenido;
+    }
+
+    public static function deudaClienteSisCobranza($rut){
+        //dd($request);
+        //$rut = "";
+        if(!isset($rut) or empty($rut)){
+            $aux_condrut = " true";
+        }else{
+            $aux_condrut = "cliente.rut='$rut'";
+        }
+        $sql = "SELECT id,rut,razonsocial,limitecredito
+                    FROM cliente
+                    WHERE $aux_condrut
+                    ORDER BY razonsocial;";
+        $clientes = DB::select($sql);
+        //$clientes = cliente::get();
+        //dd($clientes);
+        $soap = new SoapController();
+        $aux_cont = 0;
+        $ArrayFact = "";
+        foreach ($clientes as $cliente) {
+            $ListaPendientes = $soap->Comando02ListaPendientes(formatearRUT($cliente->rut));
+
+            $dom = new DOMDocument();
+            $dom->loadXML($ListaPendientes);
+            $xpath = new DOMXPath($dom);
+    
+            // Registra el espacio de nombres necesario (puedes ajustarlo según tu XML)
+            $xpath->registerNamespace('diffgr', 'urn:schemas-microsoft-com:xml-diffgram-v1');
+    
+            // Consulta XPath para seleccionar todos los elementos <Table>
+            $tables = $xpath->query('//diffgr:diffgram/NewDataSet/Table');
+    
+            $matriz = [];
+            $TFac = 0;
+            $TDeuda = 0;
+            $TDeudaFec = 0;
+            $datosFacDeuda = [];
+            $ArrayNroFac = [];
+            $cont = 0;
+            foreach ($tables as $table) {
+                $cont++;
+                // Accede a los elementos hijos dentro de cada <Table>
+                $nroFAV = $xpath->evaluate('string(NroFAV)', $table);
+                $cliente1 = $xpath->evaluate('string(Cliente)', $table);
+                $fechaFAV = $xpath->evaluate('string(FechaFAV)', $table);
+                $Deuda = $xpath->evaluate('string(Monto)', $table);
+                $pkFAVPendiente = $xpath->evaluate('string(PKFAVPENDIENTE)', $table);
+                $vendedor = $xpath->evaluate('string(Vendedor)', $table);
+                $numeroOC = $xpath->evaluate('string(NumeroOC)', $table);
+    
+    
+                // Realiza las operaciones que desees con los valores obtenidos
+                $NroFAV = substr($nroFAV,4,7);
+                $dtefac = Dte::where("nrodocto",$NroFAV)
+                                ->where("foliocontrol_id",1)
+                                ->get();
+                $mnttotal = 0;
+                if(count($dtefac) > 0){
+                    $dte = Dte::findOrFail($dtefac[0]->id);
+                    $mnttotal = $dte->mnttotal;
+                    $TFac += $dte->mnttotal;
+                    $fecfact = $dte->fchemis;
+                    if(isset($dte->dtefac->fchvenc)){
+                        $fecvenc = $dte->dtefac->fchvenc;
+                    }else{
+                        $fecvenc = $dte->fchemis;
+                    }
+                }else{
+                    $auxcliente = Cliente::findOrFail($cliente->id);
+                    $fecfact = substr($fechaFAV,0,10);
+                    $fecvenc = date('Y-m-d');
+                    //$fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $auxcliente->plazopago->dias ? $auxcliente->plazopago->dias : "0" . " days"));
+                }
+                $TDeuda += $Deuda;
+                $empresa = Empresa::findOrFail(1);
+                $fecvencProrr = date('Y-m-d', strtotime($fecvenc ."+ " . $empresa->diasprorrogacob . " days"));
+                if($cont > 1){
+                    //dd($fecvencProrr);
+                }
+                //dd($fechacobro);
+                if($fecvencProrr <= date('Y-m-d')){
+                    $TDeudaFec += $Deuda;
+                    $datosFacDeuda[] = [
+                        'NroFAV' => $NroFAV,
+                        'fecfact' => $fecfact,
+                        'fecvenc' => $fecvenc,
+                        'mnttot' => $mnttotal,
+                        'Deuda' => $Deuda
+                    ];
+                    $ArrayNroFac[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
+                }
+                $matriz [] = [
+                    'NroFAV' => $NroFAV,
+                    'Cliente' => $cliente1,
+                    'FechaFAV' => $fechaFAV,
+                    'fecfact' => $fecfact,
+                    'fecvenc' => $fecvenc,
+                    'mnttot' => $mnttotal,
+                    'Deuda' => $Deuda,
+                    //'PKFAVPendiente' => $pkFAVPendiente,
+                    'Vendedor' => $vendedor,
+                    'NumeroOC' => $numeroOC,
+                ];
+                /*
+                echo 'NroFAV: ' . $nroFAV . PHP_EOL;
+                echo 'Cliente: ' . $cliente . PHP_EOL;
+                echo 'FechaFAV: ' . $fechaFAV . PHP_EOL;
+                echo 'Monto: ' . $Deuda . PHP_EOL;
+                echo 'PKFAVPendiente: ' . $pkFAVPendiente . PHP_EOL;
+                echo 'Vendedor: ' . $vendedor . PHP_EOL;
+                echo 'NumeroOC: ' . $numeroOC . PHP_EOL;
+                */
+                // Puedes realizar otras operaciones con los valores obtenidos
+            }
+            $ArrayFact = [
+                "rut" => $cliente->rut,
+                "razonsocial" => $cliente->razonsocial,
+                "limitecredito" => $cliente->limitecredito,
+                "TFac" => $TFac,
+                "TDeuda" => $TDeuda,
+                "TDeudaFec" => $TDeudaFec,
+                "NroFacDeu" => implode(",", $ArrayNroFac),
+                "datosFacDeuda" => $datosFacDeuda
+            ];   
+            $aux_cont++;
+            /* if($aux_cont > 100){
+                break;
+            } */
+        }
+        //dd($ArrayFact);
+        return $ArrayFact;
+    }
 }
 
 function dtefactura($id,$Folio,$tipoArch,$request){
@@ -3422,3 +3683,4 @@ function consultasql_dte($request){
     $dte = DB::select($sql);
     return $dte;    
 }
+

@@ -166,6 +166,7 @@ class DteNDFacturaController extends Controller
             'id' => 1
         ]);
         */
+        //$dte->nrodocto = 23;
         //dd("");
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
@@ -182,6 +183,7 @@ class DteNDFacturaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
+            Dte::subirSisCobranza($dte);
             return redirect('dtendfactura')->with([
                 'mensaje'=>'Nota de Credito creada con exito.',
                 'tipo_alert' => 'alert-success'

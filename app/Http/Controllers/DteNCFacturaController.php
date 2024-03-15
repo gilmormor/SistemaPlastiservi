@@ -190,6 +190,7 @@ class DteNCFacturaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
+            Dte::subirSisCobranza($dte);
             return redirect('dtencfactura')->with([
                 'mensaje'=>'Nota de Debito creada con exito.',
                 'tipo_alert' => 'alert-success'
