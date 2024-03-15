@@ -168,13 +168,14 @@ class DteNCFacturaController extends Controller
         $dtencnd->codref = $request->codref;
         $dte->dtencnd = $dtencnd;
 
-        $respuesta = Dte::generardteprueba($dte);
-        /*
+        //$respuesta = Dte::generardteprueba($dte);
+        
         $respuesta = response()->json([
             'id' => 1
         ]);
-        */
+        
         //dd("");
+        $dte->nrodocto = 20;
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
             $dteNew = Dte::create($dte->toArray());

@@ -161,12 +161,12 @@ class DteNDFacturaController extends Controller
         $dtencnd->codref = $request->codref;
         $dte->dtencnd = $dtencnd;
 
-        $respuesta = Dte::generardteprueba($dte);
-        /*$respuesta = response()->json([
+        //$respuesta = Dte::generardteprueba($dte);
+        $respuesta = response()->json([
             'id' => 1
         ]);
-        */
-        //$dte->nrodocto = 23;
+        
+        $dte->nrodocto = 23;
         //dd("");
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
