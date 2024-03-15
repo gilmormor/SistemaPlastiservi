@@ -231,11 +231,11 @@ class SoapController extends Controller
             // Procesar la respuesta SOAP
             // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
             // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
-            //dd($response);
+            dd($response);
             return $response;
         } catch (Exception $e) {
             // Capturar errores
-            echo "Error: " . $e->getMessage();
+            dd("Error: " . $e->getMessage());
         }
     }
 
@@ -293,11 +293,11 @@ class SoapController extends Controller
             // Procesar la respuesta SOAP
             // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
             // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
-            //dd($response);
+            dd($response);
             return $response;
         } catch (Exception $e) {
             // Capturar errores
-            echo "Error: " . $e->getMessage();
+            dd("Error: " . $e->getMessage());
         }
 
     }
