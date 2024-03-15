@@ -2710,19 +2710,7 @@ class Dte extends Model
         $aux_cont = 0;
         $ArrayFact = "";
         foreach ($clientes as $cliente) {
-            $ListaPendientes1 = $soap->Comando02ListaPendientes(formatearRUT($cliente->rut));
-            $ListaPendientes = '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-            <soap:Body>
-                <Comando02ListaPendientesResponse xmlns="https://aplicaciones.sigetec.cl/WSPlastiServi/">
-                    <Comando02ListaPendientesResult>
-                        <EsError>false</EsError>
-                        <ErrorDescripcion/>
-                        <Contenido>' . $ListaPendientes1 .
-                        '</Contenido>
-                        </Comando02ListaPendientesResult>
-                    </Comando02ListaPendientesResponse>
-                </soap:Body>
-            </soap:Envelope>';
+            $ListaPendientes = $soap->Comando02ListaPendientes(formatearRUT($cliente->rut));
 
             $dom = new DOMDocument();
             $dom->loadXML($ListaPendientes);

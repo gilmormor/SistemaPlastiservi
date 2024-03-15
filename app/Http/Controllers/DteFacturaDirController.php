@@ -282,6 +282,7 @@ class DteFacturaDirController extends Controller
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+            Dte::subirSisCobranza($dte);
             if($aux_foliosdisp <=20){
                 return redirect('dtefacturadir')->with([
                     'mensaje'=>"Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,

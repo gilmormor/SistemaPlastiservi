@@ -191,21 +191,58 @@ class SoapController extends Controller
     }
 
     public function Comando01CargaDocumentos($cadenaxml){
+        // URL del servicio SOAP
+        $soapUrl = env('APP_URLMANAGER');
+
+        // Cuerpo de la solicitud SOAP
+        $soapRequest = '<?xml version="1.0" encoding="utf-8"?>
+                            <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                            <soap:Body>
+                                <Comando01CargaDocumentos xmlns="https://aplicaciones.sigetec.cl/WSPlastiServi/">
+                                <Codigo>0mpPWcXj8AC312v</Codigo>
+                                <XMlIngreso>' . $cadenaxml . '</XMlIngreso>
+                                </Comando01CargaDocumentos>
+                            </soap:Body>
+                            </soap:Envelope>';
+
         try {
-            $soapClient = new SoapClient(env('APP_URLMANAGER'));
-            $response = $soapClient->Comando01CargaDocumentos([
-                "Codigo" => "0mpPWcXj8AC312v",
-                "XMlIngreso" => $cadenaxml
-            ]);
-            return $response->Comando01CargaDocumentosResult;
+            // Configurar la solicitud cURL
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $soapUrl);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $soapRequest);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Content-Type: text/xml',
+                'Content-Length: ' . strlen($soapRequest)
+            ));
+
+            // Realizar la solicitud cURL
+            $response = curl_exec($curl);
+
+            // Verificar si hubo errores
+            if(curl_errno($curl)) {
+                throw new Exception('Error cURL: ' . curl_error($curl));
+            }
+
+            // Cerrar la sesión cURL
+            curl_close($curl);
+
+            // Procesar la respuesta SOAP
+            // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
+            // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
+            //dd($response);
+            return $response;
         } catch (Exception $e) {
+            // Capturar errores
             echo "Error: " . $e->getMessage();
         }
     }
 
+
     public function Comando03CreaClientes($cadenaxml)
     {
-        try {
+        /* try {
             $soapClient = new SoapClient(env('APP_URLMANAGER'));
             $response = $soapClient->Comando03CreaClientes([
                 "Codigo" => "0mpPWcXj8AC312v",
@@ -213,14 +250,60 @@ class SoapController extends Controller
             ]);
             return $response->Comando03CreaClientesResult;
         } catch (Exception $e) {
+            return "Error: " . $e->getMessage();
+        } */
+
+        // URL del servicio SOAP
+        $soapUrl = env('APP_URLMANAGER');
+
+        // Cuerpo de la solicitud SOAP
+        $soapRequest = '<?xml version="1.0" encoding="utf-8"?>
+                        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                        <soap:Body>
+                            <Comando03CreaClientes xmlns="https://aplicaciones.sigetec.cl/WSPlastiServi/">
+                            <Codigo>0mpPWcXj8AC312v</Codigo>
+                            <XMlIngreso>' . $cadenaxml . '</XMlIngreso>
+                            </Comando03CreaClientes>
+                        </soap:Body>
+                        </soap:Envelope>';
+
+        try {
+            // Configurar la solicitud cURL
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $soapUrl);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $soapRequest);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Content-Type: text/xml',
+                'Content-Length: ' . strlen($soapRequest)
+            ));
+
+            // Realizar la solicitud cURL
+            $response = curl_exec($curl);
+
+            // Verificar si hubo errores
+            if(curl_errno($curl)) {
+                throw new Exception('Error cURL: ' . curl_error($curl));
+            }
+
+            // Cerrar la sesión cURL
+            curl_close($curl);
+
+            // Procesar la respuesta SOAP
+            // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
+            // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
+            //dd($response);
+            return $response;
+        } catch (Exception $e) {
+            // Capturar errores
             echo "Error: " . $e->getMessage();
         }
+
     }
 
-    public function Comando02ListaPendientes($RutCliente)
-    {
-        try {
-            //$soapClient = new SoapClient("https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?wsdl");
+    public function Comando02ListaPendientes($RutCliente){
+        /* try {
             $soapClient = new SoapClient(env('APP_URLMANAGER'));
             $response = $soapClient->Comando02ListaPendientes([
                 "Codigo" => "0mpPWcXj8AC312v",
@@ -228,21 +311,59 @@ class SoapController extends Controller
             ]);
             return $response->Comando02ListaPendientesResult->Contenido->any;
         } catch (SoapFault $e) {
+            // Capturar errores específicos de SOAP
+            dd("Error 01: " . $e->getMessage());
+        } catch (Exception $e) {
+            // Capturar otros errores
+            dd("Error 02: " . $e->getMessage());
+        } */
+
+        // URL del servicio SOAP
+        $soapUrl = env('APP_URLMANAGER');
+
+        // Cuerpo de la solicitud SOAP
+        $soapRequest = '<?xml version="1.0" encoding="utf-8"?>
+                        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                        <soap:Body>
+                            <Comando02ListaPendientes xmlns="https://aplicaciones.sigetec.cl/WSPlastiServi/">
+                            <Codigo>0mpPWcXj8AC312v</Codigo>
+                            <RutCliente>' . $RutCliente . '</RutCliente>
+                            </Comando02ListaPendientes>
+                        </soap:Body>
+                        </soap:Envelope>';
+
+        try {
+            // Configurar la solicitud cURL
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $soapUrl);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $soapRequest);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Content-Type: text/xml',
+                'Content-Length: ' . strlen($soapRequest)
+            ));
+
+            // Realizar la solicitud cURL
+            $response = curl_exec($curl);
+
+            // Verificar si hubo errores
+            if(curl_errno($curl)) {
+                throw new Exception('Error cURL: ' . curl_error($curl));
+            }
+
+            // Cerrar la sesión cURL
+            curl_close($curl);
+
+            // Procesar la respuesta SOAP
+            // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
+            // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
+            //dd($response);
+            return $response;
+        } catch (Exception $e) {
+            // Capturar errores
             echo "Error: " . $e->getMessage();
         }
-        /*
-        try{
-            $soapclient = new SoapClient('https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx?op=Comando02ListaPendientes');
-            $response = $soapclient->Comando02ListaPendientes([
-                "Codigo" => "0mpPWcXj8AC312v",
-                "RutCliente" => $RutCliente
-            ]);
-            dd($RutCliente);
-            return ($response->Comando02ListaPendientesResponse);
-        }catch(Exception $e){
-            return $e->getMessage();
-        }
-        */
     }
 
 }
