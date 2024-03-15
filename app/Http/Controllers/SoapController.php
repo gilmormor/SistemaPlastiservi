@@ -238,4 +238,53 @@ class SoapController extends Controller
         }
     }
 
+    public function Comando02ListaPendientes01($RutCliente){
+        // URL del servicio SOAP
+        $soapUrl = "https://ws.manager.cl/Manager/ws/SigetecPlastiservi/wscomando.asmx";
+
+        // Cuerpo de la solicitud SOAP
+        $soapRequest = '<?xml version="1.0" encoding="utf-8"?>
+                        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                        <soap:Body>
+                            <Comando02ListaPendientes xmlns="https://aplicaciones.sigetec.cl/WSPlastiServi/">
+                            <Codigo>0mpPWcXj8AC312v</Codigo>
+                            <RutCliente>' . $RutCliente . '</RutCliente>
+                            </Comando02ListaPendientes>
+                        </soap:Body>
+                        </soap:Envelope>';
+
+        try {
+            // Configurar la solicitud cURL
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $soapUrl);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $soapRequest);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Content-Type: text/xml',
+                'Content-Length: ' . strlen($soapRequest)
+            ));
+
+            // Realizar la solicitud cURL
+            $response = curl_exec($curl);
+
+            // Verificar si hubo errores
+            if(curl_errno($curl)) {
+                throw new Exception('Error cURL: ' . curl_error($curl));
+            }
+
+            // Cerrar la sesión cURL
+            curl_close($curl);
+
+            // Procesar la respuesta SOAP
+            // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
+            // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
+            //dd($response);
+            return $response;
+        } catch (Exception $e) {
+            // Capturar errores
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
 }
