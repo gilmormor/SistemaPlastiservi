@@ -191,6 +191,18 @@ class SoapController extends Controller
     }
 
     public function Comando01CargaDocumentos($cadenaxml){
+        try {
+            $soapClient = new SoapClient(env('APP_URLMANAGER'));
+            $response = $soapClient->Comando01CargaDocumentos([
+                "Codigo" => "0mpPWcXj8AC312v",
+                "XMlIngreso" => $cadenaxml
+            ]);
+            dd($response->Comando03CreaClientesResult);
+            return $response->Comando03CreaClientesResult;
+        } catch (Exception $e) {
+            dd("Error: " . $e->getMessage());
+        }
+
         // URL del servicio SOAP
         $soapUrl = env('APP_URLMANAGER');
 
@@ -242,16 +254,17 @@ class SoapController extends Controller
 
     public function Comando03CreaClientes($cadenaxml)
     {
-        /* try {
+        try {
             $soapClient = new SoapClient(env('APP_URLMANAGER'));
             $response = $soapClient->Comando03CreaClientes([
                 "Codigo" => "0mpPWcXj8AC312v",
                 "XMlIngreso" => $cadenaxml
             ]);
+            dd($response->Comando03CreaClientesResult);
             return $response->Comando03CreaClientesResult;
         } catch (Exception $e) {
-            return "Error: " . $e->getMessage();
-        } */
+            dd("Error: " . $e->getMessage());
+        }
 
         // URL del servicio SOAP
         $soapUrl = env('APP_URLMANAGER');
