@@ -212,11 +212,11 @@ class SoapController extends Controller
                             <soap:Body>
                                 <Comando01CargaDocumentos xmlns="https://aplicaciones.sigetec.cl/WSPlastiServi/">
                                 <Codigo>0mpPWcXj8AC312v</Codigo>
-                                <XMlIngreso>' . $cadenaxml . '</XMlIngreso>
+                                <XMlIngreso><![CDATA[' . $cadenaxml . ']]></XMlIngreso>
                                 </Comando01CargaDocumentos>
                             </soap:Body>
                             </soap:Envelope>';
-
+        //dd($soapRequest);
         try {
             // Configurar la solicitud cURL
             $curl = curl_init();
@@ -243,7 +243,7 @@ class SoapController extends Controller
             // Procesar la respuesta SOAP
             // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
             // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
-            dd($response);
+            //dd($response);
             return $response;
         } catch (Exception $e) {
             // Capturar errores
@@ -275,7 +275,7 @@ class SoapController extends Controller
                         <soap:Body>
                             <Comando03CreaClientes xmlns="https://aplicaciones.sigetec.cl/WSPlastiServi/">
                             <Codigo>0mpPWcXj8AC312v</Codigo>
-                            <XMlIngreso>' . $cadenaxml . '</XMlIngreso>
+                            <XMlIngreso><![CDATA[' . $cadenaxml . ']]></XMlIngreso>
                             </Comando03CreaClientes>
                         </soap:Body>
                         </soap:Envelope>';
@@ -306,7 +306,7 @@ class SoapController extends Controller
             // Procesar la respuesta SOAP
             // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
             // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
-            dd($response);
+            //dd($response);
             return $response;
         } catch (Exception $e) {
             // Capturar errores

@@ -282,8 +282,10 @@ class DteFacturaController extends Controller
         $respuesta = response()->json([
             'id' => 1
         ]);
-        
-        $dte->nrodocto = 200;
+        $dte->nrodocto = 201;
+        /*
+        $prueba = Dte::subirSisCobranza($dte);
+        dd($prueba);*/
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
