@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\GuardarDteND;
 use App\Http\Requests\ValidarDTEND;
 use App\Models\CentroEconomico;
 use App\Models\Dte;
@@ -161,12 +162,12 @@ class DteNDFacturaController extends Controller
         $dtencnd->codref = $request->codref;
         $dte->dtencnd = $dtencnd;
 
-        //$respuesta = Dte::generardteprueba($dte);
-        $respuesta = response()->json([
+        $respuesta = Dte::generardteprueba($dte);
+        /* $respuesta = response()->json([
             'id' => 1
-        ]);
+        ]); */
         
-        $dte->nrodocto = 23;
+        //$dte->nrodocto = 23;
         //dd("");
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
@@ -183,7 +184,8 @@ class DteNDFacturaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
-            Dte::subirSisCobranza($dte);
+            Dte::subirSisCobranza($dteNew);
+            Event(new GuardarDteND($dteNew));//ENVIAR CORREO A CONTABILIDAD AVISANDOQ EU HAY UNA ND
             return redirect('dtendfactura')->with([
                 'mensaje'=>'Nota de Credito creada con exito.',
                 'tipo_alert' => 'alert-success'

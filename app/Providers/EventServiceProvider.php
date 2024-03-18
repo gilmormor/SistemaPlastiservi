@@ -9,6 +9,8 @@ use App\Events\AvisoRevisionNotaVenta;
 use App\Events\CerrarSolDesp;
 use App\Events\DevolverSolDesp;
 use App\Events\FinSesionUsuario;
+use App\Events\GuardarDteNC;
+use App\Events\GuardarDteND;
 use App\Events\GuardarFacturaDespacho;
 use App\Events\GuardarGuiaDespacho;
 use App\Events\InicioSesionUsuario;
@@ -22,6 +24,8 @@ use App\Listeners\NotifyMailAcuTecAprobarRechazar;
 use App\Listeners\NotifyMailAprobarRechazoNotaVenta;
 use App\Listeners\NotifyMailAvisoRevisionAcuTec;
 use App\Listeners\NotifyMailAvisoRevisionNotaVenta;
+use App\Listeners\NotifyMailGuardarDteNC;
+use App\Listeners\NotifyMailGuardarDteND;
 use App\Listeners\NotifyMailGuardarFacturaDespacho;
 use App\Listeners\NotifyMailGuardarGuiaDespacho;
 use Illuminate\Support\Facades\Event;
@@ -72,8 +76,11 @@ class EventServiceProvider extends ServiceProvider
         AvisoRevisionNotaVenta::class => [
             NotifyMailAvisoRevisionNotaVenta::class,
         ],
-        AprobarRechazoNotaVenta::class => [
-            NotifyMailAprobarRechazoNotaVenta::class,
+        GuardarDteNC::class => [
+            NotifyMailGuardarDteNC::class,
+        ],
+        GuardarDteND::class => [
+            NotifyMailGuardarDteND::class,
         ]
     ];
 

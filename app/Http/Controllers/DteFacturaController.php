@@ -277,12 +277,12 @@ class DteFacturaController extends Controller
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
 
-        //$respuesta = Dte::generardteprueba($dte);
+        $respuesta = Dte::generardteprueba($dte);
         
-        $respuesta = response()->json([
+        /* $respuesta = response()->json([
             'id' => 1
-        ]);
-        $dte->nrodocto = 201;
+        ]); */
+        //$dte->nrodocto = 201;
         /*
         $prueba = Dte::subirSisCobranza($dte);
         dd($prueba);*/

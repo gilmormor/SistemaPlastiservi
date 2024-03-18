@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\GuardarDteNC;
 use App\Http\Requests\ValidarDTE;
 use App\Http\Requests\ValidarDTEFac;
 use App\Http\Requests\ValidarDTENC;
@@ -168,14 +169,14 @@ class DteNCFacturaController extends Controller
         $dtencnd->codref = $request->codref;
         $dte->dtencnd = $dtencnd;
 
-        //$respuesta = Dte::generardteprueba($dte);
+        $respuesta = Dte::generardteprueba($dte);
         
-        $respuesta = response()->json([
+        /* $respuesta = response()->json([
             'id' => 1
-        ]);
+        ]); */
         
         //dd("");
-        $dte->nrodocto = 20;
+        //$dte->nrodocto = 20;
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta->original["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
@@ -191,7 +192,8 @@ class DteNCFacturaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
-            Dte::subirSisCobranza($dte);
+            Dte::subirSisCobranza($dteNew);
+            Event(new GuardarDteNC($dteNew)); //ENVIAR CORREO A CONTABILIDAD AVISANDOQ EU HAY UNA NC
             return redirect('dtencfactura')->with([
                 'mensaje'=>'Nota de Debito creada con exito.',
                 'tipo_alert' => 'alert-success'
