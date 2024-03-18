@@ -316,7 +316,7 @@ class SoapController extends Controller
     }
 
     public function Comando02ListaPendientes($RutCliente){
-        try {
+        /* try {
             $soapClient = new SoapClient(env('APP_URLMANAGER'));
             $response = $soapClient->Comando02ListaPendientes([
                 "Codigo" => "0mpPWcXj8AC312v",
@@ -329,8 +329,8 @@ class SoapController extends Controller
         } catch (Exception $e) {
             // Capturar otros errores
             dd("Error 02: " . $e->getMessage());
-        }
-/* 
+        } */
+
         // URL del servicio SOAP
         $soapUrl = env('APP_URLMANAGER');
 
@@ -376,7 +376,7 @@ class SoapController extends Controller
         } catch (Exception $e) {
             // Capturar errores
             echo "Error: " . $e->getMessage();
-        } */
+        }
     }
 
 }
