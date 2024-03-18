@@ -2781,6 +2781,15 @@ class Dte extends Model
                     ];
                     $ArrayNroFac[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
                 }
+                $datosTotasFacDeuda[] = [
+                    'NroFAV' => $NroFAV,
+                    'fecfact' => $fecfact,
+                    'fecvenc' => $fecvenc,
+                    'mnttot' => $mnttotal,
+                    'Deuda' => $Deuda
+                ];
+                $ArrayNroFac[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
+
                 $matriz [] = [
                     'NroFAV' => $NroFAV,
                     'Cliente' => $cliente1,
@@ -2812,7 +2821,8 @@ class Dte extends Model
                 "TDeuda" => $TDeuda,
                 "TDeudaFec" => $TDeudaFec,
                 "NroFacDeu" => implode(",", $ArrayNroFac),
-                "datosFacDeuda" => $datosFacDeuda
+                "datosFacDeuda" => $datosFacDeuda,
+                "datosTotasFacDeuda" => $datosTotasFacDeuda
             ];   
             $aux_cont++;
             /* if($aux_cont > 100){

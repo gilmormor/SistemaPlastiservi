@@ -149,12 +149,12 @@ function ajaxRequest(data,url,funcion) {
                 $('#tabla-data-consulta').DataTable().clear();
                 // Agregar los nuevos datos al arreglo
                 aux_nombrepdf = respuesta.nombrepdf
-                $('#tabla-data-consulta').DataTable().rows.add(respuesta.datacobranza.datosFacDeuda);
+                $('#tabla-data-consulta').DataTable().rows.add(respuesta.datacobranza.datosTotasFacDeuda);
 
                 // Redibujar la tabla para mostrar los nuevos datos
                 $('#tabla-data-consulta').DataTable().draw();
 
-                totalizar(respuesta.datacobranza.datosFacDeuda);
+                totalizar(respuesta.datacobranza.datosTotasFacDeuda);
 
                 
 				/* if (respuesta.mensaje == "ok") {
