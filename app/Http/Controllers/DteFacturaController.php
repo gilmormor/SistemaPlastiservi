@@ -277,13 +277,12 @@ class DteFacturaController extends Controller
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
 
-        $respuesta = Dte::generardteprueba($dte);
-        
-/*         $respuesta = response()->json([
-            'id' => 1
-        ]);
- */        //dd($respuesta);
-        //$dte->nrodocto = 201;
+        //$respuesta = Dte::generardteprueba($dte);        
+        $respuesta = [
+                    'id' => 1,
+        ];
+        //dd($respuesta);
+        $dte->nrodocto = 224297;
         /*
         $prueba = Dte::subirSisCobranza($dte);
         dd($prueba);*/
@@ -378,7 +377,7 @@ class DteFacturaController extends Controller
             }
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             Dte::subirSisCobranza($dte);
-            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
+            //Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             if($aux_foliosdisp <=20){
                 return redirect('dtefactura')->with([
                     'mensaje'=>"Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
