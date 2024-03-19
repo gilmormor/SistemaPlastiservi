@@ -1643,11 +1643,17 @@ class Dte extends Model
                 ];
             }
         }else{
-            return [
+            /* return [
                 'id' => 0,
                 'mensaje'=> nl2br("Error: Texto contiene letras acentuadas o caracteres especiales. POR FAVOR REVISAR DATOS DEL CLIENTE \n\n") . $Carga_TXTDTE,
                 'tipo_alert' => "error"
+            ]; */
+            return [
+                'id' => 0,
+                'mensaje'=> nl2br("Error: Documento no fue guardado en SII. Error devueldo por BES. Variable Carga_TXTDTE->Estatus no existe. \n\n") . $Carga_TXTDTE,
+                'tipo_alert' => "error"
             ];
+
         }
     }
 
