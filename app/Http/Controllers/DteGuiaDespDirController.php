@@ -226,7 +226,7 @@ class DteGuiaDespDirController extends Controller
             ]);
             */
             $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
-            if($respuesta->original["id"] == 1){
+            if($respuesta["id"] == 1){
                 $dteNew = Dte::create($dte->toArray());
                 if(isset($dteoc)){
                     if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
@@ -248,6 +248,7 @@ class DteGuiaDespDirController extends Controller
                 $foliocontrol->ultfoliouti = $dteNew->nrodocto;
                 $foliocontrol->save();
                 $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+                Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
                 if($aux_foliosdisp <=100){
                     return redirect('dteguiadespdir')->with([
                         'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
@@ -269,7 +270,7 @@ class DteGuiaDespDirController extends Controller
                 $foliocontrol->bloqueo = 0;
                 $foliocontrol->save();
                 return redirect('dteguiadespdir')->with([
-                    'mensaje'=>$respuesta->original["mensaje"] ,
+                    'mensaje'=>$respuesta["mensaje"] ,
                     'tipo_alert' => 'alert-error'
                 ]);
             }

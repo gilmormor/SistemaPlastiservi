@@ -170,7 +170,7 @@ class DteNDFacturaController extends Controller
         //$dte->nrodocto = 23;
         //dd("");
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
-        if($respuesta->original["id"] == 1){
+        if($respuesta["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
             foreach ($dte->dtedets as $dtedet) {
                 //dd($dtedet->toArray());
@@ -185,6 +185,7 @@ class DteNDFacturaController extends Controller
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
             Dte::subirSisCobranza($dteNew);
+            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             Event(new GuardarDteND($dteNew));//ENVIAR CORREO A CONTABILIDAD AVISANDOQ EU HAY UNA ND
             return redirect('dtendfactura')->with([
                 'mensaje'=>'Nota de Credito creada con exito.',
@@ -194,7 +195,7 @@ class DteNDFacturaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->save();
             return redirect('dtendfactura')->with([
-                'mensaje'=>$respuesta->original["mensaje"] ,
+                'mensaje'=>$respuesta["mensaje"] ,
                 'tipo_alert' => 'alert-error'
             ]);
         }

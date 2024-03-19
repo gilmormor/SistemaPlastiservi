@@ -223,18 +223,21 @@ class DteFacturaExentaController extends Controller
         $dte->usuario_id = $request->usuario_id;
 
         $respuesta = Dte::generardteprueba($dte);
+        //dd($respuesta);
         /*
         $respuesta = response()->json([
             'id' => 1
         ]);
         */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
-        if($respuesta->original["id"] == 1){
+        if($respuesta["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
-            if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
-                $dteoc->dte_id = $dteNew->id;
-                $dteoc->oc_file = $foto;
-                $dteoc->save();
+            if(isset($dteoc)){
+                if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                    $dteoc->dte_id = $dteNew->id;
+                    $dteoc->oc_file = $foto;
+                    $dteoc->save();
+                }    
             }
             foreach ($dte->dtedets as $dtedet) {
                 $dtedet->dte_id = $dteNew->id;
@@ -280,6 +283,7 @@ class DteFacturaExentaController extends Controller
             $foliocontrol->save();
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             Dte::subirSisCobranza($dte);
+            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             if($aux_foliosdisp <=20){
                 return redirect('dtefacturaexenta')->with([
                     'mensaje'=>"Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
@@ -295,7 +299,7 @@ class DteFacturaExentaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->save();
             return redirect('dtefacturaexenta')->with([
-                'mensaje'=>$respuesta->original["mensaje"] ,
+                'mensaje'=>$respuesta["mensaje"] ,
                 'tipo_alert' => 'alert-error'
             ]);
         }

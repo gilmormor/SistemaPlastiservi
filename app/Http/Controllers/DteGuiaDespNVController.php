@@ -271,7 +271,7 @@ class DteGuiaDespNVController extends Controller
         ]);
         */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
-        if($respuesta->original["id"] == 1){
+        if($respuesta["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
             if(!is_null($notaventa->oc_id)){
                 $dteoc->dte_id = $dteNew->id;
@@ -305,6 +305,7 @@ class DteGuiaDespNVController extends Controller
             $notaventa->updated_at = date("Y-m-d H:i:s");//ACTUALIZO LA FECHA DE MODIFICACION PARA VALIDAR EN OTRAS PANTALLAS, CON ESTE CAMPO VALIDO SI EL REGISTRO FUE MODIFICADO POR OTRO USUARIO
             $notaventa->save();
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             if($aux_foliosdisp <=100){
                 return redirect('dteguiadespnv')->with([
                     'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
@@ -326,7 +327,7 @@ class DteGuiaDespNVController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->save();
             return redirect('dteguiadespnv')->with([
-                'mensaje'=>$respuesta->original["mensaje"] ,
+                'mensaje'=>$respuesta["mensaje"] ,
                 'tipo_alert' => 'alert-error'
             ]);
         }

@@ -1525,26 +1525,26 @@ class Dte extends Model
         */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if(is_null($foliocontrol)){
-            return response()->json([
+            return [
                 'id' => 0,
                 'mensaje'=>'Numero de folio no encontrado.',
                 'tipo_alert' => 'error'
-            ]);
+            ];
         }
         if($foliocontrol->ultfoliouti >= $foliocontrol->ultfoliohab ){
-            return response()->json([
+            return [
                 'id' => 0,
                 'mensaje'=>'Se agotaron los folios. Se deben pedir nuevos folios',
                 'tipo_alert' => 'error'
-            ]);
+            ];
         }
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($foliocontrol->bloqueo == 1){
-                return response()->json([
+                return [
                     'id' => 0,
                     'mensaje'=>'Folio bloqueado, vuelva a intentar. Folio: ' . $foliocontrol->ultfoliouti,
                     'tipo_alert' => 'error'
-                ]);
+                ];
         }else{
             //Si $foliocontrol->bloqueo = 0;
             //Bloqueo el registro para que no pueda ser modificado por otro usuario
@@ -1561,12 +1561,12 @@ class Dte extends Model
             if($Estado_DTE->EstadoDTE == 0 and $Estado_DTE->Estatus == 3){ // EN ESTE CASO EL DOCUMENTO NO EXISTE EN LA PLATAFORMA BES, ESO QUIERE DECIR QUE FUE ELIMINADO PREVIAMENTE
                 $aux_folio = $dte->nrodocto;
             }else{ //PERO SI NO HA SIDO ELIMINADO EN PLATAFORMA BES NO DEJA VOLVER A GENERAR EL DTE
-                return response()->json([
+                return [
                     'id' => 0,
                     'titulo' => "DTE $dte->nrodocto Generado en SII.",
                     'mensaje' => "Estatus: " . $Estado_DTE->DescEstado,
                     'tipo_alert' => 'error'
-                ]);
+                ];
             }
         }else{
             //SI EL $dte->nrodocto VIENE VACIO O = A NULL, ESO QUIERE DECIR QUE SE VA A GENERAR LA PRIMERA VEZ EL DTE
@@ -1582,18 +1582,18 @@ class Dte extends Model
                         }
                     }else{
                         //dd($Solicitar_Folio);
-                        return response()->json([
+                        return [
                             'id' => 0,
                             'mensaje'=>'Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus,
                             'tipo_alert' => 'error'                
-                        ]);    
+                        ];
                     }
                 }else{
-                    return response()->json([
+                    return [
                         'id' => 0,
                         'mensaje'=>'Error: TipoDTE ' . $foliocontrol->tipodocto . ", " . $Solicitar_Folio,
                         'tipo_alert' => 'error'                
-                    ]);    
+                    ];
                 }
             }while($bandNoExisteFolio);    
         }
@@ -1608,10 +1608,13 @@ class Dte extends Model
             if($Carga_TXTDTE->Estatus == 0){
                 $dte->fchemisgen = date("Y-m-d H:i:s");
                 $dte->nrodocto = $aux_folio;
+                /* 
+                dte::guardarPdfXmlSii($aux_folio,$foliocontrol,$Carga_TXTDTE);
                 $nombreArchPDF =  $foliocontrol->nombrepdf . str_pad($aux_folio, 8, "0", STR_PAD_LEFT);
                 Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.xml', $Carga_TXTDTE->XML);
                 Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.pdf', $Carga_TXTDTE->PDF);
                 Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
+                */
 /*
                 $pdf = new Fpdi();
                 $files = array("storage/facturacion/dte/procesados/" . $nombreArchPDF . ".pdf","storage/facturacion/dte/procesados/" . $nombreArchPDF . "_cedible.pdf");
@@ -1626,24 +1629,33 @@ class Dte extends Model
                 }
                 $pdf->Output("F","storage/facturacion/dte/procesados/" . $nombreArchPDF . "_U.pdf");
                 */
-                return response()->json([
-                    'id' => 1
-                ]);    
+                return [
+                    'id' => 1,
+                    'Carga_TXTDTE' => $Carga_TXTDTE
+                ];
+                
 
             }else{
-                return response()->json([
+                return [
                     'id' => 0,
                     'mensaje'=>'Error: #' . $Carga_TXTDTE->Estatus . " " . $Carga_TXTDTE->MsgEstatus,
                     'tipo_alert' => 'error'                
-                ]);    
+                ];
             }
         }else{
-            return response()->json([
+            return [
                 'id' => 0,
                 'mensaje'=> nl2br("Error: Texto contiene letras acentuadas o caracteres especiales. POR FAVOR REVISAR DATOS DEL CLIENTE \n\n") . $Carga_TXTDTE,
                 'tipo_alert' => "error"
-            ]);
+            ];
         }
+    }
+
+    public static function guardarPdfXmlSii($aux_folio,$foliocontrol,$Carga_TXTDTE){
+        $nombreArchPDF =  $foliocontrol->nombrepdf . str_pad($aux_folio, 8, "0", STR_PAD_LEFT);
+        Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.xml', $Carga_TXTDTE->XML);
+        Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.pdf', $Carga_TXTDTE->PDF);
+        Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
     }
 
     public static function anulardte($request)

@@ -210,9 +210,9 @@ class DteGuiaDespController extends Controller
             //SI $request->tipoguiadesp = 20, GENERO DE FORMA AUTOMATICA LA GUIA DE TRASLADO, LUEGO SE GENERA LA GUIA DE VENTA
             //PASO EL VALOR DE 6 A LA FUNCION PARA IDENTIFICAR QUE VOY A GENERAR LA GUIA DE TRASLADO
             $respuesta = guardarDTE($request,6,$cont_producto);
-            if($respuesta->original["id"] != 1){
+            if($respuesta["id"] != 1){
                 return redirect('dteguiadesp/listarorddesp')->with([
-                    'mensaje'=>$respuesta->original["mensaje"] ,
+                    'mensaje'=>$respuesta["mensaje"] ,
                     'tipo_alert' => 'alert-error'
                 ]);    
             }    
@@ -220,7 +220,7 @@ class DteGuiaDespController extends Controller
             $aux_indtraslado = 1; 
         }
         $respuesta = guardarDTE($request,$aux_indtraslado,$cont_producto);
-        if($respuesta->original["id"] == 1){
+        if($respuesta["id"] == 1){
             $foliocontrol = Foliocontrol::findOrFail(2);
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             if($aux_foliosdisp <=100){
@@ -237,7 +237,7 @@ class DteGuiaDespController extends Controller
     
         }else{
             return redirect('dteguiadesp/listarorddesp')->with([
-                'mensaje'=>$respuesta->original["mensaje"] ,
+                'mensaje'=>$respuesta["mensaje"] ,
                 'tipo_alert' => 'alert-error'
             ]);    
         }
@@ -839,7 +839,7 @@ class DteGuiaDespController extends Controller
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         $foliocontrol->bloqueo = 0;
         $foliocontrol->save();
-        if($respuesta->original["id"] == 1){
+        if($respuesta["id"] == 1){
             if(empty($dteini->nrodocto)){
                 $dteini->nrodocto = $dte->nrodocto;
                 if(!$dteini->save()){
@@ -851,6 +851,7 @@ class DteGuiaDespController extends Controller
                     ]);                            
                 }
             }
+            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             return response()->json([
                 'id' => 1,
                 'mensaje'=>'DTE Generado con exito: ' . $dte->nrodocto,
@@ -859,8 +860,8 @@ class DteGuiaDespController extends Controller
         }else{
             return response()->json([
                 'id' => 0,
-                'titulo' => $respuesta->original["titulo"],
-                'mensaje'=> $respuesta->original["mensaje"],
+                'titulo' => $respuesta["titulo"],
+                'mensaje'=> $respuesta["mensaje"],
                 'tipo_alert' => 'error'
             ]);
         }
@@ -1578,7 +1579,7 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     ]);
     */
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
-    if($respuesta->original["id"] == 1){
+    if($respuesta["id"] == 1){
         $dteNew = Dte::create($dte->toArray());
         foreach ($dte->dtedets as $dtedet) {
             $dtedet->dte_id = $dteNew->id;
@@ -1624,13 +1625,14 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
         $foliocontrol->bloqueo = 0;
         $foliocontrol->ultfoliouti = $dteNew->nrodocto;
         $foliocontrol->save();
+        Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
     }else{
         $foliocontrol->bloqueo = 0;
         $foliocontrol->save();
-        //dd($respuesta->original["id"]);
+        //dd($respuesta["id"]);
         /*
         return redirect('dteguiadesp/listarorddesp')->with([
-            'mensaje'=>$respuesta->original["mensaje"] ,
+            'mensaje'=>$respuesta["mensaje"] ,
             'tipo_alert' => 'alert-error'
         ]);
         */

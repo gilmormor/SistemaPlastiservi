@@ -279,15 +279,16 @@ class DteFacturaController extends Controller
 
         $respuesta = Dte::generardteprueba($dte);
         
-        /* $respuesta = response()->json([
+/*         $respuesta = response()->json([
             'id' => 1
-        ]); */
+        ]);
+ */        //dd($respuesta);
         //$dte->nrodocto = 201;
         /*
         $prueba = Dte::subirSisCobranza($dte);
         dd($prueba);*/
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
-        if($respuesta->original["id"] == 1){
+        if($respuesta["id"] == 1){
             $dteNew = Dte::create($dte->toArray());
             foreach ($dte->dtedets as $dtedet) {
                 $dtedet->dte_id = $dteNew->id;
@@ -377,6 +378,7 @@ class DteFacturaController extends Controller
             }
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             Dte::subirSisCobranza($dte);
+            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             if($aux_foliosdisp <=20){
                 return redirect('dtefactura')->with([
                     'mensaje'=>"Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
@@ -392,7 +394,7 @@ class DteFacturaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->save();
             return redirect('dtefactura')->with([
-                'mensaje'=>$respuesta->original["mensaje"] ,
+                'mensaje'=>$respuesta["mensaje"] ,
                 'tipo_alert' => 'alert-error'
             ]);
         }
