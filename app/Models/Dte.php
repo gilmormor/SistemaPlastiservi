@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\ErrorCrearDTE;
 use App\Http\Controllers\SoapController;
 use App\Models\Seguridad\Usuario;
 use DOMDocument;
@@ -1648,6 +1649,7 @@ class Dte extends Model
                 'mensaje'=> nl2br("Error: Texto contiene letras acentuadas o caracteres especiales. POR FAVOR REVISAR DATOS DEL CLIENTE \n\n") . $Carga_TXTDTE,
                 'tipo_alert' => "error"
             ]; */
+            Event(new ErrorCrearDTE($dte,$ArchivoTXT,$Carga_TXTDTE,$aux_folio));
             return [
                 'id' => 0,
                 'mensaje'=> nl2br("Error: Documento no fue guardado en SII. Error devueldo por BES. Variable Carga_TXTDTE->Estatus no existe. \n\n") . $Carga_TXTDTE,

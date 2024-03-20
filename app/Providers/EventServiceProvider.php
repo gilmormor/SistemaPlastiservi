@@ -8,6 +8,7 @@ use App\Events\AvisoRevisionAcuTec;
 use App\Events\AvisoRevisionNotaVenta;
 use App\Events\CerrarSolDesp;
 use App\Events\DevolverSolDesp;
+use App\Events\ErrorCrearDTE;
 use App\Events\FinSesionUsuario;
 use App\Events\GuardarDteNC;
 use App\Events\GuardarDteND;
@@ -24,6 +25,7 @@ use App\Listeners\NotifyMailAcuTecAprobarRechazar;
 use App\Listeners\NotifyMailAprobarRechazoNotaVenta;
 use App\Listeners\NotifyMailAvisoRevisionAcuTec;
 use App\Listeners\NotifyMailAvisoRevisionNotaVenta;
+use App\Listeners\NotifyMailErrorCrearDTE;
 use App\Listeners\NotifyMailGuardarDteNC;
 use App\Listeners\NotifyMailGuardarDteND;
 use App\Listeners\NotifyMailGuardarFacturaDespacho;
@@ -81,6 +83,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         GuardarDteND::class => [
             NotifyMailGuardarDteND::class,
+        ],
+        ErrorCrearDTE::class => [
+            NotifyMailErrorCrearDTE::class,
         ]
     ];
 
