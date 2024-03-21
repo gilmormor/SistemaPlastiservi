@@ -277,6 +277,9 @@ class DteFacturaController extends Controller
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
 
+        $dte->nrodocto = 224297;
+        Dte::subirSisCobranza($dte);
+        dd("hasta aqui");
         $respuesta = Dte::generardteprueba($dte);        
         /* $respuesta = [
                     'id' => 1,

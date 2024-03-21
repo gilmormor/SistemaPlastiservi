@@ -16,6 +16,7 @@ use App\Events\GuardarFacturaDespacho;
 use App\Events\GuardarGuiaDespacho;
 use App\Events\InicioSesionUsuario;
 use App\Events\Notificacion;
+use App\Events\XMLCargaDocManager;
 use App\Listeners\BitFinSesionUsuario;
 use App\Listeners\BitInicioSesionUsuario;
 use App\Listeners\CerrarSolDespNotificacion;
@@ -30,6 +31,7 @@ use App\Listeners\NotifyMailGuardarDteNC;
 use App\Listeners\NotifyMailGuardarDteND;
 use App\Listeners\NotifyMailGuardarFacturaDespacho;
 use App\Listeners\NotifyMailGuardarGuiaDespacho;
+use App\Listeners\NotifyMailXMLCargaDocManager;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -86,6 +88,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ErrorCrearDTE::class => [
             NotifyMailErrorCrearDTE::class,
+        ],
+        XMLCargaDocManager::class => [
+            NotifyMailXMLCargaDocManager::class,
         ]
     ];
 
