@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Events\ErrorCrearDTE;
+use App\Events\XMLCargaDocManager;
 use App\Http\Controllers\SoapController;
 use App\Models\Seguridad\Usuario;
 use DOMDocument;
@@ -2598,6 +2599,7 @@ class Dte extends Model
                 //dd($comando03creaclientes);
                 $xmlcobranza = Dte::xmlDocSisCobranza($dte);
                 $cargadocumentoscobranza = $soap->Comando01CargaDocumentos($xmlcobranza);
+                Event(new XMLCargaDocManager($dte,$xmlcobranza,$xmlcliente)); //ENVIAR CORREO a gmoreno@plastiservi.cl del contenido del XML
                 //dd($cargadocumentoscobranza);
             }    
         }
