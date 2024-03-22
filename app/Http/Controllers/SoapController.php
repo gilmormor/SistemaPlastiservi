@@ -126,7 +126,7 @@ class SoapController extends Controller
                 'trace' => 1,
                 'connection_timeout' => 30, // tiempo de espera de conexión en segundos
                 // Aumentar el tiempo de timeout
-                'timeout' => 60 // tiempo de espera total en segundos
+                'timeout' => 120 // tiempo de espera total en segundos
             );
             $soapclient = new SoapClient(env('APP_URLSII'), $options);
             $response = $soapclient->Carga_TXTDTE([
@@ -165,7 +165,7 @@ class SoapController extends Controller
                 'trace' => 1,
                 'connection_timeout' => 30, // tiempo de espera de conexión en segundos
                 // Aumentar el tiempo de timeout
-                'timeout' => 60 // tiempo de espera total en segundos
+                'timeout' => 120 // tiempo de espera total en segundos
             );
             
             $soapFolio = new SoapClient(env('APP_URLSII'), $options);
@@ -201,7 +201,14 @@ class SoapController extends Controller
 
     public function Estado_DTE($RutEmpresa,$TipoDocto,$NroDocto){
         try{
-            $soapFolio = new SoapClient(env('APP_URLSII'));
+            // Configuración del cliente SOAP
+            $options = array(
+                'trace' => 1,
+                'connection_timeout' => 30, // tiempo de espera de conexión en segundos
+                // Aumentar el tiempo de timeout
+                'timeout' => 120 // tiempo de espera total en segundos
+            );
+            $soapFolio = new SoapClient(env('APP_URLSII'), $options);
             //$soapFolio = new SoapClient('http://bes-cert.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRUEBA
             //$soapFolio = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
             $response = $soapFolio->Estado_DTE([
@@ -209,12 +216,23 @@ class SoapController extends Controller
                 "TipoDocto" => $TipoDocto,
                 "NroDocto" => $NroDocto
             ]);
-            return $response->Estado_DTEResult;
-            /*
-            if($response->Estado_DTEResult->Estatus == 3){ // 3=Documento identificado no existe.
-                dd($response);
-            }
-            */
+            //return $response->Estado_DTEResult;
+            // Verificar el status de la solicitud HTTP
+            $http_status = $soapFolio->__getLastResponseHeaders();
+
+            // Extraer el status HTTP
+            preg_match('/^HTTP\/1\.\d (\d+)/', $http_status, $matches);
+            $status_code = isset($matches[1]) ? intval($matches[1]) : null;
+
+            // Verificar el status 200 de la solicitud HTTP
+            if ($status_code === 200) {
+                // Si el status es 200, la solicitud se completó exitosamente
+                // Procesar la respuesta del servidor aquí
+                return $response->Estado_DTEResult;
+            } else {
+                // Si el status no es 200, hubo un error en la solicitud
+                return "Hubo un error en la solicitud HTTP. Status: $http_status";
+            }            
         }catch(Exception $e){
             return $e->getMessage();
         }
@@ -222,7 +240,14 @@ class SoapController extends Controller
 
     public function Reimprimir_DoctoDTE($RutEmpresa,$TipoDocto,$NroDocto){
         try{
-            $soapFolio = new SoapClient(env('APP_URLSII'));
+            // Configuración del cliente SOAP
+            $options = array(
+                'trace' => 1,
+                'connection_timeout' => 30, // tiempo de espera de conexión en segundos
+                // Aumentar el tiempo de timeout
+                'timeout' => 120 // tiempo de espera total en segundos
+            );
+            $soapFolio = new SoapClient(env('APP_URLSII'), $options);
             //$soapFolio = new SoapClient('http://bes-cert.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRUEBA
             //$soapFolio = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
             $response = $soapFolio->Reimprimir_DoctoDTE([
@@ -230,12 +255,24 @@ class SoapController extends Controller
                 "TipoDocto" => $TipoDocto,
                 "NroDocto" => $NroDocto
             ]);
-            return $response->Reimprimir_DoctoDTEResult;
-            /*
-            if($response->Estado_DTEResult->Estatus == 3){ // 3=Documento identificado no existe.
-                dd($response);
+            //return $response->Reimprimir_DoctoDTEResult;
+            // Verificar el status de la solicitud HTTP
+            $http_status = $soapFolio->__getLastResponseHeaders();
+
+            // Extraer el status HTTP
+            preg_match('/^HTTP\/1\.\d (\d+)/', $http_status, $matches);
+            $status_code = isset($matches[1]) ? intval($matches[1]) : null;
+
+            // Verificar el status 200 de la solicitud HTTP
+            if ($status_code === 200) {
+                // Si el status es 200, la solicitud se completó exitosamente
+                // Procesar la respuesta del servidor aquí
+                return $response->Reimprimir_DoctoDTEResult;
+            } else {
+                // Si el status no es 200, hubo un error en la solicitud
+                return "Hubo un error en la solicitud HTTP. Status: $http_status";
             }
-            */
+
         }catch(Exception $e){
             return $e->getMessage();
         }
