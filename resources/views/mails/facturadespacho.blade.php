@@ -20,7 +20,7 @@
     <p><b>Datos:</b></p>
     <ul>
         <li><b>Nro. Nota Venta:</b> {{ $tabla->notaventa_id }}</li>
-        <li><b>nro. Orden Despacho:</b> {{ $tabla->id }}</li>
+        <li><b>Nro. Orden Despacho:</b> {{ $tabla->id }}</li>
         <li><b>Fecha:</b> {{date("d-m-Y h:i:s A", strtotime($tabla->guiadespachofec))}}</li>
         <li><b>Nro Guia: </b> {{ $tabla->guiadespacho }}</li>
         <li><b>Nro Factura: </b> {{ $tabla->numfactura }}</li>

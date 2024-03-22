@@ -1560,17 +1560,21 @@ class NotaVentaController extends Controller
         $sql = "SELECT notaventa.*,SUM(notaventadetalle.cant - (SELECT cantsoldesp
                     FROM vista_sumsoldespdet
                     WHERE notaventadetalle_id=notaventadetalle.id)) AS pendDesp,
+                sum(notaventadetalle.cant) as sumcant,
                 notaventacerrada.observacion as notaventacerrada_observacion
                 FROM notaventa inner join notaventadetalle
-                ON notaventa.id = notaventadetalle.notaventa_id
+                ON notaventa.id = notaventadetalle.notaventa_id and isnull(notaventadetalle.deleted_at)
                 LEFT JOIN notaventacerrada
                 ON notaventa.id = notaventacerrada.notaventa_id and isnull(notaventacerrada.deleted_at)
                 WHERE notaventadetalle.notaventa_id = $request->id
                 and isnull(notaventa.deleted_at)
                 GROUP BY notaventadetalle.notaventa_id;";
         $datas = DB::select($sql);
+        //dd($datas[0]->sumcant);
         if(count($datas) > 0){
-            if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp !== null)){
+            $aux_cantdesp = NotaVenta::consultatotcantod($request->id);
+            if($aux_cantdesp >= $datas[0]->sumcant){
+            //if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp !== null)){
                 return [
                     "id" => 0,
                     "title" => "Nota de venta despachada en su totalidad. ",

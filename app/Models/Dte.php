@@ -2689,7 +2689,7 @@ class Dte extends Model
                 VENTA=\"1\" NDIASF=\"0\" NUMCORR=\"0\"
                 CODTIPOVTA=\"\" NUMFV=\"0\" NOTAOBS=\"\"
                 FECHCONT=\"$FchEmis\" AFECTO=\"0\" EXENTO=\"0\"
-                DCTOTIPO=\"1\" DCTOPJE=\"0.00\" CODSUCUR=\"1\"
+                DCTOTIPO=\"1\" DCTOPJE=\"0.00\" CODSUCUR=\"$dte->sucursal_id\"
                 TOTNETO=\"$aux_neto\" IVA=\"$aux_tasaiva\" TOTIVA=\"$aux_iva\"
                 IMP1=\"0\" IMP2=\"0\" TOTAL=\"$aux_mnttotal\"
                 MONEDA=\"$\" TASACBIO=\"1\"

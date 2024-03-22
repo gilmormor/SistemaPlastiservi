@@ -89,7 +89,7 @@ class NotaVentaConsultaController extends Controller
             $aux_totalps = 0;
             $aux_prom = 0;
             foreach ($datas as $data) {
-                $aux_cantdesp = $this->consultatotcantod($data->id);
+                $aux_cantdesp = NotaVenta::consultatotcantod($data->id);
                 if(in_array('5',$request->aprobstatus)){
                     if($aux_cantdesp >= $data->cant){
                         continue;
@@ -185,7 +185,7 @@ class NotaVentaConsultaController extends Controller
                 $aux_obsdespachoNew = "No ha iniciado el despacho";
                 if($aux_cantdesp > 0){
                     $aux_icodespachoNew = "fa-star-o";
-                    $aux_obsdespachoNew = "Inicio despacho";
+                    $aux_obsdespachoNew = "Inicio despacho, " . $aux_cantdesp . " / " . $data->cant;
                     $aux_obsdespacho = "";
                     //>= PORQUE EN SANTA ESTER SE PUEDE DESPACHAR MAS DE LO QUE DICE LA NOTA DE VENTA
                     if($aux_cantdesp >= $data->cant){
@@ -395,38 +395,7 @@ class NotaVentaConsultaController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         }
         
-    }
-
-
-    public function consultatotcantod($id){
-        $sql = "SELECT notaventa_id,sum(cantdesp) AS cantdesp 
-        FROM despachoord JOIN despachoorddet 
-        ON despachoord.id = despachoorddet.despachoord_id
-        WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
-        and despachoord.guiadespacho is not null
-        and despachoord.notaventa_id=$id
-        and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
-        group by despachoord.notaventa_id;";
-        //dd("$sql");
-        $datas = DB::select($sql);
-        $aux_cant = 0;
-        if($datas){
-            $aux_cant = $datas[0]->cantdesp;
-            $sql = "SELECT sum(despachoordrecdet.cantrec) AS cantrec
-            FROM despachoordrecdet INNER JOIN despachoordrec
-            ON despachoordrecdet.despachoordrec_id=despachoordrec.id AND ISNULL(despachoordrec.anulada) AND ISNULL(despachoordrec.deleted_at) AND ISNULL(despachoordrecdet.deleted_at)
-            INNER JOIN despachoord
-            ON despachoord.id = despachoordrec.despachoord_id AND ISNULL(despachoord.deleted_at)
-            WHERE despachoord.notaventa_id=$id
-            AND despachoordrec.aprobstatus=2
-            and NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at)));";
-            $datas = DB::select($sql);
-            if($datas){
-                $aux_cant -= $datas[0]->cantrec;
-            }    
-        }
-        return $aux_cant;
-    }    
+    }  
 }
 
 

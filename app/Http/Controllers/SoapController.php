@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\XMLCargaDocManager;
+use App\Models\Dte;
 use Exception;
 use Illuminate\Http\Request;
 use SoapClient;
@@ -119,15 +121,38 @@ class SoapController extends Controller
     public function Carga_TXTDTE($ArchivoTXT,$TipoArchivo)
     {
         try{
-            $soapclient = new SoapClient(env('APP_URLSII'));
-            //$soapclient = new SoapClient('http://bes-cert.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRUEBA
-            //$soapclient = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
+            // Configuración del cliente SOAP
+            $options = array(
+                'trace' => 1,
+                'connection_timeout' => 30, // tiempo de espera de conexión en segundos
+                // Aumentar el tiempo de timeout
+                'timeout' => 60 // tiempo de espera total en segundos
+            );
+            $soapclient = new SoapClient(env('APP_URLSII'), $options);
             $response = $soapclient->Carga_TXTDTE([
                 "ArchivoTXT" => $ArchivoTXT,
                 "TipoArchivo" => $TipoArchivo
             ]);
 
-            return ($response->Carga_TXTDTEResult);
+            //return ($response->Carga_TXTDTEResult);
+
+            // Verificar el status de la solicitud HTTP
+            $http_status = $soapclient->__getLastResponseHeaders();
+
+            // Extraer el status HTTP
+            preg_match('/^HTTP\/1\.\d (\d+)/', $http_status, $matches);
+            $status_code = isset($matches[1]) ? intval($matches[1]) : null;
+
+            // Verificar el status 200 de la solicitud HTTP
+            if ($status_code === 200) {
+                // Si el status es 200, la solicitud se completó exitosamente
+                // Procesar la respuesta del servidor aquí
+                return $response->Carga_TXTDTEResult;
+            } else {
+                // Si el status no es 200, hubo un error en la solicitud
+                return "Hubo un error en la solicitud HTTP. Status: $http_status";
+            }
+
         }catch(Exception $e){
             return $e->getMessage();
         }
@@ -135,14 +160,40 @@ class SoapController extends Controller
 
     public function Solicitar_Folio($RutEmpresa,$TipoDocto){
         try{
-            $soapFolio = new SoapClient(env('APP_URLSII'));
+            // Configuración del cliente SOAP
+            $options = array(
+                'trace' => 1,
+                'connection_timeout' => 30, // tiempo de espera de conexión en segundos
+                // Aumentar el tiempo de timeout
+                'timeout' => 60 // tiempo de espera total en segundos
+            );
+            
+            $soapFolio = new SoapClient(env('APP_URLSII'), $options);
             //$soapFolio = new SoapClient('http://bes-cert.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRUEBA
             //$soapFolio = new SoapClient('http://bes-dte.bestechnology.cl/wsfactlocal/dtelocal.asmx?wsdl'); //AMBIENTE PRODUCTIVO
             $response = $soapFolio->Solicitar_Folio([
                 "RutEmpresa" => $RutEmpresa,
                 "TipoDocto" => $TipoDocto
             ]);
-            return $response->Solicitar_FolioResult;
+            //return $response->Solicitar_FolioResult;
+
+            // Verificar el status de la solicitud HTTP
+            $http_status = $soapFolio->__getLastResponseHeaders();
+
+            // Extraer el status HTTP
+            preg_match('/^HTTP\/1\.\d (\d+)/', $http_status, $matches);
+            $status_code = isset($matches[1]) ? intval($matches[1]) : null;
+
+            // Verificar el status 200 de la solicitud HTTP
+            if ($status_code === 200) {
+                // Si el status es 200, la solicitud se completó exitosamente
+                // Procesar la respuesta del servidor aquí
+                return $response->Solicitar_FolioResult;
+            } else {
+                // Si el status no es 200, hubo un error en la solicitud
+                return "Hubo un error en la solicitud HTTP. Status: $http_status";
+            }
+            
         }catch(Exception $e){
             return $e->getMessage();
         }

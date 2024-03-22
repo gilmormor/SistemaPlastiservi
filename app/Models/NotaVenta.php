@@ -439,4 +439,34 @@ class NotaVenta extends Model
         $datas = DB::select($sql);
         return $datas;
     }
+
+    public static function consultatotcantod($id){
+        $sql = "SELECT notaventa_id,sum(cantdesp) AS cantdesp 
+        FROM despachoord JOIN despachoorddet 
+        ON despachoord.id = despachoorddet.despachoord_id
+        WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
+        and despachoord.guiadespacho is not null
+        and despachoord.notaventa_id=$id
+        and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
+        group by despachoord.notaventa_id;";
+        //dd("$sql");
+        $datas = DB::select($sql);
+        $aux_cant = 0;
+        if($datas){
+            $aux_cant = $datas[0]->cantdesp;
+            $sql = "SELECT sum(despachoordrecdet.cantrec) AS cantrec
+            FROM despachoordrecdet INNER JOIN despachoordrec
+            ON despachoordrecdet.despachoordrec_id=despachoordrec.id AND ISNULL(despachoordrec.anulada) AND ISNULL(despachoordrec.deleted_at) AND ISNULL(despachoordrecdet.deleted_at)
+            INNER JOIN despachoord
+            ON despachoord.id = despachoordrec.despachoord_id AND ISNULL(despachoord.deleted_at)
+            WHERE despachoord.notaventa_id=$id
+            AND despachoordrec.aprobstatus=2
+            and NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at)));";
+            $datas = DB::select($sql);
+            if($datas){
+                $aux_cant -= $datas[0]->cantrec;
+            }    
+        }
+        return $aux_cant;
+    }    
 }
