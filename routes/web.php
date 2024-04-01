@@ -1151,6 +1151,7 @@ Route::post('dtefactura/estadoDTE', 'DteFacturaController@estadoDTE')->name('dte
 Route::post('dtefactura/staverfacdesp', 'DteFacturaController@staverfacdesp')->name('dtefactura_staverfacdesp');
 Route::post('dtefactura/devolverguiadesp', 'DteFacturaController@devolverguiadesp')->name('dtefactura_devolverguiadesp');
 Route::post('dtefactura/descargar-xml', 'DteFacturaController@descargarXml')->name('dtefactura_descargarXml');
+Route::post('dtefactura/volverSubirDteSisCob', 'DteFacturaController@volverSubirDteSisCob')->name('volverSubirDteSisCob_dtefactura');
 
 /*RUTAS REPORTE DTE FACTURA*/
 Route::get('reportdtefac', 'ReportDTEFacController@index')->name('reportdtefac');

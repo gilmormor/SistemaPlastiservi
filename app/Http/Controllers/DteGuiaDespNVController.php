@@ -264,7 +264,8 @@ class DteGuiaDespNVController extends Controller
 
         $dte->dteguiadesp = $dteguiadesp;
 
-        $respuesta = Dte::generardteprueba($dte);
+        //$respuesta = Dte::generardteprueba($dte);
+        $respuesta = Dte::dteSolicitarFolio($dte);
         /*
         $respuesta = response()->json([
             'id' => 1
@@ -272,6 +273,9 @@ class DteGuiaDespNVController extends Controller
         */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
+            $dte->fchemisgen = date("Y-m-d H:i:s");
+            $dte->nrodocto = $respuesta["aux_folio"];
+            $dte->stasubcob = 1;
             $dteNew = Dte::create($dte->toArray());
             if(!is_null($notaventa->oc_id)){
                 $dteoc->dte_id = $dteNew->id;
@@ -305,7 +309,12 @@ class DteGuiaDespNVController extends Controller
             $notaventa->updated_at = date("Y-m-d H:i:s");//ACTUALIZO LA FECHA DE MODIFICACION PARA VALIDAR EN OTRAS PANTALLAS, CON ESTE CAMPO VALIDO SI EL REGISTRO FUE MODIFICADO POR OTRO USUARIO
             $notaventa->save();
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
+
+            $dte = Dte::findOrFail($dteNew->id);
+            $respuesta = Dte::subirDteSii($dte);
+            if($respuesta["id"] == 1){
+                Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
+            }
             if($aux_foliosdisp <=100){
                 return redirect('dteguiadespnv')->with([
                     'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
@@ -389,7 +398,7 @@ function consultaindex($dte_id){
         $aux_conddte_id = "dte.id = $dte_id";
     }
 
-    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,
+    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,dte.stasubsii,
     comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at

@@ -222,15 +222,14 @@ class DteFacturaExentaController extends Controller
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
 
-        $respuesta = Dte::generardteprueba($dte);
-        //dd($respuesta);
-        /*
-        $respuesta = response()->json([
-            'id' => 1
-        ]);
-        */
+        $respuesta = Dte::dteSolicitarFolio($dte);
+        /* $respuesta = [
+                    'id' => 1,
+        ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
+            $dte->fchemisgen = date("Y-m-d H:i:s");
+            $dte->nrodocto = $respuesta["aux_folio"];
             $dteNew = Dte::create($dte->toArray());
             if(isset($dteoc)){
                 if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
@@ -282,22 +281,27 @@ class DteFacturaExentaController extends Controller
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-            Dte::subirSisCobranza($dte);
-            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-            if($aux_foliosdisp <=20){
-                return redirect('dtefacturaexenta')->with([
-                    'mensaje'=>"Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
-                    'tipo_alert' => 'alert-error'
-                ]);
-            }else{
-                return redirect('dtefacturaexenta')->with([
-                    'mensaje'=>'Factura creada con exito.',
-                    'tipo_alert' => 'alert-success'
-                ]);
+            $dte = Dte::findOrFail($dteNew->id);
+            $respuesta = Dte::subirDteSii($dte);
+            if($respuesta["id"] == 1){
+                Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             }
+            Dte::subirSisCobranza($dte);
+            if($aux_foliosdisp <=20){
+                $aux_mensaje = "Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!";
+                $aux_tipo_alert = 'alert-error';
+            }else{
+                $aux_mensaje = 'Factura creada con exito.';
+                $aux_tipo_alert = 'alert-success';
+            }
+            return redirect('dtefacturaexenta')->with([
+                'mensaje'=> $aux_mensaje,
+                'tipo_alert' => $aux_tipo_alert
+            ]);
+
         }else{
-            $foliocontrol->bloqueo = 0;
-            $foliocontrol->save();
+            /* $foliocontrol->bloqueo = 0;
+            $foliocontrol->save(); */
             return redirect('dtefacturaexenta')->with([
                 'mensaje'=>$respuesta["mensaje"] ,
                 'tipo_alert' => 'alert-error'
@@ -324,7 +328,7 @@ function consultaindex($dte_id){
         $aux_conddte_id = "dte.id = $dte_id";
     }
 
-    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,
+    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,dte.stasubsii,dte.stasubcob,
     comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at

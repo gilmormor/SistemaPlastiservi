@@ -30,11 +30,16 @@ class NotifyMailErrorCrearDTE
      */
     public function handle(ErrorCrearDTE $event)
     {
+        //$aux_email = $event->dte->usuario->email;
         $aux_email = "gmoreno@plastiservi.cl";
         $foliocontrol = Foliocontrol::findOrFail($event->dte->foliocontrol_id);
-        $asunto = "Error al crear DTE " . $foliocontrol->doc . " Nro: " . $event->aux_folio;
+        if($event->origenError == 1){
+            $aux_origen = "Subir DTE SII";
+        }else{
+            $aux_origen = "Subir DTE Cobranza";
+        }
+        $asunto = "Error $aux_origen " . $foliocontrol->doc . " Nro: " . $event->dte->nrodocto;
 
         Mail::to($aux_email)->send(new MailErrorCrearDTE($asunto,$event));
-
     }
 }

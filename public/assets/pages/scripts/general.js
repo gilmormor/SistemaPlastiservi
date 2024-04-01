@@ -3091,12 +3091,26 @@ function ajaxRequestGeneral(data,url,funcion) {
 						confirm: "Aceptar"
 					},
 				}).then((value) => {
+					if(respuesta.stasubsii == 1){
+						aux_text = $("#accion" + datatemp.dte_id).attr("stasubcob");
+						$("#accion" + datatemp.dte_id).html(aux_text);	
+					}
+					if(respuesta.stasubcob == 1){
+						aux_text = $("#accion" + datatemp.dte_id).attr("bntaproord");
+						$("#accion" + datatemp.dte_id).html(aux_text);
+					}
+					$("#fila" + datatemp.dte_id).attr("updated_at",respuesta.updated_at);
 				});
 			}
 			if(funcion=='procesarDTE'){
 				if (respuesta.id != 0) {
                     //genpdfFAC(respuesta.nrodocto,"_U");
-                    $("#fila"+respuesta.nfila).remove();
+                    $("#fila"+respuesta.dte_id).remove();
+					/* aux_text = 
+							`<a id="bntaproord${respuesta.dte_id}" name="bntaproord${respuesta.dte_id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${respuesta.dte_id})" title="Enviar a procesados">
+								<span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+							</a>`;
+					$("#accion" + respuesta.dte_id).html(aux_text); */
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
                     swal({
@@ -3146,6 +3160,27 @@ function ajaxRequestGeneral(data,url,funcion) {
 				}
 				
 			}
+			if(funcion=='volverSubirDteSisCob'){
+				swal({
+					title: respuesta.titulo,
+					text: respuesta.mensaje,
+					icon: respuesta.tipo_alert,
+					buttons: {
+						confirm: "Aceptar"
+					},
+				}).then((value) => {
+					if(respuesta.stasubcob == 1){
+						aux_text = $("#accion" + datatemp.dte_id).attr("stasubsii");
+						$("#accion" + datatemp.dte_id).html(aux_text);	
+					}
+					if(respuesta.stasubsii == 1){
+						aux_text = $("#accion" + datatemp.dte_id).attr("bntaproord");
+						$("#accion" + datatemp.dte_id).html(aux_text);
+					}
+					$("#fila" + datatemp.dte_id).attr("updated_at",respuesta.updated_at);
+				});
+			}
+
 		},
 		error: function () {
 		}
@@ -3180,7 +3215,7 @@ function procesarDTE(id){
     var data = {
         dte_id : id,
         nfila  : id,
-        updated_at : $("#updated_at" + id).html(),
+        updated_at : $("#fila" + id).attr("updated_at"),
         _token: $('input[name=_token]').val()
     };
     var ruta = '/dtefactura/procesar';
@@ -3597,4 +3632,28 @@ function descripElementoSelectMult(id){
 		seleccionados = selectedOptions.join(", ");
 	}
 	return seleccionados;
+}
+
+function volverSubirDteSisCob(dte_id){
+	var data = {
+        dte_id : dte_id,
+        updated_at : $("#fila" + dte_id).attr('updated_at'),
+        _token: $('input[name=_token]').val()
+    };
+    var ruta = '/dtefactura/volverSubirDteSisCob';
+    //var ruta = '/guiadesp/dteguiadesp';
+    swal({
+        title: '¿ Subir DTE a Sistema Cobranza?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequestGeneral(data,ruta,'volverSubirDteSisCob');
+        }
+    });
+
 }
