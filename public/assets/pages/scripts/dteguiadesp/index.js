@@ -39,6 +39,7 @@ $(document).ready(function () {
         "createdRow": function ( row, data, index ) {
             $(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
+            $(row).attr('updated_at', data.updated_at);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
             aux_text = 
                 "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>" +
@@ -120,25 +121,36 @@ $(document).ready(function () {
             $('td', row).eq(16).attr('id','despordupdated_at' + data.id);
             $('td', row).eq(16).attr('name','despordupdated_at' + data.id);
 
+            stasubsii_text = 
+            `<a id="stasubsii${data.id}" name="stasubsii${data.id}" onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Generar DTE SII" data-toggle="tooltip">
+                <span class="fa fa-upload text-danger"></span>
+            </a>`;    
+            $('td',row).eq(17).attr('stasubsii',stasubsii_text);
+
+            bntaproord_text = 
+            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTEGuiaDesp(${data.id})" title="Enviar a procesados">
+                <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+            </a> | 
+            <a onclick="anularguiafact(${data.id},${data.despachoord_id},'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro y devolver a Orden de Despacho" data-toggle="tooltip">
+                <span class="glyphicon glyphicon-remove text-danger"></span>
+            </a>`;
+            $('td',row).eq(17).attr('bntaproord',bntaproord_text);
+
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
                         "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
                     "</a>";
             }else{
-                aux_text = 
-                `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTEGuiaDesp(${data.id})" title="Enviar a procesados">
-                    <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
-                </a> | `;
+                aux_text = '';
+                if(data.stasubsii == 0){
+                    aux_text = stasubsii_text;
+                }else{
+                    aux_text = bntaproord_text;
+                }
             }
-
-            aux_text = aux_text +
-            `<a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
-                <span class="fa fa-upload text-danger"></span>
-            </a> | 
-            <a onclick="anularguiafact(${data.id},${data.despachoord_id},'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro y devolver a Orden de Despacho" data-toggle="tooltip">
-                <span class="glyphicon glyphicon-remove text-danger"></span>
-            </a>`;
+            $('td',row).eq(17).attr('id','accion' + data.id);
+            $('td',row).eq(17).attr('name','accion' + data.id);
             $('td', row).eq(17).html(aux_text);
         }
     });
@@ -487,7 +499,7 @@ function anularguiafact(nfila,id,aux_rutacargs){
 		id    : id,
 		nfila : nfila,
 		guiadesp_id : nfila,
-		updated_at : $("#updated_at" + nfila).html(),
+		updated_at : $("#fila" + nfila).attr('updated_at'),
         rutarecarga : aux_rutacargs,
 		_token: $('input[name=_token]').val()
 	};
@@ -543,7 +555,7 @@ function procesarDTEGuiaDesp(id){
         id         : id,
         dte_id     : id,
         nfila      : id,
-        updated_at : $("#updated_at" + id).html(),
+        updated_at : $("#fila" + id).attr('updated_at'),
         despordupdated_at : $("#despordupdated_at" + id).html(),
         _token: $('input[name=_token]').val()
     };

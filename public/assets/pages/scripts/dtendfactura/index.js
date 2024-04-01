@@ -39,6 +39,7 @@ $(document).ready(function () {
         "createdRow": function ( row, data, index ) {
             $(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
+            $(row).attr('updated_at', data.updated_at);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
@@ -193,7 +194,7 @@ $(document).ready(function () {
                 "<span class='glyphicon glyphicon-remove text-danger'></span>"
             "</a>";
             */
-            aux_text = 
+            /* aux_text = 
             `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
                 <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
             </a> | 
@@ -203,6 +204,38 @@ $(document).ready(function () {
             <a onclick="anulardte(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Anular" data-toggle="tooltip">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
+            $('td', row).eq(17).html(aux_text); */
+
+            stasubsii_text = 
+            `<a id="stasubsii${data.id}" name="stasubsii${data.id}" onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Generar DTE SII" data-toggle="tooltip">
+                <span class="fa fa-upload text-danger"></span>
+            </a>`;    
+            $('td',row).eq(17).attr('stasubsii',stasubsii_text);
+
+            stasubcob_text = 
+            `<a id="stasubcob${data.id}" name="stasubcob${data.id}" onclick="volverSubirDteSisCob(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip"">
+                <span class="fa fa-upload text-yellow"></span>
+            </a>`;    
+            $('td',row).eq(17).attr('stasubcob',stasubcob_text);
+
+            bntaproord_text = 
+            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
+                <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+            </a>`;
+            $('td',row).eq(17).attr('bntaproord',bntaproord_text);
+            aux_text = '';
+            if(data.stasubsii == 0 || data.stasubcob == 0){
+                if(data.stasubsii == 0){
+                    aux_text = stasubsii_text;
+                }
+                if(data.stasubcob == 0){
+                    aux_text += stasubcob_text;
+                }
+            }else{
+                aux_text = bntaproord_text;
+            }
+            $('td',row).eq(17).attr('id','accion' + data.id);
+            $('td',row).eq(17).attr('name','accion' + data.id);
             $('td', row).eq(17).html(aux_text);
         }
     });

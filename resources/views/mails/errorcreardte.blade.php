@@ -9,7 +9,7 @@
 <body>
 
     <p><b>Fecha:</b> {{ date("d-m-Y h:i:s A") }}.</p>
-    <p>DTE Nro: {{ $event->aux_folio }}</p>
+    <p>DTE Nro: {{ $event->dte->nrodocto }}</p>
     
 
     <p>Datos usuario que generó el correo:</p>

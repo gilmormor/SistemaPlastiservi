@@ -38,6 +38,7 @@ $(document).ready(function () {
         "createdRow": function ( row, data, index ) {
             $(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
+            $(row).attr('updated_at', data.updated_at);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
 
             $('td', row).eq(1).attr('data-order',data.fechahora);

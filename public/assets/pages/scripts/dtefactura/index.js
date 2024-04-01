@@ -38,6 +38,7 @@ $(document).ready(function () {
         "createdRow": function ( row, data, index ) {
             $(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
+            $(row).attr('updated_at', data.updated_at);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
 
             let id_str = data.nrodocto_factura.toString();
@@ -219,18 +220,46 @@ $(document).ready(function () {
             $('td', row).eq(15).attr('id','updated_at' + data.id);
             $('td', row).eq(15).attr('name','updated_at' + data.id);
 
-            aux_text = 
+            stasubsii_text = 
+            `<a id="stasubsii${data.id}" name="stasubsii${data.id}" onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Generar DTE SII" data-toggle="tooltip">
+                <span class="fa fa-upload text-danger"></span>
+            </a>`;    
+            $('td',row).eq(16).attr('stasubsii',stasubsii_text);
+
+            stasubcob_text = 
+            `<a id="stasubcob${data.id}" name="stasubcob${data.id}" onclick="volverSubirDteSisCob(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip"">
+                <span class="fa fa-upload text-yellow"></span>
+            </a>`;    
+            $('td',row).eq(16).attr('stasubcob',stasubcob_text);
+
+            bntaproord_text = 
             `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
                 <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
-            </a>|
-            <a onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Volver a Generar DTE" data-toggle="tooltip">
-                <span class="fa fa-upload text-danger"></span>
             </a>`;
+            $('td',row).eq(16).attr('bntaproord',bntaproord_text);
+
+            
+
+            aux_text = '';
+            if(data.stasubsii == 0 || data.stasubcob == 0){
+                if(data.stasubsii == 0){
+                    aux_text = stasubsii_text;
+                }
+                if(data.stasubcob == 0){
+                    aux_text += stasubcob_text;
+                }
+            }else{
+                aux_text = bntaproord_text;
+            }
+
             /*ELIMINAR BOTON ANULAR FACTURA, LAS FACTURAS DESPUES DE GENERADAS NO SE PUEDEN ANULAR, SOLO SE PUEDEN ANULAR CON NOTA DE CREDITO
             `|<a onclick="anulardte(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro" data-toggle="tooltip">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`
             */
+            $('td',row).eq(16).attr('id','accion' + data.id);
+            $('td',row).eq(16).attr('name','accion' + data.id);
+
             $('td', row).eq(16).html(aux_text);
         }
     });

@@ -277,20 +277,14 @@ class DteFacturaController extends Controller
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
 
-        /* $dte->nrodocto = 224297;
-        Dte::subirSisCobranza($dte);
-        dd("hasta aqui"); */
-        $respuesta = Dte::generardteprueba($dte);        
+        $respuesta = Dte::dteSolicitarFolio($dte);
         /* $respuesta = [
                     'id' => 1,
         ]; */
-        //dd($respuesta);
-        //$dte->nrodocto = 224297;
-        /*
-        $prueba = Dte::subirSisCobranza($dte);
-        dd($prueba);*/
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
+            $dte->fchemisgen = date("Y-m-d H:i:s");
+            $dte->nrodocto = $respuesta["aux_folio"];
             $dteNew = Dte::create($dte->toArray());
             foreach ($dte->dtedets as $dtedet) {
                 $dtedet->dte_id = $dteNew->id;
@@ -379,22 +373,27 @@ class DteFacturaController extends Controller
                 }
             }
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-            Dte::subirSisCobranza($dte);
-            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-            if($aux_foliosdisp <=20){
-                return redirect('dtefactura')->with([
-                    'mensaje'=>"Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
-                    'tipo_alert' => 'alert-error'
-                ]);
-            }else{
-                return redirect('dtefactura')->with([
-                    'mensaje'=>'Factura creada con exito.',
-                    'tipo_alert' => 'alert-success'
-                ]);
+            $dte = Dte::findOrFail($dteNew->id);
+            $respuesta = Dte::subirDteSii($dte);
+            if($respuesta["id"] == 1){
+                Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             }
+            Dte::subirSisCobranza($dte);
+            if($aux_foliosdisp <=20){
+                $aux_mensaje = "Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!";
+                $aux_tipo_alert = 'alert-error';
+            }else{
+                $aux_mensaje = 'Factura creada con exito.';
+                $aux_tipo_alert = 'alert-success';
+            }
+            return redirect('dtefactura')->with([
+                'mensaje'=> $aux_mensaje,
+                'tipo_alert' => $aux_tipo_alert
+            ]);
+
         }else{
-            $foliocontrol->bloqueo = 0;
-            $foliocontrol->save();
+            /* $foliocontrol->bloqueo = 0;
+            $foliocontrol->save(); */
             return redirect('dtefactura')->with([
                 'mensaje'=>$respuesta["mensaje"] ,
                 'tipo_alert' => 'alert-error'
@@ -1124,6 +1123,12 @@ class DteFacturaController extends Controller
         }
 
     }
+
+    public function volverSubirDteSisCob(Request $request){
+        $dte = Dte::findOrFail($request->dte_id);
+        $respuesta = Dte::subirSisCobranza($dte);
+        return $respuesta;
+    }
 }
 
 
@@ -1139,7 +1144,7 @@ function consultaindex($dte_id){
     }
 
 
-    $sql = "SELECT dte.id,dte.nrodocto as nrodocto_factura,dte.fechahora,cliente.rut,cliente.razonsocial,
+    $sql = "SELECT dte.id,dte.nrodocto as nrodocto_factura,dte.fechahora,cliente.rut,cliente.razonsocial,dte.stasubsii,dte.stasubcob,
     comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,

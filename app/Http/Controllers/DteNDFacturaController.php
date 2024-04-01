@@ -162,15 +162,15 @@ class DteNDFacturaController extends Controller
         $dtencnd->codref = $request->codref;
         $dte->dtencnd = $dtencnd;
 
-        $respuesta = Dte::generardteprueba($dte);
-        /* $respuesta = response()->json([
-            'id' => 1
-        ]); */
-        
-        //$dte->nrodocto = 23;
-        //dd("");
+        //$respuesta = Dte::generardteprueba($dte);
+        $respuesta = Dte::dteSolicitarFolio($dte);
+        /* $respuesta = [
+            'id' => 1,
+        ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
+            $dte->fchemisgen = date("Y-m-d H:i:s");
+            $dte->nrodocto = $respuesta["aux_folio"];
             $dteNew = Dte::create($dte->toArray());
             foreach ($dte->dtedets as $dtedet) {
                 //dd($dtedet->toArray());
@@ -184,16 +184,20 @@ class DteNDFacturaController extends Controller
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
-            Dte::subirSisCobranza($dteNew);
-            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-            Event(new GuardarDteND($dteNew));//ENVIAR CORREO A CONTABILIDAD AVISANDOQ EU HAY UNA ND
+            $dte = Dte::findOrFail($dteNew->id);
+            $respuesta = Dte::subirDteSii($dte);
+            if($respuesta["id"] == 1){
+                Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
+            }
+            Dte::subirSisCobranza($dte);
+            Event(new GuardarDteND($dteNew));//ENVIAR CORREO A CONTABILIDAD AVISANDO QUE HAY UNA ND
             return redirect('dtendfactura')->with([
                 'mensaje'=>'Nota de Credito creada con exito.',
                 'tipo_alert' => 'alert-success'
             ]);    
         }else{
-            $foliocontrol->bloqueo = 0;
-            $foliocontrol->save();
+            /* $foliocontrol->bloqueo = 0;
+            $foliocontrol->save(); */
             return redirect('dtendfactura')->with([
                 'mensaje'=>$respuesta["mensaje"] ,
                 'tipo_alert' => 'alert-error'
@@ -403,7 +407,7 @@ function consultaindex($dte_id){
         $aux_conddte_id = "dte.id = $dte_id";
     }
 
-    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
+    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,dte.stasubsii,dte.stasubcob,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     dte.updated_at,0 as dtefac_id
     FROM dte INNER JOIN cliente

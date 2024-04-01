@@ -17,19 +17,19 @@ class ErrorCrearDTE
     public $dte;
     public $xml;
     public $Carga_TXTDTE;
-    public $aux_folio;
+    public $origenError;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($dte,$xml,$Carga_TXTDTE,$aux_folio)
+    public function __construct($dte,$xml,$Carga_TXTDTE,$origenError)
     {
         $this->dte = $dte;
         $this->xml = $xml;
         $this->Carga_TXTDTE = $Carga_TXTDTE;
-        $this->aux_folio = $aux_folio;
+        $this->origenError = $origenError;
     }
 
     /**

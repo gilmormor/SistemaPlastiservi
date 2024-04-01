@@ -47,6 +47,8 @@ class Dte extends Model
         'aprobstatus',
         'aprobusu_id',
         'aprobfechahora',
+        'stasubsii',
+        'stasubcob',
         'usuario_id',
         'usuariodel_id'
     ];
@@ -1563,11 +1565,16 @@ class Dte extends Model
             if($Estado_DTE->EstadoDTE == 0 and $Estado_DTE->Estatus == 3){ // EN ESTE CASO EL DOCUMENTO NO EXISTE EN LA PLATAFORMA BES, ESO QUIERE DECIR QUE FUE ELIMINADO PREVIAMENTE
                 $aux_folio = $dte->nrodocto;
             }else{ //PERO SI NO HA SIDO ELIMINADO EN PLATAFORMA BES NO DEJA VOLVER A GENERAR EL DTE
+                $dte->stasubsii = 1;
+                $dte->save();
                 return [
                     'id' => 0,
+                    'stasubsii' => 1,
                     'titulo' => "DTE $dte->nrodocto Generado en SII.",
                     'mensaje' => "Estatus: " . $Estado_DTE->DescEstado,
-                    'tipo_alert' => 'error'
+                    'tipo_alert' => 'error',
+                    'stasubcob' => $dte->stasubcob,
+                    'updated_at' => $dte->updated_at
                 ];
             }
         }else{
@@ -1633,7 +1640,9 @@ class Dte extends Model
                 */
                 return [
                     'id' => 1,
-                    'Carga_TXTDTE' => $Carga_TXTDTE
+                    'stasubcob' => $dte->stasubcob,
+                    'Carga_TXTDTE' => $Carga_TXTDTE,
+                    'updated_at' => $dte->updated_at
                 ];
                 
 
@@ -1641,7 +1650,8 @@ class Dte extends Model
                 return [
                     'id' => 0,
                     'mensaje'=>'Error: #' . $Carga_TXTDTE->Estatus . " " . $Carga_TXTDTE->MsgEstatus,
-                    'tipo_alert' => 'error'                
+                    'tipo_alert' => 'error',
+                    'stasubcob' => $dte->stasubcob
                 ];
             }
         }else{
@@ -1650,11 +1660,12 @@ class Dte extends Model
                 'mensaje'=> nl2br("Error: Texto contiene letras acentuadas o caracteres especiales. POR FAVOR REVISAR DATOS DEL CLIENTE \n\n") . $Carga_TXTDTE,
                 'tipo_alert' => "error"
             ]; */
-            Event(new ErrorCrearDTE($dte,$ArchivoTXT,$Carga_TXTDTE,$aux_folio));
+            //Event(new ErrorCrearDTE($dte,$ArchivoTXT,$Carga_TXTDTE,$aux_folio));
             return [
                 'id' => 0,
                 'mensaje'=> nl2br("Error: Documento no fue guardado en SII. Error devueldo por BES. Variable Carga_TXTDTE->Estatus no existe. \n\n") . $Carga_TXTDTE,
-                'tipo_alert' => "error"
+                'tipo_alert' => "error",
+                'stasubcob' => $dte->stasubcob
             ];
 
         }
@@ -1665,6 +1676,119 @@ class Dte extends Model
         Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.xml', $Carga_TXTDTE->XML);
         Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.pdf', $Carga_TXTDTE->PDF);
         Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
+    }
+
+    public static function dteSolicitarFolio($dte){
+        /*
+        $tipoArch = "XML";
+        $ArchivoTXT = dtefacturaprueba($dte,"2514",$tipoArch);
+        dd($ArchivoTXT);
+        */
+        $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
+        if(is_null($foliocontrol)){
+            return [
+                'id' => 0,
+                'mensaje'=>'Numero de folio no encontrado.',
+                'tipo_alert' => 'error'
+            ];
+        }
+        if($foliocontrol->ultfoliouti >= $foliocontrol->ultfoliohab ){
+            return [
+                'id' => 0,
+                'mensaje'=>'Se agotaron los folios. Se deben pedir nuevos folios',
+                'tipo_alert' => 'error'
+            ];
+        }
+        $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
+        if($foliocontrol->bloqueo == 1){
+            return [
+                'id' => 0,
+                'mensaje'=>'Folio bloqueado, vuelva a intentar. Folio: ' . $foliocontrol->ultfoliouti,
+                'tipo_alert' => 'error'
+            ];
+        }
+        $empresa = Empresa::findOrFail(1);
+        $soap = new SoapController();
+        //SI DOCUMENTO YA FUE ASIGNADO, QUIERE DECIR QUE SE PUEDE VOLVER A GENERAR
+        //PERO SI NO HA SIDO ELIMINADO EN LA PLATAFORMA DE BES NO DEJA VOLVER A SUBIRLO
+        $Solicitar_Folio = $soap->Solicitar_Folio($empresa->rut,$foliocontrol->tipodocto);
+        if(isset($Solicitar_Folio->Estatus)){
+            if($Solicitar_Folio->Estatus == 0){
+                $Estado_DTE = $soap->Estado_DTE($empresa->rut,$foliocontrol->tipodocto,$Solicitar_Folio->Folio);
+                if($Estado_DTE->Estatus == 3){
+                    $aux_folio = $Solicitar_Folio->Folio;
+                    return [
+                        'id' => 1,
+                        'aux_folio'=> $aux_folio
+                    ];    
+                }
+            }else{
+                return [
+                    'id' => 0,
+                    'mensaje'=>'Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus . " Folio no fue Generado.",
+                    'tipo_alert' => 'error'                
+                ];
+            }
+        }else{
+            return [
+                'id' => 0,
+                'mensaje'=>'Error: TipoDTE ' . $foliocontrol->tipodocto . ", " . $Solicitar_Folio . " Folio no fue Generado",
+                'tipo_alert' => 'error'                
+            ];
+        }
+    }
+
+    public static function subirDteSii($dte){
+        $soap = new SoapController();
+        $tipoArch = "XML";
+        $ArchivoTXT = dtefacturaprueba($dte,$dte->nrodocto,$tipoArch);
+        $Carga_TXTDTE = $soap->Carga_TXTDTE($ArchivoTXT,$tipoArch);
+        if(isset($Carga_TXTDTE->Estatus)){
+            //ACTUALIZO EL CAMPO nrodocto
+            //SI OCURRIO ALGUN ERROR SE QUE TENGO EL FOLIO, 
+            //SE QUE NO LO PUEDO VOLVER A PEDIR PORQUE POR ALGUNA RAZON SE GENERO UN ERROR EN EL ULTIMO FOLIO SOLICITADO
+            if($Carga_TXTDTE->Estatus == 0){
+                $dte->stasubsii = 1;
+                $dte->save();
+                return [
+                    'id' => 1,
+                    'Carga_TXTDTE' => $Carga_TXTDTE,
+                    'updated_at' => $dte->updated_at
+                ];
+            }else{
+                Dte::ErrorSubirDte($dte,$ArchivoTXT,$Carga_TXTDTE->Estatus . " " . $Carga_TXTDTE->MsgEstatus,1);
+                return [
+                    'id' => 0,
+                    'mensaje'=>'Error: #' . $Carga_TXTDTE->Estatus . " " . $Carga_TXTDTE->MsgEstatus,
+                    'tipo_alert' => 'error'                
+                ];
+            }
+        }else{
+            Dte::ErrorSubirDte($dte,$ArchivoTXT,$Carga_TXTDTE,1);
+            return [
+                'id' => 0,
+                'mensaje'=> nl2br("Error: Documento no fue guardado en SII. Error devueldo por BES. Variable Carga_TXTDTE->Estatus no existe. \n\n") . $Carga_TXTDTE,
+                'tipo_alert' => "error"
+            ];
+
+        }
+    }
+    public static function ErrorSubirDte($dte,$ArchivoTXTxml,$errortxt,$origenError){
+        $errorsubirdte = New ErrorSubirDte();
+        $errorsubirdte->dte_id = $dte->id;
+        $errorsubirdte->usuario_id = auth()->id();
+        if($origenError == 1){
+            $errorsubirdte->stasubsii = 1;
+            $errorsubirdte->errorsii = $errortxt;
+            $errorsubirdte->xmlsii = $ArchivoTXTxml;
+        }
+        if($origenError == 2){
+            $errorsubirdte->stasubcob = 1;
+            $errorsubirdte->errorcob = $errortxt;
+            $errorsubirdte->xmlcob = $ArchivoTXTxml;
+        }
+        $errorsubirdte->save();
+        Event(new ErrorCrearDTE($dte,$ArchivoTXTxml,$errortxt,$origenError));
     }
 
     public static function anulardte($request)
@@ -1948,7 +2072,8 @@ class Dte extends Model
             return response()->json([
                                     'mensaje' => 'ok',
                                     'status' => '0',
-                                    'id' => $request->id,
+                                    'id' => $request->dte_id,
+                                    'dte_id' => $request->dte_id,
                                     'nfila' => $request->nfila,
                                     'nrodocto' => $dte->nrodocto
                                     ]);
@@ -2596,10 +2721,29 @@ class Dte extends Model
                 $xmlcliente = Dte::xmlClienteSisCobranza($dte);
                 //dd($xmlcliente);
                 $comando03creaclientes = $soap->Comando03CreaClientes($xmlcliente);
-                //dd($comando03creaclientes);
-                $xmlcobranza = Dte::xmlDocSisCobranza($dte);
-                $cargadocumentoscobranza = $soap->Comando01CargaDocumentos($xmlcobranza);
-                Event(new XMLCargaDocManager($dte,$xmlcobranza,$xmlcliente)); //ENVIAR CORREO a gmoreno@plastiservi.cl del contenido del XML
+                $comando03creaclientes["stasubsii"] = $dte->stasubsii;
+                $comando03creaclientes["stasubcob"] = $dte->stasubcob;
+                if($comando03creaclientes["id"] == 0){
+                    Dte::ErrorSubirDte($dte,$xmlcliente,$comando03creaclientes["error"],2);
+                    return $comando03creaclientes;
+                }else{
+                    //dd($comando03creaclientes);
+                    $xmlcobranza = Dte::xmlDocSisCobranza($dte);
+                    $cargadocumentoscobranza = $soap->Comando01CargaDocumentos($xmlcobranza);
+                    $cargadocumentoscobranza["stasubsii"] = $dte->stasubsii;
+                    $cargadocumentoscobranza["stasubcob"] = $dte->stasubcob;    
+                    if($cargadocumentoscobranza["id"] == 0){
+                        Dte::ErrorSubirDte($dte,$xmlcobranza,$cargadocumentoscobranza["error"],2);
+                        return $cargadocumentoscobranza;
+                    }else{
+                        $dte->stasubcob = 1;
+                        $dte->save();
+                        $cargadocumentoscobranza["stasubcob"] = $dte->stasubcob;
+                        $cargadocumentoscobranza["updated_at"] = date("Y-m-d H:i:s", strtotime($dte->updated_at));
+                        Event(new XMLCargaDocManager($dte,$xmlcobranza,$xmlcliente)); //ENVIAR CORREO a gmoreno@plastiservi.cl del contenido del XML
+                        return $cargadocumentoscobranza;
+                    }
+                }
                 //dd($cargadocumentoscobranza);
             }    
         }
@@ -2766,7 +2910,7 @@ class Dte extends Model
                 // Realiza las operaciones que desees con los valores obtenidos
                 $NroFAV = substr($nroFAV,4,7);
                 $dtefac = Dte::where("nrodocto",$NroFAV)
-                                ->where("foliocontrol_id",1)
+                                ->whereIn("foliocontrol_id",[1,7]) //AQUI SE VA A PRESENTAR EL PROBLEMA CUANDO COINCIDAN LOS NUMEROS ENTRE FACT Y FACT EXENTA
                                 ->get();
                 $mnttotal = 0;
                 if(count($dtefac) > 0){

@@ -279,17 +279,6 @@ class SoapController extends Controller
     }
 
     public function Comando01CargaDocumentos($cadenaxml){
-        /* try {
-            $soapClient = new SoapClient(env('APP_URLMANAGER'));
-            $response = $soapClient->Comando01CargaDocumentos([
-                "Codigo" => "0mpPWcXj8AC312v",
-                "XMlIngreso" => $cadenaxml
-            ]);
-            dd($response->Comando03CreaClientesResult);
-            return $response->Comando03CreaClientesResult;
-        } catch (Exception $e) {
-            dd("Error: " . $e->getMessage());
-        } */
 
         // URL del servicio SOAP
         $soapUrl = env('APP_URLMANAGER');
@@ -317,6 +306,17 @@ class SoapController extends Controller
                 'Content-Length: ' . strlen($soapRequest)
             ));
 
+            // Establecer tiempo máximo de espera para la conexión (en segundos)
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10); // Por ejemplo, 10 segundos
+            
+            // Establecer tiempo máximo de espera para la ejecución total (en segundos)
+            curl_setopt($curl, CURLOPT_TIMEOUT, 30); // Por ejemplo, 30 segundos
+            
+            // Activar el trace de la solicitud SOAP (opcional)
+            //curl_setopt($curl, CURLOPT_VERBOSE, true);
+            //$verbose = fopen('php://temp', 'w+');
+            //curl_setopt($curl, CURLOPT_STDERR, $verbose);
+
             // Realizar la solicitud cURL
             $response = curl_exec($curl);
 
@@ -332,10 +332,24 @@ class SoapController extends Controller
             // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
             // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
             //dd($response);
-            return $response;
+            return [
+                "id" => 1,
+                "response" => $response,
+                "titulo" => "Procesado",
+                "mensaje" => "Procesado con exito.",
+                "tipo_alert" => "success"
+            ];
+
         } catch (Exception $e) {
             // Capturar errores
-            dd("Error: " . $e->getMessage());
+            return [
+                "id" => 0,
+                "error" => $e->getMessage(),
+                "titulo" => "Error",
+                "mensaje" => "Error al subir DTE. " . $e->getMessage(),
+                "tipo_alert" => "error"
+            ];
+            //dd("Error: " . $e->getMessage());
         }
     }
 
@@ -380,6 +394,18 @@ class SoapController extends Controller
                 'Content-Length: ' . strlen($soapRequest)
             ));
 
+            // Establecer tiempo máximo de espera para la conexión (en segundos)
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10); // Por ejemplo, 10 segundos
+
+            // Establecer tiempo máximo de espera para la ejecución total (en segundos)
+            curl_setopt($curl, CURLOPT_TIMEOUT, 30); // Por ejemplo, 30 segundos
+            
+            // Activar el trace de la solicitud SOAP (opcional)
+            //curl_setopt($curl, CURLOPT_VERBOSE, true);
+            //$verbose = fopen('php://temp', 'w+');
+            //curl_setopt($curl, CURLOPT_STDERR, $verbose);
+            
+
             // Realizar la solicitud cURL
             $response = curl_exec($curl);
 
@@ -395,10 +421,21 @@ class SoapController extends Controller
             // Aquí debes manejar la respuesta según la estructura que esperas recibir del servicio
             // Por ejemplo, podrías devolver los datos o hacer cualquier otra operación necesaria
             //dd($response);
-            return $response;
+            return [
+                "id" => 1,
+                "response" => $response,
+            ];
         } catch (Exception $e) {
             // Capturar errores
-            dd("Error: " . $e->getMessage());
+            return [
+                "id" => 0,
+                "error" => $e->getMessage(),
+                "titulo" => "Error",
+                "mensaje" => "Error al subir DTE. " . $e->getMessage(),
+                "tipo_alert" => "error"
+
+            ];
+            //dd("Error: " . $e->getMessage());
         }
 
     }

@@ -831,6 +831,8 @@ class DteGuiaDespController extends Controller
         $dte = Dte::findOrFail($request->dte_id);
         $dteini = Dte::findOrFail($request->dte_id);
         $respuesta = Dte::generardteprueba($dte);
+        $dtec = Dte::findOrFail($request->dte_id);
+        //dd($respuesta);
         /*
         $respuesta = response()->json([
             'id' => 1
@@ -840,29 +842,40 @@ class DteGuiaDespController extends Controller
         $foliocontrol->bloqueo = 0;
         $foliocontrol->save();
         if($respuesta["id"] == 1){
-            if(empty($dteini->nrodocto)){
-                $dteini->nrodocto = $dte->nrodocto;
-                if(!$dteini->save()){
-                    return response()->json([
-                        'id' => 0,
-                        'titulo' => "",
-                        'mensaje'=> "Error al Guardar en dte",
-                        'tipo_alert' => 'error'
-                    ]);                            
-                }
+            $dteini->nrodocto = $dte->nrodocto;
+            $dteini->stasubsii = 1;
+            if($dteini->save()){
+                Dte::guardarPdfXmlSii($dteini->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
+                return response()->json([
+                    'id' => 1,
+                    'dte_id' => $request->dte_id,
+                    'mensaje'=>'DTE Generado con exito: ' . $dte->nrodocto,
+                    'tipo_alert' => 'success',
+                    'stasubsii' => $dteini->stasubsii,
+                    'stasubcob' => $dteini->stasubcob,
+                    'updated_at' => date("Y-m-d H:i:s", strtotime($dteini->updated_at))
+                ]);        
+            }else{
+                return response()->json([
+                    'id' => 0,
+                    'titulo' => "",
+                    'mensaje'=> "Error al Guardar en dte",
+                    'tipo_alert' => 'error',
+                    'stasubsii' => $dtec->stasubsii,
+                    'stasubcob' => $dtec->stasubcob,
+                    'updated_at' => ""
+                ]);
             }
-            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-            return response()->json([
-                'id' => 1,
-                'mensaje'=>'DTE Generado con exito: ' . $dte->nrodocto,
-                'tipo_alert' => 'success'
-            ]);
         }else{
+            $stasubsii = isset($respuesta["stasubsii"]) ? $respuesta["stasubsii"] : 0;
             return response()->json([
                 'id' => 0,
                 'titulo' => $respuesta["titulo"],
                 'mensaje'=> $respuesta["mensaje"],
-                'tipo_alert' => 'error'
+                'tipo_alert' => 'error',
+                'stasubsii' => $stasubsii,
+                'stasubcob' => $dtec->stasubcob,
+                'updated_at' => date("Y-m-d H:i:s", strtotime($dtec->updated_at))
             ]);
         }
     }
@@ -1025,7 +1038,7 @@ function consultaindex(){
     $sucurcadena = implode(",", $sucurArray);
 
     $sql ="SELECT dte.id,dte.nrodocto,dte.fechahora,dte.fchemis,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
-        despachoord.notaventa_id,
+        despachoord.notaventa_id,dte.stasubsii,
         despachoord.despachosol_id,dteguiadesp.despachoord_id,despachoord.fechaestdesp,comuna.nombre as cmnarecep,dte.kgtotal,
         dteguiadesp.tipoentrega_id,tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.updated_at,despachoord.updated_at as despordupdated_at,
@@ -1572,7 +1585,8 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     }
     */
     $dte->dteguiadesp = $dteguiadesp;
-    $respuesta = Dte::generardteprueba($dte);
+    $respuesta = Dte::dteSolicitarFolio($dte);
+    //$respuesta = Dte::generardteprueba($dte);
     /*
     $respuesta = response()->json([
         'id' => 1
@@ -1580,6 +1594,9 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     */
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
     if($respuesta["id"] == 1){
+        $dte->fchemisgen = date("Y-m-d H:i:s");
+        $dte->nrodocto = $respuesta["aux_folio"];
+        $dte->stasubcob = 1;
         $dteNew = Dte::create($dte->toArray());
         foreach ($dte->dtedets as $dtedet) {
             $dtedet->dte_id = $dteNew->id;
@@ -1625,17 +1642,24 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
         $foliocontrol->bloqueo = 0;
         $foliocontrol->ultfoliouti = $dteNew->nrodocto;
         $foliocontrol->save();
-        Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
+
+        $dte = Dte::findOrFail($dteNew->id);
+        $respuesta = Dte::subirDteSii($dte);
+        if($respuesta["id"] == 1){
+            Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
+        }
+
+
     }else{
-        $foliocontrol->bloqueo = 0;
-        $foliocontrol->save();
+        /* $foliocontrol->bloqueo = 0;
+        $foliocontrol->save(); */
         //dd($respuesta["id"]);
-        /*
+        
         return redirect('dteguiadesp/listarorddesp')->with([
             'mensaje'=>$respuesta["mensaje"] ,
             'tipo_alert' => 'alert-error'
         ]);
-        */
+       
     }
     return $respuesta;
 }
