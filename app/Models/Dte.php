@@ -2837,7 +2837,7 @@ class Dte extends Model
                 NUMFACT=\"$dte->nrodocto\" NUMREG=\"0\" FECHA=\"$FchEmis\" VENCIMIE=\"$vencimie\" RUTFACT=\"$rutrecep\"
                 RAZSOC2=\"$RznSocRecep\" GIRO=\"$GiroRecep\"
                 DIR=\"$DirRecep\" COMUNA=\"$CmnaRecep\" CIUDAD=\"$CiuRecep\" FONO=\"$telefono\"
-                CODCOMIS=\"\" COMISION=\"0\" CODCODVEND=\"$dte->vendedor_id\" CODVEND=\"$dte->vendedor_id\" GLOSACON=\"\" NUMGUIAF=\"$numfv\" 
+                CODCOMIS=\"\" COMISION=\"0\" CODCODVEND=\"$dte->vendedor_id\" GLOSACON=\"\" NUMGUIAF=\"$numfv\" 
                 CODFORMPAGO=\"$codformpago\"
                 GARANTIA=\"0\" STOCK=\"1\" NULA=\"0\" CANCELA=\"0\" CODTIPODOC=\"$codtipodoc\"
                 VENTA=\"1\" NDIASF=\"0\" NUMCORR=\"0\"
