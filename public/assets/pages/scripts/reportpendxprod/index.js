@@ -886,7 +886,8 @@ function exportarExcel() {
                 registro.cantsaldo,
                 registro.kgpend,
                 registro.precioxkilo,
-                registro.subtotalplata
+                registro.subtotalplata,
+                registro.at_materiaprima
             ];
             //aux_vendedor_id = registro.vendedor_id;
 
@@ -937,7 +938,7 @@ function createExcel(datosExcel) {
 
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 17; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -962,7 +963,7 @@ function createExcel(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 17; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
@@ -1053,6 +1054,9 @@ function createExcel(datosExcel) {
 
         const cell16 = worksheet.getCell(i, 16);
         cell16.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        const cell17 = worksheet.getCell(i, 17);
+        cell17.alignment = { wrapText: true, horizontal: "left", vertical: "middle" };
 
         /*
         const cell9 = worksheet.getCell(i, 9);

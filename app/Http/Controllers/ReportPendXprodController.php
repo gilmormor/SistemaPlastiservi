@@ -157,6 +157,7 @@ class ReportPendXprodController extends Controller
             $data->at_espesor = $atributoProd["at_espesor"];
             $data->cla_nombre = $atributoProd["cla_nombre"];
             $data->tipounion = $atributoProd["tipounion"];
+            $data->at_materiaprima = $atributoProd["at_materiaprima"];
             $data->stockbpt = 0;
             $data->picking = 0;
             $aux_picking = 0;

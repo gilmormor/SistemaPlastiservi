@@ -1052,6 +1052,7 @@ class Producto extends Model
             $aux_atribAcuTec = $AcuTec->materiaprima->descfact . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
             //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
             $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
+            $at_materiaprima = $producto->acuerdotecnico->materiaprima->nombre;
         }else{
             //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
             $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_descripcion);
@@ -1065,6 +1066,7 @@ class Producto extends Model
                 $aux_tipounion = $producto->tipounion;
             }                                        
             $aux_nombreprod = $aux_nombreprod . $at_anchoT . $at_largoT . " " . $aux_cla_nombre. " " . $aux_tipounion;
+            $at_materiaprima = "";
         }
         $atributoProducto = [
             "nombre" => $aux_nombreprod,
@@ -1074,7 +1076,8 @@ class Producto extends Model
             "at_anchoT" => $at_anchoT,
             "at_largoT" => $at_largoT,
             "cla_nombre" => $aux_cla_nombre,
-            "tipounion" => $aux_tipounion
+            "tipounion" => $aux_tipounion,
+            "at_materiaprima" => $at_materiaprima
         ];
         return $atributoProducto;
     }
