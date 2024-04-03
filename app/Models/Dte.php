@@ -2793,10 +2793,20 @@ class Dte extends Model
         $aux_mnttotal = $dte->mnttotal;
         $FchEmis = date('d-m-Y', strtotime($dte->fchemis));
         $numfv = "";
+        $aux_afecto = 0;
+        $aux_excento = 0;
         if($TipoDTE == 33 or $TipoDTE == 34){
             $vencimie = date('d-m-Y', strtotime($dte->dtefac->fchvenc));
             $codtipodoc = "FAV";
             $formapago_id = $dte->dtefac->formapago_id;
+        }
+        if($aux_iva > 0){
+            $aux_afecto = $aux_neto;
+            $aux_excento = 0;    
+        }
+        if($aux_iva == 0){
+            $aux_afecto = 0;
+            $aux_excento = $aux_neto;    
         }
         if($TipoDTE == 61){
             $vencimie = $FchEmis;
@@ -2832,7 +2842,7 @@ class Dte extends Model
                 GARANTIA=\"0\" STOCK=\"1\" NULA=\"0\" CANCELA=\"0\" CODTIPODOC=\"$codtipodoc\"
                 VENTA=\"1\" NDIASF=\"0\" NUMCORR=\"0\"
                 CODTIPOVTA=\"\" NUMFV=\"0\" NOTAOBS=\"\"
-                FECHCONT=\"$FchEmis\" AFECTO=\"0\" EXENTO=\"0\"
+                FECHCONT=\"$FchEmis\" AFECTO=\"$aux_afecto\" EXENTO=\"$aux_excento\"
                 DCTOTIPO=\"1\" DCTOPJE=\"0.00\" CODSUCUR=\"$dte->sucursal_id\"
                 TOTNETO=\"$aux_neto\" IVA=\"$aux_tasaiva\" TOTIVA=\"$aux_iva\"
                 IMP1=\"0\" IMP2=\"0\" TOTAL=\"$aux_mnttotal\"
