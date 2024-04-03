@@ -3051,28 +3051,52 @@ function validarItemVacios(){
 	//});
 }
 
-function volverGenDTE(dte_id){
+function volverGenDTE(dte_id,aux_slug = "subir-dte-sii"){
 	var data = {
-        dte_id : dte_id,
-        updated_at : $("#updated_at" + dte_id).html(),
-        _token: $('input[name=_token]').val()
-    };
-    var ruta = '/dteguiadesp/volverGenDTE';
-    //var ruta = '/guiadesp/dteguiadesp';
-    swal({
-        title: '¿ Generar DTE ?',
-        text: "Esta acción no se puede deshacer!",
-        icon: 'warning',
-        buttons: {
-            cancel: "Cancelar",
-            confirm: "Aceptar"
-        },
-    }).then((value) => {
-        if (value) {
-            ajaxRequestGeneral(data,ruta,'volverGenDTE');
-        }
-    });
-
+		slug: aux_slug,
+		_token: $('input[name=_token]').val()
+	};
+	$.ajax({
+		url: '/generales_valpermiso',
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			//console.log(respuesta);
+			if(respuesta.resp){
+				var data = {
+					dte_id : dte_id,
+					updated_at : $("#updated_at" + dte_id).html(),
+					_token: $('input[name=_token]').val()
+				};
+				var ruta = '/dteguiadesp/volverGenDTE';
+				//var ruta = '/guiadesp/dteguiadesp';
+				swal({
+					title: '¿ Generar DTE ?',
+					text: "Esta acción no se puede deshacer!",
+					icon: 'warning',
+					buttons: {
+						cancel: "Cancelar",
+						confirm: "Aceptar"
+					},
+				}).then((value) => {
+					if (value) {
+						ajaxRequestGeneral(data,ruta,'volverGenDTE');
+					}
+				});
+			
+			}else{
+				swal({
+					title: respuesta.mensaje,
+					text:  respuesta.mensaje2,
+					icon: 'error',
+					buttons: {
+						confirm: "Cerrar",
+					},
+				}).then((value) => {
+				});
+			}
+		}
+	});
 }
 
 function ajaxRequestGeneral(data,url,funcion) {
@@ -3634,26 +3658,50 @@ function descripElementoSelectMult(id){
 	return seleccionados;
 }
 
-function volverSubirDteSisCob(dte_id){
+function volverSubirDteSisCob(dte_id,aux_slug = "subir-dte-sistema-cobranza"){
 	var data = {
-        dte_id : dte_id,
-        updated_at : $("#fila" + dte_id).attr('updated_at'),
-        _token: $('input[name=_token]').val()
-    };
-    var ruta = '/dtefactura/volverSubirDteSisCob';
-    //var ruta = '/guiadesp/dteguiadesp';
-    swal({
-        title: '¿ Subir DTE a Sistema Cobranza?',
-        text: "Esta acción no se puede deshacer!",
-        icon: 'warning',
-        buttons: {
-            cancel: "Cancelar",
-            confirm: "Aceptar"
-        },
-    }).then((value) => {
-        if (value) {
-            ajaxRequestGeneral(data,ruta,'volverSubirDteSisCob');
-        }
-    });
+		slug: aux_slug,
+		_token: $('input[name=_token]').val()
+	};
+	$.ajax({
+		url: '/generales_valpermiso',
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			//console.log(respuesta);
+			if(respuesta.resp){
+				var data = {
+					dte_id : dte_id,
+					updated_at : $("#fila" + dte_id).attr('updated_at'),
+					_token: $('input[name=_token]').val()
+				};
+				var ruta = '/dtefactura/volverSubirDteSisCob';
+				//var ruta = '/guiadesp/dteguiadesp';
+				swal({
+					title: '¿ Subir DTE a Sistema Cobranza?',
+					text: "Esta acción no se puede deshacer!",
+					icon: 'warning',
+					buttons: {
+						cancel: "Cancelar",
+						confirm: "Aceptar"
+					},
+				}).then((value) => {
+					if (value) {
+						ajaxRequestGeneral(data,ruta,'volverSubirDteSisCob');
+					}
+				});			
+			}else{
+				swal({
+					title: respuesta.mensaje,
+					text:  respuesta.mensaje2,
+					icon: 'error',
+					buttons: {
+						confirm: "Cerrar",
+					},
+				}).then((value) => {
+				});
+			}
+		}
+	});
 
 }
