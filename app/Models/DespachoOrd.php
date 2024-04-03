@@ -206,7 +206,9 @@ class DespachoOrd extends Model
         AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
         AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
         AND $aux_notaventa_idCodn
+        AND dte.indtraslado in (1,2,9)
         GROUP BY despachoorddet.despachoord_id;";
         return DB::select($sql);
+        //and indtraslado in (1,2,9) // indtraslado = 1: Operación constituye venta1 2: Ventas por efectuar 3: Consignaciones 4: Entrega gratuita 5: Traslados internos 6: Otros traslados no venta 7: Guía de devolución 8: Traslado para exportación. (no venta) 9: Venta para exportación
     }
 }
