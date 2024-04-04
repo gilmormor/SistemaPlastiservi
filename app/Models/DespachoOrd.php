@@ -202,7 +202,13 @@ class DespachoOrd extends Model
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
         LEFT JOIN dte
         ON despachoord.guiadespacho = dte.nrodocto
-        WHERE despachoord.aprguiadesp='1' and NOT isnull(despachoord.guiadespacho) and isnull(despachoord.numfactura)
+        WHERE despachoord.aprguiadesp='1'
+        AND NOT isnull(despachoord.guiadespacho)
+        AND ((SELECT COUNT(dteguiadesp.id) /*ESTA VALIDACION ES PARA CUANDO LA GUIA ES ANULADA DESDE (dtefactura/listarguiadesp JAVASCRIPT anularguia()) PERO SIN DEVOLVER A ORDEN DE DESPACHO, LA ORDEN DE DESPACHO SIGUE ASIGNADA A LA GUIA ANULADA */
+            FROM dteguiadesp INNER JOIN dteanul
+            ON dteguiadesp.dte_id = dteanul.dte_id
+            WHERE dteguiadesp.despachoord_id = despachoord.id) = 0)
+        AND isnull(despachoord.numfactura)
         AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
         AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
         AND $aux_notaventa_idCodn

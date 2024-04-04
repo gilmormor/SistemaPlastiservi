@@ -662,7 +662,14 @@ class Producto extends Model
             $vendedorcond = " notaventa.vendedor_id in ($aux_vendedorid) ";
     
             //$vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
-        }  
+        }
+        
+        if(isset($request->FiltarxVendedor) and ($request->FiltarxVendedor == false)){
+            //ESTA CONDICION ES PARA QUE NO FILTRE POR VENDEDOR, SE DIO EL CAOS DE GORIGOITIA QUE ES VENDEDOR Y TAMBIEN ADMINISTRATIVO QUE ES EL JEFE DE PRODUCCION
+            //EL NECESITA VER TODO SIN FILTRO POR VENDEDOR
+            //OJO PERO ESTA VARIABLE $request->FiltarxVendedor SOLO LA ESTOY ENVIANDO DESDE reportinvstockbppendxprodpage
+            $vendedorcond = " true ";
+        }
     
         if(empty($request->fechad) or empty($request->fechah)){
             $aux_condFecha = " true";

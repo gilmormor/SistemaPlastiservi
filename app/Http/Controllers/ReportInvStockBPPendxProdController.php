@@ -42,6 +42,7 @@ class ReportInvStockBPPendxProdController extends Controller
         can('reporte-stock-+-pendiente');
         $request->request->add(['groupby' => " group by notaventadetalle.producto_id "]);
         $request->request->add(['orderby' => " order by notaventadetalle.producto_id "]);
+        $request->request->add(['FiltarxVendedor' => false]);
         $pendientexprods = Producto::pendientexProducto($request,2,1);
         //dd($pendientexprods);
         $arrego_producto_id = [];
@@ -59,6 +60,7 @@ class ReportInvStockBPPendxProdController extends Controller
         $request->request->add(['MostrarStockCero' => true]);
         $datas1 = [];
         $datas = InvMov::stocksql($request,"producto.id");
+        //dd($datas);
         foreach ($datas as &$data) {
             if(isset($arrego_pendientexprod[$data->producto_id])){ //SIE EL ELEMENTO EXISTE EL ARREGLO ENTRA.
                 $data->cantpend = $arrego_pendientexprod[$data->producto_id]->cant - $arrego_pendientexprod[$data->producto_id]->cantdesp;
@@ -79,6 +81,7 @@ class ReportInvStockBPPendxProdController extends Controller
         can('reporte-stock-+-pendiente');
         $request->request->add(['groupby' => " group by notaventadetalle.producto_id "]);
         $request->request->add(['orderby' => " order by notaventadetalle.producto_id "]);
+        $request->request->add(['FiltarxVendedor' => false]);
         $pendientexprods = Producto::pendientexProducto($request,2,1);
         //dd($pendientexprods);
         $arrego_producto_id = [];
