@@ -441,9 +441,57 @@ class NotaVenta extends Model
     }
 
     public static function consultatotcantod($id){
+        //TOMANDO EN CUENTA QUE EN PLANTA SANTA ESTER PERMITE DESPACHAR POR ENCIMA DEL LA CANT EN NV
+        //VALIDAR, SI LA CANTIDAD DESPACHADA ES MAYOR AL ITEM DE LA NV, SE DEBE TOMAR PARA CONTROL LA CANTIDAD DE LA NV
+        //ESTO PARA NO SUMAR LO TOTAL DESPACHADO, YA QUE PUEDE SOBREPASAR EL TOTAL EN CANTIDAD DE LA NV
+        //DANDO ASI UN VALOR ERRONEO, COMO SI LA NV YA ESTUVIESE TOTALMENTE DESPACHADA Y NO ES ASI.
+        $sql = "SELECT despachoord.notaventa_id,notaventadetalle.id as notaventadetalle_id,notaventadetalle.producto_id,
+                notaventadetalle.cant AS cantnv
+                FROM despachoord JOIN despachoorddet 
+                ON despachoord.id = despachoorddet.despachoord_id
+                INNER JOIN notaventadetalle
+                ON notaventadetalle.id = despachoorddet.notaventadetalle_id
+                WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
+                and despachoord.guiadespacho is not null
+                and despachoord.notaventa_id = $id
+                and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
+                group by notaventadetalle.id;";
+        //dd("$sql");
+        $nvdets = DB::select($sql);
+        $aux_totalcantnv = 0;
+        $aux_cantdesptotalmax = 0;
+        if($nvdets){
+            foreach ($nvdets as $nvdet) {
+                $aux_totalcantnv += $nvdet->cantnv;
+                $sql = "SELECT despachoord.notaventa_id,notaventadetalle.id as notaventadetalle_id,
+                        notaventadetalle.producto_id,notaventadetalle.cant AS cantnv,
+                        sum(cantdesp) AS canddespreal
+                        FROM despachoord JOIN despachoorddet 
+                        ON despachoord.id = despachoorddet.despachoord_id
+                        INNER JOIN notaventadetalle
+                        ON notaventadetalle.id = despachoorddet.notaventadetalle_id
+                        WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
+                        and despachoord.guiadespacho is not null
+                        and despachoorddet.notaventadetalle_id = $nvdet->notaventadetalle_id
+                        and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
+                        group by notaventadetalle.id;";
+                //dd("$sql");
+                $datas = DB::select($sql);
+                if($datas){
+                    if($datas[0]->canddespreal > $nvdet->cantnv){
+                        $aux_cantdesptotalmax += $nvdet->cantnv;
+                    }else{
+                        $aux_cantdesptotalmax += $datas[0]->canddespreal;
+                    }
+                }
+            }
+        }
+        return $aux_cantdesptotalmax;
+        //DE AQUI PARA ABAJO FUE SUSTITUIDO POR LO DE ARRIBA 05/04/2024
         //cantdesptopenv = CANTIDAD TOPE DE DESPACHO SEGUN NOTA DE VENTA
         //EN SANTA ESTER SE PUEDE DESPACHAR MAS DE LO QUE DICE LA NOTA DE VENTA
-        $sql = "SELECT despachoord.notaventa_id,sum(notaventadetalle.cant) AS cantnv,sum(cantdesp) AS canddespreal,
+        $sql = "SELECT despachoord.notaventa_id,notaventadetalle.id as notaventadetalle_id,notaventadetalle.producto_id,
+                sum(notaventadetalle.cant) AS cantnv,sum(cantdesp) AS canddespreal,
                 if(sum(cantdesp)>notaventadetalle.cant,sum(notaventadetalle.cant),sum(cantdesp)) AS cantdesptopenv
                 FROM despachoord JOIN despachoorddet 
                 ON despachoord.id = despachoorddet.despachoord_id
@@ -456,6 +504,7 @@ class NotaVenta extends Model
                 group by despachoorddet.id;";
         //dd("$sql");
         $datas = DB::select($sql);
+        //dd($datas);
         $aux_cant = 0;
         if($datas){
             foreach ($datas as $data) {
