@@ -127,21 +127,28 @@ function ajaxRequest(data,url,funcion) {
                 $("#myModaldevsoldeps").modal('hide');
             }
             if(funcion=='btncerrarsol'){
-                if (respuesta.mensaje == "ok") {
-                    //form.parents('tr').remove();
-                    $("#fila"+data['nfila']).remove();
-                    Biblioteca.notificaciones('El registro fue procesado correctamente.', 'Plastiservi', 'success');
-                } else {
-                    if (respuesta.mensaje == "sp"){
-                        Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
-                    }else{
-                        if(respuesta.mensaje == "hijos"){
-                            Biblioteca.notificaciones('No puede ser eliminado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
+                if ('error' in respuesta){
+                    if (respuesta.error == 0){
+                        $("#fila"+data['nfila']).remove();
+                    }
+                    Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                }else{
+                    if (respuesta.mensaje == "ok") {
+                        //form.parents('tr').remove();
+                        $("#fila"+data['nfila']).remove();
+                        Biblioteca.notificaciones('El registro fue procesado correctamente.', 'Plastiservi', 'success');
+                    } else {
+                        if (respuesta.mensaje == "sp"){
+                            Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
                         }else{
-                            if(respuesta.mensaje == "ne"){
-                                Biblioteca.notificaciones('No tiene permiso para eliminar.', 'Plastiservi', 'error');
+                            if(respuesta.mensaje == "hijos"){
+                                Biblioteca.notificaciones('No puede ser eliminado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
                             }else{
-                                Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
+                                if(respuesta.mensaje == "ne"){
+                                    Biblioteca.notificaciones('No tiene permiso para eliminar.', 'Plastiservi', 'error');
+                                }else{
+                                    Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
+                                }
                             }
                         }
                     }

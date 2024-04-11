@@ -947,6 +947,20 @@ class DespachoSolController extends Controller
     {
         if ($request->ajax()) {
             $despachosol = DespachoSol::findOrFail($request->id);
+            $aux_picking = 0;
+            $detalles = $despachosol->despachosoldets()->get();
+            $arrayBodegasPickings = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
+            //dd($arrayBodegasPickings);
+            foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
+                $aux_picking += $arrayBodegasPicking["stock"];
+            }
+            if($aux_picking > 0){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => 'La Solicitud Nro.' . $request->id . ' contiene picking. Antes de cerrar SolDesp, es necesario liberar previamente el picking.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
 
             /******************************************************/
             $despachosol = DespachoSol::findOrFail($request->id);
