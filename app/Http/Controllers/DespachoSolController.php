@@ -703,6 +703,14 @@ class DespachoSolController extends Controller
             }
 
             $despachosol = DespachoSol::findOrFail($request->id);
+            if($despachosol->despachosolanul){
+                return response()->json([
+                    'status' => 0,
+                    'mensaje' => 'Solicitud de despacho Nro: ' . $despachosol->id . ' fue anulada el ' . date("d/m/Y h:i:s A", strtotime($despachosol->despachosolanul->created_at)),
+                    'tipo_alert' => 'error'
+                ]);
+            };
+
             if(isset($request->updated_at) and ($despachosol->updated_at != $request->updated_at)){
                 return response()->json([
                     'status'=>'0',
@@ -710,7 +718,6 @@ class DespachoSolController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
-    
             if($despachosol->aprorddesp != 1){
                 return response()->json([
                     'mensaje' => 'Registro fue modificado previamente.'
@@ -962,6 +969,13 @@ class DespachoSolController extends Controller
                 ]);
             }
 
+            if($despachosol->despachosolanul){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => 'Solicitud de despacho Nro: ' . $despachosol->id . ' fue anulada el ' . date("d/m/Y h:i:s A", strtotime($despachosol->despachosolanul->created_at)),
+                    'tipo_alert' => 'error'
+                ]);
+            };
             /******************************************************/
             $despachosol = DespachoSol::findOrFail($request->id);
             if($despachosol->aprorddesp != 1){

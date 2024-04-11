@@ -196,6 +196,14 @@ class PickingController extends Controller
             ]);    
         }
 
+        if($despachosol->despachosolanul){
+            return redirect('/')->with([
+                'mensaje'=>'Picking: Solicitud de despacho Nro: ' . $despachosol->id . ' fue anulada el ' . date("d/m/Y h:i:s A", strtotime($despachosol->despachosolanul->created_at)),
+                'tipo_alert' => 'alert-error'
+            ]);    
+        };
+
+
         $despachosol->updated_at = date("Y-m-d H:i:s"); //ACTUALIZO DESDE EL PRINCIPIO EL REGISTRO PARA EVITAR QUE SEA MODIFICADO MIENTRAS EL PROCESO SE EJECUTA
         if (!$despachosol->save()) {
            return response()->json(['mensaje' => 'ng']);
