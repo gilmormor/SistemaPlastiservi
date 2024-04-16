@@ -69,18 +69,18 @@
 					?>
 						<tr class="headt" style="height:150%;">
 							<td class="textcenter">{{$cotizacion->id,0}}</td>
-							<td class="textcenter">{{date('d/m/Y', strtotime($cotizacion->fechahora))}}&nbsp</td>
-							<td class="textleft">{{$rut}}&nbsp</td>
-							<td class="textleft">&nbsp{{$cotizacion->razonsocial}}&nbsp</td>
-							<td class="textleft">&nbsp{{$aux_mensaje}}&nbsp</td>
-							<td class="textright">{{number_format($cotizacion->total, 0, ",", ".")}}&nbsp</td>
+							<td class="textcenter">{{date('d/m/Y', strtotime($cotizacion->fechahora))}}&nbsp;</td>
+							<td class="textleft">{{$rut}}&nbsp;</td>
+							<td class="textleft">&nbsp;{{$cotizacion->razonsocial}}&nbsp;</td>
+							<td class="textleft">&nbsp;{{$aux_mensaje}}&nbsp;</td>
+							<td class="textright">{{number_format($cotizacion->total, 0, ",", ".")}}&nbsp;</td>
 						</tr>
 					@endforeach
 				</tbody>
 				<tfoot id="detalle_totales">
 					<tr class="headt">
 						<th colspan="5" style='text-align:right'>TOTAL</th>
-						<th class="textright">{{number_format($aux_total, 0, ",", ".")}}&nbsp</th>
+						<th class="textright">{{number_format($aux_total, 0, ",", ".")}}&nbsp;</th>
 					</tr>
 				</tfoot>
 			</table>

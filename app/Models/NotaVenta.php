@@ -372,7 +372,7 @@ class NotaVenta extends Model
             sum(if(areaproduccion.id=1,notaventadetalle.subtotal,0)) AS pvcpesos,
             sum(if(areaproduccion.id=2,notaventadetalle.subtotal,0)) AS canpesos,
             sum(notaventadetalle.subtotal) AS totalps,
-            sum(notaventa.total) AS total,
+            ROUND(sum(notaventadetalle.subtotal * ((notaventa.piva + 100) /100) ),0) AS total,
             comuna.nombre as comunanombre,
             notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
             FROM notaventa INNER JOIN notaventadetalle
