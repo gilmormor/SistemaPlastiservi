@@ -62,12 +62,12 @@ class PickingController extends Controller
     {
         can('editar-picking');
         $data = DespachoSol::findOrFail($id);
-        if($data->despachosoldev){
+        /* if($data->despachosoldev){
             return redirect('/')->with([
                 'mensaje'=>'Picking: Solicitud de despacho Nro: ' . $data->id . ' fue cerrada el ' . date("d/m/Y h:i:s A", strtotime($data->despachosoldev->created_at)),
                 'tipo_alert' => 'alert-error'
             ]);    
-        };
+        }; */
         if($data->despachosolanul){
             return redirect('/')->with([
                 'mensaje'=>'Picking: Solicitud de despacho Nro: ' . $data->id . ' fue anulada el ' . date("d/m/Y h:i:s A", strtotime($data->despachosolanul->created_at)),
