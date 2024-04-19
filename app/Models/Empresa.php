@@ -34,5 +34,12 @@ class Empresa extends Model
     {
         return $this->belongsTo(Moneda::class);
     }
+
+    //RELACION MUCHO A MUCHOS CON BANCO A TRAVES DE empresa_banco
+    public function bancos()
+    {
+        return $this->belongsToMany(Banco::class, 'empresa_banco')->withTimestamps();
+    }
+    
     
 }

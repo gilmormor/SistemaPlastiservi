@@ -3705,3 +3705,13 @@ function volverSubirDteSisCob(dte_id,aux_slug = "subir-dte-sistema-cobranza"){
 	});
 
 }
+
+function factFormaLibre(id,stareport,aux_venmodant = ""){ //GENERAR PDF NOTA DE VENTA
+	$("#venmodant").val(""); //Ventana Modal Anterior
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	$('#contpdf').attr('src', '/dtefacturadirlannube/'+id+'/'+stareport+'/exportPdf');
+	$("#myModalpdf").modal('show')
+}

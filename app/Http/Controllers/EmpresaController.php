@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarEmpresa;
+use App\Models\Banco;
 use App\Models\Empresa;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
@@ -30,8 +31,8 @@ class EmpresaController extends Controller
     {
         can('crear-empresa');
         $sucursales = Sucursal::orderBy('id')->get();
-        $aux_sta=1;
-        return view('empresa.crear',compact('sucursales','aux_sta'));
+        $bancos = Banco::orderBy('id')->get();
+        return view('empresa.crear',compact('sucursales','bancos'));
     }
 
     /**
@@ -43,7 +44,8 @@ class EmpresaController extends Controller
     public function guardar(ValidarEmpresa $request)
     {
         can('guardar-empresa');
-        Empresa::create($request->all());
+        $empresa = Empresa::create($request->all());
+        $empresa->bancos()->sync($request->banco_id);
         return redirect('empresa')->with('mensaje','Empresa creada con exito');
     }
 
@@ -69,8 +71,9 @@ class EmpresaController extends Controller
         can('editar-empresa');
         $data = Empresa::findOrFail($id);
         $sucursales = Sucursal::orderBy('id')->get();
+        $bancos = Banco::orderBy('id')->get();
         $aux_sta=2;
-        return view('empresa.editar', compact('data','sucursales','aux_sta'));
+        return view('empresa.editar', compact('data','sucursales','bancos','aux_sta'));
     }
 
     /**
@@ -83,7 +86,12 @@ class EmpresaController extends Controller
     public function actualizar(ValidarEmpresa $request, $id)
     {
         can('guardar-empresa');
-        Empresa::findOrFail($id)->update($request->all());
+        $empresa = Empresa::findOrFail($id);
+        
+        $empresa->update($request->all());
+
+        //$empresa = Empresa::findOrFail($id)->update($request->all());
+        $empresa->bancos()->sync($request->banco_id);
         return redirect('empresa')->with('mensaje','Empresa actualizada con exito');
     }
 

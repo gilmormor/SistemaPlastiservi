@@ -1516,3 +1516,32 @@ Route::get('reportdeudaclientesiscob/totalizarindex', 'ReportDeudaClienteSisCobC
 Route::get('reportdeudaclientesiscob/listardtedet', 'ReportDeudaClienteSisCobController@listardtedet')->name('reportdeudaclientesiscob_listardtedet');
 
 Route::post('reportdeudaclientesiscob/consulta', 'ReportDeudaClienteSisCobController@consulta')->name('reportdeudaclientesiscob_consulta');
+
+
+/*RUTAS FACTURA DIRECTA PARA LANNUBE*/
+Route::get('dtefacturadirlannube', 'DteFacturaDirLannubeController@index')->name('dtefacturadirlannube');
+Route::get('dtefacturadirlannubepage', 'DteFacturaDirLannubeController@dtefacturadirlannubepage')->name('dtefacturadirlannubepage');
+Route::get('dtefacturadirlannube/totalizarindex', 'DteFacturaDirLannubeController@totalizarindex')->name('dtefacturadirlannube_totalizarindex');
+Route::get('dtefacturadirlannube/crear', 'DteFacturaDirLannubeController@crear')->name('crear_dtefacturadirlannube');
+Route::post('dtefacturadirlannube', 'DteFacturaDirLannubeController@guardar')->name('guardar_dtefacturadirlannube');
+Route::post('dtefacturadirlannube/procesar', 'DteFacturaDirLannubeController@procesar')->name('dtefacturadirlannube_procesar');
+Route::post('dtefacturadirlannube/dtedtefacturadirlannube', 'DteFacturaDirLannubeController@dtedtefacturadirlannube')->name('dtefacturadirlannube_dtedtefacturadir');
+Route::get('dtefacturadirlannube/{id}/{stareport}/exportPdf', 'DteFacturaDirLannubeController@exportPdf')->name('dtefacturadirlannube_exportPdf');
+
+/*RUTAS BANCO*/
+Route::get('banco', 'BancoController@index')->name('banco');
+Route::get('bancopage', 'BancoController@bancopage')->name('bancopage');
+Route::get('banco/crear', 'BancoController@crear')->name('crear_banco');
+Route::post('banco', 'BancoController@guardar')->name('guardar_banco');
+Route::get('banco/{id}/editar', 'BancoController@editar')->name('editar_banco');
+Route::put('banco/{id}', 'BancoController@actualizar')->name('actualizar_banco');
+Route::delete('banco/{id}', 'BancoController@eliminar')->name('eliminar_banco');
+
+/*RUTAS BANCO TIPO DE CUENTA*/
+Route::get('bancotipocta', 'BancoTipoCtaController@index')->name('bancotipocta');
+Route::get('bancotipoctapage', 'BancoTipoCtaController@bancotipoctapage')->name('bancotipoctapage');
+Route::get('bancotipocta/crear', 'BancoTipoCtaController@crear')->name('crear_bancotipocta');
+Route::post('bancotipocta', 'BancoTipoCtaController@guardar')->name('guardar_bancotipocta');
+Route::get('bancotipocta/{id}/editar', 'BancoTipoCtaController@editar')->name('editar_bancotipocta');
+Route::put('bancotipocta/{id}', 'BancoTipoCtaController@actualizar')->name('actualizar_bancotipocta');
+Route::delete('bancotipocta/{id}', 'BancoTipoCtaController@eliminar')->name('eliminar_bancotipocta');

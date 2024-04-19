@@ -311,4 +311,31 @@ H1.SaltoDePagina
 .small-text {
     font-size: smaller;
     color: #444; /* Color que no sea tan negro */
-  }
+}
+
+#facturaformalibre_detalle{
+	width: 100%;
+	margin-bottom: 10px;
+}
+#facturaformalibre_detalle{
+	border-collapse: collapse;
+}
+#facturaformalibre_detalle thead th{
+	background: rgb(232, 232, 232);
+	color: #000000;
+	padding: 5px;
+}
+.facturaformalibre_h3{
+	font-family: 'BrixSansBlack';
+	font-size: 12pt;
+	display: block;
+	background: rgb(232, 232, 232);
+	color: #000000;
+	text-align: center;
+	padding: 3px;
+	margin-bottom: 5px;
+}
+
+.fontnrofactura{
+	font-size: 14pt;
+}

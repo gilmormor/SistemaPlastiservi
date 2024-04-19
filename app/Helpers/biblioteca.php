@@ -382,4 +382,77 @@ if (!function_exists('datacobranza')) {
     }
 }
 
+if (!function_exists('numero_a_letras')){
+    function numero_a_letras($numero) {
+        $unidades = array('', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve');
+        $decenas = array('', '', 'veinte', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa');
+        $centenas = array('', 'ciento', 'doscientos', 'trescientos', 'cuatrocientos', 'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos');
+     
+        if ($numero == 0) {
+            return 'cero';
+        }
+     
+        if ($numero < 0) {
+            return 'menos ' . numero_a_letras(abs($numero));
+        }
+     
+        $letras = '';
+     
+        if ($numero >= 1000) {
+            $parte_entera = floor($numero / 1000);
+            $letras .= numero_a_letras($parte_entera) . ' mil';
+            $resto = $numero - ($parte_entera * 1000);
+            if ($resto > 0) {
+                $letras .= ' ' . numero_a_letras($resto);
+            }
+        } else {
+            if ($numero < 20) {
+                $letras .= $unidades[$numero];
+            } elseif ($numero < 100) {
+                $letras .= $decenas[floor($numero / 10)];
+                $resto = $numero % 10;
+                if ($resto) {
+                    $letras .= ' y ' . $unidades[$resto];
+                }
+            } else {
+                $letras .= $centenas[floor($numero / 100)];
+                $resto = $numero % 100;
+                if ($resto) {
+                    $letras .= ' ' . numero_a_letras($resto);
+                }
+            }
+        }
+     
+        return strtoupper($letras);            
+    }
+}
+
+if (!function_exists('numero_a_letras_con_decimales')){
+    function numero_a_letras_con_decimales($numero) {
+        $parte_entera = floor($numero);
+        $parte_decimal = round(($numero - $parte_entera) * 100);
+     
+        $parte_entera_letras = numero_a_letras($parte_entera);
+        $parte_decimal_letras = numero_a_letras($parte_decimal);
+     
+        if ($parte_decimal == 0) {
+            return $parte_entera_letras . ' 00/100';
+        } else {
+            return $parte_entera_letras . ' ' . $parte_decimal . '/100';
+        }
+    }    
+}
+
+if (!function_exists('montoaLetras')){
+    function montoaLetras($numero) {
+        $formatterES = new NumberFormatter("es-ES", NumberFormatter::SPELLOUT);
+        $n = $numero;
+        $izquierda = intval(floor($n));
+        $derecha = round(intval(round(($n - floor($n)) * 100)));
+        return strtoupper($formatterES->format($izquierda) . ' con ' . $derecha . '/100');
+    }
+
+}
+
+
 ?>

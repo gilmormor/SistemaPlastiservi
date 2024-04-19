@@ -25,12 +25,25 @@
             @foreach($sucursales as $sucursal)
                 <option
                     value="{{$sucursal->id}}"
-                    @if (($aux_sta==2) and ($data->sucursal_id==$sucursal->id))
+                    @if (isset($data) and ($data->sucursal_id==$sucursal->id))
                         {{'selected'}}
                     @endif
                     >
                     {{$sucursal->nombre}}
                 </option>
+            @endforeach
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label for="banco_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Bancos">Bancos</label>
+    <div class="col-lg-8">
+        <select name="banco_id[]" id="banco_id" class="form-control select2" multiple required>
+            @foreach($bancos as $banco)
+                <option
+                    value="{{$banco->id}}"
+                    {{is_array(old('banco_id')) ? (in_array($banco->id, old('banco_id')) ? 'selected' : '') : (isset($data) ? ($data->bancos->firstWhere('id', $banco->id) ? 'selected' : '') : '')}}
+                    >{{$banco->nombre}}</option>
             @endforeach
         </select>
     </div>
@@ -63,5 +76,6 @@
         </label>
     </div>
 </div>
+
 
 <input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{old('stabloxdeusiscob', $data->stabloxdeusiscob ?? '0')}}">
