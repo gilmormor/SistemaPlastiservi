@@ -5,6 +5,8 @@
 <br>
 <br>
 <br>
+<br>
+<br>
 <div id="page_pdf">
 	<table id="factura_head">
 		<tr>
@@ -72,7 +74,7 @@
 						<td class="textright">{{number_format($dtedet->montoitem, 2, ",", ".")}}&nbsp;</td>
 					</tr>
 				@endforeach
-				@for ($i = 1; $i < (28 - count($dte->dtedets)); $i++)
+				@for ($i = 1; $i < (22 - count($dte->dtedets)); $i++)
 					<tr class="headt" style="height:150%;">
 						<td class="textleft"></td>
 						<td class="textleft"></td>
