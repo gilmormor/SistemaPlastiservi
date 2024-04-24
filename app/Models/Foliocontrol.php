@@ -17,6 +17,8 @@ class Foliocontrol extends Model
         'activo',
         'bloqueo',
         'signo',
+        'maxitemxdoc',
+        'folmindisp',
         'usuario_id',
         'usuariodel_id'
     ];

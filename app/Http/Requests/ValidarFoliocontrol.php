@@ -28,6 +28,8 @@ class ValidarFoliocontrol extends FormRequest
             'desc' => 'required|max:50',
             'ultfoliouti' => 'required',
             'ultfoliohab' => 'required',
+            'maxitemxdoc' => 'required',
+            'folmindisp' => 'required',
             'activo' => 'required'
         ];
     }

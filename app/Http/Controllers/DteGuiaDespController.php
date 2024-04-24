@@ -178,6 +178,14 @@ class DteGuiaDespController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        $foliocontrol = Foliocontrol::findOrFail(2);
+        if($cont_producto > $foliocontrol->maxitemxdoc ){
+            return redirect('dteguiadesp/listarorddesp')->with([
+                'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
         if(count($despachoord->despachoorddets) != $cont_producto){
             return redirect('dteguiadesp/listarorddesp')->with([
                 'mensaje'=>'Cantidad de item diferentes a la Orden de Despacho Original.',
@@ -223,7 +231,7 @@ class DteGuiaDespController extends Controller
         if($respuesta["id"] == 1){
             $foliocontrol = Foliocontrol::findOrFail(2);
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-            if($aux_foliosdisp <=100){
+            if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 return redirect('dteguiadesp')->with([
                     'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
                     'tipo_alert' => 'alert-error'

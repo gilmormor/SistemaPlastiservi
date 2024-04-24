@@ -87,6 +87,13 @@ class DteNCFacturaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        $foliocontrol = Foliocontrol::findOrFail(5);
+        if($cont_producto > $foliocontrol->maxitemxdoc ){
+            return redirect('dtencfactura')->with([
+                'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
 
         $dte = new Dte();
         $Tmntneto = 0;
@@ -280,7 +287,7 @@ class DteNCFacturaController extends Controller
         $dte->save();
 
         $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-        if($aux_foliosdisp <=20){
+        if($aux_foliosdisp <= $foliocontrol->folmindisp){
             return redirect('dtencfactura')->with([
                 'mensaje'=>"Nota de Credito creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
                 'tipo_alert' => 'alert-error'

@@ -84,6 +84,13 @@ class DteFacturaDirAntiguaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        $foliocontrol = Foliocontrol::findOrFail(1);
+        if($cont_producto > $foliocontrol->maxitemxdoc ){
+            return redirect('dtefacturadirantigua')->with([
+                'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
 
         $cliente = Cliente::findOrFail($request->cliente_id);
         foreach ($cliente->clientebloqueados as $clientebloqueado) {
@@ -292,7 +299,7 @@ class DteFacturaDirAntiguaController extends Controller
             $foliocontrol->save();
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             Dte::subirSisCobranza($dte);
-            if($aux_foliosdisp <=20){
+            if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 return redirect('dtefacturadirantigua')->with([
                     'mensaje'=>"Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
                     'tipo_alert' => 'alert-error'
