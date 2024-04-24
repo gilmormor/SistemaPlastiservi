@@ -26,16 +26,16 @@
 </div>
 
 <div class="form-group">
-    <label for="maxitemxdoc" class="col-lg-3 control-label requerido" data-toggle='tooltip' title='Maximo de items x Dom4cumento'>Maximo item x Doc</label>
+    <label for="maxitemxdoc" class="col-lg-3 control-label requerido" data-toggle='tooltip' title='Maximo de items x Documento. Maximo 30 items'>Maximo item x Doc</label>
     <div class="col-lg-9">
-        <input type="text" name="maxitemxdoc" id="maxitemxdoc" class="form-control" value="{{old('maxitemxdoc', $data->maxitemxdoc ?? '')}}" required/>
+        <input type="text" name="maxitemxdoc" id="maxitemxdoc" class="form-control numerico" value="{{old('maxitemxdoc', $data->maxitemxdoc ?? '')}}" required maxlength="2"/>
     </div>
 </div>
 
 <div class="form-group">
-    <label for="folmindisp" class="col-lg-3 control-label requerido" data-toggle='tooltip' title='Alerta minimo de folios disponibles'>Alerta Folios Disponibles</label>
+    <label for="folmindisp" class="col-lg-3 control-label requerido" data-toggle='tooltip' title='Alerta minimo folios disponibles'>Alerta Folios Disponibles</label>
     <div class="col-lg-9">
-        <input type="text" name="folmindisp" id="folmindisp" class="form-control" value="{{old('folmindisp', $data->folmindisp ?? '')}}" required/>
+        <input type="text" name="folmindisp" id="folmindisp" class="form-control numerico" value="{{old('folmindisp', $data->folmindisp ?? '')}}" required maxlength="2"/>
     </div>
 </div>
 

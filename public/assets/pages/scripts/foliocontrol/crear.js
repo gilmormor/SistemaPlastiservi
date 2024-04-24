@@ -6,6 +6,7 @@ $(document).ready(function () {
 	}else{
 		$("#activoT").prop("checked", false);
 	}
+	$('.numerico').numeric('.');
 });
 
 $("#activoT").click(function(event)
