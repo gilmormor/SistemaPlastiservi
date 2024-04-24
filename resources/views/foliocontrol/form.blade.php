@@ -33,7 +33,7 @@
 </div>
 
 <div class="form-group">
-    <label for="folmindisp" class="col-lg-3 control-label requerido" data-toggle='tooltip' title='Maximo de items x Dom4cumento'>Maximo item x Doc</label>
+    <label for="folmindisp" class="col-lg-3 control-label requerido" data-toggle='tooltip' title='Alerta minimo de folios disponibles'>Alerta Folios Disponibles</label>
     <div class="col-lg-9">
         <input type="text" name="folmindisp" id="folmindisp" class="form-control" value="{{old('folmindisp', $data->folmindisp ?? '')}}" required/>
     </div>
