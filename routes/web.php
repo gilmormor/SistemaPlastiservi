@@ -584,6 +584,8 @@ Route::get('despachosol/pdfpendientesoldesp', 'DespachoSolController@pdfpendient
 Route::get('despachosol/pdfnotaventapendiente', 'DespachoSolController@pdfnotaventapendiente')->name('despachosol_pdfnotaventapendiente');
 Route::get('despachosol/totalizarindex', 'DespachoSolController@totalizarindex')->name('despachosol_totalizarindex');
 Route::post('despachosol/guardarfechaed', 'DespachoSolController@guardarfechaed')->name('guardarfechaed_despachosol');
+Route::get('despachosol/listardespachosolpage', 'DespachoSolController@listardespachosolpage')->name('despachosol_listardespachosolpage');
+Route::post('despachosol/validarregmod', 'DespachoSolController@validarregmod')->name('validarregmod_despachosol');
 
 /*RUTAS REPORTE SOLICITUD DESPACHO*/
 Route::get('reportsoldesp', 'ReportSolDespController@index')->name('reportsoldesp');
@@ -627,7 +629,7 @@ Route::get('despachoord', 'DespachoOrdController@index')->name('despachoord');
 //Route::get('despachoord', 'DespachoOrdController@listards')->name('listards_despachoord');
 Route::get('despachoordpage', 'DespachoOrdController@despachoordpage')->name('despachoordpage');
 Route::get('despachoord/crear', 'DespachoOrdController@crear')->name('crear_despachoord');
-Route::get('despachoord/{id}/crearord', 'DespachoOrdController@crearord')->name('crearord_despachoord');
+Route::get('despachoord/crearord/{id}', 'DespachoOrdController@crearord')->name('crearord_despachoord');
 Route::post('despachoord', 'DespachoOrdController@guardar')->name('guardar_despachoord');
 Route::get('despachoord/{id}/editar', 'DespachoOrdController@editar')->name('editar_despachoord');
 Route::put('despachoord/{id}', 'DespachoOrdController@actualizar')->name('actualizar_despachoord');
@@ -650,11 +652,14 @@ Route::get('despachoordguia', 'DespachoOrdGuiaController@index')->name('despacho
 Route::get('despachoordguiapage', 'DespachoOrdGuiaController@despachoordguiapage')->name('despachoordguiapage');
 Route::get('despachoordguia/totalizarindex', 'DespachoOrdGuiaController@totalizarindex')->name('despachoordguia_totalizarindex');
 Route::post('despachoordguia/bloquearhacerguia', 'DespachoOrdGuiaController@bloquearhacerguia')->name('despachoordguia_bloquearhacerguia');
+Route::get('despachoord/listarsoldespsolenvord', 'DespachoOrdController@listarsoldespsolenvord')->name('listarsoldespsolenvord_despachoord');
+Route::post('despachoord/delsolenvord', 'DespachoOrdController@delsolenvord')->name('delsolenvord_despachoord');
 
 Route::get('despachoord/productobuscarpage', 'DespachoOrdController@productobuscarpage')->name('productobuscarpage');
 Route::get('despachoord/clientebuscarpage', 'DespachoOrdController@clientebuscarpage')->name('clientebuscarpage');
 Route::get('despachoord/{id}/productobuscarpage', 'DespachoOrdController@productobuscarpageid')->name('productobuscarpageid');
 Route::get('despachoord/{id}/clientebuscarpage', 'DespachoOrdController@clientebuscarpageid')->name('clientebuscarpageid');
+
 
 
 Route::get('despachoordfact', 'DespachoOrdFactController@index')->name('despachoordfact');
@@ -996,9 +1001,11 @@ Route::get('pesajeaprobarpage', 'PesajeAprobarController@pesajeaprobarpage')->na
 Route::get('picking', 'PickingController@index')->name('picking');
 Route::get('pickingpage', 'PickingController@pickingpage')->name('pickingpage');
 Route::post('picking/actualizar', 'PickingController@actualizar')->name('actualizar_picking');
-Route::get('picking/{id}/crearord', 'PickingController@crearord')->name('crearord_picking');
+Route::get('picking/crearord/{id}', 'PickingController@crearord')->name('crearord_picking');
 Route::post('picking/reportesoldesp', 'PickingController@reportesoldesp')->name('reportesoldesp_picking');
 Route::post('picking', 'PickingController@guardar')->name('guardar_picking');
+Route::post('picking/enviardespord', 'PickingController@enviardespord')->name('enviardespord_picking');
+Route::post('picking/validareditarpicking', 'PickingController@validareditarpicking')->name('validareditarpicking_picking');
 
 /*RUTAS Turno*/
 Route::get('areaproduccionsuclinea', 'AreaProduccionSucLineaController@index')->name('areaproduccionsuclinea');

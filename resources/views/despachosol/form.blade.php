@@ -292,12 +292,12 @@
                             <select name="tipoguiadesp" id="tipoguiadesp" class="form-control select2  tipoguiadesp" data-live-search='true' value="{{old('tipoguiadesp', isset($data) ? $data->tipoguiadesp : '')}}" required>
                                 <option value="">Seleccione...</option>
                                 @if (count($data->dteguiadespnvs) == 0)
-                                    <option
+                                    <!--<option EN COMENTARIO DESDE EL 30/04/2024, PARA EVITAR ERRORES, LAS GUIAS ORIGINADAS DESDE SOLDESP DEBEN SER 
                                         value="30"
                                         @if(isset($data) and $data->tipoguiadesp =="30")
                                             {{'selected'}}
                                         @endif
-                                        >Traslado</option>
+                                        >Traslado</option>-->
                                     <option
                                         value="1" 
                                         @if(isset($data) and $data->tipoguiadesp =="1")

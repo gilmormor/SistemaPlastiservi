@@ -34,10 +34,12 @@ Pendiente Solicitud Orden Despacho
             @csrf
             <div class="box-body">
                 <input type="hidden" name="sololectura" id="sololectura" value="{{old('sololectura', $tablashtml["sololectura"] ?? '0')}}">
+                <input type="hidden" name="solenvord" id="solenvord" value="{{old('solenvord', $tablashtml["solenvord"] ?? '0')}}">
                 <div class="row">
                     <form id="form-general" action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
                         <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
+                        <input type="hidden" name="aux_ruta_crearord" id="aux_ruta_crearord" value="{{route('crearord_despachoord', ['id' => '1'])}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
@@ -249,7 +251,45 @@ Pendiente Solicitud Orden Despacho
             
             <div class="table-responsive" id="tablaconsulta">
             </div>
+            <div class="table-responsive">
 
+                <table id='tabla-data-pendientesoldesp' name='tabla-data-pendientesoldesp' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='25'>
+                    <thead>
+                        <tr>
+                            <th nombrecampo='despachosol.id' class='tooltipsC' title='Solicitud de Despacho'>SD</th>
+                            <th nombrecampo='despachosol.fechahora'>Fecha</th>
+                            <th nombrecampo='despachosol.fechaestdesp' class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
+                            <th nombrecampo='cliente.razonsocial'>Razón Social</th>
+                            <th nombrecampo='sucursal.nombre'>Sucursal</th>
+                            <th nombrecampo='notaventa.oc_id' class='tooltipsC' title='Orden de Compra'>OC</th>
+                            <th nombrecampo='despachosol.notaventa_id' class='tooltipsC' title='Nota de Venta'>NV</th>
+                            <th nombrecampo='comuna.nombre'>Comuna</th>
+                            <th class='tooltipsC' title='Total Kg Pendientes'>Total Kg</th>
+                            <th class='tooltipsC' title='Total $'>$</th>
+                            <th class='tooltipsC' title='Vista Previa Orden Despacho'>VP</th>
+                            <th class='tooltipsC' title='Acción'>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan='8' style='text-align:right'>Total página</th>
+                            <th id='subkgpend' name='subkgpend' style='text-align:right'>0,00</th>
+                            <th id='subtotaldinero' name='subtotaldinero' style='text-align:right'>0,00</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th colspan='8'  style='text-align:right'>TOTAL GENERAL</th>
+                            <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                            <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
     </div>
 </div>
