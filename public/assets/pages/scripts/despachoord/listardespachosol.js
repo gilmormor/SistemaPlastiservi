@@ -1,24 +1,212 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
+    $("#auxeditcampoT").attr('maxlength',"100");
+    $("#auxeditcampoT").attr('placeholder',"Ingrese Observacion");
 
-/*
-    $('.tablas').DataTable({
-		'paging'      : true, 
-		'lengthChange': true,
-		'searching'   : true,
-		'ordering'    : true,
-		'info'        : true,
-		'autoWidth'   : false,
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-        }
-	});
-*/
-    consultar(datoslsd());
+    configurarTabla('#tabla-data-pendientesoldesp');
+
+    function configurarTabla(aux_tabla){
+        data = datosdespachosol();
+        $(aux_tabla).DataTable({
+            'paging'      : true, 
+            'lengthChange': true,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'processing'  : true,
+            'serverSide'  : true,
+            'ajax'        : "/despachosol/listardespachosolpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+            "order": [[ 1, "desc" ]],
+            'columns'     : [
+                {data: 'id'},
+                {data: 'fechahora'},
+                {data: 'fechaestdesp'},
+                {data: 'razonsocial'},
+                {data: 'sucursal_nombre'},
+                {data: 'oc_file'},
+                {data: 'notaventa_id'},
+                {data: 'comunanombre'},
+                {data: 'totalkilos'},
+                {data: 'id'},
+                {data: 'icono'},
+                {data: 'icono'},
+            ],
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            },
+            "createdRow": function ( row, data, index ) {
+                /*
+                if(data.stock <= 0){
+                    $(row).hide();                    
+                }*/
+                if ('datosAdicionales' in data) {
+                    //console.log(data);
+                    $("#totalkg").html(MASKLA(data.datosAdicionales.aux_totalkilos,2))
+                    $("#totaldinero").html(MASKLA(data.datosAdicionales.aux_totaldinero,0));
+                }
+
+                $(row).attr('id','fila' + data.id);
+                $(row).attr('name','fila' + data.id);    
+
+                $('td', row).eq(0).attr('style','text-align:center');
+                aux_text = 
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Solicitud de Despacho" onclick="genpdfSD(${data.id},1)">
+                    ${data.id}
+                </a>`;
+                $('td', row).eq(0).html(aux_text);
+
+                $('td', row).eq(1).attr('id','fechahora'+data.id);
+                $('td', row).eq(1).attr('name','fechahora'+data.id);
+                $('td', row).eq(1).attr('data-order',data.fechahora);
+                aux_fecha = new Date(data.fechahora);
+                $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
+                $('td', row).eq(2).attr('id','fechaestdespTD'+data.id);
+                $('td', row).eq(2).attr('name','fechaestdespTD'+data.id);
+                $('td', row).eq(2).attr('data-order',data.fechaestdesp);
+                aux_fecha = new Date(data.fechaestdesp + " 00:00:00");
+
+                aux_text = 
+                `<a id="fechaestdesp${data.id}" name="fechaestdesp${data.id}" class="editfed">
+                    ${fechaddmmaaaa(aux_fecha)}
+                </a>
+                <input type="text" class="form-control datepickerfed savefed" name="fechaed${data.id}" id="fechaed${data.id}" value="${fechaddmmaaaa(aux_fecha)}" style="display:none; width: 70px; height: 21.6px;padding-left: 0px;padding-right: 0px;" readonly>
+                <a name="editfed${data.id}" id="editfed${data.id}" class="btn-accion-tabla btn-sm tooltipsC editfed" title="Editar Fecha ED" onclick="editfeced(${data.id},${data.id})">
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                </a>
+                <a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar Fecha ED" onclick="savefeced(${data.id},${data.id})" style="display:none" updated_at="${data.updated_at}">
+                    <i class="fa fa-fw fa-save text-red"></i>
+                </a>`;
+                $('td', row).eq(2).html(aux_text);
+
+                if(data.razonsocial.length > 30){
+                    $('td', row).eq(3).attr('class',"btn-accion-tabla");
+                    $('td', row).eq(3).attr('title',data.razonsocial);
+                    $('td', row).eq(3).html(data.razonsocial.substring(0, 30));    
+                }
+
+                if(data.oc_file == "" ||  data.oc_file === null){
+                    aux_enlaceoc = "";
+                }else{
+                    aux_enlaceoc = `<a onclick="verpdf2('${data.oc_file}',2)" class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra">${data.oc_id}</a>`;
+                }
+                $('td', row).eq(5).html(aux_enlaceoc);
+
+                aux_text =
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta" onclick="genpdfNV(${data.notaventa_id},1)">
+                    ${data.notaventa_id}
+                </a>`;
+                $('td', row).eq(6).html(aux_text);
+
+                aux_subtotalkilos = data.totalkilos - data.totalkilosdesp;
+
+                $('td', row).eq(8).attr('class','kgpend');
+                $('td', row).eq(8).attr('style','text-align:right');
+                $('td', row).eq(8).attr('data-order',aux_subtotalkilos);
+                $('td', row).eq(8).attr('data-search',aux_subtotalkilos);
+                $('td', row).eq(8).html(MASKLA(aux_subtotalkilos, 2));
+
+                aux_subtotal = data.subtotalsoldesp - data.subtotaldesp;
+                $('td', row).eq(9).attr('class','dinpend');
+                $('td', row).eq(9).attr('style','text-align:right');
+                $('td', row).eq(9).attr('data-order',aux_subtotal);
+                $('td', row).eq(9).attr('data-search',aux_subtotal);
+                $('td', row).eq(9).html(MASKLA(aux_subtotal, 0));
+
+                aux_text =
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa" onclick="genpdfVPOD(${data.id},1)" style="display: inline-block;">
+                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                </a>`;
+                $('td', row).eq(10).html(aux_text);
+
+                aux_ruta_crearord = $("#aux_ruta_crearord").val();
+                aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
+                aux_solenvord = $("#solenvord").val();
+                if(data.clientebloqueado_descripcion !== null){
+                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${data.clientebloqueado_descripcion}" style="display: inline-block;">
+                                        <button type="button" class="btn btn-default btn-xs" disabled>
+                                            <i class="fa fa-fw fa-lock text-danger"></i>
+                                        </button>
+                                    </a>`;
+                }else{
+                    aux_text = `<a href="${aux_ruta + data.id}" target="_blank" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}">
+                                        <button type="button" class="btn btn-default btn-xs">
+                                            <i class="fa fa-fw ${data.icono}"></i>
+                                        </button>
+                                    </a>`;
+                    aux_text = `<a onclick="crearord('${data.id}','${aux_ruta + aux_solenvord + '-' + data.id}','${data.updated_at}')" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}" style="display: inline-block;">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw ${data.icono}"></i>
+                                    </button>
+                                </a>`;
+                    if($("#solenvord").val() == '0'){
+                        data.nuevoOrdDesp.forEach(function(nuevoOrdDesp, index) {
+                            aux_text += `<a href="${nuevoOrdDesp.a_href}" fila="${nuevoOrdDesp.a_fila}" id="btnanular${nuevoOrdDesp.a_fila}" name="btnanular${nuevoOrdDesp.a_fila}" class="${nuevoOrdDesp.a_class}" title="${nuevoOrdDesp.a_title}" data-toggle="tooltip" style="display: inline-block;" updated_at="${data.updated_at}">
+                                            <button type='button' class="${nuevoOrdDesp.b_class}"><i class="${nuevoOrdDesp.i_class}"></i></button>
+                                        </a>`;
+                            });    
+                    }
+                }
+                if($("#solenvord").val() == '1'){
+                    /* aux_text += `<a onclick="delsolenvord(${data.id},'${data.updated_at}')" class="btn-accion-tabla tooltipsC" title="Eliminar de listado. Solo elimina del listado no afecta Stock picking." style="display: inline-block;">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw fa-trash-o text-danger"></i>
+                                    </button>
+                                </a>`; */
+                    aux_text += `<a onclick="delsolenvord1(${data.id},'${data.updated_at}')" class="btn-accion-tabla tooltipsC" fila="${data.id}" title="Eliminar de listado. Solo elimina del listado no afecta Stock picking." style="display: inline-block;">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw fa-trash-o text-danger"></i>
+                                    </button>
+                                </a>`;
+            }
+                $('td', row).eq(11).html(aux_text);
+                
+            }
+        });
+    }
+
+    
+    $('#tabla-data-pendientesoldesp').on('draw.dt', function () {
+        // Aquí puedes ejecutar la función que deseas que se ejecute cuando se termine de llenar la tabla
+        // Llamar a tu función aquí
+        eventFired1( 'Page' );
+    });
+
+    var eventFired1 = function ( type ) {
+        total = 0;
+        $("#tabla-data-pendientesoldesp tr .kgpend").each(function() {
+            valor = $(this).attr('data-order') ;
+            valorNum = parseFloat(valor);
+            total += valorNum;
+        });
+        $("#subkgpend").html(MASKLA(total,2))
+        total = 0;
+        $("#tabla-data-pendientesoldesp tr .dinpend").each(function() {
+            valor = $(this).attr('data-order') ;
+            valorNum = parseFloat(valor);
+            total += valorNum;
+        });
+        $("#subtotaldinero").html(MASKLA(total,0))
+    }
+
+
+    //consultar(datoslsd());
     $("#btnconsultar").click(function()
     {
-        consultar(datoslsd());
+        //consultar(datoslsd());
+        data = datosdespachosol();
+        $("#totalkg").html("0,00")
+        $("#totaldinero").html("0");
+
+        $('#tabla-data-pendientesoldesp').DataTable().ajax.url( "/despachosol/listardespachosolpage/" + data.data2 ).load();
+
     });
+
+    //consultar(datoslsd());
+    /* $("#btnconsultar").click(function()
+    {
+        consultar(datoslsd());
+    }); */
 
 
 
@@ -68,7 +256,7 @@ function ajaxRequest(data,url,funcion) {
 		success: function (respuesta) {
 			if(funcion=='aprobarcotvend'){
 				if (respuesta.mensaje == "ok") {
-					$("#fila"+data['nfila']).remove();
+					$("#fila"+aux_data.nfila).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					if (respuesta.mensaje == "sp"){
@@ -80,7 +268,7 @@ function ajaxRequest(data,url,funcion) {
             }
             if(funcion=='vistonotaventa'){
 				if (respuesta.mensaje == "ok") {
-					//$("#fila"+data['nfila']).remove();
+					//$("#fila"+aux_data.nfila).remove();
                     Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
                     
 				} else {
@@ -94,7 +282,7 @@ function ajaxRequest(data,url,funcion) {
             if(funcion=='btndevsol'){
                 if (respuesta.status == "1") {
                     //form.parents('tr').remove();
-                    $("#fila"+data['nfila']).remove();
+                    $("#fila"+aux_data.nfila).remove();
                     Biblioteca.notificaciones('El registro fue procesado correctamente.', 'Plastiservi', 'success');
                 } else {
                     swal({
@@ -129,13 +317,13 @@ function ajaxRequest(data,url,funcion) {
             if(funcion=='btncerrarsol'){
                 if ('error' in respuesta){
                     if (respuesta.error == 0){
-                        $("#fila"+data['nfila']).remove();
+                        $("#fila"+aux_data.nfila).remove();
                     }
                     Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
                 }else{
                     if (respuesta.mensaje == "ok") {
                         //form.parents('tr').remove();
-                        $("#fila"+data['nfila']).remove();
+                        $("#fila"+aux_data.nfila).remove();
                         Biblioteca.notificaciones('El registro fue procesado correctamente.', 'Plastiservi', 'success');
                     } else {
                         if (respuesta.mensaje == "sp"){
@@ -164,6 +352,22 @@ function ajaxRequest(data,url,funcion) {
                     $("#fechaestdespTD" + aux_data.i).attr('data-order',respuesta.fechaestdesp);
                 }
             }
+            if(funcion=="delsolenvord"){
+                if (respuesta.error == 0) {
+                    //form.parents('tr').remove();
+                    $("#myModalEditarCampoTex").modal('hide')
+                    $("#fila"+aux_data.despachosol_id).remove();
+                }
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+            }
+            if(funcion=="validarregmod"){
+                if (respuesta.error == 0) {
+					window.location = aux_data.ruta;
+                }else{
+                    Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                }
+            }
+
 		},
 		error: function () {
 		}
@@ -190,6 +394,56 @@ function datoslsd(){
         sucursal_id       : $("#sucursal_id").val(),
         sololectura       : $("#sololectura").val(),
         _token            : $('input[name=_token]').val()
+    };
+    return data;
+}
+
+function datosdespachosol(){
+    var data1 = {
+        fechad            : $("#fechad").val(),
+        fechah            : $("#fechah").val(),
+        fechaestdesp      : $("#fechaestdesp").val(),
+        rut               : eliminarFormatoRutret($("#rut").val()),
+        vendedor_id       : $("#vendedor_id").val(),
+        oc_id             : $("#oc_id").val(),
+        giro_id           : $("#giro_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
+        tipoentrega_id    : $("#tipoentrega_id").val(),
+        notaventa_id      : $("#notaventa_id").val(),
+        aprobstatus       : $("#aprobstatus").val(),
+        comuna_id         : $("#comuna_id").val(),
+        id                : $("#id").val(),
+        producto_id       : $("#producto_idPxP").val(),
+        filtro            : 1,
+        sucursal_id       : $("#sucursal_id").val(),
+        sololectura       : $("#sololectura").val(),
+        solenvord         : $("#solenvord").val(),
+        _token            : $('input[name=_token]').val()
+    };
+
+    var data2 = "?fechad="+data1.fechad +
+    "&fechah="+data1.fechah +
+    "&fechaestdesp="+data1.fechaestdesp +
+    "&rut="+data1.rut +
+    "&vendedor_id="+data1.vendedor_id +
+    "&oc_id="+data1.oc_id +
+    "&giro_id="+data1.giro_id +
+    "&areaproduccion_id="+data1.areaproduccion_id +
+    "&tipoentrega_id="+data1.tipoentrega_id +
+    "&notaventa_id="+data1.notaventa_id +
+    "&aprobstatus="+data1.aprobstatus +
+    "&comuna_id="+data1.comuna_id +
+    "&id="+data1.id +
+    "&producto_id="+data1.producto_id +
+    "&filtro="+data1.filtro +
+    "&sucursal_id="+data1.sucursal_id +
+    "&sololectura="+data1.sololectura +
+    "&solenvord="+data1.solenvord +
+    "&_token="+data1._token;
+
+    var data = {
+        data1 : data1,
+        data2 : data2
     };
     return data;
 }
@@ -342,6 +596,8 @@ $(document).on("click", ".btndevsol", function(event){
     $('.modal-title').html('Devolver Solicitud Despacho');
     $("#despachosol_id").val(id);
     $("#nfilaDel").val(form.attr('fila'));
+    $("#btnGuardarDSD").attr("fila_id",form.attr('fila'));
+    $("#btnGuardarDSD").attr("funcion",'btndevsol');
     $("#ruta").val(form.attr('href'));
     $("#observacion").val("");
     $("#status").val("1");
@@ -360,9 +616,12 @@ $(document).on("click", ".btncerrarsol", function(event){
     $('.modal-title').html('Cerrar Solicitud Despacho');
     $("#despachosol_id").val(id);
     $("#nfilaDel").val(form.attr('fila'));
+    $("#btnGuardarDSD").attr("fila_id",form.attr('fila'));
+    $("#btnGuardarDSD").attr("funcion",'btncerrarsol');
     $("#ruta").val(form.attr('href'));
     $("#observacion").val("");
     $("#status").val("2");
+    $("#status").attr("updated_at",$(this).attr("updated_at"));
     $("#boton").val("btncerrarsol");
     quitarValidacion($(".requeridos").prop('name'),$(".requeridos").attr('tipoval'));
     $("#myModaldevsoldeps").modal('show');
@@ -396,14 +655,20 @@ $("#btnGuardarDSD").click(function(event){
                 aux_updated_at = "";
             }
             var data = {
-                id     : $("#despachosol_id").val(),
-                nfila  : $("#nfilaDel").val(),
+                id     : $("#btnGuardarDSD").attr("fila_id"),
+                nfila  : $("#btnGuardarDSD").attr("fila_id"), //$("#nfilaDel").val(),
                 obs    : $("#observacion").val(),
                 status : $("#status").val(),
                 updated_at : aux_updated_at,
                 _token : $('input[name=_token]').val()
             };
+            if($("#btnGuardarDSD").attr("funcion")){
+                form = $("#btnGuardarDSD").attr("funcion");
+            }
+            //console.log(data);
+            //return 0;
             //console.log($("#boton").val());
+            //console.log($("#ruta").val());
             if (value) {
                 ajaxRequest(data,$("#ruta").val(),$("#boton").val(),form);
             }
@@ -559,4 +824,99 @@ function restbotoneditfeced(i){
     $("#editfed" + i).show();
     $("#savefed" + i).hide();
     $(".datepicker").datepicker("refresh");
+}
+
+function delsolenvord(id,updated_at){
+    swal({
+        title: '¿Eliminar del listado?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            var data = {
+                despachosol_id : id,
+                updated_at : updated_at,
+                _token: $('input[name=_token]').val()
+            };
+            ruta = '/despachoord/delsolenvord';
+            ajaxRequest(data,ruta,"delsolenvord");
+        }
+    });
+}
+
+function crearord(id,aux_ruta,updated_at){
+    var data = {
+        despachosol_id : id,
+        updated_at : updated_at,
+        ruta       : aux_ruta,
+        _token: $('input[name=_token]').val()
+    };
+    ruta = '/despachosol/validarregmod';
+    ajaxRequest(data,ruta,"validarregmod");
+}
+function delsolenvord1(id,updated_at){
+    //$("#auxeditcampoT").attr('aux_nomcampot',$(this).attr('nomcampo'));
+    $("#auxeditcampoT").attr("updated_at",updated_at)
+    $("#titeditarcampo").html("Mensaje");
+    $("#lbleditarcampo").html("Observacion:");
+    $("#auxeditcampoT").attr('fila_id',id);
+    $("#auxeditcampoT").val("");
+    $("#myModalEditarCampoTex").modal('show');
+}
+
+$("#btnaceptarMT").click(function(event){
+	event.preventDefault();
+	$("#auxeditcampoN").val(1);
+	if(verificarDato(".valorrequerido"))
+	{
+		let auxeditcampoT = $("#auxeditcampoT").val();
+		//esto es para reemplazar el caracter comilla doble " de la cadena, para evitar que me trunque los valores en javascript al asignar a attr val 
+		auxeditcampoT = auxeditcampoT.replaceAll('"', "'");
+		id = $("#auxeditcampoT").attr('fila_id');
+        swal({
+            title: '¿Eliminar del listado?',
+            text: "Esta acción no se puede deshacer!",
+            icon: 'warning',
+            buttons: {
+                cancel: "Cancelar",
+                confirm: "Aceptar"
+            },
+        }).then((value) => {
+            if (value) {
+                var data = {
+                    despachosol_id : id,
+                    obs        : auxeditcampoT,
+                    updated_at : $("#auxeditcampoT").attr("updated_at"),
+                    _token: $('input[name=_token]').val()
+                };
+                ruta = '/despachoord/delsolenvord';
+                ajaxRequest(data,ruta,"delsolenvord");
+            }
+        });
+    
+        //$("#myModalEditarCampoTex").modal('hide');
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+});
+
+function verificarDato(aux_nomclass)
+{
+	aux_resultado = true;
+	$(aux_nomclass).serializeArray().map(function(x){
+		aux_tipoval = $("#" + x.name).attr('tipoval');
+		if (validacion(x.name,aux_tipoval) == false)
+		{
+			//return false;
+			aux_resultado = false;
+
+		}else{
+			//return true;
+		}
+	});
+	return aux_resultado;
 }

@@ -1,23 +1,179 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
 
-/*
-    $('.tablas').DataTable({
-		'paging'      : true, 
-		'lengthChange': true,
-		'searching'   : true,
-		'ordering'    : true,
-		'info'        : true,
-		'autoWidth'   : false,
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-        }
-	});
-*/
-    consultar(datoslsd());
+    configurarTabla('#tabla-data-picking');
+
+    function configurarTabla(aux_tabla){
+        data = datospicking();
+        $(aux_tabla).DataTable({
+            'paging'      : true, 
+            'lengthChange': true,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'processing'  : true,
+            'serverSide'  : true,
+            'ajax'        : "/pickingpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+            "order": [[ 0, "desc" ]],
+            'columns'     : [
+                {data: 'id'},
+                {data: 'fechahora'},
+                {data: 'fechaestdesp'},
+                {data: 'razonsocial'},
+                {data: 'sucursal_nombre'},
+                {data: 'oc_file'},
+                {data: 'notaventa_id'},
+                {data: 'comunanombre'},
+                {data: 'totalkilos'},
+                {data: 'totalkilospicking'},
+                {data: 'totalcantpicking'},
+                {data: 'id'},
+                {data: 'icono'},
+                {data: 'icono'},
+            ],
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            },
+            "createdRow": function ( row, data, index ) {
+                /*
+                if(data.stock <= 0){
+                    $(row).hide();                    
+                }*/
+                $(row).attr('id','fila' + data.id);
+                $(row).attr('name','fila' + data.id);    
+                $('td', row).eq(0).attr('style','text-align:center');
+                aux_text = 
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Solicitud de Despacho" onclick="genpdfSD(${data.id},1)">
+                    ${data.id}
+                </a>`;
+                $('td', row).eq(0).html(aux_text);
+
+                $('td', row).eq(1).attr('data-order',data.fechahora);
+                aux_fecha = new Date(data.fechahora);
+                $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
+                $('td', row).eq(2).attr('data-order',data.fechaestdesp);
+                aux_fecha = new Date(data.fechaestdesp + " 00:00:00");
+
+                if(data.despachosolenvorddesp_obs != "" && data.despachosolenvorddesp_obs != null){
+                    aux_text = data.razonsocial +
+                    " <a class='btn-sm tooltipsC' title='" + data.despachosolenvorddesp_obs + "'>" +
+                        "<i class='fa fa-fw fa-question-circle text-red'></i>" + 
+                    "</a>";
+                    $('td', row).eq(3).html(aux_text);
+                }
+    
+
+                aux_text = 
+                `<a id="fechaestdesp${data.id}" name="fechaestdesp${data.id}" class="editfed">
+                    ${fechaddmmaaaa(aux_fecha)}
+                </a>
+                <input type="text" class="form-control datepickerfed savefed" name="fechaed${data.id}" id="fechaed${data.id}" value="${fechaddmmaaaa(aux_fecha)}" style="display:none; width: 70px; height: 21.6px;padding-left: 0px;padding-right: 0px;" readonly>
+                <a name="editfed${data.id}" id="editfed${data.id}" class="btn-accion-tabla btn-sm tooltipsC editfed" title="Editar Fecha ED" onclick="editfeced(${data.id},${data.id})">
+                    <i class="fa fa-fw fa-pencil-square-o"></i>
+                </a>
+                <a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar Fecha ED" onclick="savefeced(${data.id},${data.id})" style="display:none" updated_at="${data.updated_at}">
+                    <i class="fa fa-fw fa-save text-red"></i>
+                </a>`;
+                $('td', row).eq(2).html(aux_text);
+
+                if(data.razonsocial.length > 30){
+                    $('td', row).eq(3).attr('class',"btn-accion-tabla");
+                    $('td', row).eq(3).attr('title',data.razonsocial);
+                    $('td', row).eq(3).html(data.razonsocial.substring(0, 30));    
+                }
+
+                if(data.oc_file == "" ||  data.oc_file === null){
+                    aux_enlaceoc = "";
+                }else{
+                    aux_enlaceoc = `<a onclick="verpdf2('${data.oc_file}',2)" class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra">${data.oc_id}</a>`;
+                }
+                $('td', row).eq(5).html(aux_enlaceoc);
+
+                aux_text =
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta" onclick="genpdfNV(${data.notaventa_id},1)">
+                    ${data.notaventa_id}
+                </a>`;
+                $('td', row).eq(6).html(aux_text);
+
+                aux_totalkilos = data.totalkilos - data.totalkilosdesp;
+
+                $('td', row).eq(8).attr('class','kgpend');
+                $('td', row).eq(8).attr('style','text-align:right');
+                $('td', row).eq(8).attr('data-order',aux_totalkilos);
+                $('td', row).eq(8).attr('data-search',aux_totalkilos);
+                $('td', row).eq(8).html(MASKLA(aux_totalkilos, 2));
+
+                $('td', row).eq(9).attr('class','kgpend');
+                $('td', row).eq(9).attr('style','text-align:right');
+                $('td', row).eq(9).attr('data-order',data.totalkilospicking);
+                $('td', row).eq(9).attr('data-search',data.totalkilospicking);
+                $('td', row).eq(9).html(MASKLA(data.totalkilospicking, 2));
+
+                $('td', row).eq(10).attr('class','kgpend');
+                $('td', row).eq(10).attr('style','text-align:right');
+                $('td', row).eq(10).attr('data-order',data.totalcantpicking);
+                $('td', row).eq(10).attr('data-search',data.totalcantpicking);
+                $('td', row).eq(10).html(MASKLA(data.totalcantpicking, 2));
+
+
+                aux_subtotal = data.subtotalsoldesp - data.subtotaldesp;
+                $('td', row).eq(11).attr('class','dinpend');
+                $('td', row).eq(11).attr('style','text-align:right');
+                $('td', row).eq(11).attr('data-order',aux_subtotal);
+                $('td', row).eq(11).attr('data-search',aux_subtotal);
+                $('td', row).eq(11).html(MASKLA(aux_subtotal, 0));
+
+                aux_text =
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa" onclick="genpdfVPOD(${data.id},1)">
+                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                </a>`;
+                $('td', row).eq(12).html(aux_text);
+
+                aux_ruta_crearord = $("#aux_ruta_crearord").val();
+                aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
+                if(data.clientebloqueado_descripcion !== null){
+                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${data.clientebloqueado_descripcion}">
+                                        <button type="button" class="btn btn-default btn-xs" disabled>
+                                            <i class="fa fa-fw fa-lock text-danger"></i>
+                                        </button>
+                                    </a>`;    
+                }else{
+                    aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC" title="Editar Picking">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw ${data.icono}"></i>
+                                    </button>
+                                </a>
+                                <a id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-arrow-right text-yellow"></i>
+                                    </button>
+                                </a>`;
+
+                    /* aux_text = `<a href="${aux_ruta + data.id}" target="_blank" class="btn-accion-tabla tooltipsC" title="Editar Picking">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw ${data.icono}"></i>
+                                    </button>
+                                </a>
+                                <a id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-upload text-yellow"></i>
+                                    </button>
+                                </a>`; */
+                }
+                $('td', row).eq(13).html(aux_text);
+                
+            }
+        });
+    }
+
+    //consultar(datoslsd());
     $("#btnconsultar").click(function()
     {
-        consultar(datoslsd());
+        //consultar(datoslsd());
+        data = datospicking();
+        $('#tabla-data-picking').DataTable().ajax.url( "/pickingpage/" + data.data2 ).load();
+
     });
 
 
@@ -152,6 +308,23 @@ function ajaxRequest(data,url,funcion) {
                     $("#savefed" + aux_data.i).attr('updated_at',respuesta.updated_at);
                 }
             }
+            if(funcion=="enviardespord"){
+                if (respuesta.error == 0) {
+                    //form.parents('tr').remove();
+                    $("#fila"+aux_data.despachosol_id).remove();
+                }
+                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+            }
+            if(funcion=="validareditarpicking"){
+                if (respuesta.error == 0) {
+					//var loc = window.location;
+    				//window.location = aux_data.ruta;
+                    window.open(aux_data.ruta, '_blank');
+                }else{
+                    Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                }
+            }
+
 		},
 		error: function () {
 		}
@@ -178,6 +351,54 @@ function datoslsd(){
         sucursal_id       : $("#sucursal_id").val(),
         sta_picking       : $("#sta_picking").val(),
         _token            : $('input[name=_token]').val()
+    };
+    return data;
+}
+
+function datospicking(){
+    var data1 = {
+        fechad            : $("#fechad").val(),
+        fechah            : $("#fechah").val(),
+        fechaestdesp      : $("#fechaestdesp").val(),
+        rut               : eliminarFormatoRutret($("#rut").val()),
+        vendedor_id       : $("#vendedor_id").val(),
+        oc_id             : $("#oc_id").val(),
+        giro_id           : $("#giro_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
+        tipoentrega_id    : $("#tipoentrega_id").val(),
+        notaventa_id      : $("#notaventa_id").val(),
+        aprobstatus       : $("#aprobstatus").val(),
+        comuna_id         : $("#comuna_id").val(),
+        id                : $("#id").val(),
+        producto_id       : $("#producto_idPxP").val(),
+        filtro            : 1,
+        sucursal_id       : $("#sucursal_id").val(),
+        sta_picking       : $("#sta_picking").val(),
+        _token            : $('input[name=_token]').val()
+    };
+
+    var data2 = "?fechad="+data1.fechad +
+    "&fechah="+data1.fechah +
+    "&fechaestdesp="+data1.fechaestdesp +
+    "&rut="+data1.rut +
+    "&vendedor_id="+data1.vendedor_id +
+    "&oc_id="+data1.oc_id +
+    "&giro_id="+data1.giro_id +
+    "&areaproduccion_id="+data1.areaproduccion_id +
+    "&tipoentrega_id="+data1.tipoentrega_id +
+    "&notaventa_id="+data1.notaventa_id +
+    "&aprobstatus="+data1.aprobstatus +
+    "&comuna_id="+data1.comuna_id +
+    "&id="+data1.id +
+    "&producto_id="+data1.producto_id +
+    "&filtro="+data1.filtro +
+    "&sucursal_id="+data1.sucursal_id +
+    "&sta_picking="+data1.sta_picking +
+    "&_token="+data1._token;
+
+    var data = {
+        data1 : data1,
+        data2 : data2
     };
     return data;
 }
@@ -534,4 +755,44 @@ function restbotoneditfeced(i){
     $("#editfed" + i).show();
     $("#savefed" + i).hide();
     $(".datepicker").datepicker("refresh");
+}
+
+
+function enviardespord(id,updated_at){
+    /* estaSeleccionado = $("#enviardespord" + id).is(":checked");
+    if (estaSeleccionado) {
+        aux_estado = 1
+    } else {
+        aux_estado = 0
+    } */
+    swal({
+        title: '¿Enviar registro a Orden de Despacho?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            var data = {
+                despachosol_id : id,
+                updated_at : updated_at,
+                _token: $('input[name=_token]').val()
+            };
+            ruta = '/picking/enviardespord';
+            ajaxRequest(data,ruta,"enviardespord");    
+        }
+    });
+}
+
+function validareditarpicking(id,updated_at,aux_ruta){
+    var data = {
+        despachosol_id : id,
+        updated_at : updated_at,
+        ruta       : aux_ruta,
+        _token: $('input[name=_token]').val()
+    };
+    ruta = '/picking/validareditarpicking';
+    ajaxRequest(data,ruta,"validareditarpicking");
 }
