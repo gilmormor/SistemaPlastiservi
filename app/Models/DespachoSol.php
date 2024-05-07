@@ -99,5 +99,11 @@ class DespachoSol extends Model
         return $this->hasOne(DespachoSolDev::class,"despachosol_id");
     }
 
+    //RELACION de uno a uno DespachoSolEnvOrdDesp
+    public function despachosolenvorddesp()
+    {
+        return $this->hasOne(DespachoSolEnvOrdDesp::class,"despachosol_id");
+    }
+    
 
 }

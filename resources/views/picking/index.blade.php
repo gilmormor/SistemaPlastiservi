@@ -32,6 +32,7 @@ Pendiente Solicitud Orden Despacho
                     <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
                         <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
+                        <input type="hidden" name="aux_ruta_crearord" id="aux_ruta_crearord" value="{{route('crearord_picking', ['id' => '1'])}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
@@ -240,9 +241,11 @@ Pendiente Solicitud Orden Despacho
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
                                 <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                                <!--
                                 <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
                                     <i class='glyphicon glyphicon-print'></i> Reporte
                                 </button>
+                                -->
                         </div>
                     </form>
                 </div>
@@ -255,6 +258,32 @@ Pendiente Solicitud Orden Despacho
             
             <div class="table-responsive" id="tablaconsulta">
             </div>
+
+            <div class="table-responsive">
+                <table id="tabla-data-picking"  class="table display AllDataTables table-hover table-condensed tablascons" data-page-length='10'>
+                    <thead>
+                        <tr>
+                            <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
+                            <th>Fecha</th>
+                            <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
+                            <th>Razón Social</th>
+                            <th>Sucursal</th>
+                            <th class='tooltipsC' title='Orden de Compra'>OC</th>
+                            <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                            <th>Comuna</th>
+                            <th class='tooltipsC' title='Total Kg Pendientes'>Total Kg</th>
+                            <th class='tooltipsC' title='Total Kg Picking'>Kg Pick</th>
+                            <th class='tooltipsC' title='Total Cant Picking'>Cant Pick</th>
+                            <th class='tooltipsC' title='Total $'>$</th>
+                            <th class='tooltipsC' title='Vista Previa Orden Despacho'>VP</th>
+                            <th class='tooltipsC' title='Acción'>Acción</th>            
+                        </tr>
+                    </thead>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+
 
         </div>
     </div>

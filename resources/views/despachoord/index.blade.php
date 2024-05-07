@@ -17,13 +17,21 @@ Orden de despacho
             <div class="box-header with-border">
                 <h3 class="box-title">Orden de Despacho por aprobar</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('listarsoldesp_despachoord')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nueva Orden Despacho
-                    </a>
+                    @if (can('nueva-orden-despacho-sin-filtro-env-sold-a-ordd',false))
+                        <a href="{{route('listarsoldesp_despachoord')}}" class="btn btn-block btn-success btn-sm">
+                            <i class="fa fa-fw fa-plus-circle"></i> Nueva Ord Desp
+                        </a>
+                    @endif
+                    @if (can('nueva-orden-despacho-con-filtro-env-sold-a-ordd',false))
+                        <a href="{{route('listarsoldespsolenvord_despachoord')}}" class="btn btn-block btn-success btn-sm">
+                            <i class="fa fa-fw fa-plus-circle"></i> Nueva Ord Desp Filtrar
+                        </a>                        
+                    @endif
                 </div>
             </div>
             <div class="box-body">
                 <div class="table-responsive">
+                    <input type="hidden" name="solenvord" id="solenvord" value="{{old('solenvord', $solenvord ?? '')}}">
                     <table id='tabla-data-despachoord' name='tabla-data-despachoord' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='50'>
                     <!--<table class="table table-striped table-bordered table-hover" id="tabla-data">-->
                         <thead>
