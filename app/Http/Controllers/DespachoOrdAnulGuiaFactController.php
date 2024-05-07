@@ -566,6 +566,8 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 $despachoord->aprguiadespfh = NULL;
             }
             if ($despachoord->save()) {
+                $despachoord->despachosol->updated_at = date("Y-m-d H:i:s");
+                $despachoord->despachosol->save();
                 return response()->json([
                                 'status'=>'1',
                                 'error' => '0',

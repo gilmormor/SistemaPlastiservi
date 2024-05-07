@@ -479,7 +479,12 @@ function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
         }
         $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprodid) ";
     }
-//dd($aux_condcategoriaprod_id);
+
+    if(empty($request->filtroacutec) or $request->filtroacutec == "0"){
+        $aux_condacutec = " true";
+    }else{
+        $aux_condacutec = "notaventadetalle.producto_id IN (SELECT producto_id FROM acuerdotecnico WHERE producto_id = notaventadetalle.producto_id AND at_impreso = 1 and ISNULL(deleted_at))";
+    }
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){
@@ -604,7 +609,8 @@ function consulta($request,$aux_sql,$orden,$aux_AgruOrd){
         AND isnull(notaventa.anulada)
         AND notaventadetalle.cant>if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
-        and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND $aux_condacutec
         $aux_AgruOrd;";
     }
     $datas = DB::select($sql);

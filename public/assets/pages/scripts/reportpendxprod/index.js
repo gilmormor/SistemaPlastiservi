@@ -17,7 +17,6 @@ $(document).ready(function () {
 
     function configurarTabla1(aux_tabla){
         datax = datosPentxProd(1);
-        datax
         $(aux_tabla).DataTable({
             'paging'      : true, 
             'lengthChange': true,
@@ -293,6 +292,7 @@ function datosPentxProd(aux_filtro = 0){
         categoriaprod_id  : $("#categoriaprod_id").val(),
         sucursal_id       : aux_sucursal_id,
         filtro            : 0,
+        filtroacutec      : $("#filtroacutec").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -316,6 +316,7 @@ function datosPentxProd(aux_filtro = 0){
     "&categoriaprod_id="+data1.categoriaprod_id +
     "&sucursal_id="+data1.sucursal_id +
     "&filtro="+data1.filtro +
+    "&filtroacutec="+data1.filtroacutec +
     "&_token="+data1._token
 
     var data = {

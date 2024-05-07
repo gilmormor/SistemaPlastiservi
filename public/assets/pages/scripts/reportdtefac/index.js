@@ -211,10 +211,11 @@ $(document).ready(function () {
                     </a>
                     <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="descArcTXT('${id_str}.xml')">
                         <i class="fa fa-fw fa-cloud-download"></i>
-                    </a>
-                    <a id="stasubcob${data.id}" name="stasubcob${data.id}" onclick="volverSubirDteSisCob(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip"">
+                    </a>`;
+                    
+                    /* `<a id="stasubcob${data.id}" name="stasubcob${data.id}" onclick="volverSubirDteSisCob(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip"">
                         <span class="fa fa-upload text-yellow"></span>
-                    </a>`;    
+                    </a>`; */
         ;
                 }
                 $('td', row).eq(11).attr("class","action-buttons");

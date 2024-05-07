@@ -22,11 +22,21 @@
                 <a class='btn-accion-tabla btn-sm' onclick='verpdf2("{{$data->oc_file}}",2)' title='Orden de Compra' data-toggle='tooltip'>
                     Orden Compra: {{$data->oc_id}} <i class='fa fa-fw fa-file-pdf-o'></i>
                 </a>
-                <div class="box-tools pull-right">
-                    <a href="{{route('listarsoldesp_despachoord')}}" class="btn btn-block btn-info btn-sm">
-                        <i class="fa fa-fw fa-reply-all"></i> Volver al listado
-                    </a>
-                </div>
+                @if ($solenvord == '0')
+                    <div class="box-tools pull-right">
+                        <a href="{{route('listarsoldesp_despachoord')}}" class="btn btn-block btn-info btn-sm">
+                            <i class="fa fa-fw fa-reply-all"></i> Volver al listado
+                        </a>
+                    </div>
+                @endif
+                
+                @if ($solenvord == '1')
+                    <div class="box-tools pull-right">
+                        <a href="{{route('listarsoldespsolenvord_despachoord')}}" class="btn btn-block btn-info btn-sm">
+                            <i class="fa fa-fw fa-reply-all"></i> Volver al listado
+                        </a>
+                    </div>
+                @endif
             </div>
             <form action="{{route('guardar_despachoord')}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
                 @csrf
@@ -39,5 +49,5 @@
             </form>
         </div>
     </div>
-</div> 
+</div>
 @endsection
