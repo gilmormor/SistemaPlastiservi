@@ -463,9 +463,9 @@ class NotaVenta extends Model
         if($nvdets){
             foreach ($nvdets as $nvdet) {
                 $aux_totalcantnv += $nvdet->cantnv;
-                $sql = "SELECT despachoord.notaventa_id,notaventadetalle.id as notaventadetalle_id,
+                /* $sql = "SELECT despachoord.notaventa_id,notaventadetalle.id as notaventadetalle_id,
                         notaventadetalle.producto_id,notaventadetalle.cant AS cantnv,
-                        sum(cantdesp) AS canddespreal
+                        sum(despachoorddet.cantdesp) AS canddespreal
                         FROM despachoord JOIN despachoorddet 
                         ON despachoord.id = despachoorddet.despachoord_id
                         INNER JOIN notaventadetalle
@@ -474,9 +474,18 @@ class NotaVenta extends Model
                         and despachoord.guiadespacho is not null
                         and despachoorddet.notaventadetalle_id = $nvdet->notaventadetalle_id
                         and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
-                        group by notaventadetalle.id;";
+                        group by notaventadetalle.id;"; */
+
+                $sql = "SELECT notaventadetalle.notaventa_id,notaventadetalle.id as notaventadetalle_id,
+                        notaventadetalle.producto_id,notaventadetalle.cant AS cantnv,
+                        if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS canddespreal
+                        FROM notaventadetalle LEFT JOIN vista_sumorddespxnvdetid
+                        ON notaventadetalle.id=vista_sumorddespxnvdetid.notaventadetalle_id
+                        WHERE notaventadetalle.id = $nvdet->notaventadetalle_id
+                        ORDER by notaventadetalle.id;";
                 //dd("$sql");
                 $datas = DB::select($sql);
+                //dd($datas);
                 if($datas){
                     if($datas[0]->canddespreal > $nvdet->cantnv){
                         $aux_cantdesptotalmax += $nvdet->cantnv;
