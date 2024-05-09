@@ -23,7 +23,7 @@ $(document).ready(function () {
                 {data: 'fechaestdesp'},
                 {data: 'razonsocial'},
                 {data: 'sucursal_nombre'},
-                {data: 'oc_file'},
+                {data: 'oc_id'},
                 {data: 'notaventa_id'},
                 {data: 'comunanombre'},
                 {data: 'totalkilos'},
