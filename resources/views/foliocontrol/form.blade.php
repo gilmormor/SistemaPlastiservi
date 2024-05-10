@@ -35,7 +35,7 @@
 <div class="form-group">
     <label for="folmindisp" class="col-lg-3 control-label requerido" data-toggle='tooltip' title='Alerta minimo folios disponibles'>Alerta Folios Disponibles</label>
     <div class="col-lg-9">
-        <input type="text" name="folmindisp" id="folmindisp" class="form-control numerico" value="{{old('folmindisp', $data->folmindisp ?? '')}}" required maxlength="2"/>
+        <input type="text" name="folmindisp" id="folmindisp" class="form-control numerico" value="{{old('folmindisp', $data->folmindisp ?? '')}}" required maxlength="3"/>
     </div>
 </div>
 
