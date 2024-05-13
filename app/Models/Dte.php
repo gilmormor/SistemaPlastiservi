@@ -795,7 +795,14 @@ class Dte extends Model
         if(!$aux_verguias){
             $aux_condFiltrarxUsuario = " dte.usuario_id = $user->id ";
         }
-    
+
+        
+        if(empty($request->indtraslado)){
+            $aux_condindtraslado = " true";
+        }else{
+            $aux_condindtraslado = "dte.indtraslado IN ($request->indtraslado)";
+        }
+
         
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.centroeconomico_id,
@@ -814,6 +821,8 @@ class Dte extends Model
         notaventadetalle.precioxkilo,notaventadetalle.precioxkiloreal,
         dte.mnttotal,dte.kgtotal,
         dte.vendedor_id,persona.rut as vendedor_rut,concat(persona.nombre, ' ' ,persona.apellido) AS vendedor_nombre,
+        acuerdotecnico.at_ancho,acuerdotecnico.at_largo,acuerdotecnico.at_largo,at_espesor,
+        materiaprima.nombre as materiaprima_nombre,materiaprima.desc as materiaprima_desc,
         dte.indtraslado,dte.usuario_id,usuario.usuario
         $otrosCampos
         FROM dte INNER JOIN dteguiadesp
@@ -844,6 +853,10 @@ class Dte extends Model
         ON vendedor.persona_id=persona.id and isnull(persona.deleted_at)
         LEFT JOIN usuario
         ON dte.usuario_id=usuario.id
+        LEFT JOIN acuerdotecnico
+        ON dtedet.producto_id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
+        LEFT JOIN materiaprima
+        ON materiaprima.id = acuerdotecnico.at_materiaprima_id and isnull(materiaprima.deleted_at)
         $unionOtrasTablas
         WHERE $vendedorcond
         AND $aux_condFecha
@@ -864,6 +877,7 @@ class Dte extends Model
         AND $aux_sucursal_idCond
         AND $aux_condproducto_id
         AND $aux_condFiltrarxUsuario
+        AND $aux_condindtraslado
         order BY dte.nrodocto,dtedet.id;";
         //dd($sql);
         $arrays = DB::select($sql);
@@ -1024,6 +1038,13 @@ class Dte extends Model
             $aux_condFiltrarxUsuario = " dte.usuario_id = $user->id ";
         }
 
+        //Incluido el 13/05/2024, para el reporte ReportDTEFacController. 
+        if(!isset($request->producto_id) or empty($request->producto_id) or ($request->producto_id == "")){
+            $aux_producto_idCond = "true";
+        }else{
+            $aux_producto_idCond = "dte.id in (SELECT dtedet.dte_id FROM dtedet WHERE dtedet.producto_id in ($request->producto_id) and dte.id=dtedet.dte_id and isnull(dtedet.deleted_at))";
+        }
+
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,dte.kgtotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -1088,6 +1109,7 @@ class Dte extends Model
         AND $aux_vendedor_idCond
         AND $aux_condFiltrarxUsuario
         AND NOT ISNULL(dte.nrodocto)
+        AND $aux_producto_idCond
         GROUP BY dte.id
         ORDER BY dte.nrodocto asc;";
 

@@ -146,7 +146,7 @@ $(document).ready(function () {
                                 </a>
                                 <a id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
                                     <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-arrow-right text-yellow"></i>
+                                        <i class="fa fa-fw fa-arrow-right text-yellow"></i>
                                     </button>
                                 </a>`;
 

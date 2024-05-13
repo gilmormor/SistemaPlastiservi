@@ -377,7 +377,7 @@ function exportarExcel() {
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Informe Comisión Vendedores","","","","","","","","",data.fechaact]);
+        datosExcel.push(["Informe Comisión Vendedores","","","","","","","","","",data.fechaact]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","","",""]);
         aux_totalMonto = 0;
         aux_totalComision = 0;
@@ -387,13 +387,13 @@ function exportarExcel() {
                 if(aux_vendedor_id == ""){
                     datosExcel.push(["","","","","","","","","",""]);
                 }else{
-                    datosExcel.push(["","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
+                    datosExcel.push(["","","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
                 }
                 aux_totalMonto = 0;
                 aux_totalComision = 0;        
                 datosExcel.push(["","","","","","","","","",""]);
                 datosExcel.push(["Vendedor: " + registro.vendedor_rut + " - " + registro.vendedor_nombre,"","","","","","","","",""]);
-                datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Neto","Comisión %","Comisión $"]);
+                datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Cant","Neto","Comisión %","Comisión $"]);
                 arrayfusionarCelNomVend.push(filainifusionar);
             }
             aux_totalMonto += registro.montoitem;
@@ -417,6 +417,7 @@ function exportarExcel() {
                 registro.rut,
                 registro.producto_id,
                 registro.nmbitem,
+                registro.qtyitem,
                 registro.montoitem,
                 registro.porc_comision,
                 registro.comision
@@ -429,7 +430,7 @@ function exportarExcel() {
         /* if(aux_totalMonto != 0){
             datosExcel.push(["","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
         } */
-        datosExcel.push(["","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
+        datosExcel.push(["","","","","","","","Total: ",aux_totalMonto,"",aux_totalComision]);
 
 /*
         // Crear el libro de Excel
@@ -500,6 +501,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     ajustarcolumnaexcel(worksheet,"G");
     ajustarcolumnaexcel(worksheet,"H");
     ajustarcolumnaexcel(worksheet,"I");
+    ajustarcolumnaexcel(worksheet,"K");
     
 
     // Combinar celdas desde [4,0] hasta [4,2]
@@ -507,7 +509,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
         
         // Establecer negrita a totales
         row = worksheet.getRow(fila + 2 -2);
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 11; i++) {
             cell = row.getCell(i);
             cell.font = { bold: true };
             cell.alignment = { horizontal: "right" };
@@ -515,7 +517,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
         }
 
         row = worksheet.getRow(datosExcel.length);
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 11; i++) {
             cell = row.getCell(i);
             cell.font = { bold: true };
             cell.alignment = { horizontal: "right" };
@@ -529,7 +531,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
 
         //Establecer negrita a todos los titulos debajo de vendedor
         const row6 = worksheet.getRow(fila + 3);
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 11; i++) {
             cell = row6.getCell(i);
             cell.font = { bold: true };
         }
@@ -543,7 +545,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     });
 
     // Recorrer la columna 7 y dar formato con punto para separar los miles
-    const columnG = worksheet.getColumn(8);
+    const columnG = worksheet.getColumn(9);
     columnG.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -551,7 +553,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     });
 
     // Recorrer la columna 8 y dar formato con punto para separar los miles
-    const columnH = worksheet.getColumn(9);
+    const columnH = worksheet.getColumn(10);
     columnH.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0.00";
@@ -559,7 +561,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     });
 
     // Recorrer la columna 9 y dar formato con punto para separar los miles
-    const columnI = worksheet.getColumn(10);
+    const columnI = worksheet.getColumn(11);
     columnI.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -568,7 +570,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
     for (let i = 4; i <= datosExcel.length; i++) {
-    const cell = worksheet.getCell(i, 9);
+    const cell = worksheet.getCell(i, 10);
     cell.alignment = { horizontal: "center", vertical: "middle" };
     }
 
@@ -594,13 +596,13 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
 
     //Fecha Reporte
     const row2 = worksheet.getRow(1);
-    cell = row2.getCell(9);
+    cell = row2.getCell(10);
     cell.alignment = { horizontal: "center", vertical: "middle" };
 
 
     //Fusionar celdas de Titulo
     const startCol = 0;
-    const endCol = 9;
+    const endCol = 10;
     worksheet.mergeCells(1, startCol, 1, endCol);
 
     //Negrita Columna Sucursal
@@ -610,7 +612,7 @@ function createExcel(datosExcel,arrayfusionarCelNomVend) {
     
     //Fusionar celdas Sucursal
     const startCol1 = 0;
-    const endCol1 = 9;
+    const endCol1 = 10;
     worksheet.mergeCells(2, startCol1, 2, endCol1);
 
     aux_nombrearchivo = "comisionVendedores.xlsx";

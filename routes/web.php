@@ -1523,3 +1523,10 @@ Route::get('reportdeudaclientesiscob/totalizarindex', 'ReportDeudaClienteSisCobC
 Route::get('reportdeudaclientesiscob/listardtedet', 'ReportDeudaClienteSisCobController@listardtedet')->name('reportdeudaclientesiscob_listardtedet');
 
 Route::post('reportdeudaclientesiscob/consulta', 'ReportDeudaClienteSisCobController@consulta')->name('reportdeudaclientesiscob_consulta');
+
+/*RUTAS REPORTE GUIA DESPACHO DETALLE*/
+Route::get('reportdteguiadespdet', 'ReportDTEGuiaDespDetController@index')->name('reportdteguiadespdet');
+Route::get('reportdteguiadespdet/reportdteguiadespdetpage', 'ReportDTEGuiaDespDetController@reportdteguiadespdetpage')->name('reportdteguiadespdetpage');
+Route::get('reportdteguiadespdet/reporte', 'ReportDTEGuiaDespDetController@reporte')->name('reportdteguiadespdet_reporte');
+Route::get('reportdteguiadespdet/exportPdf', 'ReportDTEGuiaDespDetController@exportPdf')->name('reportdteguiadespdet_exportPdf');
+Route::get('reportdteguiadespdet/totalizarindex', 'ReportDTEGuiaDespDetController@totalizarindex')->name('reportdteguiadespdet_totalizarindex');

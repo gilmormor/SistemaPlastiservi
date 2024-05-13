@@ -21,7 +21,7 @@
 			</td>
 			<td class="info_factura">
 				<div class="round">
-					<span class="h3">Estadistica Ventas</span>
+					<span class="h3">Guia Despacho Dettalle</span>
 					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
 					<p>Sucursal: {{$request->sucursal_nombre}}</p>
 					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
