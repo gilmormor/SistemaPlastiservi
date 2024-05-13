@@ -346,7 +346,7 @@ function exportarExcelSantaEster() {
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Estadistica Ventas","","","","","","","","","","","","","","",data.fechaact]);
+        datosExcel.push(["Guia Despacho Dettalle","","","","","","","","","","","","","","",data.fechaact]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","","","","","","",""]);
         aux_totalMonto = 0;
         aux_totalComision = 0;
@@ -545,7 +545,7 @@ function createExcelSantaEster(datosExcel) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "EstadistivaVentas.xlsx";
+      a.download = "GuiaDespachoDetalle.xlsx";
       a.click();
 
       // Limpiar el objeto Blob
