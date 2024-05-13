@@ -351,7 +351,7 @@ function exportarExcelSantaEster() {
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["N° Guia","Tipo","N° Fact","Fecha","RUT","Cliente","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","Kg","P/U","Neto"]);
+        datosExcel.push(["N° Guia","TipoTras","N° Fact","Fecha","RUT","Cliente","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","Kg","P/U","Neto"]);
         //console.log(data);
         data.datos.forEach(function(registro) {
             aux_indtra = indtrasladoObj(registro.indtraslado);
