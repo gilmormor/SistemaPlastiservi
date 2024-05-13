@@ -346,7 +346,7 @@ function exportarExcelSantaEster() {
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Guia Despacho Dettalle","","","","","","","","","","","","","","",data.fechaact]);
+        datosExcel.push(["Guia Despacho Detalle","","","","","","","","","","","","","","",data.fechaact]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","","","","","","",""]);
         aux_totalMonto = 0;
         aux_totalComision = 0;
