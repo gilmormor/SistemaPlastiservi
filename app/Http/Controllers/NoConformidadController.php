@@ -47,12 +47,8 @@ class NoConformidadController extends Controller
         $motivoncs = MotivoNc::orderBy('id')->pluck('descripcion', 'id')->toArray();
         $formadeteccionncs = FormaDeteccionNC::orderBy('id')->pluck('descripcion', 'id')->toArray();
         $jefaturasucursalareas = JefaturaSucursalArea::orderBy('jefatura_sucursal_area.id')
-                                ->join('sucursal_area', 'jefatura_sucursal_area.sucursal_area_id', '=', 'sucursal_area.id')
-                                ->whereIn('sucursal_area.sucursal_id', $sucurArray)
                                 ->get();
         $jefaturasucursalareasR = JefaturaSucursalArea::orderBy('jefatura_sucursal_area.id')
-                                ->join('sucursal_area', 'jefatura_sucursal_area.sucursal_area_id', '=', 'sucursal_area.id')
-                                ->whereIn('sucursal_area.sucursal_id', $sucurArray)
                                 ->whereNotNull('jefatura_sucursal_area.updated_at')
                                 ->get();
         $certificados = Certificado::orderBy('id')->get();
