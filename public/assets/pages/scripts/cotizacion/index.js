@@ -123,6 +123,7 @@ $(document).on("click", ".btnEnviarNV", function(event){
     var data = {
 		id: id,
         aprobstatus : aprobstatus,
+        updated_at  : $("#updated_at" + id).html(),
         _token: $('input[name=_token]').val()
 	};
 	var ruta = '/cotizacion/aprobarcotvend/'+id;
@@ -173,17 +174,25 @@ function ajaxRequest(data,url,funcion,form = false) {
 		data: data,
 		success: function (respuesta) {
 			if(funcion=='aprobarcotvend'){
-				if (respuesta.mensaje == "ok") {
-                    form.parents('tr').remove();
-					//$("#fila"+data['nfila']).remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
-				}
+                //console.log(Array.isArray(respuesta));
+                if ('error' in respuesta){
+                    if (respuesta.error == 0){
+                        form.parents('tr').remove();
+                    }
+                    Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                }else{
+                    if (respuesta.mensaje == "ok") {
+                        form.parents('tr').remove();
+                        //$("#fila"+data['nfila']).remove();
+                        Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                    } else {
+                        if (respuesta.mensaje == "sp"){
+                            Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                        }else{
+                            Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                        }
+                    }    
+                }
 			}
             if(funcion=='eliminar'){
                 if (respuesta.mensaje == "ok") {

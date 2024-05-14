@@ -793,6 +793,7 @@ $("#rut").blur(function(){
 			*/
 			var data = {
 				rut: $("#rut").val(),
+				stanv : 1,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
@@ -823,6 +824,20 @@ $("#rut").blur(function(){
 							});
 						}
 						*/
+						if(respuesta.cliente[0].descripcion!=null){
+							swal({
+								//title: 'Cliente Bloqueado. Pero puedes hacer la Cotizacion',
+								text: respuesta.cliente[0].descripcion,
+								icon: 'warning',
+								buttons: {
+									confirm: "Aceptar"
+								},
+							}).then((value) => {
+								if (value) {
+								}
+							});	
+						}
+
 			
 						$("#razonsocial").val(respuesta.cliente[0].razonsocial);
 						$("#telefono").val(respuesta.cliente[0].telefono);

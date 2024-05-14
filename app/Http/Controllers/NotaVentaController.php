@@ -13,6 +13,7 @@ use App\Models\CategoriaProd;
 use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\ClienteDesBloqueado;
+use App\Models\ClienteDesBloqueadoNV;
 use App\Models\ClienteDirec;
 use App\Models\ClienteProducto;
 use App\Models\ClienteSucursal;
@@ -358,6 +359,18 @@ class NotaVentaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);    
         }
+        $request = new Request();
+        $request->merge(['stanv' => 1]);
+        $request->request->set('stanv', 1);
+        //$cliente = Cliente::findOrFail($request->cliente_id);
+        $clibloq = clienteBloqueado($data->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('notaventa')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
         //$detalles = $data->cotizaciondetalles()->get();
         $detalles = $data->cotizaciondetalles;
@@ -468,6 +481,15 @@ class NotaVentaController extends Controller
     {
         //dd($request);
         can('guardar-notaventa');
+        $request->merge(['stanv' => 1]);
+        //$cliente = Cliente::findOrFail($request->cliente_id);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('notaventa')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
             return redirect('notaventa')->with([
@@ -602,13 +624,13 @@ class NotaVentaController extends Controller
                 }*/
             }    
         }
-        if($notaventa->cliente->clientedesbloqueado){
-            $clientedesbloqueado_id = $notaventa->cliente->clientedesbloqueado->id;
-            if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+        if($notaventa->cliente->clientedesbloqueadonv){
+            $clientedesbloqueadonv_id = $notaventa->cliente->clientedesbloqueadonv->id;
+            if (ClienteDesBloqueadoNV::destroy($clientedesbloqueadonv_id)) {
                 //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
-                $clientedesbloqueado->usuariodel_id = auth()->id();
-                $clientedesbloqueado->save();
+                $clientedesbloqueadonv = ClienteDesBloqueadoNV::withTrashed()->findOrFail($clientedesbloqueadonv_id);
+                $clientedesbloqueadonv->usuariodel_id = auth()->id();
+                $clientedesbloqueadonv->save();
             }
         }
 

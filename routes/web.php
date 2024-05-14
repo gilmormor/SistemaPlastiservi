@@ -1516,3 +1516,13 @@ Route::get('reportdeudaclientesiscob/totalizarindex', 'ReportDeudaClienteSisCobC
 Route::get('reportdeudaclientesiscob/listardtedet', 'ReportDeudaClienteSisCobController@listardtedet')->name('reportdeudaclientesiscob_listardtedet');
 
 Route::post('reportdeudaclientesiscob/consulta', 'ReportDeudaClienteSisCobController@consulta')->name('reportdeudaclientesiscob_consulta');
+
+//DESBLOQUEAR CLIENTE MODULO DE CREAR NOTA DE VENTA
+Route::get('clientedesbloqueadonv', 'ClienteDesBloqueadoNVController@index')->name('clientedesbloqueadonv');
+Route::get('clientedesbloqueadonvpage', 'ClienteDesBloqueadoNVController@clientedesbloqueadonvpage')->name('clientedesbloqueadonvpage');
+Route::get('clientedesbloqueadonv/crear', 'ClienteDesBloqueadoNVController@crear')->name('crear_clientedesbloqueadonv');
+Route::post('clientedesbloqueadonv', 'ClienteDesBloqueadoNVController@guardar')->name('guardar_clientedesbloqueadonv');
+Route::get('clientedesbloqueadonv/{id}/editar', 'ClienteDesBloqueadoNVController@editar')->name('editar_clientedesbloqueadonv');
+Route::put('clientedesbloqueadonv/{id}', 'ClienteDesBloqueadoNVController@actualizar')->name('actualizar_clientedesbloqueadonv');
+Route::delete('clientedesbloqueadonv/{id}', 'ClienteDesBloqueadoNVController@eliminar')->name('eliminar_clientedesbloqueadonv');
+Route::post('clientedesbloqueadonv/buscarclibloq', 'ClienteDesBloqueadoNVController@buscarclibloq')->name('buscarclibloq');

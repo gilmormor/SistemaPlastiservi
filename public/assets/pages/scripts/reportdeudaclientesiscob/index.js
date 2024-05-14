@@ -375,6 +375,8 @@ $("#rut").blur(function(){
 					if(respuesta.length>0){
 						formato_rut($("#rut"));
                         $("#rut").attr("cliente_id",respuesta[0].id);
+                        $("#razonsocial").val(respuesta[0].razonsocial);
+                        $("#limitecredito").val(MASKLA(respuesta[0].limitecredito,0));
 					}else{
                         formato_rut($("#rut"));
                         swal({

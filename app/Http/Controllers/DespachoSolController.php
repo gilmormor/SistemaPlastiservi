@@ -10,6 +10,7 @@ use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Cliente;
 use App\Models\ClienteBloqueado;
+use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
@@ -113,6 +114,18 @@ class DespachoSolController extends Controller
             'tipo_alert' => 'alert-error'
         ]); */
 
+        $request = new Request();
+        $request->merge(['stanv' => 0]);
+        $request->request->set('stanv', 0);
+        //$cliente = Cliente::findOrFail($request->cliente_id);
+        $clibloq = clienteBloqueado($data->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('despachosol/listarnv')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $detalles = $data->notaventadetalles()->get();
         $clienteselec = $data->cliente()->get();
@@ -165,6 +178,15 @@ class DespachoSolController extends Controller
     {
         can('guardar-solicitud-despacho');
         //dd($request);
+        $request->merge(['stanv' => 0]);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('despachosol/listarnv')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $cont_producto = count($request->producto_id);
         if($cont_producto<=0){
             return redirect('despachosol')->with([
@@ -290,6 +312,17 @@ class DespachoSolController extends Controller
                     $despachosoldte->dte_id = $request->dte_id;
                     $despachosoldte->save();
                 }
+
+                if($notaventa->cliente->clientedesbloqueado){
+                    $clientedesbloqueado_id = $notaventa->cliente->clientedesbloqueado->id;
+                    if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                        //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                        $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                        $clientedesbloqueado->usuariodel_id = auth()->id();
+                        $clientedesbloqueado->save();
+                    }
+                }
+        
                 return redirect('despachosol')->with([
                     'mensaje'=>'Registro creado con exito.',
                     'tipo_alert' => 'alert-success'

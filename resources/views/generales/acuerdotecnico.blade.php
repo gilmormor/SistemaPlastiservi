@@ -55,7 +55,7 @@
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                             <label for="at_materiaprima_id" class="control-label requerido" data-toggle='tooltip' title="Materia Prima">Materia Prima</label>
-                                            <select name="at_materiaprima_id" id="at_materiaprima_id" class="selectpicker form-control materiaprima_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
+                                            <select name="at_materiaprima_id" id="at_materiaprima_id" class="selectpicker form-control materiaprima_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox" data-size="5">
                                                 <option value="">Seleccione...</option>
                                                 @foreach($tablas['materiPrima'] as $materiprima)
                                                     <option
@@ -70,7 +70,7 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3">
                                             <label for="at_color_id" class="control-label color_id requerido" data-toggle='tooltip' title="Color">Color</label>
-                                            <select name="at_color_id" id="at_color_id" class="selectpicker form-control color_id form_acutec valorrequerido" data-live-search='true' title='Seleccione...' tipoval="combobox" size="3">
+                                            <select name="at_color_id" id="at_color_id" class="selectpicker form-control color_id form_acutec valorrequerido" data-live-search='true' title='Seleccione...' tipoval="combobox" data-size="5">
                                                 @foreach($tablas['color'] as $color)
                                                     <option data-content="<span class='badge' style='background: {{$color->codcolor}}; color: #fff;'>{{$color->nombre}}</span>"
                                                         value="{{$color->id}}"

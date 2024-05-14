@@ -3,6 +3,7 @@
 use App\Models\Admin\Menu;
 use App\Models\Admin\Permiso;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueadoNV;
 use App\Models\Dte;
 use App\Models\Empresa;
 use Illuminate\Database\Eloquent\Builder;
@@ -330,22 +331,51 @@ if (!function_exists('dtetipotraslado')) {
 }
 
 if (!function_exists('clienteBloqueado')) {
-    function clienteBloqueado($cliente_id,$aux_consultadeuda = 0){
+    function clienteBloqueado($cliente_id,$aux_consultadeuda = 0,$request = null){
+        //dd($request);
         $cliente = Cliente::findOrFail($cliente_id);
         //dd($cliente);
         $staBloqueo = [];
         $staBloqueo ["bloqueo"] = null;
+        $empresa = Empresa::findOrFail(1);
+        //SI stabloxdeusiscob = 0 BUSCO SI ESTA BLOQUEADO DE FORMA MANUAL, SI NO ESTA BLOQUEADO SIMPLEMENTe SIGUE SIN BLOQUEO
+        if($empresa->stabloxdeusiscob == 0){
+            if(isset($cliente->clientebloqueado)){
+                $staBloqueo ["bloqueo"]= $cliente->clientebloqueado->descripcion;
+            }
+            return $staBloqueo;
+        }
+        //SI LA SOLICITUD VIENE DE NOTA DE VENTA, BUSCO SI EL CLIENTE ESTA DESBLOQUEADO PARA NOTA DE VENTA
+        if(isset($request->stanv) and $request->stanv == 1 and $aux_consultadeuda == 0){
+            if($cliente->clientedesbloqueadonv){
+                //SI EXISTE EL DESBLOQUEO LO ELIMINO
+                if(isset($request->deldesbloqueo) and $request->deldesbloqueo == 1){ //SOLO ENTRA AQUI SI ENVIO LA PROPIEDAD EN EL REQUEST
+                    $clientedesbloqueadonv_id = $cliente->clientedesbloqueadonv->id;
+                    if (ClienteDesBloqueadoNV::destroy($clientedesbloqueadonv_id)) {
+                        //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                        $clientedesbloqueadonv = ClienteDesBloqueadoNV::withTrashed()->findOrFail($clientedesbloqueadonv_id);
+                        $clientedesbloqueadonv->usuariodel_id = auth()->id();
+                        $clientedesbloqueadonv->save();
+                    }    
+                }
+                return $staBloqueo;
+            }
+        }else{ // DE LO CONTRARIO BUSCO SI ESTA DESBLOQUEADO PARA TODOS LOS DEMAS PROCESOS
+            if($cliente->clientedesbloqueado and $aux_consultadeuda == 0){
+                return $staBloqueo;
+            }    
+        }
+
         if($aux_consultadeuda == 1){
-            datacobranza($staBloqueo,$cliente);
+            datacobranza($staBloqueo,$cliente,$request);
             //$dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
         }
         if(isset($cliente->clientebloqueado)){
             $staBloqueo ["bloqueo"]= $cliente->clientebloqueado->descripcion;
         }else{
-            $empresa = Empresa::findOrFail(1);
             if($empresa->stabloxdeusiscob == 1){
                 if($aux_consultadeuda == 0){
-                    datacobranza($staBloqueo,$cliente);
+                    datacobranza($staBloqueo,$cliente,$request);
                 }
                 /* $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
                 //dd($dataCobranza);
@@ -360,16 +390,13 @@ if (!function_exists('clienteBloqueado')) {
             }
         }
         $staBloqueo["bloqueoreal"] = $staBloqueo ["bloqueo"];
-        if($cliente->clientedesbloqueado){
-            $staBloqueo ["bloqueo"]= null;
-        }
         return $staBloqueo;
     }
 }
 
 if (!function_exists('datacobranza')) {
-    function datacobranza(&$staBloqueo,$cliente){
-        $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
+    function datacobranza(&$staBloqueo,$cliente,$request){
+        $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut,$request);
         //dd($dataCobranza);
         $staBloqueo["datacobranza"] = $dataCobranza;
         if($dataCobranza["TDeuda"] > 0 and $dataCobranza["TDeuda"] >= $dataCobranza["limitecredito"]){

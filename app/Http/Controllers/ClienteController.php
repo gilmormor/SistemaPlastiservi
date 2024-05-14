@@ -438,6 +438,7 @@ class ClienteController extends Controller
                                 'cliente.regionp_id',
                                 'cliente.provinciap_id',
                                 'cliente.comunap_id',
+                                'cliente.limitecredito',
                                 'clientedirec.id as direc_id',
                                 'clientedirec.direcciondetalle',
                                 'clientebloqueado.descripcion',
@@ -724,6 +725,7 @@ class ClienteController extends Controller
 
     public function buscarClixVenRut(Request $request){
         if($request->ajax()){
+            //dd($request);
             $respuesta = array();
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -769,7 +771,7 @@ class ClienteController extends Controller
 
 function valBloqCliSisCob(&$cliente,$request){
     if(count($cliente) > 0){
-        $staBloqueo = clienteBloqueado($cliente[0]->id);
+        $staBloqueo = clienteBloqueado($cliente[0]->id,0,$request);
         $cliente[0]->descripcion = $staBloqueo ["bloqueo"];
         /* $clientebus = Cliente::findOrFail($cliente[0]->id);
         if($clientebus->clientedesbloqueado){

@@ -53,7 +53,7 @@ class CotizacionAprobarAcuTecController extends Controller
         $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
                     concat(persona.nombre, ' ' ,persona.apellido) as vendedor_nombre,
-                    aprobstatus,'1' as pdfcot
+                    aprobstatus,'1' as pdfcot,cotizacion.updated_at
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
@@ -162,11 +162,40 @@ function editar($id){
 
         //dd(session('aux_paginaredirect'));
         $data = Cotizacion::findOrFail($id);
+        // Verificar si el carácter '&' está presente en la cadena
+        $cadena = $id;
+        if (strpos($cadena, '&') !== false) {
+            // Si '&' está presente, extraer los valores antes y después de '&'
+            $posicion = strpos($cadena, '&');
+            $id = substr($cadena, 0, $posicion);
+            $updated_at = substr($cadena, $posicion + 1);
+            if($updated_at != $data->updated_at){
+                return redirect('cotizacionaprobaracutec')->with([
+                    'mensaje'=>'Cotizacion fue modificada por otro usuario.',
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }
+        //dd("ID:" . $id . "\n updated_at: " . $updated_at);
         if($data->aprobstatus != 5){
             return redirect('cotizacionaprobaracutec')->with([
                 'mensaje'=>'Cotizacion fue modificada por otro usuario.',
                 'tipo_alert' => 'alert-error'
             ]);
+        }
+        if($data->cliente_id){
+            $request1 = new Request();
+            $request1->merge(['stanv' => 1]);
+            $request1->request->set('stanv', 1);
+            $request1->merge(['deldesbloqueo' => 0]);
+            $request1->request->set('deldesbloqueo', 0);
+            $bloqcli = clienteBloqueado($data->cliente_id,0,$request1);
+            if($bloqcli["bloqueo"]){
+                return redirect('cotizacionaprobaracutec')->with([
+                    'mensaje'=> "Cliente bloqueado \n" . $bloqcli["bloqueo"],
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
         }
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $cotizacionDetalles = $data->cotizaciondetalles()->get();

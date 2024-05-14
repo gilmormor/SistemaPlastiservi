@@ -2867,7 +2867,7 @@ class Dte extends Model
         return $contenido;
     }
 
-    public static function deudaClienteSisCobranza($rut){
+    public static function deudaClienteSisCobranza($rut,$request){
         //dd($request);
         //$rut = "";
         if(!isset($rut) or empty($rut)){
@@ -2905,6 +2905,7 @@ class Dte extends Model
             $datosFacDeuda = [];
             $ArrayNroFac = [];
             $cont = 0;
+            $datosTotasFacDeuda = [];
             foreach ($tables as $table) {
                 $cont++;
                 // Accede a los elementos hijos dentro de cada <Table>

@@ -5,10 +5,14 @@ $(document).ready(function () {
         opcion = 2;//editar
         fila = $(this).closest("tr");	        
         id = fila.find('td:eq(0)').text();
+        updated_at = "";
+        if (fila.find('td:eq(0)').attr("updated_at") !== undefined){
+            updated_at = "&" + fila.find('td:eq(0)').attr("updated_at");
+        }
         form = $(this);
         var loc = window.location;
         //alert(loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+"/editar");
-        window.location = loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+"/editar";
+        window.location = loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+updated_at+"/editar";
     });
 });
 

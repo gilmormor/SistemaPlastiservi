@@ -137,6 +137,12 @@ class Cliente extends Model
         return $this->hasOne(ClienteBloqueado::class);
     }
 
+    //RELACION UNO A UNO clientedesbloqueado Nota de Venta
+    public function clientedesbloqueadonv()
+    {
+        return $this->hasOne(ClienteDesBloqueadoNV::class);
+    }
+    
     public static function clientesxUsuario($vendedor_id = '0',$cliente_id = 0){
         $respuesta = array();
         $user = Usuario::findOrFail(auth()->id());

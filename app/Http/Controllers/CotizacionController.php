@@ -442,6 +442,21 @@ class CotizacionController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        if($cotizacion->cliente_id){
+            $request1 = new Request();
+            $request1->merge(['stanv' => 1]);
+            $request1->request->set('stanv', 1);
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
+            if($bloqcli["bloqueo"]){
+                return redirect('cotizacion')->with([
+                    'mensaje'=> "Cliente bloqueado \n" . $bloqcli["bloqueo"],
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }
+
         $cont_cotdet = count($request->cotdet_id);
         if($cont_cotdet <=0 ){
             return redirect('notaventa')->with([
@@ -806,6 +821,28 @@ class CotizacionController extends Controller
         can('guardar-cotizacion');
         if ($request->ajax()) {
             $cotizacion = Cotizacion::findOrFail($request->id);
+            if($request->updated_at != $cotizacion->updated_at){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "No se actualizaron los datos, registro fue modificado por otro usuario!",
+                    'tipo_alert' => "error"
+                ]);
+            }
+            if($cotizacion->cliente_id){
+                $request1 = new Request();
+                $request1->merge(['stanv' => 1]);
+                $request1->request->set('stanv', 1);
+                $request1->merge(['deldesbloqueo' => 1]);
+                $request1->request->set('deldesbloqueo', 1);
+                $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
+                if($bloqcli["bloqueo"]){
+                    return response()->json([
+                        'error' => 1,
+                        'mensaje' => "Cliente bloqueado \n" . $bloqcli["bloqueo"],
+                        'tipo_alert' => "error"
+                    ]);
+                }
+            }
             $cotizacion->aprobstatus = $request->aprobstatus;
             $aux_statusAcuTec = false;
             foreach ($cotizacion->cotizaciondetalles as $cotdet) {
@@ -870,9 +907,19 @@ class CotizacionController extends Controller
                 if($aux_statusAcuTec){
                     //Event(new AvisoRevisionAcuTec($cotizacion));
                 }    
-                return response()->json(['mensaje' => 'ok']);
+                return response()->json([
+                    'error' => 0,
+                    'mensaje' => "El registro fue procesado con exito.",
+                    'tipo_alert' => "success"
+                ]);
+                //return response()->json(['mensaje' => 'ok']);
             } else {
-                return response()->json(['mensaje' => 'ng']);
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "El registro no pudo ser procesado.",
+                    'tipo_alert' => "error"
+                ]);
+                //return response()->json(['mensaje' => 'ng']);
             }
         } else {
             abort(404);
@@ -891,6 +938,20 @@ class CotizacionController extends Controller
                     'id' => 0,
                     'mensaje' => 'Registro fue modificado por otro usuario.'
                 ]);
+            }
+            if($cotizacion->cliente_id){
+                $request1 = new Request();
+                $request1->merge(['stanv' => 1]);
+                $request1->request->set('stanv', 1);
+                $request1->merge(['deldesbloqueo' => 1]);
+                $request1->request->set('deldesbloqueo', 1);
+                $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
+                if($bloqcli["bloqueo"]){
+                    return response()->json([
+                        'id' => 0,
+                        'mensaje' => "Cliente bloqueado \n" . $bloqcli["bloqueo"]
+                    ]);
+                }
             }
             if($request->valor == "3"){ //SI ES APROBACION ENTRA AQUI
                 //RECORRO LOS ACUERDOS TECNICOS PARA VERIFICAR QUE FUERON EDITADOS PARA LUEGO UPDATE
