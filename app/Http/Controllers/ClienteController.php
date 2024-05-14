@@ -703,6 +703,7 @@ class ClienteController extends Controller
             and isnull(cliente.deleted_at)
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))";
             $cliente = DB::select($sql);
+            valBloqCliSisCob($cliente,$request);
             //dd($cliente);
             $respuesta['cliente'] = $cliente;
 

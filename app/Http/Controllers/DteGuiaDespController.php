@@ -7,6 +7,7 @@ use App\Http\Requests\ValidarDTE;
 use App\Models\AreaProduccion;
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\DespachoOrd;
@@ -95,6 +96,18 @@ class DteGuiaDespController extends Controller
     {
         can('crear-dte-guia-despacho');
         $data = DespachoOrd::findOrFail($id);
+        $request = new Request();
+        $request->merge(['stanv' => 0]);
+        $request->request->set('stanv', 0);
+        //$cliente = Cliente::findOrFail($request->cliente_id);
+        $clibloq = clienteBloqueado($data->notaventa->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('dteguiadesp/listarorddesp')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         if($updated_at != $data->updated_at){
             return redirect('dteguiadesp/listarorddesp')->with([
                 'mensaje'=>'No se actualizaron los datos, registro fue modificado por otro usuario!',
@@ -178,6 +191,14 @@ class DteGuiaDespController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        $foliocontrol = Foliocontrol::findOrFail(2);
+        if($cont_producto > $foliocontrol->maxitemxdoc ){
+            return redirect('dteguiadesp/listarorddesp')->with([
+                'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
         if(count($despachoord->despachoorddets) != $cont_producto){
             return redirect('dteguiadesp/listarorddesp')->with([
                 'mensaje'=>'Cantidad de item diferentes a la Orden de Despacho Original.',
@@ -201,6 +222,16 @@ class DteGuiaDespController extends Controller
                 }
             }
         }
+
+        $request->merge(['stanv' => 0]);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('dteguiadesp/listarorddesp')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $aux_indtraslado = $request->tipoguiadesp;
         if($aux_indtraslado == 30){ //ESTO ES TEMPORAL POR EL MES DE AGOSTO 2023 PARA QUE PUEDAN HACER GUIA DE TRASLADO DE LAS GUIAS HECHAS POR EPROPLAS
             $aux_indtraslado = 6;
@@ -223,7 +254,18 @@ class DteGuiaDespController extends Controller
         if($respuesta["id"] == 1){
             $foliocontrol = Foliocontrol::findOrFail(2);
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-            if($aux_foliosdisp <=100){
+            
+            if($despachoord->notaventa->cliente->clientedesbloqueado){
+                $clientedesbloqueado_id = $despachoord->notaventa->cliente->clientedesbloqueado->id;
+                if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                    $clientedesbloqueado->usuariodel_id = auth()->id();
+                    $clientedesbloqueado->save();
+                }
+            }
+
+            if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 return redirect('dteguiadesp')->with([
                     'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
                     'tipo_alert' => 'alert-error'

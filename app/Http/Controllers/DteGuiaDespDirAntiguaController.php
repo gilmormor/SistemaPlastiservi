@@ -84,6 +84,13 @@ class DteGuiaDespDirAntiguaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        $foliocontrol = Foliocontrol::findOrFail(2);
+        if($cont_producto > $foliocontrol->maxitemxdoc ){
+            return redirect('dteguiadespdirantigua')->with([
+                'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
 
         $cliente = Cliente::findOrFail($request->cliente_id);
         foreach ($cliente->clientebloqueados as $clientebloqueado) {
@@ -256,7 +263,7 @@ class DteGuiaDespDirAntiguaController extends Controller
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-            if($aux_foliosdisp <=100){
+            if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 return redirect('dteguiadespdirantigua')->with([
                     'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
                     'tipo_alert' => 'alert-error'

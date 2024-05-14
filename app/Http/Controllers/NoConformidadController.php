@@ -40,11 +40,16 @@ class NoConformidadController extends Controller
     public function crear()
     {
         can('crear-no-conformidad');
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         $motivoncs = MotivoNc::orderBy('id')->pluck('descripcion', 'id')->toArray();
         $formadeteccionncs = FormaDeteccionNC::orderBy('id')->pluck('descripcion', 'id')->toArray();
-        $jefaturasucursalareas = JefaturaSucursalArea::orderBy('id')->get();
-        $jefaturasucursalareasR = JefaturaSucursalArea::orderBy('id')
-                                ->whereNotNull('updated_at')
+        $jefaturasucursalareas = JefaturaSucursalArea::orderBy('jefatura_sucursal_area.id')
+                                ->get();
+        $jefaturasucursalareasR = JefaturaSucursalArea::orderBy('jefatura_sucursal_area.id')
+                                ->whereNotNull('jefatura_sucursal_area.updated_at')
                                 ->get();
         $certificados = Certificado::orderBy('id')->get();
         return view('noconformidad.crear',compact('motivoncs','formadeteccionncs','jefaturasucursalareas','certificados','jefaturasucursalareasR'));

@@ -335,7 +335,7 @@ class DespachoOrdRecController extends Controller
                     }
                 }else{
                     return redirect('despachoordrec')->with([
-                        'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$despachoordrec->updated_at,
+                        'mensaje'=>'Registro modificado por otro usuario. Fecha Hora: '.$despachoordrec->updated_at,
                             'tipo_alert' => 'alert-error'
                         ]);
                 }

@@ -12,6 +12,7 @@ use App\Models\DespachoSol;
 use App\Models\DespachoSol_InvMov;
 use App\Models\DespachoSolDet;
 use App\Models\DespachoSolDet_InvBodegaProducto;
+use App\Models\DespachoSolEnvOrdDesp;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
@@ -52,6 +53,35 @@ class PickingController extends Controller
         return view('picking.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
+    public function pickingpage(Request $request){
+        $datas = consultasoldesp($request);
+        //dd($datas);
+        foreach ($datas as &$data) {
+            $despachosol = DespachoSol::findOrFail($data->id);
+            $aux_despachosolenvorddesp_obs = "";
+            if($despachosol->despachosolenvorddesp){
+                if($despachosol->despachosolenvorddesp->staenvdesp == 0){
+                    $aux_despachosolenvorddesp_obs = $despachosol->despachosolenvorddesp->obs;
+                }
+            }
+            $data->despachosolenvorddesp_obs = $aux_despachosolenvorddesp_obs;
+            $aux_totalkilospicking = 0;
+            $aux_totalcantpicking = 0;
+            $despachosoldets = $despachosol->despachosoldets;
+            //dd($despachosoldets);
+            $arrayBodegasPickings = InvBodega::llenarArrayBodegasPickingSolDesp($despachosoldets);
+            foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
+                $producto = Producto::findOrFail($arrayBodegasPicking["producto_id"]);
+                $aux_totalkilospicking += $arrayBodegasPicking["stock"] * $producto->peso;
+                $aux_totalcantpicking += $arrayBodegasPicking["stock"];
+            }
+            $data->totalkilospicking = $aux_totalkilospicking;
+            $data->totalcantpicking = $aux_totalcantpicking;
+        }
+        //dd($datas);
+        return datatables($datas)->toJson();
+    }
+
     public function reportesoldesp(Request $request){
         //$respuesta = app(DespachoSolController::class)->reportesoldesp($request);
         $respuesta = reportesoldesp1($request);
@@ -62,6 +92,25 @@ class PickingController extends Controller
     {
         can('editar-picking');
         $data = DespachoSol::findOrFail($id);
+        if(isset($data->notaventa->cliente->clientebloqueado->descripcion)){
+            return redirect('/')->with([
+                'mensaje'=>'Cliente bloqueado: ' . $data->notaventa->cliente->clientebloqueado->descripcion . " Razon Social: " . $data->notaventa->cliente->razonsocial,
+                'tipo_alert' => 'alert-error'
+            ]);    
+        }
+        /* if($data->despachosoldev){
+            return redirect('/')->with([
+                'mensaje'=>'Picking: Solicitud de despacho Nro: ' . $data->id . ' fue cerrada el ' . date("d/m/Y h:i:s A", strtotime($data->despachosoldev->created_at)),
+                'tipo_alert' => 'alert-error'
+            ]);    
+        }; */
+        if($data->despachosolanul){
+            return redirect('/')->with([
+                'mensaje'=>'Picking: Solicitud de despacho Nro: ' . $data->id . ' fue anulada el ' . date("d/m/Y h:i:s A", strtotime($data->despachosolanul->created_at)),
+                'tipo_alert' => 'alert-error'
+            ]);    
+        };
+
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
@@ -182,6 +231,14 @@ class PickingController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);    
         }
+
+        if($despachosol->despachosolanul){
+            return redirect('/')->with([
+                'mensaje'=>'Picking: Solicitud de despacho Nro: ' . $despachosol->id . ' fue anulada el ' . date("d/m/Y h:i:s A", strtotime($despachosol->despachosolanul->created_at)),
+                'tipo_alert' => 'alert-error'
+            ]);    
+        };
+
 
         $despachosol->updated_at = date("Y-m-d H:i:s"); //ACTUALIZO DESDE EL PRINCIPIO EL REGISTRO PARA EVITAR QUE SEA MODIFICADO MIENTRAS EL PROCESO SE EJECUTA
         if (!$despachosol->save()) {
@@ -513,6 +570,114 @@ class PickingController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function enviardespord(Request $request)
+    {
+        $despachosol = DespachoSol::findOrFail($request->despachosol_id);
+        $request->merge(['stanv' => 0]);
+        $request->request->set('stanv', 0);
+        //$cliente = Cliente::findOrFail($request->cliente_id);
+        $clibloq = clienteBloqueado($despachosol->notaventa->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return [
+                "error" => 1,
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "error"
+            ];
+        }
+        
+        if($despachosol->updated_at != $request->updated_at){
+            return [
+                'error' => 1,
+                'mensaje' => 'No se pudo modificar. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                'tipo_alert' => 'error'
+            ];
+        }
+        //dd($despachosol->notaventa->cliente->clientebloqueado);
+        if(isset($despachosol->notaventa->cliente->clientebloqueado)){
+            return [
+                'error' => 1,
+                'mensaje' => 'Cliente bloqueado: ' . $despachosol->notaventa->cliente->clientebloqueado->descripcion,
+                'tipo_alert' => 'error'
+            ];
+        }
+
+        $despachosol->updated_at = date("Y-m-d H:i:s");
+        if($despachosol->despachosolenvorddesp){
+            $despachosol->despachosolenvorddesp->staenvdesp = 1;
+            $despachosol->despachosolenvorddesp->save();
+        }else{
+            $request->merge([
+                'staenvdesp' => 1,
+                'usuario_id' => auth()->id()
+            ]);
+            DespachoSolEnvOrdDesp::create($request->all());
+        }
+        $despachosol->save();
+        return [
+            'error' => 0,
+            'mensaje' => 'Procesado con exito.',
+            'tipo_alert' => 'success'
+        ];
+
+        /* if($request->estado == 1){
+            $request->merge(['usuario_id' => auth()->id()]);
+            DespachoSolEnvOrdDesp::create($request->all());
+            $despachosol->save();
+            return [
+                'error' => 0,
+                'mensaje' => 'Procesado con exito.',
+                'tipo_alert' => 'success'
+            ];
+        }else{
+            if (DespachoSolEnvOrdDesp::destroy($despachosol->despachosolenvorddesp->id)) {
+                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                $despachosolenvorddesp = DespachoSolEnvOrdDesp::withTrashed()->findOrFail($despachosol->despachosolenvorddesp->id);
+                $despachosolenvorddesp->usuariodel_id = auth()->id();
+                $despachosolenvorddesp->save();
+                $despachosol->save();
+                return [
+                    'error' => 0,
+                    'mensaje' => 'Procesado con exito.',
+                    'tipo_alert' => 'success'
+                ];
+            } else {
+                return [
+                    'error' => 1,
+                    'mensaje' => 'Ocurrio un error.',
+                    'tipo_alert' => 'error'
+                ];
+            }    
+        } */
+
+        //dd($request);
+    }
+
+    public function validareditarpicking(Request $request)
+    {
+        $despachosol = DespachoSol::findOrFail($request->despachosol_id);
+        if($despachosol->updated_at != $request->updated_at){
+            return [
+                'error' => 1,
+                'mensaje' => 'No se pudo modificar. Registro Editado por otro usuario. Fecha Hora: '.$despachosol->updated_at,
+                'tipo_alert' => 'error'
+            ];
+        }
+        if(isset($despachosol->notaventa->cliente->clientebloqueado)){
+            return [
+                'error' => 1,
+                'mensaje' => 'Cliente bloqueado: ' . $despachosol->notaventa->cliente->clientebloqueado->descripcion,
+                'tipo_alert' => 'error'
+            ];
+        }
+        /* $despachosol->updated_at = date("Y-m-d H:i:s");
+        $despachosol->save(); */
+        return [
+            'error' => 0,
+            'mensaje' => 'Procesado con exito.',
+            'tipo_alert' => 'success'
+        ];
     }
 }
 
@@ -860,7 +1025,10 @@ function consultasoldesp($request){
             IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
             IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
             vista_despsoltotales.totalkilos,
-            vista_despsoltotales.subtotalsoldesp,despachosol.updated_at
+            vista_despsoltotales.subtotalsoldesp,despachosol.updated_at,
+            clientebloqueado.descripcion as clientebloqueado_descripcion,
+            despachosolenvorddesp.despachosol_id as despachosolenvorddesp_despachosol_id,
+            despachosolenvorddesp.despachosol_id as despachosolenvorddesp_updated_at
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
@@ -888,6 +1056,10 @@ function consultasoldesp($request){
             ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
             INNER JOIN despachosoldet_invbodegaproducto
             ON despachosoldet.id = despachosoldet_invbodegaproducto.despachosoldet_id AND ISNULL(despachosoldet_invbodegaproducto.deleted_at)
+            LEFT JOIN clientebloqueado
+            ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+            LEFT JOIN despachosolenvorddesp
+            ON despachosolenvorddesp.despachosol_id = despachosol.id AND ISNULL(despachosolenvorddesp.deleted_at)
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -907,8 +1079,17 @@ function consultasoldesp($request){
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             and isnull(despachosoldet.deleted_at)
+            and despachosol.id not in (SELECT despachosol_id FROM despachosolenvorddesp where despachosolenvorddesp.despachosol_id = despachosol.id AND despachosolenvorddesp.staenvdesp = 1 AND ISNULL(despachosolenvorddesp.deleted_at))
+            AND despachosol.id NOT IN (SELECT despachoord.despachosol_id 
+                                            from despachoord 
+                                            WHERE despachoord.id NOT IN 
+                                                (SELECT despachoordanul.despachoord_id from despachoordanul 
+                                                    WHERE despachoordanul.despachoord_id = despachoord.id 
+                                                    AND ISNULL(despachoordanul.deleted_at))
+                                            AND isnull(despachoord.aprguiadesp)
+                                            AND ISNULL(despachoord.deleted_at))
             GROUP BY despachosol.id
-            ORDER BY despachosol.id DESC;";
+            ORDER BY despachosol.id ASC;";
 /*
 (select sum(cantsoldesp) as cantsoldesp
                     from despachosol inner join despachosoldet
@@ -918,7 +1099,7 @@ function consultasoldesp($request){
                     despachosol.deleted_at is null
                     group by notaventadetalle_id)
 */
-    //dd("$sql");
+    //dd($sql);
     $datas = DB::select($sql);
     //dd($datas);
     return $datas;

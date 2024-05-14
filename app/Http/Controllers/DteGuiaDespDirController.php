@@ -76,7 +76,13 @@ class DteGuiaDespDirController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);
             }
-    
+            $foliocontrol = Foliocontrol::findOrFail(2);
+            if($cont_producto > $foliocontrol->maxitemxdoc ){
+                return redirect('dteguiadespdir')->with([
+                    'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
             $cliente = Cliente::findOrFail($request->cliente_id);
             foreach ($cliente->clientebloqueados as $clientebloqueado) {
                 return redirect('dteguiadespdir')->with([
@@ -256,7 +262,7 @@ class DteGuiaDespDirController extends Controller
                 if($respuesta["id"] == 1){
                     Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
                 }
-                if($aux_foliosdisp <=100){
+                if($aux_foliosdisp <= $foliocontrol->folmindisp){
                     return redirect('dteguiadespdir')->with([
                         'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
                         'tipo_alert' => 'alert-error'

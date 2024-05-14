@@ -880,7 +880,7 @@ class NotaVentaController extends Controller
 */
         }else{
             return redirect('notaventa')->with([
-                'mensaje'=>'Registro no fue modificado. Registro Editado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
+                'mensaje'=>'Registro modificado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
                 'tipo_alert' => 'alert-error'
             ]);
         }

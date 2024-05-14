@@ -2165,8 +2165,8 @@ function consulta($request){
     $datas = DB::select($sql);
     $respuesta['ventasxmes'] = $datas;
 
-
-    $sql = "SELECT date_format(notaventa.fechahora,'%Y%m') AS annomes,
+    //ESTA CONSULTA ESTABA DANDO DIFERENTE A ventasxmes 25/04/2024
+    /* $sql = "SELECT date_format(notaventa.fechahora,'%Y%m') AS annomes,
     categoriaprod.areaproduccion_id,areaproduccion.nombre,
     MONTHNAME(notaventa.fechahora) AS mes,
     MONTH(notaventa.fechahora) AS nummes,
@@ -2197,10 +2197,40 @@ function consulta($request){
     and isnull(notaventa.anulada)
     and isnull(notaventadetalle.deleted_at)
     GROUP BY categoriaprod.areaproduccion_id,date_format(notaventa.fechahora,'%Y%m')
-    ORDER BY date_format(notaventa.fechahora,'%Y%m'),categoriaprod.areaproduccion_id;";
-    //dd($sql);
-    //" and " . $aux_condrut .
+    ORDER BY date_format(notaventa.fechahora,'%Y%m'),categoriaprod.areaproduccion_id;"; */
 
+    $sql = "SELECT date_format(notaventa.fechahora,'%Y%m') AS annomes,
+    categoriaprod.areaproduccion_id,areaproduccion.nombre,
+    MONTHNAME(notaventa.fechahora) AS mes,
+    MONTH(notaventa.fechahora) AS nummes,
+    sum(notaventadetalle.cant) AS cant,
+    sum(notaventadetalle.totalkilos) AS totalkilos,
+    sum(notaventadetalle.subtotal) AS subtotal,
+    round(sum((notaventadetalle.subtotal))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM notaventadetalle INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at)
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id=areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN claseprod
+    ON producto.claseprod_id=claseprod.id and isnull(claseprod.deleted_at)
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    WHERE $aux_condanno
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condstatusact_id
+    and isnull(notaventa.anulada)
+    and isnull(notaventadetalle.deleted_at)
+    GROUP BY categoriaprod.areaproduccion_id,date_format(notaventa.fechahora,'%Y%m')
+    ORDER BY date_format(notaventa.fechahora,'%Y%m'),categoriaprod.areaproduccion_id;";
+    
     $datas = DB::select($sql);
     $respuesta['ventasareaprodxmes'] = $datas;
 
@@ -2346,14 +2376,14 @@ function consultaODcerrada($request){
     //dd($aux_condanno);
 
     $sql = "SELECT grupoprod.id,grupoprod.gru_nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * vista_despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo
-    FROM despachoorddet INNER JOIN notaventadetalle 
-    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    FROM vista_despachoorddet INNER JOIN notaventadetalle 
+    ON vista_despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
-    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
+    ON vista_despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
     INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
     INNER JOIN categoriaprod
@@ -2374,23 +2404,22 @@ function consultaODcerrada($request){
     and $aux_condareaproduccion_id
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
-    and isnull(despachoorddet.deleted_at) 
+    and isnull(vista_despachoorddet.deleted_at) 
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY grupoprod.id,grupoprod.gru_nombre;";
     //dd($sql);
     //" and " . $aux_condrut .
-
     $datas = DB::select($sql);
     $respuesta['productos'] = $datas;
 
     $sql = "SELECT persona.id,persona.nombre,
-    ROUND(sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp),2) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
-    FROM despachoorddet INNER JOIN notaventadetalle 
-    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at)
+    ROUND(sum((notaventadetalle.totalkilos/notaventadetalle.cant) * vista_despachoorddet.cantdesp),2) AS totalkilos,
+    sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM vista_despachoorddet INNER JOIN notaventadetalle 
+    ON vista_despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at)
     INNER JOIN despachoord
-    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at)
+    ON vista_despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at)
     INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at)
     INNER JOIN categoriaprod
@@ -2413,7 +2442,7 @@ function consultaODcerrada($request){
     and $aux_condareaproduccion_id
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
-    and isnull(despachoorddet.deleted_at)
+    and isnull(vista_despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY persona.id,persona.nombre;";
 
@@ -2422,13 +2451,13 @@ function consultaODcerrada($request){
 
 
     $sql = "SELECT grupoprod.id as grupoprod_id,grupoprod.gru_nombre,persona.id as persona_id,persona.nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
-    FROM despachoorddet INNER JOIN notaventadetalle 
-    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * vista_despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM vista_despachoorddet INNER JOIN notaventadetalle 
+    ON vista_despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
-    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
+    ON vista_despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
     INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
     INNER JOIN categoriaprod
@@ -2449,57 +2478,13 @@ function consultaODcerrada($request){
     and $aux_condcategoriaprod_id
     and $aux_condgiro_id
     and $aux_condareaproduccion_id
-    and isnull(notaventa.anulada)
-    and isnull(despachoorddet.deleted_at)
     and $aux_condstatusact_id
+    and isnull(notaventa.anulada)
+    and isnull(vista_despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY grupoprod.id,grupoprod.gru_nombre,persona.id,persona.nombre;";
-
     $datas = DB::select($sql);
     $respuesta['totales'] = $datas;
-    //dd($respuesta['totales']);
-/*
-    $sql = "SELECT producto.id as producto_id,categoriaprod.nombre,claseprod.cla_nombre,
-    producto.long,producto.diametro,
-    producto.tipounion,notaventadetalle.peso,color.nombre as color,
-    categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,
-    grupoprod.id as gru_id,grupoprod.gru_nombre,
-    sum(despachoorddet.cantdesp) AS cant,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
-    FROM despachoorddet INNER JOIN notaventadetalle 
-    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
-    INNER JOIN despachoord
-    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
-    INNER JOIN producto
-    ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
-    INNER JOIN categoriaprod
-    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at) 
-    INNER JOIN claseprod
-    ON producto.claseprod_id=claseprod.id and isnull(claseprod.deleted_at) 
-    INNER JOIN notaventa 
-    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
-    INNER JOIN cliente
-    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
-    LEFT JOIN color
-    ON producto.color_id=color.id and isnull(color.deleted_at)
-    INNER JOIN grupoprod
-    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
-    LEFT JOIN categoriagrupovalmes
-    ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
-    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
-    and $aux_condFecha
-    and $vendedorcond
-    and $aux_condcategoriaprod_id
-    and $aux_condgiro_id
-    and $aux_condareaproduccion_id
-    and $aux_condstatusact_id
-    and isnull(notaventa.anulada)
-    and isnull(despachoorddet.deleted_at)
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
-    GROUP BY producto.id;";
-*/
     $sql = "SELECT producto.id as producto_id,CONCAT(categoriaprod.nombre,'/',producto.nombre) as nombre,claseprod.cla_nombre,
     producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
@@ -2540,53 +2525,17 @@ function consultaODcerrada($request){
     and isnull(vista_despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY producto.id;";
-/*
-    CONSULTA DE LOS RECHAZOS, LA VOY A DEJAR AQUI PARA INCLUIRLA DESPUES EN LA CONSULTA 20/01/2022
-    $sql = "SELECT producto.id as producto_id,categoriaprod.nombre,claseprod.cla_nombre,
-    producto.long,producto.diametro,
-    producto.tipounion,notaventadetalle.peso,color.nombre as color,
-    categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,
-    grupoprod.id as gru_id,grupoprod.gru_nombre,
-    SUM(despachoordrecdet.cantrec) AS cant,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoordrecdet.cantrec) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoordrecdet.cantrec)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoordrecdet.cantrec))*((notaventa.piva+100)/100)) AS totalmas_iva
-    FROM despachoordrec inner join despachoordrecdet
-    ON despachoordrec.id=despachoordrecdet.despachoordrec_id and isnull(despachoordrec.deleted_at)  and isnull(despachoordrecdet.deleted_at) 
-    INNER JOIN despachoorddet
-    ON despachoordrecdet.despachoorddet_id=despachoorddet.id and isnull(despachoorddet.deleted_at) 
-    INNER JOIN notaventadetalle
-    on despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
-    INNER JOIN producto
-    ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
-    INNER JOIN categoriaprod
-    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at)
-    INNER JOIN claseprod
-    ON producto.claseprod_id=claseprod.id and isnull(claseprod.deleted_at) 
-    INNER JOIN notaventa 
-    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
-    INNER JOIN cliente
-    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
-    LEFT JOIN color
-    ON producto.color_id=color.id and isnull(color.deleted_at)
-    INNER JOIN grupoprod
-    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
-    LEFT JOIN categoriagrupovalmes
-    ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
-    group BY notaventadetalle.producto_id;";
-*/
-    //dd($sql);
     $datas = DB::select($sql);
     $respuesta['agruxproducto'] = $datas;
 
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,categoriagrupovalmes.costo,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
-    FROM despachoorddet INNER JOIN notaventadetalle 
-    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * vista_despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM vista_despachoorddet INNER JOIN notaventadetalle 
+    ON vista_despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
-    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at)
+    ON vista_despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at)
     INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
     INNER JOIN categoriaprod
@@ -2607,7 +2556,7 @@ function consultaODcerrada($request){
     and $aux_condstatusact_id
     and areaproduccion.stapromkg=1
     and isnull(notaventa.anulada)
-    and isnull(despachoorddet.deleted_at)
+    and isnull(vista_despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY categoriaprod.areaproduccion_id
     ORDER BY categoriaprod.areaproduccion_id;";
@@ -2616,13 +2565,13 @@ function consultaODcerrada($request){
     $respuesta['areaproduccion'] = $datas;
 
     $sql = "SELECT areaproduccion.id,areaproduccion.nombre,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
-    FROM despachoorddet INNER JOIN notaventadetalle 
-    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * vista_despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM vista_despachoorddet INNER JOIN notaventadetalle 
+    ON vista_despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
-    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
+    ON vista_despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
     INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at)
     INNER JOIN categoriaprod
@@ -2639,7 +2588,7 @@ function consultaODcerrada($request){
     and $aux_condstatusact_id
     and areaproduccion.stapromkg=1
     and isnull(notaventa.anulada)
-    and isnull(despachoorddet.deleted_at)
+    and isnull(vista_despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY categoriaprod.areaproduccion_id
     ORDER BY categoriaprod.areaproduccion_id;";
@@ -2652,14 +2601,14 @@ function consultaODcerrada($request){
 
     $sql = "SELECT date_format(despachoord.fechafactura,'%Y%m') AS annomes,
     MONTHNAME(despachoord.fechafactura) AS mes,
-    sum(despachoorddet.cantdesp) AS cant,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
-    FROM despachoorddet INNER JOIN notaventadetalle 
-    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    sum(vista_despachoorddet.cantdesp) AS cant,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * vista_despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM vista_despachoorddet INNER JOIN notaventadetalle 
+    ON vista_despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
-    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
+    ON vista_despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
     INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
     INNER JOIN categoriaprod
@@ -2680,25 +2629,24 @@ function consultaODcerrada($request){
     and $aux_condareaproduccion_id
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
-    and isnull(despachoorddet.deleted_at)
+    and isnull(vista_despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY date_format(despachoord.fechafactura,'%Y%m');";
-
     $datas = DB::select($sql);
     $respuesta['ventasxmes'] = $datas;
 
-    $sql = "SELECT date_format(despachoord.fechafactura,'%Y%m') AS annomes,
+    /* $sql = "SELECT date_format(despachoord.fechafactura,'%Y%m') AS annomes,
     categoriaprod.areaproduccion_id,areaproduccion.nombre,
     MONTHNAME(despachoord.fechafactura) AS mes,
     MONTH(despachoord.fechafactura) AS nummes,
-    sum(despachoorddet.cantdesp) AS cant,
-    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * despachoorddet.cantdesp) AS totalkilos,
-    sum((notaventadetalle.preciounit * despachoorddet.cantdesp)) AS subtotal,
-    round(sum((notaventadetalle.preciounit * despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
-    FROM despachoorddet INNER JOIN notaventadetalle 
-    ON despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    sum(vista_despachoorddet.cantdesp) AS cant,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * vista_despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM vista_despachoorddet INNER JOIN notaventadetalle 
+    ON vista_despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
     INNER JOIN despachoord
-    ON despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
+    ON vista_despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
     INNER JOIN producto
     ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
     INNER JOIN categoriaprod
@@ -2715,11 +2663,50 @@ function consultaODcerrada($request){
     and $aux_condstatusact_id
     and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
     and isnull(notaventa.anulada)
-    and isnull(despachoorddet.deleted_at)
+    and isnull(vista_despachoorddet.deleted_at)
+    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    GROUP BY categoriaprod.areaproduccion_id,date_format(despachoord.fechafactura,'%Y%m')
+    ORDER BY date_format(despachoord.fechafactura,'%Y%m'),categoriaprod.areaproduccion_id;"; */
+
+    $sql = "SELECT date_format(despachoord.fechafactura,'%Y%m') AS annomes,
+    categoriaprod.areaproduccion_id,
+    areaproduccion.nombre,
+    MONTHNAME(despachoord.fechafactura) AS mes,
+    MONTH(despachoord.fechafactura) AS nummes,
+    sum(vista_despachoorddet.cantdesp) AS cant,
+    sum((notaventadetalle.totalkilos/notaventadetalle.cant) * vista_despachoorddet.cantdesp) AS totalkilos,
+    sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp)) AS subtotal,
+    round(sum((notaventadetalle.preciounit * vista_despachoorddet.cantdesp))*((notaventa.piva+100)/100)) AS totalmas_iva
+    FROM vista_despachoorddet INNER JOIN notaventadetalle 
+    ON vista_despachoorddet.notaventadetalle_id=notaventadetalle.id and isnull(notaventadetalle.deleted_at) 
+    INNER JOIN despachoord
+    ON vista_despachoorddet.despachoord_id=despachoord.id and isnull(despachoord.deleted_at) 
+    INNER JOIN producto
+    ON notaventadetalle.producto_id=producto.id and isnull(producto.deleted_at) 
+    INNER JOIN categoriaprod
+    ON producto.categoriaprod_id=categoriaprod.id and isnull(categoriaprod.deleted_at) 
+    INNER JOIN areaproduccion
+    ON categoriaprod.areaproduccion_id=areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN claseprod
+    ON producto.claseprod_id=claseprod.id and isnull(claseprod.deleted_at) 
+    INNER JOIN notaventa 
+    ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
+    INNER JOIN grupoprod
+    ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
+    and $aux_condanno
+    and $vendedorcond
+    and $aux_condcategoriaprod_id
+    and $aux_condgiro_id
+    and $aux_condareaproduccion_id
+    and $aux_condstatusact_id
+    and isnull(notaventa.anulada)
+    and isnull(vista_despachoorddet.deleted_at)
     and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
     GROUP BY categoriaprod.areaproduccion_id,date_format(despachoord.fechafactura,'%Y%m')
     ORDER BY date_format(despachoord.fechafactura,'%Y%m'),categoriaprod.areaproduccion_id;";
-
     //dd($sql);
     $datas = DB::select($sql);
     $respuesta['ventasareaprodxmes'] = $datas;

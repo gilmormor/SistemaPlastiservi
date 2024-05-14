@@ -105,7 +105,9 @@ class NoConformidad extends Model
     {
         return $this->belongsToMany(JefaturaSucursalArea::class, 'noconformidad_responsable','noconformidad_id')->withTimestamps();
     }
-
-    
-    
+    //RELACION DE UNO A MUCHOS noconformidad_responsable
+    public function noconformidad_responsables()
+    {
+        return $this->hasMany(NoConformidad_Responsable::class);
+    }    
 }

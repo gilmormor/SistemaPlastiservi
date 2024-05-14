@@ -51,8 +51,7 @@
                     value="{{$jefaturasucursalarea->id}}"
                     {{is_array(old('jefatura_sucursal_area_id')) ? (in_array($jefaturasucursalarea->id, old('jefatura_sucursal_area_id')) ? 'selected' : '') : (isset($data) ? ($data->jefaturasucursalareas->firstWhere('id', $jefaturasucursalarea->id) ? 'selected' : '') : '')}}
                     >
-                    <!--{{$jefaturasucursalarea->sucursal_area->sucursal->abrev}}/{{$jefaturasucursalarea->sucursal_area->area->abrev}}/{{$jefaturasucursalarea->jefatura->nombre}}-->
-                    {{$jefaturasucursalarea->jefatura->nombre}}
+                    {{$jefaturasucursalarea->jefatura->nombre}}/{{$jefaturasucursalarea->sucursal_area->sucursal->nombre}}
                 </option>
             @endforeach
         </select>
@@ -84,14 +83,13 @@
     <div class="col-lg-10">
         <select name="jefatura_sucursal_areaR_id[]" id="jefatura_sucursal_areaR_id" class="form-control select2" multiple required>
             @foreach($jefaturasucursalareasR as $jefaturasucursalarea)
-                <option
-                    value="{{$jefaturasucursalarea->id}}"
-                    {{is_array(old('jefatura_sucursal_areaR_id')) ? (in_array($jefaturasucursalarea->id, old('jefatura_sucursal_areaR_id')) ? 'selected' : '') : (isset($data) ? ($data->jefaturasucursalarearesponsables->firstWhere('id', $jefaturasucursalarea->id) ? 'selected' : '') : '')}}
-                    >
-                    <!--{{$jefaturasucursalarea->sucursal_area->sucursal->abrev}}/{{$jefaturasucursalarea->jefatura->abrev}}/{{$jefaturasucursalarea->persona->nombre}} {{$jefaturasucursalarea->persona->apellido}}-->
-                    {{$jefaturasucursalarea->jefatura->nombre}}/{{$jefaturasucursalarea->persona->nombre}} {{$jefaturasucursalarea->persona->apellido}}
-                </option>
-            @endforeach
+                @if (isset($jefaturasucursalarea->persona))
+                    <option
+                        value="{{$jefaturasucursalarea->id}}"
+                        {{is_array(old('jefatura_sucursal_areaR_id')) ? (in_array($jefaturasucursalarea->id, old('jefatura_sucursal_areaR_id')) ? 'selected' : '') : (isset($data) ? ($data->jefaturasucursalarearesponsables->firstWhere('id', $jefaturasucursalarea->id) ? 'selected' : '') : '')}}
+                        >{{$jefaturasucursalarea->jefatura->nombre}}/{{$jefaturasucursalarea->persona->nombre}} {{$jefaturasucursalarea->persona->apellido}}/{{$jefaturasucursalarea->sucursal_area->sucursal->nombre}}</option>
+                @endif
+                @endforeach
         </select>
     </div>
 </div>

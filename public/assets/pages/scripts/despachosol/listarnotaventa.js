@@ -519,7 +519,7 @@ function btnpdf(numrep){
     $("#myModalpdf").modal('show');
 }
 
-$(document).on("click", ".enlace-soldesp", function(event){
+/* $(document).on("click", ".enlace-soldesp", function(event){
     // Detenemos el comportamiento predeterminado del enlace
     event.preventDefault();
     // Aquí puedes obtener el href del enlace actual
@@ -543,4 +543,4 @@ $(document).on("click", ".enlace-soldesp", function(event){
             window.location.href = href;
         }
     });
-});
+}); */

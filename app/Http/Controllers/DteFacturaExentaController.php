@@ -76,6 +76,13 @@ class DteFacturaExentaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        $foliocontrol = Foliocontrol::findOrFail(7);
+        if($cont_producto > $foliocontrol->maxitemxdoc ){
+            return redirect('dtefacturaexenta')->with([
+                'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
 
         $cliente = Cliente::findOrFail($request->cliente_id);
         foreach ($cliente->clientebloqueados as $clientebloqueado) {
@@ -287,7 +294,7 @@ class DteFacturaExentaController extends Controller
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             }
             Dte::subirSisCobranza($dte);
-            if($aux_foliosdisp <=20){
+            if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 $aux_mensaje = "Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!";
                 $aux_tipo_alert = 'alert-error';
             }else{

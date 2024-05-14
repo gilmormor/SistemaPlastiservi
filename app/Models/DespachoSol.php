@@ -64,7 +64,7 @@ class DespachoSol extends Model
     {
         return $this->belongsTo(Comuna::class,'comunaentrega_id');
     }
-    //RELACION DE UNO A MUCHOS DespachoSolAnul
+    //RELACION DE UNO A uno DespachoSolAnul
     public function despachosolanul()
     {
         return $this->hasOne(DespachoSolAnul::class,'despachosol_id');
@@ -92,5 +92,18 @@ class DespachoSol extends Model
     {
         return $this->hasOne(DespachoSolDTE::class,"despachosol_id");
     }
+
+    //RELACION de uno a uno despachosoldev
+    public function despachosoldev()
+    {
+        return $this->hasOne(DespachoSolDev::class,"despachosol_id");
+    }
+
+    //RELACION de uno a uno DespachoSolEnvOrdDesp
+    public function despachosolenvorddesp()
+    {
+        return $this->hasOne(DespachoSolEnvOrdDesp::class,"despachosol_id");
+    }
+    
 
 }

@@ -64,7 +64,7 @@ class DteNDFacturaController extends Controller
         can('guardar-nota-debito-factura');
         $dtefac = Dte::findOrFail($request->dte_id);
         if($dtefac->updated_at != $request->updated_at){
-            return redirect('dtencfactura')->with([
+            return redirect('dtendfactura')->with([
                 'mensaje'=>'Registro fué modificado por otro usuario.',
                 'tipo_alert' => 'alert-error'
             ]);
@@ -75,8 +75,15 @@ class DteNDFacturaController extends Controller
 
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
-            return redirect('dtencfactura')->with([
+            return redirect('dtendfactura')->with([
                 'mensaje'=>'Sin items para proceras, no se guardó.',
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+        $foliocontrol = Foliocontrol::findOrFail(6);
+        if($cont_producto > $foliocontrol->maxitemxdoc ){
+            return redirect('dtendfactura')->with([
+                'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -285,7 +292,7 @@ class DteNDFacturaController extends Controller
         $dte->save();
 
         $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-        if($aux_foliosdisp <=20){
+        if($aux_foliosdisp <= $foliocontrol->folmindisp){
             return redirect('dtendfactura')->with([
                 'mensaje'=>"Nota de Debito creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
                 'tipo_alert' => 'alert-error'
