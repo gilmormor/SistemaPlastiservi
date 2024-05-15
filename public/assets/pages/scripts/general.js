@@ -2981,7 +2981,7 @@ async function llenarDatosProd(vlrcodigo){
 				//console.log("Sin Acuerdo");
 				//console.log(arrayDatosProducto);
 				aux_cla_nombre = arrayDatosProducto["cla_descripcion"];
-				aux_cla_nombre = aux_cla_nombre == "N/A" ? "" : " " + aux_cla_nombre; // str_replace("N/A","",arrayDatosProducto["cla_descripcion"]);
+				aux_cla_nombre = (aux_cla_nombre == "N/A" || aux_cla_nombre == null) ? "" : " " + aux_cla_nombre; // str_replace("N/A","",arrayDatosProducto["cla_descripcion"]);
 				aux_diametro = arrayDatosProducto["diametro"];
 				aux_diametro = (aux_diametro === null || aux_diametro === undefined || aux_diametro === "" || aux_diametro === "0") ? "" : " D:" + arrayDatosProducto["diametro"];
 				aux_long = arrayDatosProducto["long"]  ? " L:" + arrayDatosProducto["long"] : "";
