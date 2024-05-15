@@ -802,7 +802,11 @@ class Dte extends Model
         }else{
             $aux_condindtraslado = "dte.indtraslado IN ($request->indtraslado)";
         }
-
+        if(!isset($request->areaproduccion_id) AND empty($request->areaproduccion_id)){
+            $aux_condareaproduccion_id = " true";
+        }else{
+            $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id IN ($request->areaproduccion_id)";
+        }
         
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.centroeconomico_id,
@@ -857,6 +861,10 @@ class Dte extends Model
         ON dtedet.producto_id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
         LEFT JOIN materiaprima
         ON materiaprima.id = acuerdotecnico.at_materiaprima_id and isnull(materiaprima.deleted_at)
+        INNER JOIN producto
+        ON producto.id = dtedet.producto_id
+        INNER JOIN categoriaprod
+        ON categoriaprod.id = producto.categoriaprod_id
         $unionOtrasTablas
         WHERE $vendedorcond
         AND $aux_condFecha
@@ -878,6 +886,7 @@ class Dte extends Model
         AND $aux_condproducto_id
         AND $aux_condFiltrarxUsuario
         AND $aux_condindtraslado
+        AND $aux_condareaproduccion_id
         order BY dte.nrodocto,dtedet.id;";
         //dd($sql);
         $arrays = DB::select($sql);
@@ -1045,6 +1054,17 @@ class Dte extends Model
             $aux_producto_idCond = "dte.id in (SELECT dtedet.dte_id FROM dtedet WHERE dtedet.producto_id in ($request->producto_id) and dte.id=dtedet.dte_id and isnull(dtedet.deleted_at))";
         }
 
+        if(!isset($request->areaproduccion_id) or empty($request->areaproduccion_id) or ($request->areaproduccion_id == "")){
+            $aux_areaproduccion_idCond = "true";
+        }else{
+            $aux_areaproduccion_idCond = "dte.id in 
+            (SELECT dtedet.dte_id FROM dtedet INNER JOIN producto
+            ON producto.id = dtedet.producto_id
+            INNER JOIN categoriaprod
+            ON categoriaprod.id = producto.categoriaprod_id
+            WHERE categoriaprod.areaproduccion_id in ($request->areaproduccion_id) and dte.id=dtedet.dte_id and isnull(dtedet.deleted_at))";
+        }
+
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,dte.kgtotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -1110,6 +1130,7 @@ class Dte extends Model
         AND $aux_condFiltrarxUsuario
         AND NOT ISNULL(dte.nrodocto)
         AND $aux_producto_idCond
+        AND $aux_areaproduccion_idCond
         GROUP BY dte.id
         ORDER BY dte.nrodocto asc;";
 

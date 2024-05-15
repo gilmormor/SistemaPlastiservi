@@ -74,9 +74,7 @@
                     @if (($aux_sta==2) and ($data->areaproduccion_id==$id))
                         {{'selected'}}
                     @endif
-                    >
-                    {{$nombre}}
-                </option>
+                    >{{$nombre}}</option>
             @endforeach
         </select>
     </div>
@@ -92,9 +90,7 @@
                     @if (($aux_sta==2) and ($data->unidadmedida_id==$id))
                         {{'selected'}}
                     @endif
-                    >
-                    {{$descripcion}}
-                </option>
+                    >{{$descripcion}}</option>
             @endforeach
         </select>
     </div>
@@ -110,9 +106,7 @@
                     @if (($aux_sta==2) and ($data->unidadmedidafact_id==$id))
                         {{'selected'}}
                     @endif
-                    >
-                    {{$descripcion}}
-                </option>
+                    >{{$descripcion}}</option>
             @endforeach
         </select>
     </div>
@@ -128,9 +122,7 @@
                     @if (($aux_sta==2) and ($data->categoriaprodgrupo_id==$id))
                         {{'selected'}}
                     @endif
-                    >
-                    {{$nombre}}
-                </option>
+                    >{{$nombre}}</option>
             @endforeach
         </select>
     </div>

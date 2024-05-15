@@ -40,16 +40,17 @@ function consultarpage(aux_data){
         'ajax'        : "/reportdteguiadespdet/reportdteguiadespdetpage/" + aux_data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
         'columns'     : [
             {data: 'id'},     // 0
-            {data: 'nrodocto'}, // 1
+            {data: 'oc_id'}, // 1
             {data: 'nrodocto'}, // 2
-            {data: 'fechahora'}, // 3
-            {data: 'rut'}, // 4
-            {data: 'razonsocial'}, // 5
-            {data: 'producto_id'}, // 6
-            {data: 'nmbitem'}, // 7
-            {data: 'qtyitem'}, // 8
-            {data: 'prcitem'}, // 9
-            {data: 'montoitem'}, // 10
+            {data: 'fact_nrodocto'}, // 3
+            {data: 'fechahora'}, // 4
+            {data: 'rut'}, // 5
+            {data: 'razonsocial'}, // 6
+            {data: 'producto_id'}, // 7
+            {data: 'nmbitem'}, // 8
+            {data: 'qtyitem'}, // 9
+            {data: 'prcitem'}, // 10
+            {data: 'montoitem'}, // 11
         ],
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -69,6 +70,15 @@ function consultarpage(aux_data){
             $('td', row).eq(0).attr('data-order',data.id);
 
             aux_text = "";
+            if(data.oc_id != null){
+                aux_text = 
+                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra" onclick="verpdf2('${data.oc_file}',2)"> 
+                    ${data.oc_id}
+                </a>`;
+            }
+            $('td', row).eq(1).html(aux_text);
+
+            aux_text = "";
             if(data.nrodocto != null){
                 let id_str = data.nrodocto.toString();
                 id_str = data.nombrepdf + id_str.padStart(8, "0");
@@ -83,7 +93,7 @@ function consultarpage(aux_data){
                     </a>`;
                 }
             }
-            $('td', row).eq(1).html(aux_text);
+            $('td', row).eq(2).html(aux_text);
 
             aux_text = "";
             if(data.fact_nrodocto != null){
@@ -100,34 +110,34 @@ function consultarpage(aux_data){
                     </a>`;
                 }
             }
-            $('td', row).eq(2).html(aux_text);
+            $('td', row).eq(3).html(aux_text);
 
 
 
-            $('td', row).eq(3).attr('data-order',data.fechahora);
+            $('td', row).eq(4).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
-            $('td', row).eq(3).html(fechaddmmaaaa(aux_fecha));
+            $('td', row).eq(4).html(fechaddmmaaaa(aux_fecha));
 
-            $('td', row).eq(6).attr('style','text-align:center');
+            $('td', row).eq(7).attr('style','text-align:center');
 
             aux_diametro = data.diametro == "0" || data.diametro == "" ? "" : " D:" + data.diametro;
             aux_cla_nombre = data.cla_nombre == "0" || data.cla_nombre == "" ? "" : " C:" + data.cla_nombre;
             aux_long = data.long == "0" || data.long == "" ? "" : " L:" + data.long;
             aux_tipounion = data.tipounion == "0" || data.tipounion == "" ? "" : " TU:" + data.tipounion;
             aux_nombreprod = data.nmbitem; // + aux_diametro + aux_cla_nombre + aux_long + aux_tipounion;
-            $('td', row).eq(7).attr('style','text-align:left');
-            $('td', row).eq(7).attr('data-search',aux_nombreprod);
-            $('td', row).eq(7).attr('data-order',aux_nombreprod);
-            $('td', row).eq(7).html(aux_nombreprod);
+            $('td', row).eq(8).attr('style','text-align:left');
+            $('td', row).eq(8).attr('data-search',aux_nombreprod);
+            $('td', row).eq(8).attr('data-order',aux_nombreprod);
+            $('td', row).eq(8).html(aux_nombreprod);
 
-            $('td', row).eq(8).attr('style','text-align:right');
             $('td', row).eq(9).attr('style','text-align:right');
-
             $('td', row).eq(10).attr('style','text-align:right');
-            $('td', row).eq(10).attr('data-order',data.montoitem);
-            $('td', row).eq(10).attr('data-search',data.montoitem);
-            $('td', row).eq(10).html(MASKLA(data.montoitem,0));
-            $('td', row).eq(10).addClass('subtotalmonto');
+
+            $('td', row).eq(11).attr('style','text-align:right');
+            $('td', row).eq(11).attr('data-order',data.montoitem);
+            $('td', row).eq(11).attr('data-search',data.montoitem);
+            $('td', row).eq(11).html(MASKLA(data.montoitem,0));
+            $('td', row).eq(11).addClass('subtotalmonto');
             /*
             $('td', row).eq(9).attr('style','text-align:center');
             $('td', row).eq(9).attr('data-order',data.porc_comision);
@@ -346,12 +356,12 @@ function exportarExcelSantaEster() {
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Guia Despacho Detalle","","","","","","","","","","","","","","",data.fechaact]);
+        datosExcel.push(["Guia Despacho Detalle","","","","","","","","","","","","","","","",data.fechaact]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","","","","","","",""]);
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["N° Guia","TipoTras","N° Fact","Fecha","RUT","Cliente","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","Kg","P/U","Neto"]);
+        datosExcel.push(["OC","N° Guia","TipoTras","N° Fact","Fecha","RUT","Cliente","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","Kg","P/U","Neto"]);
         //console.log(data);
         data.datos.forEach(function(registro) {
             aux_indtra = indtrasladoObj(registro.indtraslado);
@@ -374,6 +384,7 @@ function exportarExcelSantaEster() {
                 aux_fact_nrodocto = parseInt(registro.fact_nrodocto);
             }
             var filaExcel = [
+                registro.oc_id,
                 registro.nrodocto,
                 aux_indtra.letra,
                 aux_fact_nrodocto,
@@ -399,7 +410,7 @@ function exportarExcelSantaEster() {
         /* if(aux_totalMonto != 0){
             datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto]);
         } */
-        datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto]);
+        datosExcel.push(["","","","","","","","","","","","","","","","Total: ",aux_totalMonto]);
 
         createExcelSantaEster(datosExcel);
 
@@ -451,17 +462,18 @@ function createExcelSantaEster(datosExcel) {
     ajustarcolumnaexcel(worksheet,"Q");
     ajustarcolumnaexcel(worksheet,"R");
     ajustarcolumnaexcel(worksheet,"S");
+    ajustarcolumnaexcel(worksheet,"T");
     
 
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 19; i++) {
+    for (let i = 1; i <= 20; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
     }
 
 
     // Recorrer la columna 7 y dar formato con punto para separar los miles
-    const columnG = worksheet.getColumn(16);
+    const columnG = worksheet.getColumn(17);
     columnG.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -472,17 +484,17 @@ function createExcelSantaEster(datosExcel) {
     for (let i = 4; i <= datosExcel.length; i++) {
         /* const cell8 = worksheet.getCell(i, 8);
         cell8.alignment = { horizontal: "center", vertical: "middle" }; */
-        const cell9 = worksheet.getCell(i, 9);
-        cell9.alignment = { horizontal: "center", vertical: "middle" };
         const cell10 = worksheet.getCell(i, 10);
         cell10.alignment = { horizontal: "center", vertical: "middle" };
         const cell11 = worksheet.getCell(i, 11);
         cell11.alignment = { horizontal: "center", vertical: "middle" };
+        const cell12 = worksheet.getCell(i, 12);
+        cell12.alignment = { horizontal: "center", vertical: "middle" };
 
-        const cell13 = worksheet.getCell(i, 13);
-        cell13.alignment = { horizontal: "center", vertical: "middle" };
-        const cell17 = worksheet.getCell(i, 17);
-        cell17.alignment = { horizontal: "center", vertical: "middle" };
+        const cell14 = worksheet.getCell(i, 14);
+        cell14.alignment = { horizontal: "center", vertical: "middle" };
+        const cell18 = worksheet.getCell(i, 18);
+        cell18.alignment = { horizontal: "center", vertical: "middle" };
     }
 
     /*
@@ -507,13 +519,13 @@ function createExcelSantaEster(datosExcel) {
 
     //Fecha Reporte
     const row2 = worksheet.getRow(1);
-    cell = row2.getCell(16);
+    cell = row2.getCell(17);
     cell.alignment = { horizontal: "center", vertical: "middle" };
 
 
     //Fusionar celdas de Titulo
     const startCol = 0;
-    const endCol = 15;
+    const endCol = 16;
     worksheet.mergeCells(1, startCol, 1, endCol);
 
     //Negrita Columna Sucursal
@@ -523,12 +535,12 @@ function createExcelSantaEster(datosExcel) {
     
     //Fusionar celdas Sucursal
     const startCol1 = 0;
-    const endCol1 = 15;
+    const endCol1 = 16;
     worksheet.mergeCells(2, startCol1, 2, endCol1);
 
     // Establecer negrita a totales
     row = worksheet.getRow(datosExcel.length);
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 17; i++) {
         cell = row.getCell(i);
         cell.font = { bold: true };
         cell.alignment = { horizontal: "right" };

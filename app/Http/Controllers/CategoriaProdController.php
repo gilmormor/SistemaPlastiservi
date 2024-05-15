@@ -155,7 +155,7 @@ class CategoriaProdController extends Controller
             ClaseProd::destroy($auxcla[$i]);
         }
         for ($i=0; $i < count($request->cla_nombre) ; $i++){
-            if(is_null($request->cla_nombre[$i])==false && is_null($request->cla_descripcion[$i])==false && is_null($request->cla_longitud[$i])==false)
+            if(is_null($request->cla_longitud[$i])==false)
             {
                 $array_claseprod[$i] = array(
                     'id' => $request->cla_id[$i],
@@ -179,7 +179,7 @@ class CategoriaProdController extends Controller
             GrupoProd::destroy($auxgru[$i]);
         }
         for ($i=0; $i < count($request->gru_nombre) ; $i++){
-            if(is_null($request->gru_nombre[$i])==false && is_null($request->gru_descripcion[$i])==false)
+            if(is_null($request->gru_descripcion[$i])==false)
             {
                 $array_grupoprod[$i] = array(
                     'id' => $request->gru_id[$i],
