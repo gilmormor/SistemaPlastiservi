@@ -177,6 +177,7 @@ Guia Despacho Detalle
                     <thead>
                         <tr>
                             <th class="width20 tooltipsC" title='Id'>ID</th>
+                            <th class='width60 tooltipsC' title='Orden de Compra'>OC</th>
                             <th class='width60 tooltipsC' title='Guia Despacho'>GuiaDesp</th>
                             <th class='width60 tooltipsC' title='Factura'>Fact</th>
                             <th class='width30 tooltipsC' title='Fecha'>Fecha</th>
@@ -195,11 +196,11 @@ Guia Despacho Detalle
                         <tr>
                         </tr>
                         <tr>
-                            <th colspan="10" style='text-align:right'>Total página</th>
+                            <th colspan="11" style='text-align:right'>Total página</th>
                             <th id='subtotalmonto' name='subtotalmonto' style='text-align:right'>0</th>
                         </tr>
                         <tr>
-                            <th colspan="10" style='text-align:right'>TOTAL GENERAL</th>
+                            <th colspan="11" style='text-align:right'>TOTAL GENERAL</th>
                             <th id='totalmonto' name='totalmonto' style='text-align:right'>0</th>
                         </tr>
                     </tfoot>
