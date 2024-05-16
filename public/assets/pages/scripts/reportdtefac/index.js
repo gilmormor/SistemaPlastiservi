@@ -390,6 +390,7 @@ function datosFac(filtro = 0){
         fechah            : $("#fechah").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
         sucursal_id       : aux_sucursal_id,
+        centroeconomico_id: $("#centroeconomico_id").val(),
         vendedor_id       : $("#vendedor_id").val(),
         oc_id             : $("#oc_id").val(),
         giro_id           : $("#giro_id").val(),
@@ -429,6 +430,7 @@ function datosFac(filtro = 0){
     "&fechah="+data1.fechah +
     "&rut="+data1.rut +
     "&sucursal_id="+data1.sucursal_id +
+    "&centroeconomico_id="+data1.centroeconomico_id +
     "&vendedor_id="+data1.vendedor_id +
     "&oc_id="+data1.oc_id +
     "&giro_id="+data1.giro_id +
@@ -841,13 +843,13 @@ function exportarExcel() {
         cellLengthProducto = 0;
         filainifusionar = -1
         //console.log(data);
-        aux_sucursalNombre = $("#sucursal_id option:selected").html();
-        if(aux_sucursalNombre == "Seleccione..."){
-            aux_sucursalNombre = "";
+        aux_centroeconomicoNombre = $("#centroeconomico_id option:selected").html();
+        if(aux_centroeconomicoNombre == "Seleccione..."){
+            aux_centroeconomicoNombre = "";
         }
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
         datosExcel.push(["Facturas Emitidas","","","","","","","","",fechaactual()]);
-        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
+        datosExcel.push(["Centro Economico: " + aux_centroeconomicoNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
         aux_totalkgtotal = 0;
         aux_totalmnttotal = 0;
         datosExcel.push(["","","","","","","","",""]);
@@ -1104,13 +1106,13 @@ function exportarExcelDTEDet() {
         filainifusionar = -1
         arrayTituloDetalle = [];
         //console.log(data);
-        aux_sucursalNombre = $("#sucursal_id option:selected").html();
-        if(aux_sucursalNombre == "Seleccione..."){
-            aux_sucursalNombre = "";
+        aux_centroeconomicoNombre = $("#centroeconomico_id option:selected").html();
+        if(aux_centroeconomicoNombre == "Seleccione..."){
+            aux_centroeconomicoNombre = "";
         }
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
         datosExcel.push(["Informe Facturas Emitidas","","","","","","","","","","Fecha: "+fechaactual()]);
-        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
+        datosExcel.push(["Centro Economico: " + aux_centroeconomicoNombre + " Entre: " + aux_rangofecha,"","","","","","","",""]);
         aux_totalkgtotal = 0;
         aux_totalmnttotal = 0;
         datosExcel.push(["","","","","","","","",""]);

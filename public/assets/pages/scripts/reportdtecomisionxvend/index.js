@@ -166,6 +166,7 @@ function datosFac(orderby = "",aux_genexcel){
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
         sucursal_id       : $("#sucursal_id").val(),
+        centroeconomico_id: $("#centroeconomico_id").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
         vendedor_id       : $("#vendedor_id").val(),
         filtro            : 1,
@@ -181,6 +182,7 @@ function datosFac(orderby = "",aux_genexcel){
     var data2 = "?fechad="+data1.fechad +
     "&fechah="+data1.fechah +
     "&sucursal_id="+data1.sucursal_id +
+    "&centroeconomico_id="+data1.centroeconomico_id +
     "&rut="+data1.rut +
     "&vendedor_id="+data1.vendedor_id +
     "&filtro="+data1.filtro +
@@ -375,10 +377,10 @@ function exportarExcel() {
         filainifusionar = -1
         arrayfusionarCelNomVend = [];
         //console.log(data);
-        aux_sucursalNombre = $("#sucursal_id option:selected").html();
+        aux_centroeconomicoNombre = $("#centroeconomico_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
         datosExcel.push(["Informe Comisión Vendedores","","","","","","","","","",data.fechaact]);
-        datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","","",""]);
+        datosExcel.push(["Centro Economico: " + aux_centroeconomicoNombre + " Entre: " + aux_rangofecha,"","","","","","","","",""]);
         aux_totalMonto = 0;
         aux_totalComision = 0;
         data.datos.forEach(function(registro) {

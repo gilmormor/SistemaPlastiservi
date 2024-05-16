@@ -219,9 +219,22 @@ DTE Facturacion
                                             @foreach($tablashtml['sucursales'] as $sucursal)
                                                 <option
                                                     value="{{$sucursal->id}}"
-                                                >
-                                                    {{$sucursal->nombre}}
-                                                </option>
+                                                >{{$sucursal->nombre}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="centroeconomico_id" data-toggle='tooltip' title="Centro Económico">Centro Económico</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="centroeconomico_id" id="centroeconomico_id" class="selectpicker form-control" required>
+                                            <option value="">Seleccione...</option>
+                                            @foreach($tablashtml['centroeconomicos'] as $centroeconomico)
+                                                <option
+                                                    value="{{$centroeconomico->id}}"
+                                                >{{$centroeconomico->nombre}}</option>
                                             @endforeach
                                         </select>
                                     </div>

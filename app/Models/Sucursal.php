@@ -84,6 +84,12 @@ class Sucursal extends Model
         return $this->hasOne(CentroEconomico::class);
     }
 
+    //RELACION UNO A UNO CON CENTRO ECONOMICO
+    public function centroeconomicos()
+    {
+        return $this->hasMany(CentroEconomico::class);
+    }
+    
     //Relacion inversa a Comuna
     public function comuna()
     {

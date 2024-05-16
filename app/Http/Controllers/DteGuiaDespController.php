@@ -126,7 +126,11 @@ class DteGuiaDespController extends Controller
         $comunas = Comuna::orderBy('id')->get();
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
-        $centroeconomicos = CentroEconomico::orderBy('id')->get();
+        $centroeconomicos = $data->notaventa->sucursal->centroeconomicos;
+        /* dd($centroeconomicos);
+        $centroeconomicos = CentroEconomico::orderBy('id')
+                            ->where("sucursal_")
+                            ->get(); */
         $aux_status = "1"; //Crear
         //dd($data);
         return view('dteguiadesp.crear', compact('data','detalles','comunas','empresa','tipoentregas','centroeconomicos','aux_status'));

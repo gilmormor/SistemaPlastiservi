@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CentroEconomico;
 use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\Seguridad\Usuario;
@@ -26,6 +27,7 @@ class ReportDTELibroVentasController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablas['fecha1erDiaMes'] = date("01/m/Y");
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
         return view('reportdtelibroventas.index', compact('tablas'));
     }
 

@@ -75,7 +75,8 @@ class DteFacturaEditarController extends Controller
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
 
-        $centroeconomicos = CentroEconomico::orderBy('id')->get();
+        //$centroeconomicos = CentroEconomico::orderBy('id')->get();
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get(); //$data->sucursal->centroeconomicos;
         $tablas['sucursales'] = Sucursal::orderBy('id')
             ->whereIn('sucursal.id', $sucurArray)
             ->get();

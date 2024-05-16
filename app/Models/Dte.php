@@ -1035,6 +1035,11 @@ class Dte extends Model
         }else{
             $aux_sucursal_idCond = "dte.sucursal_id = $request->sucursal_id";
         }
+        if(!isset($request->centroeconomico_id) or empty($request->centroeconomico_id) or ($request->centroeconomico_id == "")){
+            $aux_centroeconomico_idCond = "true";
+        }else{
+            $aux_centroeconomico_idCond = "dte.centroeconomico_id = $request->centroeconomico_id";
+        }
         if(!isset($request->vendedor_id) or empty($request->vendedor_id) or ($request->vendedor_id == "")){
             $aux_vendedor_idCond = "true";
         }else{
@@ -1117,6 +1122,7 @@ class Dte extends Model
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond
+        AND $aux_centroeconomico_idCond
         AND $aux_conddte_id
         AND $aux_condFecha
         AND $aux_condnrodocto
@@ -2317,6 +2323,11 @@ class Dte extends Model
         }else{
             $aux_condvendedor_id = "dte.vendedor_id in ($request->vendedor_id)";
         }
+        if(!isset($request->centroeconomico_id) or empty($request->centroeconomico_id) or ($request->centroeconomico_id == "")){
+            $aux_centroeconomico_idCond = "true";
+        }else{
+            $aux_centroeconomico_idCond = "dte.centroeconomico_id = $request->centroeconomico_id";
+        }
         $sql = "SELECT dte.id,dte.fechahora,dte.fchemis,dte.cliente_id,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -2396,6 +2407,7 @@ class Dte extends Model
         AND $aux_condstatusgen
         AND $aux_condvendedor_id
         AND $aux_condsucurArray
+        AND $aux_centroeconomico_idCond
         AND NOT ISNULL(dte.nrodocto)
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
         $aux_groupby
@@ -2603,6 +2615,11 @@ class Dte extends Model
             $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id in ($request->areaproduccion_id)";
         }
 
+        if(!isset($request->centroeconomico_id) or empty($request->centroeconomico_id) or ($request->centroeconomico_id == "")){
+            $aux_centroeconomico_idCond = "true";
+        }else{
+            $aux_centroeconomico_idCond = "dte.centroeconomico_id = $request->centroeconomico_id";
+        }
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
         persona.rut as vendedor_rut, CONCAT(persona.nombre,' ',persona.apellido) as vendedor_nombre,
@@ -2719,6 +2736,7 @@ class Dte extends Model
         AND $aux_condsucurArray
         AND $aux_condsucurJefAreaFis
         AND $aux_condareaproduccion_id
+        AND $aux_centroeconomico_idCond
         AND NOT ISNULL(dte.nrodocto)
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
         $aux_groupby

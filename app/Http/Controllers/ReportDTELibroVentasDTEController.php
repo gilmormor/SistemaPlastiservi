@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CentroEconomico;
 use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\Seguridad\Usuario;
@@ -25,6 +26,7 @@ class ReportDTELibroVentasDTEController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
         return view('reportdtelibroventasdte.index', compact('tablas'));
     }
 
@@ -54,12 +56,12 @@ class ReportDTELibroVentasDTEController extends Controller
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
-        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
-            $request->merge(['sucursal_nombre' => "Todas"]);
+        if(!isset($request->centroeconomico_id) or empty($request->centroeconomico_id) or ($request->centroeconomico_id == "")){
+            $request->merge(['centroeconomico_nombre' => "Todas"]);
         }else{
-            $sucursal = Sucursal::findOrFail($request->sucursal_id);
-            $aux_sucursalNombre = $sucursal->nombre;
-            $request->merge(['sucursal_nombre' => $sucursal->nombre]);
+            $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
+            $aux_centroeconomicoNombre = $centroeconomico->nombre;
+            $request->merge(['centroeconomico_nombre' => $centroeconomico->nombre]);
         }
         if($datas){
             

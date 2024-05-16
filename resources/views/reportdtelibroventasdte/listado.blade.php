@@ -22,7 +22,7 @@
 				<div class="round">
 					<span class="h3">Libro de Ventas DTE</span>
 					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
-					<p>Centro Economico: {{$request->sucursal_nombre}}</p>
+					<p>Centro Economico: {{$request->centroeconomico_nombre}}</p>
 					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
 				</div>
 			</td>

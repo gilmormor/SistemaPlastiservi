@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CentroEconomico;
 use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\Seguridad\Usuario;
@@ -33,6 +34,7 @@ class ReportDTEEstadisticaVentasController extends Controller
             return $area->attributesToArray();
         })->toArray();
         $tablas['sucFisXUsu'] = sucFisXUsu($users->persona);
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
         return view('reportdteestadisticaventa.index', compact('tablas'));
     }
 
