@@ -2873,7 +2873,7 @@ class Dte extends Model
         if($formapago_id == 5){
             $codformpago = "Crédito";
         }
-
+        //CAMBIE sucursal_id POR centroeconomico_id CODSUCUR=\"$dte->sucursal_id\"
         $contenido = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>
         <Raiz>
             <EncabezadoDOC
@@ -2886,7 +2886,7 @@ class Dte extends Model
                 VENTA=\"1\" NDIASF=\"0\" NUMCORR=\"0\"
                 CODTIPOVTA=\"\" NUMFV=\"0\" NOTAOBS=\"\"
                 FECHCONT=\"$FchEmis\" AFECTO=\"$aux_afecto\" EXENTO=\"$aux_excento\"
-                DCTOTIPO=\"1\" DCTOPJE=\"0.00\" CODSUCUR=\"$dte->sucursal_id\"
+                DCTOTIPO=\"1\" DCTOPJE=\"0.00\" >CODSUCUR=\"$dte->centroeconomico_id\"
                 TOTNETO=\"$aux_neto\" IVA=\"$aux_tasaiva\" TOTIVA=\"$aux_iva\"
                 IMP1=\"0\" IMP2=\"0\" TOTAL=\"$aux_mnttotal\"
                 MONEDA=\"$\" TASACBIO=\"1\"
