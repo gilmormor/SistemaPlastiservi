@@ -18,6 +18,9 @@
                 <h3 class="box-title">Editar Factura:
                     <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfFAC('{{$data->foliocontrol->nombrepdf . str_pad($data->nrodocto, 8, '0', STR_PAD_LEFT)}}','')" data-original-title="Ver PDF Factura">
                         {{$data->nrodocto}}
+                        <a onclick="volverSubirDteSisCob({{$data->id}})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip">
+                            <span class="fa fa-upload text-yellow"></span>
+                        </a>
                     </a>
                 </h3>
                 <div class="box-tools pull-right">

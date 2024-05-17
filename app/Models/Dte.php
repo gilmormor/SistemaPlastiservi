@@ -2792,7 +2792,7 @@ class Dte extends Model
                     $xmlcobranza = Dte::xmlDocSisCobranza($dte);
                     $cargadocumentoscobranza = $soap->Comando01CargaDocumentos($xmlcobranza);
                     $cargadocumentoscobranza["stasubsii"] = $dte->stasubsii;
-                    $cargadocumentoscobranza["stasubcob"] = $dte->stasubcob;    
+                    $cargadocumentoscobranza["stasubcob"] = $dte->stasubcob;
                     if($cargadocumentoscobranza["id"] == 0){
                         Dte::ErrorSubirDte($dte,$xmlcobranza,$cargadocumentoscobranza["error"],2);
                         return $cargadocumentoscobranza;
@@ -2806,7 +2806,14 @@ class Dte extends Model
                     }
                 }
                 //dd($cargadocumentoscobranza);
-            }    
+            }else{
+                return [
+                    "titulo" => "Mensaje",
+					"mensaje" => "La empresa no permite subir Facturas",
+					"tipo_alert" => "error",
+
+                ];
+            }
         }
     }
 
@@ -2904,7 +2911,7 @@ class Dte extends Model
                 VENTA=\"1\" NDIASF=\"0\" NUMCORR=\"0\"
                 CODTIPOVTA=\"\" NUMFV=\"0\" NOTAOBS=\"\"
                 FECHCONT=\"$FchEmis\" AFECTO=\"$aux_afecto\" EXENTO=\"$aux_excento\"
-                DCTOTIPO=\"1\" DCTOPJE=\"0.00\" >CODSUCUR=\"$dte->centroeconomico_id\"
+                DCTOTIPO=\"1\" DCTOPJE=\"0.00\" CODSUCUR=\"$dte->centroeconomico_id\"
                 TOTNETO=\"$aux_neto\" IVA=\"$aux_tasaiva\" TOTIVA=\"$aux_iva\"
                 IMP1=\"0\" IMP2=\"0\" TOTAL=\"$aux_mnttotal\"
                 MONEDA=\"$\" TASACBIO=\"1\"
