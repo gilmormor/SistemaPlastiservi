@@ -2822,14 +2822,14 @@ class Dte extends Model
         $rutrecep = number_format( substr ( $rutrecep, 0 , -1 ) , 0, "", "") . '-' . substr ( $rutrecep, strlen($rutrecep) -1 , 1 );
 
         $CorreoRecep = strtoupper(substr(trim($dte->cliente->contactoemail),0,80));
-        $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
-        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
-        $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
-        $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
-        $CiudadRecep = strtoupper(sanear_string(substr(trim($dte->cliente->ciudad->nombre),0,20)));
-        $telefonoRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->telefono),0,20)));
-        $telefonoRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->telefono),0,20)));
-        $plazopagoRecep = strtoupper(sanear_string(substr(trim($dte->cliente->plazopago->descripcion),0,20)));    
+        $RznSocRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->razonsocial),0,100)));
+        $GiroRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->giro),0,40)));
+        $DirRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->direccion),0,70)));
+        $CmnaRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->comuna->nombre),0,20)));
+        $CiudadRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->ciudad->nombre),0,20)));
+        $telefonoRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->comuna->telefono),0,20)));
+        $telefonoRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->comuna->telefono),0,20)));
+        $plazopagoRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->plazopago->descripcion),0,20)));    
 
         $contenido = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>
         <Raiz>
@@ -2846,12 +2846,12 @@ class Dte extends Model
         $rutrecep = $dte->cliente->rut;
         $rutrecep = number_format( substr ( $rutrecep, 0 , -1 ) , 0, "", "") . '-' . substr ( $rutrecep, strlen($rutrecep) -1 , 1 );
 
-        $RznSocRecep = strtoupper(sanear_string(substr(trim($dte->cliente->razonsocial),0,100)));
-        $GiroRecep = strtoupper(sanear_string(substr(trim($dte->cliente->giro),0,40)));
-        $DirRecep = strtoupper(sanear_string(substr(trim($dte->cliente->direccion),0,70)));
-        $CiuRecep = strtoupper(sanear_string(substr(trim($dte->cliente->ciudad->nombre),0,70)));
-        $CmnaRecep = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->nombre),0,20)));
-        $telefono = strtoupper(sanear_string(substr(trim($dte->cliente->comuna->telefono),0,20)));
+        $RznSocRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->razonsocial),0,100)));
+        $GiroRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->giro),0,40)));
+        $DirRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->direccion),0,70)));
+        $CiuRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->ciudad->nombre),0,70)));
+        $CmnaRecep = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->comuna->nombre),0,20)));
+        $telefono = strtoupper(sanear_stringSisCob(substr(trim($dte->cliente->comuna->telefono),0,20)));
         
         $TipoDTE = $dte->foliocontrol->tipodocto;
 
