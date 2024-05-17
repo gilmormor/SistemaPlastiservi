@@ -2780,7 +2780,6 @@ class Dte extends Model
                 //dd("entro en obser DteFac");
                 $soap = new SoapController();
                 $xmlcliente = Dte::xmlClienteSisCobranza($dte);
-                dd($xmlcliente);
                 $comando03creaclientes = $soap->Comando03CreaClientes($xmlcliente);
                 $comando03creaclientes["stasubsii"] = $dte->stasubsii;
                 $comando03creaclientes["stasubcob"] = $dte->stasubcob;
