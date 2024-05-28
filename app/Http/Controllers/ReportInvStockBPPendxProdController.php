@@ -53,7 +53,6 @@ class ReportInvStockBPPendxProdController extends Controller
         }
 
         $arrego_producto_id = [];
-        $arrego_pendientexprod = [];
         foreach ($pendientexprods as &$pendientexprod) {
             $arrego_producto_id[] = $pendientexprod->producto_id;
             $pendientexprod->largo = $pendientexprod->long;
@@ -120,33 +119,46 @@ class ReportInvStockBPPendxProdController extends Controller
         $request->request->add(['FiltarxVendedor' => false]);
         $pendientexprods = Producto::pendientexProducto($request,2,1);
         //dd($pendientexprods);
-        $arrego_producto_id = [];
-        $arrego_pendientexprod = [];
-        foreach ($pendientexprods as $pendientexprod) {
-            $arrego_producto_id[] = $pendientexprod->producto_id;
-            $arrego_pendientexprod[$pendientexprod->producto_id] = $pendientexprod;
-        }
-        //dd($arrego_pendientexprod);
-        $producto_id = implode(",", $arrego_producto_id);
-        //$request->request->add(['producto_id' => $producto_id]);
-        //dd($producto_id);
-        $request->request->add(['MostrarStockCero' => true]);
         $datas1 = [];
         $datas = InvMov::stocksql($request,"producto.id");
-        foreach ($datas as &$data) {
-            if(isset($arrego_pendientexprod[$data->producto_id])){ //SIE EL ELEMENTO EXISTE EL ARREGLO ENTRA.
-                $data->cantpend = $arrego_pendientexprod[$data->producto_id]->cant - $arrego_pendientexprod[$data->producto_id]->cantdesp;
-                $data->difcantpend = $data->stock - $data->cantpend; //DIFERENCIA ENTRE STOCK Y CANTPEND=CANTIDAD PENDIENTE                
-            }else{
-                $data->difcantpend = $data->stock;
+        $InvStocks = [];
+        foreach ($datas as $data) {
+            $InvStocks[$data->producto_id] = $data;
+        }
+
+        $arrego_producto_id = [];
+        foreach ($pendientexprods as &$pendientexprod) {
+            $arrego_producto_id[] = $pendientexprod->producto_id;
+            $pendientexprod->largo = $pendientexprod->long;
+            $producto = Producto::findOrFail($pendientexprod->producto_id);
+            $pendientexprod->producto_nombre = $pendientexprod->nombre;
+            $pendientexprod->categoria_nombre = $producto->categoriaprod->nombre;
+            $pendientexprod->stock = 0;
+            $pendientexprod->stockBodProdTerm = 0;
+            $pendientexprod->stockPiking = 0;
+            $pendientexprod->stockkg = 0;
+            $pendientexprod->cantpend = $pendientexprod->cant - $pendientexprod->cantdesp;
+            $pendientexprod->difcantpend = $pendientexprod->cantpend * -1;
+            $pendientexprod->acuerdotecnico_id = null;
+            $pendientexprod->at_ancho = null;
+            $pendientexprod->at_largo = null;
+            $pendientexprod->at_espesor = null;
+
+            if(isset($InvStocks[$pendientexprod->producto_id])){
+                $pendientexprod->stock = $InvStocks[$pendientexprod->producto_id]->stock;
+                $pendientexprod->stockPiking = $InvStocks[$pendientexprod->producto_id]->stockPiking;
+                $pendientexprod->difcantpend = $pendientexprod->stock - $pendientexprod->cantpend;
             }
-            if($data->difcantpend != 0){
-                $datas1[] = $data;
+            $datas1[$pendientexprod->producto_id] = $pendientexprod;
+
+            //$arrego_pendientexprod[$pendientexprod->producto_id] = $pendientexprod;
+        }
+        foreach ($InvStocks as &$InvStock) {
+            if(!isset($datas1[$InvStock->producto_id])){
+                $InvStock->difcantpend = $InvStock->stock;
+                $datas1[$InvStock->producto_id] = $InvStock;
             }
         }
-        //dd($datas);
-
-        //$datas = $datas->get();
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());
