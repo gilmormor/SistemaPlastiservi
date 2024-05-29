@@ -1580,6 +1580,7 @@ class Dte extends Model
         if(is_null($foliocontrol)){
             return [
                 'id' => 0,
+                'titulo' => "Numero de folio no encontrado.",
                 'mensaje'=>'Numero de folio no encontrado.',
                 'tipo_alert' => 'error'
             ];
@@ -1587,6 +1588,7 @@ class Dte extends Model
         if($foliocontrol->ultfoliouti >= $foliocontrol->ultfoliohab ){
             return [
                 'id' => 0,
+                'titulo' => 'Se agotaron los folios. Se deben pedir nuevos folios',
                 'mensaje'=>'Se agotaron los folios. Se deben pedir nuevos folios',
                 'tipo_alert' => 'error'
             ];
@@ -1595,6 +1597,7 @@ class Dte extends Model
         if($foliocontrol->bloqueo == 1){
                 return [
                     'id' => 0,
+                    'titulo' => 'Folio bloqueado, vuelva a intentar. Folio: ' . $foliocontrol->ultfoliouti,
                     'mensaje'=>'Folio bloqueado, vuelva a intentar. Folio: ' . $foliocontrol->ultfoliouti,
                     'tipo_alert' => 'error'
                 ];
@@ -1642,6 +1645,7 @@ class Dte extends Model
                         //dd($Solicitar_Folio);
                         return [
                             'id' => 0,
+                            'titulo' =>'Error', 
                             'mensaje'=>'Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus,
                             'tipo_alert' => 'error'                
                         ];
@@ -1649,6 +1653,7 @@ class Dte extends Model
                 }else{
                     return [
                         'id' => 0,
+                        'titulo' =>'Error:', 
                         'mensaje'=>'Error: TipoDTE ' . $foliocontrol->tipodocto . ", " . $Solicitar_Folio,
                         'tipo_alert' => 'error'                
                     ];
@@ -1689,6 +1694,7 @@ class Dte extends Model
                 */
                 return [
                     'id' => 1,
+                    'titulo' => '',
                     'stasubcob' => $dte->stasubcob,
                     'Carga_TXTDTE' => $Carga_TXTDTE,
                     'updated_at' => $dte->updated_at
@@ -1698,6 +1704,7 @@ class Dte extends Model
             }else{
                 return [
                     'id' => 0,
+                    'titulo' => '',
                     'mensaje'=>'Error: #' . $Carga_TXTDTE->Estatus . " " . $Carga_TXTDTE->MsgEstatus,
                     'tipo_alert' => 'error',
                     'stasubcob' => $dte->stasubcob
@@ -1712,6 +1719,7 @@ class Dte extends Model
             //Event(new ErrorCrearDTE($dte,$ArchivoTXT,$Carga_TXTDTE,$aux_folio));
             return [
                 'id' => 0,
+                'titulo' => '',
                 'mensaje'=> nl2br("Error: Documento no fue guardado en SII. Error devueldo por BES. Variable Carga_TXTDTE->Estatus no existe. \n\n") . $Carga_TXTDTE,
                 'tipo_alert' => "error",
                 'stasubcob' => $dte->stasubcob
