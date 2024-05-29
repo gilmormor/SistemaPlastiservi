@@ -1580,7 +1580,7 @@ class Dte extends Model
         if(is_null($foliocontrol)){
             return [
                 'id' => 0,
-                'titulo' => "Numero de folio no encontrado.",
+                'titulo' => "",
                 'mensaje'=>'Numero de folio no encontrado.',
                 'tipo_alert' => 'error'
             ];
@@ -1588,7 +1588,7 @@ class Dte extends Model
         if($foliocontrol->ultfoliouti >= $foliocontrol->ultfoliohab ){
             return [
                 'id' => 0,
-                'titulo' => 'Se agotaron los folios. Se deben pedir nuevos folios',
+                'titulo' => '',
                 'mensaje'=>'Se agotaron los folios. Se deben pedir nuevos folios',
                 'tipo_alert' => 'error'
             ];
@@ -1597,7 +1597,7 @@ class Dte extends Model
         if($foliocontrol->bloqueo == 1){
                 return [
                     'id' => 0,
-                    'titulo' => 'Folio bloqueado, vuelva a intentar. Folio: ' . $foliocontrol->ultfoliouti,
+                    'titulo' => '',
                     'mensaje'=>'Folio bloqueado, vuelva a intentar. Folio: ' . $foliocontrol->ultfoliouti,
                     'tipo_alert' => 'error'
                 ];
