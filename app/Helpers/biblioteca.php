@@ -459,4 +459,11 @@ if (!function_exists('sanear_stringSisCob')) {
         return $string;
     }
 }
+
+// Función de comparación para ordenar por 'producto_id'
+if (!function_exists('compararProductoId')) {
+    function compararProductoId($a, $b) {
+        return $a->producto_id <=> $b->producto_id;
+    }    
+}
 ?>

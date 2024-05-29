@@ -170,6 +170,7 @@ class ReportInvStockBPPendxProdController extends Controller
         }
         $datas = $datas1;
         if($datas){
+            usort($datas, 'compararProductoId');
             $sucursal = Sucursal::findOrFail($request->sucursal_id);
             $request->request->add(['sucursal_nombre' => $sucursal->nombre]);
             if(env('APP_DEBUG')){
@@ -200,5 +201,4 @@ class ReportInvStockBPPendxProdController extends Controller
         $respuesta['aux_totalkg'] = $aux_totalkg;
         return $respuesta;
     }
-     
 }
