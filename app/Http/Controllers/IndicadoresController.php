@@ -2082,6 +2082,8 @@ function consulta($request){
     ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
     WHERE $aux_condFecha
     and $vendedorcond
     and $aux_condcategoriaprod_id
@@ -2111,6 +2113,8 @@ function consulta($request){
     ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN cliente
+    ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
     WHERE $aux_condFechahoy
     and $vendedorcond
     and $aux_condcategoriaprod_id
@@ -2548,6 +2552,8 @@ function consultaODcerrada($request){
     ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
     LEFT JOIN categoriagrupovalmes
     ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
+    INNER JOIN cliente
+    ON cliente.id = notaventa.cliente_id
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -2580,6 +2586,8 @@ function consultaODcerrada($request){
     ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN cliente
+    ON cliente.id = notaventa.cliente_id
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFechahoy
     and $vendedorcond
@@ -2943,6 +2951,8 @@ function consultakilostipoentrega($request){
     ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
     inner join tipoentrega
     on despachoord.tipoentrega_id=tipoentrega.id
+    inner join cliente
+    on cliente.id = notaventa.cliente_id
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond

@@ -775,6 +775,8 @@ function consulta($request){
     ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN cliente
+    ON cliente.id = notaventa.cliente_id
     WHERE $aux_condFecha
     and $vendedorcond
     and $aux_condcategoriaprod_id
@@ -804,6 +806,8 @@ function consulta($request){
     ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN cliente
+    ON cliente.id = notaventa.cliente_id
     WHERE $aux_condFechahoy
     and $vendedorcond
     and $aux_condcategoriaprod_id
@@ -1120,6 +1124,8 @@ function consultaODcerrada($request){
     ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN cliente
+    ON cliente.id = notaventa.cliente_id
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -1151,6 +1157,8 @@ function consultaODcerrada($request){
     ON notaventadetalle.notaventa_id=notaventa.id and isnull(notaventa.deleted_at)
     INNER JOIN areaproduccion
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
+    INNER JOIN cliente
+    ON cliente.id = notaventa.cliente_id
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFechahoy
     and $vendedorcond
