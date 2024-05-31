@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
 use App\Models\DespachoOrd;
 use App\Models\Dte;
 use App\Models\DteDet;
@@ -92,6 +93,15 @@ class DteFacturaDirController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        $request->merge(['stanv' => 0]);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('dtefacturadir')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $dte = new Dte();
         $dtefac = new DteFac();
         //$dtefac->dte_id = $dte_id;
@@ -303,6 +313,16 @@ class DteFacturaDirController extends Controller
                 $aux_mensaje = 'Factura creada con exito.';
                 $aux_tipo_alert = 'alert-success';
             }
+            if($dte->cliente->clientedesbloqueado){
+                $clientedesbloqueado_id = $dte->cliente->clientedesbloqueado->id;
+                if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                    $clientedesbloqueado->usuariodel_id = auth()->id();
+                    $clientedesbloqueado->save();
+                }
+            }
+
             return redirect('dtefacturadir')->with([
                 'mensaje'=> $aux_mensaje,
                 'tipo_alert' => $aux_tipo_alert

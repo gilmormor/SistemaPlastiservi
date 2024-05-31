@@ -14,6 +14,7 @@ $(document).ready(function () {
             {data: 'id'},
             {data: 'cliente_id'},
             {data: 'rut'},
+            {data: 'notaventa_id'},
             {data: 'razonsocial'},
             {data: 'obs'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021

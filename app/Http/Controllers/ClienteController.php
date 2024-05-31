@@ -677,6 +677,7 @@ class ClienteController extends Controller
     }
 
     public function buscarCliRut(Request $request){
+        //dd($request);
         if($request->ajax()){
             $respuesta = array();
             $user = Usuario::findOrFail(auth()->id());

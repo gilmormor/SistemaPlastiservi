@@ -793,7 +793,6 @@ $("#rut").blur(function(){
 			*/
 			var data = {
 				rut: $("#rut").val(),
-				stanv : 1,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
@@ -826,7 +825,7 @@ $("#rut").blur(function(){
 						*/
 						if(respuesta.cliente[0].descripcion!=null){
 							swal({
-								//title: 'Cliente Bloqueado. Pero puedes hacer la Cotizacion',
+								title: 'Informacion',
 								text: respuesta.cliente[0].descripcion,
 								icon: 'warning',
 								buttons: {

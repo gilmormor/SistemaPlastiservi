@@ -1507,7 +1507,7 @@ Route::get('reportnvagruxcliente/totalizarRep', 'ReportNVAgruxClienteController@
 /*RUTAS Bloquear Cliente */
 Route::get('clientedesbloqueado', 'ClienteDesBloqueadoController@index')->name('clientedesbloqueado');
 Route::get('clientedesbloqueadopage', 'ClienteDesBloqueadoController@clientedesbloqueadopage')->name('clientedesbloqueadopage');
-Route::get('clientedesbloqueado/crear', 'ClienteDesBloqueadoController@crear')->name('crear_clientedesbloqueado');
+Route::get('clientedesbloqueado/crear/{id}', 'ClienteDesBloqueadoController@crear')->name('crear_clientedesbloqueado');
 Route::post('clientedesbloqueado', 'ClienteDesBloqueadoController@guardar')->name('guardar_clientedesbloqueado');
 Route::get('clientedesbloqueado/{id}/editar', 'ClienteDesBloqueadoController@editar')->name('editar_clientedesbloqueado');
 Route::put('clientedesbloqueado/{id}', 'ClienteDesBloqueadoController@actualizar')->name('actualizar_clientedesbloqueado');
@@ -1539,3 +1539,16 @@ Route::get('reportdteguiadespdet/reportdteguiadespdetpage', 'ReportDTEGuiaDespDe
 Route::get('reportdteguiadespdet/reporte', 'ReportDTEGuiaDespDetController@reporte')->name('reportdteguiadespdet_reporte');
 Route::get('reportdteguiadespdet/exportPdf', 'ReportDTEGuiaDespDetController@exportPdf')->name('reportdteguiadespdet_exportPdf');
 Route::get('reportdteguiadespdet/totalizarindex', 'ReportDTEGuiaDespDetController@totalizarindex')->name('reportdteguiadespdet_totalizarindex');
+
+/*RUTAS DATACOBRANZA */
+Route::post('datacobranza/llenartabla', 'DataCobranzaController@llenartabla')->name('llenartabla_DataCobranza');
+
+
+/*RUTAS MODULO*/
+Route::get('modulo', 'ModuloController@index')->name('modulo');
+Route::get('modulopage', 'ModuloController@modulopage')->name('modulopage');
+Route::get('modulo/crear', 'ModuloController@crear')->name('crear_modulo');
+Route::post('modulo', 'ModuloController@guardar')->name('guardar_modulo');
+Route::get('modulo/{id}/editar', 'ModuloController@editar')->name('editar_modulo');
+Route::put('modulo/{id}', 'ModuloController@actualizar')->name('actualizar_modulo');
+Route::delete('modulo/{id}', 'ModuloController@eliminar')->name('eliminar_modulo');

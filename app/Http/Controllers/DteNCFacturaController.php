@@ -8,6 +8,7 @@ use App\Http\Requests\ValidarDTEFac;
 use App\Http\Requests\ValidarDTENC;
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
 use App\Models\Dte;
 use App\Models\DteDet;
 use App\Models\DteDte;
@@ -68,7 +69,6 @@ class DteNCFacturaController extends Controller
     public function guardar(ValidarDTENC $request)
     {
         can('guardar-nota-credito-factura');
-        //dd($request);
         $dtefac = Dte::findOrFail($request->dte_id);
         if($dtefac->updated_at != $request->updated_at){
             return redirect('dtencfactura')->with([
@@ -92,6 +92,14 @@ class DteNCFacturaController extends Controller
             return redirect('dtencfactura')->with([
                 'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
                 'tipo_alert' => 'alert-error'
+            ]);
+        }
+        $request->merge(['stanv' => 0]);
+        $clibloq = clienteBloqueado($dtefac->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('dtencfactura')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
             ]);
         }
 
@@ -287,6 +295,15 @@ class DteNCFacturaController extends Controller
         $dte->save();
 
         $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+        if($dte->cliente->clientedesbloqueado){
+            $clientedesbloqueado_id = $dte->cliente->clientedesbloqueado->id;
+            if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                $clientedesbloqueado->usuariodel_id = auth()->id();
+                $clientedesbloqueado->save();
+            }
+        }
         if($aux_foliosdisp <= $foliocontrol->folmindisp){
             return redirect('dtencfactura')->with([
                 'mensaje'=>"Nota de Credito creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,

@@ -118,16 +118,23 @@ $(document).ready(function () {
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
             $('td', row).eq(8).html(aux_text);
 
-            if(data.clientebloqueado_descripcion != null){
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = ``;
+            if(aux_clienteBloqueado == ""){
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+            }else{
+                aux_displaybtnac = `style="display:none;"`;
+                aux_displaybtnbl = ``;
+            }
+
+            /* if(data.clientebloqueado_descripcion != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
                         "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
                     "</a>";
             }else{
-                /*
-                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarsol(" + i + "," + data.id + ")' title='Aprobar Solicitud Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+*/
 
                 aux_text = 
                 `<a href="/despachosol/aproborddesp" class="btn-accion-tabla btn-sm tooltipsC btnaprobar" title="Aprobar Solicitud Despacho" item="${data.id}">
@@ -136,7 +143,18 @@ $(document).ready(function () {
                 <a href="despachosol" class="btn-accion-tabla tooltipsC btnEditar" title="Editar este registro" item="${data.id}">
                     <i class='fa fa-fw fa-pencil'></i>
                 </a>`;
-            }
+            } */
+            aux_text = 
+            `<a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id})">
+                <span class="fa fa-fw fa-lock text-danger text-danger" style="bottom: 0px;top: 2px;"></span>
+            </a>
+            <a ${aux_displaybtnac} href="/despachosol/aproborddesp" class="btn-accion-tabla btn-sm tooltipsC btnaprobar botonac${data.id}" title="Aprobar Solicitud Despacho" item="${data.id}">
+                <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+            </a>
+            <a ${aux_displaybtnac} href="despachosol" class="btn-accion-tabla tooltipsC btnEditar botonac${data.id}" title="Editar este registro" item="${data.id}">
+                <i class='fa fa-fw fa-pencil'></i>
+            </a>`;
+
             $('td', row).eq(13).addClass('updated_at');
             $('td', row).eq(13).attr('item',data.id);
             $('td', row).eq(13).attr('id','updated_at'+data.id);

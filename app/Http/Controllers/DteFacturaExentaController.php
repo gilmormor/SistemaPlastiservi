@@ -92,6 +92,15 @@ class DteFacturaExentaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        $request->merge(['stanv' => 0]);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('dtefacturaexenta')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $dte = new Dte();
         $dtefac = new DteFac();
         //$dtefac->dte_id = $dte_id;

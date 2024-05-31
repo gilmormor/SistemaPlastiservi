@@ -444,8 +444,8 @@ class CotizacionController extends Controller
         }
         if($cotizacion->cliente_id){
             $request1 = new Request();
-            $request1->merge(['stanv' => 1]);
-            $request1->request->set('stanv', 1);
+            $request1->merge(['modulo_id' => 1]);
+            $request1->request->set('modulo_id', 1);
             $request1->merge(['deldesbloqueo' => 1]);
             $request1->request->set('deldesbloqueo', 1);
             $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
@@ -830,8 +830,8 @@ class CotizacionController extends Controller
             }
             if($cotizacion->cliente_id){
                 $request1 = new Request();
-                $request1->merge(['stanv' => 1]);
-                $request1->request->set('stanv', 1);
+                $request1->merge(['modulo_id' => 1]);
+                $request1->request->set('modulo_id', 1);
                 $request1->merge(['deldesbloqueo' => 1]);
                 $request1->request->set('deldesbloqueo', 1);
                 $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
@@ -941,8 +941,8 @@ class CotizacionController extends Controller
             }
             if($cotizacion->cliente_id){
                 $request1 = new Request();
-                $request1->merge(['stanv' => 1]);
-                $request1->request->set('stanv', 1);
+                $request1->merge(['modulo_id' => 1]);
+                $request1->request->set('modulo_id', 1);
                 $request1->merge(['deldesbloqueo' => 1]);
                 $request1->request->set('deldesbloqueo', 1);
                 $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);

@@ -14,6 +14,7 @@ use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
+use App\Models\DataCobranza;
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrd_InvMov;
 use App\Models\DespachoOrdAnul;
@@ -59,19 +60,9 @@ class DespachoSolController extends Controller
     public function index()
     {
         can('listar-solicitud-despacho');
-        /*
-        $despachosolanul = DespachoSolAnul::orderBy('id')->pluck('despachosol_id')->toArray();
-        $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
-        //dd($notaventacerradaArray);
-        //dd($notaventacerrada);
-        $datas = DespachoSol::orderBy('id')
-                ->whereNull('aprorddesp')
-                ->whereNotIn('id', $despachosolanul)
-                ->whereNotIn('notaventa_id', $notaventacerradaArray)
-                ->get();
-        */
-//        return view('despachosol.index', compact('datas'));
-        return view('despachosol.index');
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('despachosol.index', compact('tablashtml'));
     }
 
     public function despachosolpage(){
@@ -171,7 +162,9 @@ class DespachoSolController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
-        return view('despachosol.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('despachosol.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml','miVariableGlobal'));
     }
 
     /**
@@ -200,11 +193,18 @@ class DespachoSolController extends Controller
         ]); */
 
         $request = new Request();
-        $request->merge(['stanv' => 0]);
-        $request->request->set('stanv', 0);
+        $request->merge(['modulo_id' => 4]);
+        $request->request->set('modulo_id', 4);
+        $request->merge(['notaventa_id' => $data->id]);
+        $request->request->set('notaventa_id', $data->id);
         //$cliente = Cliente::findOrFail($request->cliente_id);
         $clibloq = clienteBloqueado($data->cliente_id,0,$request);
         if(!is_null($clibloq["bloqueo"])){
+            $request = new Request();
+            $request->merge(['cliente_id' => $data->cliente_id]);
+            $request->request->set('cliente_id', $data->cliente_id);
+            $respuesta = DataCobranza::llenartabla($request);
+    
             return redirect('despachosol/listarnv')->with([
                 "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
@@ -263,9 +263,21 @@ class DespachoSolController extends Controller
     {
         can('guardar-solicitud-despacho');
         //dd($request);
-        $request->merge(['stanv' => 0]);
-        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+        $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+        $request1 = new Request();
+        $request1->merge(['modulo_id' => 4]);
+        $request1->request->set('modulo_id', 4);
+        $request1->merge(['notaventa_id' => $request->notaventa_id]);
+        $request1->request->set('notaventa_id', $request->notaventa_id);
+        $request1->merge(['deldesbloqueo' => 1]);
+        $request1->request->set('deldesbloqueo', 1);
+        $clibloq = clienteBloqueado($notaventa->cliente_id,0,$request1);
         if(!is_null($clibloq["bloqueo"])){
+            $request1 = new Request();
+            $request1->merge(['cliente_id' => $notaventa->cliente_id]);
+            $request1->request->set('cliente_id', $notaventa->cliente_id);
+            $respuesta = DataCobranza::llenartabla($request1);
+
             return redirect('despachosol/listarnv')->with([
                 "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
@@ -398,7 +410,7 @@ class DespachoSolController extends Controller
                     $despachosoldte->save();
                 }
 
-                if($notaventa->cliente->clientedesbloqueado){
+/*                 if($notaventa->cliente->clientedesbloqueado){
                     $clientedesbloqueado_id = $notaventa->cliente->clientedesbloqueado->id;
                     if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
                         //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
@@ -407,7 +419,7 @@ class DespachoSolController extends Controller
                         $clientedesbloqueado->save();
                     }
                 }
-        
+ */        
                 return redirect('despachosol')->with([
                     'mensaje'=>'Registro creado con exito.',
                     'tipo_alert' => 'alert-success'
@@ -479,7 +491,21 @@ class DespachoSolController extends Controller
                 'persona.apellido'
             ])
             ->get();
-
+        
+        $request = new Request();
+        $request->merge(['modulo_id' => 5]);
+        $request->request->set('modulo_id', 5);
+        $request->merge(['notaventa_id' => $data->notaventa_id]);
+        $request->request->set('notaventa_id', $data->notaventa_id);
+        //$cliente = Cliente::findOrFail($request->cliente_id);
+        $clibloq = clienteBloqueado($data->notaventa->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){   
+            return redirect('despachosol')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+    
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $giros = Giro::orderBy('id')->get();
@@ -718,10 +744,6 @@ class DespachoSolController extends Controller
 
     public function listarnvpage(Request $request){
         $datas = consulta($request,1,1);
-        foreach($datas as &$data){
-            $data->rutanuevasoldesp = route('crearsol_despachosol', ['id' => $data->id]);
-            $data->rutanuevaguiadespnv = route('crear_dteguiadespnv', ['id' => $data->id]);
-        }
         return datatables($datas)->toJson();
     }
     public function totalizarlistarnvpage(Request $request){
@@ -1406,6 +1428,27 @@ class DespachoSolController extends Controller
     {
         if ($request->ajax()) {
             $despachosol = DespachoSol::findOrFail($request->id);
+            $request1 = new Request();
+            $request1->merge(['modulo_id' => 5]);
+            $request1->request->set('modulo_id', 5);
+            $request1->merge(['notaventa_id' => $despachosol->notaventa_id]);
+            $request1->request->set('notaventa_id', $despachosol->notaventa_id);
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $bloqcli = clienteBloqueado($despachosol->notaventa->cliente_id,0,$request1);
+            if(!is_null($bloqcli["bloqueo"])){
+                $request1 = new Request();
+                $request1->merge(['cliente_id' => $despachosol->notaventa->cliente_id]);
+                $request1->request->set('cliente_id', $despachosol->notaventa->cliente_id);
+                $respuesta = DataCobranza::llenartabla($request1);
+
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "Cliente bloqueado \n" . $bloqcli["bloqueo"],
+                    'tipo_alert' => "error"
+                ]);
+            }
+    
             if($despachosol == null){
                 return response()->json([
                     'id' => 0,
@@ -2428,7 +2471,14 @@ function consulta($request,$aux_sql,$orden){
             AND isnull(dteguiadesp.notaventa_id)
             AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
         clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp,
-        notaventa.aprobfechahora as notaventa_aprobfechahora
+        notaventa.aprobfechahora as notaventa_aprobfechahora,
+        cliente.limitecredito,
+        IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+        IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+        IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+        IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+        clientedesbloqueado.obs as clientedesbloqueado_obs,
+        modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -2453,6 +2503,14 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
         LEFT JOIN clientebloqueado
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
+        LEFT JOIN datacobranza
+        ON datacobranza.cliente_id = notaventa.cliente_id
+        LEFT JOIN clientedesbloqueado
+        ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+        LEFT JOIN clientedesbloqueadomodulo
+        ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 4
+        LEFT JOIN modulo
+        ON modulo.id = clientedesbloqueadomodulo.modulo_id
         WHERE
         categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
             FROM categoriaprodsuc 
@@ -3364,7 +3422,14 @@ function consultasoldesp($request){
             despachosol.aprorddesp,
             clientebloqueado.descripcion as clientebloqueado_descripcion,
             despachosolenvorddesp.despachosol_id as despachosolenvorddesp_despachosol_id,
-            despachosolenvorddesp.despachosol_id as despachosolenvorddesp_updated_at
+            despachosolenvorddesp.despachosol_id as despachosolenvorddesp_updated_at,
+            cliente.limitecredito,
+            clientebloqueado.descripcion as clientebloqueado_desc,
+            IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+            IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+            IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+            IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+            modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
@@ -3394,6 +3459,14 @@ function consultasoldesp($request){
             ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
             LEFT JOIN despachosolenvorddesp
             ON despachosolenvorddesp.despachosol_id = despachosol.id AND ISNULL(despachosolenvorddesp.deleted_at)
+            LEFT JOIN datacobranza
+            ON datacobranza.cliente_id = notaventa.cliente_id
+            LEFT JOIN clientedesbloqueado
+            ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+            LEFT JOIN clientedesbloqueadomodulo
+            ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 7
+            LEFT JOIN modulo
+            ON modulo.id = clientedesbloqueadomodulo.modulo_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -3444,9 +3517,10 @@ function consultaindex(){
     $sucurArray = $user->sucursales->pluck('id')->toArray();
     $sucurcadena = implode(",", $sucurArray);
 
-    $sql = "SELECT despachosol.id,despachosol.fechahora,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachosol.notaventa_id,
+    $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.razonsocial,notaventa.oc_id,
+    notaventa.oc_file,despachosol.notaventa_id,
     '' as notaventaxk,comuna.nombre as comuna_nombre,
-    tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
+    tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
     SUM(despachosoldet.cantsoldesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
     (SELECT obs
 		FROM despachosoldev
@@ -3460,7 +3534,15 @@ function consultaindex(){
         ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
         WHERE dteoc.oc_id = notaventa.oc_id
         AND isnull(dteguiadesp.notaventa_id)
-        AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
+        AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+    clientebloqueado.descripcion as clientebloqueado_descripcion,
+    clientebloqueado.descripcion as clientebloqueado_desc,
+    cliente.limitecredito,
+    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
     FROM despachosol INNER JOIN notaventa
     ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente
@@ -3475,6 +3557,14 @@ function consultaindex(){
     ON tipoentrega.id = despachosol.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
     LEFT JOIN clientebloqueado
     ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+    LEFT JOIN datacobranza
+    ON datacobranza.cliente_id = notaventa.cliente_id
+    LEFT JOIN clientedesbloqueado
+    ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+    LEFT JOIN clientedesbloqueadomodulo
+    ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 5
+    LEFT JOIN modulo
+    ON modulo.id = clientedesbloqueadomodulo.modulo_id
     WHERE ISNULL(despachosol.aprorddesp)
     AND despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE ISNULL(despachosolanul.deleted_at))
     AND despachosol.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))

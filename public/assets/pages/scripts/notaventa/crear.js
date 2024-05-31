@@ -766,7 +766,7 @@ $("#rut").blur(function(){
 			*/
 			var data = {
 				rut   : codigo,
-				stanv : 1,
+				modulo_id : 2,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({

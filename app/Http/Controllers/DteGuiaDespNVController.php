@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AreaProduccion;
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
 use App\Models\Dte;
@@ -53,6 +54,18 @@ class DteGuiaDespNVController extends Controller
     {
         can('crear-dte-guia-desp-nv');
         $data = NotaVenta::findOrFail($id);
+        $request = new Request();
+        $request->merge(['stanv' => 0]);
+        $request->request->set('stanv', 0);
+        //$cliente = Cliente::findOrFail($request->cliente_id);
+        $clibloq = clienteBloqueado($data->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('dteguiadespnv/listarnv')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $detalles = $data->notaventadetalles;
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
@@ -85,6 +98,8 @@ class DteGuiaDespNVController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         return view('dteguiadespnv.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -122,6 +137,16 @@ class DteGuiaDespNVController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+
+        $request->merge(['stanv' => 0]);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('dteguiadespnv')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $dte = new Dte();
         //CREAR REGISTRO DE ORDEN DE COMPRA
         //dd($request->oc_id);
@@ -323,6 +348,16 @@ class DteGuiaDespNVController extends Controller
             if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             }
+            if($dte->cliente->clientedesbloqueado){
+                $clientedesbloqueado_id = $dte->cliente->clientedesbloqueado->id;
+                if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                    $clientedesbloqueado->usuariodel_id = auth()->id();
+                    $clientedesbloqueado->save();
+                }
+            }
+
             if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 return redirect('dteguiadespnv')->with([
                     'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,

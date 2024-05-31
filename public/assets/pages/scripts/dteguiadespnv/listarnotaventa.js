@@ -117,18 +117,60 @@ $(document).ready(function () {
                     <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                 </a>`;
 
-                if(data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null){
+                aux_clienteBloqueado = validarClienteBloqueado(data);
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = ``;
+                if(aux_clienteBloqueado == ""){
+                    aux_displaybtnac = ``;
+                    aux_displaybtnbl = `style="display:none;"`;
+                }else{
+                    aux_displaybtnac = `style="display:none;"`;
+                    aux_displaybtnbl = ``;
+                }
+
+                /* if(aux_clienteBloqueado == ""){
+                    let aux_rutanuevaguiadespnv = $("#aux_ruta_rutanuevaguiadespnv").val();
+                    let nuevaaux_rutanuevaguiadespnv = aux_rutanuevaguiadespnv.replace("/0/", "/"+data.id+"/");
+                    aux_text +=
+                    `<a href="${nuevaaux_rutanuevaguiadespnv}" class="btn-accion-tabla tooltipsC" title="Hacer Guia Despacho: ${data.tipentnombre}">
+                        <i class="fa fa-fw ${data.icono}"></i>
+                    </a>`;
+                }else{
+                    aux_text += 
+                        `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${aux_clienteBloqueado}">
+                            <i class="fa fa-fw fa-lock text-danger"></i>
+                        </a>`;
+                } */
+
+                let aux_rutanuevaguiadespnv = $("#aux_ruta_rutanuevaguiadespnv").val();
+                let nuevaaux_rutanuevaguiadespnv = aux_rutanuevaguiadespnv.replace("/0/", "/"+data.id+"/");
+                aux_text +=
+                `<a ${aux_displaybtnac} href="${nuevaaux_rutanuevaguiadespnv}" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Hacer Guia Despacho: ${data.tipentnombre}">
+                    <button type="button" class="btn btn-default btn-xs">
+                        <i class="fa fa-fw ${data.icono}"></i>
+                    </button>
+                </a>
+                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id})">
+                    <button type="button" class="btn btn-default btn-xs">
+                        <i class="fa fa-fw fa-lock text-danger"></i>
+                    </button>
+                </a>`;
+
+
+                /* if(data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null){
                     aux_text += 
                         `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${data.clientebloqueado_desc}">
                             <i class="fa fa-fw fa-lock text-danger"></i>
                         </a>`;
                     $('td', row).eq(6).html(aux_text);
                 }else{
+                    let aux_rutanuevaguiadespnv = $("#aux_ruta_rutanuevaguiadespnv").val();
+                    let nuevaaux_rutanuevaguiadespnv = aux_rutadespsol.replace("/0/", "/"+data.id+"/");
                     aux_text +=
-                    `<a href="${data.rutanuevaguiadespnv}" class="btn-accion-tabla tooltipsC" title="Hacer Guia Despacho: ${data.tipentnombre}">
+                    `<a href="${nuevaaux_rutanuevaguiadespnv}" class="btn-accion-tabla tooltipsC" title="Hacer Guia Despacho: ${data.tipentnombre}">
                         <i class="fa fa-fw ${data.icono}"></i>
                     </a>`;
-                }
+                } */
                 if(data.anulada != null && data.anulada != ""){
                     aux_text = "";
                     colorFila = 'background-color: #87CEEB;';

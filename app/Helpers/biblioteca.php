@@ -3,9 +3,13 @@
 use App\Models\Admin\Menu;
 use App\Models\Admin\Permiso;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
+use App\Models\ClienteDesbloqueadoModulo;
+use App\Models\ClienteDesbloqueadoModuloDel;
 use App\Models\ClienteDesBloqueadoNV;
 use App\Models\Dte;
 use App\Models\Empresa;
+use App\Models\Modulo;
 use Illuminate\Database\Eloquent\Builder;
 
 if (!function_exists('getMenuActivo')) {
@@ -345,9 +349,68 @@ if (!function_exists('clienteBloqueado')) {
             }
             return $staBloqueo;
         }
+        //dd(isset($request->modulo_id) and $aux_consultadeuda == 0);
         //SI LA SOLICITUD VIENE DE NOTA DE VENTA, BUSCO SI EL CLIENTE ESTA DESBLOQUEADO PARA NOTA DE VENTA
-        if(isset($request->stanv) and $request->stanv == 1 and $aux_consultadeuda == 0){
-            if($cliente->clientedesbloqueadonv){
+        if(isset($request->modulo_id) and $aux_consultadeuda == 0){
+            $modulo = Modulo::findOrFail($request->modulo_id);
+            if($modulo->stanvdc == 0){
+                $clientedesbloqueados = ClienteDesBloqueado::where("cliente_id",$cliente_id)
+                                        ->whereNull("notaventa_id")
+                                        ->get();
+                //dd($clientedesbloqueados);
+            }else{
+                $clientedesbloqueados = ClienteDesBloqueado::where("cliente_id",$cliente_id)
+                                        ->where("notaventa_id",$request->notaventa_id)
+                                        ->get();
+
+            }
+            //dd($clientedesbloqueados);
+            //dd($clientedesbloqueados[0]->modulos);
+            //dd($aux_consultadeuda);
+            //dd($clientedesbloqueados[0]->clientedesbloqueadomodulos);
+            if(count($clientedesbloqueados) > 0){
+                foreach ($clientedesbloqueados as $clientedesbloqueado) {
+                    $aux_desbloqueo = false;
+                    foreach ($clientedesbloqueado->clientedesbloqueadomodulos as $clientedesbloqueadomodulo) {
+                        //dd($clientedesbloqueadomodulo);
+                        if($clientedesbloqueadomodulo->modulo_id == $request->modulo_id){
+                            //dd("Desbloqueado en NV");
+                            if(isset($request->deldesbloqueo) and $request->deldesbloqueo == 1){ //SOLO ENTRA AQUI SI ENVIO LA PROPIEDAD EN EL REQUEST
+                                if ($clientedesbloqueadomodulo->delete()) {
+                                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                                    /* $clientedesbloqueadomodulo = ClienteDesbloqueadoModulo::withTrashed()->findOrFail($clientedesbloqueadomodulo->id);
+                                    $clientedesbloqueadomodulo->usuariodel_id = auth()->id();
+                                    $clientedesbloqueadomodulo->save(); */
+                                    $clientedesbloqueadomodulodel = new ClienteDesbloqueadoModuloDel();
+                                    $clientedesbloqueadomodulodel->clientedesbloqueado_id = $clientedesbloqueado->id;
+                                    $clientedesbloqueadomodulodel->clientedesbloqueadomodulo_id = $clientedesbloqueadomodulo->id;
+                                    $clientedesbloqueadomodulodel->modulo_id = $clientedesbloqueadomodulo->modulo_id;
+                                    $clientedesbloqueadomodulodel->cliente_id = $clientedesbloqueado->cliente_id;
+                                    $clientedesbloqueadomodulodel->notaventa_id = $clientedesbloqueado->notaventa_id;
+                                    $clientedesbloqueadomodulodel->usuario_id = auth()->id();
+                                    $clientedesbloqueadomodulodel->save();    
+                                }    
+                            }
+                            $aux_desbloqueo = true;
+                            break;
+                        }
+                    }
+                    $clientedesbloqueado = ClienteDesBloqueado::findOrFail($clientedesbloqueado->id);
+                    if(count($clientedesbloqueado->clientedesbloqueadomodulos) == 0){
+                        if (ClienteDesBloqueado::destroy($clientedesbloqueado->id)) {
+                            //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                            $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado->id);
+                            $clientedesbloqueado->usuariodel_id = auth()->id();
+                            $clientedesbloqueado->save();
+                        }    
+                    }
+                    if($aux_desbloqueo){
+                        return $staBloqueo;
+                    }
+                }
+            }
+
+            /* if($cliente->clientedesbloqueadonv){
                 //SI EXISTE EL DESBLOQUEO LO ELIMINO
                 if(isset($request->deldesbloqueo) and $request->deldesbloqueo == 1){ //SOLO ENTRA AQUI SI ENVIO LA PROPIEDAD EN EL REQUEST
                     $clientedesbloqueadonv_id = $cliente->clientedesbloqueadonv->id;
@@ -359,13 +422,12 @@ if (!function_exists('clienteBloqueado')) {
                     }    
                 }
                 return $staBloqueo;
-            }
+            } */
         }else{ // DE LO CONTRARIO BUSCO SI ESTA DESBLOQUEADO PARA TODOS LOS DEMAS PROCESOS
-            if($cliente->clientedesbloqueado and $aux_consultadeuda == 0){
+            /* if($cliente->clientedesbloqueado and $aux_consultadeuda == 0){
                 return $staBloqueo;
-            }    
+            } */    
         }
-
         if($aux_consultadeuda == 1){
             datacobranza($staBloqueo,$cliente,$request);
             //$dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
@@ -398,11 +460,16 @@ if (!function_exists('datacobranza')) {
     function datacobranza(&$staBloqueo,$cliente,$request){
         $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut,$request);
         //dd($dataCobranza);
-        $staBloqueo["datacobranza"] = $dataCobranza;
+        $staBloqueo["datacobranza"] = $dataCobranza;       
         if($dataCobranza["TDeuda"] > 0 and $dataCobranza["TDeuda"] >= $dataCobranza["limitecredito"]){
-            $staBloqueo ["bloqueo"]= "Supero limite de Crédito: " . number_format($dataCobranza["limitecredito"], 0, ',', '.') . "\nDeuda: " . number_format($dataCobranza["TDeuda"], 0, ',', '.');
+            $staBloqueo ["titulo"] = "Limite de credito superado. ";
+            $staBloqueo ["bloqueo"] = "Limite de credito superado. "
+            . "\nLimite de Crédito: " . number_format($dataCobranza["limitecredito"], 0, ',', '.') 
+            . "\nDeuda a la Fecha: " . number_format($dataCobranza["TDeudaFec"], 0, ',', '.')
+            . "\nTotal Deuda: " . number_format($dataCobranza["TDeuda"], 0, ',', '.');
         }else{
             if($dataCobranza["TDeudaFec"] > 0){
+                $staBloqueo ["titulo"] = "Facturas Vencidas.";
                 $staBloqueo ["bloqueo"]=  "Facturas Vencidas:\n" . $dataCobranza["NroFacDeu"] . ".";
             }
         }

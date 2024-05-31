@@ -2171,6 +2171,17 @@ class Dte extends Model
                 'tipo_alert' => 'warning'
             ]);
         }
+        $request->merge(['cliente_id' => $dte->cliente_id]);
+        $request->request->set('cliente_id', $dte->cliente_id);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return response()->json([
+                'id' => 0,
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                'tipo_alert' => 'warning'
+            ]);
+        }
+
         $empresa = Empresa::findOrFail(1);
         return Dte::updateStatusGen($dte,$request);
         //ESTA VALIDACION LA DESACTIVE A PETICION DE ERIKA BUSTOS
@@ -2947,6 +2958,7 @@ class Dte extends Model
             $TDeudaFec = 0;
             $datosFacDeuda = [];
             $ArrayNroFac = [];
+            $ArrayNroFacDeuda = [];
             $cont = 0;
             $datosTotasFacDeuda = [];
             foreach ($tables as $table) {
@@ -2999,7 +3011,7 @@ class Dte extends Model
                         'mnttot' => $mnttotal,
                         'Deuda' => $Deuda
                     ];
-                    $ArrayNroFac[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
+                    $ArrayNroFacDeuda[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
                 }
                 $datosTotasFacDeuda[] = [
                     'NroFAV' => $NroFAV,
@@ -3040,7 +3052,7 @@ class Dte extends Model
                 "TFac" => $TFac,
                 "TDeuda" => $TDeuda,
                 "TDeudaFec" => $TDeudaFec,
-                "NroFacDeu" => implode(",", $ArrayNroFac),
+                "NroFacDeu" => implode(",", $ArrayNroFacDeuda),
                 "datosFacDeuda" => $datosFacDeuda,
                 "datosTotasFacDeuda" => $datosTotasFacDeuda
             ];   

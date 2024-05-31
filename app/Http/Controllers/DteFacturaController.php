@@ -7,8 +7,10 @@ use App\Http\Requests\ValidarDTEFac;
 use App\Models\AreaProduccion;
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
+use App\Models\DataCobranza;
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnulGuiaFact;
 use App\Models\Dte;
@@ -50,7 +52,9 @@ class DteFacturaController extends Controller
     public function index()
     {
         can('listar-dte-factura-gd');
-        return view('dtefactura.index');
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('dtefactura.index',compact('tablashtml'));
     }
 
     public function dtefacturapage($dte_id = ""){
@@ -139,9 +143,18 @@ class DteFacturaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
-        $request->merge(['stanv' => 0]);
-        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+        $request1 = new Request();
+        $request1->merge(['modulo_id' => 11]);
+        $request1->request->set('modulo_id', 11);
+        $request1->merge(['deldesbloqueo' => 1]);
+        $request1->request->set('deldesbloqueo', 1);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
         if(!is_null($clibloq["bloqueo"])){
+            $request1 = new Request();
+            $request1->merge(['cliente_id' => $request->cliente_id]);
+            $request1->request->set('cliente_id', $request->cliente_id);
+            $respuesta = DataCobranza::llenartabla($request1);
+
             return redirect('dtefactura')->with([
                 "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
@@ -402,6 +415,16 @@ class DteFacturaController extends Controller
                 $aux_mensaje = 'Factura creada con exito.';
                 $aux_tipo_alert = 'alert-success';
             }
+            if($dteNew->cliente->clientedesbloqueado){
+                $clientedesbloqueado_id = $dteNew->cliente->clientedesbloqueado->id;
+                if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                    $clientedesbloqueado->usuariodel_id = auth()->id();
+                    $clientedesbloqueado->save();
+                }
+            }
+
             return redirect('dtefactura')->with([
                 'mensaje'=> $aux_mensaje,
                 'tipo_alert' => $aux_tipo_alert
@@ -495,6 +518,10 @@ class DteFacturaController extends Controller
     public function procesar(Request $request)
     {
         if ($request->ajax()) {
+            $request->merge(['modulo_id' => 12]);
+            $request->request->set('modulo_id', 12);
+            $request->merge(['deldesbloqueo' => 1]);
+            $request->request->set('deldesbloqueo', 1);    
             return Dte::procesarDTE($request);
         }
     }
@@ -1160,7 +1187,8 @@ function consultaindex($dte_id){
     }
 
 
-    $sql = "SELECT dte.id,dte.nrodocto as nrodocto_factura,dte.fechahora,cliente.rut,cliente.razonsocial,dte.stasubsii,dte.stasubcob,
+    $sql = "SELECT dte.id,dte.nrodocto as nrodocto_factura,dte.fechahora,cliente.rut,cliente.razonsocial,
+    dte.cliente_id,dte.stasubsii,dte.stasubcob,
     comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -1177,7 +1205,14 @@ function consultaindex($dte_id){
     GROUP BY dtedte1.dte_id) AS nrodocto_guiadesp,
     foliocontrol.tipodocto,foliocontrol.nombrepdf,
     dteoc.oc_id as dteoc_oc_id,dteoc.oc_folder as dteoc_oc_folder,dteoc.oc_file as dteoc_oc_file,
-    dte.updated_at
+    dte.updated_at,
+    clientebloqueado.descripcion as clientebloqueado_desc,
+    cliente.limitecredito,
+    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
     FROM dte INNER JOIN dtedte
     ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
     INNER JOIN dteguiadesp
@@ -1196,6 +1231,14 @@ function consultaindex($dte_id){
     ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
     LEFT JOIN dteoc
     ON dteoc.dte_id = dte.id AND ISNULL(dte.deleted_at) AND ISNULL(dteoc.deleted_at)
+    LEFT JOIN datacobranza
+    ON datacobranza.cliente_id = notaventa.cliente_id
+    LEFT JOIN clientedesbloqueado
+    ON clientedesbloqueado.cliente_id = notaventa.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+    LEFT JOIN clientedesbloqueadomodulo
+    ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 12
+    LEFT JOIN modulo
+    ON modulo.id = clientedesbloqueadomodulo.modulo_id
     WHERE (dte.foliocontrol_id=1)
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.sucursal_id IN ($sucurcadena)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\GuardarDteND;
 use App\Http\Requests\ValidarDTEND;
 use App\Models\CentroEconomico;
+use App\Models\ClienteDesBloqueado;
 use App\Models\Dte;
 use App\Models\DteDet;
 use App\Models\DteDte;
@@ -85,6 +86,14 @@ class DteNDFacturaController extends Controller
             return redirect('dtendfactura')->with([
                 'mensaje' => 'Total items documento: ' . $cont_producto . '. Maximo items permitido por documento: ' . $foliocontrol->maxitemxdoc,
                 'tipo_alert' => 'alert-error'
+            ]);
+        }
+        $request->merge(['stanv' => 0]);
+        $clibloq = clienteBloqueado($dtefac->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){
+            return redirect('dtendfactura')->with([
+                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
             ]);
         }
 
@@ -292,6 +301,15 @@ class DteNDFacturaController extends Controller
         $dte->save();
 
         $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+        if($dte->cliente->clientedesbloqueado){
+            $clientedesbloqueado_id = $dte->cliente->clientedesbloqueado->id;
+            if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                $clientedesbloqueado->usuariodel_id = auth()->id();
+                $clientedesbloqueado->save();
+            }
+        }
         if($aux_foliosdisp <= $foliocontrol->folmindisp){
             return redirect('dtendfactura')->with([
                 'mensaje'=>"Nota de Debito creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,

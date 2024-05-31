@@ -91,21 +91,33 @@ $(document).ready(function () {
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
             $('td', row).eq(10).html(aux_text);
 
-            if(data.clientebloqueado_descripcion != null){
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = ``;
+            if(aux_clienteBloqueado == ""){
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+            }else{
+                aux_displaybtnac = `style="display:none;"`;
+                aux_displaybtnbl = ``;
+            }
+
+            aux_text = 
+            `<a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id})">
+                <span class="fa fa-fw fa-lock text-danger text-danger" style="bottom: 0px;top: 2px;"></span>
+            </a>
+            <a ${aux_displaybtnac} id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm" onclick="aprobarord(${data.id},${data.id})" title="Aprobar Orden Despacho" data-toggle="tooltip">
+                <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
+            </a>
+            <a ${aux_displaybtnac} href="despachoord" class="btn-accion-tabla tooltipsC btnEditar" title="Editar este registro">
+                <i class="fa fa-fw fa-pencil"></i>
+            </a>`;
+            /* if(data.clientebloqueado_descripcion != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
                         "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
                     "</a>";
             }else{
-                /*
-                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='aprobarsol(" + i + "," + data.id + ")' title='Aprobar Orden Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+*/
-/*
-                "<a href='/despachoord/aproborddesp' class='btn-accion-tabla btn-sm tooltipsC btnaprobar' title='Aprobar Orden Despacho'>" +
-                    "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
-                "</a>"+
-*/
                 aux_text = 
                 "<a id='bntaproord'" + data.id + " name='bntaproord'" + data.id + " class='btn-accion-tabla btn-sm' onclick='aprobarord(" + data.id + "," + data.id + ")' title='Aprobar Orden Despacho' data-toggle='tooltip'>"+
                     "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
@@ -113,7 +125,7 @@ $(document).ready(function () {
                 "<a href='despachoord' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
                     "<i class='fa fa-fw fa-pencil'></i>"
                 "</a>";
-            }
+            } */
             $('td', row).eq(14).addClass('updated_at');
             $('td', row).eq(14).attr('id','updated_at' + data.id);
             $('td', row).eq(14).attr('name','updated_at' + data.id);
@@ -164,118 +176,41 @@ function ajaxRequestOD(data,url,funcion) {
 		data: data,
 		success: function (respuesta) {
 			if(funcion=='aproborddesp'){
-                if(respuesta.status == "1"){
-                    swal({
-                        title: '¿ Desea ver PDF Orden Despacho ?',
-                        text: "",
-                        icon: 'success',
-                        buttons: {
-                            cancel: "Cancelar",
-                            confirm: "Aceptar"
-                        },
-                    }).then((value) => {
-                        if (value) {
-                            genpdfOD(respuesta.id,1);
-                        }
-                        //$("#fila"+data['nfila']).remove();                            
-                    });
-                    $("#fila"+respuesta.nfila).remove();
-                    Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                if ('error' in respuesta){
+                    if (respuesta.error == 0){
+                        form.parents('tr').remove();
+                    }
+                    Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
                 }else{
-                    swal({
-                        title: respuesta.title,
-                        text: respuesta.mensaje,
-                        icon: respuesta.tipo_alert,
-                        buttons: {
-                            cancel: "Cerrar",
-                        },
-                    });
-                }
-                return 0;
-                switch (respuesta.mensaje) {
-                    case 'ok':
-                        window.location = respuesta.ruta_crear_guiadesp;
-                        /*
+                    if(respuesta.status == "1"){
                         swal({
-                            title: '¿ Hacer Guia Despacho SII ?',
+                            title: '¿ Desea ver PDF Orden Despacho ?',
                             text: "",
                             icon: 'success',
                             buttons: {
-                                cancel: "No",
-                                confirm: "Si"
+                                cancel: "Cancelar",
+                                confirm: "Aceptar"
                             },
                         }).then((value) => {
                             if (value) {
-                                window.location = respuesta.ruta_crear_guiadesp;
-                            }else{
-                                swal({
-                                    title: '¿ Desea ver PDF Orden Despacho ?',
-                                    text: "",
-                                    icon: 'success',
-                                    buttons: {
-                                        cancel: "Cancelar",
-                                        confirm: "Aceptar"
-                                    },
-                                }).then((value) => {
-                                    if (value) {
-                                        genpdfOD(respuesta.id,1);
-                                        console.log(respuesta.ruta_crear_guiadesp);
-                                        window.location = respuesta.ruta_crear_guiadesp;
-                                    }
-                                    //$("#fila"+data['nfila']).remove();                            
-                                });        
+                                genpdfOD(respuesta.id,1);
                             }
                             //$("#fila"+data['nfila']).remove();                            
                         });
-                        */
-
                         $("#fila"+respuesta.nfila).remove();
                         Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-                        break;
-                    case 'sp':
-                        Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-                        break;
-                    case 'MensajePersonalizado':
-                        Biblioteca.notificaciones(respuesta.menper, 'Plastiservi', 'error');
-                        break;
-                    default:
-                        switch (respuesta.id) {
-                            case 0:
-                                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
-                                break;
-                            case 1:
-                                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
-                                break;
-                            default:
-                                Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo.', 'Plastiservi', 'error');
-                            }
-
+                    }else{
+                        swal({
+                            title: respuesta.title,
+                            text: respuesta.mensaje,
+                            icon: respuesta.tipo_alert,
+                            buttons: {
+                                cancel: "Cerrar",
+                            },
+                        });
+                    }    
                 }
-/*
-				if (respuesta.mensaje == "ok") {
-					swal({
-						title: '¿ Desea ver PDF Orden Despacho ?',
-						text: "",
-						icon: 'success',
-						buttons: {
-							cancel: "Cancelar",
-							confirm: "Aceptar"
-						},
-					}).then((value) => {
-						if (value) {
-							genpdfOD(data.id,1);
-						}
-						$("#fila"+data['nfila']).remove();
-					});
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
-				}
-*/
+
             }
             if(funcion=='buscarTipoBodegaOrdDesp'){
                 if(respuesta.datas.length > 0){

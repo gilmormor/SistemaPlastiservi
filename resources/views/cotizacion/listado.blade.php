@@ -120,7 +120,10 @@
 						$aux_ancho = $CotizacionDetalle->producto->diametro;
 						$aux_espesor = 0; //$CotizacionDetalle->espesor;
 						$aux_largo = $CotizacionDetalle->producto->long . " mts";
-						$aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod->cla_nombre;
+						$aux_cla_sello_nombre = "";
+						if(isset($CotizacionDetalle->producto->claseprod)){
+							$aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod->cla_nombre;
+						}
 						$aux_atribAcuTec = "";
 						$aux_staAT = false;
 						if ($CotizacionDetalle->acuerdotecnicotemp != null){
@@ -149,15 +152,6 @@
 						<td class="textcenter">{{$CotizacionDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($CotizacionDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$CotizacionDetalle->unidadmedida->nombre}}</td>
-						<!--San Bernardo
-						<td class="textleft">{{$CotizacionDetalle->producto->nombre}}</td>
-						<td class="textleft">{{$CotizacionDetalle->producto->claseprod->cla_nombre}}</td>
-						<td class="textcenter">
-							{{$CotizacionDetalle->producto->diametro}}
-						</td>
-						<td class="textright">{{$CotizacionDetalle->producto->long}} mts</td>
-						<td class="textcenter">{{$CotizacionDetalle->producto->tipounion}}</td>
-						-->
 						<td class="textleft">{!!$aux_producto_nombre!!}
 							@if ($aux_staAT)
 								<br><span class='small-text'>{{$aux_atribAcuTec}}</span>

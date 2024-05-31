@@ -271,9 +271,10 @@ function ajaxRequest(data,url,funcion) {
 
 function datosFac(filtro = 0){
     var data1 = {
-        id      : $("#rut").attr("cliente_id"),
-        rut     : eliminarFormatoRutret($("#rut").val()),
-        _token  : $('input[name=_token]').val()
+        id         : $("#rut").attr("cliente_id"),
+        cliente_id : $("#rut").attr("cliente_id"),
+        rut        : eliminarFormatoRutret($("#rut").val()),
+        _token     : $('input[name=_token]').val()
     };
     var data2 = "?&rut="+data1.rut +
     "&_token="+data1._token

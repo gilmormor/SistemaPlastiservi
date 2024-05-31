@@ -142,6 +142,12 @@ class Cliente extends Model
     {
         return $this->hasOne(ClienteDesBloqueadoNV::class);
     }
+
+        //RELACION UNO A UNO datacobranza
+        public function datacobranza()
+        {
+            return $this->hasOne(DataCobranza::class);
+        }
     
     public static function clientesxUsuario($vendedor_id = '0',$cliente_id = 0){
         $respuesta = array();
