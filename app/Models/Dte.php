@@ -2374,7 +2374,8 @@ class Dte extends Model
         dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at,
         (dte.mntneto * foliocontrol.signo) as mntneto,(dte.iva * foliocontrol.signo) as iva,(dte.mnttotal * foliocontrol.signo) as mnttotal_a,(dte.mnttotal * foliocontrol.signo) as mnttotal,
         sucursal.nombre as sucursal_nombre,if(isnull(dtefac.fchvenc),dte.fchemis,dtefac.fchvenc) as fchvenc,
-        concat(persona.nombre,' ',persona.apellido) as vendedor_nombre,formapago.descripcion as formapago_descripcion
+        concat(persona.nombre,' ',persona.apellido) as vendedor_nombre,formapago.descripcion as formapago_descripcion,
+        centroeconomico.nombre as centroeconomico_nombre
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         LEFT JOIN dteguiadesp
@@ -2403,6 +2404,8 @@ class Dte extends Model
         ON persona.id = vendedor.persona_id AND ISNULL(persona.deleted_at)
         LEFT JOIN formapago
         ON formapago.id = dtefac.formapago_id AND ISNULL(formapago.deleted_at)
+        INNER JOIN centroeconomico
+        ON centroeconomico.id = dte.centroeconomico_id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond

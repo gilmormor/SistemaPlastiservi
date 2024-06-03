@@ -417,7 +417,7 @@ function exportarExcel() {
         aux_totalIva = 0;
         aux_total = 0;
         datosExcel.push(["","","","","","","","","","","",""]);
-        datosExcel.push(["Suc","Doc","Fecha","Numero","FechaVenc","RUT","Razon Social","Vendedor","FormaPago","Neto","IVA","Total"]);
+        datosExcel.push(["Suc","CentEco","Doc","Fecha","Numero","FechaVenc","RUT","Razon Social","Vendedor","FormaPago","Neto","IVA","Total"]);
         data.datos.forEach(function(registro) {
             //console.log(registro);
             aux_totalNeto += registro.mntneto;
@@ -437,6 +437,7 @@ function exportarExcel() {
             aux_fechavenc = new Date(registro.fchvenc + " 01:00:00");
             var filaExcel = [
                 registro.sucursal_nombre,
+                registro.centroeconomico_nombre,
                 registro.foliocontrol_doc,
                 fechaddmmaaaa(aux_fecha),
                 registro.nrodocto,
@@ -457,7 +458,7 @@ function exportarExcel() {
         /* if(aux_totalNeto != 0){
             datosExcel.push(["","","","","","","","","Total: ",aux_totalNeto,aux_totalIva,aux_total]);
         } */
-        datosExcel.push(["","","","","","","","","Total: ",aux_totalNeto,aux_totalIva,aux_total]);
+        datosExcel.push(["","","","","","","","","","Total: ",aux_totalNeto,aux_totalIva,aux_total]);
 
         createExcel(datosExcel);
 
@@ -498,11 +499,12 @@ function createExcel(datosExcel) {
     ajustarcolumnaexcel(worksheet,"J");
     ajustarcolumnaexcel(worksheet,"K");
     ajustarcolumnaexcel(worksheet,"L");
+    ajustarcolumnaexcel(worksheet,"M");
     
     // Combinar celdas desde [4,0] hasta [4,2]
 
     // Recorrer la columna 7 y dar formato con punto para separar los miles
-    const columnG = worksheet.getColumn(10);
+    const columnG = worksheet.getColumn(11);
     columnG.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -510,7 +512,7 @@ function createExcel(datosExcel) {
     });
 
     // Recorrer la columna 8 y dar formato con punto para separar los miles
-    const columnH = worksheet.getColumn(11);
+    const columnH = worksheet.getColumn(12);
     columnH.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -518,7 +520,7 @@ function createExcel(datosExcel) {
     });
 
     // Recorrer la columna 9 y dar formato con punto para separar los miles
-    const columnI = worksheet.getColumn(12);
+    const columnI = worksheet.getColumn(13);
     columnI.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -541,14 +543,14 @@ function createExcel(datosExcel) {
 
     //Establecer negrita a titulos
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 13; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
     }
 
     // Establecer negrita a totales
     row = worksheet.getRow(aux_filas);
-    for (let i = 9; i <= 12; i++) {
+    for (let i = 9; i <= 13; i++) {
         cell = row.getCell(i);
         cell.font = { bold: true };
         cell.alignment = { horizontal: "right" };
@@ -558,11 +560,11 @@ function createExcel(datosExcel) {
 
     //Fusionar celdas de Titulo
     const startCol = 0;
-    const endCol = 11;
+    const endCol = 12;
     worksheet.mergeCells(1, startCol, 1, endCol);
     //Fusionar celdas Sucursal
     const startCol1 = 0;
-    const endCol1 = 11;
+    const endCol1 = 12;
     worksheet.mergeCells(2, startCol1, 2, endCol1);
     //Negrita Columna Sucursal
     const row3 = worksheet.getRow(2);
@@ -571,7 +573,7 @@ function createExcel(datosExcel) {
 
     //Fecha Reporte
     const row2 = worksheet.getRow(1);
-    cell = row2.getCell(12);
+    cell = row2.getCell(13);
     cell.alignment = { horizontal: "center", vertical: "middle" };
     
 
