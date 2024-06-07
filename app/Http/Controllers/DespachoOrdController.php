@@ -14,6 +14,7 @@ use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteSucursal;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
+use App\Models\DataCobranza;
 use App\Models\DespachoObs;
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrd_InvMov;
@@ -58,19 +59,10 @@ class DespachoOrdController extends Controller
     public function index()
     {
         can('listar-orden-despacho');
-        /*
-        $despachoordanul = DespachoOrdAnul::select(['despachoord_id'])->get();
-        $notaventacerradaArray = NotaVentaCerrada::pluck('notaventa_id')->toArray();
-        $datas = DespachoOrd::orderBy('id')
-                ->whereNull('aprguiadesp')
-                ->whereNull('guiadespacho')->whereNull('numfactura')
-                ->whereNotIn('id',  $despachoordanul)
-                ->whereNotIn('notaventa_id', $notaventacerradaArray)
-                ->get();
-        return view('despachoord.index', compact('datas'));
-        */
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         $solenvord = 0; //ESTATUS ENVIAR SOL DESP A ORDEN DESPACHO
-        return view('despachoord.index',compact('solenvord'));
+        return view('despachoord.index',compact('solenvord','tablashtml'));
     }
 
     public function despachoordpage(Request $request){
@@ -180,13 +172,20 @@ class DespachoOrdController extends Controller
         }
 
         $request = new Request();
-        $request->merge(['stanv' => 0]);
-        $request->request->set('stanv', 0);
+        $request->merge(['modulo_id' => 7]);
+        $request->request->set('modulo_id', 7);
+        $request->merge(['notaventa_id' => $data->notaventa_id]);
+        $request->request->set('notaventa_id', $data->notaventa_id);
         //$cliente = Cliente::findOrFail($request->cliente_id);
         $clibloq = clienteBloqueado($data->notaventa->cliente_id,0,$request);
         if(!is_null($clibloq["bloqueo"])){
+            $request = new Request();
+            $request->merge(['cliente_id' => $data->notaventa->cliente_id]);
+            $request->request->set('cliente_id', $data->notaventa->cliente_id);
+            $respuesta = DataCobranza::llenartabla($request);
+    
             return redirect('despachoord')->with([
-                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         }
@@ -197,6 +196,8 @@ class DespachoOrdController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+
+
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
@@ -301,15 +302,6 @@ class DespachoOrdController extends Controller
     public function guardar(ValidarDespachoOrd $request)
     {
         can('guardar-orden-despacho');
-        //dd($request);
-        $request->merge(['stanv' => 0]);
-        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
-        if(!is_null($clibloq["bloqueo"])){
-            return redirect('despachoord')->with([
-                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
-                "tipo_alert" => "alert-error"
-            ]);
-        }
 
         ////VALIDAR CUANDO EXSISTEN VARIOS ITEM DE UN MISMO PRODUCTO
         ////LA CANTIDAD DEL COD DE PRODUCTO REPETIDO LO AGRUPO EN UNO Y LO COMPARO CON EL STOCK DEL PRODUCTO
@@ -436,6 +428,27 @@ class DespachoOrdController extends Controller
                 ]);
             }
             */
+
+            $request1 = new Request();
+            $request1->merge(['modulo_id' => 7]);
+            $request1->request->set('modulo_id', 7);
+            $request1->merge(['notaventa_id' => $despachosol->notaventa_id]);
+            $request1->request->set('notaventa_id', $despachosol->notaventa_id);
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $clibloq = clienteBloqueado($despachosol->notaventa->cliente_id,0,$request1);
+            if(!is_null($clibloq["bloqueo"])){
+                $request1 = new Request();
+                $request1->merge(['cliente_id' => $despachosol->notaventa->cliente_id]);
+                $request1->request->set('cliente_id', $despachosol->notaventa->cliente_id);
+                $respuesta = DataCobranza::llenartabla($request1);
+    
+                return redirect('despachoord')->with([
+                    "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                    "tipo_alert" => "alert-error"
+                ]);
+            }
+    
             if($despachosol->updated_at == $request->updated_at){
                 $despachosol->updated_at = date("Y-m-d H:i:s");
                 $despachosol->save();
@@ -481,15 +494,6 @@ class DespachoOrdController extends Controller
                         }
                     }
                 }
-                if($despachoord->notaventa->cliente->clientedesbloqueado){
-                    $clientedesbloqueado_id = $despachoord->notaventa->cliente->clientedesbloqueado->id;
-                    if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
-                        //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                        $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
-                        $clientedesbloqueado->usuariodel_id = auth()->id();
-                        $clientedesbloqueado->save();
-                    }
-                }
                 return redirect('despachoord')->with([
                     'mensaje'=>'Registro creado con exito.',
                     'tipo_alert' => 'alert-success'
@@ -530,17 +534,18 @@ class DespachoOrdController extends Controller
         can('editar-orden-despacho');
         $data = DespachoOrd::findOrFail($id);
 
-        $request = new Request();
-        $request->merge(['stanv' => 0]);
-        $request->request->set('stanv', 0);
-        //$cliente = Cliente::findOrFail($request->cliente_id);
+        /* $request = new Request();
+        $request->merge(['modulo_id' => 7]);
+        $request->request->set('modulo_id', 7);
+        $request->merge(['notaventa_id' => $data->notaventa_id]);
+        $request->request->set('notaventa_id', $data->notaventa_id);
         $clibloq = clienteBloqueado($data->notaventa->cliente_id,0,$request);
-        if(!is_null($clibloq["bloqueo"])){
-            return redirect('despachoord')->with([
+        if(!is_null($clibloq["bloqueo"])){   
+            return redirect('despachosol')->with([
                 "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
-        }
+        } */
 
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
@@ -646,16 +651,6 @@ class DespachoOrdController extends Controller
     public function actualizar(ValidarDespachoOrd $request, $id)
     {
         can('guardar-orden-despacho');
-        $request->merge(['stanv' => 0]);
-        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
-        if(!is_null($clibloq["bloqueo"])){
-            return redirect('despachoord')->with([
-                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
-                "tipo_alert" => "alert-error"
-            ]);
-        }
-
-
         $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$request->notaventa_id)->get();
         //dd($request);
         if(count($notaventacerrada) == 0){
@@ -672,6 +667,25 @@ class DespachoOrdController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);
             }
+            /* $request1 = new Request();
+            $request1->merge(['modulo_id' => 7]);
+            $request1->request->set('modulo_id', 7);
+            $request1->merge(['notaventa_id' => $despachoord->notaventa_id]);
+            $request1->request->set('notaventa_id', $despachoord->notaventa_id);
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $clibloq = clienteBloqueado($despachoord->notaventa->cliente_id,0,$request1);
+            if(!is_null($clibloq["bloqueo"])){
+                $request1 = new Request();
+                $request1->merge(['cliente_id' => $despachoord->notaventa->cliente_id]);
+                $request1->request->set('cliente_id', $despachoord->notaventa->cliente_id);
+                $respuesta = DataCobranza::llenartabla($request1);
+    
+                return redirect('despachoord')->with([
+                    "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                    "tipo_alert" => "alert-error"
+                ]);
+            } */
             if($despachoord->updated_at == $request->updated_at){
                 $despachoord->updated_at = date("Y-m-d H:i:s");
                 $despachoord->comunaentrega_id = $request->comunaentrega_id;
@@ -741,16 +755,6 @@ class DespachoOrdController extends Controller
                         }
                     }
                 }
-                if($despachoord->notaventa->cliente->clientedesbloqueado){
-                    $clientedesbloqueado_id = $despachoord->notaventa->cliente->clientedesbloqueado->id;
-                    if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
-                        //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                        $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
-                        $clientedesbloqueado->usuariodel_id = auth()->id();
-                        $clientedesbloqueado->save();
-                    }
-                }
-
                 return redirect('despachoord')->with([
                                                             'mensaje'=>'Registro actualizado con exito.',
                                                             'tipo_alert' => 'alert-success'
@@ -1090,6 +1094,27 @@ class DespachoOrdController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
+            $request1 = new Request();
+            $request1->merge(['modulo_id' => 8]);
+            $request1->request->set('modulo_id', 8);
+            $request1->merge(['notaventa_id' => $despachoord->notaventa_id]);
+            $request1->request->set('notaventa_id', $despachoord->notaventa_id);
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $bloqcli = clienteBloqueado($despachoord->notaventa->cliente_id,0,$request1);
+            if(!is_null($bloqcli["bloqueo"])){
+                $request1 = new Request();
+                $request1->merge(['cliente_id' => $despachoord->notaventa->cliente_id]);
+                $request1->request->set('cliente_id', $despachoord->notaventa->cliente_id);
+                $respuesta = DataCobranza::llenartabla($request1);
+
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                    'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
+                ]);
+            }
+
             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
             $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Despacho (La bodega despacho debe ser unica)
             validarSiExisteBodega($despachoord,$invmoduloBod);   
@@ -1779,6 +1804,8 @@ class DespachoOrdController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         $tablashtml['sololectura'] = 0;
         $tablashtml['solenvord'] = 0; //ESTATUS SOLICITUD DESPACHO ENVIADA A ORD DESPACHO 
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -1798,6 +1825,8 @@ class DespachoOrdController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         $tablashtml['sololectura'] = 0;
         $tablashtml['solenvord'] = 1; //ESTATUS SOLICITUD DESPACHO ENVIADA A ORD DESPACHO 
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -2011,7 +2040,7 @@ function consultaindex(){
     $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
 
     $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
-    cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
+    notaventa.cliente_id,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
     '' as notaventaxk,comuna.nombre as comuna_nombre, sucursal.nombre as sucursal_nombre,
     tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
     SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
@@ -2023,7 +2052,14 @@ function consultaindex(){
     WHERE dteoc.oc_id = notaventa.oc_id
     AND isnull(dteguiadesp.notaventa_id)
     AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
-    despachoord.updated_at
+    despachoord.updated_at,
+    clientebloqueado.descripcion as clientebloqueado_desc,
+    cliente.limitecredito,
+    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
     FROM despachoord INNER JOIN notaventa
     ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente
@@ -2046,6 +2082,14 @@ function consultaindex(){
     ON producto.id = notaventadetalle.producto_id AND ISNULL(producto.deleted_at)
     INNER JOIN categoriaprod
     ON categoriaprod.id=producto.categoriaprod_id AND ISNULL(categoriaprod.deleted_at)
+    LEFT JOIN datacobranza
+    ON datacobranza.cliente_id = notaventa.cliente_id
+    LEFT JOIN clientedesbloqueado
+    ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+    LEFT JOIN clientedesbloqueadomodulo
+    ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 8
+    LEFT JOIN modulo
+    ON modulo.id = clientedesbloqueadomodulo.modulo_id
     WHERE categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
         FROM categoriaprodsuc 
         WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id

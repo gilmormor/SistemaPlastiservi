@@ -174,7 +174,9 @@ class NotaVentaController extends Controller
         
         //dd($cotizaciones);
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
-        return view('notaventa.index', compact('cotizaciones','aux_statusPant'));
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('notaventa.index', compact('cotizaciones','aux_statusPant','tablashtml'));
     }
     
     public function notaventapage(){
@@ -201,14 +203,32 @@ class NotaVentaController extends Controller
             $aux_condvendcot = 'true';
         }
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = "SELECT notaventa.id,notaventa.fechahora,notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,
+        $sql = "SELECT notaventa.id,notaventa.fechahora,notaventa.cliente_id,notaventa.cotizacion_id,
+                    razonsocial,aprobstatus,aprobobs,
                     oc_id,oc_file,'' as btnguardar,'' as btnanular,'' as pdfnv,
                     (SELECT COUNT(*) 
                     FROM notaventadetalle 
                     WHERE notaventadetalle.notaventa_id=notaventa.id and 
-                    notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
+                    notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador,
+                    cliente.limitecredito,
+                    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+                    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+                    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+                    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+                    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id,
+                    clientebloqueado.descripcion as clientebloqueado_desc
                 FROM notaventa inner join cliente
                 on notaventa.cliente_id = cliente.id
+                LEFT JOIN clientebloqueado
+                ON notaventa.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+                LEFT JOIN datacobranza
+                ON datacobranza.cliente_id = notaventa.cliente_id
+                LEFT JOIN clientedesbloqueado
+                ON clientedesbloqueado.cliente_id = notaventa.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+                LEFT JOIN clientedesbloqueadomodulo
+                ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 3
+                LEFT JOIN modulo
+                ON modulo.id = clientedesbloqueadomodulo.modulo_id
                 where $aux_condvend
                 and anulada is null
                 and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
@@ -360,13 +380,13 @@ class NotaVentaController extends Controller
             ]);    
         }
         $request = new Request();
-        $request->merge(['stanv' => 1]);
-        $request->request->set('stanv', 1);
+        $request->merge(['modulo_id' => 2]);
+        $request->request->set('modulo_id', 2);
         //$cliente = Cliente::findOrFail($request->cliente_id);
         $clibloq = clienteBloqueado($data->cliente_id,0,$request);
         if(!is_null($clibloq["bloqueo"])){
             return redirect('notaventa')->with([
-                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         }
@@ -481,12 +501,13 @@ class NotaVentaController extends Controller
     {
         //dd($request);
         can('guardar-notaventa');
-        $request->merge(['stanv' => 1]);
+        $request->merge(['modulo_id' => 2]);
+        $request->merge(['deldesbloqueo' => 1]);
         //$cliente = Cliente::findOrFail($request->cliente_id);
         $clibloq = clienteBloqueado($request->cliente_id,0,$request);
         if(!is_null($clibloq["bloqueo"])){
             return redirect('notaventa')->with([
-                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         }
@@ -955,6 +976,20 @@ class NotaVentaController extends Controller
         can('guardar-notaventa');
         if ($request->ajax()) {
             $notaventa = NotaVenta::findOrFail($request->id);
+
+            $request->merge(['modulo_id' => 3]);
+            $request->request->set('modulo_id', 3);
+            $request->merge(['deldesbloqueo' => 1]);
+            $request->request->set('deldesbloqueo', 1);
+            $bloqcli = clienteBloqueado($notaventa->cliente_id,0,$request);
+            if($bloqcli["bloqueo"]){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                    'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
+                ]);
+            }
+
             $notaventa->aprobstatus = $request->aprobstatus;    
             if($request->aprobstatus=='1'){
                 $notaventa->aprobusu_id = auth()->id();
@@ -1594,6 +1629,7 @@ class NotaVentaController extends Controller
         $datas = DB::select($sql);
         //dd($datas[0]->sumcant);
         if(count($datas) > 0){
+            $cliente = Cliente::findOrFail($datas[0]->cliente_id);
             $aux_cantdesp = NotaVenta::consultatotcantod($request->id);
             if($aux_cantdesp >= $datas[0]->sumcant){
             //if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp !== null)){
@@ -1618,6 +1654,9 @@ class NotaVentaController extends Controller
                 return [
                     "id" => 1,
                     "title" => "",
+                    "cliente_id" => $cliente->id,
+                    "rut" => $cliente->rut,
+                    "razonsocial" => $cliente->razonsocial,
                     "mensaje" => "",
                     "tipo_alert" => ''
                 ];    

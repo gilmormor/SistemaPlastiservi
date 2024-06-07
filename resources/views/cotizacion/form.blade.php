@@ -31,6 +31,7 @@
     $selecmultprod = false;
 ?>
 <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
+<input type="hidden" name="modulo_id" id="modulo_id" value="{{old('modulo_id', $tablas['modulo_id'] ?? '')}}">
 
 <?php
     $disabledReadOnly = "";

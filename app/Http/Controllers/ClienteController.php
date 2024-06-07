@@ -677,6 +677,7 @@ class ClienteController extends Controller
     }
 
     public function buscarCliRut(Request $request){
+        //dd($request);
         if($request->ajax()){
             $respuesta = array();
             $user = Usuario::findOrFail(auth()->id());
@@ -703,9 +704,11 @@ class ClienteController extends Controller
             and isnull(cliente.deleted_at)
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))";
             $cliente = DB::select($sql);
-            valBloqCliSisCob($cliente,$request);
-            //dd($cliente);
+            $aux_respuesta = valBloqCliSisCob($cliente,$request,0);
             $respuesta['cliente'] = $cliente;
+            if(isset($aux_respuesta["error"])){
+                $respuesta['cliente'][0]->descripcion = $aux_respuesta["mensaje"];
+            }
 
             $sql= "SELECT sucursal.id,sucursal.nombre
             FROM cliente left JOIN cliente_sucursal
@@ -741,18 +744,24 @@ class ClienteController extends Controller
             $sql= "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.telefono,cliente.email,
             cliente.direccion,cliente.vendedor_id,cliente.contactonombre,cliente.formapago_id,
             cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
-            clientebloqueado.descripcion,clientebloqueado.descripcion as clientebloqueado_descripcion
+            clientebloqueado.descripcion,clientebloqueado.descripcion as clientebloqueado_descripcion,
+            cliente.limitecredito
             FROM cliente left JOIN clientebloqueado
             ON cliente.id=clientebloqueado.cliente_id and isnull(cliente.deleted_at) and isnull(clientebloqueado.deleted_at)
             WHERE cliente.rut='$request->rut'
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))
             and $aux_clientesvendedorCond;";
             $cliente = DB::select($sql);
-            //dd($cliente);
-            valBloqCliSisCob($cliente,$request);
 
+            $aux_respuesta = valBloqCliSisCob($cliente,$request,1); //PRIMERO CONSULTO DEUDA CONTRA SISTEMA COBRANZA
+            $aux_Tdeuda = $cliente[0]->TDeuda; //GUARDO EL VALOR DE TOTAL DEUDA
+            $aux_respuesta = valBloqCliSisCob($cliente,$request,0); //AQUI CONSULTO SI ESTA DESBLOQUEADO O NO
+            $cliente[0]->TDeuda = $aux_Tdeuda; //LUEGO ASIGNO EL TOTAL DEUDA A $cliente[0]->TDeuda
             $respuesta['cliente'] = $cliente;
-
+            if(isset($aux_respuesta["error"])){
+                $respuesta['cliente'][0]->descripcion = $aux_respuesta["mensaje"];
+            }
+            //dd($cliente);
             $sql= "SELECT sucursal.id,sucursal.nombre
             FROM cliente left JOIN cliente_sucursal
             ON cliente.id=cliente_sucursal.cliente_id and cliente_sucursal.sucursal_id in ($sucurcadena) and isnull(cliente_sucursal.deleted_at)
@@ -770,10 +779,17 @@ class ClienteController extends Controller
 
 }
 
-function valBloqCliSisCob(&$cliente,$request){
+function valBloqCliSisCob(&$cliente,$request,$aux_consultadeuda){
     if(count($cliente) > 0){
-        $staBloqueo = clienteBloqueado($cliente[0]->id,0,$request);
+        $staBloqueo = clienteBloqueado($cliente[0]->id,$aux_consultadeuda,$request);
+        if(isset($staBloqueo["error"])){
+            return $staBloqueo;
+        }
         $cliente[0]->descripcion = $staBloqueo ["bloqueo"];
+        $cliente[0]->TDeuda = 0;
+        if(isset($staBloqueo["datacobranza"]["TDeuda"])){
+            $cliente[0]->TDeuda = $staBloqueo["datacobranza"]["TDeuda"];
+        }
         /* $clientebus = Cliente::findOrFail($cliente[0]->id);
         if($clientebus->clientedesbloqueado){
             $cliente[0]->descripcion = null;

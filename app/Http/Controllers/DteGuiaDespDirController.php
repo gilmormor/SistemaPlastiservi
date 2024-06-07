@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
 use App\Models\Comuna;
+use App\Models\DataCobranza;
 use App\Models\Dte;
 use App\Models\DteDet;
 use App\Models\DteGuiaDesp;
@@ -29,7 +31,9 @@ class DteGuiaDespDirController extends Controller
     public function index()
     {
         can('listar-dte-guia-desp-directa');
-        return view('dteguiadespdir.index');
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('dteguiadespdir.index',compact('tablashtml'));
     }
 
     public function dteguiadespdirpage($dte_id = ""){
@@ -89,6 +93,23 @@ class DteGuiaDespDirController extends Controller
                     'id' => 0,
                     'mensaje'=>'No es posible hacer Guia Despacho, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
                     'tipo_alert' => 'alert-error'
+                ]);
+            }
+            $request1 = new Request();
+            $request1->merge(['modulo_id' => 13]);
+            $request1->request->set('modulo_id', 13);
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
+            if(!is_null($clibloq["bloqueo"])){
+                $request1 = new Request();
+                $request1->merge(['cliente_id' => $request->cliente_id]);
+                $request1->request->set('cliente_id', $request->cliente_id);
+                $respuesta = DataCobranza::llenartabla($request1);
+    
+                return redirect('dteguiadespdir')->with([
+                    "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                    "tipo_alert" => "alert-error"
                 ]);
             }
             $dte = new Dte();
@@ -345,9 +366,17 @@ function consultaindex($dte_id){
         $aux_condFiltrarxUsuario = " dte.usuario_id = $user->id ";
     }
     $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,dte.stasubsii,
+    dte.cliente_id,
     comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
-    dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at
+    dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at,
+    clientebloqueado.descripcion as clientebloqueado_desc,
+    cliente.limitecredito,
+    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
     FROM dte LEFT JOIN dteoc
     ON dteoc.dte_id = dte.id AND ISNULL(dte.deleted_at) AND ISNULL(dteoc.deleted_at)
     INNER JOIN dteguiadesp
@@ -360,6 +389,14 @@ function consultaindex($dte_id){
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
     INNER JOIN foliocontrol
     ON foliocontrol.id = dte.foliocontrol_id
+    LEFT JOIN datacobranza
+    ON datacobranza.cliente_id = dte.cliente_id
+    LEFT JOIN clientedesbloqueado
+    ON clientedesbloqueado.cliente_id = dte.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+    LEFT JOIN clientedesbloqueadomodulo
+    ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 14
+    LEFT JOIN modulo
+    ON modulo.id = clientedesbloqueadomodulo.modulo_id
     WHERE dte.foliocontrol_id=2
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.id NOT IN (SELECT dtedte.dte_id FROM dtedte WHERE ISNULL(dtedte.deleted_at))

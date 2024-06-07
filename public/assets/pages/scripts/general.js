@@ -3204,6 +3204,17 @@ function ajaxRequestGeneral(data,url,funcion) {
 					$("#fila" + datatemp.dte_id).attr("updated_at",respuesta.updated_at);
 				});
 			}
+			if(funcion == "datacobranza/llenartabla"){
+				aux_mensaje = "Cliente bloqueado";
+				aux_tipoaler = "error";
+				if(respuesta.bloqueo != 0){
+					$(".botonac" + datatemp.id).fadeIn("slow");
+					$(".botonbloq" + datatemp.id).hide();
+					aux_mensaje = "Cliente desbloqueado"
+					aux_tipoaler = "success";
+				}
+				Biblioteca.notificaciones(aux_mensaje, 'Plastiservi', aux_tipoaler);
+			}
 
 		},
 		error: function () {
@@ -3235,10 +3246,11 @@ function anulardte(id){
     });
 }
 
-function procesarDTE(id){
+function procesarDTE(id,aux_modulo_id){
     var data = {
         dte_id : id,
         nfila  : id,
+		modulo_id : aux_modulo_id,
         updated_at : $("#fila" + id).attr("updated_at"),
         _token: $('input[name=_token]').val()
     };
@@ -3704,4 +3716,57 @@ function volverSubirDteSisCob(dte_id,aux_slug = "subir-dte-sistema-cobranza"){
 		}
 	});
 
+}
+
+function validarClienteBloqueado(data){
+	aux_clienteBloqueado = "";
+	if((data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null) || ($("#stabloxdeusiscob").val() == "1" && ((data.datacobranza_tdeudafec > 0) || (data.datacobranza_tdeuda > data.limitecredito)))){
+		aux_clienteBloqueado = "";
+		if((data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null)){
+			aux_clienteBloqueado = data.clientebloqueado_desc;
+		}
+		if($("#stabloxdeusiscob").val() == "1")
+		{
+			if(data.datacobranza_tdeuda > data.limitecredito){
+				aux_clienteBloqueado += "Excede cupo de Crédito ";
+			}
+			if(data.datacobranza_tdeudafec > 0){
+				aux_clienteBloqueado += "Factura(s) Vencida(s)";
+			}
+		}
+	}
+	return aux_clienteBloqueado;
+}
+
+function llenartablaDataCobranza(id,cliente_id,notaventa_id){
+	data = {
+		id           : id,
+		cliente_id   : cliente_id,
+		notaventa_id : notaventa_id,
+		_token       : $('input[name=_token]').val()
+	};
+	ruta= "/datacobranza/llenartabla";
+	ajaxRequestGeneral(data,ruta,'datacobranza/llenartabla');
+}
+
+function validarClienteBloqueadoxModulo(data){
+	aux_clienteBloqueado = "";
+	if((data.modulo_id === null) && ($("#stabloxdeusiscob").val() == "1" && ((data.datacobranza_tdeudafec > 0) || (data.datacobranza_tdeuda > data.limitecredito)))){
+		aux_clienteBloqueado = "";
+		if((data.modulo_id === null)){
+			if(data.clientebloqueado_desc !== null){
+				aux_clienteBloqueado = data.clientebloqueado_desc;
+			}
+		}
+		if($("#stabloxdeusiscob").val() == "1")
+		{
+			if(data.datacobranza_tdeuda > data.limitecredito){
+				aux_clienteBloqueado += "Excede cupo de Crédito ";
+			}
+			if(data.datacobranza_tdeudafec > 0){
+				aux_clienteBloqueado += "Factura(s) Vencida(s)";
+			}
+		}
+	}
+	return aux_clienteBloqueado;
 }

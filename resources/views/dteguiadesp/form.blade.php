@@ -376,7 +376,7 @@
                                         $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
                                     }else{
                                         //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
-                                        $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_descripcion);
+                                        $aux_cla_nombre =str_replace("N/A","",isset($producto->claseprod) ? $producto->claseprod->cla_descripcion : "");
                                         $aux_diametro = $producto->diametro > 0 ? " D:" . $producto->diametro : "";
                                         $aux_long = $producto->long ? " L:" . $producto->long : "";
                                         $aux_tipounion = "";

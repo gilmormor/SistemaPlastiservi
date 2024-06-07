@@ -16,8 +16,13 @@ Cliente Desbloqueado
             <div class="box-header with-border">
                 <h3 class="box-title">Cliente Desbloqueado</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('crear_clientedesbloqueado')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo Desbloqueo
+                    <a href="{{route('crear_clientedesbloqueado', ['id' => '1'])}}" class="btn btn-block btn-success btn-sm">
+                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo x NotaVenta
+                    </a>
+                </div>
+                <div class="box-tools pull-right">
+                    <a href="{{route('crear_clientedesbloqueado', ['id' => '0'])}}" class="btn btn-block btn-success btn-sm">
+                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo x Cliente
                     </a>
                 </div>
             </div>
@@ -28,8 +33,10 @@ Cliente Desbloqueado
                             <th class="width30">ID</th>
                             <th class="width70">CodCli</th>
                             <th class="width70">RUT</th>
+                            <th class="width40">NV</th>
                             <th>Nombre</th>
                             <th>Obs</th>
+                            <th>Permisos</th>
                             <th class="width70">Acción</th>
                         </tr>
                     </thead>

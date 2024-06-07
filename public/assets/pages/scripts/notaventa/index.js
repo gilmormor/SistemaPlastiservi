@@ -171,20 +171,35 @@ $(document).ready(function () {
 			}
 			//clase tools1: hace el efecto de mostrar o no los botones al pasar el cursor sobre la fila 
 			//Clase acciones: hace el efecto de atenuar los botones y poner un circulo al rededor del boton
+
+			aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+			aux_displaybtnac = ``;
+			aux_displaybtnbl = ``;
+			if(aux_clienteBloqueado == ""){
+				aux_displaybtnac = ``;
+				aux_displaybtnbl = `style="display:none;"`;
+			}else{
+				aux_displaybtnac = `style="display:none;"`;
+				aux_displaybtnbl = ``;
+			}
+	
 			aux_text = 
-				"<div class='tools11'>" +
-					"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC action-buttons' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar'>" +
-						"<!--<span class='glyphicon glyphicon-floppy-save sombra' style='bottom: 0px;top: 2px;'></span>-->" + 
-						"<i class='fa fa-fw fa-save acciones1 fa-lg'></i>" +
-					"</a>  " +
-					"<a href='notaventa' class='btn-accion-tabla tooltipsC btnEditar action-buttons' title='Editar'>" +
-						"<i class='fa fa-fw fa-pencil acciones1 fa-lg'></i>" +
-					"</a>" +
-					"<a id='btnanularnv" + data.id + "' name='btnanularnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC action-buttons' onclick='anularnv(" + data.id + "," + data.id + ")' title='Anular'>" +
-						"<!--<span class='glyphicon glyphicon-remove sombra' style='bottom: 0px;top: 2px;'></span>-->" + 
-						"<i class='fa fa-fw fa-close acciones1 fa-lg text-danger'></i>" +
-					"</a>  " +
-				"</div>";
+				`<div class="tools11">
+					<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0)">
+						<button type="button" class="btn btn-default btn-xs">
+							<i class="fa fa-fw fa-lock text-danger"></i>
+						</button>
+					</a>
+					<a ${aux_displaybtnac} id="bntaprobnv${data.id}" name="bntaprobnv${data.id}" class="btn-accion-tabla btn-sm tooltipsC action-buttons botonac${data.id}" onclick="aprobarnv(${data.id},${data.id},${aprobstatus})" title="Aprobar">
+						<i class="fa fa-fw fa-save acciones1 fa-lg"></i>
+					</a>
+					<a href="notaventa" class="btn-accion-tabla tooltipsC btnEditar action-buttons" title="Editar">
+						<i class="fa fa-fw fa-pencil acciones1 fa-lg"></i>
+					</a>
+					<a id="btnanularnv${data.id}" name="btnanularnv${data.id}" class="btn-accion-tabla btn-sm tooltipsC action-buttons" onclick="anularnv(${data.id},${data.id})" title="Anular">
+						<i class="fa fa-fw fa-close acciones1 fa-lg text-danger"></i>
+					</a>
+				</div>`;
 			$('td', row).eq(12).attr('style','padding-top: 0px;padding-bottom: 0px;');
 			$('td', row).eq(12).html(aux_text);
 
@@ -280,15 +295,30 @@ function ajaxRequest(data,url,funcion) {
 		data: data,
 		success: function (respuesta) {
 			if(funcion=='accionnotaventa'){
-				if (respuesta.mensaje == "ok") {
-					$("#fila"+data['nfila']).remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
+				if ('error' in respuesta){
+                    if (respuesta.error == 0){
+                        form.parents('tr').remove();
+                    }
+					swal({
+                        title: 'Informacion',
+                        text: respuesta.mensaje,
+                        icon: 'warning',
+                        buttons: {
+                            confirm: "Aceptar"
+                        },
+                    });
+                    //Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                }else{
+					if (respuesta.mensaje == "ok") {
+						$("#fila"+data['nfila']).remove();
+						Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+					} else {
+						if (respuesta.mensaje == "sp"){
+							Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+						}else{
+							Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+						}
+					}	
 				}
 			}
 		},

@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\AreaProduccion;
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteVendedor;
 use App\Models\Comuna;
+use App\Models\DataCobranza;
 use App\Models\Dte;
 use App\Models\DteDet;
 use App\Models\DteGuiaDesp;
@@ -35,7 +37,9 @@ class DteGuiaDespNVController extends Controller
     public function index()
     {
         can('listar-dte-guia-desp-nv');
-        return view('dteguiadespnv.index');
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('dteguiadespnv.index',compact('tablashtml'));
     }
 
     public function dteguiadespnvpage($dte_id = ""){
@@ -53,6 +57,20 @@ class DteGuiaDespNVController extends Controller
     {
         can('crear-dte-guia-desp-nv');
         $data = NotaVenta::findOrFail($id);
+
+        $request = new Request();
+        $request->merge(['modulo_id' => 19]);
+        $request->request->set('modulo_id', 19);
+        $request->merge(['notaventa_id' => $data->id]);
+        $request->request->set('notaventa_id', $data->id);
+        $clibloq = clienteBloqueado($data->cliente_id,0,$request);
+        if(!is_null($clibloq["bloqueo"])){   
+            return redirect('dteguiadespnv/listarnv')->with([
+                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $detalles = $data->notaventadetalles;
         $vendedor = Vendedor::vendedores();
         $tablas['vendedores'] = $vendedor['vendedores'];
@@ -85,6 +103,8 @@ class DteGuiaDespNVController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         return view('dteguiadespnv.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -122,10 +142,32 @@ class DteGuiaDespNVController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+
+        $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+
+        $request1 = new Request();
+        $request1->merge(['modulo_id' => 19]);
+        $request1->request->set('modulo_id', 19);
+        $request1->merge(['notaventa_id' => $request->notaventa_id]);
+        $request1->request->set('notaventa_id', $request->notaventa_id);
+        $request1->merge(['deldesbloqueo' => 1]);
+        $request1->request->set('deldesbloqueo', 1);
+        $clibloq = clienteBloqueado($notaventa->cliente_id,0,$request1);
+        if(!is_null($clibloq["bloqueo"])){
+            $request1 = new Request();
+            $request1->merge(['cliente_id' => $notaventa->cliente_id]);
+            $request1->request->set('cliente_id', $notaventa->cliente_id);
+            $respuesta = DataCobranza::llenartabla($request1);
+
+            return redirect('dteguiadespnv/listarnv')->with([
+                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
+
         $dte = new Dte();
         //CREAR REGISTRO DE ORDEN DE COMPRA
         //dd($request->oc_id);
-        $notaventa = NotaVenta::findOrFail($request->notaventa_id);
         if(!is_null($notaventa->oc_id)){
             $dteoc = new DteOC();
             $dteoc->dte_id = "";
@@ -409,7 +451,15 @@ function consultaindex($dte_id){
     $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,dte.stasubsii,
     comuna.nombre as nombre_comuna,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
-    dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at
+    dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at,
+    cliente.limitecredito,
+    clientebloqueado.descripcion as clientebloqueado_desc,
+    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id,
+    dteguiadespnv.notaventa_id,dte.cliente_id
     FROM dte LEFT JOIN dteoc
     ON dteoc.dte_id = dte.id AND ISNULL(dte.deleted_at) AND ISNULL(dteoc.deleted_at)
     INNER JOIN dteguiadesp
@@ -424,6 +474,14 @@ function consultaindex($dte_id){
     ON foliocontrol.id = dte.foliocontrol_id
     INNER JOIN dteguiadespnv
     ON dte.id = dteguiadespnv.dte_id
+    LEFT JOIN datacobranza
+    ON datacobranza.cliente_id = dte.cliente_id
+    LEFT JOIN clientedesbloqueado
+    ON clientedesbloqueado.cliente_id = dte.cliente_id and clientedesbloqueado.notaventa_id = dteguiadespnv.notaventa_id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+    LEFT JOIN clientedesbloqueadomodulo
+    ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 20
+    LEFT JOIN modulo
+    ON modulo.id = clientedesbloqueadomodulo.modulo_id
     WHERE dte.foliocontrol_id=2
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.id NOT IN (SELECT dtedte.dte_id FROM dtedte WHERE ISNULL(dtedte.deleted_at))

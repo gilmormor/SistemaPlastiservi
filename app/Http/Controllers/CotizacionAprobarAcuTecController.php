@@ -122,6 +122,7 @@ class CotizacionAprobarAcuTecController extends Controller
     public function editar($id)
     {
         session(['editaracutec' => '1']);
+        session(['modulo_id' => '2']);
         return editar($id);
         /*
         $objeto = new CotizacionController();
@@ -185,14 +186,14 @@ function editar($id){
         }
         if($data->cliente_id){
             $request1 = new Request();
-            $request1->merge(['stanv' => 1]);
-            $request1->request->set('stanv', 1);
+            $request1->merge(['modulo_id' => 25]);
+            $request1->request->set('modulo_id', 25);
             $request1->merge(['deldesbloqueo' => 0]);
             $request1->request->set('deldesbloqueo', 0);
             $bloqcli = clienteBloqueado($data->cliente_id,0,$request1);
             if($bloqcli["bloqueo"]){
                 return redirect('cotizacionaprobaracutec')->with([
-                    'mensaje'=> "Cliente bloqueado \n" . $bloqcli["bloqueo"],
+                    'mensaje'=> "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
                     'tipo_alert' => 'alert-error'
                 ]);
             }
@@ -238,6 +239,7 @@ function editar($id){
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['moneda'] = Moneda::orderBy('id')->get();
+        $tablas['modulo_id'] = 25;
 
         $aux_sta=2;
 

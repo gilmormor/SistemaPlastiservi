@@ -1062,7 +1062,10 @@ class Producto extends Model
             $at_materiaprima = $producto->acuerdotecnico->materiaprima->nombre;
         }else{
             //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
-            $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_descripcion);
+            $aux_cla_nombre = "";
+            if(isset($producto->claseprod)){
+                $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_descripcion);
+            }
             $at_anchoT = $producto->diametro > 0 ? " D:" . $producto->diametro : "";
             $at_largoT = $producto->long ? " L:" . $producto->long : "";
             $at_ancho = $producto->diametro > 0 ? $producto->diametro : "";

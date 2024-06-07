@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Seguridad\Usuario;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -13,6 +14,7 @@ class ClienteDesBloqueado extends Model
     protected $fillable = [
         'obs',
         'cliente_id',
+        'notaventa_id',
         'usuario_id',
         'usuariodel_id'
     ];
@@ -34,4 +36,17 @@ class ClienteDesBloqueado extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    //RELACION MUCHO A MUCHOS CON MODULO A TRAVES DE clientebloqueadomodulo
+    public function modulos()
+    {
+        return $this->belongsToMany(Modulo::class, 'clientedesbloqueadomodulo','clientedesbloqueado_id')
+                    ->withTimestamps();
+    }
+    //RELACION DE UNO A MUCHOS ClienteDesBloqueadoModulo
+    public function clientedesbloqueadomodulos()
+    {
+        return $this->hasMany(ClienteDesbloqueadoModulo::class,'clientedesbloqueado_id');
+    }
+    
 }

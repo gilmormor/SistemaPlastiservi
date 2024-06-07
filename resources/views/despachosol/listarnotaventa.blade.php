@@ -35,6 +35,8 @@ Notas de Venta
                     <form action="{{route('exportPdf_notaventaconsulta')}}" class="d-inline form-eliminar" method="get" target="_blank">
                         @csrf
                         <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
+                        <input type="hidden" name="aux_ruta_creardespsol" id="aux_ruta_creardespsol" value="{{route('crearsol_despachosol', ['id' => "0"])}}">
+                        <input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{$tablashtml['stabloxdeusiscob']}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">

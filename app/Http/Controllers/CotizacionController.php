@@ -54,7 +54,9 @@ class CotizacionController extends Controller
     public function index()
     {
         can('listar-cotizacion');
-        return view('cotizacion.index');
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('cotizacion.index',compact('tablashtml'));
     }
 
     public function cotizacionpage(){
@@ -75,6 +77,7 @@ class CotizacionController extends Controller
         }
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
         $sql = "SELECT cotizacion.id,fechahora,
+                    cotizacion.cliente_id,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
                     aprobstatus,aprobobs,'' as pdfcot,
                     (SELECT COUNT(*) 
@@ -86,11 +89,28 @@ class CotizacionController extends Controller
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id 
                     and not isnull(acuerdotecnicotemp_id)
                     and isnull(cotizaciondetalle.deleted_at)) AS contacutec,
-                    cotizacion.fechahora as fechahora_aaaammdd,cotizacion.updated_at
+                    cotizacion.fechahora as fechahora_aaaammdd,cotizacion.updated_at,
+                    cliente.limitecredito,
+                    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+                    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+                    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+                    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+                    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id,
+                    clientebloqueado.descripcion as clientebloqueado_desc
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
+                LEFT JOIN clientebloqueado
+                ON cotizacion.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+                LEFT JOIN datacobranza
+                ON datacobranza.cliente_id = cotizacion.cliente_id
+                LEFT JOIN clientedesbloqueado
+                ON clientedesbloqueado.cliente_id = cotizacion.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+                LEFT JOIN clientedesbloqueadomodulo
+                ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 1
+                LEFT JOIN modulo
+                ON modulo.id = clientedesbloqueadomodulo.modulo_id
                 where $aux_condvend and (isnull(aprobstatus) or aprobstatus=0 or aprobstatus=4 or aprobstatus=7) 
                 and cotizacion.deleted_at is null
                 ORDER BY cotizacion.id desc;";
@@ -444,14 +464,14 @@ class CotizacionController extends Controller
         }
         if($cotizacion->cliente_id){
             $request1 = new Request();
-            $request1->merge(['stanv' => 1]);
-            $request1->request->set('stanv', 1);
+            $request1->merge(['modulo_id' => 1]);
+            $request1->request->set('modulo_id', 1);
             $request1->merge(['deldesbloqueo' => 1]);
             $request1->request->set('deldesbloqueo', 1);
             $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
             if($bloqcli["bloqueo"]){
                 return redirect('cotizacion')->with([
-                    'mensaje'=> "Cliente bloqueado \n" . $bloqcli["bloqueo"],
+                    'mensaje'=> "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
                     'tipo_alert' => 'alert-error'
                 ]);
             }
@@ -830,16 +850,16 @@ class CotizacionController extends Controller
             }
             if($cotizacion->cliente_id){
                 $request1 = new Request();
-                $request1->merge(['stanv' => 1]);
-                $request1->request->set('stanv', 1);
+                $request1->merge(['modulo_id' => 1]);
+                $request1->request->set('modulo_id', 1);
                 $request1->merge(['deldesbloqueo' => 1]);
                 $request1->request->set('deldesbloqueo', 1);
                 $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
                 if($bloqcli["bloqueo"]){
                     return response()->json([
                         'error' => 1,
-                        'mensaje' => "Cliente bloqueado \n" . $bloqcli["bloqueo"],
-                        'tipo_alert' => "error"
+                        'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                        'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                     ]);
                 }
             }
@@ -941,15 +961,17 @@ class CotizacionController extends Controller
             }
             if($cotizacion->cliente_id){
                 $request1 = new Request();
-                $request1->merge(['stanv' => 1]);
-                $request1->request->set('stanv', 1);
+                $request1->merge(['modulo_id' => $request->modulo_id]);
+                $request1->request->set('modulo_id', $request->modulo_id);
                 $request1->merge(['deldesbloqueo' => 1]);
                 $request1->request->set('deldesbloqueo', 1);
                 $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
                 if($bloqcli["bloqueo"]){
                     return response()->json([
+                        'error' => 1,
                         'id' => 0,
-                        'mensaje' => "Cliente bloqueado \n" . $bloqcli["bloqueo"]
+                        'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                        'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                     ]);
                 }
             }

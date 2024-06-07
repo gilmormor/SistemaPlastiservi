@@ -206,7 +206,7 @@
                                     $aux_espesornum = $detalle->notaventadetalle->producto->espesor;
                                     $aux_largo = $detalle->notaventadetalle->producto->long . "Mts";
                                     $aux_largonum = $detalle->notaventadetalle->producto->long;
-                                    $aux_cla_sello_nombre = $detalle->notaventadetalle->producto->claseprod->cla_nombre;
+                                    $aux_cla_sello_nombre = isset($detalle->notaventadetalle->producto->claseprod) ? $detalle->notaventadetalle->producto->claseprod->cla_nombre : "";
                                     $aux_producto_nombre = $detalle->notaventadetalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->notaventadetalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";

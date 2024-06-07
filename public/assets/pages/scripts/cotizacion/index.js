@@ -24,18 +24,7 @@ $(document).ready(function () {
         {data: 'contacutec',className:"ocultar"},
         //El boton eliminar esta en comentario Gilmer 23/02/2021
         {defaultContent : 
-            "<div class='tools11'>" +
-                "<a href='cotizacion' class='btn-accion-tabla btn-sm tooltipsC btnEnviarNV action-buttons' title='Enviar a Nota de venta'>"+
-                    "<!--<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>-->"+
-                    "<i class='fa fa-fw fa-save accioness fa-lg'></i>" +
-                "</a>"+
-                "<a href='cotizacion' class='btn-accion-tabla tooltipsC btnEditar action-buttons' title='Editar este registro'>"+
-                    "<i class='fa fa-fw fa-pencil accioness fa-lg'></i>"+
-                "</a>"+
-                "<a href='cotizacion' class='btn-accion-tabla btnEliminar tooltipsC action-buttons' title='Eliminar este registro'>"+
-                    "<i class='fa fa-fw fa-trash text-danger accioness fa-lg'></i>"+
-                "</a>" +
-            "</div>"}
+            ""}
     ],
     "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -99,7 +88,37 @@ $(document).ready(function () {
         $('td', row).eq(7).attr("id","updated_at"+data.id);
         $('td', row).eq(7).attr("name","updated_at"+data.id);
 
+        aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+        aux_displaybtnac = ``;
+        aux_displaybtnbl = ``;
+        if(aux_clienteBloqueado == ""){
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = `style="display:none;"`;
+        }else{
+            aux_displaybtnac = `style="display:none;"`;
+            aux_displaybtnbl = ``;
+        }
+
+        aux_text = 
+        `<div class="tools11">
+                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0)">
+                    <button type="button" class="btn btn-default btn-xs">
+                        <i class="fa fa-fw fa-lock text-danger"></i>
+                    </button>
+                </a>
+                <a ${aux_displaybtnac} href="cotizacion" class="btn-accion-tabla btn-sm tooltipsC btnEnviarNV action-buttons botonac${data.id}" title="Enviar a Nota de venta">
+                    <i class="fa fa-fw fa-save accioness fa-lg"></i>
+                </a>
+                <a href="cotizacion" class="btn-accion-tabla tooltipsC btnEditar action-buttons" title="Editar este registro">
+                    <i class="fa fa-fw fa-pencil accioness fa-lg"></i>
+                </a>
+                <a href="cotizacion" class="btn-accion-tabla btnEliminar tooltipsC action-buttons" title="Eliminar este registro">
+                    <i class="fa fa-fw fa-trash text-danger accioness fa-lg"></i>
+                </a>
+        </div>`;
+
         $('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
+        $('td', row).eq(9).html(aux_text);
 
     }
     });
@@ -179,7 +198,15 @@ function ajaxRequest(data,url,funcion,form = false) {
                     if (respuesta.error == 0){
                         form.parents('tr').remove();
                     }
-                    Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                    swal({
+                        title: 'Informacion',
+                        text: respuesta.mensaje,
+                        icon: 'warning',
+                        buttons: {
+                            confirm: "Aceptar"
+                        },
+                    });
+                    //Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
                 }else{
                     if (respuesta.mensaje == "ok") {
                         form.parents('tr').remove();

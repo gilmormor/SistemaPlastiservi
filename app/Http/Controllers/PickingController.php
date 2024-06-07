@@ -50,6 +50,8 @@ class PickingController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         return view('picking.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -575,17 +577,6 @@ class PickingController extends Controller
     public function enviardespord(Request $request)
     {
         $despachosol = DespachoSol::findOrFail($request->despachosol_id);
-        $request->merge(['stanv' => 0]);
-        $request->request->set('stanv', 0);
-        //$cliente = Cliente::findOrFail($request->cliente_id);
-        $clibloq = clienteBloqueado($despachosol->notaventa->cliente_id,0,$request);
-        if(!is_null($clibloq["bloqueo"])){
-            return [
-                "error" => 1,
-                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
-                "tipo_alert" => "error"
-            ];
-        }
         
         if($despachosol->updated_at != $request->updated_at){
             return [
@@ -602,6 +593,23 @@ class PickingController extends Controller
                 'tipo_alert' => 'error'
             ];
         }
+
+        $request1 = new Request();
+        $request1->merge(['modulo_id' => 6]);
+        $request1->request->set('modulo_id', 6);
+        $request1->merge(['notaventa_id' => $despachosol->notaventa_id]);
+        $request1->request->set('notaventa_id', $despachosol->notaventa_id);
+        $request1->merge(['deldesbloqueo' => 1]);
+        $request1->request->set('deldesbloqueo', 1);
+        $clibloq = clienteBloqueado($despachosol->notaventa->cliente_id,0,$request1);
+        if(!is_null($clibloq["bloqueo"])){   
+            return [
+                "error" => 1,
+                "mensaje" => "Cliente Bloqueado: \n" . $clibloq["bloqueo"],
+                "tipo_alert" => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
+            ];
+        }
+
 
         $despachosol->updated_at = date("Y-m-d H:i:s");
         if($despachosol->despachosolenvorddesp){
@@ -1028,7 +1036,14 @@ function consultasoldesp($request){
             vista_despsoltotales.subtotalsoldesp,despachosol.updated_at,
             clientebloqueado.descripcion as clientebloqueado_descripcion,
             despachosolenvorddesp.despachosol_id as despachosolenvorddesp_despachosol_id,
-            despachosolenvorddesp.despachosol_id as despachosolenvorddesp_updated_at
+            despachosolenvorddesp.despachosol_id as despachosolenvorddesp_updated_at,
+            cliente.limitecredito,
+            IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+            IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+            IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+            IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+            clientedesbloqueado.obs as clientedesbloqueado_obs,
+            modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
@@ -1060,6 +1075,15 @@ function consultasoldesp($request){
             ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
             LEFT JOIN despachosolenvorddesp
             ON despachosolenvorddesp.despachosol_id = despachosol.id AND ISNULL(despachosolenvorddesp.deleted_at)
+            LEFT JOIN datacobranza
+            ON datacobranza.cliente_id = notaventa.cliente_id
+            LEFT JOIN clientedesbloqueado
+            ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+            LEFT JOIN clientedesbloqueadomodulo
+            ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 6
+            LEFT JOIN modulo
+            ON modulo.id = clientedesbloqueadomodulo.modulo_id
+
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut

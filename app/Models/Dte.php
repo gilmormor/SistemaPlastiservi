@@ -2171,8 +2171,28 @@ class Dte extends Model
                 'tipo_alert' => 'warning'
             ]);
         }
-        $empresa = Empresa::findOrFail(1);
+        if(isset($request->statusDTEGuiaDesp) and $request->statusDTEGuiaDesp){ 
+            //ESTOY VALIDANDO PARA SABER SI VIENE DE DTEGuiaDesp YA QUE AQUI YA ESTOY VALIDANDO EL DESBLOQUEO
+            //Y EN DTEGuiaDesp ACTUALIZO INVENTARIO EN LOS DEMAS PRODESOS DTE NO SE TOCA EL INVENTARIO
+        }else{
+            $request->merge(['cliente_id' => $dte->cliente_id]);
+            $request->request->set('cliente_id', $dte->cliente_id);
+            if(isset($dte->dteguiadespnv)){
+                $request->merge(['notaventa_id' => $dte->dteguiadespnv->notaventa_id]);
+                $request->request->set('notaventa_id', $dte->dteguiadespnv->notaventa_id);    
+            }
+            $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+            if(!is_null($clibloq["bloqueo"])){
+                return response()->json([
+                    'id' => 0,
+                    "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                    'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : 'warning'
+                ]);
+            }    
+        }
+
         return Dte::updateStatusGen($dte,$request);
+        //$empresa = Empresa::findOrFail(1);
         //ESTA VALIDACION LA DESACTIVE A PETICION DE ERIKA BUSTOS
         //LE PARECE MUCHO TIEMPO DE ESPERA POR LA APROBACION DE UN DTE POR PARTE DE BES Y SII
         /*
@@ -2930,6 +2950,9 @@ class Dte extends Model
         $ArrayFact = "";
         foreach ($clientes as $cliente) {
             $ListaPendientes = $soap->Comando02ListaPendientes(formatearRUT($cliente->rut));
+            if(isset($ListaPendientes["error"])){
+                return $ListaPendientes;
+            }
 
             $dom = new DOMDocument();
             $dom->loadXML($ListaPendientes);
@@ -2947,6 +2970,7 @@ class Dte extends Model
             $TDeudaFec = 0;
             $datosFacDeuda = [];
             $ArrayNroFac = [];
+            $ArrayNroFacDeuda = [];
             $cont = 0;
             $datosTotasFacDeuda = [];
             foreach ($tables as $table) {
@@ -2990,6 +3014,7 @@ class Dte extends Model
                     //dd($fecvencProrr);
                 }
                 //dd($fechacobro);
+                $staVencida = false;
                 if($fecvencProrr <= date('Y-m-d')){
                     $TDeudaFec += $Deuda;
                     $datosFacDeuda[] = [
@@ -2999,14 +3024,16 @@ class Dte extends Model
                         'mnttot' => $mnttotal,
                         'Deuda' => $Deuda
                     ];
-                    $ArrayNroFac[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
+                    $ArrayNroFacDeuda[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
+                    $staVencida = true;
                 }
                 $datosTotasFacDeuda[] = [
                     'NroFAV' => $NroFAV,
                     'fecfact' => $fecfact,
                     'fecvenc' => $fecvenc,
                     'mnttot' => $mnttotal,
-                    'Deuda' => $Deuda
+                    'Deuda' => $Deuda,
+                    'staVencida' => $staVencida
                 ];
                 $ArrayNroFac[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
 
@@ -3040,7 +3067,7 @@ class Dte extends Model
                 "TFac" => $TFac,
                 "TDeuda" => $TDeuda,
                 "TDeudaFec" => $TDeudaFec,
-                "NroFacDeu" => implode(",", $ArrayNroFac),
+                "NroFacDeu" => implode(",", $ArrayNroFacDeuda),
                 "datosFacDeuda" => $datosFacDeuda,
                 "datosTotasFacDeuda" => $datosTotasFacDeuda
             ];   

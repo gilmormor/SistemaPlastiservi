@@ -19,6 +19,7 @@ Pendiente Orden Despacho
 
 @section('contenido')
 <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
+<input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{$tablashtml['stabloxdeusiscob']}}">
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')

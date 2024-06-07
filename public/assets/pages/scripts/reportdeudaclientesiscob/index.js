@@ -88,7 +88,7 @@ function configurarTabla(aux_tabla,datos){
         },
         "createdRow": function ( row, data, index ) {
             //console.log(aux_nombrepdf);
-            $('td', row).eq(0).attr('style','text-align:center');
+            $('td', row).eq(0).attr('style','text-align:center;');
             $('td', row).eq(1).attr('style','text-align:center');
             $('td', row).eq(1).attr('data-order',data.fecfact);
             aux_fecha = new Date(data.fecfact + " 00:00:00");
@@ -109,6 +109,15 @@ function configurarTabla(aux_tabla,datos){
 
             let id_str = data.NroFAV.toString();
             id_str = aux_nombrepdf + id_str.padStart(8, "0");
+            aux_colorvenc = "";
+            aux_icohand = "fa-thumbs-o-up";
+            aux_titlehand = "Vigente";
+            if (data.staVencida){
+                aux_colorvenc = "text-red";
+                aux_icohand = "fa-thumbs-o-down";
+                aux_titlehand = "Vencida";
+            }
+
             aux_text = "";
             if(data.NroFAV != null){
                 aux_text = 
@@ -120,6 +129,9 @@ function configurarTabla(aux_tabla,datos){
                 </a>
                 <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="descArcTXT('${id_str}.xml')">
                     <i class="fa fa-fw fa-cloud-download"></i>
+                </a>
+                <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${aux_titlehand}">
+                    <i class="fa fa-fw ${aux_icohand} ${aux_colorvenc}"></i>
                 </a>`;
             }
             $('td', row).eq(0).attr("class","action-buttons");
@@ -271,9 +283,10 @@ function ajaxRequest(data,url,funcion) {
 
 function datosFac(filtro = 0){
     var data1 = {
-        id      : $("#rut").attr("cliente_id"),
-        rut     : eliminarFormatoRutret($("#rut").val()),
-        _token  : $('input[name=_token]').val()
+        id         : $("#rut").attr("cliente_id"),
+        cliente_id : $("#rut").attr("cliente_id"),
+        rut        : eliminarFormatoRutret($("#rut").val()),
+        _token     : $('input[name=_token]').val()
     };
     var data2 = "?&rut="+data1.rut +
     "&_token="+data1._token

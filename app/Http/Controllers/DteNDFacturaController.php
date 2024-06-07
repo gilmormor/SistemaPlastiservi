@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Events\GuardarDteND;
 use App\Http\Requests\ValidarDTEND;
 use App\Models\CentroEconomico;
+use App\Models\ClienteDesBloqueado;
+use App\Models\DataCobranza;
 use App\Models\Dte;
 use App\Models\DteDet;
 use App\Models\DteDte;
@@ -26,7 +28,9 @@ class DteNDFacturaController extends Controller
     public function index()
     {
         can('listar-nota-debito-factura');
-        return view('dtendfactura.index');
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('dtendfactura.index',compact('tablashtml'));
     }
 
     public function dtendfacturapage($dte_id = ""){
@@ -87,7 +91,22 @@ class DteNDFacturaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
-
+        $request1 = new Request();
+        $request1->merge(['modulo_id' => 23]);
+        $request1->request->set('modulo_id', 23);
+        $request1->merge(['deldesbloqueo' => 1]);
+        $request1->request->set('deldesbloqueo', 1);
+        $clibloq = clienteBloqueado($dtefac->cliente_id,0,$request1);
+        if(!is_null($clibloq["bloqueo"])){
+            $request1 = new Request();
+            $request1->merge(['cliente_id' => $dtefac->cliente_id]);
+            $request1->request->set('cliente_id', $dtefac->cliente_id);
+            $respuesta = DataCobranza::llenartabla($request1);
+            return redirect('dtendfactura')->with([
+                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
         $dte = new Dte();
         $Tmntneto = 0;
         $Tiva = 0;
@@ -414,15 +433,32 @@ function consultaindex($dte_id){
         $aux_conddte_id = "dte.id = $dte_id";
     }
 
-    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,dte.stasubsii,dte.stasubcob,
+    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,
+    dte.cliente_id,
+    comuna.nombre as nombre_comuna,dte.stasubsii,dte.stasubcob,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
-    dte.updated_at,0 as dtefac_id
+    dte.updated_at,0 as dtefac_id,
+    clientebloqueado.descripcion as clientebloqueado_desc,
+    cliente.limitecredito,
+    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
     FROM dte INNER JOIN cliente
     ON dte.cliente_id  = cliente.id AND ISNULL(dte.deleted_at) AND ISNULL(cliente.deleted_at)
     INNER JOIN comuna
     ON comuna.id = cliente.comunap_id AND ISNULL(comuna.deleted_at)
     LEFT JOIN clientebloqueado
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+    LEFT JOIN datacobranza
+    ON datacobranza.cliente_id = dte.cliente_id
+    LEFT JOIN clientedesbloqueado
+    ON clientedesbloqueado.cliente_id = dte.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+    LEFT JOIN clientedesbloqueadomodulo
+    ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 24
+    LEFT JOIN modulo
+    ON modulo.id = clientedesbloqueadomodulo.modulo_id
     WHERE dte.foliocontrol_id=6
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND ISNULL(dte.statusgen)
