@@ -145,7 +145,7 @@ $(document).ready(function () {
             <a onclick="anularguiafact(${data.id},${data.despachoord_id},'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro y devolver a Orden de Despacho" data-toggle="tooltip">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
-            $('td',row).eq(17).attr('bntaproord',bntaproord_text);
+            //$('td',row).eq(17).attr('bntaproord',bntaproord_text);
 
             aux_text = 
                     `<a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id})">

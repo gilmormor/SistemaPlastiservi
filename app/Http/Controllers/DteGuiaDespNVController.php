@@ -365,6 +365,16 @@ class DteGuiaDespNVController extends Controller
             if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             }
+            if($dte->cliente->clientedesbloqueado){
+                $clientedesbloqueado_id = $dte->cliente->clientedesbloqueado->id;
+                if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                    $clientedesbloqueado->usuariodel_id = auth()->id();
+                    $clientedesbloqueado->save();
+                }
+            }
+
             if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 return redirect('dteguiadespnv')->with([
                     'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,

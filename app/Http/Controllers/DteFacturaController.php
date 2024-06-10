@@ -416,6 +416,16 @@ class DteFacturaController extends Controller
                 $aux_mensaje = 'Factura creada con exito.';
                 $aux_tipo_alert = 'alert-success';
             }
+            if($dteNew->cliente->clientedesbloqueado){
+                $clientedesbloqueado_id = $dteNew->cliente->clientedesbloqueado->id;
+                if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                    $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                    $clientedesbloqueado->usuariodel_id = auth()->id();
+                    $clientedesbloqueado->save();
+                }
+            }
+
             return redirect('dtefactura')->with([
                 'mensaje'=> $aux_mensaje,
                 'tipo_alert' => $aux_tipo_alert

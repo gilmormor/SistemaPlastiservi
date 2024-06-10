@@ -305,6 +305,15 @@ class DteNCFacturaController extends Controller
         $dte->save();
 
         $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+        if($dte->cliente->clientedesbloqueado){
+            $clientedesbloqueado_id = $dte->cliente->clientedesbloqueado->id;
+            if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
+                //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
+                $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
+                $clientedesbloqueado->usuariodel_id = auth()->id();
+                $clientedesbloqueado->save();
+            }
+        }
         if($aux_foliosdisp <= $foliocontrol->folmindisp){
             return redirect('dtencfactura')->with([
                 'mensaje'=>"Nota de Credito creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
