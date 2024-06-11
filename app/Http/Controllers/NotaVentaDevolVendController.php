@@ -215,15 +215,25 @@ function consulta($id){
             and $aux_condsucursal_id
             and notaventa.id not in (SELECT notaventa_id 
                                     FROM despachosol 
-                                    where isnull(despachosol.deleted_at) and despachosol.id 
+                                    where despachosol.notaventa_id=notaventa.id and isnull(despachosol.deleted_at) 
+                                    and despachosol.id 
                                     not in (SELECT despachosolanul.despachosol_id 
                                             from despachosolanul 
-                                            where isnull(despachosolanul.deleted_at)
+                                            where despachosolanul.despachosol_id = despachosol.id 
+                                            and isnull(despachosolanul.deleted_at)
                                            )
                                     )
             and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
             and isnull(notaventa.deleted_at)
-            and notaventa.id not in (select notaventa_id from dteguiadespnv)
+            and notaventa.id not in (SELECT notaventa_id 
+                                    FROM dteguiadespnv
+                                    WHERE dteguiadespnv.notaventa_id = notaventa.id
+                                    and dteguiadespnv.dte_id 
+                                    not in (SELECT dteanul.dte_id 
+                                            FROM dteanul 
+                                            WHERE isnull(dteanul.deleted_at)
+                                            )
+                                    )
             order by notaventa.id desc;";
     $datas = DB::select($sql);
     return $datas;
