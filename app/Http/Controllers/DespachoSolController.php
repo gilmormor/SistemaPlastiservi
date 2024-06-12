@@ -3427,7 +3427,11 @@ function consultaindex(){
         ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
         WHERE dteoc.oc_id = notaventa.oc_id
         AND isnull(dteguiadesp.notaventa_id)
-        AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto
+        AND dte.cliente_id= notaventa.cliente_id
+        AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
+		                                 FROM dteanul 
+													WHERE dteanul.dte_id = dteguiadesp.dte_id 
+													and ISNULL(dteanul.deleted_at))) as dte_nrodocto
     FROM despachosol INNER JOIN notaventa
     ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente
