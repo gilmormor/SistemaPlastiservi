@@ -2393,7 +2393,11 @@ function consulta($request,$aux_sql,$orden){
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
             AND isnull(dteguiadesp.notaventa_id)
-            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+            AND dte.cliente_id= notaventa.cliente_id
+            AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
+                                    FROM dteanul 
+                                    WHERE dteanul.dte_id = dteguiadesp.dte_id 
+                                    and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
         clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp,
         notaventa.aprobfechahora as notaventa_aprobfechahora
         FROM notaventa INNER JOIN notaventadetalle
@@ -2467,7 +2471,11 @@ function consulta($request,$aux_sql,$orden){
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
             AND isnull(dteguiadesp.notaventa_id)
-            AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+            AND dte.cliente_id= notaventa.cliente_id
+            AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
+                                    FROM dteanul 
+                                    WHERE dteanul.dte_id = dteguiadesp.dte_id 
+                                    and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
         clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
@@ -3329,9 +3337,9 @@ function consultasoldesp($request){
             AND isnull(dteguiadesp.notaventa_id)
             AND dte.cliente_id= notaventa.cliente_id
             AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
-                        FROM dteanul 
-                                WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
+                                            FROM dteanul 
+                                            WHERE dteanul.dte_id = dteguiadesp.dte_id 
+                                            and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
             despachosol.aprorddesp,
             clientebloqueado.descripcion as clientebloqueado_descripcion,
             despachosolenvorddesp.despachosol_id as despachosolenvorddesp_despachosol_id,
@@ -3433,9 +3441,9 @@ function consultaindex(){
         AND isnull(dteguiadesp.notaventa_id)
         AND dte.cliente_id= notaventa.cliente_id
         AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
-		                                 FROM dteanul 
-													WHERE dteanul.dte_id = dteguiadesp.dte_id 
-													and ISNULL(dteanul.deleted_at))) as dte_nrodocto
+		                                FROM dteanul 
+                                        WHERE dteanul.dte_id = dteguiadesp.dte_id 
+                                        and ISNULL(dteanul.deleted_at))) as dte_nrodocto
     FROM despachosol INNER JOIN notaventa
     ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente
