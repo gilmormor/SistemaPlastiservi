@@ -1117,7 +1117,7 @@ function consultaindex(){
         IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
         IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
         IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-        modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+        modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
         INNER JOIN despachoord
@@ -1276,7 +1276,7 @@ function consultalistarorddesppage($request){
     IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
     IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
     clientebloqueado.descripcion as clientebloqueado_desc,
-    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id
     FROM despachoord INNER JOIN notaventa
     ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente
