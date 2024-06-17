@@ -1043,7 +1043,7 @@ function consultasoldesp($request){
             IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
             IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
             clientedesbloqueado.obs as clientedesbloqueado_obs,
-            modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+            modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas

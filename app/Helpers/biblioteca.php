@@ -353,16 +353,24 @@ if (!function_exists('clienteBloqueado')) {
         //SI LA SOLICITUD VIENE DE NOTA DE VENTA, BUSCO SI EL CLIENTE ESTA DESBLOQUEADO PARA NOTA DE VENTA
         if(isset($request->modulo_id) and $aux_consultadeuda == 0){
             $modulo = Modulo::findOrFail($request->modulo_id);
-            if($modulo->stanvdc == 0){
+            if($modulo->stamodapl == 0){
                 $clientedesbloqueados = ClienteDesBloqueado::where("cliente_id",$cliente_id)
                                         ->whereNull("notaventa_id")
+                                        ->whereNull("cotizacion_id")
                                         ->get();
                 //dd($clientedesbloqueados);
-            }else{
+            }
+            if($modulo->stamodapl == 1){
                 $clientedesbloqueados = ClienteDesBloqueado::where("cliente_id",$cliente_id)
                                         ->where("notaventa_id",$request->notaventa_id)
+                                        ->whereNull("cotizacion_id")
                                         ->get();
-
+            }
+            if($modulo->stamodapl == 2){
+                $clientedesbloqueados = ClienteDesBloqueado::where("cliente_id",$cliente_id)
+                                        ->where("cotizacion_id",$request->cotizacion_id)
+                                        ->whereNull("notaventa_id")
+                                        ->get();
             }
             //dd($clientedesbloqueados);
             //dd($clientedesbloqueados[0]->modulos);
