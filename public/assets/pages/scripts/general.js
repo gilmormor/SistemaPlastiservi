@@ -3207,7 +3207,7 @@ function ajaxRequestGeneral(data,url,funcion) {
 			if(funcion == "datacobranza/llenartabla"){
 				aux_mensaje = "Cliente bloqueado";
 				aux_tipoaler = "error";
-				if(respuesta.bloqueo != 0){
+				if(respuesta.bloqueo == 0){
 					$(".botonac" + datatemp.id).fadeIn("slow");
 					$(".botonbloq" + datatemp.id).hide();
 					aux_mensaje = "Cliente desbloqueado"
