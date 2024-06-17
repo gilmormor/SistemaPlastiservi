@@ -282,17 +282,7 @@ class DteGuiaDespDirController extends Controller
                 $respuesta = Dte::subirDteSii($dte);
                 if($respuesta["id"] == 1){
                     Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-                }
-                if($dte->cliente->clientedesbloqueado){
-                    $clientedesbloqueado_id = $dte->cliente->clientedesbloqueado->id;
-                    if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
-                        //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                        $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
-                        $clientedesbloqueado->usuariodel_id = auth()->id();
-                        $clientedesbloqueado->save();
-                    }
-                }
-    
+                }    
                 if($aux_foliosdisp <= $foliocontrol->folmindisp){
                     return redirect('dteguiadespdir')->with([
                         'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
@@ -386,7 +376,7 @@ function consultaindex($dte_id){
     IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
     IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
     IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id
     FROM dte LEFT JOIN dteoc
     ON dteoc.dte_id = dte.id AND ISNULL(dte.deleted_at) AND ISNULL(dteoc.deleted_at)
     INNER JOIN dteguiadesp

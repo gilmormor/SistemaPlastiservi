@@ -255,5 +255,42 @@ class Cliente extends Model
         $datas = DB::select($sql);
         return $datas;
     }
+
+    public static function valBloqCliSisCob(&$cliente,$request,$aux_consultadeuda){
+        //dd(count($cliente));
+        if(count($cliente) > 0){
+            if(isset($cliente[0]->cliente_id)){
+                $aux_cliente_id = $cliente[0]->cliente_id;
+            }else{
+                $aux_cliente_id = $cliente[0]->id;
+            }
+            $staBloqueo = clienteBloqueado($aux_cliente_id,$aux_consultadeuda,$request);
+            if(isset($staBloqueo["error"])){
+                return $staBloqueo;
+            }
+            $cliente[0]->descripcion = $staBloqueo ["bloqueo"];
+            $cliente[0]->TDeuda = 0;
+            if(isset($staBloqueo["datacobranza"]["TDeuda"])){
+                $cliente[0]->TDeuda = $staBloqueo["datacobranza"]["TDeuda"];
+            }
+            /* $clientebus = Cliente::findOrFail($cliente[0]->id);
+            if($clientebus->clientedesbloqueado){
+                $cliente[0]->descripcion = null;
+            }else{
+                if(is_null($cliente[0]->clientebloqueado_descripcion)){
+                    $rut = isset($request->rut) ? $request->rut : null;
+                    $datCobranza = Dte::deudaClienteSisCobranza($rut);
+                    //dd($datCobranza);
+                    if($datCobranza["TDeuda"] > 0 and $datCobranza["TDeuda"] >= $datCobranza["limitecredito"]){
+                        $cliente[0]->descripcion = "Supero limite de Crédito: " . number_format($datCobranza["limitecredito"], 0, ',', '.') . "\nDeuda: " . number_format($datCobranza["TDeuda"], 0, ',', '.');
+                    }else{
+                        if($datCobranza["TDeudaFec"] > 0){
+                            $cliente[0]->descripcion = "Facturas Vencidas: " . $datCobranza["NroFacDeu"];
+                        }
+                    }
+                }    
+            } */
+        }
+    }
     
 }

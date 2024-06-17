@@ -316,6 +316,7 @@ Route::get('cotizacion/{id}/clientebuscarpage', 'CotizacionController@clientebus
 Route::post('cotizacion/buscardetcot', 'CotizacionController@buscardetcot')->name('buscardetcot');
 Route::post('cotizacion/updateobsdet', 'CotizacionController@updateobsdet')->name('updateobsdet');
 Route::post('cotizacion/devolveracrecot', 'CotizacionController@devolveracrecot')->name('devolveracrecot_cotizacion');
+Route::post('cotizacion/buscarCotGen', 'CotizacionController@buscarCotGen')->name('buscarCotGen');
 
 
 
