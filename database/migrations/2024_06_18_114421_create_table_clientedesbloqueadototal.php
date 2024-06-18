@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableClientedesbloqueado extends Migration
+class CreateTableClientedesbloqueadototal extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateTableClientedesbloqueado extends Migration
      */
     public function up()
     {
-        Schema::create('clientedesbloqueado', function (Blueprint $table) {
+        Schema::create('clientedesbloqueadototal', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
-            $table->string('obs',100)->comment('Observacion desbloqueo Cliente.');
+            $table->string('obs',100)->comment('Observacion desbloqueo Cliente Total.');
             $table->unsignedBigInteger('cliente_id');
-            $table->foreign('cliente_id','fk_clientedesbloqueado_cliente')->references('id')->on('cliente')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('cliente_id','fk_clientedesbloqueadototal_cliente')->references('id')->on('cliente')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuario_id')->comment('Usuario creó el registro');
-            $table->foreign('usuario_id','fk_clientedesbloqueado_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('usuario_id','fk_clientedesbloqueadototal_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -36,6 +36,6 @@ class CreateTableClientedesbloqueado extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('clientedesbloqueado');
+        Schema::dropIfExists('clientedesbloqueadototal');
     }
 }

@@ -34,6 +34,24 @@
         </div>
     </div>    
 @endif
+@if ($aux_sta == 2)
+    <div class="form-group">
+        <label for="cotizacion_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Cotizacion ID">Cotizacion ID</label>
+        <div class="col-lg-2">
+            @if (!isset($data))
+                <input type="text" name="cotizacion_id" id="cotizacion_id" class="form-control" value="{{old('cotizacion_id', $data->cotizacion_id ?? '')}}" maxlength="12" required/>
+            @else
+                <input type="text" name="cotizacion_idenabled" id="cotizacion_idenabled" class="form-control" value="{{old('cotizacion_idenabled', $data->cotizacion_id ?? '')}}" maxlength="12" required  disabled readonly/>
+            @endif
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="rut" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
+        <div class="col-lg-2">
+            <input type="text" name="rut" id="rut" class="form-control inputrut" value="{{old('rut', $data->cliente->rut ?? '')}}" onkeyup="llevarMayus(this);" maxlength="12" required disabled readonly/>
+        </div>
+    </div>    
+@endif
 
 <div class="form-group">
     <label for="razonsocial" class="col-lg-3 control-label requerido">Razon Social</label>
