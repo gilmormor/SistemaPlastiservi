@@ -2983,6 +2983,7 @@ class Dte extends Model
             $TDeudaFec = 0;
             $datosFacDeuda = [];
             $ArrayNroFac = [];
+            $datosTotasFacDeuda = [];
             $cont = 0;
             foreach ($tables as $table) {
                 $cont++;

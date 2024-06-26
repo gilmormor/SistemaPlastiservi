@@ -462,3 +462,7 @@ td.highlight {
     .elementosjuntos {
         display:flex;  
     }
+
+    .highlight {
+        background-color: yellow !important; /* Color para iluminar con prioridad */
+    }

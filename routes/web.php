@@ -1530,3 +1530,13 @@ Route::get('reportdteguiadespdet/reportdteguiadespdetpage', 'ReportDTEGuiaDespDe
 Route::get('reportdteguiadespdet/reporte', 'ReportDTEGuiaDespDetController@reporte')->name('reportdteguiadespdet_reporte');
 Route::get('reportdteguiadespdet/exportPdf', 'ReportDTEGuiaDespDetController@exportPdf')->name('reportdteguiadespdet_exportPdf');
 Route::get('reportdteguiadespdet/totalizarindex', 'ReportDTEGuiaDespDetController@totalizarindex')->name('reportdteguiadespdet_totalizarindex');
+
+/*RUTAS GRUPO CAT PROM: GRUPO CATEGORIA PROMEDIAR PRECIO*/
+Route::get('grupocatprom', 'GrupoCatPromController@index')->name('grupocatprom');
+Route::get('grupocatprompage', 'GrupoCatPromController@grupocatprompage')->name('grupocatprompage');
+Route::get('grupocatprom/crear', 'GrupoCatPromController@crear')->name('crear_grupocatprom');
+Route::post('grupocatprom', 'GrupoCatPromController@guardar')->name('guardar_grupocatprom');
+Route::get('grupocatprom/{id}/editar', 'GrupoCatPromController@editar')->name('editar_grupocatprom');
+Route::put('grupocatprom/{id}', 'GrupoCatPromController@actualizar')->name('actualizar_grupocatprom');
+Route::delete('grupocatprom/{id}', 'GrupoCatPromController@eliminar')->name('eliminar_grupocatprom');
+Route::post('grupocatprom/arraygrupocatprom', 'GrupoCatPromController@arraygrupocatprom')->name('arraygrupocatprom_grupocatprom');

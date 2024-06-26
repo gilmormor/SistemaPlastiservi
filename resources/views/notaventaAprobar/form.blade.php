@@ -480,7 +480,7 @@
                                     $aux_ancho = $detalle->producto->diametro;
                                     $aux_espesor = $detalle->espesor;
                                     $aux_largo = $detalle->largo;
-                                    $aux_cla_sello_nombre = $detalle->producto->claseprod->cla_nombre;
+                                    $aux_cla_sello_nombre = $detalle->producto->claseprod ? $detalle->producto->claseprod->cla_nombre : "";
                                     $aux_producto_nombre = $detalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
                                     $aux_staAT = false;
@@ -504,8 +504,8 @@
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
                                     }
                                 ?>
-                                <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
-                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$detalle->producto->categoriaprod_id}}">
+                                <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="prod_id{{$detalle->producto_id}}">
+                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$detalle->producto->categoriaprod_id}}" class="filaproducto_id" fila="{{$aux_nfila}}">
                                         @if ($detalle->producto->tipoprod == 1)
                                             <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$acuerdotecnico->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
                                                 {{$detalle->producto_id}}
@@ -698,6 +698,7 @@
 
             </div>
         </div>
+        @include('generales.divgrupocatprom')
     </div>
 </div>
 <!--

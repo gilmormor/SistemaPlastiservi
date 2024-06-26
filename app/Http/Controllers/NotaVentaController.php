@@ -24,6 +24,7 @@ use App\Models\CotizacionDetalle;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\GrupoCatProm;
 use App\Models\MateriaPrima;
 use App\Models\Moneda;
 use App\Models\NotaVenta;
@@ -344,6 +345,7 @@ class NotaVentaController extends Controller
         $tablas['moneda'] = Moneda::orderBy('id')->get();
         session(['editaracutec' => '0']);
         session(['aux_aproNV' => '0']);
+        $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
         //dd($vendedor_id);
         return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant','tablas'));
     }
@@ -449,6 +451,7 @@ class NotaVentaController extends Controller
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['moneda'] = Moneda::orderBy('id')->get();
+        $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
 
         session(['editaracutec' => '0']);
 
@@ -725,6 +728,7 @@ class NotaVentaController extends Controller
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['moneda'] = Moneda::orderBy('id')->get();
+        $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
 
         return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }

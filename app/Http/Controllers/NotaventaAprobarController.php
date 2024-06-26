@@ -12,6 +12,7 @@ use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\GrupoCatProm;
 use App\Models\MateriaPrima;
 use App\Models\NotaVenta;
 use App\Models\PlazoPago;
@@ -272,7 +273,7 @@ class NotaventaAprobarController extends Controller
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['staapronv'] = 1;
-
+        $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
 
         //dd($clientedirecs);
         return view('notaventaAprobar.editar', compact('data','clienteselec','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));

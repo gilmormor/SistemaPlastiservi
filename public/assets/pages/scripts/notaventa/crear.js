@@ -341,7 +341,12 @@ function insertarTabla(){
 	$("#triva").remove();
 	$("#trtotal").remove();
 	//aux_nfila = 1; 
-	var aux_nfila = $("#tabla-data tbody tr").length;
+	aux_nfila = 0;
+	$("#tabla-data tr .filaproducto_id").each(function() {
+		fila = $(this).attr('fila') ;
+		aux_nfila = Number(fila);
+	});
+	//var aux_nfila = $("#tabla-data tbody tr").length;
 	aux_nfila++;
 	//alert(aux_nfila);
 	aux_nombre = $("#nombreprodM").val();
@@ -363,8 +368,8 @@ function insertarTabla(){
 		aux_precioxkiloreal = $("#precioM").attr("valor");		
 	}
 
-    var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
-			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;">'+ 
+    var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '" class="cat' + $("#categoriaprod_id").val() + '">'+
+			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;" categoriaprod_id="' + $("#categoriaprod_id").val() + '" class="filaproducto_id" fila="'+ aux_nfila + '">'+  
 				$("#producto_idM").val() +
 			'</td>'+
 			'<td style="display:none;" name="NVdet_idTD'+ aux_nfila + '" id="NVdet_idTD'+ aux_nfila + '">'+ 

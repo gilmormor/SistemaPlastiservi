@@ -24,6 +24,7 @@ use App\Models\CotizacionDetalle;
 use App\Models\Empresa;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\GrupoCatProm;
 use App\Models\MateriaPrima;
 use App\Models\Moneda;
 use App\Models\PlazoPago;
@@ -188,6 +189,7 @@ class CotizacionController extends Controller
         session(['aux_aprocot' => '0']);
         session(['editaracutec' => '1']);
 
+        $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
         return view('cotizacion.crear',compact('fecha','aux_sta','tablas'));
     }
     /**
@@ -1288,6 +1290,7 @@ function editar($id){
         $tablas['certificado'] = Certificado::orderBy('id')->get();
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['moneda'] = Moneda::orderBy('id')->get();
+        $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
 
         $aux_sta=2;
 
