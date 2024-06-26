@@ -127,6 +127,17 @@ $(document).ready(function () {
 
 	$( ".modal" ).draggable({opacity: 0.80, handle: ".modal-header"});
 
+	$('#tabla-data-grupocatprom tbody tr').on('mouseover', function() {
+		var prod_ids = $(this).attr('producto_ids').split(',');
+		prod_ids.forEach(function(prod_id) {
+			$('.prod_id' + prod_id).addClass('highlight');
+		});
+	}).on('mouseout', function() {
+		var prod_ids = $(this).attr('producto_ids').split(',');
+		prod_ids.forEach(function(prod_id) {
+			$('.prod_id' + prod_id).removeClass('highlight');
+		});
+	});
 });
 
 
@@ -741,7 +752,7 @@ function totalizarItem(aux_estprec){
 
 	if($("#pesoM").val()>0 && $("#precioM").attr('preciokgini')>0){
 		aux_preciounitarioini = Math.round($("#precioM").attr('preciokgini') * $("#pesoM").val());
-		console.log(aux_preciounitarioini);
+		//console.log(aux_preciounitarioini);
 		if(aux_preciounitarioini == $("#precionetoM").val()){
 			aux_precdesc = $("#precioM").attr('preciokgini');
 		}
@@ -974,6 +985,7 @@ function totalizar(){
 		//$("tfoot").show();
 		$("#foottotal").show();
 	}
+	llenartablagrupocatprom();
 }
 
 function totalizardespacho(){
@@ -1208,7 +1220,7 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 				}
 				$("#producto_idM").attr("acuerdotecnico_id",respuesta.acuerdotecnico_id ? respuesta.acuerdotecnico_id : 0);
 				if(respuesta.acuerdotecnico_id != null){
-					console.log(respuesta["acuerdotecnico"]["at_unidadmedida_id"]);
+					//console.log(respuesta["acuerdotecnico"]["at_unidadmedida_id"]);
 					$("#unidadmedida_idM").val(respuesta["acuerdotecnico"]["at_unidadmedida_id"]);
 					$("#at_unidadmedida_idM").val(respuesta["acuerdotecnico"]["at_unidadmedida_id"]);
 					$(".selectpicker").selectpicker('refresh');
@@ -3356,7 +3368,7 @@ function activarCajasPreciokgUni(){
 	if(aux_staAT > 0 || aux_tipoProd == 1){
 		if(aux_staAT > 0){
 			$("#unidadmedida_idM").prop("disabled", true);
-			console.log($("#at_unidadmedida_idM").val());
+			//console.log($("#at_unidadmedida_idM").val());
 			$("#unidadmedida_idM").val($("#at_unidadmedida_idM").val())
 			if($("#at_unidadmedida_idM").val() != 7){
 				$("#totalkilosM").prop("disabled", false);
@@ -3704,4 +3716,62 @@ function volverSubirDteSisCob(dte_id,aux_slug = "subir-dte-sistema-cobranza"){
 		}
 	});
 
+}
+
+
+function llenartablagrupocatprom(){
+	$("#divgrupocatprom").hide();
+	$("#tabla-data-grupocatprom tr .grupocatprom_nombre").each(function() {
+		fila = $(this).attr('fila');
+		aux_fila = Number(fila);
+		
+		$("#grupocatprom_nombre" + aux_fila).attr("title","");
+		$("#grupocatprom_kg" + aux_fila).html(0);
+		$("#grupocatprom_dinero" + aux_fila).html(0);
+		$("#grupocatprom_prom" + aux_fila).html(0);
+		$("#grupocatprom_kg" + aux_fila).attr("valor",0);
+		$("#grupocatprom_dinero" + aux_fila).attr("valor",0);
+		$("#grupocatprom_prom" + aux_fila).attr("valor",0);
+
+		$("#filagrupocatprom" + aux_fila).hide();
+	});
+	
+	
+	$("#tabla-data tr .filaproducto_id").each(function() {
+		fila = $(this).attr('fila') ;
+		producto_id = $("#producto_id" + fila).val();
+		categoriaprod_id = $("#producto_idTDT" + fila).attr('categoriaprod_id');
+		subtotalM = $("#subtotalSFTD" + fila).html();
+		totalkilosM  = $("#totalkilos" + fila).attr('value');
+		$("#tabla-data-grupocatprom tr .grupocatprom_nombre").each(function() {
+			fila = $(this).attr('fila');
+			aux_fila = Number(fila);
+			aux_grupocatprom_nombretitle = $("#grupocatprom_nombre" + aux_fila).attr("title");
+			aux_grupocatprom_kg = Number($("#grupocatprom_kg" + aux_fila).attr("valor"));
+			aux_grupocatprom_dinero = Number($("#grupocatprom_dinero" + aux_fila).attr("valor"));
+			aux_grupocatprom_prom = Number($("#grupocatprom_prom" + aux_fila).attr("valor"));
+			txt_caterodiaprod = $("#grupocatprom_nombre" + aux_fila).attr("categoriaprod_ids");
+			array_categoriaprod = txt_caterodiaprod.split(',');
+			const index = array_categoriaprod.indexOf(categoriaprod_id);
+			if ((index !== -1) && (totalkilosM > 0)) {
+				aux_grupocatprom_nombretitle += (aux_grupocatprom_nombretitle == "" ? "" : ",") + producto_id;
+				aux_grupocatprom_kg += Number(totalkilosM);
+				aux_grupocatprom_dinero += Number(subtotalM);
+				aux_grupocatprom_prom = (Number(aux_grupocatprom_dinero) / Number(aux_grupocatprom_kg));
+			}
+			$("#grupocatprom_nombre" + aux_fila).attr("title", aux_grupocatprom_nombretitle);
+			$("#filagrupocatprom" + aux_fila).attr("producto_ids", aux_grupocatprom_nombretitle);
+			$("#grupocatprom_kg" + aux_fila).attr("valor",aux_grupocatprom_kg);
+			$("#grupocatprom_dinero" + aux_fila).attr("valor",aux_grupocatprom_dinero);
+			$("#grupocatprom_prom" + aux_fila).attr("valor",aux_grupocatprom_prom);
+	
+			$("#grupocatprom_kg" + aux_fila).html(MASKLA(aux_grupocatprom_kg,2));
+			$("#grupocatprom_dinero" + aux_fila).html(MASKLA(aux_grupocatprom_dinero,0));
+			$("#grupocatprom_prom" + aux_fila).html(MASKLA(aux_grupocatprom_prom.toFixed(2),2));
+			if(aux_grupocatprom_dinero > 0){
+				$("#divgrupocatprom").show();
+				$("#filagrupocatprom" + aux_fila).show();
+			}
+		});
+	});
 }

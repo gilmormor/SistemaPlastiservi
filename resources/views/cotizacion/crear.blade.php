@@ -33,7 +33,6 @@
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>
-            </div>
             <form action="{{route('guardar_cotizacion')}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
                 @csrf
                 <div class="box-body">
