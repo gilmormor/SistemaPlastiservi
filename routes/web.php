@@ -1540,3 +1540,10 @@ Route::get('grupocatprom/{id}/editar', 'GrupoCatPromController@editar')->name('e
 Route::put('grupocatprom/{id}', 'GrupoCatPromController@actualizar')->name('actualizar_grupocatprom');
 Route::delete('grupocatprom/{id}', 'GrupoCatPromController@eliminar')->name('eliminar_grupocatprom');
 Route::post('grupocatprom/arraygrupocatprom', 'GrupoCatPromController@arraygrupocatprom')->name('arraygrupocatprom_grupocatprom');
+
+/*RUTAS REPORTE GUIA DESPACHO DETALLE*/
+Route::get('reportgrupocatprom', 'ReportGrupoCatPromController@index')->name('reportgrupocatprom');
+Route::get('reportgrupocatprom/reportgrupocatprompage', 'ReportGrupoCatPromController@reportgrupocatprompage')->name('reportgrupocatprompage');
+Route::get('reportgrupocatprom/reporte', 'ReportGrupoCatPromController@reporte')->name('reportgrupocatprom_reporte');
+Route::get('reportgrupocatprom/exportPdf', 'ReportGrupoCatPromController@exportPdf')->name('reportgrupocatprom_exportPdf');
+Route::get('reportgrupocatprom/totalizarindex', 'ReportGrupoCatPromController@totalizarindex')->name('reportgrupocatprom_totalizarindex');

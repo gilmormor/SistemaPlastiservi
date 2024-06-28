@@ -534,5 +534,146 @@ class NotaVenta extends Model
             }    
         }
         return $aux_cant;
-    }    
+    }
+
+    public static function consultagrupcatprom($request){
+        $user = Usuario::findOrFail(auth()->id());
+        if(empty($request->vendedor_id)){
+            $sql= 'SELECT COUNT(*) AS contador
+                FROM vendedor INNER JOIN persona
+                ON vendedor.persona_id=persona.id
+                INNER JOIN usuario 
+                ON persona.usuario_id=usuario.id
+                WHERE usuario.id=' . auth()->id();
+            $counts = DB::select($sql);
+            if($counts[0]->contador>0){
+                $vendedor_id=$user->persona->vendedor->id;
+                $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+                $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+            }else{
+                $vendedorcond = " true ";
+                $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            }
+        }else{
+            $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        }
+    
+        if(empty($request->fechad) or empty($request->fechah)){
+            $aux_condFecha = " true";
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d');
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d');
+            $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
+        }
+        if(empty($request->rut)){
+            $aux_condrut = " true";
+        }else{
+            $aux_condrut = "cliente.rut='$request->rut'";
+        }
+        if(empty($request->oc_id)){
+            $aux_condoc_id = " true";
+        }else{
+            $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
+        }
+        if(empty($request->giro_id)){
+            $aux_condgiro_id = " true";
+        }else{
+            $aux_condgiro_id = "notaventa.giro_id='$request->giro_id'";
+        }
+        if(empty($request->tipoentrega_id)){
+            $aux_condtipoentrega_id = " true";
+        }else{
+            $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$request->tipoentrega_id'";
+        }
+        if(empty($request->notaventa_id)){
+            $aux_condnotaventa_id = " true";
+        }else{
+            $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
+        }
+    
+        if(empty($request->comuna_id)){
+            $aux_condcomuna_id = " true";
+        }else{
+            $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
+        }
+
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+        
+        if(!isset($request->areaproduccion_id) AND empty($request->areaproduccion_id)){
+            $aux_condareaproduccion_id = " true";
+        }else{
+            $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id IN ($request->areaproduccion_id)";
+        }
+
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $aux_sucursal_idCond = "true";
+        }else{
+            $aux_sucursal_idCond = "notaventa.sucursal_id = $request->sucursal_id";
+        }
+
+        $aux_condproducto_id = " true";
+        if(!empty($request->producto_id)){
+            $aux_codprod = explode(",", $request->producto_id);
+            $aux_codprod = implode ( ',' , $aux_codprod);
+            $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
+        }
+        
+        $sql = "SELECT grupocatprom.nombre,notaventa.vendedor_id,
+        persona.rut as vendedor_rut,CONCAT(persona.nombre,' ',persona.apellido) AS vendedor_nombre,
+        SUM(notaventadetalle.totalkilos) AS totalkilos,SUM(subtotal) AS subtotal
+        FROM notaventa INNER JOIN notaventadetalle
+        ON notaventadetalle.notaventa_id = notaventa.id AND ISNULL(notaventa.deleted_at) 
+        AND ISNULL(notaventadetalle.deleted_at) AND ISNULL(notaventa.anulada)
+        INNER JOIN cliente
+        ON cliente.id = notaventa.cliente_id AND isnull(cliente.deleted_at)
+        INNER JOIN comuna
+        ON comuna.id = notaventa.comuna_id AND isnull(comuna.deleted_at)
+        LEFT JOIN vendedor
+        ON notaventa.vendedor_id=vendedor.id and isnull(vendedor.deleted_at)
+        LEFT JOIN persona
+        ON vendedor.persona_id=persona.id and isnull(persona.deleted_at)
+        LEFT JOIN usuario
+        ON notaventa.usuario_id=usuario.id
+        INNER JOIN producto
+        ON producto.id = notaventadetalle.producto_id
+        INNER JOIN categoriaprod
+        ON categoriaprod.id = producto.categoriaprod_id
+        INNER JOIN grupocatpromcategoriaprod
+        ON grupocatpromcategoriaprod.categoriaprod_id = categoriaprod.id
+        INNER JOIN grupocatprom
+        ON grupocatprom.id = grupocatpromcategoriaprod.grupocatprom_id and isnull(grupocatprom.deleted_at)
+        WHERE $vendedorcond
+        AND $aux_condFecha
+        AND $aux_condrut
+        AND $aux_condoc_id
+        AND $aux_condgiro_id
+        AND $aux_condtipoentrega_id
+        AND $aux_condnotaventa_id
+        AND $aux_condcomuna_id
+        AND notaventa.sucursal_id in ($sucurcadena)
+        AND $aux_sucursal_idCond
+        AND $aux_condproducto_id
+        AND $aux_condareaproduccion_id
+        AND notaventadetalle.totalkilos > 0
+        GROUP BY grupocatprom.id,notaventa.vendedor_id
+        ORDER BY notaventa.vendedor_id,grupocatprom.nombre;";
+        //dd($sql);
+        $arrays = DB::select($sql);
+        /*
+        $i = 0;
+        foreach ($arrays as $array) {
+            $arrays[$i]->rutacrear = route('crear_factura', ['id' => $array->id]);
+            $i++;
+        }*/
+        foreach ($arrays as &$array) {
+            //dd($array->totalkilos);
+            $array->promedio = round(($array->subtotal / $array->totalkilos),2);
+        }
+        //dd($arrays);
+        return $arrays;
+    }
 }

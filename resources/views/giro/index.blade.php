@@ -22,15 +22,17 @@ Giro
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
-                    <thead>
-                        <tr>
-                            <th class="width30">ID</th>
-                            <th>Nombre</th>
-                            <th class="width70">Acción</th>
-                        </tr>
-                    </thead>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                        <thead>
+                            <tr>
+                                <th class="width30">ID</th>
+                                <th>Nombre</th>
+                                <th class="width70">Acción</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

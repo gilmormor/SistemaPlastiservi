@@ -22,16 +22,18 @@ Grupo Categoria Promediar
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
-                    <thead>
-                        <tr>
-                            <th class="width70">ID</th>
-                            <th>Nombre</th>
-                            <th>Categorias</th>
-                            <th class="width70"></th>
-                        </tr>
-                    </thead>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                        <thead>
+                            <tr>
+                                <th class="width70">ID</th>
+                                <th>Nombre</th>
+                                <th>Categorias</th>
+                                <th class="width70"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
