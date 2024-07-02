@@ -537,6 +537,7 @@ class NotaVenta extends Model
     }
 
     public static function consultagrupcatprom($request){
+        //dd($request->vendedor_id);
         $user = Usuario::findOrFail(auth()->id());
         if(empty($request->vendedor_id)){
             $sql= 'SELECT COUNT(*) AS contador
@@ -556,7 +557,8 @@ class NotaVenta extends Model
                 $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
             }
         }else{
-            $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+            $aux_codvend = implode ( ',' , $request->vendedor_id);
+            $vendedorcond = "notaventa.vendedor_id in ($aux_codvend)";
         }
     
         if(empty($request->fechad) or empty($request->fechah)){
