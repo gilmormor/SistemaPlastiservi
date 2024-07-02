@@ -1025,7 +1025,7 @@ function pdfjs(datos) {
     if (base64Img) {
         doc.addImage(base64Img, 'JPEG', 14, 6, 30, 10);
     }
-    doc.text('Notas de Venta Agrupada x Cliente', 69, 12);
+    doc.text('Precio promedio NV', 69, 12);
     doc.setFontSize(8);
     doc.text('Sucursal: ' + $("#sucursal_id option:selected").html(), 87, 16);
     doc.text('Fecha: ' + datos.data[2][0], 160, 10);
