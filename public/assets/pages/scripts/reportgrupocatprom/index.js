@@ -291,7 +291,7 @@ function exportarExcel(data) {
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Precio promedio NV","","",datos.data[1][0]]);
+        datosExcel.push(["Precio promedio NV Agrupado x Categoria","","",datos.data[1][0]]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","",""]);
         //console.log(data);
         aux_vendedor_id = "";
@@ -1025,7 +1025,7 @@ function pdfjs(datos) {
     if (base64Img) {
         doc.addImage(base64Img, 'JPEG', 14, 6, 30, 10);
     }
-    doc.text('Precio promedio NV', 69, 12);
+    doc.text('Precio promedio NV Agrupado x Categoria', 69, 12);
     doc.setFontSize(8);
     doc.text('Sucursal: ' + $("#sucursal_id option:selected").html(), 87, 16);
     doc.text('Fecha: ' + datos.data[2][0], 160, 10);
