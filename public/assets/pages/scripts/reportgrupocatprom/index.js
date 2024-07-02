@@ -23,6 +23,24 @@ $(document).ready(function () {
     consultarpage(datosgrupocatprom("",0));
 });
 
+function ejecutarConsulta(aux_cod){
+    if(aux_cod == 1){
+        data = datosgrupocatprom("",0)
+        $('#tabla-data-consulta').DataTable().ajax.url( "/reportgrupocatprom/reportgrupocatprompage/" + data.data2 ).load();
+        //totalizar(data)
+    }
+    if(aux_cod == 2){
+        data = datosgrupocatprom("",1)
+        consultarJS(data);    
+    }
+    if(aux_cod == 3){
+        data = datosgrupocatprom("",1)
+        exportarExcel(data);    
+    }
+
+}
+
+
 function consultarpage(aux_data){
     //return 0;
     $("#tabla-data-consulta").attr('style','')
@@ -235,17 +253,18 @@ function btnpdf(data){
     $("#myModalpdf").modal('show');
 }
 
-function exportarExcel() {
+function exportarExcel(data) {
     var tabla = $('#tabla-data-consulta').DataTable();
     orderby = " order by foliocontrol.doc,dte.id ";
-    data = datosgrupocatprom(orderby,1);
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
       url: "/reportgrupocatprom/reportgrupocatprompage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
       type: 'POST',
       dataType: 'json',
-      success: function(data) {
-        if(data.datos.length == 0){
+      success: function(datos) {
+        console.log(datos.data[0].length);
+        //return 0;
+        if(datos.data[0].length == 0){
             swal({
                 title: 'Información no encontrada!',
                 text: "",
@@ -273,12 +292,12 @@ function exportarExcel() {
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Precio promedio NV","","",data.fechaact]);
+        datosExcel.push(["Precio promedio NV","","",datos.data[1][0]]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","",""]);
         //console.log(data);
         aux_vendedor_id = "";
         arrayfusionarCelNomVend = [];
-        data.datos.forEach(function(registro) {
+        datos.data[0].forEach(function(registro) {
             if (registro.vendedor_id != aux_vendedor_id){
                 filainifusionar += 3;
                 datosExcel.push(["","","",""]);
@@ -317,16 +336,16 @@ function exportarExcel() {
 
 }
 
-  function getCellWidth(cellValue) {
+function getCellWidth(cellValue) {
     // Puedes ajustar un valor constante para el ancho mínimo que deseas asignar a la columna.
     const minimumColumnWidth = 10;
-  
+
     // Calcula la longitud del valor en la celda y agrega un poco de espacio adicional.
     const cellLength = cellValue.toString().length + 2;
-  
+
     // Retorna el ancho máximo entre el ancho calculado y el ancho mínimo establecido.
     return Math.max(cellLength, minimumColumnWidth);
-  }
+}
 
 
   // Función para crear el archivo Excel
@@ -943,4 +962,164 @@ function createExcelLosPinos(datosExcel) {
       // Limpiar el objeto Blob
       window.URL.revokeObjectURL(url);
     });
+}
+
+function consultarJS(data){
+    $.ajax({
+        url: '/reportgrupocatprom/reportgrupocatprompage/',
+        type: 'GET',
+        data: data.data1,
+        success: function (datos) {
+            //console.log(datos.data);
+            if (datos.recordsTotal <= 0) {
+                aux_text = "Verifique los filtros";
+                /* if(data.data1.sucursal_id == ""){
+                    aux_text = "Debe seleccionar la Sucursal";
+                } */
+                swal({
+                    title: 'Informacion no encontrada.',
+                    text: aux_text,
+                        icon: 'warning',
+                    buttons: {
+                        confirm: "Aceptar"
+                    },
+                });    
+            }else{
+                pdf = pdfjs(datos);
+                pdf.save('grupocatprom.pdf');    
+            }
+        }
+    });
+}
+
+function groupByVendor(datos) {
+    var grouped = {};
+    datos.forEach(row => {
+        if (!grouped[row.vendedor_nombre]) {
+            grouped[row.vendedor_nombre] = [];
+        }
+        grouped[row.vendedor_nombre].push(row);
+    });
+
+    var result = [];
+    for (var vendedor_nombre in grouped) {
+        result.push({
+            vendedor_nombre: vendedor_nombre,
+            data: grouped[vendedor_nombre]
+        });
+    }
+    return result;
+}
+
+function pdfjs(datos) {
+    //console.log(datos.data[1][0]);
+    var base64Img = imgToBase64('assets/lte/dist/img/LOGO-PLASTISERVI.jpg');
+    var doc = new jsPDF();
+    var totalPagesExp = '{total_pages_count_string}';
+
+    // Agrupar datos por vendedor
+    var groupedData = groupByVendor(datos.data[0]);
+
+    // Imprimir encabezado una vez
+    doc.setFontSize(12);
+    doc.setTextColor(20);
+    if (base64Img) {
+        doc.addImage(base64Img, 'JPEG', 14, 6, 30, 10);
+    }
+    doc.text('Notas de Venta Agrupada x Cliente', 69, 12);
+    doc.setFontSize(8);
+    doc.text('Sucursal: ' + $("#sucursal_id option:selected").html(), 87, 16);
+    doc.text('Fecha: ' + datos.data[2][0], 160, 10);
+    doc.text('Periodo: ' + $("#fechad").val() + " al " + $("#fechah").val(), 160, 14);
+
+
+    // Imprimir encabezados de columnas
+    doc.autoTable({
+        startY: 25,
+        //head: headRows(),
+        body: [],
+        theme: 'grid',
+        styles: {
+            fontSize: 6, // Tamaño de letra para los encabezados
+        },
+        headStyles: {
+            fillColor: '#0077FF', // Color de fondo azul
+            textColor: '#FFFFFF', // texto blanco solo para el encabezado
+            valign: 'middle' // Centrar verticalmente los títulos en el encabezado
+        },
+        /* columnStyles: {
+            0: { cellWidth: 70 },  // Ancho columna
+            1: { cellWidth: 20, halign: 'right' },  // Ancho columna
+            2: { cellWidth: 20, halign: 'right' },  // Ancho columna
+            3: { cellWidth: 20, halign: 'right' },  // Ancho columna
+        }, */
+        margin: { top: 20 },
+    });
+
+    // Imprimir datos agrupados por vendedor sin repetir encabezado
+    groupedData.forEach((group, index) => {
+        var vendorName = group.vendedor_nombre;
+        
+        // Agregar título de vendedor
+        doc.setFontSize(9);
+        doc.text(`Vendedor: ${vendorName}`, 40, doc.autoTable.previous.finalY + 10);
+        
+        doc.autoTable({
+            startY: doc.autoTable.previous.finalY + 11,
+            head: headRows(),
+            body: bodyRows(group.data),
+            theme: 'grid',
+            styles: {
+                fontSize: 6, // Tamaño de letra para los encabezados
+            },
+            headStyles: { 
+                fillColor: '#0077FF', // Color de fondo azul
+                textColor: '#FFFFFF', //texto blanco solo para el encabezado
+                valign: 'middle', // Centrar verticalmente los títulos en el encabezado
+                1: { cellWidth: 20, halign: 'right' },  // Ancho columna
+                2: { cellWidth: 20, halign: 'right' },  // Ancho columna
+                3: { cellWidth: 20, halign: 'right' },  // Ancho columna
+            },        
+            columnStyles: {
+                0: { cellWidth: 70 },  // Ancho columna
+                1: { cellWidth: 20, halign: 'right' },  // Ancho columna
+                2: { cellWidth: 20, halign: 'right' },  // Ancho columna
+                3: { cellWidth: 20, halign: 'right' },  // Ancho columna
+            },    
+            willDrawPage: function (data) {
+                // Footer
+                var str = 'Pag ' + doc.internal.getNumberOfPages();
+                if (typeof doc.putTotalPages === 'function') {
+                    str = str + ' de ' + totalPagesExp;
+                }
+                doc.setFontSize(7);
+                var pageSize = doc.internal.pageSize;
+                var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+                doc.text(str, data.settings.margin.left, pageHeight - 10);
+            },
+            margin: { top: 20, left: 40, right: 20 },
+        });
+    });
+
+    // Add Total Page Count if needed
+    if (typeof doc.putTotalPages === 'function') {
+        doc.putTotalPages(totalPagesExp);
+    }
+
+    return doc;
+}
+
+function headRows() {
+    return [
+      //{ id: "NV", cliente_rut: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", clase: "ClaSello", diam: "Diam Anch", l: "L", pesoesp: "Peso Esp", tu: "TU", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
+      { nombregrupo: "Nombre Grupo", totalpesos: "Total $", totalkg: "Total Kg", promedio: "Promedio"},
+    ]
+}
+
+function bodyRows(data) {
+    const body = [];
+    data.forEach(row => {
+        body.push([row.nombre, MASKLA(row.subtotal,0), MASKLA(row.totalkilos,2), MASKLA(row.promedio,2)]);
+    });
+    return body;
 }

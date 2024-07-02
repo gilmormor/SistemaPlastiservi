@@ -130,13 +130,17 @@ Precio promedio NV Agrupado x Categoria
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
-                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                            <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar" onclick="ejecutarConsulta(1)">Consultar</button>
                             @if (false)
                                 <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
                                     <i class='glyphicon glyphicon-print'></i> Reporte
                                 </button>                                
                             @endif
-                            <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">Excel</button>
+                            <button type="button" id="btnpdfJS" name="btnpdfJS" class="btn btn-success tooltipsC" title="Reporte PDF" onclick="ejecutarConsulta(2)">
+                                <i class='glyphicon glyphicon-print'></i> Reporte
+                            </button>
+
+                            <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="ejecutarConsulta(3)">Excel</button>
                             @if (in_array(1, $tablas['sucFisXUsu']))
                                 <!--<button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcelSantaEster()">Excel SE</button>-->
                             @endif

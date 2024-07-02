@@ -393,7 +393,7 @@ $('#tabla-data-consulta').on('draw.dt', function () {
         return sumarColumna(columna) / datos.length;
     }
 
-  function consultarJS(data){
+function consultarJS(data){
     /*
     // Ejemplo de uso
     var rutaArchivo = 'assets/lte/dist/img/LOGO-PLASTISERVI1x.jpg';
@@ -572,28 +572,6 @@ function pdfjs(datos) {
     return doc
 }
 
-function imgToBase64(src, callback) {
-    var outputFormat = src.substr(-3) === 'png' ? 'image/png' : 'image/jpeg';
-    var img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.onload = function() {
-        var canvas = document.createElement('CANVAS');
-        var ctx = canvas.getContext('2d');
-        var dataURL;
-        canvas.height = this.naturalHeight;
-        canvas.width = this.naturalWidth;
-        ctx.drawImage(this, 0, 0);
-        dataURL = canvas.toDataURL(outputFormat);
-        //callback(dataURL);
-    };
-    img.src = src;
-    if (img.complete || img.complete === undefined) {
-        img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-        img.src = src;
-    }
-    return img;
-    console.log(img);
-}
 
 function verificarArchivo(url, callback) {
     fetch(url, { method: 'HEAD' })

@@ -43,7 +43,9 @@ class ReportGrupoCatPromController extends Controller
         }else{
             $respuesta = [];
             $respuesta["datos"] = $datas; //datatables($datas)->toJson();
-            $respuesta["fechaact"] = date("d/m/Y");    
+            $respuesta["fechaact"] = date("d/m/Y");
+            $respuesta["fechaacthora"] = date("d/m/Y h:i:s A");
+            $respuesta = datatables($respuesta)->toJson();
         }
         return $respuesta;
     }
