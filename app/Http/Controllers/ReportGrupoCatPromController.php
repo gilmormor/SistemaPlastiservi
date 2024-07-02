@@ -37,6 +37,7 @@ class ReportGrupoCatPromController extends Controller
     }
 
     public function reportgrupocatprompage(Request $request){
+        //dd($request->vendedor_id);
         $datas = NotaVenta::consultagrupcatprom($request);
         if($request->genexcel == "0"){
             $respuesta = datatables($datas)->toJson();

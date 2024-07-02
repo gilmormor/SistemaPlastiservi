@@ -12,14 +12,6 @@ $(document).ready(function () {
         eliminarFormatoRut($(this));
     });
 
-    $("#btnconsultar").click(function()
-    {
-        consultarpage(datosgrupocatprom("",0));
-    });
-    $("#btnpdf2").click(function()
-    {
-        btnpdf(datosgrupocatprom("",0));
-    });
     consultarpage(datosgrupocatprom("",0));
 });
 
@@ -258,11 +250,18 @@ function exportarExcel(data) {
     orderby = " order by foliocontrol.doc,dte.id ";
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
+        url: '/reportgrupocatprom/reportgrupocatprompage/',
+        type: 'GET',
+        data: data.data1,
+        success: function (datos) {
+
+
+    /* $.ajax({
       url: "/reportgrupocatprom/reportgrupocatprompage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
       type: 'POST',
       dataType: 'json',
-      success: function(datos) {
-        console.log(datos.data[0].length);
+      success: function(datos) { */
+        //console.log(datos.data[0].length);
         //return 0;
         if(datos.data[0].length == 0){
             swal({
