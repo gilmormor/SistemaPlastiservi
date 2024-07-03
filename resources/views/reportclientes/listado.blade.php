@@ -41,11 +41,12 @@
 					<th class="textleft">RUT</th>
 					<th class="textleft">Razón Social</th>
 					@if ($request->bloqueado == "1")
-						<th class="textleft">Descbloq</th>
+						<th class="textleft">Observacion Bloqueo</th>
+						<th class="textleft">Fecha Bloqueo</th>
 					@else
 						<th class="textleft">Dirección</th>
-					@endif					
-					<th class="textleft">Comuna</th>
+						<th class="textleft">Comuna</th>
+					@endif
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -56,12 +57,14 @@
 						<td>{{$data->razonsocial}}</td>
 						@if ($request->bloqueado == "1")
 							<td>{{$data->clientebloqueadodesc}}</td>
+							<?php 
+								$aux_fechabloq = date('d-m-Y h:i:s A', strtotime($data->clientebloqueado_created_at));
+							?>
+							<td>{{$aux_fechabloq}}</td>
 						@else
 							<td>{{$data->direccion}}</td>
+							<td>{{$data->nombrecomuna}}</td>
 						@endif
-
-						
-						<td>{{$data->nombrecomuna}}</td>
 					</tr>
 				@endforeach
 			</tbody>				
