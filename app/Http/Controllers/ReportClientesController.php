@@ -54,12 +54,17 @@ class ReportClientesController extends Controller
                     <th>RUT</th>
                     <th>Razón Social</th>";
             if($request->bloqueado == "1"){
-                $respuesta['tabla'] .= "<th>Descbloq</th>";
+                $respuesta['tabla'] .= "
+                    <th>Observacion Bloqueo</th>
+                    <th>Fecha Bloqueo</th>
+                    ";
             }else{
-                $respuesta['tabla'] .= "<th>Dirección</th>";
+                $respuesta['tabla'] .= "
+                    <th>Dirección</th>
+                    <th>Comuna</th>";
             }
             
-            $respuesta['tabla'] .= "<th>Comuna</th>
+            $respuesta['tabla'] .= "
                 </tr>
             </thead>
             <tbody>";
@@ -76,13 +81,17 @@ class ReportClientesController extends Controller
                     <td>$data->razonsocial</td>";
 
                     if($request->bloqueado == "1"){
-                        $respuesta['tabla'] .= "<td>$data->clientebloqueadodesc</td>";
+                        $aux_fechabloq = date('d-m-Y h:i:s A', strtotime($data->clientebloqueado_created_at));
+                        $respuesta['tabla'] .= "
+                            <td>$data->clientebloqueadodesc</td>
+                            <td>$aux_fechabloq</td>";
                     }else{
-                        $respuesta['tabla'] .= "<td>$data->direccion</td>";
+                        $respuesta['tabla'] .= "
+                            <td>$data->direccion</td>
+                            <td>$data->nombrecomuna</td>";
                     }
         
                 $respuesta['tabla'] .= "
-                    <td>$data->nombrecomuna</td>
                 </tr>";
             }
 
@@ -274,7 +283,8 @@ function consulta($request){
     }
 
 
-    $sql = "SELECT cliente.*,comuna.nombre as nombrecomuna, clientebloqueado.descripcion as clientebloqueadodesc
+    $sql = "SELECT cliente.*,comuna.nombre as nombrecomuna, 
+    clientebloqueado.descripcion as clientebloqueadodesc,clientebloqueado.created_at as clientebloqueado_created_at
     FROM cliente inner join comuna
     on cliente.comunap_id=comuna.id
     inner join cliente_vendedor
