@@ -18,12 +18,33 @@
     </div>
 </div>
 <div class="form-group">
-    <div class="checkbox">
-        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
-            <input type="checkbox" id="aux_stanvdc" name="aux_stanvdc">
-            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-            Status Asociado al ID Nota de Venta
-        </label>
+    <label for="stamodapl" class="col-lg-3 control-label requerido">Aplica a:</label>
+    <div class="col-lg-4">
+        <select name="stamodapl" id="stamodapl" class="form-control select2  stamodapl" data-live-search='true' value="{{old('stamodapl', $data->stamodapl ?? '')}}" required>
+            <option 
+                value=""
+                @if (!isset($data))
+                    {{'selected'}}
+                @endif
+                >Seleccione...</option>
+            <option 
+              value="2"
+                @if (isset($data) and ($data->stamodapl=="2"))
+                    {{'selected'}}
+                @endif
+                >Cotización</option>
+            <option 
+                value="0"
+                @if (isset($data) and ($data->stamodapl=="0"))
+                    {{'selected'}}
+                @endif
+                >Cliente</option>
+            <option 
+                value="1"
+                @if (isset($data) and ($data->stamodapl=="1"))
+                    {{'selected'}}
+                @endif
+                >Nota Venta</option>
+        </select>
     </div>
 </div>
-<input type="hidden" name="stanvdc" id="stanvdc" value="{{old('stanvdc', $data->stanvdc ?? '0')}}">
