@@ -316,6 +316,7 @@ Route::get('cotizacion/{id}/clientebuscarpage', 'CotizacionController@clientebus
 Route::post('cotizacion/buscardetcot', 'CotizacionController@buscardetcot')->name('buscardetcot');
 Route::post('cotizacion/updateobsdet', 'CotizacionController@updateobsdet')->name('updateobsdet');
 Route::post('cotizacion/devolveracrecot', 'CotizacionController@devolveracrecot')->name('devolveracrecot_cotizacion');
+Route::post('cotizacion/buscarCotGen', 'CotizacionController@buscarCotGen')->name('buscarCotGen');
 
 
 
@@ -1552,3 +1553,13 @@ Route::post('modulo', 'ModuloController@guardar')->name('guardar_modulo');
 Route::get('modulo/{id}/editar', 'ModuloController@editar')->name('editar_modulo');
 Route::put('modulo/{id}', 'ModuloController@actualizar')->name('actualizar_modulo');
 Route::delete('modulo/{id}', 'ModuloController@eliminar')->name('eliminar_modulo');
+
+/*RUTAS CLIENTEDESBLOQUEADOPRO*/
+Route::get('clientedesbloqueadopro', 'ClienteDesbloqueadoProController@index')->name('clientedesbloqueadopro');
+Route::get('clientedesbloqueadopropage', 'ClienteDesbloqueadoProController@clientedesbloqueadopropage')->name('clientedesbloqueadopropage');
+Route::get('clientedesbloqueadopro/crear', 'ClienteDesbloqueadoProController@crear')->name('crear_clientedesbloqueadopro');
+Route::post('clientedesbloqueadopro', 'ClienteDesbloqueadoProController@guardar')->name('guardar_clientedesbloqueadopro');
+Route::get('clientedesbloqueadopro/{id}/editar', 'ClienteDesbloqueadoProController@editar')->name('editar_clientedesbloqueadopro');
+Route::put('clientedesbloqueadopro/{id}', 'ClienteDesbloqueadoProController@actualizar')->name('actualizar_clientedesbloqueadopro');
+Route::delete('clientedesbloqueadopro/{id}', 'ClienteDesbloqueadoProController@eliminar')->name('eliminar_clientedesbloqueadopro');
+Route::post('clientedesbloqueadopro/buscarclidesbloq', 'ClienteDesbloqueadoProController@buscarclidesbloq')->name('buscarclidesbloq_clientedesbloqueadopro');

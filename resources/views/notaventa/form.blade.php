@@ -41,8 +41,6 @@
     <input type="hidden" name="oc_fileaux" id="oc_fileaux" value="" class="form-control" style="text-align:right;">
 </div>
 
-<input type="hidden" name="aux_TDeuida" id="aux_TDeuida" value="{{old('aux_TDeuida', $tablas['TDeuda'] ?? '')}}">
-
 <?php
     $disabledReadOnly = "";
     $disabledcliente = "";
@@ -325,20 +323,6 @@
                                         >{{$moneda->nombre}} {{$moneda->desc}}</option>
                                     @endforeach
                             </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-xs-12 col-sm-2">
-                            <label for="limitecredito" class="control-label requerido">Limite crédito</label>
-                            <input type="text" name="limitecredito" id="limitecredito" class="form-control" value="{{old('limitecredito', $tablas['limitecredito'] ?? '')}}" required disabled style="text-align:right"/>
-                        </div>
-                        <div class="form-group col-xs-12 col-sm-2">
-                            <label for="TDeuda" class="control-label requerido">Total Deuda</label>
-                            <input type="text" name="TDeuda" id="TDeuda" class="form-control" value="{{old('TDeuda', $tablas['TDeuda'] ?? '')}}" required disabled style="text-align:right"/>
-                        </div>
-                        <div class="form-group col-xs-12 col-sm-2">
-                            <label for="LMdisponible" class="control-label requerido" data-toggle='tooltip' title="Crédito Disponible">Cred disponible</label>
-                            <input type="text" name="LMdisponible" id="LMdisponible" class="form-control" value="{{old('LMdisponible', $tablas['LMdisponible'] ?? '0')}}" required disabled style="text-align:right"/>
                         </div>
                     </div>
                 </div>
