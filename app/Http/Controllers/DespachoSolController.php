@@ -2490,7 +2490,7 @@ function consulta($request,$aux_sql,$orden){
         IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
         IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
         clientedesbloqueado.obs as clientedesbloqueado_obs,
-        modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+        modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -3441,7 +3441,7 @@ function consultasoldesp($request){
             IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
             IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
             IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-            modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+            modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
@@ -3554,7 +3554,7 @@ function consultaindex(){
     IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
     IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
     IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id
     FROM despachosol INNER JOIN notaventa
     ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente

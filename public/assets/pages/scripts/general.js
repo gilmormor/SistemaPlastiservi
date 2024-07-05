@@ -3207,7 +3207,7 @@ function ajaxRequestGeneral(data,url,funcion) {
 			if(funcion == "datacobranza/llenartabla"){
 				aux_mensaje = "Cliente bloqueado";
 				aux_tipoaler = "error";
-				if(respuesta.bloqueo != 0){
+				if(respuesta.bloqueo == 0){
 					$(".botonac" + datatemp.id).fadeIn("slow");
 					$(".botonbloq" + datatemp.id).hide();
 					aux_mensaje = "Cliente desbloqueado"
@@ -3769,4 +3769,71 @@ function validarClienteBloqueadoxModulo(data){
 		}
 	}
 	return aux_clienteBloqueado;
+}
+
+
+function imgToBase64(src, callback) {
+    var outputFormat = src.substr(-3) === 'png' ? 'image/png' : 'image/jpeg';
+    var img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = function() {
+        var canvas = document.createElement('CANVAS');
+        var ctx = canvas.getContext('2d');
+        var dataURL;
+        canvas.height = this.naturalHeight;
+        canvas.width = this.naturalWidth;
+        ctx.drawImage(this, 0, 0);
+        dataURL = canvas.toDataURL(outputFormat);
+        //callback(dataURL);
+    };
+    img.src = src;
+    if (img.complete || img.complete === undefined) {
+        img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+        img.src = src;
+    }
+    return img;
+    console.log(img);
+}
+
+function formato_rutVar(rut)
+{
+	var sRut1 = rut;      //contador de para saber cuando insertar el . o la -
+    var nPos = 0; //Guarda el rut invertido con los puntos y el guión agregado
+    var sInvertido = ""; //Guarda el resultado final del rut como debe ser
+    var sRut = "";
+    for(var i = sRut1.length - 1; i >= 0; i-- )
+    {
+        sInvertido += sRut1.charAt(i);
+        if (i == sRut1.length - 1 )
+            sInvertido += "-";
+        else if (nPos == 3)
+        {
+            sInvertido += ".";
+            nPos = 0;
+        }
+        nPos++;
+    }
+    for(var j = sInvertido.length - 1; j>= 0; j-- )
+    {
+        if (sInvertido.charAt(sInvertido.length - 1) != ".")
+            sRut += sInvertido.charAt(j);
+        else if (j != sInvertido.length - 1 )
+            sRut += sInvertido.charAt(j);
+    }
+	//Pasamos al campo el valor formateado
+	//rut.value = sRut.toUpperCase();
+	return sRut.toUpperCase();
+}
+
+function fechaaaaammdd(fecha){
+	// Divide la fecha en partes
+    const partes = fecha.split('/');
+    if (partes.length !== 3) {
+        throw new Error('Formato de fecha incorrecto. Debe ser dd/mm/aaaa.');
+    }
+
+    const [dia, mes, anio] = partes;
+    
+    // Retorna la fecha en el nuevo formato
+    return `${anio}/${mes}/${dia}`;
 }
