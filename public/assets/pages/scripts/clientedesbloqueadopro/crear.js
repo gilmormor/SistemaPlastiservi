@@ -11,11 +11,6 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
 	});
-    $("#cotizacion_id").numeric();
-    $("#cotizacion_id").focus();
-    $("#notaventa_id").numeric();
-    $("#notaventa_id").focus();
-    //formato_rut($("#rutenabled"));
     $("#rut" ).focus();
     $("#rut").focus(function(){
         eliminarFormatoRut($(this));
@@ -76,8 +71,8 @@ $("#rut").blur(function(){
                         razonsocial: respuesta[0]['razonsocial'],
                         _token: $('input[name=_token]').val()
                     };
-                    var ruta = '/clientedesbloqueado/buscarclibloq';
-                    ajaxRequest(data,ruta,'buscarclibloq');
+                    var ruta = '/clientedesbloqueadopro/buscarclidesbloq';
+                    ajaxRequest(data,ruta,'buscarclidesbloq');
                 }else{
                     swal({
                         title: 'Cliente no existe.',
@@ -104,7 +99,7 @@ function ajaxRequest(data,url,funcion) {
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			if(funcion=='buscarclibloq'){
+			if(funcion=='buscarclidesbloq'){
 				if (respuesta.mensaje == "ng") {
                     formato_rut($("#rut"));
                     $("#razonsocial").val(data.razonsocial);
@@ -139,89 +134,3 @@ function ajaxRequest(data,url,funcion) {
 		}
 	});
 }
-
-$("#notaventa_id").blur(function(){
-    eliminarFormatoRut($(this));
-	codigo = $("#notaventa_id").val();
-	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
-	{
-		//totalizar();
-        var data = {
-            id: codigo,
-            _token: $('input[name=_token]').val()
-        };
-        $.ajax({
-            url: '/notaventa/buscarNVActiva',
-            type: 'POST',
-            data: data,
-            success: function (respuesta) {
-                if(respuesta.id=="1"){
-                    $("#cliente_id").val(respuesta.cliente_id);
-                    $("#rut").val(respuesta.rut);
-                    $("#razonsocial").val(respuesta.razonsocial);
-                    formato_rut($("#rut"));
-                    /* $("#observacion").focus();
-                    $("#vpnv1").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
-                    $("#vpnv2").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
-                    $('#vistaprevNV').show(); */
-                }else{
-                    swal({
-                        title: respuesta.title,
-                        text: "",
-                        icon: respuesta.tipo_alert,
-                        buttons: {
-                            confirm: "Aceptar"
-                        },
-                    }).then((value) => {
-                        if (value) {
-                            $("#notaventa_id").focus();
-                        }
-                    });
-                }
-            }
-        });
-	}
-});
-
-$("#cotizacion_id").blur(function(){
-    eliminarFormatoRut($(this));
-	codigo = $("#cotizacion_id").val();
-	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
-	{
-		//totalizar();
-        var data = {
-            id: codigo,
-            _token: $('input[name=_token]').val()
-        };
-        $.ajax({
-            url: '/cotizacion/buscarCotGen',
-            type: 'POST',
-            data: data,
-            success: function (respuesta) {
-                if(respuesta.id != 0){
-                    $("#cliente_id").val(respuesta.cliente_id);
-                    $("#rut").val(respuesta.rut);
-                    $("#razonsocial").val(respuesta.razonsocial);
-                    formato_rut($("#rut"));
-                    /* $("#observacion").focus();
-                    $("#vpnv1").attr("onclick","genpdfNV(" + $("#cotizacion_id").val() + ",1)");
-                    $("#vpnv2").attr("onclick","genpdfNV(" + $("#cotizacion_id").val() + ",1)");
-                    $('#vistaprevNV').show(); */
-                }else{
-                    swal({
-                        title: respuesta.title,
-                        text: respuesta.text,
-                        icon: respuesta.tipo_alert,
-                        buttons: {
-                            confirm: "Aceptar"
-                        },
-                    }).then((value) => {
-                        if (value) {
-                            $("#cotizacion_id").focus();
-                        }
-                    });
-                }
-            }
-        });
-	}
-});

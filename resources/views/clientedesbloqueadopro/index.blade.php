@@ -1,11 +1,11 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Cliente Desbloqueado
+Cliente Desbloqueado Pro
 @endsection
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/clientedesbloqueado/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/clientedesbloqueadopro/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -14,20 +14,10 @@ Cliente Desbloqueado
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Cliente Desbloqueado</h3>
+                <h3 class="box-title">Cliente Desbloqueado Total</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('crear_clientedesbloqueado', ['id' => '1'])}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i>NotaVenta
-                    </a>
-                </div>
-                <div class="box-tools pull-right">
-                    <a href="{{route('crear_clientedesbloqueado', ['id' => '2'])}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i>Cotización
-                    </a>
-                </div>
-                <div class="box-tools pull-right">
-                    <a href="{{route('crear_clientedesbloqueado', ['id' => '0'])}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i>Cliente
+                    <a href="{{route('crear_clientedesbloqueadopro')}}" class="btn btn-block btn-success btn-sm">
+                        <i class="fa fa-fw fa-plus-circle"></i>Nuevo
                     </a>
                 </div>
             </div>
@@ -38,11 +28,8 @@ Cliente Desbloqueado
                             <th class="width30">ID</th>
                             <th class="width70">CodCli</th>
                             <th class="width70">RUT</th>
-                            <th class="width40">Cot</th>
-                            <th class="width40">NV</th>
                             <th>Nombre</th>
                             <th>Obs</th>
-                            <th>Permisos</th>
                             <th class="width70">Acción</th>
                         </tr>
                     </thead>

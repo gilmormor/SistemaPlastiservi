@@ -95,8 +95,9 @@ class CotizacionController extends Controller
                     IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
                     IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
                     IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-                    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id,
-                    clientebloqueado.descripcion as clientebloqueado_desc
+                    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+                    clientebloqueado.descripcion as clientebloqueado_desc,
+                    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
@@ -106,11 +107,13 @@ class CotizacionController extends Controller
                 LEFT JOIN datacobranza
                 ON datacobranza.cliente_id = cotizacion.cliente_id
                 LEFT JOIN clientedesbloqueado
-                ON clientedesbloqueado.cliente_id = cotizacion.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+                ON clientedesbloqueado.cliente_id = cotizacion.cliente_id and clientedesbloqueado.cotizacion_id = cotizacion.id and not isnull(clientedesbloqueado.cotizacion_id) and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
                 LEFT JOIN clientedesbloqueadomodulo
                 ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 1
                 LEFT JOIN modulo
                 ON modulo.id = clientedesbloqueadomodulo.modulo_id
+                LEFT JOIN clientedesbloqueadopro
+                ON clientedesbloqueadopro.cliente_id = cotizacion.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
                 where $aux_condvend and (isnull(aprobstatus) or aprobstatus=0 or aprobstatus=4 or aprobstatus=7) 
                 and cotizacion.deleted_at is null
                 ORDER BY cotizacion.id desc;";
@@ -850,6 +853,8 @@ class CotizacionController extends Controller
             }
             if($cotizacion->cliente_id){
                 $request1 = new Request();
+                $request1->merge(['cotizacion_id' => $request->id]);
+                $request1->request->set('cotizacion_id', $request->id);
                 $request1->merge(['modulo_id' => 1]);
                 $request1->request->set('modulo_id', 1);
                 $request1->merge(['deldesbloqueo' => 1]);
@@ -1114,11 +1119,13 @@ class CotizacionController extends Controller
             $aux_condaprobstatus = "(aprobstatus=1 or aprobstatus=3 or aprobstatus=6)";
             $cotizaciones = consultabuscarcot($request->id,$aux_condvend,$aux_condaprobstatus);
             $respuesta["mensaje"] = "";
+            $respuesta["id"] = "1";
             if (count($cotizaciones) == 0){
                 $respuesta["mensaje"] = "Cotización no existe";
                 $aux_condaprobstatus = "true";
                 $cotizaciones01 = consultabuscarcot($request->id,$aux_condvend,$aux_condaprobstatus);
                 //dd($cotizaciones01);
+                $respuesta["id"] = "0";
                 if (count($cotizaciones01) > 0){
                     //dd($cotizaciones01[0]->aprobstatus);
                     if($cotizaciones01[0]->aprobstatus == null){
@@ -1140,16 +1147,16 @@ class CotizacionController extends Controller
                     if($cotizaciones01[0]->aprobstatus == 7){
                         $respuesta["mensaje"] = "Acuerdo tecnico Rechazado: " . $cotizaciones01[0]->aprobobs;
                     }
+                    $respuesta["title"] = $respuesta["mensaje"];
+                    $respuesta["tipo_alert"] = "error";
+                    
+
                     //$respuesta["mensaje"] = $cotizaciones01[0]
                 }
                 //$respuesta["cotizaciones01"] = response()->json($cotizaciones01);
-
-                
             }
-            //$respuesta["cotizaciones"] = response()->json($cotizaciones);
+            //$respuesta["cotizaciones"] = response()->json($cotizaciones);  
             $respuesta["cotizaciones"] = $cotizaciones;
-            
-            
             //dd($clientedirecs->get());
             return $respuesta;
         }
@@ -1287,6 +1294,40 @@ class CotizacionController extends Controller
                 ];
             }
         }
+    }
+
+    public function buscarCotGen(Request $request){
+        $respuesta = [];
+        $cotizacion = Cotizacion::find($request->id);
+        if($cotizacion){
+            if(is_null($cotizacion->aprobstatus)){
+                $respuesta = [
+                    "id" => $request->id,
+                    "cotizacion_id" => $request->id,
+                    "cliente_id" => $cotizacion->cliente_id,
+                    "rut" => $cotizacion->cliente->rut,
+                    "razonsocial" => $cotizacion->cliente->razonsocial,
+                ];    
+            }else{
+                $respuesta = [
+                    "id" => 0,
+                    "error" => 1,
+                    "title" => "Mensaje",
+                    "text" => "Cotizacion $request->id no puede ser desbloqueada, se encuentra en otro módulo.",
+                    "tipo_alert" => "error"
+                ];
+    
+            }
+        }else{
+            $respuesta = [
+                "id" => 0,
+                "error" => 1,
+                "title" => "Mensaje",
+                "text" => "Cotizacion $request->id no existe.",
+                "tipo_alert" => "error"
+            ];
+        }
+        return $respuesta;
     }
 }
 
