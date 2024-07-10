@@ -534,5 +534,31 @@ class NotaVenta extends Model
             }    
         }
         return $aux_cant;
-    }    
+    }
+
+    public static function totaldineropendNV($cliente_id,$request){
+        $aux_cliente = Cliente::findOrFail($cliente_id);
+        //dd($aux_cliente->sucursales);
+        $request->merge(['fechad' => null]);
+        $request->request->set('fechad', null);
+        $request->merge(['fechah' => "10/06/2024"]);
+        $request->request->set('fechah', "10/06/2024");
+        $request->merge(['aprobstatus' => "3"]);
+        $request->request->set('aprobstatus', "3");
+        $aux_Tdeudapxp = 0;
+        foreach ($aux_cliente->sucursales as $sucursal) {
+            $request->merge(['sucursal_id' => $sucursal->id]);
+            $request->request->set('sucursal_id', $sucursal->id);
+            //ASIGNO BLANCO A producto_id PORQUE SE VIENE CON UN VALOR
+            $request->merge(['producto_id' => ""]);
+            $request->request->set('producto_id', "");
+            $pendxprod = Producto::pendxprod($request);
+            for ($i = 0; $i < count($pendxprod->original["data"]); $i++) {
+                $aux_Tdeudapxp += $pendxprod->original["data"][$i]["subtotalplata"];
+            }
+        }
+        return $aux_Tdeudapxp;
+    }
+
+
 }
