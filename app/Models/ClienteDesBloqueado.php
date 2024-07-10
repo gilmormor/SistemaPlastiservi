@@ -15,6 +15,7 @@ class ClienteDesBloqueado extends Model
         'obs',
         'cliente_id',
         'notaventa_id',
+        'cotizacion_id',
         'usuario_id',
         'usuariodel_id'
     ];
@@ -37,6 +38,18 @@ class ClienteDesBloqueado extends Model
         return $this->belongsTo(User::class);
     }
 
+    //RELACION INVERSA NOTAVENTA
+    public function notaventa()
+    {
+        return $this->belongsTo(NotaVenta::class);
+    }
+
+    //RELACION INVERSA COTIZACION
+    public function cotizacion()
+    {
+        return $this->belongsTo(Cotizacion::class);
+    }
+    
     //RELACION MUCHO A MUCHOS CON MODULO A TRAVES DE clientebloqueadomodulo
     public function modulos()
     {
