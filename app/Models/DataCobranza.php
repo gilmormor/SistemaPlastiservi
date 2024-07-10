@@ -31,7 +31,14 @@ class DataCobranza extends Model
                         where("id",$request->cliente_id)
                         ->get();
         }else{
-            $clientes = Cliente::get();
+            if(isset($request->clienteid_ini)){
+                //PARA TAREA QUE SE EJECUTA EN EL CPANEL A TRAVES DE CRON
+                $clientes = Cliente::where("id",">=",$request->clienteid_ini)
+                            ->where("id","<=",$request->clienteid_fin)
+                            ->get();
+            }else{
+                $clientes = Cliente::get();
+            }
         }
         //DataCobranza::truncate();
         foreach ($clientes as $cliente) {

@@ -88,6 +88,52 @@ Route::get('composerintervention', function () {
     shell_exec('composer require intervention/image');
 });
 
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza',function(){
+    Artisan::call('datacobranza:llenardatacobranza'); 
+
+});
+
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza0001a0500',function(){
+    Artisan::call('datacobranza:llenardatacobranza0001a0500'); 
+
+});
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza0501a1000',function(){
+    Artisan::call('datacobranza:llenardatacobranza0501a1000'); 
+
+});
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza1001a1500',function(){
+    Artisan::call('datacobranza:llenardatacobranza1001a1500'); 
+
+});
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza1501a2000',function(){
+    Artisan::call('datacobranza:llenardatacobranza1501a2000'); 
+
+});
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza2001a2500',function(){
+    Artisan::call('datacobranza:llenardatacobranza2001a2500'); 
+
+});
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza2501a3000',function(){
+    Artisan::call('datacobranza:llenardatacobranza2501a3000'); 
+
+});
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza3001a3500',function(){
+    Artisan::call('datacobranza:llenardatacobranza3001a3500'); 
+
+});
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza3501a4000',function(){
+    Artisan::call('datacobranza:llenardatacobranza3501a4000'); 
+
+});
 
 
 //Route::group(['middleware' => ['auth']], function () {
@@ -316,6 +362,7 @@ Route::get('cotizacion/{id}/clientebuscarpage', 'CotizacionController@clientebus
 Route::post('cotizacion/buscardetcot', 'CotizacionController@buscardetcot')->name('buscardetcot');
 Route::post('cotizacion/updateobsdet', 'CotizacionController@updateobsdet')->name('updateobsdet');
 Route::post('cotizacion/devolveracrecot', 'CotizacionController@devolveracrecot')->name('devolveracrecot_cotizacion');
+Route::post('cotizacion/buscarCotGen', 'CotizacionController@buscarCotGen')->name('buscarCotGen');
 
 
 
@@ -1552,3 +1599,13 @@ Route::post('modulo', 'ModuloController@guardar')->name('guardar_modulo');
 Route::get('modulo/{id}/editar', 'ModuloController@editar')->name('editar_modulo');
 Route::put('modulo/{id}', 'ModuloController@actualizar')->name('actualizar_modulo');
 Route::delete('modulo/{id}', 'ModuloController@eliminar')->name('eliminar_modulo');
+
+/*RUTAS CLIENTEDESBLOQUEADOPRO*/
+Route::get('clientedesbloqueadopro', 'ClienteDesbloqueadoProController@index')->name('clientedesbloqueadopro');
+Route::get('clientedesbloqueadopropage', 'ClienteDesbloqueadoProController@clientedesbloqueadopropage')->name('clientedesbloqueadopropage');
+Route::get('clientedesbloqueadopro/crear', 'ClienteDesbloqueadoProController@crear')->name('crear_clientedesbloqueadopro');
+Route::post('clientedesbloqueadopro', 'ClienteDesbloqueadoProController@guardar')->name('guardar_clientedesbloqueadopro');
+Route::get('clientedesbloqueadopro/{id}/editar', 'ClienteDesbloqueadoProController@editar')->name('editar_clientedesbloqueadopro');
+Route::put('clientedesbloqueadopro/{id}', 'ClienteDesbloqueadoProController@actualizar')->name('actualizar_clientedesbloqueadopro');
+Route::delete('clientedesbloqueadopro/{id}', 'ClienteDesbloqueadoProController@eliminar')->name('eliminar_clientedesbloqueadopro');
+Route::post('clientedesbloqueadopro/buscarclidesbloq', 'ClienteDesbloqueadoProController@buscarclidesbloq')->name('buscarclidesbloq_clientedesbloqueadopro');
