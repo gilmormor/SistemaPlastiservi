@@ -29,7 +29,6 @@ class AddNotaventaidClientedesbloqueado extends Migration
         Schema::table('clientedesbloqueado', function (Blueprint $table) {
             $table->dropForeign('fk_clientedesbloqueado_notaventa');
             $table->dropColumn('notaventa_id');
-
         });
     }
 }

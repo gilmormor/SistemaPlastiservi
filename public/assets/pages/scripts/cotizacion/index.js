@@ -101,12 +101,10 @@ $(document).ready(function () {
 
         aux_text = 
         `<div class="tools11">
-                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0)">
-                    <button type="button" class="btn btn-default btn-xs">
-                        <i class="fa fa-fw fa-lock text-danger"></i>
-                    </button>
+                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0)" style="padding-left: 0px;">
+                    <i class="fa fa-fw fa-lock text-danger accioness fa-lg"></i>
                 </a>
-                <a ${aux_displaybtnac} href="cotizacion" class="btn-accion-tabla btn-sm tooltipsC btnEnviarNV action-buttons botonac${data.id}" title="Enviar a Nota de venta">
+                <a ${aux_displaybtnac} href="cotizacion" class="btn-accion-tabla btn-sm tooltipsC btnEnviarNV action-buttons botonac${data.id}" title="Enviar a Nota de venta" style="padding-left: 0px;">
                     <i class="fa fa-fw fa-save accioness fa-lg"></i>
                 </a>
                 <a href="cotizacion" class="btn-accion-tabla tooltipsC btnEditar action-buttons" title="Editar este registro">
@@ -117,7 +115,7 @@ $(document).ready(function () {
                 </a>
         </div>`;
 
-        $('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
+        //$('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
         $('td', row).eq(9).html(aux_text);
 
     }
@@ -141,6 +139,7 @@ $(document).on("click", ".btnEnviarNV", function(event){
     }
     var data = {
 		id: id,
+        cotizacion_id: id,
         aprobstatus : aprobstatus,
         updated_at  : $("#updated_at" + id).html(),
         _token: $('input[name=_token]').val()

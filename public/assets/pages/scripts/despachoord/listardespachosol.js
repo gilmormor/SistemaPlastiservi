@@ -160,25 +160,23 @@ $(document).ready(function () {
                                 </a>`;
                 } */
 
-                aux_text = `<a ${aux_displaybtnac} onclick="crearord('${data.id}','${aux_ruta + aux_solenvord + '-' + data.id}','${data.updated_at}')" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Hacer orden despacho: ${data.tipentnombre}" style="display: inline-block;">
-                                <button type="button" class="btn btn-default btn-xs">
-                                    <i class="fa fa-fw ${data.icono}"></i>
-                                </button>
-                            </a>`;
+                aux_text = 
+                        `<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" style="display: inline-block;" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id})">
+                            <button type="button" class="btn btn-default btn-xs">
+                                <i class="fa fa-fw fa-lock text-danger"></i>
+                            </button>
+                        </a><a ${aux_displaybtnac} onclick="crearord('${data.id}','${aux_ruta + aux_solenvord + '-' + data.id}','${data.updated_at}')" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Hacer orden despacho: ${data.tipentnombre}" style="display: inline-block;">
+                            <button type="button" class="btn btn-default btn-xs">
+                                <i class="fa fa-fw ${data.icono}"></i>
+                            </button>
+                        </a>`;
                 if($("#solenvord").val() == '0'){
                     data.nuevoOrdDesp.forEach(function(nuevoOrdDesp, index) {
-                        aux_text += `<a ${aux_displaybtnac} href="${nuevoOrdDesp.a_href}" fila="${nuevoOrdDesp.a_fila}" id="btnanular${nuevoOrdDesp.a_fila}" name="btnanular${nuevoOrdDesp.a_fila}" class="${nuevoOrdDesp.a_class} botonac${data.id}" title="${nuevoOrdDesp.a_title}" data-toggle="tooltip" style="display: inline-block;" updated_at="${data.updated_at}">
+                        aux_text += `<a href="${nuevoOrdDesp.a_href}" fila="${nuevoOrdDesp.a_fila}" id="btnanular${nuevoOrdDesp.a_fila}" name="btnanular${nuevoOrdDesp.a_fila}" class="${nuevoOrdDesp.a_class} botonac${data.id}" title="${nuevoOrdDesp.a_title}" data-toggle="tooltip" style="display: inline-block;" updated_at="${data.updated_at}">
                                         <button type='button' class="${nuevoOrdDesp.b_class}"><i class="${nuevoOrdDesp.i_class}"></i></button>
                                     </a>`;
                         });    
                 }
-                aux_text += `<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" style="display: inline-block;" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id})">
-                                <button type="button" class="btn btn-default btn-xs">
-                                    <i class="fa fa-fw fa-lock text-danger"></i>
-                                </button>
-                            </a>`;
-
-
 
                 /* if(data.clientebloqueado_descripcion !== null){
                     aux_text = `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${data.clientebloqueado_descripcion}" style="display: inline-block;">
