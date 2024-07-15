@@ -134,8 +134,15 @@ class DteNCFacturaController extends Controller
             }
         }
         //dd($dte);
+        if(($Tmntneto <= 0)){
+            return redirect('dtencfactura')->with([
+                'mensaje'=>'Error: Total Neto debe ser mayor a cero (0).',
+                'tipo_alert' => 'alert-error'
+            ]);    
+        }
+        $Tmnttotal = $Tmntneto;
         $empresa = Empresa::findOrFail(1);
-        if($Tmntneto>0){
+        if(($dtefac->tasaiva > 0)){
             $Tiva = round(($empresa->iva/100) * $Tmntneto);
             $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);    
         }
@@ -175,6 +182,7 @@ class DteNCFacturaController extends Controller
         $dtencnd->dte_id = "";
         $dtencnd->codref = $request->codref;
         $dte->dtencnd = $dtencnd;
+        //dd($dte);
 
         //$respuesta = Dte::generardteprueba($dte);
         $respuesta = Dte::dteSolicitarFolio($dte);
