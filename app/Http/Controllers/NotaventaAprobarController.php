@@ -203,10 +203,11 @@ class NotaventaAprobarController extends Controller
         $clienteselec = $data->cliente()->get();
         session(['aux_aprocot' => '2']);
         //dd($clienteselec[0]->rut);
-
         $request1 = new Request();
-        $request1->merge(['modulo_id' => 3]);
-        $request1->request->set('modulo_id', 3);
+        $request1->merge(['notaventa_id' => $id]);
+        $request1->request->set('notaventa_id', $id);
+        $request1->merge(['modulo_id' => 28]);
+        $request1->request->set('modulo_id', 28);
         $request1->merge(['deldesbloqueo' => 0]);
         $request1->request->set('deldesbloqueo', 0);
         $bloqcli = clienteBloqueado($data->cliente_id,0,$request1);
@@ -215,7 +216,8 @@ class NotaventaAprobarController extends Controller
                 'mensaje'=> "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
                 'tipo_alert' => 'alert-error'
             ]);
-        }    
+        }
+        //dd("entro");
 
 
         $user = Usuario::findOrFail(auth()->id());

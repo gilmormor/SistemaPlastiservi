@@ -8,6 +8,7 @@ use App\Events\AvisoRevisionAcuTec;
 use App\Events\AvisoRevisionNotaVenta;
 use App\Events\CerrarSolDesp;
 use App\Events\DevolverSolDesp;
+use App\Events\EnviarEmailFactxVencer;
 use App\Events\ErrorCrearDTE;
 use App\Events\FinSesionUsuario;
 use App\Events\GuardarDteNC;
@@ -27,6 +28,7 @@ use App\Listeners\NotifyMailAprobarRechazoNotaVenta;
 use App\Listeners\NotifyMailAvisoRevisionAcuTec;
 use App\Listeners\NotifyMailAvisoRevisionNotaVenta;
 use App\Listeners\NotifyMailErrorCrearDTE;
+use App\Listeners\NotifyMailFactxVencer;
 use App\Listeners\NotifyMailGuardarDteNC;
 use App\Listeners\NotifyMailGuardarDteND;
 use App\Listeners\NotifyMailGuardarFacturaDespacho;
@@ -91,6 +93,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         XMLCargaDocManager::class => [
             NotifyMailXMLCargaDocManager::class,
+        ],
+        EnviarEmailFactxVencer::class => [
+            NotifyMailFactxVencer::class,
         ]
     ];
 
