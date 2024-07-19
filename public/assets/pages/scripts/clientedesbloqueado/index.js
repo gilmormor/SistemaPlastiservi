@@ -9,11 +9,13 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
+        'order': [[ 0, "desc" ]],
         'ajax'        : "clientedesbloqueadopage",
         'columns'     : [
             {data: 'id'},
             {data: 'cliente_id'},
             {data: 'rut'},
+            {data: 'cotizacion_id'},
             {data: 'notaventa_id'},
             {data: 'razonsocial'},
             {data: 'obs'},
