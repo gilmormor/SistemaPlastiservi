@@ -2972,7 +2972,7 @@ class Dte extends Model
             $ArrayNroFac = [];
             $ArrayNroFacDeuda = [];
             $cont = 0;
-            $datosTotasFacDeuda = [];
+            $datosTodasFacDeuda = [];
             foreach ($tables as $table) {
                 $cont++;
                 // Accede a los elementos hijos dentro de cada <Table>
@@ -3027,7 +3027,7 @@ class Dte extends Model
                     $ArrayNroFacDeuda[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
                     $staVencida = true;
                 }
-                $datosTotasFacDeuda[] = [
+                $datosTodasFacDeuda[] = [
                     'NroFAV' => $NroFAV,
                     'fecfact' => $fecfact,
                     'fecvenc' => $fecvenc,
@@ -3069,7 +3069,7 @@ class Dte extends Model
                 "TDeudaFec" => $TDeudaFec,
                 "NroFacDeu" => implode(",", $ArrayNroFacDeuda),
                 "datosFacDeuda" => $datosFacDeuda,
-                "datosTotasFacDeuda" => $datosTotasFacDeuda
+                "datosTodasFacDeuda" => $datosTodasFacDeuda
             ];   
             $aux_cont++;
             /* if($aux_cont > 100){
