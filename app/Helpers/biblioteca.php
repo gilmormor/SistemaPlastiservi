@@ -341,28 +341,41 @@ if (!function_exists('clienteBloqueado')) {
         //dd($cliente);
         $staBloqueo = [];
         $staBloqueo ["bloqueo"] = null;
-        $empresa = Empresa::findOrFail(1);
+        $empresa = Empresa::findOrFail(1);        
         //SI stabloxdeusiscob = 0 BUSCO SI ESTA BLOQUEADO DE FORMA MANUAL, SI NO ESTA BLOQUEADO SIMPLEMENTe SIGUE SIN BLOQUEO
-        if($empresa->stabloxdeusiscob == 0){
+        if($empresa->stabloxdeusiscob == 0 and $aux_consultadeuda == 0){
             if(isset($cliente->clientebloqueado)){
                 $staBloqueo ["bloqueo"]= $cliente->clientebloqueado->descripcion;
             }
             return $staBloqueo;
         }
+        //VALIDAR DESBLOQUEO TOTAL
+        if(isset($cliente->clientedesbloqueadopro) and $aux_consultadeuda == 0){
+            return $staBloqueo;
+        }
+
         //dd(isset($request->modulo_id) and $aux_consultadeuda == 0);
         //SI LA SOLICITUD VIENE DE NOTA DE VENTA, BUSCO SI EL CLIENTE ESTA DESBLOQUEADO PARA NOTA DE VENTA
         if(isset($request->modulo_id) and $aux_consultadeuda == 0){
             $modulo = Modulo::findOrFail($request->modulo_id);
-            if($modulo->stanvdc == 0){
+            if($modulo->stamodapl == 0){
                 $clientedesbloqueados = ClienteDesBloqueado::where("cliente_id",$cliente_id)
                                         ->whereNull("notaventa_id")
+                                        ->whereNull("cotizacion_id")
                                         ->get();
                 //dd($clientedesbloqueados);
-            }else{
+            }
+            if($modulo->stamodapl == 1){
                 $clientedesbloqueados = ClienteDesBloqueado::where("cliente_id",$cliente_id)
                                         ->where("notaventa_id",$request->notaventa_id)
+                                        ->whereNull("cotizacion_id")
                                         ->get();
-
+            }
+            if($modulo->stamodapl == 2){
+                $clientedesbloqueados = ClienteDesBloqueado::where("cliente_id",$cliente_id)
+                                        ->where("cotizacion_id",$request->cotizacion_id)
+                                        ->whereNull("notaventa_id")
+                                        ->get();
             }
             //dd($clientedesbloqueados);
             //dd($clientedesbloqueados[0]->modulos);
@@ -409,7 +422,6 @@ if (!function_exists('clienteBloqueado')) {
                     }
                 }
             }
-
             /* if($cliente->clientedesbloqueadonv){
                 //SI EXISTE EL DESBLOQUEO LO ELIMINO
                 if(isset($request->deldesbloqueo) and $request->deldesbloqueo == 1){ //SOLO ENTRA AQUI SI ENVIO LA PROPIEDAD EN EL REQUEST
@@ -428,6 +440,11 @@ if (!function_exists('clienteBloqueado')) {
                 return $staBloqueo;
             } */    
         }
+        //SI EL plazopago_id=1 DEL CLIENTE ES CONTADO ENTONCES SE DEBE BLOQUEAR DE FORMA PREDETERMINADA
+        if($cliente->plazopago_id ==1){
+            $staBloqueo ["bloqueo"]= "Plazo de pago CONTADO.\nSolo se permite hacer Cotizaciones.";
+            return $staBloqueo;
+        }        
         $aux_respuestadatacobranza = [];
         if($aux_consultadeuda == 1){
             $aux_respuestadatacobranza = datacobranza($staBloqueo,$cliente,$request);

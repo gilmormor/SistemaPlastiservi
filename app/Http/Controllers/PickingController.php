@@ -1043,7 +1043,8 @@ function consultasoldesp($request){
             IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
             IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
             clientedesbloqueado.obs as clientedesbloqueado_obs,
-            modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+            modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+            IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
@@ -1083,7 +1084,8 @@ function consultasoldesp($request){
             ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 6
             LEFT JOIN modulo
             ON modulo.id = clientedesbloqueadomodulo.modulo_id
-
+            LEFT JOIN clientedesbloqueadopro
+            ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut

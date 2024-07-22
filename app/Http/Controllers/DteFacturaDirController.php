@@ -325,16 +325,6 @@ class DteFacturaDirController extends Controller
                 $aux_mensaje = 'Factura creada con exito.';
                 $aux_tipo_alert = 'alert-success';
             }
-            if($dte->cliente->clientedesbloqueado){
-                $clientedesbloqueado_id = $dte->cliente->clientedesbloqueado->id;
-                if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
-                    //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
-                    $clientedesbloqueado = ClienteDesBloqueado::withTrashed()->findOrFail($clientedesbloqueado_id);
-                    $clientedesbloqueado->usuariodel_id = auth()->id();
-                    $clientedesbloqueado->save();
-                }
-            }
-
             return redirect('dtefacturadir')->with([
                 'mensaje'=> $aux_mensaje,
                 'tipo_alert' => $aux_tipo_alert
@@ -413,7 +403,8 @@ function consultaindex($dte_id){
     IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
     IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
     IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
     FROM dte LEFT JOIN dteoc
     ON dteoc.dte_id = dte.id AND ISNULL(dte.deleted_at) AND ISNULL(dteoc.deleted_at)
     INNER JOIN cliente
@@ -432,6 +423,8 @@ function consultaindex($dte_id){
     ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 16
     LEFT JOIN modulo
     ON modulo.id = clientedesbloqueadomodulo.modulo_id
+    LEFT JOIN clientedesbloqueadopro
+    ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
     WHERE (dte.foliocontrol_id=1 OR dte.foliocontrol_id=7)
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.id NOT IN (SELECT dtedte.dte_id FROM dtedte WHERE ISNULL(dtedte.deleted_at))
