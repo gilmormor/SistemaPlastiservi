@@ -67,4 +67,11 @@ class Persona extends Model
         }
         return $sucurJefAreaFis;
     }
+
+        //RELACION MUCHO A MUCHOS CON emailxlote A TRAVES DE emailxlote_persona
+        public function emailxlotes()
+        {
+            return $this->belongsToMany(EmailxLote::class, 'emailxlote_persona')->withTimestamps();
+        }
+    
 }
