@@ -1117,7 +1117,8 @@ function consultaindex(){
         IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
         IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
         IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-        modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+        modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+        IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
         INNER JOIN despachoord
@@ -1146,6 +1147,8 @@ function consultaindex(){
         ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 10
         LEFT JOIN modulo
         ON modulo.id = clientedesbloqueadomodulo.modulo_id
+        LEFT JOIN clientedesbloqueadopro
+        ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
         WHERE despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
         AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
@@ -1276,7 +1279,8 @@ function consultalistarorddesppage($request){
     IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
     IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
     clientebloqueado.descripcion as clientebloqueado_desc,
-    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
     FROM despachoord INNER JOIN notaventa
     ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
     INNER JOIN cliente
@@ -1301,6 +1305,8 @@ function consultalistarorddesppage($request){
     ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 9
     LEFT JOIN modulo
     ON modulo.id = clientedesbloqueadomodulo.modulo_id
+    LEFT JOIN clientedesbloqueadopro
+    ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
     WHERE $vendedorcond
     and $aux_condFecha
     and $aux_condrut

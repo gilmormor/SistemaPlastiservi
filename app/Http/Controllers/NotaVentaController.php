@@ -215,8 +215,9 @@ class NotaVentaController extends Controller
                     IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
                     IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
                     IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-                    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id,
-                    clientebloqueado.descripcion as clientebloqueado_desc
+                    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+                    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+                    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
                 FROM notaventa inner join cliente
                 on notaventa.cliente_id = cliente.id
                 LEFT JOIN clientebloqueado
@@ -224,11 +225,13 @@ class NotaVentaController extends Controller
                 LEFT JOIN datacobranza
                 ON datacobranza.cliente_id = notaventa.cliente_id
                 LEFT JOIN clientedesbloqueado
-                ON clientedesbloqueado.cliente_id = notaventa.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+                ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
                 LEFT JOIN clientedesbloqueadomodulo
                 ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 3
                 LEFT JOIN modulo
                 ON modulo.id = clientedesbloqueadomodulo.modulo_id
+                LEFT JOIN clientedesbloqueadopro
+                ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
                 where $aux_condvend
                 and anulada is null
                 and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
@@ -380,14 +383,16 @@ class NotaVentaController extends Controller
             ]);    
         }
         $request = new Request();
-        $request->merge(['modulo_id' => 2]);
-        $request->request->set('modulo_id', 2);
-        //$cliente = Cliente::findOrFail($request->cliente_id);
-        $clibloq = clienteBloqueado($data->cliente_id,0,$request);
-        if(!is_null($clibloq["bloqueo"])){
+        $request->merge(['cotizacion_id' => $id]);
+        $request->request->set('cotizacion_id', $id);
+        $request->merge(['modulo_id' => 27]);
+        $request->request->set('modulo_id', 27);
+        $bloqcli = clienteBloqueado($data->cliente_id,0,$request);
+        if($bloqcli["bloqueo"]){
             return redirect('notaventa')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
-                "tipo_alert" => "alert-error"
+                'error' => 1,
+                'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                'tipo_alert' => "alert-error"
             ]);
         }
 
@@ -431,6 +436,7 @@ class NotaVentaController extends Controller
                                 'clientedirec.direcciondetalle'
                             ])->get();
         //dd($clientedirecs);
+        //Cliente::valBloqCliSisCob($clientedirecs,$request,1);
 
         $clienteDirec = $data->clientedirec()->get();
         $fecha = date("d/m/Y", strtotime($data->fechahora));
@@ -483,6 +489,7 @@ class NotaVentaController extends Controller
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['moneda'] = Moneda::orderBy('id')->get();
 
+        $tablas['limitecredito'] = $data->cliente->limitecredito;
         session(['editaracutec' => '0']);
 
         //dd($aux_aproNV);
@@ -501,15 +508,17 @@ class NotaVentaController extends Controller
     {
         //dd($request);
         can('guardar-notaventa');
-        $request->merge(['modulo_id' => 2]);
-        $request->merge(['deldesbloqueo' => 1]);
-        //$cliente = Cliente::findOrFail($request->cliente_id);
-        $clibloq = clienteBloqueado($request->cliente_id,0,$request);
-        if(!is_null($clibloq["bloqueo"])){
-            return redirect('notaventa')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
-                "tipo_alert" => "alert-error"
-            ]);
+        if(empty($request->cotizacion_id)){
+            $request->merge(['modulo_id' => 2]);
+            $request->merge(['deldesbloqueo' => 1]);
+            //$cliente = Cliente::findOrFail($request->cliente_id);
+            $clibloq = clienteBloqueado($request->cliente_id,0,$request);
+            if(!is_null($clibloq["bloqueo"])){
+                return redirect('notaventa')->with([
+                    "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"] . "Permiso x Cliente",
+                    "tipo_alert" => "alert-error"
+                ]);
+            }    
         }
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
@@ -527,6 +536,22 @@ class NotaVentaController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);
             }
+            $request1 = new Request();
+            $request1->merge(['cotizacion_id' => $request->cotizacion_id]);
+            $request1->request->set('cotizacion_id', $request->cotizacion_id);
+            $request1->merge(['modulo_id' => 27]);
+            $request1->request->set('modulo_id', 27);
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
+            if($bloqcli["bloqueo"]){
+                return redirect('notaventa')->with([
+                    'error' => 1,
+                    'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"]  . " Permiso por Nro. Cotizacion",
+                    'tipo_alert' => "alert-error"
+                ]);
+            }
+    
         }
         $hoy = date("Y-m-d H:i:s");
         $request->request->add(['fechahora' => $hoy]);
@@ -976,7 +1001,8 @@ class NotaVentaController extends Controller
         can('guardar-notaventa');
         if ($request->ajax()) {
             $notaventa = NotaVenta::findOrFail($request->id);
-
+            $request->merge(['notaventa_id' => $request->id]);
+            $request->request->set('notaventa_id', $request->id);
             $request->merge(['modulo_id' => 3]);
             $request->request->set('modulo_id', 3);
             $request->merge(['deldesbloqueo' => 1]);
@@ -1764,4 +1790,36 @@ function consultaNVaprobadas($id){
     $datas = DB::select($sql);
     return $datas;
 
+}
+
+function valBloqCliSisCob(&$cliente,$request,$aux_consultadeuda){
+    if(count($cliente) > 0){
+        $staBloqueo = clienteBloqueado($cliente[0]->id,$aux_consultadeuda,$request);
+        dd($staBloqueo);
+        if(isset($staBloqueo["error"])){
+            return $staBloqueo;
+        }
+        $cliente[0]->descripcion = $staBloqueo ["bloqueo"];
+        $cliente[0]->TDeuda = 0;
+        if(isset($staBloqueo["datacobranza"]["TDeuda"])){
+            $cliente[0]->TDeuda = $staBloqueo["datacobranza"]["TDeuda"];
+        }
+        /* $clientebus = Cliente::findOrFail($cliente[0]->id);
+        if($clientebus->clientedesbloqueado){
+            $cliente[0]->descripcion = null;
+        }else{
+            if(is_null($cliente[0]->clientebloqueado_descripcion)){
+                $rut = isset($request->rut) ? $request->rut : null;
+                $datCobranza = Dte::deudaClienteSisCobranza($rut);
+                //dd($datCobranza);
+                if($datCobranza["TDeuda"] > 0 and $datCobranza["TDeuda"] >= $datCobranza["limitecredito"]){
+                    $cliente[0]->descripcion = "Supero limite de Crédito: " . number_format($datCobranza["limitecredito"], 0, ',', '.') . "\nDeuda: " . number_format($datCobranza["TDeuda"], 0, ',', '.');
+                }else{
+                    if($datCobranza["TDeudaFec"] > 0){
+                        $cliente[0]->descripcion = "Facturas Vencidas: " . $datCobranza["NroFacDeu"];
+                    }
+                }
+            }    
+        } */
+    }
 }
