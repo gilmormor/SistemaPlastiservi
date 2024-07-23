@@ -17,6 +17,7 @@ $(document).ready(function () {
 	}
 	aux_obs = $("#aux_observaciones").val();
 	$("#observaciones").val(aux_obs);
+	$(".numerico").numeric();
 });
 
 $("#mostrarguiasfacturasT").click(function(event)

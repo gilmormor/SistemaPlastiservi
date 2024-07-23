@@ -3798,3 +3798,32 @@ function imgToBase64(src, callback) {
     return img;
     console.log(img);
 }
+
+// Mapa de caracteres acentuados a no acentuados
+const mapaAcentos = {
+	'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+	'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
+	'ä': 'a', 'ë': 'e', 'ï': 'i', 'ö': 'o', 'ü': 'u',
+	'Ä': 'A', 'Ë': 'E', 'Ï': 'I', 'Ö': 'O', 'Ü': 'U',
+	'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u', 
+	'â': 'a', 'ª': 'a', 'À': 'A', 'Â': 'A',
+	'ê': 'e', 'È': 'E', 'Ê': 'E',
+	'î': 'i', 'Ì': 'I', 'Î': 'I',
+	'ô': 'o', 'Ò': 'O', 'Ô': 'O',
+	'û': 'u', 'Ù': 'U', 'Û': 'U'
+};
+
+$('.delacento').on('input', function() {
+	const input = $(this);
+	const start = input[0].selectionStart;
+	const end = input[0].selectionEnd;
+	let texto = input.val();
+	let textoLimpio = texto.split('').map(char => mapaAcentos[char] || char).join('');
+
+	input.val(textoLimpio);
+
+	// Ajustar la posición del cursor
+	if (texto !== textoLimpio) {
+		input[0].setSelectionRange(start, end);
+    }
+});

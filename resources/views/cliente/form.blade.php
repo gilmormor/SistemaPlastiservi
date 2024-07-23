@@ -19,15 +19,15 @@
 -->
     <div class="form-group col-xs-12 col-sm-3">
         <label for="razonsocial" class="control-label requerido" data-toggle='tooltip' title="Razón Social">Razón Social</label>
-        <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', $data->razonsocial ?? '')}}" maxlength="70" required/>
+        <input type="text" name="razonsocial" id="razonsocial" class="form-control delacento" value="{{old('razonsocial', $data->razonsocial ?? '')}}" maxlength="70" required/>
     </div>
     <div class="form-group col-xs-12 col-sm-5">
         <label for="direccion" class="control-label requerido" data-toggle='tooltip' title="direccion">Dirección Principal</label>
-        <input type="text" name="direccion" id="direccion" class="form-control" value="{{old('direccion', $data->direccion ?? '')}}" required  maxlength="200" placeholder="Ingrese Dirección"/>
+        <input type="text" name="direccion" id="direccion" class="form-control delacento" value="{{old('direccion', $data->direccion ?? '')}}" required  maxlength="200" placeholder="Ingrese Dirección"/>
     </div>
     <div class="form-group col-xs-12 col-sm-2">
         <label for="telefono" class="control-label requerido" data-toggle='tooltip' title="Teléfono">Teléfono</label>
-        <input type="text" name="telefono" id="telefono" class="form-control" value="{{old('telefono', $data->telefono ?? '')}}" maxlength="50" required placeholder="Ingrese Teléfono"/>
+        <input type="text" name="telefono" id="telefono" class="form-control numerico" value="{{old('telefono', $data->telefono ?? '')}}" maxlength="50" required placeholder="Ingrese Teléfono"/>
     </div>    
 </div>
 <!--style="text-transform:uppercase;" Llevar a MAYUSCULA-->
@@ -39,7 +39,7 @@
     </div>
     <div class="form-group col-xs-12 col-sm-4">
         <label for="nombrefantasia" class="control-label" data-toggle='tooltip' title="Nombre de Fantasia">Fantasia</label>
-        <input type="text" name="nombrefantasia" id="nombrefantasia" class="form-control" value="{{old('nombrefantasia', $data->nombrefantasia ?? '')}}" maxlength="50" placeholder="Nombre de Fantasia"/>
+        <input type="text" name="nombrefantasia" id="nombrefantasia" class="form-control delacento" value="{{old('nombrefantasia', $data->nombrefantasia ?? '')}}" maxlength="50" placeholder="Nombre de Fantasia"/>
     </div>
     <div class="form-group col-xs-12 col-sm-5">
         <label for="vendedor_id" class="control-label requerido" data-toggle='tooltip' title="Vendedores">Vendedores</label>
@@ -70,7 +70,7 @@
     </div>
     <div class="form-group col-xs-12 col-sm-9">
         <label for="giro" class="control-label requerido" data-toggle='tooltip' title="Descripción Giro">Descripción Giro</label>
-        <input type="text" name="giro" id="giro" class="form-control" value="{{old('giro', $data->giro ?? '')}}" maxlength="40" required/>
+        <input type="text" name="giro" id="giro" class="form-control delacento" value="{{old('giro', $data->giro ?? '')}}" maxlength="40" required/>
     </div>
 
 </div>
@@ -237,7 +237,7 @@
 <div class="row">
     <div class="form-group col-xs-12 col-sm-4">
         <label for="contactonombreM" class="col-form-label requerido" data-toggle='tooltip' title="Nombre Contacto">Nombre Contacto</label>
-        <input type="text" name="contactonombre" id="contactonombre" class="form-control" value="{{old('contactonombre', $data->contactonombre ?? '')}}" placeholder="Nombre Contacto"required/>
+        <input type="text" name="contactonombre" id="contactonombre" class="form-control delacento" value="{{old('contactonombre', $data->contactonombre ?? '')}}" placeholder="Nombre Contacto"required/>
         <span class="help-block"></span>
     </div>
     <div class="form-group col-xs-12 col-sm-4">
@@ -247,7 +247,7 @@
     </div>
     <div class="form-group col-xs-12 col-sm-4">
         <label for="contactotelefM" class="col-form-label requerido" data-toggle='tooltip' title="Teléfono Contacto">Teléfono Contacto</label>
-        <input type="text" name="contactotelef" id="contactotelef" class="form-control" value="{{old('contactotelef', $data->contactotelef ?? '')}}" placeholder="Teléfono Contacto"required/>
+        <input type="text" name="contactotelef" id="contactotelef" class="form-control numerico" value="{{old('contactotelef', $data->contactotelef ?? '')}}" placeholder="Teléfono Contacto"required/>
         <span class="help-block"></span>
     </div>
 </div>
@@ -255,7 +255,7 @@
 <div class="row">
     <div class="form-group col-xs-12 col-sm-4">
         <label for="finanzascontacto" class="col-form-label requerido" data-toggle='tooltip' title="Contacto Finanzas">Contacto Finanzas</label>
-        <input type="text" name="finanzascontacto" id="finanzascontacto" class="form-control" value="{{old('finanzascontacto', $data->finanzascontacto ?? '')}}" placeholder="Contacto Finanzas"required/>
+        <input type="text" name="finanzascontacto" id="finanzascontacto" class="form-control delacento" value="{{old('finanzascontacto', $data->finanzascontacto ?? '')}}" placeholder="Contacto Finanzas"required/>
         <span class="help-block"></span>
     </div>
     <div class="form-group col-xs-12 col-sm-4">
@@ -265,7 +265,7 @@
     </div>
     <div class="form-group col-xs-12 col-sm-4">
         <label for="finanzastelefono" class="col-form-label requerido" data-toggle='tooltip' title="Teléfono Finanzas">Teléfono Finanzas</label>
-        <input type="text" name="finanzastelefono" id="finanzastelefono" class="form-control" value="{{old('finanzastelefono', $data->finanzastelefono ?? '')}}" placeholder="Teléfono Finanzas"required/>
+        <input type="text" name="finanzastelefono" id="finanzastelefono" class="form-control numerico" value="{{old('finanzastelefono', $data->finanzastelefono ?? '')}}" placeholder="Teléfono Finanzas"required/>
         <span class="help-block"></span>
     </div>
 </div>
