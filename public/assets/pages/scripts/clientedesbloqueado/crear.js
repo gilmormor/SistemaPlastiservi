@@ -11,6 +11,8 @@ $(document).ready(function () {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
 	});
+    $("#cotizacion_id").numeric();
+    $("#cotizacion_id").focus();
     $("#notaventa_id").numeric();
     $("#notaventa_id").focus();
     //formato_rut($("#rutenabled"));
@@ -25,14 +27,23 @@ $(document).ready(function () {
 			$("#myModalBusqueda").modal('show');
 		}
     });
-    $("#btnbuscarcliente").click(function(event){
+    /* $("#btnbuscarcliente").click(function(event){
         $(this).val("");
         $(".input-sm").val('');
         $("#myModalBusqueda").modal('show');
+    }); */
+    $("#btnbuscarcliente").click(function(event){
+        $("#rut").val("");
+        $("#myModalBusqueda").modal('show');
     });
+    
+
     formato_rut($('#rut'));
     $("#notaventa_id").focus(function(){
-        console.log("entro");
+        $("#rut").val("");
+        $("#razonsocial").val("");
+    });
+    $("#cotizacion_id").focus(function(){
         $("#rut").val("");
         $("#razonsocial").val("");
     });
@@ -178,4 +189,45 @@ $("#notaventa_id").blur(function(){
 	}
 });
 
-
+$("#cotizacion_id").blur(function(){
+    eliminarFormatoRut($(this));
+	codigo = $("#cotizacion_id").val();
+	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
+	{
+		//totalizar();
+        var data = {
+            id: codigo,
+            _token: $('input[name=_token]').val()
+        };
+        $.ajax({
+            url: '/cotizacion/buscarCotGen',
+            type: 'POST',
+            data: data,
+            success: function (respuesta) {
+                if(respuesta.id != 0){
+                    $("#cliente_id").val(respuesta.cliente_id);
+                    $("#rut").val(respuesta.rut);
+                    $("#razonsocial").val(respuesta.razonsocial);
+                    formato_rut($("#rut"));
+                    /* $("#observacion").focus();
+                    $("#vpnv1").attr("onclick","genpdfNV(" + $("#cotizacion_id").val() + ",1)");
+                    $("#vpnv2").attr("onclick","genpdfNV(" + $("#cotizacion_id").val() + ",1)");
+                    $('#vistaprevNV').show(); */
+                }else{
+                    swal({
+                        title: respuesta.title,
+                        text: respuesta.text,
+                        icon: respuesta.tipo_alert,
+                        buttons: {
+                            confirm: "Aceptar"
+                        },
+                    }).then((value) => {
+                        if (value) {
+                            $("#cotizacion_id").focus();
+                        }
+                    });
+                }
+            }
+        });
+	}
+});

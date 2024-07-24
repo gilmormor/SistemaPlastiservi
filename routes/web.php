@@ -88,6 +88,14 @@ Route::get('composerintervention', function () {
     shell_exec('composer require intervention/image');
 });
 
+//COMANDO PARA LLENAR TABLA DATACOBRANZA
+Route::get('llenardatacobranza/{clienteid_ini}/{clienteid_fin}',function($clienteid_ini, $clienteid_fin){
+    Artisan::call('datacobranza:llenardatacobranza', [
+        'clienteid_ini' => $clienteid_ini,
+        'clienteid_fin' => $clienteid_fin,
+    ]); 
+
+});
 
 
 //Route::group(['middleware' => ['auth']], function () {
@@ -316,6 +324,7 @@ Route::get('cotizacion/{id}/clientebuscarpage', 'CotizacionController@clientebus
 Route::post('cotizacion/buscardetcot', 'CotizacionController@buscardetcot')->name('buscardetcot');
 Route::post('cotizacion/updateobsdet', 'CotizacionController@updateobsdet')->name('updateobsdet');
 Route::post('cotizacion/devolveracrecot', 'CotizacionController@devolveracrecot')->name('devolveracrecot_cotizacion');
+Route::post('cotizacion/buscarCotGen', 'CotizacionController@buscarCotGen')->name('buscarCotGen');
 
 
 
@@ -1521,8 +1530,10 @@ Route::get('reportdeudaclientesiscob/reporte', 'ReportDeudaClienteSisCobControll
 Route::get('reportdeudaclientesiscob/exportPdf', 'ReportDeudaClienteSisCobController@exportPdf')->name('reportdeudaclientesiscob_exportPdf');
 Route::get('reportdeudaclientesiscob/totalizarindex', 'ReportDeudaClienteSisCobController@totalizarindex')->name('reportdeudaclientesiscob_totalizarindex');
 Route::get('reportdeudaclientesiscob/listardtedet', 'ReportDeudaClienteSisCobController@listardtedet')->name('reportdeudaclientesiscob_listardtedet');
-
 Route::post('reportdeudaclientesiscob/consulta', 'ReportDeudaClienteSisCobController@consulta')->name('reportdeudaclientesiscob_consulta');
+Route::post('reportdeudaclientesiscob/enviarcorreo', 'ReportDeudaClienteSisCobController@enviarcorreo')->name('reportdeudaclientesiscob_enviarcorreo');
+
+
 
 //DESBLOQUEAR CLIENTE MODULO DE CREAR NOTA DE VENTA
 Route::get('clientedesbloqueadonv', 'ClienteDesBloqueadoNVController@index')->name('clientedesbloqueadonv');
@@ -1552,3 +1563,22 @@ Route::post('modulo', 'ModuloController@guardar')->name('guardar_modulo');
 Route::get('modulo/{id}/editar', 'ModuloController@editar')->name('editar_modulo');
 Route::put('modulo/{id}', 'ModuloController@actualizar')->name('actualizar_modulo');
 Route::delete('modulo/{id}', 'ModuloController@eliminar')->name('eliminar_modulo');
+
+/*RUTAS CLIENTEDESBLOQUEADOPRO*/
+Route::get('clientedesbloqueadopro', 'ClienteDesbloqueadoProController@index')->name('clientedesbloqueadopro');
+Route::get('clientedesbloqueadopropage', 'ClienteDesbloqueadoProController@clientedesbloqueadopropage')->name('clientedesbloqueadopropage');
+Route::get('clientedesbloqueadopro/crear', 'ClienteDesbloqueadoProController@crear')->name('crear_clientedesbloqueadopro');
+Route::post('clientedesbloqueadopro', 'ClienteDesbloqueadoProController@guardar')->name('guardar_clientedesbloqueadopro');
+Route::get('clientedesbloqueadopro/{id}/editar', 'ClienteDesbloqueadoProController@editar')->name('editar_clientedesbloqueadopro');
+Route::put('clientedesbloqueadopro/{id}', 'ClienteDesbloqueadoProController@actualizar')->name('actualizar_clientedesbloqueadopro');
+Route::delete('clientedesbloqueadopro/{id}', 'ClienteDesbloqueadoProController@eliminar')->name('eliminar_clientedesbloqueadopro');
+Route::post('clientedesbloqueadopro/buscarclidesbloq', 'ClienteDesbloqueadoProController@buscarclidesbloq')->name('buscarclidesbloq_clientedesbloqueadopro');
+
+/*RUTAS EMAILXLOTE*/
+Route::get('emailxlote', 'EmailxLoteController@index')->name('emailxlote');
+Route::get('emailxlotepage', 'EmailxLoteController@emailxlotepage')->name('emailxlotepage');
+Route::get('emailxlote/crear', 'EmailxLoteController@crear')->name('crear_emailxlote');
+Route::post('emailxlote', 'EmailxLoteController@guardar')->name('guardar_emailxlote');
+Route::get('emailxlote/{id}/editar', 'EmailxLoteController@editar')->name('editar_emailxlote');
+Route::put('emailxlote/{id}', 'EmailxLoteController@actualizar')->name('actualizar_emailxlote');
+Route::delete('emailxlote/{id}', 'EmailxLoteController@eliminar')->name('eliminar_emailxlote');
