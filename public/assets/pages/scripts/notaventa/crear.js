@@ -767,6 +767,7 @@ $("#rut").blur(function(){
 			var data = {
 				rut   : codigo,
 				modulo_id : 2,
+				sta_consdeuda : 1,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
@@ -776,8 +777,8 @@ $("#rut").blur(function(){
 				data: data,
 				success: function (respuesta) {
 					if(respuesta.cliente.length>0){
-						//alert(respuesta[0]['vendedor_id']);
 						console.log(respuesta.cliente);
+						//alert(respuesta[0]['vendedor_id']);
 						if(respuesta.cliente[0].descripcion==null){
 							$("#razonsocial").val(respuesta.cliente[0].razonsocial);
 							$("#telefono").val(respuesta.cliente[0].telefono);
@@ -813,11 +814,6 @@ $("#rut").blur(function(){
 							if (respuesta.sucursales.length == 1){
 								$("#sucursal_id").val(respuesta.sucursales[0].id);
 							}
-							$("#aux_TDeuida").val(respuesta.cliente[0].TDeida);
-							$("#TDeuda").val(MASKLA(respuesta.cliente[0].TDeuda,0));
-							$("#limitecredito").val(MASKLA(respuesta.cliente[0].limitecredito,0));
-							$("#LMdisponible").val(MASKLA(respuesta.cliente[0].limitecredito - respuesta.cliente[0].TDeuda,0));
-							
 	
 							/*
 							$("#clientedirec_id option").remove();
@@ -969,10 +965,7 @@ function limpiarCampos(){
 	$("#iva").val('');
 	$("#total").val('');
 	$("#oc_id").val('');
-	$("#aux_TDeuida").val('');
-	$("#TDeuda").val('');
-	$("#limitecredito").val('');
-	$("#LMdisponible").val('');
+	$("#tabla-data tbody").empty();
 	
 	totalizar();
 }

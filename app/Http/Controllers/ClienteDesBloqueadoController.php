@@ -7,6 +7,7 @@ use App\Models\Cliente;
 use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteDesbloqueadoModulo;
 use App\Models\Modulo;
+use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,7 +25,13 @@ class ClienteDesBloqueadoController extends Controller
     }
 
     public function clientedesbloqueadopage(){
-        $sql = "SELECT clientedesbloqueado.id,clientedesbloqueado.notaventa_id,clientedesbloqueado.obs,
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+        $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
+
+        $sql = "SELECT clientedesbloqueado.id,clientedesbloqueado.notaventa_id,clientedesbloqueado.cotizacion_id,
+            clientedesbloqueado.obs,
             clientedesbloqueado.cliente_id,cliente.rut,cliente.razonsocial,
             GROUP_CONCAT(DISTINCT modulo.nombre ORDER BY modulo.orden) AS modulo_nombre
             from clientedesbloqueado inner join cliente
@@ -35,6 +42,10 @@ class ClienteDesBloqueadoController extends Controller
             ON modulo.id = clientedesbloqueadomodulo.modulo_id
             where isnull(clientedesbloqueado.deleted_at) 
             and isnull(cliente.deleted_at)
+            AND cliente.id IN (SELECT cliente_sucursal.cliente_id 
+                                FROM cliente_sucursal
+                                WHERE cliente_sucursal.cliente_id  = cliente.id
+                                AND cliente_sucursal.sucursal_id IN ($arraySucFisxUsu))
             GROUP BY clientedesbloqueado.id
         ";
         $datas = DB::select($sql);
@@ -61,7 +72,7 @@ class ClienteDesBloqueadoController extends Controller
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
         $modulos = Modulo::orderBy('orden')
-                    ->where("stanvdc","=",$id)
+                    ->where("stamodapl","=",$id)
                     ->get();
         $aux_sta = $id;
         return view('clientedesbloqueado.crear', compact('clientes','modulos','aux_sta'));
@@ -77,14 +88,32 @@ class ClienteDesBloqueadoController extends Controller
     {
         //dd($request);
         can('guardar-cliente-desbloqueado');
-        $clientedesbloqueado = ClienteDesBloqueado::where("cliente_id",$request->cliente_id)
-                                ->where("notaventa_id",$request->notaventa_id)
-                                ->get();
+        if(isset($request->notaventa_id)){
+            $clientedesbloqueado = ClienteDesBloqueado::where("cliente_id",$request->cliente_id)
+            ->where("notaventa_id",$request->notaventa_id)
+            ->get();
+        }else{
+            if(isset($request->cotizacion_id)){
+                $clientedesbloqueado = ClienteDesBloqueado::where("cliente_id",$request->cliente_id)
+                ->where("cotizacion_id",$request->cotizacion_id)
+                ->get();
+            }else{
+                $clientedesbloqueado = ClienteDesBloqueado::where("cliente_id",$request->cliente_id)
+                ->whereNull('notaventa_id')
+                ->whereNull('cotizacion_id')
+                ->get();
+            }    
+        }
         if(count($clientedesbloqueado) > 0){
-            $mensaje = 'Ya existe un desbloqueo por Id Nota de Venta!';
-            if(is_null($clientedesbloqueado[0]->notaventa_id)){
-                $mensaje = 'Ya existe un desbloqueo por RUT de cliente!';
-            };
+            if(isset($request->notaventa_id)){
+                $mensaje = 'Ya existe un desbloqueo por Id Nota de Venta!';
+            }else{
+                if(isset($request->cotizacion_id)){
+                    $mensaje = 'Ya existe desbloqueo Cotizacion Nro: ' . $request->cotizacion_id;
+                }else{
+                    $mensaje = 'Ya existe desbloqueo por RUT de cliente!';
+                }
+            }
             return redirect('clientedesbloqueado')->with([
                 'mensaje' => $mensaje,
                 'tipo_alert' => 'alert-error'
@@ -118,14 +147,18 @@ class ClienteDesBloqueadoController extends Controller
         can('editar-cliente-desbloqueado');
         $data = ClienteDesBloqueado::findOrFail($id);
         //dd(count($data->clientedesbloqueadomodulos));
-        $aux_sta = 1;
-        if($data->notaventa_id == null){
-            $aux_sta = 0;
+        $aux_sta = 0;
+        if($data->notaventa_id != null){
+            $aux_sta = 1;
+        }else{
+            if($data->cotizacion_id != null){
+                $aux_sta = 2;
+            }
         }
         $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes'];
         $modulos = Modulo::orderBy('orden')
-                    ->where("stanvdc","=",$aux_sta)
+                    ->where("stamodapl","=",$aux_sta)
                     ->get();
         return view('clientedesbloqueado.editar', compact('data','clientes','aux_sta','modulos'));
     }
@@ -180,7 +213,8 @@ class ClienteDesBloqueadoController extends Controller
     {
         if ($request->ajax()) {
             $datas = ClienteDesBloqueado::where('cliente_id','=',$request->id)
-            ->whereNull('notaventa_id');
+            ->whereNull('notaventa_id')
+            ->whereNull('cotizacion_id');
             //dd($datas->count());
     
             $aux_contRegistos = $datas->count();
