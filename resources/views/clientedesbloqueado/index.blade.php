@@ -16,20 +16,33 @@ Cliente Desbloqueado
             <div class="box-header with-border">
                 <h3 class="box-title">Cliente Desbloqueado</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('crear_clientedesbloqueado')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo Desbloqueo
+                    <a href="{{route('crear_clientedesbloqueado', ['id' => '1'])}}" class="btn btn-block btn-success btn-sm">
+                        <i class="fa fa-fw fa-plus-circle"></i>NotaVenta
+                    </a>
+                </div>
+                <div class="box-tools pull-right">
+                    <a href="{{route('crear_clientedesbloqueado', ['id' => '2'])}}" class="btn btn-block btn-success btn-sm">
+                        <i class="fa fa-fw fa-plus-circle"></i>Cotización
+                    </a>
+                </div>
+                <div class="box-tools pull-right">
+                    <a href="{{route('crear_clientedesbloqueado', ['id' => '0'])}}" class="btn btn-block btn-success btn-sm">
+                        <i class="fa fa-fw fa-plus-circle"></i>Cliente
                     </a>
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                <table class="table table-striped table-bordered table-hover" id="tabla-data" data-page-length="25">
                     <thead>
                         <tr>
                             <th class="width30">ID</th>
                             <th class="width70">CodCli</th>
                             <th class="width70">RUT</th>
+                            <th class="width40">Cot</th>
+                            <th class="width40">NV</th>
                             <th>Nombre</th>
                             <th>Obs</th>
+                            <th>Permisos</th>
                             <th class="width70">Acción</th>
                         </tr>
                     </thead>

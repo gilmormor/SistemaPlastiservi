@@ -8,6 +8,8 @@ use App\Http\Requests\ValidarDTEFac;
 use App\Http\Requests\ValidarDTENC;
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\ClienteDesBloqueado;
+use App\Models\DataCobranza;
 use App\Models\Dte;
 use App\Models\DteDet;
 use App\Models\DteDte;
@@ -31,7 +33,9 @@ class DteNCFacturaController extends Controller
     public function index()
     {
         can('listar-nota-credito-factura');
-        return view('dtencfactura.index');
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('dtencfactura.index',compact('tablashtml'));
     }
 
     public function dtencfacturapage($dte_id = ""){
@@ -68,7 +72,6 @@ class DteNCFacturaController extends Controller
     public function guardar(ValidarDTENC $request)
     {
         can('guardar-nota-credito-factura');
-        //dd($request);
         $dtefac = Dte::findOrFail($request->dte_id);
         if($dtefac->updated_at != $request->updated_at){
             return redirect('dtencfactura')->with([
@@ -94,7 +97,22 @@ class DteNCFacturaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
-
+        $request1 = new Request();
+        $request1->merge(['modulo_id' => 21]);
+        $request1->request->set('modulo_id', 21);
+        $request1->merge(['deldesbloqueo' => 1]);
+        $request1->request->set('deldesbloqueo', 1);
+        $clibloq = clienteBloqueado($dtefac->cliente_id,0,$request1);
+        if(!is_null($clibloq["bloqueo"])){
+            $request1 = new Request();
+            $request1->merge(['cliente_id' => $dtefac->cliente_id]);
+            $request1->request->set('cliente_id', $dtefac->cliente_id);
+            $respuesta = DataCobranza::llenartabla($request1);
+            return redirect('dtencfactura')->with([
+                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
+            ]);
+        }
         $dte = new Dte();
         $Tmntneto = 0;
         $Tiva = 0;
@@ -414,15 +432,35 @@ function consultaindex($dte_id){
         $aux_conddte_id = "dte.id = $dte_id";
     }
 
-    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,dte.stasubsii,dte.stasubcob,
+    $sql = "SELECT dte.id,dte.nrodocto,dte.fechahora,cliente.rut,cliente.razonsocial,
+    dte.cliente_id,
+    comuna.nombre as nombre_comuna,dte.stasubsii,dte.stasubcob,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
-    dte.updated_at,0 as dtefac_id
+    dte.updated_at,0 as dtefac_id,
+    clientebloqueado.descripcion as clientebloqueado_desc,
+    cliente.limitecredito,
+    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
     FROM dte INNER JOIN cliente
     ON dte.cliente_id  = cliente.id AND ISNULL(dte.deleted_at) AND ISNULL(cliente.deleted_at)
     INNER JOIN comuna
     ON comuna.id = cliente.comunap_id AND ISNULL(comuna.deleted_at)
     LEFT JOIN clientebloqueado
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+    LEFT JOIN datacobranza
+    ON datacobranza.cliente_id = dte.cliente_id
+    LEFT JOIN clientedesbloqueado
+    ON clientedesbloqueado.cliente_id = dte.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+    LEFT JOIN clientedesbloqueadomodulo
+    ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 22
+    LEFT JOIN modulo
+    ON modulo.id = clientedesbloqueadomodulo.modulo_id
+    LEFT JOIN clientedesbloqueadopro
+    ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
     WHERE dte.foliocontrol_id = 5 
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND ISNULL(dte.statusgen)
@@ -431,7 +469,6 @@ function consultaindex($dte_id){
     AND !ISNULL(dte.nrodocto)
     GROUP BY dte.id
     ORDER BY dte.id desc;";
-
     $dteDocs = DB::select($sql);
     //dd($dteDocs);
     for ($i = 0; $i < count($dteDocs);$i++) {

@@ -94,7 +94,9 @@ class NotaventaAprobarController extends Controller
         //dd($cotizaciones);
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
         //return view('notaventaAprobar.index', compact('datas','cotizaciones','aux_statusPant'));
-        return view('notaventaAprobar.index');
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('notaventaAprobar.index',compact('tablashtml'));
     }
 
     function notaventaaprobarpage(){
@@ -204,6 +206,22 @@ class NotaventaAprobarController extends Controller
         $clienteselec = $data->cliente()->get();
         session(['aux_aprocot' => '2']);
         //dd($clienteselec[0]->rut);
+        /* $request1 = new Request(); //EN COMENTARIO PORQUE SE ENRREDA LA NOTA DE VENTA
+        $request1->merge(['notaventa_id' => $id]);
+        $request1->request->set('notaventa_id', $id);
+        $request1->merge(['modulo_id' => 28]);
+        $request1->request->set('modulo_id', 28);
+        $request1->merge(['deldesbloqueo' => 0]);
+        $request1->request->set('deldesbloqueo', 0);
+        $bloqcli = clienteBloqueado($data->cliente_id,0,$request1);
+        if($bloqcli["bloqueo"]){
+            return redirect('notaventaaprobar')->with([
+                'mensaje'=> "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                'tipo_alert' => 'alert-error'
+            ]);
+        } */
+        //dd("entro");
+
 
         $user = Usuario::findOrFail(auth()->id());
         if(isset($user->persona->vendedor->id)){

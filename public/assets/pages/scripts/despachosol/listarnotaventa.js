@@ -126,18 +126,74 @@ $(document).ready(function () {
                 `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa SD" onclick="pdfSolDespPrev(${data.id},2)">
                     <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                 </a>`;
-
-                if(data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null){
+                aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
+                let aux_rutadespsol = $("#aux_ruta_creardespsol").val();
+                let nuevaaux_rutadespsol = aux_rutadespsol.replace("/0/", "/"+data.id+"/");
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = ``;
+                if(aux_clienteBloqueado == ""){
+                    aux_displaybtnac = ``;
+                    aux_displaybtnbl = `style="display:none;"`;
+                }else{
+                    aux_displaybtnac = `style="display:none;"`;
+                    aux_displaybtnbl = ``;
+                }
+                /* aux_verbotonbloqueo = 1;
+                if(aux_clienteBloqueado == ""){
+                    aux_bloqueo = 0;
+                    aux_text +=
+                    `<a href="${nuevaaux_rutadespsol}" class="btn-accion-tabla tooltipsC enlace-soldesp" title="Hacer solicitud despacho: ${data.tipentnombre}">
+                        <button type="button" class="btn btn-default btn-xs">
+                            <i class="fa fa-fw ${data.icono}"></i>
+                        </button>
+                    </a>`;
+                }else{
                     aux_text += 
-                        `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${data.clientebloqueado_desc}">
+                        `<a id="aac${data.id}" name="aac${data.id}" class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id})" aclassact="btn-accion-tabla tooltipsC enlace-soldesp" ahrefact="${nuevaaux_rutadespsol}" atitleact="Hacer solicitud despacho: ${data.tipentnombre}" iclassact="fa fa-fw ${data.icono}">
+                            <button type="button" class="btn btn-default btn-xs">
+                                <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw fa-lock text-danger"></i>
+                            </button>
+                        </a>`;
+                } */
+                aux_text += 
+                `<a ${aux_displaybtnac} href="${nuevaaux_rutadespsol}" class="btn-accion-tabla tooltipsC enlace-soldesp botonac${data.id}" title="Hacer solicitud despacho: ${data.tipentnombre}">
+                    <button type="button" class="btn btn-default btn-xs">
+                        <i class="fa fa-fw ${data.icono}"></i>
+                    </button>
+                </a>
+                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id})">
+                    <button type="button" class="btn btn-default btn-xs">
+                        <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw fa-lock text-danger"></i>
+                    </button>
+                </a>`;
+
+
+                /* if((data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null) || ($("#stabloxdeusiscob").val() == "1" && ((data.datacobranza_tdeudafec > 0) || (data.datacobranza_tdeuda > data.limitecredito)))){
+                    aux_descbloq = "";
+                    if((data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null)){
+                        aux_descbloq = data.clientebloqueado_desc;
+                    }
+                    if($("#stabloxdeusiscob").val() == "1")
+                    {
+                        if(data.datacobranza_tdeuda > data.limitecredito){
+                            aux_descbloq += "Excede cupo de Crédito ";
+                        }
+                        if(data.datacobranza_tdeudafec > 0){
+                            aux_descbloq += "Factura(s) Vencida(s)";
+                        }
+                    }
+                    aux_text += 
+                        `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${aux_descbloq}">
                             <i class="fa fa-fw fa-lock text-danger"></i>
                         </a>`;
                 }else{
+                    let aux_rutadespsol = $("#aux_ruta_creardespsol").val();
+                    let nuevaaux_rutadespsol = aux_rutadespsol.replace("/0/", "/"+data.id+"/");
                     aux_text +=
-                    `<a href="${data.rutanuevasoldesp}" class="btn-accion-tabla tooltipsC enlace-soldesp" title="Hacer solicitud despacho: ${data.tipentnombre}">
+                    `<a href="${nuevaaux_rutadespsol}" class="btn-accion-tabla tooltipsC enlace-soldesp" title="Hacer solicitud despacho: ${data.tipentnombre}">
                         <i class="fa fa-fw ${data.icono}"></i>
                     </a>`;
-                }
+                } */
                 if(data.anulada != null && data.anulada != ""){
                     aux_text = "";
                     colorFila = 'background-color: #87CEEB;';
@@ -302,6 +358,7 @@ function datoslnv1(){
         producto_id       : $("#producto_idPxP").val(),
         sucursal_id       : $("#sucursal_id").val(),
         filtro            : 0,
+        modulo_id         : 4,
         _token            : $('input[name=_token]').val()
     };
 
@@ -320,6 +377,7 @@ function datoslnv1(){
             "&filtro=" + data1.filtro +
             "&producto_id=" + data1.producto_id +
             "&sucursal_id=" + data1.sucursal_id +
+            "&modulo_id=" + data1.modulo_id +
             "&aux_titulo=" + aux_titulo;
     
     var data = {

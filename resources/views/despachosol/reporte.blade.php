@@ -110,7 +110,7 @@
 						$aux_ancho = $despachosoldet->notaventadetalle->producto->diametro;
 						$aux_largo = $despachosoldet->notaventadetalle->producto->long . "Mts";
 						$aux_espesor = $despachosoldet->notaventadetalle->producto->tipounion;
-						$aux_cla_sello_nombre = $despachosoldet->notaventadetalle->producto->claseprod->cla_nombre;
+						$aux_cla_sello_nombre = isset($despachosoldet->notaventadetalle->producto->claseprod) ? $despachosoldet->notaventadetalle->producto->claseprod->cla_nombre : "";
 						$aux_producto_nombre = $despachosoldet->notaventadetalle->producto->nombre;
 						$aux_atribAcuTec = "";
                         $aux_staAT = false;

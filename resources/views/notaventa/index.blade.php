@@ -12,6 +12,7 @@ Nota de Venta
 @section('contenido')
 <div class="row">
     <div class="col-lg-12">
+        <input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{$tablashtml['stabloxdeusiscob']}}">
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
@@ -19,7 +20,7 @@ Nota de Venta
                 @if ($aux_statusPant == '0')
                     <div class="box-tools pull-right">
                         <!--<a href="{{route('crear_notaventa')}}" class="btn btn-block btn-success btn-sm" id="btnnuevaNV">-->
-                        <a href="#" class="btn btn-block btn-success btn-sm" id="btnnuevaNV">
+                        <a class="btn btn-block btn-success btn-sm" id="btnnuevaNV">
                             <i class="fa fa-fw fa-plus-circle"></i> Crear Nota Venta
                         </a>
                     </div>                        

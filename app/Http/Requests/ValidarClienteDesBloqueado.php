@@ -24,7 +24,8 @@ class ValidarClienteDesBloqueado extends FormRequest
     public function rules()
     {
         return [
-            'cliente_id' => 'required|max:6|unique:clientedesbloqueado,cliente_id,' . $this->route('id'). ',id,deleted_at,NULL',
+            'cliente_id' => 'required|max:6',
+            //'cliente_id' => 'required|max:6|unique:clientedesbloqueado,cliente_id,' . $this->route('id'). ',id,deleted_at,NULL',
             'obs' => 'required|max:100'
         ];
     }

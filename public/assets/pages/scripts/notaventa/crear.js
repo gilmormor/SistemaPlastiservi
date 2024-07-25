@@ -770,7 +770,9 @@ $("#rut").blur(function(){
 			}
 			*/
 			var data = {
-				rut: codigo,
+				rut   : codigo,
+				modulo_id : 2,
+				sta_consdeuda : 1,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
@@ -780,6 +782,7 @@ $("#rut").blur(function(){
 				data: data,
 				success: function (respuesta) {
 					if(respuesta.cliente.length>0){
+						console.log(respuesta.cliente);
 						//alert(respuesta[0]['vendedor_id']);
 						if(respuesta.cliente[0].descripcion==null){
 							$("#razonsocial").val(respuesta.cliente[0].razonsocial);
@@ -816,7 +819,6 @@ $("#rut").blur(function(){
 							if (respuesta.sucursales.length == 1){
 								$("#sucursal_id").val(respuesta.sucursales[0].id);
 							}
-	
 	
 							/*
 							$("#clientedirec_id option").remove();
@@ -968,6 +970,8 @@ function limpiarCampos(){
 	$("#iva").val('');
 	$("#total").val('');
 	$("#oc_id").val('');
+	$("#tabla-data tbody").empty();
+	
 	totalizar();
 }
 

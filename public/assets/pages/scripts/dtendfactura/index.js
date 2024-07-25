@@ -206,20 +206,31 @@ $(document).ready(function () {
             </a>`;
             $('td', row).eq(17).html(aux_text); */
 
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = ``;
+            if(aux_clienteBloqueado == ""){
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+            }else{
+                aux_displaybtnac = `style="display:none;"`;
+                aux_displaybtnbl = ``;
+            }
+
             stasubsii_text = 
-            `<a id="stasubsii${data.id}" name="stasubsii${data.id}" onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Generar DTE SII" data-toggle="tooltip">
+            `<a ${aux_displaybtnac} id="stasubsii${data.id}" name="stasubsii${data.id}" onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC botonac${data.id}" title="Generar DTE SII" data-toggle="tooltip">
                 <span class="fa fa-upload text-danger"></span>
             </a>`;    
             $('td',row).eq(17).attr('stasubsii',stasubsii_text);
 
             stasubcob_text = 
-            `<a id="stasubcob${data.id}" name="stasubcob${data.id}" onclick="volverSubirDteSisCob(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip"">
+            `<a ${aux_displaybtnac} id="stasubcob${data.id}" name="stasubcob${data.id}" onclick="volverSubirDteSisCob(${data.id})" class="btn-accion-tabla btn-sm tooltipsC botonac${data.id}" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip"">
                 <span class="fa fa-upload text-yellow"></span>
             </a>`;    
             $('td',row).eq(17).attr('stasubcob',stasubcob_text);
 
             bntaproord_text = 
-            `<a id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${data.id})" title="Enviar a procesados">
+            `<a ${aux_displaybtnac} id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC botonac${data.id}" onclick="procesarDTE(${data.id},24)" title="Enviar a procesados">
                 <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
             </a>`;
             $('td',row).eq(17).attr('bntaproord',bntaproord_text);
@@ -234,6 +245,11 @@ $(document).ready(function () {
             }else{
                 aux_text = bntaproord_text;
             }
+            aux_text += 
+            `<a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0)">
+                <span class="fa fa-fw fa-lock text-danger text-danger" style="bottom: 0px;top: 2px;"></span>
+            </a>`;
+
             $('td',row).eq(17).attr('id','accion' + data.id);
             $('td',row).eq(17).attr('name','accion' + data.id);
             $('td', row).eq(17).html(aux_text);

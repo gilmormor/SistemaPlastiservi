@@ -3216,6 +3216,17 @@ function ajaxRequestGeneral(data,url,funcion) {
 					$("#fila" + datatemp.dte_id).attr("updated_at",respuesta.updated_at);
 				});
 			}
+			if(funcion == "datacobranza/llenartabla"){
+				aux_mensaje = "Cliente bloqueado";
+				aux_tipoaler = "error";
+				if(respuesta.bloqueo == 0){
+					$(".botonac" + datatemp.id).fadeIn("slow");
+					$(".botonbloq" + datatemp.id).hide();
+					aux_mensaje = "Cliente desbloqueado"
+					aux_tipoaler = "success";
+				}
+				Biblioteca.notificaciones(aux_mensaje, 'Plastiservi', aux_tipoaler);
+			}
 
 		},
 		error: function () {
@@ -3247,10 +3258,11 @@ function anulardte(id){
     });
 }
 
-function procesarDTE(id){
+function procesarDTE(id,aux_modulo_id){
     var data = {
         dte_id : id,
         nfila  : id,
+		modulo_id : aux_modulo_id,
         updated_at : $("#fila" + id).attr("updated_at"),
         _token: $('input[name=_token]').val()
     };
@@ -3776,6 +3788,63 @@ function llenartablagrupocatprom(){
 	});
 }
 
+function validarClienteBloqueado(data){
+	aux_clienteBloqueado = "";
+	if((data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null) || ($("#stabloxdeusiscob").val() == "1" && ((data.datacobranza_tdeudafec > 0) || (data.datacobranza_tdeuda > data.limitecredito)))){
+		aux_clienteBloqueado = "";
+		if((data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null)){
+			aux_clienteBloqueado = data.clientebloqueado_desc;
+		}
+		if($("#stabloxdeusiscob").val() == "1")
+		{
+			if(data.datacobranza_tdeuda > data.limitecredito){
+				aux_clienteBloqueado += "Excede cupo de Crédito ";
+			}
+			if(data.datacobranza_tdeudafec > 0){
+				aux_clienteBloqueado += "Factura(s) Vencida(s)";
+			}
+		}
+	}
+	return aux_clienteBloqueado;
+}
+
+function llenartablaDataCobranza(id,cliente_id,notaventa_id){
+	data = {
+		id           : id,
+		cliente_id   : cliente_id,
+		notaventa_id : notaventa_id,
+		_token       : $('input[name=_token]').val()
+	};
+	ruta= "/datacobranza/llenartabla";
+	ajaxRequestGeneral(data,ruta,'datacobranza/llenartabla');
+}
+
+function validarClienteBloqueadoxModulo(data){
+	aux_clienteBloqueado = "";
+	//console.log(data);
+	if(data.clientedesbloqueadopro_obs == ""){
+		if((data.modulo_id === null) && ($("#stabloxdeusiscob").val() == "1" && ((data.datacobranza_tdeudafec > 0) || (data.datacobranza_tdeuda > data.limitecredito)  || data.clientebloqueado_desc !== null))){
+			aux_clienteBloqueado = "";
+			if((data.modulo_id === null)){
+				if(data.clientebloqueado_desc !== null){
+					aux_clienteBloqueado = data.clientebloqueado_desc;
+				}
+			}
+			if($("#stabloxdeusiscob").val() == "1")
+			{
+				if(data.datacobranza_tdeuda > data.limitecredito){
+					aux_clienteBloqueado += " Excede cupo de Crédito ";
+				}
+				if(data.datacobranza_tdeudafec > 0){
+					aux_clienteBloqueado += " Factura(s) Vencida(s)";
+				}
+			}
+		}
+	}
+	return aux_clienteBloqueado;
+}
+
+
 function imgToBase64(src, callback) {
     var outputFormat = src.substr(-3) === 'png' ? 'image/png' : 'image/jpeg';
     var img = new Image();
@@ -3827,3 +3896,45 @@ $('.delacento').on('input', function() {
 		input[0].setSelectionRange(start, end);
     }
 });
+function formato_rutVar(rut)
+{
+	var sRut1 = rut;      //contador de para saber cuando insertar el . o la -
+    var nPos = 0; //Guarda el rut invertido con los puntos y el guión agregado
+    var sInvertido = ""; //Guarda el resultado final del rut como debe ser
+    var sRut = "";
+    for(var i = sRut1.length - 1; i >= 0; i-- )
+    {
+        sInvertido += sRut1.charAt(i);
+        if (i == sRut1.length - 1 )
+            sInvertido += "-";
+        else if (nPos == 3)
+        {
+            sInvertido += ".";
+            nPos = 0;
+        }
+        nPos++;
+    }
+    for(var j = sInvertido.length - 1; j>= 0; j-- )
+    {
+        if (sInvertido.charAt(sInvertido.length - 1) != ".")
+            sRut += sInvertido.charAt(j);
+        else if (j != sInvertido.length - 1 )
+            sRut += sInvertido.charAt(j);
+    }
+	//Pasamos al campo el valor formateado
+	//rut.value = sRut.toUpperCase();
+	return sRut.toUpperCase();
+}
+
+function fechaaaaammdd(fecha){
+	// Divide la fecha en partes
+    const partes = fecha.split('/');
+    if (partes.length !== 3) {
+        throw new Error('Formato de fecha incorrecto. Debe ser dd/mm/aaaa.');
+    }
+
+    const [dia, mes, anio] = partes;
+    
+    // Retorna la fecha en el nuevo formato
+    return `${anio}/${mes}/${dia}`;
+}
