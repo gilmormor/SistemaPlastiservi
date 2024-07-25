@@ -64,9 +64,9 @@ function configTablaProd(){
 
             $(row).attr('name', 'fila' + aux_nfila);
             $(row).attr('id', 'fila' + aux_nfila);
-            $(row).attr('prodid', 'tooltip');
+            //$(row).attr('prodid', 'tooltip');
             $(row).attr('class', "btn-accion-tabla copiar_id");
-            $(row).attr('data-toggle', data.id);
+            //$(row).attr('data-toggle', data.id);
             $(row).attr('title', "Click para seleccionar producto");
             $(row).attr('onClick', aux_onclick + ';');
 

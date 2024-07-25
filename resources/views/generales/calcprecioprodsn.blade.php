@@ -23,7 +23,7 @@
                     <div class="input-group">
                         <input type="text" name="producto_idM" id="producto_idM" class="form-control" tipoval="numericootro" value="{{old('producto_idM', $clienteselec[0]->producto_idM ?? '')}}" placeholder="F2 Buscar"/>
                         <span class="input-group-btn">
-                            <button class="btn btn-default" type="button" id="btnbuscarproducto" name="btnbuscarproducto" data-toggle='tooltip' title="Buscar">Buscar</button>
+                            <button class="btn btn-default" type="button" id="btnbuscarproducto" name="btnbuscarproducto" title="Buscar">Buscar</button>
                         </span>
                     </div>
                     <span class="help-block"></span>

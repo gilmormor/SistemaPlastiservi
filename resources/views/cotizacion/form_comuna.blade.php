@@ -57,7 +57,7 @@
                 <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" title="F2 Buscar" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12" required {{$disabledReadOnly}}/>
                 <span class="input-group-btn">
                     @if (session('aux_aprocot')=='0')
-                        <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
+                        <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" title="Buscar">Buscar</button>
                     @endif
                 </span>
             </div>

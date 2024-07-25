@@ -70,10 +70,10 @@
                                     </div>
                                     @if (isset($selecmultprod) and $selecmultprod == true) <!-- Valiable creada en el controlador para validar si se puede hacer multiple seleccion -->
                                         <div class="col-xs-12" id="divprodselec" name="divprodselec">
-                                            <div class="col-xs-12 col-md-1 col-sm-1 text-left" data-toggle='tooltip' title="Productos seleccionados">
+                                            <div class="col-xs-12 col-md-1 col-sm-1 text-left" title="Productos seleccionados">
                                                 <label for="productos">Selección:</label>
                                             </div>
-                                            <div class="col-xs-12 col-md-11 col-sm-11" data-toggle='tooltip' title="Productos seleccionados">
+                                            <div class="col-xs-12 col-md-11 col-sm-11" title="Productos seleccionados">
                                                 <select id="productos" name="productos" class="form-control select2" multiple>
                                                 </select>
                                             </div>

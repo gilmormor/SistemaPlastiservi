@@ -45,31 +45,31 @@
     <div class="row">
         <div class="form-group col-xs-12 col-sm-2">
             <!--
-            <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
+            <label for="rut" class="control-label requerido" title="RUT">RUT</label>
             <div class="input-group">
             <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" title="F2 Buscar" placeholder="F2 Buscar" required {{$disabledReadOnly}}/>
                 <span class="input-group-btn">
                     @if (session('aux_aprocot')=='0')
-                        <a id="btnbuscarcliente" name="btnbuscarcliente" href="#" class="btn btn-flat" data-toggle='tooltip' title="Buscar">
+                        <a id="btnbuscarcliente" name="btnbuscarcliente" href="#" class="btn btn-flat" title="Buscar">
                             <i class="fa fa-search"></i>
                         </a>
                     @endif
                 </span>
             </div>
             -->
-            <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT sin puntos ni guión">RUT</label>
+            <label for="rut" class="control-label requerido" title="RUT sin puntos ni guión">RUT</label>
             <div class="input-group">
                 <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" title="F2 Buscar" placeholder="F2 Buscar" maxlength="12" oninput="validarInputRut(event)" onkeyup="llevarMayus(this);" required {{$disabledReadOnly}}/>
                 <span class="input-group-btn">
                     @if (session('aux_aprocot')=='0')
-                        <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
+                        <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" title="Buscar">Buscar</button>
                     @endif
                 </span>
             </div>
 
         </div>
         <div class="form-group col-xs-12 col-sm-3">
-            <label for="razonsocial" class="control-label requerido" data-toggle='tooltip' title="Razón Social">Razón Social</label>
+            <label for="razonsocial" class="control-label requerido" title="Razón Social">Razón Social</label>
             <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', $clienteselec[0]->razonsocial ?? '')}}" readonly/>
         </div>
 
@@ -207,7 +207,7 @@
         </div>
         -->
         <div class="form-group col-xs-12 col-sm-1">
-            <label for="plaentdias" class="control-label requerido" data-toggle='tooltip' title="Plazo entrega Días">PlaEnt Dias</label>
+            <label for="plaentdias" class="control-label requerido" title="Plazo entrega Días">PlaEnt Dias</label>
             <input type="number" name="plaentdias" id="plaentdias" class="form-control" min="1" max="45" value="{{old('plaentdias', $data->plaentdias ?? '')}}" required {{$disabledReadOnly}}>
         </div>
         <div class="form-group col-xs-12 col-sm-2">
@@ -549,11 +549,11 @@
     </div>
 </div>
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
-    <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
+    <label for="total" class="control-label requerido" title="Total Documento">Total Documento</label>
     <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
 </div>
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
-    <label name="lblitemcompletos" id="lblitemcompletos" for="itemcompletos" class="control-label requerido" data-toggle='tooltip' title="Complete valores item">Complete valores item 1</label>
+    <label name="lblitemcompletos" id="lblitemcompletos" for="itemcompletos" class="control-label requerido" title="Complete valores item">Complete valores item 1</label>
     <input type="hidden" name="itemcompletos" id="itemcompletos" value="" class="form-control" style="text-align:right;" readonly required>
 </div>
 
@@ -582,24 +582,24 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="razonsocialCTM" class="control-label" data-toggle='tooltip' title="Razón Social">Razón Social</label>
+                        <label for="razonsocialCTM" class="control-label" title="Razón Social">Razón Social</label>
                         <input type="text" name="razonsocialCTM" id="razonsocialCTM" class="form-control requeridos" tipoval="texto" value="{{old('razonsocialCTM')}}" placeholder="Razón Social"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="direccionCTM" class="control-label" data-toggle='tooltip' title="Dirección">Dirección</label>
+                        <label for="direccionCTM" class="control-label" title="Dirección">Dirección</label>
                         <input type="text" name="direccionCTM" id="direccionCTM" class="form-control requeridos" tipoval="texto"  maxlength="200" value="{{old('direccionCTM')}}" placeholder="Dirección"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="telefonoCTM" class="control-label" data-toggle='tooltip' title="Teléfono">Teléfono</label>
+                        <label for="telefonoCTM" class="control-label" title="Teléfono">Teléfono</label>
                         <input type="text" name="telefonoCTM" id="telefonoCTM" class="form-control requeridos" tipoval="numerico" maxlength="50" value="{{old('telefonoCTM')}}" placeholder="Teléfono"/>
                         <span class="help-block"></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="giro_idCTM" class="control-label" data-toggle='tooltip' title="Giro">Giro</label>
+                        <label for="giro_idCTM" class="control-label" title="Giro">Giro</label>
                         <select name="giro_idCTM" id="giro_idCTM" class="selectpicker form-control requeridos" tipoval="combobox" value="{{old('giro_idCTM')}}">
                             <option value="">Seleccione...</option>
                             @foreach($tablas['giros'] as $giro)
@@ -613,7 +613,7 @@
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-8" classorig="col-xs-12 col-sm-8">
-                        <label for="giroCTM" class="control-label" data-toggle='tooltip' title="Descripción Giro">Descripción Giro</label>
+                        <label for="giroCTM" class="control-label" title="Descripción Giro">Descripción Giro</label>
                         <input type="text" name="giroCTM" id="giroCTM" class="form-control requeridos" tipoval="texto" value="{{old('giroCTM')}}" placeholder="Descripción Giro"/>
                         <span class="help-block"></span>
                     </div>
@@ -621,7 +621,7 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="emailCTM" class="control-label" data-toggle='tooltip' title="email">Email</label>
+                        <label for="emailCTM" class="control-label" title="email">Email</label>
                         <input type="text" name="emailCTM" id="emailCTM" class="form-control requeridos" tipoval="email" maxlength="50" value="{{old('emailCTM')}}" placeholder="Email"/>
                         <span class="help-block"></span>
                     </div>
@@ -700,34 +700,34 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="contactonombreCTM" class="control-label" data-toggle='tooltip' title="Nombre Contacto">Nombre Contacto</label>
+                        <label for="contactonombreCTM" class="control-label" title="Nombre Contacto">Nombre Contacto</label>
                         <input type="text" name="contactonombreCTM" id="contactonombreCTM" class="form-control requeridos" tipoval="texto" placeholder="Nombre Contacto" value="{{old('contactonombreCTM')}}"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="contactoemailCTM" class="control-label" data-toggle='tooltip' title="Email Contacto">Email Contacto</label>
+                        <label for="contactoemailCTM" class="control-label" title="Email Contacto">Email Contacto</label>
                         <input type="text" name="contactoemailCTM" id="contactoemailCTM" class="form-control requeridos" tipoval="email" placeholder="Email Contacto" value="{{old('contactoemailCTM')}}"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="contactotelefCTM" class="control-label" data-toggle='tooltip' title="Teléfono Contacto">Teléfono Contacto</label>
+                        <label for="contactotelefCTM" class="control-label" title="Teléfono Contacto">Teléfono Contacto</label>
                         <input type="text" name="contactotelefCTM" id="contactotelefCTM" class="form-control requeridos" tipoval="numerico" placeholder="Teléfono Contacto" value="{{old('contactotelefCTM')}}"/>
                         <span class="help-block"></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="finanzascontactoCTM" class="control-label" data-toggle='tooltip' title="Contacto Finanzas">Contacto Finanzas</label>
+                        <label for="finanzascontactoCTM" class="control-label" title="Contacto Finanzas">Contacto Finanzas</label>
                         <input type="text" name="finanzascontactoCTM" id="finanzascontactoCTM" class="form-control requeridos" tipoval="texto" placeholder="Contacto Finanzas" value="{{old('finanzascontactoCTM')}}"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="finanzanemailCTM" class="control-label" data-toggle='tooltip' title="Email Finanzas">Email Finanzas</label>
+                        <label for="finanzanemailCTM" class="control-label" title="Email Finanzas">Email Finanzas</label>
                         <input type="text" name="finanzanemailCTM" id="finanzanemailCTM" class="form-control requeridos" tipoval="email" placeholder="Email Finanzas" value="{{old('finanzanemailCTM')}}"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="finanzastelefonoCTM" class="control-label" data-toggle='tooltip' title="Teléfono Finanzas">Teléfono Finanzas</label>
+                        <label for="finanzastelefonoCTM" class="control-label" title="Teléfono Finanzas">Teléfono Finanzas</label>
                         <input type="text" name="finanzastelefonoCTM" id="finanzastelefonoCTM" class="form-control requeridos" tipoval="numerico" placeholder="Teléfono Finanzas" value="{{old('finanzastelefonoCTM')}}"/>
                         <span class="help-block"></span>
                     </div>
@@ -748,7 +748,7 @@
                     </div>
 
                     <div class="col-xs-12 col-sm-8" classorig="col-xs-12 col-sm-8">
-                        <label for="observacionesCTM" class="control-label" data-toggle='tooltip' title="Observaciones">Observación</label>
+                        <label for="observacionesCTM" class="control-label" title="Observaciones">Observación</label>
                         <textarea class="form-control requeridos" name="observacionesCTM" id="observacionesCTM" placeholder="Observación" value="{{old('contactotelefCTM')}}"></textarea>
                         <span class="help-block"></span>
                     </div>
@@ -779,24 +779,24 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="razonsocialCTM" class="control-label" data-toggle='tooltip' title="Razón Social">Razón Social</label>
+                        <label for="razonsocialCTM" class="control-label" title="Razón Social">Razón Social</label>
                         <input type="text" name="razonsocialCTM" id="razonsocialCTM" class="form-control requeridos" tipoval="texto" value="{{old('razonsocialCTM')}}" placeholder="Razón Social"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="direccionCTM" class="control-label" data-toggle='tooltip' title="Dirección">Dirección</label>
+                        <label for="direccionCTM" class="control-label" title="Dirección">Dirección</label>
                         <input type="text" name="direccionCTM" id="direccionCTM" class="form-control requeridos" tipoval="texto"  maxlength="200" value="{{old('direccionCTM')}}" placeholder="Dirección"/>
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="telefonoCTM" class="control-label" data-toggle='tooltip' title="Teléfono">Teléfono</label>
+                        <label for="telefonoCTM" class="control-label" title="Teléfono">Teléfono</label>
                         <input type="text" name="telefonoCTM" id="telefonoCTM" class="form-control requeridos" tipoval="numerico" maxlength="50" value="{{old('telefonoCTM')}}" placeholder="Teléfono"/>
                         <span class="help-block"></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="contactonombreCTM" class="control-label" data-toggle='tooltip' title="Nombre Contacto">Nombre Contacto</label>
+                        <label for="contactonombreCTM" class="control-label" title="Nombre Contacto">Nombre Contacto</label>
                         <input type="text" name="contactonombreCTM" id="contactonombreCTM" class="form-control requeridos" tipoval="texto" placeholder="Nombre Contacto" value="{{old('contactonombreCTM')}}"/>
                         <span class="help-block"></span>
                     </div>
@@ -845,7 +845,7 @@
                 </div>             
                 <div class="row">
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="emailCTM" class="control-label" data-toggle='tooltip' title="email">Email</label>
+                        <label for="emailCTM" class="control-label" title="email">Email</label>
                         <input type="text" name="emailCTM" id="emailCTM" class="form-control requeridos" tipoval="email" maxlength="50" value="{{old('emailCTM')}}" placeholder="Email"/>
                         <span class="help-block"></span>
                     </div>
@@ -863,7 +863,7 @@
                         <span class="help-block"></span>
                     </div>
                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                        <label for="observacionesCTM" class="control-label" data-toggle='tooltip' title="Observaciones">Observación</label>
+                        <label for="observacionesCTM" class="control-label" title="Observaciones">Observación</label>
                         <textarea class="form-control requeridos" name="observacionesCTM" id="observacionesCTM" placeholder="Observación" value="{{old('contactotelefCTM')}}"></textarea>
                         <span class="help-block"></span>
                     </div>

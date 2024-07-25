@@ -9,7 +9,7 @@
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
 <input type="hidden" name="giro_id" id="giro_id" value="{{old('giro_id', $data->giro_id ?? '')}}">
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
-    <label for="oc_fileaux" class="control-label requerido" data-toggle='tooltip' title="Adjuntar Orden de compra">Adjuntar Orden de compra</label>
+    <label for="oc_fileaux" class="control-label requerido" title="Adjuntar Orden de compra">Adjuntar Orden de compra</label>
     <input type="hidden" name="oc_fileaux" id="oc_fileaux" value="" class="form-control" style="text-align:right;">
 </div>
 
@@ -26,7 +26,7 @@
 <input type="hidden" name="piva" id="piva" value="{{old('piva', $empresa->iva ?? '')}}">
 <input type="hidden" name="iva" id="iva" value="{{old('iva', $data->iva ?? '')}}">
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
-    <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
+    <label for="total" class="control-label requerido" title="Total Documento">Total Documento</label>
     <input type="hidden" name="total" id="total" value="{{old('total', $data->total ?? '')}}"class="form-control" style="text-align:right;" readonly required>
 </div>
 <input type="hidden" name="imagen" id="imagen" value="{{old('imagen', $data->oc_file ?? '')}}">
@@ -37,7 +37,7 @@
 ?>
 <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{$selecmultprod}}">
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
-    <label for="oc_fileaux" class="control-label requerido" data-toggle='tooltip' title="Adjuntar Orden de compra">Adjuntar Orden de compra</label>
+    <label for="oc_fileaux" class="control-label requerido" title="Adjuntar Orden de compra">Adjuntar Orden de compra</label>
     <input type="hidden" name="oc_fileaux" id="oc_fileaux" value="" class="form-control" style="text-align:right;">
 </div>
 
@@ -73,7 +73,7 @@
                     <div class="row">
                         @if (($aux_sta==2 and $data->cotizacion_id and $data->id) or $aux_sta==3)
                             <div class="form-group col-xs-12 col-sm-1">
-                                <label for="cotizacion_id" class="control-label requerido" data-toggle='tooltip' title="Num Cotización">Cot</label>
+                                <label for="cotizacion_id" class="control-label requerido" title="Num Cotización">Cot</label>
                                 @if($aux_sta==2)
                                     <input type="text" name="cotizacion_id" id="cotizacion_id" class="form-control" value="{{old('cotizacion_id', $data->cotizacion_id ?? '')}}" required readonly/>
                                 @else
@@ -82,19 +82,19 @@
                             </div>            
                         @endif
                         <div class="form-group col-xs-12 col-sm-3">
-                            <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT sin puntos ni guión">RUT</label>
+                            <label for="rut" class="control-label requerido" title="RUT sin puntos ni guión">RUT</label>
                             <div class="input-group">
                                 <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut', $clienteselec[0]->rut ?? '')}}" onkeyup="llevarMayus(this);" title="F2 Buscar" placeholder="F2 Buscar"  maxlength="12" oninput="validarInputRut(event)" onkeyup="llevarMayus(this);" required {{$disabledReadOnly}} {{$disabledcliente}}/>
                                 <span class="input-group-btn">
                                     @if (session('aux_aproNV')=='0')
-                                        <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar" {{$disabledcliente}}>Buscar</button>
+                                        <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" title="Buscar" {{$disabledcliente}}>Buscar</button>
                                     @endif
                                 </span>
                             </div>
             
                         </div>
                         <div class="form-group col-xs-12 col-sm-5">
-                            <label for="razonsocial" class="control-label requerido" data-toggle='tooltip' title="Razón Social">Razón Social</label>
+                            <label for="razonsocial" class="control-label requerido" title="Razón Social">Razón Social</label>
                             <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="{{old('razonsocial', $clienteselec[0]->razonsocial ?? '')}}" readonly/>
                         </div>
             
@@ -354,7 +354,7 @@
                             @if ($data->oc_file)
                                 <div class="form-group col-xs-12 col-sm-1">
                                     <label for="btnverfoto" class="control-label requerido">Ver</label>
-                                    <button class="btn btn-default" type="button" id="btnverfoto" name="btnverfoto" data-toggle='tooltip' title="Ver Archivo">Ver OC</button>
+                                    <button class="btn btn-default" type="button" id="btnverfoto" name="btnverfoto" title="Ver Archivo">Ver OC</button>
                                 </div>                    
                             @endif
                         @endif

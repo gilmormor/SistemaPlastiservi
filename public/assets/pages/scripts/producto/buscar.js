@@ -161,7 +161,7 @@ function configTablaProd(){
             for(i=1; i<=10; i++){
                 $('td', row).eq(i).attr('onClick',  aux_onclick + ';');
                 //$('td', row).eq(i).attr('data-toggle', data.id);
-                $('td', row).eq(i).addClass('tooltipsC');
+                //$('td', row).eq(i).addClass('tooltipsC');
                 $('td', row).eq(i).attr('title', "Click para seleccionar producto");    
             }
             if(data.acuerdotecnico_id != null){
