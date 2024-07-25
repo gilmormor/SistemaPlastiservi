@@ -2938,8 +2938,9 @@ class Dte extends Model
         }else{
             $aux_condrut = "cliente.rut='$rut'";
         }
-        $sql = "SELECT id,rut,razonsocial,limitecredito
-                    FROM cliente
+        $sql = "SELECT cliente.id,rut,razonsocial,limitecredito,plazopago.dias as plazopago_dias
+                    FROM cliente INNER JOIN plazopago
+                    ON plazopago.id = cliente.plazopago_id
                     WHERE $aux_condrut
                     ORDER BY razonsocial;";
         $clientes = DB::select($sql);
@@ -2972,7 +2973,7 @@ class Dte extends Model
             $ArrayNroFac = [];
             $ArrayNroFacDeuda = [];
             $cont = 0;
-            $datosTotasFacDeuda = [];
+            $datosTodasFacDeuda = [];
             foreach ($tables as $table) {
                 $cont++;
                 // Accede a los elementos hijos dentro de cada <Table>
@@ -2999,12 +3000,14 @@ class Dte extends Model
                     if(isset($dte->dtefac->fchvenc)){
                         $fecvenc = $dte->dtefac->fchvenc;
                     }else{
-                        $fecvenc = $dte->fchemis;
+                        //$fecvenc = $dte->fchemis;
+                        $fecvenc = date('Y-m-d', strtotime($dte->fchemis ."+ " . $cliente->plazopago_dias . " days"));
                     }
                 }else{
                     $auxcliente = Cliente::findOrFail($cliente->id);
                     $fecfact = substr($fechaFAV,0,10);
-                    $fecvenc = date('Y-m-d');
+                    $fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $cliente->plazopago_dias . " days"));
+                    $mnttotal = $Deuda;
                     //$fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $auxcliente->plazopago->dias ? $auxcliente->plazopago->dias : "0" . " days"));
                 }
                 $TDeuda += $Deuda;
@@ -3027,7 +3030,7 @@ class Dte extends Model
                     $ArrayNroFacDeuda[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
                     $staVencida = true;
                 }
-                $datosTotasFacDeuda[] = [
+                $datosTodasFacDeuda[] = [
                     'NroFAV' => $NroFAV,
                     'fecfact' => $fecfact,
                     'fecvenc' => $fecvenc,
@@ -3069,7 +3072,7 @@ class Dte extends Model
                 "TDeudaFec" => $TDeudaFec,
                 "NroFacDeu" => implode(",", $ArrayNroFacDeuda),
                 "datosFacDeuda" => $datosFacDeuda,
-                "datosTotasFacDeuda" => $datosTotasFacDeuda
+                "datosTodasFacDeuda" => $datosTodasFacDeuda
             ];   
             $aux_cont++;
             /* if($aux_cont > 100){
