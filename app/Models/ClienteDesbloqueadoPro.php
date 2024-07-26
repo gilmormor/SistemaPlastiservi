@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Models\Seguridad\Usuario;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ClienteDesBloqueadoNV extends Model
+class ClienteDesbloqueadoPro extends Model
 {
     use SoftDeletes;
-    protected $table = "clientedesbloqueadonv";
+    protected $table = "clientedesbloqueadopro";
     protected $fillable = [
         'obs',
         'cliente_id',
@@ -34,4 +35,5 @@ class ClienteDesBloqueadoNV extends Model
     {
         return $this->belongsTo(User::class);
     }
+
 }
