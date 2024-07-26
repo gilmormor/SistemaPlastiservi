@@ -793,6 +793,7 @@ $("#rut").blur(function(){
 			*/
 			var data = {
 				rut: $("#rut").val(),
+				sta_consdeuda : 1,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({

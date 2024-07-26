@@ -1,11 +1,11 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Cliente Desbloqueado para Nota de Venta
+Cliente Desbloqueado Pro
 @endsection
 
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/clientedesbloqueadonv/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/clientedesbloqueadopro/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -14,15 +14,15 @@ Cliente Desbloqueado para Nota de Venta
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Cliente Desbloqueado para Nota de Venta</h3>
+                <h3 class="box-title">Cliente Desbloqueado Total</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('crear_clientedesbloqueadonv')}}" class="btn btn-block btn-success btn-sm">
-                        <i class="fa fa-fw fa-plus-circle"></i> Nuevo Desbloqueo
+                    <a href="{{route('crear_clientedesbloqueadopro')}}" class="btn btn-block btn-success btn-sm">
+                        <i class="fa fa-fw fa-plus-circle"></i>Nuevo
                     </a>
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                <table class="table table-striped table-bordered table-hover" id="tabla-data" data-page-length="25">
                     <thead>
                         <tr>
                             <th class="width30">ID</th>

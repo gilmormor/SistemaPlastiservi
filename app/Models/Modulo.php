@@ -13,7 +13,7 @@ class Modulo extends Model
         'orden',
         'nombre',
         'desc',
-        'stanvdc',
+        'stamodapl',
         'usuario_id',
         'usuariodel_id'
     ];

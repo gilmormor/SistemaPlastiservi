@@ -18,7 +18,7 @@ class CreateTableModulo extends Migration
             $table->bigIncrements('id');
             $table->string('nombre',50)->comment('Nombre');
             $table->string('desc',100)->comment('Descripcion');
-            $table->tinyInteger('stanvdc')->comment('Estatus para validar que el modulo esta asociado a el id de Nota de Venta. Esto para filtrar en el caso de desbloqueo de clientes por modulo');
+            $table->tinyInteger('stamodapl')->comment('Estatus para saber en el modulo donde aplica. Ejemplo: 0 = Clientes, 1 = Nota de Venta, 2 = Cotizacion, asociado al cliente_id, notaventa_id o cotizacion_id. Esto para filtrar en el caso de desbloqueo de clientes por modulo');
             $table->unsignedBigInteger('usuario_id');
             $table->foreign('usuario_id','fk_modulo_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();

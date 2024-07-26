@@ -1211,7 +1211,8 @@ function consultaindex($dte_id){
     IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
     IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
     IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-    modulo.stanvdc as modulo_stanvdc,clientedesbloqueadomodulo.modulo_id
+    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
     FROM dte INNER JOIN dtedte
     ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
     INNER JOIN dteguiadesp
@@ -1238,6 +1239,8 @@ function consultaindex($dte_id){
     ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 12
     LEFT JOIN modulo
     ON modulo.id = clientedesbloqueadomodulo.modulo_id
+    LEFT JOIN clientedesbloqueadopro
+    ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
     WHERE (dte.foliocontrol_id=1)
     AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
     AND dte.sucursal_id IN ($sucurcadena)
