@@ -34,6 +34,24 @@
         </div>
     </div>    
 @endif
+@if ($aux_sta == 2)
+    <div class="form-group">
+        <label for="cotizacion_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Cotizacion ID">Cotizacion ID</label>
+        <div class="col-lg-2">
+            @if (!isset($data))
+                <input type="text" name="cotizacion_id" id="cotizacion_id" class="form-control" value="{{old('cotizacion_id', $data->cotizacion_id ?? '')}}" maxlength="12" required/>
+            @else
+                <input type="text" name="cotizacion_idenabled" id="cotizacion_idenabled" class="form-control" value="{{old('cotizacion_idenabled', $data->cotizacion_id ?? '')}}" maxlength="12" required  disabled readonly/>
+            @endif
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="rut" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
+        <div class="col-lg-2">
+            <input type="text" name="rut" id="rut" class="form-control inputrut" value="{{old('rut', $data->cliente->rut ?? '')}}" onkeyup="llevarMayus(this);" maxlength="12" required disabled readonly/>
+        </div>
+    </div>    
+@endif
 
 <div class="form-group">
     <label for="razonsocial" class="col-lg-3 control-label requerido">Razon Social</label>
@@ -45,15 +63,16 @@
 <div class="form-group">
     <label for="modulo_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Modulos">Modulos</label>
     <div class="col-lg-8">
-        <select name="modulo_id[]" id="modulo_id" class='selectpicker form-control' data-live-search='true' multiple data-actions-box='true'>
-            @foreach($modulos as $modulo)
-                <option
-                value="{{$modulo->id}}"
-                {{is_array(old('modulo_id')) ? (in_array($modulo->id, old('modulo_id')) ? 'selected' : '') : (isset($data) ? ($data->modulos->firstWhere('id', $modulo->id) ? 'selected' : '') : '')}}
-                >{{$modulo->nombre}}</option>
-            @endforeach
-        </select>
-
+        <div>
+            <select name="modulo_id[]" id="modulo_id" class='selectpicker form-control modulo_id' data-live-search='true' multiple data-actions-box='true' required>
+                @foreach($modulos as $modulo)
+                    <option
+                    value="{{$modulo->id}}"
+                    {{is_array(old('modulo_id')) ? (in_array($modulo->id, old('modulo_id')) ? 'selected' : '') : (isset($data) ? ($data->modulos->firstWhere('id', $modulo->id) ? 'selected' : '') : '')}}
+                    >{{$modulo->nombre}}</option>
+                @endforeach
+            </select>
+        </div>
     </div>
 </div>
 

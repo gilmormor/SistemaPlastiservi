@@ -186,9 +186,7 @@ $(document).ready(function () {
 			aux_text = 
 				`<div class="tools11">
 					<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0)">
-						<button type="button" class="btn btn-default btn-xs">
-							<i class="fa fa-fw fa-lock text-danger"></i>
-						</button>
+						<i class="fa fa-fw fa-lock text-danger fa-lg"></i>
 					</a>
 					<a ${aux_displaybtnac} id="bntaprobnv${data.id}" name="bntaprobnv${data.id}" class="btn-accion-tabla btn-sm tooltipsC action-buttons botonac${data.id}" onclick="aprobarnv(${data.id},${data.id},${aprobstatus})" title="Aprobar">
 						<i class="fa fa-fw fa-save acciones1 fa-lg"></i>
@@ -200,7 +198,7 @@ $(document).ready(function () {
 						<i class="fa fa-fw fa-close acciones1 fa-lg text-danger"></i>
 					</a>
 				</div>`;
-			$('td', row).eq(12).attr('style','padding-top: 0px;padding-bottom: 0px;');
+			//$('td', row).eq(12).attr('style','padding-top: 0px;padding-bottom: 0px;');
 			$('td', row).eq(12).html(aux_text);
 
 		}
@@ -421,7 +419,7 @@ $("#cotizacion_idM").blur(function(){
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
-				//console.log(respuesta);
+				console.log(respuesta.cotizaciones);
 				//console.log(respuesta.cotizaciones)
 				//console.log(respuesta.cotizaciones["length"]);
 				if(respuesta.cotizaciones["length"]>0){

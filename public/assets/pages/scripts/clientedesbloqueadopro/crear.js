@@ -28,6 +28,14 @@ $(document).ready(function () {
         $("#myModalBusqueda").modal('show');
     });
     formato_rut($('#rut'));
+    $("#notaventa_id").focus(function(){
+        $("#rut").val("");
+        $("#razonsocial").val("");
+    });
+    $("#cotizacion_id").focus(function(){
+        $("#rut").val("");
+        $("#razonsocial").val("");
+    });
 });
 
 function copiar_rut(id,rut){
@@ -63,8 +71,8 @@ $("#rut").blur(function(){
                         razonsocial: respuesta[0]['razonsocial'],
                         _token: $('input[name=_token]').val()
                     };
-                    var ruta = '/clientedesbloqueadonv/buscarclibloq';
-                    ajaxRequest(data,ruta,'buscarclibloq');
+                    var ruta = '/clientedesbloqueadopro/buscarclidesbloq';
+                    ajaxRequest(data,ruta,'buscarclidesbloq');
                 }else{
                     swal({
                         title: 'Cliente no existe.',
@@ -91,7 +99,7 @@ function ajaxRequest(data,url,funcion) {
 		type: 'POST',
 		data: data,
 		success: function (respuesta) {
-			if(funcion=='buscarclibloq'){
+			if(funcion=='buscarclidesbloq'){
 				if (respuesta.mensaje == "ng") {
                     formato_rut($("#rut"));
                     $("#razonsocial").val(data.razonsocial);
