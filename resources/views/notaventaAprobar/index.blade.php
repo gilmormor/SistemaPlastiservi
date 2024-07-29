@@ -13,6 +13,7 @@ Aprobar Nota de Venta
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
+        <input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{$tablashtml['stabloxdeusiscob']}}">
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Aprobar Nota de Venta</h3>

@@ -116,7 +116,50 @@ $(document).ready(function () {
             $('td', row).eq(9).html(aux_text);
             $('td', row).eq(9).attr('style','text-align:center');
             //console.log(data);
-            if(data.clientebloqueado_descripcion != null){
+
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = ``;
+            if(aux_clienteBloqueado == ""){
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+            }else{
+                aux_displaybtnac = `style="display:none;"`;
+                aux_displaybtnbl = ``;
+            }
+
+            /* if(aux_clienteBloqueado == ""){
+                aux_text = 
+                `<a href="${data.rutacrear}" class="btn-accion-tabla tooltipsC" title="Hacer Guia Despacho: ${data.tipoentrega_nombre}">
+                    <button type="button" class="btn btn-default btn-xs">
+                        <i class="fa fa-fw ${data.icono}"></i>
+                    </button>
+                </a>|`;
+
+            }else{
+                aux_text = 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" title="Cliente Bloqueado: ${aux_clienteBloqueado}">
+                        <button type="button" class="btn btn-default btn-xs" disabled>
+                            <i class="fa fa-fw fa-lock text-danger text-danger"></i>
+                        </button>
+                    </a>|`;
+
+            } */
+
+            aux_text = 
+            `<a ${aux_displaybtnac} href="${data.rutacrear}" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Hacer Guia Despacho: ${data.tipoentrega_nombre}">
+                <button type="button" class="btn btn-default btn-xs">
+                    <i class="fa fa-fw ${data.icono}"></i>
+                </button>
+            </a>
+            <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id})">
+                <button type="button" class="btn btn-default btn-xs">
+                    <i class="fa fa-fw fa-lock text-danger text-danger"></i>
+                </button>
+            </a>`;
+
+
+            /* if(data.clientebloqueado_descripcion != null){
                 aux_text = 
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
                         "<button type='button' class='btn btn-default btn-xs' disabled>" +
@@ -130,7 +173,7 @@ $(document).ready(function () {
                         "<i class='fa fa-fw " + data.icono + "'></i>"+
                     "</button>" +
                 "</a>|";
-            }
+            } */
             $('td', row).eq(14).addClass('updated_at');
             $('td', row).eq(14).attr('id','updated_at' + data.id);
             $('td', row).eq(14).attr('name','updated_at' + data.id);
@@ -149,9 +192,9 @@ $(document).ready(function () {
             }
             */
             aux_text =  aux_text +
-                    "<a onclick='anularguiafact(" + data.id + "," + data.id + ")' class='btn-accion-tabla btn-sm tooltipsC btndevord' title='Devolver Orden Despacho' data-toggle='tooltip'>" +
-                                    "<button type='button' class='btn btn-warning btn-xs'><i class='fa fa-fw fa-reply'></i></button>" +
-                    "</a>";
+                    `<a onclick="anularguiafact('${data.id}','${data.id}')" class="btn-accion-tabla btn-sm tooltipsC btndevord" title="Devolver Orden Despacho" data-toggle="tooltip">
+                                    <button type="button" class="btn btn-warning btn-xs"><i class="fa fa-fw fa-reply"></i></button>
+                    </a>`;
             $('td', row).eq(15).html(aux_text);
         }
     });

@@ -11,7 +11,7 @@
 <input type="hidden" name="aux_fechaphp" id="aux_fechaphp" value="{{old('aux_fechaphp', $fecha ?? '')}}">
 <input type="hidden" name="aux_iva" id="aux_iva" value="{{$empresa->iva}}">
 <input type="hidden" name="direccioncot" id="direccioncot" value="{{old('direccioncot', $data->direccioncot ?? '')}}">
-<input type="hidden" name="cliente_id" id="cliente_id" value="{{old('cliente_id', $data->cliente_id ?? '')}}">
+<input type="hidden" name="cliente_id" id="cliente_id" value="{{old('cliente_id', $data->cliente_id ? $data->cliente_id : $data->notaventa->cliente_id ?? '')}}">
 <input type="hidden" name="comuna_id" id="comuna_id" value="{{old('comuna_id', $data->comuna_id ?? '')}}">
 <input type="hidden" name="formapago_id" id="formapago_id" value="{{old('formapago_id', $data->formapago_id ?? '')}}">
 <input type="hidden" name="plazopago_id" id="plazopago_id" value="{{old('plazopago_id', $data->plazopago_id ?? '')}}">
@@ -165,7 +165,7 @@
                                     $aux_espesornum = $detalle->notaventadetalle->producto->espesor;
                                     $aux_largo = $detalle->notaventadetalle->producto->long . "Mts";
                                     $aux_largonum = $detalle->notaventadetalle->producto->long;
-                                    $aux_cla_sello_nombre = $detalle->notaventadetalle->producto->claseprod->cla_nombre;
+                                    $aux_cla_sello_nombre = isset($detalle->notaventadetalle->producto->claseprod) ? $detalle->notaventadetalle->producto->claseprod->cla_nombre : "";
                                     $aux_producto_nombre = $detalle->notaventadetalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->notaventadetalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";

@@ -132,7 +132,57 @@ $(document).ready(function () {
 
                 aux_ruta_crearord = $("#aux_ruta_crearord").val();
                 aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
-                if(data.clientebloqueado_descripcion !== null){
+
+                aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = ``;
+                if(aux_clienteBloqueado == ""){
+                    aux_displaybtnac = ``;
+                    aux_displaybtnbl = `style="display:none;"`;
+                }else{
+                    aux_displaybtnac = `style="display:none;"`;
+                    aux_displaybtnbl = ``;
+                }
+    
+                /* if(aux_clienteBloqueado == ""){
+                    aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC" title="Editar Picking">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw ${data.icono}"></i>
+                                    </button>
+                                </a>
+                                <a id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw fa-arrow-right text-yellow"></i>
+                                    </button>
+                                </a>`;
+
+                }else{
+                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${aux_clienteBloqueado}">
+                                        <button type="button" class="btn btn-default btn-xs" disabled>
+                                            <i class="fa fa-fw fa-lock text-danger"></i>
+                                        </button>
+                                    </a>`;    
+
+                } */
+
+                aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Editar Picking">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw ${data.icono}"></i>
+                                </button>
+                            </a>
+                            <a ${aux_displaybtnac} id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw fa-arrow-right text-yellow"></i>
+                                </button>
+                            </a>
+                            <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id})">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw fa-lock text-danger"></i>
+                                </button>
+                            </a>`;
+
+
+                /* if(data.clientebloqueado_descripcion !== null){
                     aux_text = `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${data.clientebloqueado_descripcion}">
                                         <button type="button" class="btn btn-default btn-xs" disabled>
                                             <i class="fa fa-fw fa-lock text-danger"></i>
@@ -150,17 +200,7 @@ $(document).ready(function () {
                                     </button>
                                 </a>`;
 
-                    /* aux_text = `<a href="${aux_ruta + data.id}" target="_blank" class="btn-accion-tabla tooltipsC" title="Editar Picking">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-fw ${data.icono}"></i>
-                                    </button>
-                                </a>
-                                <a id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-upload text-yellow"></i>
-                                    </button>
-                                </a>`; */
-                }
+                } */
                 $('td', row).eq(13).html(aux_text);
                 
             }
@@ -313,7 +353,15 @@ function ajaxRequest(data,url,funcion) {
                     //form.parents('tr').remove();
                     $("#fila"+aux_data.despachosol_id).remove();
                 }
-                Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+                swal({
+                    title: 'Informacion',
+                    text: respuesta.mensaje,
+                    icon: 'warning',
+                    buttons: {
+                        confirm: "Aceptar"
+                    },
+                });
+                //Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
             }
             if(funcion=="validareditarpicking"){
                 if (respuesta.error == 0) {
