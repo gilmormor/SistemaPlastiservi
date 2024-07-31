@@ -137,17 +137,19 @@ class Cliente extends Model
         return $this->hasOne(ClienteBloqueado::class);
     }
 
-    //RELACION UNO A UNO clientedesbloqueado Nota de Venta
-    public function clientedesbloqueadonv()
-    {
-        return $this->hasOne(ClienteDesBloqueadoNV::class);
-    }
 
         //RELACION UNO A UNO datacobranza
         public function datacobranza()
         {
             return $this->hasOne(DataCobranza::class);
         }
+    
+    //RELACION UNO A UNO clientedesbloqueadopro
+    public function clientedesbloqueadopro()
+    {
+        return $this->hasOne(ClienteDesbloqueadoPro::class);
+    }
+
     
     public static function clientesxUsuario($vendedor_id = '0',$cliente_id = 0){
         $respuesta = array();
@@ -252,6 +254,92 @@ class Cliente extends Model
                 and cliente_sucursal.sucursal_id in ($sucurcadena)
                 GROUP BY cliente.id
                 ORDER BY cliente.id;";
+        $datas = DB::select($sql);
+        return $datas;
+    }
+
+    public static function valBloqCliSisCob(&$cliente,$request,$aux_consultadeuda){
+        //dd(count($cliente));
+        if(count($cliente) > 0){
+            if(isset($cliente[0]->cliente_id)){
+                $aux_cliente_id = $cliente[0]->cliente_id;
+            }else{
+                $aux_cliente_id = $cliente[0]->id;
+            }
+            $staBloqueo = clienteBloqueado($aux_cliente_id,$aux_consultadeuda,$request);
+            if(isset($staBloqueo["error"])){
+                return $staBloqueo;
+            }
+            $cliente[0]->descripcion = $staBloqueo ["bloqueo"];
+            $cliente[0]->TDeuda = 0;
+            if(isset($staBloqueo["datacobranza"]["TDeuda"])){
+                $cliente[0]->TDeuda = $staBloqueo["datacobranza"]["TDeuda"];
+            }
+            /* $clientebus = Cliente::findOrFail($cliente[0]->id);
+            if($clientebus->clientedesbloqueado){
+                $cliente[0]->descripcion = null;
+            }else{
+                if(is_null($cliente[0]->clientebloqueado_descripcion)){
+                    $rut = isset($request->rut) ? $request->rut : null;
+                    $datCobranza = Dte::deudaClienteSisCobranza($rut);
+                    //dd($datCobranza);
+                    if($datCobranza["TDeuda"] > 0 and $datCobranza["TDeuda"] >= $datCobranza["limitecredito"]){
+                        $cliente[0]->descripcion = "Supero limite de Crédito: " . number_format($datCobranza["limitecredito"], 0, ',', '.') . "\nDeuda: " . number_format($datCobranza["TDeuda"], 0, ',', '.');
+                    }else{
+                        if($datCobranza["TDeudaFec"] > 0){
+                            $cliente[0]->descripcion = "Facturas Vencidas: " . $datCobranza["NroFacDeu"];
+                        }
+                    }
+                }    
+            } */
+        }
+    }
+
+    public static function clientesxUsuarioMejorado($request){
+        //dd($request);
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurUsuArray = $users->sucursales->pluck('id')->toArray();
+        $sucurUsuCadena = implode(",", $sucurUsuArray);
+        //dd($sucurUsuArray);
+        $condUsuvendedor_id = "true";
+        if($users->persona->vendedor){
+            $vendedor_id=$users->persona->vendedor->id;
+            $condUsuvendedor_id = "cliente_vendedor.vendedor_id = $vendedor_id";
+        }
+
+        if(!isset($request->id) or empty($request->id)){
+            $aux_condcliente_id = " true";
+        }else{
+            $aux_condcliente_id = "cliente.id = $request->id";
+        }
+
+        if(!isset($request->sucursal_id) or empty($request->sucursal_id) or ($request->sucursal_id == "")){
+            $aux_sucursal_idCond = "true";
+        }else{
+            $aux_sucursal_idCond = "cliente_sucursal.sucursal_id = $request->sucursal_id";
+        }
+
+        if(!isset($request->vendedor_id) or empty($request->vendedor_id)){
+            $aux_condvendedor_id = " true";
+        }else{
+            $aux_vendedor_id = implode(",", $request->vendedor_id);
+            $aux_condvendedor_id = "cliente_vendedor.vendedor_id in ($aux_vendedor_id)";
+        }
+ 
+        $sql = "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.direccion,cliente.telefono,cliente.giro_id,
+                limitecredito
+                FROM cliente inner join cliente_sucursal
+                on cliente.id = cliente_sucursal.cliente_id and isnull(cliente.deleted_at) and isnull(cliente_sucursal.deleted_at)
+                LEFT JOIN cliente_vendedor
+                ON cliente_vendedor.cliente_id = cliente.id and isnull(cliente_vendedor.deleted_at)
+                where $aux_condcliente_id
+                and cliente_sucursal.sucursal_id in ($sucurUsuCadena)
+                and $aux_sucursal_idCond
+                and $condUsuvendedor_id
+                and $aux_condvendedor_id
+                GROUP BY cliente.id
+                ORDER BY cliente.id;";
+        //dd($sql);
         $datas = DB::select($sql);
         return $datas;
     }
