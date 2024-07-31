@@ -280,6 +280,7 @@ $("#nrodoctoF").blur(function(){
 				if(respuesta.dte.length>0){
 					if(respuesta.dte[0].statusgen == 1){
 						if(respuesta.dtefacdet.length>0){
+							$("#aux_iva").val(respuesta.dte[0].dte_tasaiva); //ASIGNO A aux_iva respuesta.dte[0].tasaiva LO QUE VIENE DE LA TABLA DTE
 							llenarDatosCliente(respuesta);
 							llenarItemFact(respuesta.dtefacdet);
 							bandera = false;

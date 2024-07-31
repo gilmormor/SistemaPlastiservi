@@ -3916,7 +3916,8 @@ function consultasql_dte($request){
     //dte_idrefanul: CODIGO DTE QUE ANULO EL DTE
     //codref: CODIGO REFERENCIA QUE INDICA EL MOTIVO DE LA ANULACION DEL DTE
     $sql = "SELECT dte.id as dte_id,dte.fchemis,dte.nrodocto,dte.foliocontrol_id,dte.fechahora,dte.centroeconomico_id,
-    dte.vendedor_id,dte.obs,dte.indtraslado,dte.updated_at,dtefac.hep,dtefac.formapago_id,dtefac.fchvenc,
+    dte.vendedor_id,dte.obs,dte.indtraslado,dte.tasaiva as dte_tasaiva,
+    dte.updated_at,dtefac.hep,dtefac.formapago_id,dtefac.fchvenc,
     0 as dte_idrefanul,0 as codref,
     cliente.id as cliente_id,cliente.rut,cliente.razonsocial,
     cliente.telefono,cliente.email,cliente.direccion,cliente.contactonombre,

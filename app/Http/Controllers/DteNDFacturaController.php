@@ -181,6 +181,7 @@ class DteNDFacturaController extends Controller
         $respuesta = Dte::dteSolicitarFolio($dte);
         /* $respuesta = [
             'id' => 1,
+            'aux_folio' => 1234
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
@@ -216,99 +217,6 @@ class DteNDFacturaController extends Controller
             return redirect('dtendfactura')->with([
                 'mensaje'=>$respuesta["mensaje"] ,
                 'tipo_alert' => 'alert-error'
-            ]);
-        }
-
-
-        //$cliente = Cliente::findOrFail($request->cliente_id);
-        $request->request->add(['fchemis' => date('Y-m-d')]);
-
-        $request->request->add(['cliente_id' => $dtefac->cliente_id]);
-        $request->request->add(['tipodespacho' => $dtefac->tipodespacho]);
-        $request->request->add(['fechahora' => date("Y-m-d H:i:s")]);
-        //$request->request->add(['tasaiva' => $dteguiadesp->iva]);
-        $request->request->add(['sucursal_id' => $centroeconomico->sucursal_id]);
-        $request->request->add(['comuna_id' => $dtefac->comuna_id]);
-        $request->request->add(['foliocontrol_id' => 6]); //CODIGO DE TIPO DE DTE 6=NOTA DEBITO
-        $request->request->add(['usuario_id' => auth()->id()]);
-
-        $dte = Dte::create($request->all());
-        $dte_id = $dte->id;
-
-        $arrayDTE = Dte::busDTEOrig($request->dte_id); //Buscar la factura inicial del DTE
-        $dtedte = new DteDte();
-        $dtedte->dte_id = $dte_id;
-        $dtedte->dter_id = $request->dte_id;
-        $dtedte->dtefac_id = $arrayDTE["dtefac_id"]; 
-        $dtedte->save();
-
-        $dtencnd = new DteNcNd();
-        $dtencnd->dte_id = $dte_id;
-        $dtencnd->codref = $request->codref;
-        $dtencnd->save();
-
-        $Tmntneto = 0;
-        $Tiva = 0;
-        $Tmnttotal = 0;
-        $Tkgtotal = 0;
-
-        for ($i=0; $i < $cont_producto ; $i++){
-            if(is_null($request->producto_id[$i])==false AND (is_null($request->qtyitem[$i])==false) OR $request->codref == 2){
-                //$producto = Producto::findOrFail($request->producto_id[$i]);
-                $dtedet = new DteDet();
-                $dtedet->dte_id = $dte_id;
-                $dtedet->dtedet_id = $request->dtedetorigen_id[$i];
-                $dtedet->producto_id = $request->producto_id[$i];
-                $dtedet->nrolindet = ($i + 1);
-                $dtedet->vlrcodigo = $request->producto_id[$i];
-                $dtedet->nmbitem = $request->nmbitem[$i];
-                //$dtedet->dscitem = $request->dscitem[$i]; este valor aun no lo uso
-                $dtedet->qtyitem = $request->qtyitem[$i];
-                $dtedet->unmditem = $request->unmditem[$i];
-                $dtedet->unidadmedida_id = $request->unidadmedida_id[$i];
-                $dtedet->prcitem = $request->prcitem[$i]; //$request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
-                $dtedet->montoitem = round($request->montoitem[$i],0);
-                //$dtedet->obsdet = $request->obsdet[$i];
-                $dtedetorigen = DteDet::findOrFail($request->dtedetorigen_id[$i]);
-                if(is_numeric($dtedetorigen->itemkg) and $dtedetorigen->itemkg > 0){
-                    $aux_itemkg = ($dtedetorigen->itemkg / $dtedetorigen->qtyitem) * $request->qtyitem[$i];
-                }else{
-                    $aux_itemkg = 0;    
-                }
-                //$dtedet->itemkg = $request->itemkg[$i];
-                $dtedet->itemkg = $aux_itemkg;
-                $dtedet->save();
-                $dtedet_id = $dtedet->id;
-
-                $Tmntneto += $request->montoitem[$i];
-                $Tkgtotal += $request->itemkg[$i];
-            }
-        }
-        $empresa = Empresa::findOrFail(1);
-        if($Tmntneto>0){
-            $Tiva = round(($empresa->iva/100) * $Tmntneto);
-            $Tmnttotal = round((($empresa->iva/100) + 1) * $Tmntneto);    
-        }
-        $dte = Dte::findOrFail($dte_id);
-        $dte->tipodespacho = $dtefac->tipodespacho;
-        $dte->indtraslado = $dtefac->indtraslado;
-        $dte->mntneto = $Tmntneto;
-        $dte->tasaiva = $empresa->iva;
-        $dte->iva = $Tiva;
-        $dte->mnttotal = $Tmnttotal;
-        $dte->kgtotal = $Tkgtotal;
-        $dte->save();
-
-        $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-        if($aux_foliosdisp <= $foliocontrol->folmindisp){
-            return redirect('dtendfactura')->with([
-                'mensaje'=>"Nota de Debito creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,
-                'tipo_alert' => 'alert-error'
-            ]);
-        }else{
-            return redirect('dtendfactura')->with([
-                'mensaje'=>'Nota de Debito creada con exito.',
-                'tipo_alert' => 'alert-success'
             ]);
         }
     }
