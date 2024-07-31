@@ -2489,10 +2489,10 @@ function consulta($request,$aux_sql,$orden){
         clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp,
         notaventa.aprobfechahora as notaventa_aprobfechahora,
         cliente.limitecredito,
-        IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
-        IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
-        IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
-        IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+        IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
+        IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+        IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+        IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
         clientedesbloqueado.obs as clientedesbloqueado_obs,
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
@@ -2520,8 +2520,8 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
         LEFT JOIN clientebloqueado
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-        LEFT JOIN datacobranza
-        ON datacobranza.cliente_id = notaventa.cliente_id
+        LEFT JOIN vista_datacobranza
+        ON vista_datacobranza.cliente_id = notaventa.cliente_id
         LEFT JOIN clientedesbloqueado
         ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
         LEFT JOIN clientedesbloqueadomodulo
@@ -3452,10 +3452,10 @@ function consultasoldesp($request){
             despachosolenvorddesp.despachosol_id as despachosolenvorddesp_updated_at,
             cliente.limitecredito,
             clientebloqueado.descripcion as clientebloqueado_desc,
-            IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
-            IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
-            IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
-            IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+            IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
+            IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+            IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+            IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
             modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
             IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
             FROM despachosol INNER JOIN despachosoldet
@@ -3487,8 +3487,8 @@ function consultasoldesp($request){
             ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
             LEFT JOIN despachosolenvorddesp
             ON despachosolenvorddesp.despachosol_id = despachosol.id AND ISNULL(despachosolenvorddesp.deleted_at)
-            LEFT JOIN datacobranza
-            ON datacobranza.cliente_id = notaventa.cliente_id
+            LEFT JOIN vista_datacobranza
+            ON vista_datacobranza.cliente_id = notaventa.cliente_id
             LEFT JOIN clientedesbloqueado
             ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
             LEFT JOIN clientedesbloqueadomodulo
@@ -3572,10 +3572,10 @@ function consultaindex(){
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     cliente.limitecredito,
-    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
-    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
-    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
-    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+    IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
+    IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+    IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+    IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
     modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
     IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
     FROM despachosol INNER JOIN notaventa
@@ -3592,8 +3592,8 @@ function consultaindex(){
     ON tipoentrega.id = despachosol.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
     LEFT JOIN clientebloqueado
     ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-    LEFT JOIN datacobranza
-    ON datacobranza.cliente_id = notaventa.cliente_id
+    LEFT JOIN vista_datacobranza
+    ON vista_datacobranza.cliente_id = notaventa.cliente_id
     LEFT JOIN clientedesbloqueado
     ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
     LEFT JOIN clientedesbloqueadomodulo

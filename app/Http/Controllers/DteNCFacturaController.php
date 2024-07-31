@@ -360,10 +360,10 @@ function consultaindex($dte_id){
     dte.updated_at,0 as dtefac_id,
     clientebloqueado.descripcion as clientebloqueado_desc,
     cliente.limitecredito,
-    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
-    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
-    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
-    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+    IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
+    IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+    IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+    IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
     modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
     IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
     FROM dte INNER JOIN cliente
@@ -372,8 +372,8 @@ function consultaindex($dte_id){
     ON comuna.id = cliente.comunap_id AND ISNULL(comuna.deleted_at)
     LEFT JOIN clientebloqueado
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-    LEFT JOIN datacobranza
-    ON datacobranza.cliente_id = dte.cliente_id
+    LEFT JOIN vista_datacobranza
+    ON vista_datacobranza.cliente_id = dte.cliente_id
     LEFT JOIN clientedesbloqueado
     ON clientedesbloqueado.cliente_id = dte.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
     LEFT JOIN clientedesbloqueadomodulo
