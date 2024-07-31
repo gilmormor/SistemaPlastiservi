@@ -798,6 +798,7 @@ $("#rut").blur(function(){
 			*/
 			var data = {
 				rut: $("#rut").val(),
+				sta_consdeuda : 1,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
@@ -828,6 +829,20 @@ $("#rut").blur(function(){
 							});
 						}
 						*/
+						if(respuesta.cliente[0].descripcion!=null){
+							swal({
+								title: 'Informacion',
+								text: respuesta.cliente[0].descripcion,
+								icon: 'warning',
+								buttons: {
+									confirm: "Aceptar"
+								},
+							}).then((value) => {
+								if (value) {
+								}
+							});	
+						}
+
 			
 						$("#razonsocial").val(respuesta.cliente[0].razonsocial);
 						$("#telefono").val(respuesta.cliente[0].telefono);
@@ -1096,7 +1111,8 @@ $("#btnaprobarM").click(function(event)
 		valor : 3,
 		obs   : $("#aprobobs").val(),
 		updated_at : $("#updated_at").val(),
-		arrayATs : aux_arrayATs,
+		arrayATs   : aux_arrayATs,
+		modulo_id  : $("#modulo_id").val(),
 		_token: $('input[name=_token]').val()
 	};
 	var ruta = '/cotizacion/aprobarcotsup/'+data['id'];
@@ -1158,7 +1174,8 @@ $("#btnrechazarM").click(function(event)
 			valor : 4,
 			obs   : $("#aprobobs").val(),
 			updated_at : $("#updated_at").val(),
-			arrayATs : aux_arrayATs,
+			arrayATs  : aux_arrayATs,
+			modulo_id : $("modulo_id").val(),
 			_token: $('input[name=_token]').val()
 		};
 		var ruta = '/cotizacion/aprobarcotsup/'+data['id'];

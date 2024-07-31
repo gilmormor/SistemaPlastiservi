@@ -85,7 +85,7 @@
 						$aux_ancho = $notaventaDetalle->producto->diametro;
 						$aux_largo = $notaventaDetalle->producto->long . "Mts";
 						$aux_espesor = ""; //number_format($notaventaDetalle->producto->espesor, 3, ',', '.');
-						$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
+						$aux_cla_sello_nombre = isset($notaventaDetalle->producto->claseprod) ? $notaventaDetalle->producto->claseprod->cla_nombre : "";
 						$aux_staAT = false;
 						$aux_atribAcuTec = "";
 						if ($notaventaDetalle->cotizaciondetalle and $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp != null){

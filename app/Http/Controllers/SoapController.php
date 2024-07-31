@@ -344,10 +344,11 @@ class SoapController extends Controller
             // Capturar errores
             return [
                 "id" => 0,
-                "error" => $e->getMessage(),
+                "error" => 1,
                 "titulo" => "Error",
-                "mensaje" => "Error al subir DTE. " . $e->getMessage(),
-                "tipo_alert" => "error"
+                "mensaje" => "No hay comunicacion con Sistema de Cobranza. " . $e->getMessage(),
+                "bloqueo" => "No hay comunicacion con Sistema de Cobranza. " . $e->getMessage(),
+                "tipo_alert" => "info"
             ];
             //dd("Error: " . $e->getMessage());
         }
@@ -429,10 +430,11 @@ class SoapController extends Controller
             // Capturar errores
             return [
                 "id" => 0,
-                "error" => $e->getMessage(),
+                "error" => 1,
                 "titulo" => "Error",
-                "mensaje" => "Error al subir DTE. " . $e->getMessage(),
-                "tipo_alert" => "error"
+                "mensaje" => "No hay comunicacion con Sistema de Cobranza. " . $e->getMessage(),
+                "bloqueo" => "No hay comunicacion con Sistema de Cobranza. " . $e->getMessage(),
+                "tipo_alert" => "info"
 
             ];
             //dd("Error: " . $e->getMessage());
@@ -500,7 +502,15 @@ class SoapController extends Controller
             return $response;
         } catch (Exception $e) {
             // Capturar errores
-            echo "Error: " . $e->getMessage();
+            return [
+                "id" => 0,
+                "error" => 1,
+                "titulo" => "Error",
+                "mensaje" => "No hay comunicacion con Sistema de Cobranza. " . $e->getMessage(),
+                "bloqueo" => "No hay comunicacion con Sistema de Cobranza. " . $e->getMessage(),
+                "tipo_alert" => "info"
+
+            ];
         }
     }
 

@@ -55,7 +55,9 @@ class CotizacionController extends Controller
     public function index()
     {
         can('listar-cotizacion');
-        return view('cotizacion.index');
+        $empresa = Empresa::findOrFail(1);
+        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
+        return view('cotizacion.index',compact('tablashtml'));
     }
 
     public function cotizacionpage(){
@@ -76,6 +78,7 @@ class CotizacionController extends Controller
         }
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
         $sql = "SELECT cotizacion.id,fechahora,
+                    cotizacion.cliente_id,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
                     aprobstatus,aprobobs,'' as pdfcot,
                     (SELECT COUNT(*) 
@@ -87,11 +90,31 @@ class CotizacionController extends Controller
                     WHERE cotizaciondetalle.cotizacion_id=cotizacion.id 
                     and not isnull(acuerdotecnicotemp_id)
                     and isnull(cotizaciondetalle.deleted_at)) AS contacutec,
-                    cotizacion.fechahora as fechahora_aaaammdd,cotizacion.updated_at
+                    cotizacion.fechahora as fechahora_aaaammdd,cotizacion.updated_at,
+                    cliente.limitecredito,
+                    IFNULL(datacobranza.tfac,0) AS datacobranza_tfac,
+                    IFNULL(datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+                    IFNULL(datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+                    IFNULL(datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+                    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+                    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+                    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
                 on cotizacion.clientetemp_id = clientetemp.id
+                LEFT JOIN clientebloqueado
+                ON cotizacion.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+                LEFT JOIN datacobranza
+                ON datacobranza.cliente_id = cotizacion.cliente_id
+                LEFT JOIN clientedesbloqueado
+                ON clientedesbloqueado.cliente_id = cotizacion.cliente_id and clientedesbloqueado.cotizacion_id = cotizacion.id and not isnull(clientedesbloqueado.cotizacion_id) and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+                LEFT JOIN clientedesbloqueadomodulo
+                ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 1
+                LEFT JOIN modulo
+                ON modulo.id = clientedesbloqueadomodulo.modulo_id
+                LEFT JOIN clientedesbloqueadopro
+                ON clientedesbloqueadopro.cliente_id = cotizacion.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
                 where $aux_condvend and (isnull(aprobstatus) or aprobstatus=0 or aprobstatus=4 or aprobstatus=7) 
                 and cotizacion.deleted_at is null
                 ORDER BY cotizacion.id desc;";
@@ -444,6 +467,21 @@ class CotizacionController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        if($cotizacion->cliente_id){
+            $request1 = new Request();
+            $request1->merge(['modulo_id' => 1]);
+            $request1->request->set('modulo_id', 1);
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
+            if($bloqcli["bloqueo"]){
+                return redirect('cotizacion')->with([
+                    'mensaje'=> "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }
+
         $cont_cotdet = count($request->cotdet_id);
         if($cont_cotdet <=0 ){
             return redirect('notaventa')->with([
@@ -808,6 +846,30 @@ class CotizacionController extends Controller
         can('guardar-cotizacion');
         if ($request->ajax()) {
             $cotizacion = Cotizacion::findOrFail($request->id);
+            if($request->updated_at != $cotizacion->updated_at){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "No se actualizaron los datos, registro fue modificado por otro usuario!",
+                    'tipo_alert' => "error"
+                ]);
+            }
+            if($cotizacion->cliente_id){
+                $request1 = new Request();
+                $request1->merge(['cotizacion_id' => $request->id]);
+                $request1->request->set('cotizacion_id', $request->id);
+                $request1->merge(['modulo_id' => 1]);
+                $request1->request->set('modulo_id', 1);
+                $request1->merge(['deldesbloqueo' => 1]);
+                $request1->request->set('deldesbloqueo', 1);
+                $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
+                if($bloqcli["bloqueo"]){
+                    return response()->json([
+                        'error' => 1,
+                        'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                        'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
+                    ]);
+                }
+            }
             $cotizacion->aprobstatus = $request->aprobstatus;
             $aux_statusAcuTec = false;
             foreach ($cotizacion->cotizaciondetalles as $cotdet) {
@@ -872,9 +934,19 @@ class CotizacionController extends Controller
                 if($aux_statusAcuTec){
                     //Event(new AvisoRevisionAcuTec($cotizacion));
                 }    
-                return response()->json(['mensaje' => 'ok']);
+                return response()->json([
+                    'error' => 0,
+                    'mensaje' => "El registro fue procesado con exito.",
+                    'tipo_alert' => "success"
+                ]);
+                //return response()->json(['mensaje' => 'ok']);
             } else {
-                return response()->json(['mensaje' => 'ng']);
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "El registro no pudo ser procesado.",
+                    'tipo_alert' => "error"
+                ]);
+                //return response()->json(['mensaje' => 'ng']);
             }
         } else {
             abort(404);
@@ -884,7 +956,6 @@ class CotizacionController extends Controller
 
     public function aprobarcotsup(Request $request)
     {
-        //dd($request);
         can('guardar-cotizacion');
         if ($request->ajax()) {
             $cotizacion = Cotizacion::findOrFail($request->id);
@@ -893,6 +964,24 @@ class CotizacionController extends Controller
                     'id' => 0,
                     'mensaje' => 'Registro fue modificado por otro usuario.'
                 ]);
+            }
+            if($cotizacion->cliente_id){
+                $request1 = new Request();
+                $request1->merge(['cotizacion_id' => $cotizacion->id]);
+                $request1->request->set('cotizacion_id', $cotizacion->id);
+                $request1->merge(['modulo_id' => $request->modulo_id]);
+                $request1->request->set('modulo_id', $request->modulo_id);
+                $request1->merge(['deldesbloqueo' => 1]);
+                $request1->request->set('deldesbloqueo', 1);
+                $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
+                if($bloqcli["bloqueo"]){
+                    return response()->json([
+                        'error' => 1,
+                        'id' => 0,
+                        'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                        'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
+                    ]);
+                }
             }
             if($request->valor == "3"){ //SI ES APROBACION ENTRA AQUI
                 //RECORRO LOS ACUERDOS TECNICOS PARA VERIFICAR QUE FUERON EDITADOS PARA LUEGO UPDATE
@@ -1033,11 +1122,13 @@ class CotizacionController extends Controller
             $aux_condaprobstatus = "(aprobstatus=1 or aprobstatus=3 or aprobstatus=6)";
             $cotizaciones = consultabuscarcot($request->id,$aux_condvend,$aux_condaprobstatus);
             $respuesta["mensaje"] = "";
+            $respuesta["id"] = "1";
             if (count($cotizaciones) == 0){
                 $respuesta["mensaje"] = "Cotización no existe";
                 $aux_condaprobstatus = "true";
                 $cotizaciones01 = consultabuscarcot($request->id,$aux_condvend,$aux_condaprobstatus);
                 //dd($cotizaciones01);
+                $respuesta["id"] = "0";
                 if (count($cotizaciones01) > 0){
                     //dd($cotizaciones01[0]->aprobstatus);
                     if($cotizaciones01[0]->aprobstatus == null){
@@ -1059,16 +1150,16 @@ class CotizacionController extends Controller
                     if($cotizaciones01[0]->aprobstatus == 7){
                         $respuesta["mensaje"] = "Acuerdo tecnico Rechazado: " . $cotizaciones01[0]->aprobobs;
                     }
+                    $respuesta["title"] = $respuesta["mensaje"];
+                    $respuesta["tipo_alert"] = "error";
+                    
+
                     //$respuesta["mensaje"] = $cotizaciones01[0]
                 }
                 //$respuesta["cotizaciones01"] = response()->json($cotizaciones01);
-
-                
             }
-            //$respuesta["cotizaciones"] = response()->json($cotizaciones);
+            //$respuesta["cotizaciones"] = response()->json($cotizaciones);  
             $respuesta["cotizaciones"] = $cotizaciones;
-            
-            
             //dd($clientedirecs->get());
             return $respuesta;
         }
@@ -1206,6 +1297,47 @@ class CotizacionController extends Controller
                 ];
             }
         }
+    }
+
+    public function buscarCotGen(Request $request){
+        $respuesta = [];
+        $cotizacion = Cotizacion::find($request->id);
+        if($cotizacion){
+            $respuesta = [
+                "id" => $request->id,
+                "cotizacion_id" => $request->id,
+                "cliente_id" => $cotizacion->cliente_id,
+                "rut" => $cotizacion->cliente->rut,
+                "razonsocial" => $cotizacion->cliente->razonsocial,
+            ];  
+            /* if(is_null($cotizacion->aprobstatus)){
+                $respuesta = [
+                    "id" => $request->id,
+                    "cotizacion_id" => $request->id,
+                    "cliente_id" => $cotizacion->cliente_id,
+                    "rut" => $cotizacion->cliente->rut,
+                    "razonsocial" => $cotizacion->cliente->razonsocial,
+                ];    
+            }else{
+                $respuesta = [
+                    "id" => 0,
+                    "error" => 1,
+                    "title" => "Mensaje",
+                    "text" => "Cotizacion $request->id no puede ser desbloqueada, se encuentra en otro módulo.",
+                    "tipo_alert" => "error"
+                ];
+    
+            } */
+        }else{
+            $respuesta = [
+                "id" => 0,
+                "error" => 1,
+                "title" => "Mensaje",
+                "text" => "Cotizacion $request->id no existe.",
+                "tipo_alert" => "error"
+            ];
+        }
+        return $respuesta;
     }
 }
 

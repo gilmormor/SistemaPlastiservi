@@ -49,20 +49,72 @@ Deuda Clientes Sis Cob
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label data-toggle='tooltip' title="Vendedor">Vendedor:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <?php
+                                            echo $tablas['vendedores'];
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-md-6 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="sucursal_id" data-toggle='tooltip' title="Sucursal">Sucursal</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
+                                            <option value="">Todos...</option>
+                                            @foreach($tablas['sucursales'] as $sucursal)
+                                                <option
+                                                    value="{{$sucursal->id}}"
+                                                >{{$sucursal->nombre}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="statusDeuda" data-toggle='tooltip' title="Estatus">Estatus Cliente</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="statusDeuda" id="statusDeuda" class="selectpicker form-control" required>
+                                            <option value="0">Todos...</option>
+                                            <option value="1">Bloqueados (Deuda Vencida)</option>
+                                            <option value="2">DesBloqueados (Deuda Vigente)</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
                             <div class="col-xs-12 col-md-4 col-sm-4">
-                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar">Consultar</button>
+                                <button type="button" id="btnconsultar" name="btnconsultar" class="btn btn-success tooltipsC" title="Consultar" onclick="ejecutarConsulta(1)">Consultar</button>
                             </div>
                             <div class="col-xs-12 col-md-4 col-sm-4">
-                                <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF">
+                                <button type='button' id='btnpdf2' name='btnpdf2' class='btn btn-success tooltipsC' title="Reporte PDF" onclick="ejecutarConsulta(2)">
                                     <i class='glyphicon glyphicon-print'></i> Reporte
                                 </button>
                             </div>
                             <div class="col-xs-12 col-md-4 col-sm-4">
-                                <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">
+                                <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel"  onclick="ejecutarConsulta(3)">
                                     <i class='fa fa-fw fa-file-excel-o'> </i> Excel
+                                </button>
+                            </div>
+                            @if (can('boton-actualizar-data-cobranza',false))
+                                <div class="col-xs-12 col-md-4 col-sm-4">
+                                    <button type="button" id="llenartabladatacobranza" name="llenartabladatacobranza" class="btn btn-success tooltipsC" title="Llenar tabla">
+                                        <i class='fa fa-fw fa-file-excel-o'> </i> LlenarTabla
+                                    </button>
+                                </div>
+                            @endif
+    
+                            <div class="col-xs-12 col-md-4 col-sm-4">
+                                <button type="button" id="llenartabla" name="llenartabla" class="btn btn-success tooltipsC" title="Llenar tabla" onclick="ejecutarConsulta(4)">
+                                    <i class='fa fa-fw fa-file-excel-o'> </i> Enviar correo
                                 </button>
                             </div>
                             <!--
@@ -95,7 +147,7 @@ Deuda Clientes Sis Cob
                     <input type="text" name="TDeuda" id="TDeuda" class="form-control" value="" maxlength="70" style="text-align:right" readonly/>
                 </div>
                 <div class="form-group col-xs-12 col-sm-2">
-                    <label for="TDeudaFec" class="control-label" data-toggle='tooltip' title="Total Deuda Fecha">Total Deuda Fecha</label>
+                    <label for="TDeudaFec" class="control-label" data-toggle='tooltip' title="Total Deuda Fecha">Total Deuda Vencida</label>
                     <input type="text" name="TDeudaFec" id="TDeudaFec" class="form-control" value="" maxlength="70" style="text-align:right" readonly/>
                 </div>           
             </div>

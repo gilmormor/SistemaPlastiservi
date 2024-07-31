@@ -208,6 +208,7 @@ $("#rut").blur(function(){
 		}else{
 			var data = {
 				rut: codigo,
+				modulo_id : 17,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({

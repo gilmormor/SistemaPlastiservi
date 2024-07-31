@@ -262,6 +262,22 @@ function editar($id){
     can('editar-cotizacion');
         //dd(session('aux_paginaredirect'));
         $data = Cotizacion::findOrFail($id);
+        if($data->cliente_id){
+            $request1 = new Request();            
+            $request1->merge(['modulo_id' => 26]);
+            $request1->request->set('modulo_id', 26);
+            $request1->merge(['cotizacion_id' => $data->id]);
+            $request1->request->set('cotizacion_id', $data->id);
+            $request1->merge(['deldesbloqueo' => 0]);
+            $request1->request->set('deldesbloqueo', 0);
+            $bloqcli = clienteBloqueado($data->cliente_id,0,$request1);
+            if($bloqcli["bloqueo"]){
+                return redirect('cotizacionaprobar')->with([
+                    'mensaje'=> "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }    
+        }
         if($data->aprobstatus != 2){
             return redirect('cotizacionaprobar')->with([
                 'mensaje'=>'Cotizacion fue modificada por otro usuario.',
@@ -311,6 +327,7 @@ function editar($id){
         $tablas['moneda'] = Moneda::orderBy('id')->get();
         $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
 
+        $tablas['modulo_id'] = 26;
         $aux_sta=2;
 
         return view('cotizacionaprobar.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','aux_cont','tablas'));

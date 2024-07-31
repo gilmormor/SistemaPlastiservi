@@ -13,7 +13,9 @@ use App\Models\Cotizacion;
 use App\Models\Dte;
 use App\Models\FormaPago;
 use App\Models\Giro;
+use App\Models\NotaVenta;
 use App\Models\PlazoPago;
+use App\Models\Producto;
 use App\Models\Provincia;
 use App\Models\Region;
 use App\Models\Seguridad\Usuario;
@@ -438,6 +440,7 @@ class ClienteController extends Controller
                                 'cliente.regionp_id',
                                 'cliente.provinciap_id',
                                 'cliente.comunap_id',
+                                'cliente.limitecredito',
                                 'clientedirec.id as direc_id',
                                 'clientedirec.direcciondetalle',
                                 'clientebloqueado.descripcion',
@@ -676,6 +679,7 @@ class ClienteController extends Controller
     }
 
     public function buscarCliRut(Request $request){
+        //dd($request);
         if($request->ajax()){
             $respuesta = array();
             $user = Usuario::findOrFail(auth()->id());
@@ -702,8 +706,24 @@ class ClienteController extends Controller
             and isnull(cliente.deleted_at)
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))";
             $cliente = DB::select($sql);
-            //dd($cliente);
+            if(count($cliente) > 0 ){
+                $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,1); //PRIMERO CONSULTO DEUDA CONTRA SISTEMA COBRANZA
+                $aux_Tdeuda = $cliente[0]->TDeuda; //GUARDO EL VALOR DE TOTAL DEUDA
+                $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //AQUI CONSULTO SI ESTA DESBLOQUEADO O NO
+                $aux_Tdeudapxp = 0; //VARIABLE PARA ALMACENAR EL DINERO QUE ESTA PENDIENTE POR DESPACHAR. PERO POR AHORA ESTA EN COMENTARIO EL FUNCION QUE ME TRAE ESE VALOR NotaVenta::totaldineropendNV($cliente[0]->id,$request)
+                //EN COMENTARIO ESPERANDO A VER COMO FUNCIONA EL LIMITE DE CREDITO
+                //LU ME PIDEN QUE INCORPORE LO QUE ESTA PENDIENTE POR DESPACHO AL TOTAL DE LA DEUDA O INCLUYO.
+                /* if(count($cliente) > 0){
+                    $aux_Tdeudapxp = NotaVenta::totaldineropendNV($cliente[0]->id,$request);
+                } */
+                //dd($aux_Tdeuda);
+                $cliente[0]->TDeuda = $aux_Tdeuda + $aux_Tdeudapxp; //LUEGO ASIGNO EL TOTAL DEUDA A $cliente[0]->TDeuda    
+            }
+
             $respuesta['cliente'] = $cliente;
+            if(isset($aux_respuesta["error"])){
+                $respuesta['cliente'][0]->descripcion = $aux_respuesta["mensaje"];
+            }
 
             $sql= "SELECT sucursal.id,sucursal.nombre
             FROM cliente left JOIN cliente_sucursal
@@ -724,6 +744,7 @@ class ClienteController extends Controller
 
     public function buscarClixVenRut(Request $request){
         if($request->ajax()){
+            //dd($request);
             $respuesta = array();
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -738,7 +759,8 @@ class ClienteController extends Controller
             $sql= "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.telefono,cliente.email,
             cliente.direccion,cliente.vendedor_id,cliente.contactonombre,cliente.formapago_id,
             cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
-            clientebloqueado.descripcion,clientebloqueado.descripcion as clientebloqueado_descripcion
+            clientebloqueado.descripcion,clientebloqueado.descripcion as clientebloqueado_descripcion,
+            cliente.limitecredito
             FROM cliente left JOIN clientebloqueado
             ON cliente.id=clientebloqueado.cliente_id and isnull(cliente.deleted_at) and isnull(clientebloqueado.deleted_at)
             WHERE cliente.rut='$request->rut'
@@ -746,10 +768,28 @@ class ClienteController extends Controller
             and $aux_clientesvendedorCond;";
             $cliente = DB::select($sql);
             //dd($cliente);
-            valBloqCliSisCob($cliente,$request);
+
+            if(count($cliente) > 0){
+                if(isset($request->sta_consdeuda) and $request->sta_consdeuda == '1'){
+                    $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,1); //PRIMERO CONSULTO DEUDA CONTRA SISTEMA COBRANZA
+                    $aux_Tdeuda = $cliente[0]->TDeuda; //GUARDO EL VALOR DE TOTAL DEUDA
+                    $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //AQUI CONSULTO SI ESTA DESBLOQUEADO O NO
+                    $aux_Tdeudapxp = 0; //VARIABLE PARA ALMACENAR EL DINERO QUE ESTA PENDIENTE POR DESPACHAR. PERO POR AHORA ESTA EN COMENTARIO EL FUNCION QUE ME TRAE ESE VALOR NotaVenta::totaldineropendNV($cliente[0]->id,$request)
+                    //EN COMENTARIO ESPERANDO A VER COMO FUNCIONA EL LIMITE DE CREDITO
+                    //LU ME PIDEN QUE INCORPORE LO QUE ESTA PENDIENTE POR DESPACHO AL TOTAL DE LA DEUDA O INCLUYO.
+                    /* if(count($cliente) > 0){
+                        $aux_Tdeudapxp = NotaVenta::totaldineropendNV($cliente[0]->id,$request);
+                    } */
+                    //dd($aux_Tdeuda);
+                    $cliente[0]->TDeuda = $aux_Tdeuda + $aux_Tdeudapxp; //LUEGO ASIGNO EL TOTAL DEUDA A $cliente[0]->TDeuda        
+                }
+            }
 
             $respuesta['cliente'] = $cliente;
-
+            if(isset($aux_respuesta["error"])){
+                $respuesta['cliente'][0]->descripcion = $aux_respuesta["mensaje"];
+            }
+            //dd($cliente);
             $sql= "SELECT sucursal.id,sucursal.nombre
             FROM cliente left JOIN cliente_sucursal
             ON cliente.id=cliente_sucursal.cliente_id and cliente_sucursal.sucursal_id in ($sucurcadena) and isnull(cliente_sucursal.deleted_at)
@@ -763,30 +803,5 @@ class ClienteController extends Controller
             $respuesta['sucursales'] = $sucursales;
             return $respuesta;
         }
-    }
-
-}
-
-function valBloqCliSisCob(&$cliente,$request){
-    if(count($cliente) > 0){
-        $staBloqueo = clienteBloqueado($cliente[0]->id);
-        $cliente[0]->descripcion = $staBloqueo ["bloqueo"];
-        /* $clientebus = Cliente::findOrFail($cliente[0]->id);
-        if($clientebus->clientedesbloqueado){
-            $cliente[0]->descripcion = null;
-        }else{
-            if(is_null($cliente[0]->clientebloqueado_descripcion)){
-                $rut = isset($request->rut) ? $request->rut : null;
-                $datCobranza = Dte::deudaClienteSisCobranza($rut);
-                //dd($datCobranza);
-                if($datCobranza["TDeuda"] > 0 and $datCobranza["TDeuda"] >= $datCobranza["limitecredito"]){
-                    $cliente[0]->descripcion = "Supero limite de Crédito: " . number_format($datCobranza["limitecredito"], 0, ',', '.') . "\nDeuda: " . number_format($datCobranza["TDeuda"], 0, ',', '.');
-                }else{
-                    if($datCobranza["TDeudaFec"] > 0){
-                        $cliente[0]->descripcion = "Facturas Vencidas: " . $datCobranza["NroFacDeu"];
-                    }
-                }
-            }    
-        } */
     }
 }

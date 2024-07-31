@@ -130,7 +130,7 @@
                                     $aux_largonum = $detalle->producto->long;
                                     $aux_espesor = $detalle->producto->espesor;
                                     $aux_espesornum = $detalle->producto->espesor;
-                                    $aux_cla_sello_nombre = $detalle->producto->claseprod->cla_nombre;
+                                    $aux_cla_sello_nombre = isset($detalle->producto->claseprod->cla_nombre) ? $detalle->producto->claseprod->cla_nombre : "";
                                     $aux_producto_nombre = $detalle->producto->nombre;
                                     //$aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
                                     if ($detalle->producto->acuerdotecnico != null){
