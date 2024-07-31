@@ -73,6 +73,8 @@ class ReportDeudaClienteSisCobController extends Controller
         }else{
             $respuesta = [
                 "fechaact" => date("d/m/Y"),
+                "fechaactaaaammdd" => date("Y/m/d"),
+                "fechaactaaaammdd2" => date("Y-m-d"),
                 "fechaacthora" => date("d/m/Y h:i:s A"),
                 "clientes" => $aux_clientes
             ];

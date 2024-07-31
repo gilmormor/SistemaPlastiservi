@@ -34,6 +34,7 @@ Deuda Clientes Sis Cob
                         @csrf
                         @csrf @method("put")
                         <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
+                        <input type="hidden" name="fechahoy" id="fechahoy" value="{{date('Y-m-d')}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6">

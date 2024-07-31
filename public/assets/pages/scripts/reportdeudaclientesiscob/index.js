@@ -141,7 +141,10 @@ function configurarTabla(aux_tabla,datos){
             aux_colorvenc = "";
             aux_icohand = "fa-thumbs-o-up";
             aux_titlehand = "Vigente";
-            if (data.stavencida == 1){
+            //console.log(data);
+            aux_fechahoy = $("#fechahoy").val();
+            //if (data.stavencida == 1){
+            if (data.fecvenc <= aux_fechahoy){
                 aux_colorvenc = "text-red";
                 aux_icohand = "fa-thumbs-o-down";
                 aux_titlehand = "Vencida";
@@ -189,8 +192,21 @@ function ajaxRequest(data,url,funcion) {
                     respuesta = respuesta1[0];
                     $("#razonsocial").val(respuesta.razonsocial);
                     $("#limitecredito").val(MASKLA(respuesta.limitecredito,0));
-                    $("#TDeuda").val(MASKLA(respuesta.datacobranza.tdeuda,0));
-                    $("#TDeudaFec").val(MASKLA(respuesta.datacobranza.tdeudafec,0));
+                    aux_totaldeuda = 0;
+                    aux_totaldeudaVenc = 0;
+                    aux_fechahoy = $("#fechahoy").val();
+                    respuesta.datacobranzadets.forEach(function(deuda) {
+                        let valorNumericoDeuda = parseFloat(deuda.deuda);
+                        valorNumericoDeuda = isNaN(valorNumericoDeuda) ? 0 : valorNumericoDeuda;
+                        aux_totaldeuda += valorNumericoDeuda;
+                        if (deuda.fecvenc <= aux_fechahoy) {
+                            aux_totaldeudaVenc += valorNumericoDeuda;
+                        }
+            
+                    });
+        
+                    $("#TDeuda").val(MASKLA(aux_totaldeuda,0));
+                    $("#TDeudaFec").val(MASKLA(aux_totaldeudaVenc,0));
                     //configurarTabla("#tabla-data-consulta",respuesta.datosFacDeuda);
                     // Limpiar los datos existentes de la tabla
                     $('#tabla-data-consulta').DataTable().clear();
@@ -506,6 +522,20 @@ function pdfjs(datos) {
 
         // Imprimir encabezados de columnas
         if(cliente.datacobranzadets.length > 0){
+            aux_totaldeuda = 0;
+            aux_totaldeudaVenc = 0;
+            cliente.datacobranzadets.forEach(function(deuda) {
+                let valorNumericoDeuda = parseFloat(deuda.deuda);
+                valorNumericoDeuda = isNaN(valorNumericoDeuda) ? 0 : valorNumericoDeuda;
+                aux_totaldeuda += valorNumericoDeuda;
+                /* console.log(deuda.fecvenc);
+                console.log(datos.fechaactaaaammdd2); */
+                if (deuda.fecvenc <= datos.fechaactaaaammdd2) {
+                    aux_totaldeudaVenc += valorNumericoDeuda;
+                }
+    
+            });
+
             // Agregar título de vendedor
             doc.setFontSize(8);
             // Poner en negrita los títulos
@@ -521,8 +551,8 @@ function pdfjs(datos) {
             doc.text(`${formato_rutVar(cliente.rut)}`, 48, doc.autoTable.previous.finalY + 10);
             doc.text(`${cliente.razonsocial}`, 90, doc.autoTable.previous.finalY + 10);
             doc.text(`${MASKLA(cliente.limitecredito,0)}`, 61, doc.autoTable.previous.finalY + 14);
-            doc.text(`${MASKLA(cliente.datacobranza.tdeuda,0)}`, 91, doc.autoTable.previous.finalY + 14);
-            doc.text(`${MASKLA(cliente.datacobranza.tdeudafec,0)}`, 146, doc.autoTable.previous.finalY + 14);
+            doc.text(`${MASKLA(aux_totaldeuda,0)}`, 91, doc.autoTable.previous.finalY + 14);
+            doc.text(`${MASKLA(aux_totaldeudaVenc,0)}`, 146, doc.autoTable.previous.finalY + 14);
 
             doc.autoTable({
                 startY: doc.autoTable.previous.finalY + 15,
@@ -546,11 +576,14 @@ function pdfjs(datos) {
                 },
                 didParseCell: function(data) {
                     if (data.section === 'body') {
+                        /* console.log(datos.fechaactaaaammdd)
+                        console.log(fechaaaaammdd(data.row.raw[2])); */
                         const vencimiento = new Date(fechaaaaammdd(data.row.raw[2]) + " 00:00:00"); // Obtén la fecha de vencimiento
                         const today = new Date(); // Fecha actual
 
                         // Aplica estilo si la factura está vencida
-                        if (vencimiento < today) {
+                        //if (vencimiento < today) {
+                        if (fechaaaaammdd(data.row.raw[2]) <= datos.fechaactaaaammdd) {
                             if (data.column.index === 2 || data.column.index === 4) { // Verifica si es la columna de fecha de vencimiento o deuda
                                 data.cell.styles.fillColor = [255, 230, 230]; // Fondo rojo claro
                                 data.cell.styles.textColor = [255, 0, 0]; // Texto rojo
@@ -623,7 +656,7 @@ function enviarcorreo(data){
 }
 
 function exportarExcel(datos) {
-    //console.log(data);
+    //console.log(datos);
     // Crear una matriz para los datos de Excel
     var datosExcel = [];
     // Agregar los datos de la tabla al arreglo
@@ -671,8 +704,24 @@ function exportarExcel(datos) {
             ];
             count++;
             datosExcel.push(filaExcel);
+
+            aux_totaldeuda = 0;
+            aux_totaldeudaVenc = 0;
+            cliente.datacobranzadets.forEach(function(deuda) {
+                let valorNumericoDeuda = parseFloat(deuda.deuda);
+                valorNumericoDeuda = isNaN(valorNumericoDeuda) ? 0 : valorNumericoDeuda;
+                aux_totaldeuda += valorNumericoDeuda;
+                /* console.log(deuda.fecvenc);
+                console.log(datos.fechaactaaaammdd2); */
+                if (deuda.fecvenc <= datos.fechaactaaaammdd2) {
+                    aux_totaldeudaVenc += valorNumericoDeuda;
+                }
+    
+            });
+            /* console.log(aux_totaldeuda);
+            console.log(aux_totaldeudaVenc); */
             var filaExcel = [
-                "Limite Credito: " + MASKLA(cliente.limitecredito,0) + "    Deuda: " + MASKLA(cliente.datacobranza.tdeuda,0) + "    Deuda Vencida: " +MASKLA(cliente.datacobranza.TDeudaFec,0)
+                "Limite Credito: " + MASKLA(cliente.limitecredito,0) + "    Deuda: " + MASKLA(aux_totaldeuda,0) + "    Deuda Vencida: " +MASKLA(aux_totaldeudaVenc,0)
             ];
             count++;    
             datosExcel.push(filaExcel);
