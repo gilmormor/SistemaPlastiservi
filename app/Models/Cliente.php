@@ -138,11 +138,17 @@ class Cliente extends Model
     }
 
 
-        //RELACION UNO A UNO datacobranza
-        public function datacobranza()
-        {
-            return $this->hasOne(DataCobranza::class);
-        }
+    //RELACION UNO A UNO datacobranza
+    public function datacobranza()
+    {
+        return $this->hasOne(DataCobranza::class);
+    }
+
+    //RELACION DE UNO A MUCHOS datacobranzadet
+    public function datacobranzadets()
+    {
+        return $this->hasMany(DataCobranzaDet::class);
+    }
     
     //RELACION UNO A UNO clientedesbloqueadopro
     public function clientedesbloqueadopro()

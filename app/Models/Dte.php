@@ -205,6 +205,13 @@ class Dte extends Model
     {
         return $this->belongsTo(Vendedor::class);
     }
+
+    //RELACION DE UNO A MUCHOS datacobranzadet
+    public function datacobranzadets()
+    {
+        return $this->hasMany(DataCobranzaDet::class);
+    }
+    
     
     public static function reportguiadesppage($request){
         $user = Usuario::findOrFail(auth()->id());

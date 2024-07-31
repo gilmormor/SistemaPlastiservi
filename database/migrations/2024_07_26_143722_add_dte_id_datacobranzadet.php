@@ -14,7 +14,9 @@ class AddDteIdDatacobranzadet extends Migration
     public function up()
     {
         Schema::table('datacobranzadet', function (Blueprint $table) {
-            $table->unsignedBigInteger('dte_id')->nullable()->after('datacobranza_id');
+            $table->unsignedBigInteger('cliente_id')->after('datacobranza_id');
+            $table->foreign('cliente_id','fk_datacobranzadet_cliente')->references('id')->on('cliente')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('dte_id')->nullable()->after('cliente_id');
             $table->foreign('dte_id','fk_datacobranzadet_dte')->references('id')->on('dte')->onDelete('restrict')->onUpdate('restrict');
         });
     }
@@ -27,6 +29,8 @@ class AddDteIdDatacobranzadet extends Migration
     public function down()
     {
         Schema::table('datacobranzadet', function (Blueprint $table) {
+            $table->dropForeign('fk_datacobranzadet_cliente');
+            $table->dropColumn('cliente_id');
             $table->dropForeign('fk_datacobranzadet_dte');
             $table->dropColumn('dte_id');
         });
