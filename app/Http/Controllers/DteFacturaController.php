@@ -1205,7 +1205,7 @@ function consultaindex($dte_id){
     foliocontrol.tipodocto,foliocontrol.nombrepdf,
     dteoc.oc_id as dteoc_oc_id,dteoc.oc_folder as dteoc_oc_folder,dteoc.oc_file as dteoc_oc_file,
     dte.updated_at,
-    clientebloqueado.descripcion as clientebloqueado_desc,
+    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     cliente.limitecredito,
     IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
     IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,

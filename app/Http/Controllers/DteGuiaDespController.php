@@ -1115,7 +1115,7 @@ function consultaindex(){
         dteguiadesp.tipoentrega_id,tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.updated_at,despachoord.updated_at as despordupdated_at,
         dtedev.obs as dtedev_obs,usuario.nombre as dtedevusuario_nombre,dte.indtraslado,
-        clientebloqueado.descripcion as clientebloqueado_desc,
+        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         cliente.limitecredito,
         IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
         IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
@@ -1286,7 +1286,7 @@ function consultalistarorddesppage($request){
     IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
     IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
     IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-    clientebloqueado.descripcion as clientebloqueado_desc,
+    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
     IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
     FROM despachoord INNER JOIN notaventa

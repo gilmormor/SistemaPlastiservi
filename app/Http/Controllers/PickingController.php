@@ -1044,6 +1044,7 @@ function consultasoldesp($request){
             IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
             clientedesbloqueado.obs as clientedesbloqueado_obs,
             modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+            if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
             IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id

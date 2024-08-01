@@ -2486,7 +2486,8 @@ function consulta($request,$aux_sql,$orden){
                                     FROM dteanul 
                                     WHERE dteanul.dte_id = dteguiadesp.dte_id 
                                     and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
-        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp,
+        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        '' as rutanuevasoldesp,
         notaventa.aprobfechahora as notaventa_aprobfechahora,
         cliente.limitecredito,
         IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
@@ -2582,7 +2583,8 @@ function consulta($request,$aux_sql,$orden){
                                     FROM dteanul 
                                     WHERE dteanul.dte_id = dteguiadesp.dte_id 
                                     and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
-        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
+        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        '' as rutanuevasoldesp
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
@@ -2650,7 +2652,8 @@ function consulta($request,$aux_sql,$orden){
                 WHERE notaventa_id=notaventa.id)) as totalsubtotalsoldesp,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
         tipoentrega.nombre as tipentnombre,tipoentrega.icono,
-        clientebloqueado.descripcion as clientebloqueado_desc,'' as rutanuevasoldesp
+        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        '' as rutanuevasoldesp
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -3451,7 +3454,7 @@ function consultasoldesp($request){
             despachosolenvorddesp.despachosol_id as despachosolenvorddesp_despachosol_id,
             despachosolenvorddesp.despachosol_id as despachosolenvorddesp_updated_at,
             cliente.limitecredito,
-            clientebloqueado.descripcion as clientebloqueado_desc,
+            if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
             IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
             IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
             IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,

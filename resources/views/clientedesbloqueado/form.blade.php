@@ -6,9 +6,9 @@
             <div class="col-lg-2">
                 <input type="text" name="rut" id="rut" class="form-control inputrut" value="{{old('rut', $data->cliente->rut ?? '')}}" onkeyup="llevarMayus(this);" maxlength="12" required/>
             </div>
-            <div class="col-lg-1">
+            <!--<div class="col-lg-1">
                 <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
-            </div>
+            </div>-->
         @else
             <div class="col-lg-3">
                 <input type="text" name="rutenabled" id="rutenabled" class="form-control inputrut" value="{{old('rutenabled', $data->cliente->rut ?? '')}}" maxlength="12" required disabled readonly/>
@@ -82,4 +82,3 @@
         <textarea name="obs" id="obs" class="form-control" value="{{old('obs', $data->obs ?? '')}}" required>{{old('obs', $data->obs ?? '')}}</textarea>
     </div>
 </div>
-@include('generales.buscarcliente')

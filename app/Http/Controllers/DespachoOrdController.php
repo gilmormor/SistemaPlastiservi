@@ -2057,7 +2057,7 @@ function consultaindex(){
                                     WHERE dteanul.dte_id = dteguiadesp.dte_id 
                                     and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
     despachoord.updated_at,
-    clientebloqueado.descripcion as clientebloqueado_desc,
+    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     cliente.limitecredito,
     IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
     IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
