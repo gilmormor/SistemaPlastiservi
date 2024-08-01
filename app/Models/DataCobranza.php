@@ -36,6 +36,7 @@ class DataCobranza extends Model
     
 
     public static function llenartabla($request){
+        //dd($request);
         if(isset($request->cliente_id)){
             $clientes = Cliente::
                         where("id",$request->cliente_id)
@@ -52,11 +53,15 @@ class DataCobranza extends Model
         }
         //dd($clientes);
         //DataCobranza::truncate();
+        $sta_consultaSisCobRemota = 1;
+        if(isset($request->sta_consultaSisCobRemota) and $request->sta_consultaSisCobRemota == 0){
+            $sta_consultaSisCobRemota = $request->sta_consultaSisCobRemota;
+        }
         foreach ($clientes as $cliente) {
             //dd($cliente->razonsocial);
             //$request = new Request();
             //$cliente = Cliente::findOrFail($request->cliente_id);
-            $clibloq = clienteBloqueado($cliente->id,1,$request);
+            $clibloq = clienteBloqueado($cliente->id,$sta_consultaSisCobRemota,$request);
             if(!is_null($clibloq["bloqueo"])){
                 if(isset($clibloq["datacobranza"])){
                     if(isset($cliente->datacobranza)){

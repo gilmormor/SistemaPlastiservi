@@ -145,7 +145,7 @@ $(document).ready(function () {
                 </a>`;
             } */
             aux_text = 
-            `<a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id})">
+            `<a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
                 <i class="fa fa-fw fa-lock text-danger fa-lg"></i>
             </a>
             <a ${aux_displaybtnac} href="/despachosol/aproborddesp" class="btn-accion-tabla btn-sm tooltipsC btnaprobar botonac${data.id}" title="Aprobar Solicitud Despacho" item="${data.id}">

@@ -707,9 +707,10 @@ class ClienteController extends Controller
             and cliente.id in (select cliente_id from cliente_sucursal where sucursal_id in ($sucurcadena))";
             $cliente = DB::select($sql);
             if(count($cliente) > 0 ){
-                $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,1); //PRIMERO CONSULTO DEUDA CONTRA SISTEMA COBRANZA
+                $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //AQUI SOLO CONSULTO DATACOBRANZA LOCAL
+                //$aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,1); //PRIMERO CONSULTO DEUDA CONTRA SISTEMA COBRANZA
                 $aux_Tdeuda = $cliente[0]->TDeuda; //GUARDO EL VALOR DE TOTAL DEUDA
-                $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //AQUI CONSULTO SI ESTA DESBLOQUEADO O NO
+                //$aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //AQUI CONSULTO SI ESTA DESBLOQUEADO O NO
                 $aux_Tdeudapxp = 0; //VARIABLE PARA ALMACENAR EL DINERO QUE ESTA PENDIENTE POR DESPACHAR. PERO POR AHORA ESTA EN COMENTARIO EL FUNCION QUE ME TRAE ESE VALOR NotaVenta::totaldineropendNV($cliente[0]->id,$request)
                 //EN COMENTARIO ESPERANDO A VER COMO FUNCIONA EL LIMITE DE CREDITO
                 //LU ME PIDEN QUE INCORPORE LO QUE ESTA PENDIENTE POR DESPACHO AL TOTAL DE LA DEUDA O INCLUYO.
@@ -771,9 +772,10 @@ class ClienteController extends Controller
 
             if(count($cliente) > 0){
                 if(isset($request->sta_consdeuda) and $request->sta_consdeuda == '1'){
-                    $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,1); //PRIMERO CONSULTO DEUDA CONTRA SISTEMA COBRANZA
+                    $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //AQUI SOLO CONSULTO DATACOBRANZA LOCAL
+                    //$aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //PRIMERO CONSULTO DEUDA CONTRA SISTEMA COBRANZA
                     $aux_Tdeuda = $cliente[0]->TDeuda; //GUARDO EL VALOR DE TOTAL DEUDA
-                    $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //AQUI CONSULTO SI ESTA DESBLOQUEADO O NO
+                    //$aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //AQUI CONSULTO SI ESTA DESBLOQUEADO O NO
                     $aux_Tdeudapxp = 0; //VARIABLE PARA ALMACENAR EL DINERO QUE ESTA PENDIENTE POR DESPACHAR. PERO POR AHORA ESTA EN COMENTARIO EL FUNCION QUE ME TRAE ESE VALOR NotaVenta::totaldineropendNV($cliente[0]->id,$request)
                     //EN COMENTARIO ESPERANDO A VER COMO FUNCIONA EL LIMITE DE CREDITO
                     //LU ME PIDEN QUE INCORPORE LO QUE ESTA PENDIENTE POR DESPACHO AL TOTAL DE LA DEUDA O INCLUYO.

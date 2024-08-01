@@ -161,7 +161,7 @@ $(document).ready(function () {
                         <i class="fa fa-fw ${data.icono}"></i>
                     </button>
                 </a>
-                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id})">
+                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id},0)">
                     <button type="button" class="btn btn-default btn-xs">
                         <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw fa-lock text-danger"></i>
                     </button>

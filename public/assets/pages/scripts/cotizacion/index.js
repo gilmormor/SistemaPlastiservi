@@ -101,7 +101,7 @@ $(document).ready(function () {
 
         aux_text = 
         `<div class="tools11">
-                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0)" style="padding-left: 0px;">
+                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0,0)" style="padding-left: 0px;">
                     <i class="fa fa-fw fa-lock text-danger accioness fa-lg"></i>
                 </a>
                 <a ${aux_displaybtnac} href="cotizacion" class="btn-accion-tabla btn-sm tooltipsC btnEnviarNV action-buttons botonac${data.id}" title="Enviar a Nota de venta" style="padding-left: 0px;">

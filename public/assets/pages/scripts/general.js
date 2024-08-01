@@ -3808,11 +3808,12 @@ function validarClienteBloqueado(data){
 	return aux_clienteBloqueado;
 }
 
-function llenartablaDataCobranza(id,cliente_id,notaventa_id){
+function llenartablaDataCobranza(id,cliente_id,notaventa_id,aux_consSisCobRemota){
 	data = {
 		id           : id,
 		cliente_id   : cliente_id,
 		notaventa_id : notaventa_id,
+		sta_consultaSisCobRemota : aux_consSisCobRemota,
 		_token       : $('input[name=_token]').val()
 	};
 	ruta= "/datacobranza/llenartabla";

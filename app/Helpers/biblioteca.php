@@ -441,7 +441,7 @@ if (!function_exists('clienteBloqueado')) {
         }else{
             if($empresa->stabloxdeusiscob == 1){
                 if($aux_consultadeuda == 0){
-                    $aux_respuestadatacobranza = datacobranza($staBloqueo,$cliente,$request,1);
+                    $aux_respuestadatacobranza = datacobranza($staBloqueo,$cliente,$request,0);
                 }
                 /* $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
                 //dd($dataCobranza);
