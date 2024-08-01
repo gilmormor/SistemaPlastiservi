@@ -433,7 +433,7 @@ if (!function_exists('clienteBloqueado')) {
         }        
         $aux_respuestadatacobranza = [];
         if($aux_consultadeuda == 1){
-            $aux_respuestadatacobranza = datacobranza($staBloqueo,$cliente,$request);
+            $aux_respuestadatacobranza = datacobranza($staBloqueo,$cliente,$request,1);
             //$dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
         }
         if(isset($cliente->clientebloqueado)){
@@ -441,7 +441,7 @@ if (!function_exists('clienteBloqueado')) {
         }else{
             if($empresa->stabloxdeusiscob == 1){
                 if($aux_consultadeuda == 0){
-                    $aux_respuestadatacobranza = datacobranza($staBloqueo,$cliente,$request);
+                    $aux_respuestadatacobranza = datacobranza($staBloqueo,$cliente,$request,1);
                 }
                 /* $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut);
                 //dd($dataCobranza);
@@ -464,9 +464,14 @@ if (!function_exists('clienteBloqueado')) {
 }
 
 if (!function_exists('datacobranza')) {
-    function datacobranza(&$staBloqueo,$cliente,$request){
+    function datacobranza(&$staBloqueo,$cliente,$request,$importarDataSisCob = 0){
+        if($importarDataSisCob == 1){
+            $dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut,$request);
+        }else{
+            $dataCobranza = Dte::deudaClienteSisCobranzaLocal($cliente->rut,$request);
+        }
         //$dataCobranza = Dte::deudaClienteSisCobranza($cliente->rut,$request);
-        $dataCobranza = Dte::deudaClienteSisCobranzaLocal($cliente->rut,$request);
+        //$dataCobranza = Dte::deudaClienteSisCobranzaLocal($cliente->rut,$request);
         //dd($dataCobranza);
         if(isset($dataCobranza["error"])){
             //dd($dataCobranza);
