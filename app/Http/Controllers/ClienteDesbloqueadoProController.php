@@ -62,9 +62,10 @@ class ClienteDesbloqueadoProController extends Controller
     public function crear()
     {
         can('crear-cliente-desbloqueado-pro');
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        return view('clientedesbloqueadopro.crear', compact('clientes'));
+        /* $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes']; */
+        return view('clientedesbloqueadopro.crear');
+        //return view('clientedesbloqueadopro.crear', compact('clientes'));
     }
 
     /**
@@ -112,9 +113,10 @@ class ClienteDesbloqueadoProController extends Controller
     {
         can('editar-cliente-desbloqueado-pro');
         $data = ClienteDesbloqueadoPro::findOrFail($id);
-        $clientesArray = Cliente::clientesxUsuario();
-        $clientes = $clientesArray['clientes'];
-        return view('clientedesbloqueadopro.editar', compact('data','clientes'));
+        /* $clientesArray = Cliente::clientesxUsuario();
+        $clientes = $clientesArray['clientes']; */
+        return view('clientedesbloqueadopro.editar');
+        //return view('clientedesbloqueadopro.editar', compact('data','clientes'));
     }
 
     /**
