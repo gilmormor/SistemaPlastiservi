@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-    Cliente Desbloqueado Total
+    Desbloquear Cliente Pro
 @endsection
 
 @section('scripts')
@@ -16,7 +16,7 @@
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Editar Cliente Desbloqueado</h3>
+                <h3 class="box-title">Editar Desbloquear Cliente Pro</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('clientedesbloqueadopro')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
