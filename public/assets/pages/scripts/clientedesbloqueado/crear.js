@@ -45,7 +45,7 @@ $(document).ready(function () {
     
     
 
-    formato_rut($('#rut'));
+    //formato_rut($('#rut'));
     $("#notaventa_id").focus(function(){
         $("#rut").val("");
         $("#razonsocial").val("");

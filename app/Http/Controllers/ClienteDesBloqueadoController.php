@@ -69,13 +69,16 @@ class ClienteDesBloqueadoController extends Controller
     public function crear($id)
     {
         can('crear-cliente-desbloqueado');
+        if($id == "clientebuscarpage"){
+            $datas = Cliente::clientesxUsuarioSQL();
+            return datatables($datas)->toJson();    
+        }
         /* $clientesArray = Cliente::clientesxUsuario();
         $clientes = $clientesArray['clientes']; */
         $modulos = Modulo::orderBy('orden')
                     ->where("stamodapl","=",$id)
                     ->get();
         $aux_sta = $id;
-        return view('clientedesbloqueado.crear', compact('clientes','modulos','aux_sta'));
         return view('clientedesbloqueado.crear', compact('modulos','aux_sta'));
     }
 
@@ -146,6 +149,10 @@ class ClienteDesBloqueadoController extends Controller
     public function editar($id)
     {
         can('editar-cliente-desbloqueado');
+        if($id == "clientebuscarpage"){
+            $datas = Cliente::clientesxUsuarioSQL();
+            return datatables($datas)->toJson();    
+        }
         $data = ClienteDesBloqueado::findOrFail($id);
         //dd(count($data->clientedesbloqueadomodulos));
         $aux_sta = 0;

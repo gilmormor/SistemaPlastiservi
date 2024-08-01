@@ -6,6 +6,7 @@
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/clientedesbloqueado/crear.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
 @endsection
 
 @section('contenido')
@@ -33,5 +34,6 @@
             </form>
         </div>
     </div>
-</div> 
+</div>
+@include('generales.buscarclientebd')
 @endsection
