@@ -2981,11 +2981,12 @@ class Dte extends Model
         }else{
             $aux_condrut = "cliente.rut='$rut'";
         }
-        $sql = "SELECT cliente.id,rut,razonsocial,limitecredito,plazopago.dias as plazopago_dias
-                    FROM cliente INNER JOIN plazopago
+        $sql = "SELECT cliente.id,rut,razonsocial,limitecredito,if(isnull(plazopago.dias),1,plazopago.dias) as plazopago_dias
+                    FROM cliente LEFT JOIN plazopago
                     ON plazopago.id = cliente.plazopago_id
                     WHERE $aux_condrut
                     ORDER BY razonsocial;";
+        //dd($sql);
         $clientes = DB::select($sql);
         //$clientes = cliente::get();
         //dd($clientes);
@@ -3134,8 +3135,8 @@ class Dte extends Model
         }else{
             $aux_condrut = "cliente.rut='$rut'";
         }
-        $sql = "SELECT cliente.id,rut,razonsocial,limitecredito,plazopago.dias as plazopago_dias
-                    FROM cliente INNER JOIN plazopago
+        $sql = "SELECT cliente.id,rut,razonsocial,limitecredito,if(isnull(plazopago.dias),1,plazopago.dias) as plazopago_dias
+                    FROM cliente LEFT JOIN plazopago
                     ON plazopago.id = cliente.plazopago_id
                     WHERE $aux_condrut
                     ORDER BY razonsocial;";

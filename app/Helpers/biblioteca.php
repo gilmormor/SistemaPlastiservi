@@ -478,7 +478,7 @@ if (!function_exists('datacobranza')) {
             return $dataCobranza;
         }
         //dd($dataCobranza);
-        $staBloqueo["datacobranza"] = $dataCobranza;       
+        $staBloqueo["datacobranza"] = $dataCobranza;
         if($dataCobranza["TDeuda"] > 0 and $dataCobranza["TDeuda"] >= $dataCobranza["limitecredito"]){
             $staBloqueo ["titulo"] = "Limite de credito superado. ";
             $staBloqueo ["bloqueo"] = "Limite de credito superado. "
