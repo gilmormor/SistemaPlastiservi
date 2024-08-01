@@ -113,11 +113,11 @@ Deuda Clientes Sis Cob
                                 </div>
                             @endif
     
-                            <div class="col-xs-12 col-md-4 col-sm-4">
+                            <!--<div class="col-xs-12 col-md-4 col-sm-4">
                                 <button type="button" id="llenartabla" name="llenartabla" class="btn btn-success tooltipsC" title="Llenar tabla" onclick="ejecutarConsulta(4)">
                                     <i class='fa fa-fw fa-file-excel-o'> </i> Enviar correo
                                 </button>
-                            </div>
+                            </div>-->
                             <!--
                             <div class="col-xs-12 col-md-4 col-sm-4">
                                 <button type="button" id="btnexportarExcelDet" name="btnexportarExcelDet" class="btn btn-success tooltipsC" title="Exportar Excel Detalle" onclick="exportarExcelDTEDet()">
