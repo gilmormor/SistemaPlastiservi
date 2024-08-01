@@ -427,7 +427,7 @@ if (!function_exists('clienteBloqueado')) {
             } */    
         }
         //SI EL plazopago_id=1 DEL CLIENTE ES CONTADO ENTONCES SE DEBE BLOQUEAR DE FORMA PREDETERMINADA
-        if($cliente->plazopago_id ==1){
+        if($cliente->plazopago_id == 1 and $aux_consultadeuda == 0){
             $staBloqueo ["bloqueo"]= "Plazo de pago CONTADO.\nSolo se permite hacer Cotizaciones.";
             return $staBloqueo;
         }        
