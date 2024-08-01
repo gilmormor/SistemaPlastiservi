@@ -3228,7 +3228,7 @@ class Dte extends Model
                         'mnttot' => $mnttotal,
                         'Deuda' => $Deuda,
                         //'PKFAVPendiente' => $pkFAVPendiente,
-                        'Vendedor' => $dte->vendedor,
+                        'Vendedor' => isset($dte) ? $dte->vendedor : 39,
                         'NumeroOC' => $numeroOC,
                     ];
                 }
