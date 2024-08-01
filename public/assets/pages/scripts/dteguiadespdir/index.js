@@ -86,7 +86,7 @@ $(document).ready(function () {
             </a>`;
             $('td', row).eq(12).html(aux_text); */
 
-            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            /* aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
             console.log(data);
             aux_displaybtnac = ``;
             aux_displaybtnbl = ``;
@@ -96,7 +96,11 @@ $(document).ready(function () {
             }else{
                 aux_displaybtnac = `style="display:none;"`;
                 aux_displaybtnbl = ``;
-            }
+            } */
+            aux_clienteBloqueado = "";
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = `style="display:none;"`;
+    
             stasubsii_text = 
             `<a ${aux_displaybtnac} onclick="volverGenDTE(${data.id})" class="btn-accion-tabla btn-sm tooltipsC botonac${data.id}" title="Volver a Generar DTE" data-toggle="tooltip">
                 <span class="fa fa-upload text-danger"></span>

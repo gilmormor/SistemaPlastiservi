@@ -2204,11 +2204,12 @@ class Dte extends Model
             }
             $clibloq = clienteBloqueado($request->cliente_id,0,$request);
             if(!is_null($clibloq["bloqueo"])){
-                return response()->json([
+                //EN COMENTARIO PORQUE NO ES NECESARIO BLOQUEAR DESPUES QUE EL DTE ESTA GENERADO
+                /* return response()->json([
                     'id' => 0,
                     "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
                     'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : 'warning'
-                ]);
+                ]); */
             }    
         }
 
