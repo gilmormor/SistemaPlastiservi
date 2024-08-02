@@ -467,7 +467,8 @@ class CotizacionController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
-        if($cotizacion->cliente_id){
+        //EN COMENTARIO PARA QUE PERMITA MODIFICAR LAS COTIZACIONES DE LOS CLIENTES QUE ESTAN BLOQUEADOS
+        /* if($cotizacion->cliente_id){
             $request1 = new Request();
             $request1->merge(['modulo_id' => 1]);
             $request1->request->set('modulo_id', 1);
@@ -480,7 +481,7 @@ class CotizacionController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);
             }
-        }
+        } */
 
         $cont_cotdet = count($request->cotdet_id);
         if($cont_cotdet <=0 ){
