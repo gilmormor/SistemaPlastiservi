@@ -5,7 +5,7 @@ $(document).ready(function () {
     }else{
         $("#aux_actsiscob").prop("checked", false);    
     }
-    if($("#stabloxdeusiscob").val() == '1'){
+    if($("#stabloxdeusiscob_e").val() == '1'){
         $("#aux_stabloxdeusiscob").prop("checked", true);    
     }else{
         $("#aux_stabloxdeusiscob").prop("checked", false);    
@@ -35,9 +35,9 @@ $("#aux_actsiscob").change(function() {
 });
 $("#aux_stabloxdeusiscob").change(function() {
     estaSeleccionado = $("#aux_stabloxdeusiscob").is(":checked");
-    $("#stabloxdeusiscob").val('0');
+    $("#stabloxdeusiscob_e").val('0');
     if(estaSeleccionado){
-        $("#stabloxdeusiscob").val('1');
+        $("#stabloxdeusiscob_e").val('1');
     }
 });
 $('.region_id').on('change', function () {

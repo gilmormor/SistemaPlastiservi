@@ -36,7 +36,6 @@ Notas de Venta
                         @csrf
                         <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
                         <input type="hidden" name="aux_ruta_rutanuevaguiadespnv" id="aux_ruta_rutanuevaguiadespnv" value="{{route('crear_dteguiadespnv', ['id' => "0"])}}">
-                        <input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{$tablashtml['stabloxdeusiscob']}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">

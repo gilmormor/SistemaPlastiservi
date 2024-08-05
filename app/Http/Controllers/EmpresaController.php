@@ -43,6 +43,8 @@ class EmpresaController extends Controller
     public function guardar(ValidarEmpresa $request)
     {
         can('guardar-empresa');
+        $request->merge(['stabloxdeusiscob' => $request->stabloxdeusiscob_e]);
+        $request->request->set('stabloxdeusiscob', $request->stabloxdeusiscob_e);
         Empresa::create($request->all());
         return redirect('empresa')->with('mensaje','Empresa creada con exito');
     }
@@ -83,6 +85,8 @@ class EmpresaController extends Controller
     public function actualizar(ValidarEmpresa $request, $id)
     {
         can('guardar-empresa');
+        $request->merge(['stabloxdeusiscob' => $request->stabloxdeusiscob_e]);
+        $request->request->set('stabloxdeusiscob', $request->stabloxdeusiscob_e);
         Empresa::findOrFail($id)->update($request->all());
         return redirect('empresa')->with('mensaje','Empresa actualizada con exito');
     }

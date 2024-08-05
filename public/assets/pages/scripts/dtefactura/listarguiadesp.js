@@ -148,6 +148,17 @@ $(document).ready(function () {
             $('td', row).eq(18).addClass('updated_at');
             $('td', row).eq(18).attr('id','despordupdated_at' + data.id);
             $('td', row).eq(18).attr('name','despordupdated_at' + data.id);
+
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = ``;
+            if(aux_clienteBloqueado == ""){
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+            }else{
+                aux_displaybtnac = `style="display:none;"`;
+                aux_displaybtnbl = ``;
+            }
             aux_text = /*"<a href='" + data.rutacrear + "' class='btn-accion-tabla tooltipsC' title='Hacer Factura: " + data.tipoentrega_nombre + "'>" +
                             "<button type='button' class='btn btn-default btn-xs'>" +
                                 "<i class='fa fa-fw " + data.icono + "'></i>"+
@@ -163,6 +174,9 @@ $(document).ready(function () {
                             <button type='button' class='btn btn-danger btn-xs'>
                                 <i class='fa fa-fw fa-close'></i>
                             </button>
+                        </a>
+                        <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" style="padding-left: 0px;">
+                            <span class="fa fa-fw fa-lock text-danger text-danger" style="bottom: 0px;top: 2px;"></span>
                         </a>`;
             $('td', row).eq(19).html(aux_text);
         }

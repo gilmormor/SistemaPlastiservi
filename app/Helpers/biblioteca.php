@@ -578,4 +578,12 @@ if (!function_exists('compararProductoId')) {
         return $a->producto_id <=> $b->producto_id;
     }    
 }
+
+// Función devuelve stabloxdeusiscob de la tabla EMPRESA 
+if (!function_exists('stabloxdeusiscob')) {
+    function stabloxdeusiscob() {
+        $empresa = Empresa::findOrFail(1);
+        return  $empresa->stabloxdeusiscob;
+    }    
+}
 ?>

@@ -31,9 +31,7 @@ class DteGuiaDespDirController extends Controller
     public function index()
     {
         can('listar-dte-guia-desp-directa');
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('dteguiadespdir.index',compact('tablashtml'));
+        return view('dteguiadespdir.index');
     }
 
     public function dteguiadespdirpage($dte_id = ""){

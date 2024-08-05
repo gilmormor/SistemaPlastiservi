@@ -175,9 +175,7 @@ class NotaVentaController extends Controller
         
         //dd($cotizaciones);
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('notaventa.index', compact('cotizaciones','aux_statusPant','tablashtml'));
+        return view('notaventa.index', compact('cotizaciones','aux_statusPant'));
     }
     
     public function notaventapage(){

@@ -32,9 +32,7 @@ class DteFacturaDirController extends Controller
     public function index()
     {
         can('listar-dte-factura-directa');
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('dtefacturadir.index',compact('tablashtml'));
+        return view('dtefacturadir.index');
     }
 
     public function dtefacturadirpage($dte_id = ""){

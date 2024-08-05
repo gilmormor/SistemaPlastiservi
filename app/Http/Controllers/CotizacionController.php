@@ -55,9 +55,7 @@ class CotizacionController extends Controller
     public function index()
     {
         can('listar-cotizacion');
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('cotizacion.index',compact('tablashtml'));
+        return view('cotizacion.index');
     }
 
     public function cotizacionpage(){

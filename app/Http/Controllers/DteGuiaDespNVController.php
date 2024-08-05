@@ -37,9 +37,7 @@ class DteGuiaDespNVController extends Controller
     public function index()
     {
         can('listar-dte-guia-desp-nv');
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('dteguiadespnv.index',compact('tablashtml'));
+        return view('dteguiadespnv.index');
     }
 
     public function dteguiadespnvpage($dte_id = ""){
@@ -103,8 +101,6 @@ class DteGuiaDespNVController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         return view('dteguiadespnv.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 

@@ -16,7 +16,6 @@ Factura Directa
 @section('contenido')
 <div class="row">
     <div class="col-lg-12">
-        <input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{$tablashtml['stabloxdeusiscob']}}">
         @include('includes.mensaje')
         <div class="box box-danger">
             <div class="box-header with-border">

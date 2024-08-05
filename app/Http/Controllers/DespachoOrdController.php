@@ -59,10 +59,8 @@ class DespachoOrdController extends Controller
     public function index()
     {
         can('listar-orden-despacho');
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         $solenvord = 0; //ESTATUS ENVIAR SOL DESP A ORDEN DESPACHO
-        return view('despachoord.index',compact('solenvord','tablashtml'));
+        return view('despachoord.index',compact('solenvord'));
     }
 
     public function despachoordpage(Request $request){
@@ -1804,8 +1802,6 @@ class DespachoOrdController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         $tablashtml['sololectura'] = 0;
         $tablashtml['solenvord'] = 0; //ESTATUS SOLICITUD DESPACHO ENVIADA A ORD DESPACHO 
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -1825,8 +1821,6 @@ class DespachoOrdController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         $tablashtml['sololectura'] = 0;
         $tablashtml['solenvord'] = 1; //ESTATUS SOLICITUD DESPACHO ENVIADA A ORD DESPACHO 
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 

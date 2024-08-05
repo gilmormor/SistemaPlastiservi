@@ -51,9 +51,7 @@ class DteGuiaDespController extends Controller
     public function index()
     {
         can('listar-dte-guia-despacho');
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('dteguiadesp.index',compact('tablashtml'));
+        return view('dteguiadesp.index');
     }
 
     public function dteguiadesppage(){
@@ -75,8 +73,6 @@ class DteGuiaDespController extends Controller
         $fechaAct = date("d/m/Y");
         $tablashtml['comunas'] = Comuna::selectcomunas();
         $tablashtml['vendedores'] = Vendedor::selectvendedores();
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
         return view('dteguiadesp.listardespachoord', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
 
         //can('listar-guia-despacho');

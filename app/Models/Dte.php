@@ -583,7 +583,7 @@ class Dte extends Model
         if(isset($request->aux_condindtraslado) and $request->aux_condindtraslado != "" and $request->aux_condindtraslado != null){
             $aux_condindtraslado = $request->aux_condindtraslado;
         }
-        $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
+        $sql = "SELECT dte.id,dte.cliente_id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.indtraslado,
         cliente.razonsocial,cliente.rut,cliente.razonsocial,despachosol.notaventa_id as notaventa_id,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as oc_id,
@@ -595,7 +595,15 @@ class Dte extends Model
         dte.mnttotal as subtotal,
         dte.updated_at,despachoord.updated_at as despordupdated_at,'' as rutacrear,
         dteoc.oc_id as dteoc_oc_id,dteoc.oc_file as dteoc_oc_file,tipodespacho,
-        dteguiadespnv.notaventa_id as dteguiadespnv_notaventa_id
+        dteguiadespnv.notaventa_id as dteguiadespnv_notaventa_id,
+        cliente.limitecredito,
+        IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
+        IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+        IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+        IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+        modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
         LEFT JOIN dteguiadespnv
@@ -613,9 +621,20 @@ class Dte extends Model
         LEFT JOIN tipoentrega
         ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
         LEFT JOIN clientebloqueado
-        ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+        ON clientebloqueado.cliente_id = dte.cliente_id AND ISNULL(clientebloqueado.deleted_at)
         LEFT JOIN dteoc
         ON dteoc.dte_id=dte.id and isnull(dteoc.deleted_at)
+        LEFT JOIN vista_datacobranza
+        ON vista_datacobranza.cliente_id = dte.cliente_id
+        LEFT JOIN clientedesbloqueado
+        ON clientedesbloqueado.cliente_id = dte.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+        LEFT JOIN clientedesbloqueadomodulo
+        ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 11
+        LEFT JOIN modulo
+        ON modulo.id = clientedesbloqueadomodulo.modulo_id
+        LEFT JOIN clientedesbloqueadopro
+        ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+
         WHERE $vendedorcond
         AND $aux_condFecha
         AND $aux_condrut
@@ -643,6 +662,22 @@ class Dte extends Model
         $i = 0;
         foreach ($arrays as $array) {
             $arrays[$i]->rutacrear = route('crear_factura', ['id' => $array->id]);
+            if(is_null($arrays[$i]->notaventa_id)){
+                $aux_cliente_id = $arrays[$i]->cliente_id;
+                $sql = "SELECT clientedesbloqueado.cliente_id,modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id
+                        from clientedesbloqueado INNER JOIN clientedesbloqueadomodulo
+                        ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 30
+                        LEFT JOIN modulo
+                        ON modulo.id = clientedesbloqueadomodulo.modulo_id
+                        WHERE clientedesbloqueado.cliente_id = $aux_cliente_id
+                        and isnull(clientedesbloqueado.deleted_at);";
+                $clientedesbloqueado = DB::select($sql);
+                //dd($clientedesbloqueado);
+                if(count($clientedesbloqueado) > 0){
+                    $arrays[$i]->modulo_stamodapl = $clientedesbloqueado[0]->modulo_stamodapl;
+                    $arrays[$i]->modulo_id = $clientedesbloqueado[0]->modulo_id;
+                }
+            }
             $i++;
         }
         return $arrays;

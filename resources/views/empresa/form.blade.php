@@ -64,4 +64,4 @@
     </div>
 </div>
 
-<input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{old('stabloxdeusiscob', $data->stabloxdeusiscob ?? '0')}}">
+<input type="hidden" name="stabloxdeusiscob_e" id="stabloxdeusiscob_e" value="{{old('stabloxdeusiscob_e', $data->stabloxdeusiscob ?? '0')}}">

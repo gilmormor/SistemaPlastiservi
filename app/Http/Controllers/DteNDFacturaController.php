@@ -28,9 +28,7 @@ class DteNDFacturaController extends Controller
     public function index()
     {
         can('listar-nota-debito-factura');
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('dtendfactura.index',compact('tablashtml'));
+        return view('dtendfactura.index');
     }
 
     public function dtendfacturapage($dte_id = ""){

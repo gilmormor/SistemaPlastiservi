@@ -175,16 +175,31 @@ function configTablaDteGuiaDesp(){
                 aux_checked = "checked";
                 //$("#llenarselGD" + data.id).prop("checked", true);
             }
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = ``;
+            if(aux_clienteBloqueado == ""){
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+            }else{
+                aux_displaybtnac = `style="display:none;"`;
+                aux_displaybtnbl = ``;
+            }
 
             aux_text = 
-                "<div class='checkbox' style='padding-top: 0px;'>" +
-                    "<label style='font-size: 1.0em'>" +
-                        "<input type='checkbox' class='checkllenarCantSol' id='llenarselGD" + data.id + "' name='llenarselGD[]' onclick='" + aux_onclick + "' " + aux_checked+ ">" +
-                        "<span class='cr'><i class='cr-icon fa fa-check'></i></span>" +
-                    "</label>" +
-                    "<input type='text' name='dte_idGD[]' id='dte_idGD" + (i+1) + "' class='form-control' value='" + data.id + "' style='display:none;'/>" +
-                    "<input type='text' name='updated_atGD[]' id='updated_atGD" + (i+1) + "' class='form-control' value='" + data.updated_at + "' style='display:none;'/>" +
-                "</div>";
+                `<div class="checkbox" style="padding-top: 0px;">
+                    <div ${aux_displaybtnac}>
+                        <label style="font-size: 1.0em">
+                            <input type="checkbox" class="checkllenarCantSol" id="llenarselGD${data.id}" name="llenarselGD[]" onclick="${aux_onclick}" ${aux_checked}>
+                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                        </label>
+                        <input type="text" name="dte_idGD[]" id="dte_idGD${(i+1)}" class="form-control" value="${data.id}" style=display:none;"/>
+                        <input type="text" name="updated_atGD[]" id="updated_atGD${(i+1)}" class="form-control" value="${data.updated_at}" style="display:none;"/>
+                    </div>
+                    <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" style="padding-left: 0px;">
+                        <span class="fa fa-fw fa-lock text-danger text-danger" style="bottom: 0px;top: 2px;"></span>
+                    </a>
+                </div>`;
 
             $('td', row).eq(10).html(aux_text);
             

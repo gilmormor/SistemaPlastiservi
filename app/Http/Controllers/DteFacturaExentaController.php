@@ -31,9 +31,7 @@ class DteFacturaExentaController extends Controller
     public function index()
     {
         can('listar-dte-factura-exenta');
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('dtefacturaexenta.index',compact('tablashtml'));
+        return view('dtefacturaexenta.index');
     }
 
     public function dtefacturaexentapage($dte_id = ""){

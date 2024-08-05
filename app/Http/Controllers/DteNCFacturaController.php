@@ -33,9 +33,7 @@ class DteNCFacturaController extends Controller
     public function index()
     {
         can('listar-nota-credito-factura');
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('dtencfactura.index',compact('tablashtml'));
+        return view('dtencfactura.index');
     }
 
     public function dtencfacturapage($dte_id = ""){

@@ -337,7 +337,7 @@ $("#rut").blur(function(){
 				success: function (respuesta) {
 					if(respuesta.cliente.length>0){
 						//alert(respuesta[0]['vendedor_id']);
-						if(respuesta.cliente[0].descripcion==null){
+						//if(respuesta.cliente[0].descripcion==null){
 							formato_rut($("#rut"));
 
 							$("#razonsocial").val(respuesta.cliente[0].razonsocial);
@@ -391,7 +391,7 @@ $("#rut").blur(function(){
 							$('#tabla-data-dteguiadesp').DataTable().ajax.url( "/dtefactura/listarguiadesppage/" + data.data2, ).load();
 						
 							$(".selectpicker").selectpicker('refresh');
-						}else{
+						/* }else{
 							swal({
 								title: 'Cliente Bloqueado.',
 								text: respuesta.cliente[0].descripcion,
@@ -406,7 +406,7 @@ $("#rut").blur(function(){
 									$("#rut").focus();
 								}
 							});
-						}
+						} */
 
 					}else{
 						swal({

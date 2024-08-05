@@ -94,9 +94,7 @@ class NotaventaAprobarController extends Controller
         //dd($cotizaciones);
         //$datas = Cotizacion::where('usuario_id',auth()->id())->get();
         //return view('notaventaAprobar.index', compact('datas','cotizaciones','aux_statusPant'));
-        $empresa = Empresa::findOrFail(1);
-        $tablashtml['stabloxdeusiscob'] = $empresa->stabloxdeusiscob;
-        return view('notaventaAprobar.index',compact('tablashtml'));
+        return view('notaventaAprobar.index');
     }
 
     function notaventaaprobarpage(){

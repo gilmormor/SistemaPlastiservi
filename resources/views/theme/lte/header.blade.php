@@ -1,5 +1,6 @@
 <header class="main-header">
   <!-- Logo -->
+  <input type="hidden" name="stabloxdeusiscob" id="stabloxdeusiscob" value="{{stabloxdeusiscob()}}">
   <a href="/" class="logo" style="background-color: #fbfbfb;">
     <!-- mini logo for sidebar mini 50x50 pixels -->
     
