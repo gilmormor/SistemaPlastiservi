@@ -2231,7 +2231,8 @@ class Dte extends Model
             //ESTOY VALIDANDO PARA SABER SI VIENE DE DTEGuiaDesp YA QUE AQUI YA ESTOY VALIDANDO EL DESBLOQUEO
             //Y EN DTEGuiaDesp ACTUALIZO INVENTARIO EN LOS DEMAS PRODESOS DTE NO SE TOCA EL INVENTARIO
         }else{
-            $request->merge(['cliente_id' => $dte->cliente_id]);
+            //EN COMENTARIO
+            /* $request->merge(['cliente_id' => $dte->cliente_id]);
             $request->request->set('cliente_id', $dte->cliente_id);
             if(isset($dte->dteguiadespnv)){
                 $request->merge(['notaventa_id' => $dte->dteguiadespnv->notaventa_id]);
@@ -2239,13 +2240,7 @@ class Dte extends Model
             }
             $clibloq = clienteBloqueado($request->cliente_id,0,$request);
             if(!is_null($clibloq["bloqueo"])){
-                //EN COMENTARIO PORQUE NO ES NECESARIO BLOQUEAR DESPUES QUE EL DTE ESTA GENERADO
-                /* return response()->json([
-                    'id' => 0,
-                    "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
-                    'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : 'warning'
-                ]); */
-            }    
+            } */    
         }
 
         return Dte::updateStatusGen($dte,$request);
