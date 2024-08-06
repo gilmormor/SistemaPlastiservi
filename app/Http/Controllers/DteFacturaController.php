@@ -288,7 +288,7 @@ class DteFacturaController extends Controller
         //$respuesta = Dte::dteSolicitarFolio($dte);
         $respuesta = [
                     'id' => 1,
-                    'aux_folio' => '228419'
+                    'aux_folio' => '228421'
         ];
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
