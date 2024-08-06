@@ -187,6 +187,8 @@ function editar($id){
         }
         if($data->cliente_id){
             $request1 = new Request();
+            $request1->merge(['cotizacion_id' => $data->id]);
+            $request1->request->set('cotizacion_id', $data->id);
             $request1->merge(['modulo_id' => 25]);
             $request1->request->set('modulo_id', 25);
             $request1->merge(['deldesbloqueo' => 0]);

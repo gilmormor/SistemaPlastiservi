@@ -96,6 +96,7 @@ $("#notaventa_id").blur(function(){
 		//totalizar();
         var data = {
             id: codigo,
+            sta_cerrarNV : 1, //Estatus consulta para desbloquear NV
             _token: $('input[name=_token]').val()
         };
         $.ajax({

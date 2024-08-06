@@ -161,6 +161,7 @@ $("#notaventa_id").blur(function(){
 		//totalizar();
         var data = {
             id: codigo,
+            sta_cerrarNV : 0, // = 0 no estoy consultando nota de venta para cerrar, estoy consultando para desbloquear cliente
             _token: $('input[name=_token]').val()
         };
         $.ajax({

@@ -1672,7 +1672,7 @@ class NotaVentaController extends Controller
         if(count($datas) > 0){
             $cliente = Cliente::findOrFail($datas[0]->cliente_id);
             $aux_cantdesp = NotaVenta::consultatotcantod($request->id);
-            if($aux_cantdesp >= $datas[0]->sumcant){
+            if(($aux_cantdesp >= $datas[0]->sumcant) and isset($request->sta_cerrarNV) and $request->sta_cerrarNV == 1){
             //if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp !== null)){
                 return [
                     "id" => 0,

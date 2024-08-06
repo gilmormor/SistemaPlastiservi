@@ -666,7 +666,7 @@ class Dte extends Model
                 $aux_cliente_id = $arrays[$i]->cliente_id;
                 $sql = "SELECT clientedesbloqueado.cliente_id,modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id
                         from clientedesbloqueado INNER JOIN clientedesbloqueadomodulo
-                        ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 30
+                        ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 29
                         LEFT JOIN modulo
                         ON modulo.id = clientedesbloqueadomodulo.modulo_id
                         WHERE clientedesbloqueado.cliente_id = $aux_cliente_id

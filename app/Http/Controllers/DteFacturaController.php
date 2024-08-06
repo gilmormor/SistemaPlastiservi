@@ -321,8 +321,8 @@ class DteFacturaController extends Controller
                 } */
             }
             $request1 = new Request();
-            $request1->merge(['modulo_id' => 30]);
-            $request1->request->set('modulo_id', 30);
+            $request1->merge(['modulo_id' => 29]);
+            $request1->request->set('modulo_id', 29);
             $request1->merge(['deldesbloqueo' => 1]);
             $request1->request->set('deldesbloqueo', 1);
             $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
