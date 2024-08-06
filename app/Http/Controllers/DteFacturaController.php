@@ -286,7 +286,7 @@ class DteFacturaController extends Controller
         $dte->usuario_id = $request->usuario_id;
 
         $respuesta = Dte::dteSolicitarFolio($dte);
-        dd($respuesta["aux_folio"]);
+        //dd($respuesta["aux_folio"]);
         /* $respuesta = [
                     'id' => 1,
                     'aux_folio' => '1234'
