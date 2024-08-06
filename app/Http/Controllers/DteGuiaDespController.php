@@ -960,7 +960,7 @@ class DteGuiaDespController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             }
-            $request1 = new Request();
+            /* $request1 = new Request();
             $request1->merge(['modulo_id' => 10]);
             $request1->request->set('modulo_id', 10);
             $request1->merge(['notaventa_id' => $despachoord->notaventa_id]);
@@ -975,7 +975,7 @@ class DteGuiaDespController extends Controller
                     'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
                     'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                 ]);
-            }
+            } */
 
             $notaventacerrada = NotaVentaCerrada::where('notaventa_id',$despachoord->notaventa_id)->get();
             if(count($notaventacerrada) > 0){
