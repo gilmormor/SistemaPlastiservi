@@ -286,6 +286,7 @@ class DteFacturaController extends Controller
         $dte->usuario_id = $request->usuario_id;
 
         $respuesta = Dte::dteSolicitarFolio($dte);
+        dd($respuesta["aux_folio"]);
         /* $respuesta = [
                     'id' => 1,
                     'aux_folio' => '1234'
@@ -437,7 +438,7 @@ class DteFacturaController extends Controller
                 $aux_mensaje = 'Factura creada con exito.';
                 $aux_tipo_alert = 'alert-success';
             }
-            if($dteNew->cliente->clientedesbloqueado){
+            /* if($dteNew->cliente->clientedesbloqueado){
                 $clientedesbloqueado_id = $dteNew->cliente->clientedesbloqueado->id;
                 if (ClienteDesBloqueado::destroy($clientedesbloqueado_id)) {
                     //Despues de eliminar actualizo el campo usuariodel_id=usuario que elimino el registro
@@ -445,7 +446,7 @@ class DteFacturaController extends Controller
                     $clientedesbloqueado->usuariodel_id = auth()->id();
                     $clientedesbloqueado->save();
                 }
-            }
+            } */
 
             return redirect('dtefactura')->with([
                 'mensaje'=> $aux_mensaje,
