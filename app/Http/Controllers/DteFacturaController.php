@@ -285,11 +285,11 @@ class DteFacturaController extends Controller
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
 
-        $respuesta = Dte::dteSolicitarFolio($dte);
-        /* $respuesta = [
+        //$respuesta = Dte::dteSolicitarFolio($dte);
+        $respuesta = [
                     'id' => 1,
-                    'aux_folio' => '1234'
-        ]; */
+                    'aux_folio' => '228417'
+        ];
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
             //VALIDAR BLOQUEO CLIENTE DESPUES DE QUE SE OBTIENE EL FOLIO
@@ -319,12 +319,12 @@ class DteFacturaController extends Controller
                     ]);
                 } */
             }
-            $request1 = new Request();
+            /* $request1 = new Request();
             $request1->merge(['modulo_id' => 30]);
             $request1->request->set('modulo_id', 30);
             $request1->merge(['deldesbloqueo' => 1]);
             $request1->request->set('deldesbloqueo', 1);
-            $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
+            $clibloq = clienteBloqueado($request->cliente_id,0,$request1); */
             /* if(!is_null($clibloq["bloqueo"])){   
                 return redirect('dtefactura')->with([
                     "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
