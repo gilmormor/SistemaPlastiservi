@@ -285,11 +285,11 @@ class DteFacturaController extends Controller
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
 
-        //$respuesta = Dte::dteSolicitarFolio($dte);
-        $respuesta = [
+        $respuesta = Dte::dteSolicitarFolio($dte);
+        /* $respuesta = [
                     'id' => 1,
                     'aux_folio' => '1234'
-        ];
+        ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
             //VALIDAR BLOQUEO CLIENTE DESPUES DE QUE SE OBTIENE EL FOLIO
