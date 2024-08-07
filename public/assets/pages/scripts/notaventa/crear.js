@@ -368,7 +368,7 @@ function insertarTabla(){
 		aux_precioxkiloreal = $("#precioM").attr("valor");		
 	}
 
-    var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '" class="cat' + $("#categoriaprod_id").val() + '">'+
+    var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '" class="cat' + $("#categoriaprod_id").val() + ' prod_id'  + $("#producto_idM").val() + '">'+
 			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;" categoriaprod_id="' + $("#categoriaprod_id").val() + '" class="filaproducto_id" fila="'+ aux_nfila + '">'+  
 				$("#producto_idM").val() +
 			'</td>'+
