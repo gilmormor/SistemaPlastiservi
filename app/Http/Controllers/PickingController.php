@@ -1126,6 +1126,7 @@ function consultasoldesp($request){
 */
     //dd($sql);
     $datas = DB::select($sql);
+    filtrarclientesbloqueados($request,$datas);
     //dd($datas);
     return $datas;
 }

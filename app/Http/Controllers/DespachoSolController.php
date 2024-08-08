@@ -2067,6 +2067,13 @@ class DespachoSolController extends Controller
         $request->aux_titulo = $_GET["aux_titulo"];
         $request->orden = $_GET["orden"];
 
+        $request->sucursal_id = $_GET["sucursal_id"];
+        $request->sololectura = $_GET["sololectura"];
+        $request->solenvord = $_GET["solenvord"];
+
+        if(isset($_GET["statusBloqueo"])){
+            $request->statusBloqueo = $_GET["statusBloqueo"];
+        }
         $datas = consultasoldesp($request);
 
         $aux_fdesde= $request->fechad;
@@ -2134,6 +2141,9 @@ class DespachoSolController extends Controller
         $request->aux_sql = $_GET["aux_sql"];
         $request->aux_orden = $_GET["aux_orden"];
         $request->producto_id = $_GET["producto_id"];
+        if(isset($_GET["statusBloqueo"])){
+            $request->statusBloqueo = $_GET["statusBloqueo"];
+        }
         
 
 
@@ -2288,6 +2298,7 @@ class DespachoSolController extends Controller
 
 
 function consulta($request,$aux_sql,$orden){
+    //dd($request);
     if($orden==1){
         $aux_orden = "notaventadetalle.notaventa_id desc";
     }else{
@@ -2702,6 +2713,7 @@ function consulta($request,$aux_sql,$orden){
     }
 
     $datas = DB::select($sql);
+    filtrarclientesbloqueados($request,$datas);
     return $datas;
 }
 
@@ -3537,6 +3549,7 @@ function consultasoldesp($request){
 */
     //dd("$sql");
     $datas = DB::select($sql);
+    filtrarclientesbloqueados($request,$datas);
     //dd($datas);
     return $datas;
 }

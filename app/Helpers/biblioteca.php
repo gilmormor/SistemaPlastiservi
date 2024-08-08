@@ -586,4 +586,34 @@ if (!function_exists('stabloxdeusiscob')) {
         return  $empresa->stabloxdeusiscob;
     }    
 }
+
+// Función BUSCA EN FUNCION A CIERTAS CONDICIONES LOS CLIENTES QUE ESTAN BLOQUEADOS Y LOS INSERTA EN UN NUEVO ARRAY
+if (!function_exists('filtrarclientesbloqueados')) {
+    function filtrarclientesbloqueados($request,&$datas) {
+        //dd($request);
+        if(isset($request->statusBloqueo) and $request->statusBloqueo){
+            $aux_stabloxdeusiscob = stabloxdeusiscob();
+            $aux_data = [];
+            foreach ($datas as $data) {
+                //dd($data);
+                if($data->clientedesbloqueadopro_obs == ""){
+                    if(($data->modulo_id === null) and ((($data->datacobranza_tdeudafec > 0) OR ($data->datacobranza_tdeuda > $data->limitecredito)  OR $data->clientebloqueado_desc !== null))){
+                        if(($data->modulo_id === null)){
+                            if($data->clientebloqueado_desc !== null){
+                                $aux_data[] = $data;
+                                continue;
+                            }
+                        }
+                        if($aux_stabloxdeusiscob == "1"){
+                            if($data->datacobranza_tdeuda > $data->limitecredito OR $data->datacobranza_tdeudafec > 0){
+                                $aux_data[] = $data;
+                            }
+                        }
+                    }
+                }        
+            }
+            $datas = $aux_data;
+        }    
+    }    
+}
 ?>

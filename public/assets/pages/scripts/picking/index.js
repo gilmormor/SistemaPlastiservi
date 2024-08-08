@@ -422,6 +422,7 @@ function datospicking(){
         filtro            : 1,
         sucursal_id       : $("#sucursal_id").val(),
         sta_picking       : $("#sta_picking").val(),
+        statusBloqueo     : $("#statusBloqueo").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -442,6 +443,7 @@ function datospicking(){
     "&filtro="+data1.filtro +
     "&sucursal_id="+data1.sucursal_id +
     "&sta_picking="+data1.sta_picking +
+    "&statusBloqueo="+data1.statusBloqueo +
     "&_token="+data1._token;
 
     var data = {

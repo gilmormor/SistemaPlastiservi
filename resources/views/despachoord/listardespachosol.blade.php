@@ -25,11 +25,13 @@ Pendiente Solicitud Orden Despacho
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>
-                <div class="box-tools pull-right">
-                    <a href="{{route('despachoord')}}" class="btn btn-block btn-info btn-sm">
-                        <i class="fa fa-fw fa-reply-all"></i> Volver al listado
-                    </a>
-                </div>
+                @if ($tablashtml['sololectura'] == 0)
+                    <div class="box-tools pull-right">
+                        <a href="{{route('despachoord')}}" class="btn btn-block btn-info btn-sm">
+                            <i class="fa fa-fw fa-reply-all"></i> Volver al listado
+                        </a>
+                    </div>                    
+                @endif
             </div>
             @csrf
             <div class="box-body">
@@ -229,6 +231,19 @@ Pendiente Solicitud Orden Despacho
                                                     {{$sucursal->nombre}}
                                                 </option>
                                             @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Bloqueo">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Estatus Bloqueo:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="statusBloqueo" id="statusBloqueo" class="selectpicker form-control statusBloqueo">
+                                            <option value="">Seleccione...</option>
+                                            <option value="1">Clientes Bloqueados</option>
                                         </select>
                                     </div>
                                 </div>

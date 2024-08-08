@@ -96,7 +96,7 @@ $(document).ready(function () {
     
                 if(data.oc_file != "" && data.oc_file != null){
                     aux_text = 
-                        "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
+                        "<a class='btn-accion-tabla btn-sm' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
                             data.oc_id + 
                         "</a>";
                     $('td', row).eq(4).html(aux_text);
@@ -359,6 +359,7 @@ function datoslnv1(){
         sucursal_id       : $("#sucursal_id").val(),
         filtro            : 0,
         modulo_id         : 4,
+        statusBloqueo     : $("#statusBloqueo").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -378,6 +379,7 @@ function datoslnv1(){
             "&producto_id=" + data1.producto_id +
             "&sucursal_id=" + data1.sucursal_id +
             "&modulo_id=" + data1.modulo_id +
+            "&statusBloqueo=" + data1.statusBloqueo +
             "&aux_titulo=" + aux_titulo;
     
     var data = {
@@ -551,6 +553,7 @@ function btnpdf(numrep){
             "&plazoentrega=" + data.plazoentrega +
             "&producto_id=" + data.producto_id +
             "&filtro=" + data.filtro +
+            "&statusBloqueo=" + data.statusBloqueo +
             "&numrep=" + numrep;
     if(numrep==1){
         aux_titulo = 'Nota de Venta Pendientes';
@@ -572,6 +575,9 @@ function btnpdf(numrep){
             "&aux_titulo=" + aux_titulo +
             "&aux_sql=2" + 
             "&aux_orden=1";
+    }
+    if(data.statusBloqueo == "1"){
+        aux_titulo = 'Clientes bloqueados';
     }
     $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/'+cadena);
     $("#myModalpdf").modal('show');

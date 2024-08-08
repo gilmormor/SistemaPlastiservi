@@ -449,6 +449,8 @@ function datoslsd(){
         filtro            : 1,
         sucursal_id       : $("#sucursal_id").val(),
         sololectura       : $("#sololectura").val(),
+        solenvord         : $("#solenvord").val(),
+        statusBloqueo     : $("#statusBloqueo").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -474,6 +476,7 @@ function datosdespachosol(){
         sucursal_id       : $("#sucursal_id").val(),
         sololectura       : $("#sololectura").val(),
         solenvord         : $("#solenvord").val(),
+        statusBloqueo     : $("#statusBloqueo").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -495,6 +498,7 @@ function datosdespachosol(){
     "&sucursal_id="+data1.sucursal_id +
     "&sololectura="+data1.sololectura +
     "&solenvord="+data1.solenvord +
+    "&statusBloqueo="+data1.statusBloqueo +
     "&_token="+data1._token;
 
     var data = {
@@ -803,6 +807,10 @@ $("#btnpdf2").click(function()
             "&filtro=" + data.filtro +
             "&producto_id=" + data.producto_id +
             "&orden=" + ordentablaGen($('#pendientesoldesp').DataTable()) +
+            "&sucursal_id=" + data.sucursal_id +
+            "&sololectura=" + data.sololectura +
+            "&solenvord=" + data.solenvord +
+            "&statusBloqueo=" + data.statusBloqueo +
             "&aux_titulo=" + aux_titulo;
     $('#contpdf').attr('src', '/despachosol/pdfpendientesoldesp/'+cadena);
     $("#myModalpdf").modal('show'); 
