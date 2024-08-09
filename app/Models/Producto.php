@@ -695,10 +695,20 @@ class Producto extends Model
         }else{
             $aux_condgiro_id = "notaventa.giro_id='$request->giro_id'";
         }
-        if(!isset($request->areaproduccion_id) or empty($request->areaproduccion_id)){
+        /* if(!isset($request->areaproduccion_id) or empty($request->areaproduccion_id)){
             $aux_condareaproduccion_id = " true";
         }else{
             $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$request->areaproduccion_id'";
+        } */
+        if(empty($request->areaproduccion_id)){
+            $aux_condareaproduccion_id = " true ";
+        }else{
+            if(is_array($request->areaproduccion_id)){
+                $aux_areaproduccion_id = implode ( ',' , $request->areaproduccion_id);
+            }else{
+                $aux_areaproduccion_id = $request->areaproduccion_id;
+            }
+            $aux_condareaproduccion_id = " categoriaprod.areaproduccion_id in ($aux_areaproduccion_id) ";
         }
         if(!isset($request->tipoentrega_id) or empty($request->tipoentrega_id)){
             $aux_condtipoentrega_id = " true";
