@@ -20,11 +20,11 @@ Cliente Desbloqueado
                         <i class="fa fa-fw fa-plus-circle"></i>NotaVenta
                     </a>
                 </div>
-                <div class="box-tools pull-right">
+                {{-- <div class="box-tools pull-right">
                     <a href="{{route('crear_clientedesbloqueado', ['id' => '2'])}}" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i>Cotización
                     </a>
-                </div>
+                </div> --}}
                 <div class="box-tools pull-right">
                     <a href="{{route('crear_clientedesbloqueado', ['id' => '0'])}}" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i>Cliente

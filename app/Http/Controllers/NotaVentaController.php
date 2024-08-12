@@ -382,7 +382,7 @@ class NotaVentaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);    
         }
-        $request = new Request();
+        /* $request = new Request();
         $request->merge(['cotizacion_id' => $id]);
         $request->request->set('cotizacion_id', $id);
         $request->merge(['modulo_id' => 27]);
@@ -394,7 +394,7 @@ class NotaVentaController extends Controller
                 'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
                 'tipo_alert' => "alert-error"
             ]);
-        }
+        } */
 
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));;
         //$detalles = $data->cotizaciondetalles()->get();
@@ -509,7 +509,7 @@ class NotaVentaController extends Controller
     {
         //dd($request);
         can('guardar-notaventa');
-        if(empty($request->cotizacion_id)){
+        /* if(empty($request->cotizacion_id)){
             $request->merge(['modulo_id' => 2]);
             $request->merge(['deldesbloqueo' => 1]);
             //$cliente = Cliente::findOrFail($request->cliente_id);
@@ -520,7 +520,7 @@ class NotaVentaController extends Controller
                     "tipo_alert" => "alert-error"
                 ]);
             }    
-        }
+        } */
         $cont_producto = count($request->producto_id);
         if($cont_producto <=0 ){
             return redirect('notaventa')->with([
@@ -537,7 +537,7 @@ class NotaVentaController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);
             }
-            $request1 = new Request();
+            /* $request1 = new Request();
             $request1->merge(['cotizacion_id' => $request->cotizacion_id]);
             $request1->request->set('cotizacion_id', $request->cotizacion_id);
             $request1->merge(['modulo_id' => 27]);
@@ -551,7 +551,7 @@ class NotaVentaController extends Controller
                     'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"]  . " Permiso por Nro. Cotizacion",
                     'tipo_alert' => "alert-error"
                 ]);
-            }
+            } */
     
         }
         $hoy = date("Y-m-d H:i:s");
@@ -1805,36 +1805,4 @@ function consultaNVaprobadas($id){
     $datas = DB::select($sql);
     return $datas;
 
-}
-
-function valBloqCliSisCob(&$cliente,$request,$aux_consultadeuda){
-    if(count($cliente) > 0){
-        $staBloqueo = clienteBloqueado($cliente[0]->id,$aux_consultadeuda,$request);
-        dd($staBloqueo);
-        if(isset($staBloqueo["error"])){
-            return $staBloqueo;
-        }
-        $cliente[0]->descripcion = $staBloqueo ["bloqueo"];
-        $cliente[0]->TDeuda = 0;
-        if(isset($staBloqueo["datacobranza"]["TDeuda"])){
-            $cliente[0]->TDeuda = $staBloqueo["datacobranza"]["TDeuda"];
-        }
-        /* $clientebus = Cliente::findOrFail($cliente[0]->id);
-        if($clientebus->clientedesbloqueado){
-            $cliente[0]->descripcion = null;
-        }else{
-            if(is_null($cliente[0]->clientebloqueado_descripcion)){
-                $rut = isset($request->rut) ? $request->rut : null;
-                $datCobranza = Dte::deudaClienteSisCobranza($rut);
-                //dd($datCobranza);
-                if($datCobranza["TDeuda"] > 0 and $datCobranza["TDeuda"] >= $datCobranza["limitecredito"]){
-                    $cliente[0]->descripcion = "Supero limite de Crédito: " . number_format($datCobranza["limitecredito"], 0, ',', '.') . "\nDeuda: " . number_format($datCobranza["TDeuda"], 0, ',', '.');
-                }else{
-                    if($datCobranza["TDeudaFec"] > 0){
-                        $cliente[0]->descripcion = "Facturas Vencidas: " . $datCobranza["NroFacDeu"];
-                    }
-                }
-            }    
-        } */
-    }
 }

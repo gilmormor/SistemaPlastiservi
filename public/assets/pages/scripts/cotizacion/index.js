@@ -88,7 +88,7 @@ $(document).ready(function () {
         $('td', row).eq(7).attr("id","updated_at"+data.id);
         $('td', row).eq(7).attr("name","updated_at"+data.id);
 
-        aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+        /* aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
         aux_displaybtnac = ``;
         aux_displaybtnbl = ``;
         if(aux_clienteBloqueado == ""){
@@ -97,7 +97,10 @@ $(document).ready(function () {
         }else{
             aux_displaybtnac = `style="display:none;"`;
             aux_displaybtnbl = ``;
-        }
+        } */
+        aux_clienteBloqueado = "";
+        aux_displaybtnac = ``;
+        aux_displaybtnbl = `style="display:none;"`;
 
         aux_text = 
         `<div class="tools11">

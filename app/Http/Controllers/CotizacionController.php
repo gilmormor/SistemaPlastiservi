@@ -852,7 +852,7 @@ class CotizacionController extends Controller
                     'tipo_alert' => "error"
                 ]);
             }
-            if($cotizacion->cliente_id){
+            /* if($cotizacion->cliente_id){
                 $request1 = new Request();
                 $request1->merge(['cotizacion_id' => $request->id]);
                 $request1->request->set('cotizacion_id', $request->id);
@@ -868,7 +868,7 @@ class CotizacionController extends Controller
                         'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                     ]);
                 }
-            }
+            } */
             $cotizacion->aprobstatus = $request->aprobstatus;
             $aux_statusAcuTec = false;
             foreach ($cotizacion->cotizaciondetalles as $cotdet) {
