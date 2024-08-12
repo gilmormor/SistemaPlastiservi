@@ -964,7 +964,7 @@ class CotizacionController extends Controller
                     'mensaje' => 'Registro fue modificado por otro usuario.'
                 ]);
             }
-            if($cotizacion->cliente_id){
+            /* if($cotizacion->cliente_id){
                 $request1 = new Request();
                 $request1->merge(['cotizacion_id' => $cotizacion->id]);
                 $request1->request->set('cotizacion_id', $cotizacion->id);
@@ -981,7 +981,7 @@ class CotizacionController extends Controller
                         'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                     ]);
                 }
-            }
+            } */
             if($request->valor == "3"){ //SI ES APROBACION ENTRA AQUI
                 //RECORRO LOS ACUERDOS TECNICOS PARA VERIFICAR QUE FUERON EDITADOS PARA LUEGO UPDATE
                 if($request->arrayATs){

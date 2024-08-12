@@ -185,7 +185,7 @@ function editar($id){
                 'tipo_alert' => 'alert-error'
             ]);
         }
-        if($data->cliente_id){
+        /* if($data->cliente_id){
             $request1 = new Request();
             $request1->merge(['cotizacion_id' => $data->id]);
             $request1->request->set('cotizacion_id', $data->id);
@@ -200,7 +200,7 @@ function editar($id){
                     'tipo_alert' => 'alert-error'
                 ]);
             }
-        }
+        } */
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $cotizacionDetalles = $data->cotizaciondetalles()->get();
 
