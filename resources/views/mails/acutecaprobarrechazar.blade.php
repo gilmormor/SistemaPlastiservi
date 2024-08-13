@@ -24,8 +24,8 @@
         <li><b>Nro. Cotización:</b> {{ $tabla->id }}</li>
         <li><b>Fecha Cotización:</b> {{date("d-m-Y h:i:s A", strtotime($tabla->fechahora))}}</li>
         <li><b>Fecha Validación:</b> {{date("d-m-Y h:i:s A", strtotime($tabla->aprobfechahora))}}</li>
-        <li><b>RUT:</b> {{ $tabla->cliente->rut }}</li>
-        <li><b>Razon Social:</b> {{ $tabla->cliente->razonsocial }}</li>
+        <li><b>RUT:</b> {{ isset($tabla->cliente) ? $tabla->cliente->rut : $tabla->clientetemp->rut }}</li>
+        <li><b>Razon Social:</b> {{ isset($tabla->cliente) ? $tabla->cliente->razonsocial : $tabla->clientetemp->razonsocial }}</li>
         <li><b>Vendedor:</b> {{ $tabla->vendedor->persona->nombre . " " . $tabla->vendedor->persona->apellido}}</li>
     </ul>
     <p>
