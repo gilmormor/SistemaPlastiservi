@@ -262,7 +262,7 @@ function editar($id){
     can('editar-cotizacion');
         //dd(session('aux_paginaredirect'));
         $data = Cotizacion::findOrFail($id);
-        if($data->cliente_id){
+        /* if($data->cliente_id){
             $request1 = new Request();            
             $request1->merge(['modulo_id' => 26]);
             $request1->request->set('modulo_id', 26);
@@ -277,7 +277,7 @@ function editar($id){
                     'tipo_alert' => 'alert-error'
                 ]);
             }    
-        }
+        } */
         if($data->aprobstatus != 2){
             return redirect('cotizacionaprobar')->with([
                 'mensaje'=>'Cotizacion fue modificada por otro usuario.',
