@@ -118,7 +118,7 @@ $(document).ready(function () {
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
             $('td', row).eq(8).html(aux_text);
 
-            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            /* aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
             aux_displaybtnac = ``;
             aux_displaybtnbl = ``;
             if(aux_clienteBloqueado == ""){
@@ -127,7 +127,10 @@ $(document).ready(function () {
             }else{
                 aux_displaybtnac = `style="display:none;"`;
                 aux_displaybtnbl = ``;
-            }
+            } */
+            aux_clienteBloqueado = "";
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = `style="display:none;"`;
 
             /* if(data.clientebloqueado_descripcion != null){
                 aux_text = 

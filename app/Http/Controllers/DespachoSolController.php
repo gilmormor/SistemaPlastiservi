@@ -188,7 +188,8 @@ class DespachoSolController extends Controller
             'tipo_alert' => 'alert-error'
         ]); */
 
-        $request = new Request();
+        //BLOQUEO POR DEUDA: DESHABILITADO POR AUTORIZACION DE JEANNETTE MARTINEZ 14/08/2024
+        /* $request = new Request();
         $request->merge(['modulo_id' => 4]);
         $request->request->set('modulo_id', 4);
         $request->merge(['notaventa_id' => $data->id]);
@@ -205,7 +206,7 @@ class DespachoSolController extends Controller
                 "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
-        }
+        } */
 
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $detalles = $data->notaventadetalles()->get();
@@ -260,7 +261,8 @@ class DespachoSolController extends Controller
         can('guardar-solicitud-despacho');
         //dd($request);
         $notaventa = NotaVenta::findOrFail($request->notaventa_id);
-        $request1 = new Request();
+        //BLOQUEO POR DEUDA: DESHABILITADO POR AUTORIZACION DE JEANNETTE MARTINEZ 14/08/2024
+        /* $request1 = new Request();
         $request1->merge(['modulo_id' => 4]);
         $request1->request->set('modulo_id', 4);
         $request1->merge(['notaventa_id' => $request->notaventa_id]);
@@ -278,7 +280,7 @@ class DespachoSolController extends Controller
                 "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
-        }
+        } */
 
         $cont_producto = count($request->producto_id);
         if($cont_producto<=0){
@@ -1431,7 +1433,8 @@ class DespachoSolController extends Controller
     {
         if ($request->ajax()) {
             $despachosol = DespachoSol::findOrFail($request->id);
-            $request1 = new Request();
+            //BLOQUEO POR DEUDA: DESHABILITADO POR AUTORIZACION DE JEANNETTE MARTINEZ 14/08/2024
+            /* $request1 = new Request();
             $request1->merge(['modulo_id' => 5]);
             $request1->request->set('modulo_id', 5);
             $request1->merge(['notaventa_id' => $despachosol->notaventa_id]);
@@ -1450,7 +1453,7 @@ class DespachoSolController extends Controller
                     'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
                     'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                 ]);
-            }
+            } */
     
             if($despachosol == null){
                 return response()->json([

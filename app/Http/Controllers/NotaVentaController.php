@@ -699,6 +699,13 @@ class NotaVentaController extends Controller
     {
         can('editar-notaventa');
         $data = NotaVenta::findOrFail($id);
+        if(isset($data->clientedesbloqueado)){
+            return redirect('notaventa')->with([
+                'error' => 1,
+                'mensaje' => "Registro no puede ser modificado, NV desbloqueada.",
+                'tipo_alert' => "alert-error"
+            ]);
+        }
         /*
         foreach($data->notaventadetalles as $detalle){
             dd($detalle->producto->acuerdotecnico);
@@ -811,6 +818,13 @@ class NotaVentaController extends Controller
         }
 
         $notaventa = NotaVenta::findOrFail($id);
+        if(isset($notaventa->clientedesbloqueado)){
+            return redirect('notaventa')->with([
+                'error' => 1,
+                'mensaje' => "Registro no puede ser modificado, NV desbloqueada.",
+                'tipo_alert' => "alert-error"
+            ]);
+        }
         $aux_oc_fileold = $notaventa->oc_file;
         if($notaventa->updated_at == $request->updated_at){
             $notaventa->updated_at = date("Y-m-d H:i:s");

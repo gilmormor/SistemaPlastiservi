@@ -784,7 +784,6 @@ $("#rut").blur(function(){
 					if(respuesta.cliente.length>0){
 						//console.log(respuesta.cliente);
 						//alert(respuesta[0]['vendedor_id']);
-						if(respuesta.cliente[0].descripcion==null){
 							$("#razonsocial").val(respuesta.cliente[0].razonsocial);
 							$("#telefono").val(respuesta.cliente[0].telefono);
 							$("#email").val(respuesta.cliente[0].email);
@@ -838,9 +837,11 @@ $("#rut").blur(function(){
 							activar_controles();
 	
 							$(".selectpicker").selectpicker('refresh');
+						if(respuesta.cliente[0].descripcion==null){
+
 						}else{
 							swal({
-								title: 'Cliente Bloqueado.',
+								title: 'Informacion',
 								text: respuesta.cliente[0].descripcion,
 								icon: 'warning',
 								buttons: {
@@ -849,8 +850,8 @@ $("#rut").blur(function(){
 							}).then((value) => {
 								if (value) {
 									//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-									$("#rut").val('');
-									$("#rut").focus();
+									/* $("#rut").val('');
+									$("#rut").focus(); */
 								}
 							});
 						}

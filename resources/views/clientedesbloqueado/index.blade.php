@@ -38,7 +38,7 @@ Cliente Desbloqueado
                             <th class="width30">ID</th>
                             <th class="width70">CodCli</th>
                             <th class="width70">RUT</th>
-                            <th class="width40">Cot</th>
+                            {{-- <th class="width40">Cot</th> --}}
                             <th class="width40">NV</th>
                             <th>Nombre</th>
                             <th>Obs</th>

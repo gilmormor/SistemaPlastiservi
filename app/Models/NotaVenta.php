@@ -173,6 +173,13 @@ class NotaVenta extends Model
     {
         return $this->hasMany(DespachoOrd::class,'notaventa_id');
     }
+
+    //RELACION UNO A UNO clientedesbloqueado
+    public function clientedesbloqueado()
+    {
+        return $this->hasOne(ClienteDesBloqueado::class,'notaventa_id');
+    }
+    
     
     public static function consulta($request,$aux_consulta){
         $user = Usuario::findOrFail(auth()->id());

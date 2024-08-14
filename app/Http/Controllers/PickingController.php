@@ -592,7 +592,8 @@ class PickingController extends Controller
             ];
         }
 
-        $request1 = new Request();
+        //BLOQUEO POR DEUDA: DESHABILITADO POR AUTORIZACION DE JEANNETTE MARTINEZ 14/08/2024
+        /* $request1 = new Request();
         $request1->merge(['modulo_id' => 6]);
         $request1->request->set('modulo_id', 6);
         $request1->merge(['notaventa_id' => $despachosol->notaventa_id]);
@@ -606,7 +607,7 @@ class PickingController extends Controller
                 "mensaje" => "Cliente Bloqueado: \n" . $clibloq["bloqueo"],
                 "tipo_alert" => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
             ];
-        }
+        } */
 
 
         $despachosol->updated_at = date("Y-m-d H:i:s");

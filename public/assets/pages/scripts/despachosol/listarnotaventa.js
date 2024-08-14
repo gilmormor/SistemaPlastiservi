@@ -126,9 +126,9 @@ $(document).ready(function () {
                 `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa SD" onclick="pdfSolDespPrev(${data.id},2)">
                     <i class='fa fa-fw fa-file-pdf-o'></i>                                    
                 </a>`;
-                aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
                 let aux_rutadespsol = $("#aux_ruta_creardespsol").val();
                 let nuevaaux_rutadespsol = aux_rutadespsol.replace("/0/", "/"+data.id+"/");
+                /* aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
                 aux_displaybtnac = ``;
                 aux_displaybtnbl = ``;
                 if(aux_clienteBloqueado == ""){
@@ -137,7 +137,11 @@ $(document).ready(function () {
                 }else{
                     aux_displaybtnac = `style="display:none;"`;
                     aux_displaybtnbl = ``;
-                }
+                } */
+                aux_clienteBloqueado = "";
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+    
                 /* aux_verbotonbloqueo = 1;
                 if(aux_clienteBloqueado == ""){
                     aux_bloqueo = 0;
