@@ -671,13 +671,14 @@ class PickingController extends Controller
                 'tipo_alert' => 'error'
             ];
         }
-        if(isset($despachosol->notaventa->cliente->clientebloqueado)){
+        //BLOQUEO POR DEUDA: DESHABILITADO POR AUTORIZACION DE JEANNETTE MARTINEZ 14/08/2024
+        /* if(isset($despachosol->notaventa->cliente->clientebloqueado)){
             return [
                 'error' => 1,
                 'mensaje' => 'Cliente bloqueado: ' . $despachosol->notaventa->cliente->clientebloqueado->descripcion,
                 'tipo_alert' => 'error'
             ];
-        }
+        } */
         /* $despachosol->updated_at = date("Y-m-d H:i:s");
         $despachosol->save(); */
         return [
