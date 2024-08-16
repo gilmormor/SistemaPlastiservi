@@ -118,19 +118,18 @@ $(document).ready(function () {
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
             $('td', row).eq(8).html(aux_text);
 
-            /* aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
-            aux_displaybtnac = ``;
-            aux_displaybtnbl = ``;
+            $('td', row).eq(13).attr('class','action-buttons');
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            aux_displaybtnac = `style="padding-left: 0px;"`;
+            aux_displaybtnbl = `style="padding-left: 0px;"`;
             if(aux_clienteBloqueado == ""){
-                aux_displaybtnac = ``;
-                aux_displaybtnbl = `style="display:none;"`;
+                aux_displaybtnac = `style="padding-left: 0px;"`;
+                aux_displaybtnbl = `style="display:none;padding-left: 0px;"`;
             }else{
-                aux_displaybtnac = `style="display:none;"`;
-                aux_displaybtnbl = ``;
-            } */
-            aux_clienteBloqueado = "";
-            aux_displaybtnac = ``;
-            aux_displaybtnbl = `style="display:none;"`;
+                aux_displaybtnac = `style="display:none;padding-left: 0px;"`;
+                aux_displaybtnbl = `style="padding-left: 0px;"`;
+            }
+            aux_displaybtnac = `style="padding-left: 0px;"`;
 
             /* if(data.clientebloqueado_descripcion != null){
                 aux_text = 
@@ -148,13 +147,10 @@ $(document).ready(function () {
                 </a>`;
             } */
             aux_text = 
-            `<a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
-                <i class="fa fa-fw fa-lock text-danger fa-lg"></i>
-            </a>
-            <a ${aux_displaybtnac} href="/despachosol/aproborddesp" class="btn-accion-tabla btn-sm tooltipsC btnaprobar botonac${data.id}" title="Aprobar Solicitud Despacho" item="${data.id}">
+            `<a ${aux_displaybtnac} href="/despachosol/aproborddesp" class="btn-accion-tabla btn-sm tooltipsC btnaprobar botonac${data.id}" title="Aprobar Solicitud Despacho" item="${data.id}">
                 <i class="fa fa-fw fa-save fa-lg"></i>
             </a>
-            <a href="despachosol" class="btn-accion-tabla tooltipsC btnEditar botonac${data.id}" title="Editar este registro" item="${data.id}">
+            <a href="despachosol" style="padding-left: 0px;" class="btn-accion-tabla tooltipsC btnEditar botonac${data.id}" title="Editar este registro" item="${data.id}">
                 <i class='fa fa-fw fa-pencil fa-lg'></i>
             </a>`;
             $('td', row).eq(13).addClass('updated_at');
@@ -162,8 +158,11 @@ $(document).ready(function () {
             $('td', row).eq(13).attr('id','updated_at'+data.id);
             $('td', row).eq(13).attr('name','updated_at'+data.id);
             aux_text = aux_text +
-            `<a href="despachosol" class="btn-accion-tabla btn-sm btnAnular tooltipsC" title="Anular Solicitud Despacho" data-toggle="tooltip" item="${data.id}">
+            `<a href="despachosol" style="padding-left: 0px;" class="btn-accion-tabla btn-sm btnAnular tooltipsC" title="Anular Solicitud Despacho" data-toggle="tooltip" item="${data.id}">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
+            </a>
+            <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
+                <i class="fa fa-fw fa-lock text-danger fa-lg"></i>
             </a>`;
             $('td', row).eq(14).html(aux_text);
             /* Santa Ester

@@ -128,7 +128,8 @@ $(document).ready(function () {
                 </a>`;
                 let aux_rutadespsol = $("#aux_ruta_creardespsol").val();
                 let nuevaaux_rutadespsol = aux_rutadespsol.replace("/0/", "/"+data.id+"/");
-                /* aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
+                $('td', row).eq(9).attr('class','action-buttons');
+                aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
                 aux_displaybtnac = ``;
                 aux_displaybtnbl = ``;
                 if(aux_clienteBloqueado == ""){
@@ -137,10 +138,10 @@ $(document).ready(function () {
                 }else{
                     aux_displaybtnac = `style="display:none;"`;
                     aux_displaybtnbl = ``;
-                } */
-                aux_clienteBloqueado = "";
+                }
+                //aux_clienteBloqueado = "";
                 aux_displaybtnac = ``;
-                aux_displaybtnbl = `style="display:none;"`;
+                //aux_displaybtnbl = `style="display:none;"`;
     
                 /* aux_verbotonbloqueo = 1;
                 if(aux_clienteBloqueado == ""){

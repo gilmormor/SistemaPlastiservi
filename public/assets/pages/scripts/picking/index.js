@@ -133,7 +133,8 @@ $(document).ready(function () {
                 aux_ruta_crearord = $("#aux_ruta_crearord").val();
                 aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
 
-                /* aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+                $('td', row).eq(13).attr('class','action-buttons');
+                aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
                 aux_displaybtnac = ``;
                 aux_displaybtnbl = ``;
                 if(aux_clienteBloqueado == ""){
@@ -142,11 +143,11 @@ $(document).ready(function () {
                 }else{
                     aux_displaybtnac = `style="display:none;"`;
                     aux_displaybtnbl = ``;
-                } */
+                }
 
-                aux_clienteBloqueado = "";
+                //aux_clienteBloqueado = "";
                 aux_displaybtnac = ``;
-                aux_displaybtnbl = `style="display:none;"`;
+                //aux_displaybtnbl = `style="display:none;"`;
     
                 /* if(aux_clienteBloqueado == ""){
                     aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC" title="Editar Picking">
