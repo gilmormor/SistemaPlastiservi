@@ -118,7 +118,7 @@ $(document).ready(function () {
                 "<i class='fa fa-fw " + data.icono + " tooltipsC' title='" + data.tipoentrega_nombre + "'></i>";
             $('td', row).eq(8).html(aux_text);
 
-            $('td', row).eq(13).attr('class','action-buttons');
+            $('td', row).eq(14).attr('class','action-buttons');
             aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
             aux_displaybtnac = `style="padding-left: 0px;"`;
             aux_displaybtnbl = `style="padding-left: 0px;"`;
