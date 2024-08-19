@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\DataCobranza;
 use App\Models\DespachoOrd;
 use App\Models\Dte;
 use App\Models\DteDet;
@@ -98,6 +99,23 @@ class DteFacturaDirAntiguaController extends Controller
                 'id' => 0,
                 'mensaje'=>'No es posible hacer Factura, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
                 'tipo_alert' => 'alert-error'
+            ]);
+        }
+        $request1 = new Request();
+        $request1->merge(['modulo_id' => 30]);
+        $request1->request->set('modulo_id', 30);
+        $request1->merge(['deldesbloqueo' => 1]);
+        $request1->request->set('deldesbloqueo', 1);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
+        if(!is_null($clibloq["bloqueo"])){
+            /* $request1 = new Request();
+            $request1->merge(['cliente_id' => $request->cliente_id]);
+            $request1->request->set('cliente_id', $request->cliente_id);
+            $respuesta = DataCobranza::llenartabla($request1); */
+
+            return redirect('dtefacturadir')->with([
+                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "tipo_alert" => "alert-error"
             ]);
         }
         $dte = new Dte();
