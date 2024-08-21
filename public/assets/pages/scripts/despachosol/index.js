@@ -122,12 +122,18 @@ $(document).ready(function () {
             aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
             aux_displaybtnac = `style="padding-left: 0px;"`;
             aux_displaybtnbl = `style="padding-left: 0px;"`;
+            aux_iconobloqueo = "fa-lock text-danger";
+            aux_mensajebloqueo = `Cliente Bloqueado: ${aux_clienteBloqueado}`;
             if(aux_clienteBloqueado == ""){
                 aux_displaybtnac = `style="padding-left: 0px;"`;
                 aux_displaybtnbl = `style="display:none;padding-left: 0px;"`;
             }else{
                 aux_displaybtnac = `style="display:none;padding-left: 0px;"`;
                 aux_displaybtnbl = `style="padding-left: 0px;"`;
+                if(data.modulo_id_orddesp  !== null){
+                    aux_iconobloqueo = "fa-unlock text-yellow";
+                    aux_mensajebloqueo = `Desbloqueado para Despacho`;
+                }
             }
             aux_displaybtnac = `style="padding-left: 0px;"`;
 
@@ -161,8 +167,8 @@ $(document).ready(function () {
             `<a href="despachosol" style="padding-left: 0px;" class="btn-accion-tabla btn-sm btnAnular tooltipsC" title="Anular Solicitud Despacho" data-toggle="tooltip" item="${data.id}">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>
-            <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
-                <i class="fa fa-fw fa-lock text-danger fa-lg"></i>
+            <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
+                <i class="fa fa-fw ${aux_iconobloqueo} fa-lg"></i>
             </a>`;
             $('td', row).eq(14).html(aux_text);
             /* Santa Ester

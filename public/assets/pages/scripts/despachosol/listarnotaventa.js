@@ -132,12 +132,19 @@ $(document).ready(function () {
                 aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
                 aux_displaybtnac = ``;
                 aux_displaybtnbl = ``;
+                aux_mensajebloqueo = `Cliente Bloqueado: ${aux_clienteBloqueado}`;
+                aux_iconobloqueo = "fa-lock text-danger";
                 if(aux_clienteBloqueado == ""){
                     aux_displaybtnac = ``;
                     aux_displaybtnbl = `style="display:none;"`;
                 }else{
                     aux_displaybtnac = `style="display:none;"`;
                     aux_displaybtnbl = ``;
+                    if(data.modulo_id_orddesp  !== null){
+                        aux_iconobloqueo = "fa-unlock text-yellow";
+                        aux_mensajebloqueo = `Desbloqueado para Despacho`;
+                    }
+    
                 }
                 //aux_clienteBloqueado = "";
                 aux_displaybtnac = ``;
@@ -166,9 +173,9 @@ $(document).ready(function () {
                         <i class="fa fa-fw ${data.icono}"></i>
                     </button>
                 </a>
-                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id},0)">
+                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id},0)">
                     <button type="button" class="btn btn-default btn-xs">
-                        <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw fa-lock text-danger"></i>
+                        <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw ${aux_iconobloqueo}"></i>
                     </button>
                 </a>`;
 

@@ -2506,6 +2506,7 @@ function consulta($request,$aux_sql,$orden){
         IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
         clientedesbloqueado.obs as clientedesbloqueado_obs,
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+        clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
@@ -2541,6 +2542,12 @@ function consulta($request,$aux_sql,$orden){
         ON modulo.id = clientedesbloqueadomodulo.modulo_id
         LEFT JOIN clientedesbloqueadopro
         ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+        
+        LEFT JOIN clientedesbloqueado as clientedesbloqueado_orddesp
+        ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
+        LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
+        ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
+
         WHERE
         categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
             FROM categoriaprodsuc 
@@ -3471,6 +3478,7 @@ function consultasoldesp($request){
             IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
             IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
             modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+            clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
             IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
@@ -3511,6 +3519,12 @@ function consultasoldesp($request){
             ON modulo.id = clientedesbloqueadomodulo.modulo_id
             LEFT JOIN clientedesbloqueadopro
             ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+
+            LEFT JOIN clientedesbloqueado as clientedesbloqueado_orddesp
+            ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
+            LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
+            ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
+
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -3592,6 +3606,7 @@ function consultaindex(){
     IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
     IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
     modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+    clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
     IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
     FROM despachosol INNER JOIN notaventa
     ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
@@ -3617,6 +3632,12 @@ function consultaindex(){
     ON modulo.id = clientedesbloqueadomodulo.modulo_id
     LEFT JOIN clientedesbloqueadopro
     ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+
+    LEFT JOIN clientedesbloqueado as clientedesbloqueado_orddesp
+    ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
+    LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
+    ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
+
     WHERE ISNULL(despachosol.aprorddesp)
     AND despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE ISNULL(despachosolanul.deleted_at))
     AND despachosol.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
