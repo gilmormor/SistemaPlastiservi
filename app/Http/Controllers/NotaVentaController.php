@@ -702,7 +702,7 @@ class NotaVentaController extends Controller
         if(isset($data->clientedesbloqueado)){
             return redirect('notaventa')->with([
                 'error' => 1,
-                'mensaje' => "Registro no puede ser modificado, NV desbloqueada.",
+                'mensaje' => "Registro no puede ser modificado, NV desbloqueada. Para poder modificar cobranza debe eliminar el desbloqueo a NV $id",
                 'tipo_alert' => "alert-error"
             ]);
         }
@@ -821,7 +821,7 @@ class NotaVentaController extends Controller
         if(isset($notaventa->clientedesbloqueado)){
             return redirect('notaventa')->with([
                 'error' => 1,
-                'mensaje' => "Registro no puede ser modificado, NV desbloqueada.",
+                'mensaje' => "Registro no puede ser modificado, NV desbloqueada. Para poder modificar cobranza debe eliminar el desbloqueo a NV $id.",
                 'tipo_alert' => "alert-error"
             ]);
         }

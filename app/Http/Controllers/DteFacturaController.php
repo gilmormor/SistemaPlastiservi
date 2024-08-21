@@ -31,6 +31,7 @@ use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovDet_BodSolDesp;
 use App\Models\InvMovModulo;
+use App\Models\Modulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\NotaVentaDetalle;
@@ -285,6 +286,58 @@ class DteFacturaController extends Controller
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = $request->usuario_id;
 
+        //VALIDAR BLOQUEO CLIENTE DESPUES DE QUE SE OBTIENE EL FOLIO
+        $arraynotaventa_id = [];
+        foreach ($request->notaventadetalle_id as $notaventadetalle_id) {
+            if($notaventadetalle_id != "null"){
+                $notaventadet = NotaVentaDetalle::findOrFail($notaventadetalle_id);
+                if (!in_array($notaventadet->notaventa_id, $arraynotaventa_id)) {
+                    $arraynotaventa_id[] = $notaventadet->notaventa_id;
+                }    
+            }
+        }
+        $request1 = new Request();
+        $request1->merge(['modulo_id' => 11]);
+        $request1->request->set('modulo_id', 11);
+        $request1->merge(['deldesbloqueo' => 1]);
+        $request1->request->set('deldesbloqueo', 1);
+        foreach ($arraynotaventa_id as $notaventa_id) {
+            $request1->merge(['notaventa_id' => $notaventa_id]);
+            $request1->request->set('notaventa_id', $notaventa_id);
+            $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
+            //NO PUEDO BLOQUEAR PORQUE YA TENGO EL FOLIO
+            /* if(!is_null($clibloq["bloqueo"])){   
+                return redirect('dtefactura')->with([
+                    "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                    "tipo_alert" => "alert-error"
+                ]);
+            } */
+        }
+        $modulo = Modulo::get();
+        $request1 = new Request();
+        $request1->merge(['modulo_id' => 29]);
+        $request1->request->set('modulo_id', 29);
+        $request1->merge(['deldesbloqueo' => 1]);
+        $request1->request->set('deldesbloqueo', 1);
+        $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
+        
+        //*******AQUI ELIMINO TODOS LOS DESBLOQUEOS HACIA ATRAS
+        $modulos = Modulo::where("stamodapl",1)->get();
+        foreach ($modulos as $modulo) {
+            $request1 = new Request();
+            $request1->merge(['modulo_id' => $modulo->id]);
+            $request1->request->set('modulo_id', $modulo->id);
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $request1->merge(['notaventa_id' => $notaventa_id]);
+            $request1->request->set('notaventa_id', $notaventa_id);
+            $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
+        }
+        //*******FIN: AQUI ELIMINO TODOS LOS DESBLOQUEOS HACIA ATRAS
+        //dd($modulos);
+
+        //HASTA AQUI LA VALIDACION 
+
         $respuesta = Dte::dteSolicitarFolio($dte);
         //dd($respuesta["aux_folio"]);
         /* $respuesta = [
@@ -293,48 +346,6 @@ class DteFacturaController extends Controller
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
-            //VALIDAR BLOQUEO CLIENTE DESPUES DE QUE SE OBTIENE EL FOLIO
-            $arraynotaventa_id = [];
-            foreach ($request->notaventadetalle_id as $notaventadetalle_id) {
-                if($notaventadetalle_id != "null"){
-                    $notaventadet = NotaVentaDetalle::findOrFail($notaventadetalle_id);
-                    if (!in_array($notaventadet->notaventa_id, $arraynotaventa_id)) {
-                        $arraynotaventa_id[] = $notaventadet->notaventa_id;
-                    }    
-                }
-            }
-            $request1 = new Request();
-            $request1->merge(['modulo_id' => 11]);
-            $request1->request->set('modulo_id', 11);
-            $request1->merge(['deldesbloqueo' => 1]);
-            $request1->request->set('deldesbloqueo', 1);
-            foreach ($arraynotaventa_id as $notaventa_id) {
-                $request1->merge(['notaventa_id' => $notaventa_id]);
-                $request1->request->set('notaventa_id', $notaventa_id);
-                $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
-                //NO PUEDO BLOQUEAR PORQUE YA TENGO EL FOLIO
-                /* if(!is_null($clibloq["bloqueo"])){   
-                    return redirect('dtefactura')->with([
-                        "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
-                        "tipo_alert" => "alert-error"
-                    ]);
-                } */
-            }
-            $request1 = new Request();
-            $request1->merge(['modulo_id' => 29]);
-            $request1->request->set('modulo_id', 29);
-            $request1->merge(['deldesbloqueo' => 1]);
-            $request1->request->set('deldesbloqueo', 1);
-            $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
-            /* if(!is_null($clibloq["bloqueo"])){   
-                return redirect('dtefactura')->with([
-                    "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
-                    "tipo_alert" => "alert-error"
-                ]);
-            } */
-
-            //HASTA AQUI LA VALIDACION 
-            
             $dte->fchemisgen = date("Y-m-d H:i:s");
             $dte->nrodocto = $respuesta["aux_folio"];
             $dteNew = Dte::create($dte->toArray());
