@@ -3939,3 +3939,8 @@ function fechaaaaammdd(fecha){
     // Retorna la fecha en el nuevo formato
     return `${anio}/${mes}/${dia}`;
 }
+
+function genpdfVPODPicking(id){ //GENERAR PDF Vista Previa Orden Despacho
+	$('#contpdf').attr('src', '/despachoord/crearord/2-'+id);
+	$("#myModalpdf").modal('show')
+}

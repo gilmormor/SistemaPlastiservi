@@ -282,8 +282,17 @@ H1.SaltoDePagina
 .width100{
     width: 100px !important;
 }
+.width120{
+    width: 120px !important;
+}
+.width130{
+    width: 130px !important;
+}
 .width200{
     width: 200px !important;
+}
+.width250{
+    width: 250px !important;
 }
 
 .headtarial td {

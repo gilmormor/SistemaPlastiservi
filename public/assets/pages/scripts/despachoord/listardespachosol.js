@@ -116,6 +116,9 @@ $(document).ready(function () {
                 aux_text =
                 `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa" onclick="genpdfVPOD(${data.id},1)" style="display: inline-block;">
                     <i class='fa fa-fw fa-file-pdf-o'></i>
+                </a>
+                <a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa Picking" onclick="genpdfVPODPicking(${data.id})" style="display: inline-block;">
+                    <i class='fa fa-fw fa-file-pdf-o'></i>
                 </a>`;
                 $('td', row).eq(10).html(aux_text);
 
