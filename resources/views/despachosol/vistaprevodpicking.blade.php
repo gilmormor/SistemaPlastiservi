@@ -199,7 +199,7 @@
 												if(array_key_exists($invbodegaproducto->id . "-" . $detalle->id, $arrayBodegasPicking)){
 													$aux_stock = $arrayBodegasPicking[$invbodegaproducto->id . "-" . $detalle->id]["stock"];
 													$aux_valueStock = $aux_stock == 0 ? "" : $aux_stock;
-													$aux_valueStockNum = $aux_stock == 0 ? "" : $aux_stock;
+													$aux_valueStockNum = $aux_stock == 0 ? 0 : $aux_stock;
 												}else{
 													//SI NO ESTA EN EL ARRAY DE $arrayBodegasPicking NO TIENE PICKING, ENTONCES LE ASIGNO 0
 													if($invbodegaproducto->invbodega->nomabre == "SolDe"){
