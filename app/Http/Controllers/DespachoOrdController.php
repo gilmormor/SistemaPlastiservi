@@ -163,8 +163,11 @@ class DespachoOrdController extends Controller
         $id = substr($id, strpos($id, '-') + 1);
         $data = DespachoSol::findOrFail($id);
         if(isset($data->notaventa->cliente->clientebloqueado->descripcion)){
+            if(isset($valores[0]) and $valores[0] == 2){
+                return 'Cliente Bloqueado: ' . $data->notaventa->cliente->clientebloqueado->descripcion . ". Razon Social: " . $data->notaventa->cliente->razonsocial;
+            }
             return redirect('despachoord')->with([
-                'mensaje'=>'Cliente bloqueado: ' . $data->notaventa->cliente->clientebloqueado->descripcion . ". Razon Social: " . $data->notaventa->cliente->razonsocial,
+                'mensaje'=>'Cliente Bloqueado: ' . $data->notaventa->cliente->clientebloqueado->descripcion . ". Razon Social: " . $data->notaventa->cliente->razonsocial,
                 'tipo_alert' => 'alert-error'
             ]);    
         }
@@ -181,7 +184,11 @@ class DespachoOrdController extends Controller
             $request->merge(['cliente_id' => $data->notaventa->cliente_id]);
             $request->request->set('cliente_id', $data->notaventa->cliente_id);
             $respuesta = DataCobranza::llenartabla($request);
-    
+
+            if(isset($valores[0]) and $valores[0] == 2){
+                return "Cliente Bloqueado: " . $clibloq["bloqueo"];
+            }
+
             return redirect('despachoord')->with([
                 "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
@@ -189,6 +196,10 @@ class DespachoOrdController extends Controller
         }
 
         if(isset($data->despachosolanul)){
+            if(isset($valores[0]) and $valores[0] == 2){
+                return 'Solicitud Despacho anulada: ' . $data->id;
+            }
+
             return redirect('despachoord')->with([
                 'mensaje'=>'Solicitud Despacho anulada: ' . $data->id,
                 'tipo_alert' => 'alert-error'
