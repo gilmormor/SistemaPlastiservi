@@ -113,15 +113,6 @@ $(document).ready(function () {
                 $('td', row).eq(9).attr('data-search',aux_subtotal);
                 $('td', row).eq(9).html(MASKLA(aux_subtotal, 0));
 
-                aux_text =
-                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa" onclick="genpdfVPOD(${data.id},1)" style="display: inline-block;">
-                    <i class='fa fa-fw fa-file-pdf-o'></i>
-                </a>
-                <a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa Picking" onclick="genpdfVPODPicking(${data.id})" style="display: inline-block;">
-                    <i class='fa fa-fw fa-file-pdf-o'></i>
-                </a>`;
-                $('td', row).eq(10).html(aux_text);
-
                 aux_ruta_crearord = $("#aux_ruta_crearord").val();
                 aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
                 aux_solenvord = $("#solenvord").val();
@@ -136,6 +127,18 @@ $(document).ready(function () {
                     aux_displaybtnac = `style="display:none;"`;
                     aux_displaybtnbl = ``;
                 }
+
+                aux_text =
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa" onclick="genpdfVPOD(${data.id},1)" style="display: inline-block;">
+                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                </a>`;
+                if(aux_displaybtnbl !==""){
+                    aux_text += 
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa Picking" onclick="genpdfVPODPicking(${data.id})" style="display: inline-block;">
+                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                    </a>`;    
+                }
+                $('td', row).eq(10).html(aux_text);
 
                 /* if(aux_clienteBloqueado == ""){
                     aux_text = `<a href="${aux_ruta + data.id}" target="_blank" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}">

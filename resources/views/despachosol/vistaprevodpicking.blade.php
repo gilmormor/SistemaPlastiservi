@@ -71,13 +71,15 @@
 				<th>OrdDesp</th>
 				<th>Saldo</th>
 				<th class="width130">Bodegas</th>
-				<th>Esp</th>
 				<th>Peso</th>
+				<th>Kg</th>
 			</tr>
 		</thead>
 		<tbody id="detalle_productos">
 			@if ($aux_sta==2 or $aux_sta==3)
-				<?php $aux_nfila = 0; $i = 0;
+				<?php 
+					$aux_nfila = 0; $i = 0;
+					$totalkilos = 0;
 				?>
 				@foreach($detalles as $detalle)
 					<?php 
@@ -103,7 +105,6 @@
 						}
 						$atributoProd = Producto::atributosProducto($detalle->notaventadetalle->producto_id);
 						$aux_producto_nombre = $atributoProd["nombre"];
-
 
 						if($detalle->cantsoldesp > $sumacantorddesp){
 							$aux_totalrecABodSolDesp = 0;
@@ -178,7 +179,9 @@
 						<td style="text-align:center;border-bottom: 1px solid #d3d3d3;">
 							<table class="table" id="tabla-bod" style="font-size:9px;table-layout: fixed;width: 130px;border-collapse: collapse;">
 								<tbody>
-									<?php $i=0; //dd($invbodegaproductos) ?>
+									<?php $i=0; //dd($invbodegaproductos) 
+										$totalkilosItem = 0;
+									?>
 									@foreach($invbodegaproductos as $invbodegaproducto)
 										@if ($invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)
 											<?php
@@ -192,9 +195,11 @@
 												//$existencia = $invbodegaproductoobj->consexistencia($request);
 												//$aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
 												$aux_valueStock = ""; 
+												$aux_valueStockNum = 0; 
 												if(array_key_exists($invbodegaproducto->id . "-" . $detalle->id, $arrayBodegasPicking)){
 													$aux_stock = $arrayBodegasPicking[$invbodegaproducto->id . "-" . $detalle->id]["stock"];
 													$aux_valueStock = $aux_stock == 0 ? "" : $aux_stock;
+													$aux_valueStockNum = $aux_stock == 0 ? "" : $aux_stock;
 												}else{
 													//SI NO ESTA EN EL ARRAY DE $arrayBodegasPicking NO TIENE PICKING, ENTONCES LE ASIGNO 0
 													if($invbodegaproducto->invbodega->nomabre == "SolDe"){
@@ -217,6 +222,8 @@
 												if($invbodegaproducto->invbodega->tipo != 1 and $detalle->notaventadetalle->producto->categoriaprod->stadespsinstock == 1){
 													$stadespsinstock=$detalle->notaventadetalle->producto->categoriaprod->stadespsinstock;
 												}
+												$totalkilosItem += $aux_valueStockNum * $peso;
+												$totalkilos += $aux_valueStockNum > 0 ? $totalkilosItem : 0;
 											?>
 											@if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
 												<tr style="background-color: white;">
@@ -247,18 +254,26 @@
 								</tbody>
 							</table>
 						</td>
-						<td style="text-align:right;border-bottom: 1px solid #d3d3d3;text-align:center">
-							{{$aux_espesor}}
+						<td style="border-bottom: 1px solid #d3d3d3;text-align:center">
+							{{number_format($peso, 3, ",", ".")}}
 						</td>
-						<td style="text-align:right;border-bottom: 1px solid #d3d3d3;text-align:center">
-							{{$peso}}
+						<td style="text-align:right;border-bottom: 1px solid #d3d3d3">
+							{{number_format($totalkilosItem, 2, ",", ".")}}
 						</td>
 					</tr>
-					<?php $i++;
+					<?php 
+							$i++;
 						}
 					?>
 				@endforeach
 			@endif
 		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="7" class="textright"><span><strong>TOTAL</strong></span></td>
+				<td class="textright"><span><strong>{{number_format($totalkilos, 2, ",", ".")}}</strong></span></td>
+			</tr>
+		</tfoot>
+
 	</table>
 </div>
