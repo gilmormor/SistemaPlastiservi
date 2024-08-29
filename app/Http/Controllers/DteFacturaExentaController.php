@@ -100,10 +100,10 @@ class DteFacturaExentaController extends Controller
         $request1->request->set('deldesbloqueo', 1);
         $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
         if(!is_null($clibloq["bloqueo"])){
-            $request1 = new Request();
+            /* $request1 = new Request();
             $request1->merge(['cliente_id' => $request->cliente_id]);
             $request1->request->set('cliente_id', $request->cliente_id);
-            $respuesta = DataCobranza::llenartabla($request1);
+            $respuesta = DataCobranza::llenartabla($request1); */
 
             return redirect('dtefacturaexenta')->with([
                 "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],

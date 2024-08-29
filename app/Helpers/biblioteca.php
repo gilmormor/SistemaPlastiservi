@@ -430,7 +430,7 @@ if (!function_exists('clienteBloqueado')) {
         if($cliente->plazopago_id == 1 and $aux_consultadeuda == 0){
             $staBloqueo ["bloqueo"]= "Plazo de pago CONTADO.\nSolo se permite hacer Cotizaciones.";
             return $staBloqueo;
-        }        
+        }
         $aux_respuestadatacobranza = [];
         if($aux_consultadeuda == 1){
             $aux_respuestadatacobranza = datacobranza($staBloqueo,$cliente,$request,1);

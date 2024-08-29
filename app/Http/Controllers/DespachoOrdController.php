@@ -180,10 +180,10 @@ class DespachoOrdController extends Controller
         //$cliente = Cliente::findOrFail($request->cliente_id);
         $clibloq = clienteBloqueado($data->notaventa->cliente_id,0,$request);
         if(!is_null($clibloq["bloqueo"])){
-            $request = new Request();
+            /* $request = new Request();
             $request->merge(['cliente_id' => $data->notaventa->cliente_id]);
             $request->request->set('cliente_id', $data->notaventa->cliente_id);
-            $respuesta = DataCobranza::llenartabla($request);
+            $respuesta = DataCobranza::llenartabla($request); */
 
             if(isset($valores[0]) and $valores[0] == 2){
                 return "Cliente Bloqueado: " . $clibloq["bloqueo"];
@@ -484,10 +484,10 @@ class DespachoOrdController extends Controller
             $request1->request->set('deldesbloqueo', 1);
             $clibloq = clienteBloqueado($despachosol->notaventa->cliente_id,0,$request1);
             if(!is_null($clibloq["bloqueo"])){
-                $request1 = new Request();
+                /* $request1 = new Request();
                 $request1->merge(['cliente_id' => $despachosol->notaventa->cliente_id]);
                 $request1->request->set('cliente_id', $despachosol->notaventa->cliente_id);
-                $respuesta = DataCobranza::llenartabla($request1);
+                $respuesta = DataCobranza::llenartabla($request1); */
     
                 return redirect('despachoord')->with([
                     "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
@@ -1149,10 +1149,10 @@ class DespachoOrdController extends Controller
             $request1->request->set('deldesbloqueo', 1);
             $bloqcli = clienteBloqueado($despachoord->notaventa->cliente_id,0,$request1);
             if(!is_null($bloqcli["bloqueo"])){
-                $request1 = new Request();
+                /* $request1 = new Request();
                 $request1->merge(['cliente_id' => $despachoord->notaventa->cliente_id]);
                 $request1->request->set('cliente_id', $despachoord->notaventa->cliente_id);
-                $respuesta = DataCobranza::llenartabla($request1);
+                $respuesta = DataCobranza::llenartabla($request1); */
 
                 return response()->json([
                     'error' => 1,

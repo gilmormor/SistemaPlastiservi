@@ -96,10 +96,10 @@ class DteNDFacturaController extends Controller
         $request1->request->set('deldesbloqueo', 1);
         $clibloq = clienteBloqueado($dtefac->cliente_id,0,$request1);
         if(!is_null($clibloq["bloqueo"])){
-            $request1 = new Request();
+            /* $request1 = new Request();
             $request1->merge(['cliente_id' => $dtefac->cliente_id]);
             $request1->request->set('cliente_id', $dtefac->cliente_id);
-            $respuesta = DataCobranza::llenartabla($request1);
+            $respuesta = DataCobranza::llenartabla($request1); */
             return redirect('dtendfactura')->with([
                 "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
