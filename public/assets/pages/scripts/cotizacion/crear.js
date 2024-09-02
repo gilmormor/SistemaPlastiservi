@@ -1,20 +1,5 @@
 $(document).ready(function () {
 	Biblioteca.validacionGeneral('form-general');
-	//$("#comuna_idD").html($("#comunax").val());
-	//$(".selectpicker").selectpicker('refresh');
-	//$(".select2").selectmenu('refresh', true);
-	/*
-	$('#tabla-data-clientes').DataTable({
-		'paging'      : true, 
-		'lengthChange': true,
-		'searching'   : true,
-		'ordering'    : true,
-		'info'        : true,
-		'autoWidth'   : false,
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-        }
-	});*/
 	$('.tablas').DataTable({
 		'paging'      : true, 
 		'lengthChange': true,
@@ -235,6 +220,156 @@ $(document).ready(function () {
 		});
 	});
 	//configTablaProd();
+
+	// Función para manejar la consulta y el click del botón
+	function procesarProducto(codigo) {
+		return new Promise((resolve) => {
+			// Asignar el valor de cada codigo a #producto_idM
+			$("#producto_idM").val(codigo);
+
+			// Ejecutar el evento blur y esperar a que termine el AJAX
+			$("#producto_idM").blur();
+
+			// Escuchar el fin de la consulta AJAX en blur
+			$(document).one('ajaxComplete', function(event, xhr, settings) {
+				if (settings.url === '/producto/buscarUnProducto') {
+					// Después de que la consulta finalice, resolver la promesa
+					resolve();
+				}
+			});
+		});
+	}
+
+	/* function llenatPantallaPrecios(){
+
+		$.each(productosSeleccionados, function(index, producto) {
+			console.log("ID: " + producto.producto_id);
+			console.log("Nombre: " + producto.nombre);
+			console.log("Clasificación: " + producto.cla_nombre);
+			console.log("Diámetro: " + producto.diametro);
+			console.log("Espesor: " + producto.espesor);
+			console.log("Longitud 1: " + producto.long1);
+			console.log("Longitud 2: " + producto.long);
+			console.log("Peso: " + producto.peso);
+			console.log("Tipo de Unión: " + producto.tipounion);
+			console.log("Precio: " + producto.precio);
+			console.log("Precio Neto: " + producto.precioneto);
+			console.log("Unidad de Medida Facturación ID: " + producto.unidadmedidafact_id);
+			console.log("Ancho: " + producto.ancho);
+			console.log("Diámetro Exterior (mm): " + producto.diamextmm);
+			console.log("Tipo de Producto: " + producto.tipoprod);
+			console.log("Stock en Kilos: " + producto.stakilos);
+			console.log("Categoría Producto ID: " + producto.categoriaprod_id);
+			console.log("Acuerdo Técnico ID: " + producto.acuerdotecnico_id);
+			console.log("Unidad de Medida ID: " + producto.at_unidadmedida_id);
+			console.log("-------------------------");
+		});
+
+
+		$("#nombreprodM").val(producto.nombre);
+		$("#cla_nombreM").val(producto.cla_nombre);
+		$("#diamextmmM").val(producto.diametro);
+		$("#espesorM").val(producto.espesor);
+		$("#espesor1M").val(producto.espesor);
+		$("#espesor1M").attr('valor',producto.espesor);
+
+		$("#longM").val(producto.long);
+		$("#largoM").val(producto.long);
+		$("#largoM").attr('valor',producto.long);	
+		}
+		aux_peso = producto.peso;
+		aux_peso = aux_peso.toFixed(3);
+		$("#pesoM").val(aux_peso);
+		$("#tipounionM").val(producto.tipounion);
+		$("#precioM").val(producto.precio);
+		$("#precioM").attr('valor',producto.precio);
+		$("#precioM").attr('preciokgini',producto.precio);
+		$("#precioxkilorealM").val(producto.precio);
+		$("#precioxkilorealM").attr('valor',producto.precio);
+		$("#precionetoM").val(producto.precioneto);
+		$("#precionetoM").attr('valor',producto.precioneto);
+		//alert(respuesta['precio']);
+
+		$("#unidadmedida_idM").val(producto.unidadmedidafact_id);
+		$("#anchoM").val('');
+		$("#anchoM").attr('valor','');
+		if(respuesta['at_ancho'] != null){
+			$("#anchoM").val(producto.at_ancho);
+			$("#anchoM").attr('valor',producto.at_ancho);	
+			$("#diamextmmM").val(producto.at_ancho);
+			$("#diamextmmM").attr('valor',producto.at_ancho);	
+		}
+		if(respuesta['at_largo'] != null){
+			$("#longM").val(respuesta['at_largo']);
+			$("#longM").attr('valor',respuesta['at_largo']);	
+			$("#largoM").val(respuesta['at_largo']);
+			$("#largoM").attr('valor',respuesta['at_largo']);
+		}
+		if(respuesta['at_espesor'] != null){
+			$("#espesorM").val(respuesta['at_espesor']);
+			$("#espesorM").attr('valor',respuesta['at_espesor']);	
+			$("#espesor1M").val(respuesta['at_espesor']);
+			$("#espesor1M").attr('valor',respuesta['at_espesor']);
+		}
+
+		$("#obsM").val('');
+		$("#tipoprodM").attr('valor',respuesta['tipoprod']);
+		$("#stakilos").val(respuesta['stakilos']);
+		$("#categoriaprod_id").val(respuesta['categoriaprod_id']);
+		$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id']);
+		$("#at_unidadmedida_idM").val(respuesta['at_unidadmedida_id']);
+		activarCajasPreciokgUni();
+		mostrardatosadUniMed(respuesta);
+		llenarselectbodega(respuesta);
+
+		llenarcampostockM(respuesta);
+
+		$(".selectpicker").selectpicker('refresh');					
+		//$("#cantM").change();
+		quitarverificar();
+		$("#producto_idM").keyup();
+		$("#cantM").focus();
+		totalizarItem(1);
+		if($("#precionetoM").attr("valor")>0){
+			$("#precionetoM").blur();
+		}		
+	} */
+	// Procesar cada código de manera secuencial
+	async function procesarCodigos(codigos) {
+		let array_producto_ids = [];
+		// Recorrer cada elemento con la clase .filaproducto_id
+		$('.filaproducto_id').each(function() {
+			// Extraer el contenido HTML del elemento y agregarlo al array
+			let producto_id = $(this).html().trim(); // .trim() elimina espacios en blanco
+			array_producto_ids.push(producto_id);
+		});
+	
+		for (const codigo of codigos) {
+			if (!array_producto_ids.includes(codigo)){
+				await procesarProducto(codigo);
+				// Ejecutar el evento click del botón #btnGuardarM después de que termine la consulta
+				aux_precio = $("#preciosm").val()
+				$("#cantM").val(1);
+				$("#precioM").val(aux_precio);
+				$("#precioxkilorealM").val($("#precioM").val())
+				totalizarItem(0);
+				/* $("#precionetoM").val(1000);
+				$("#cantM").keyup(); */
+				$("#btnGuardarM").click();	
+			}
+		}
+	}
+
+	// Ejecutar procesarCodigos cuando se haga click en el botón #aceptarmbpsm
+	$("#aceptarmbpsm").on('click', function() {
+		// Obtener los códigos al hacer clic en el botón
+		const $input = $('#producto_idsm');
+		let codigos = $input.val() ? $input.val().split(',') : [];
+
+		// Iniciar el procesamiento de los códigos
+		procesarCodigos(codigos);
+	});
+
 });
 
 //CAPTURE DE PANTALLA Y GENERAR PDF
@@ -1722,3 +1857,118 @@ function arrayAcuerdoTecnico(){
 	}
 	return miArray;
 }
+
+//AL HACER CLIC EN BOTON INCLUIR NUEVO PRODUCTO. COTIZACION NOTA DE VENTA ETC
+/* $("#botonNewProdLote").click(function(event)
+{
+	$("#selecmultprod").val(true);
+    $(this).val("");
+    $(".input-sm").val('');
+    data = datosproducto();
+    $('#tabla-data-productos-selecmult').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+    $('#myModalBuscarProd').modal('show');
+	
+}); */
+$("#botonNewProdLote").click(function(event){
+    //$(this).val("");
+    $(".input-sm").val('');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+	let array_producto_ids = [];
+
+    // Recorrer cada elemento con la clase .filaproducto_id
+    $('.filaproducto_id').each(function() {
+        // Extraer el contenido HTML del elemento y agregarlo al array
+        let producto_id = $(this).html().trim(); // .trim() elimina espacios en blanco
+        array_producto_ids.push(producto_id);
+    });
+
+    // Convertir el array en un string separado por comas
+    let producto_ids = array_producto_ids.join(',');
+
+    // Aquí puedes usar la variable producto_ids como desees
+    // Por ejemplo, asignarlo a un input hidden
+    $('#producto_idsm').val(producto_ids);
+
+	//RECORRO LOS REGISTROS DE LA PANTALLA DE PRODUCTOS POR LOTE LO INSERTO EN UN ARRAY array_tdproducto_id
+	var array_tdproducto_id = [];
+	$('.tdproducto_id').each(function() {
+		// Tomamos el valor del atributo que necesites, por ejemplo "tdproducto_id"
+		var valor = $(this).attr('tdproducto_id');
+	
+		// Lo insertamos en el array
+		array_tdproducto_id.push(valor);
+	});
+	//LUEGO RECORRO EL array_tdproducto_id BUSCO SI ESTAN EN EL ARRAY array_producto_ids
+	//PARA MARCAR O DESMARCAR EN PANTALLA DE BUSQUEDA DE PRODUCTOS POR LOTE
+	$.each(array_tdproducto_id, function(index, producto_id) {
+		// Construimos el nombre del checkbox
+		var checkbox_name = 'llenarProd_id' + producto_id;
+	
+		// Comprobamos si el producto_id existe en array_tdproducto_id
+		if (array_producto_ids.includes(producto_id)) {
+			// Si existe, marcamos el checkbox como true
+			$('#' + checkbox_name).prop('checked', true);
+		} else {
+			// Si no existe, marcamos el checkbox como false
+			$('#' + checkbox_name).prop('checked', false);
+		}
+	});
+
+    $("#myModalBuscarProdSelectMult").modal('show');
+
+});
+
+
+/* $("#aceptarmbpsm").click(function(event){
+	let array_producto_ids = [];
+    // Recorrer cada elemento con la clase .filaproducto_id
+    $('.filaproducto_id').each(function() {
+        // Extraer el contenido HTML del elemento y agregarlo al array
+        let producto_id = $(this).html().trim(); // .trim() elimina espacios en blanco
+        array_producto_ids.push(producto_id);
+    });
+
+	const $input = $('#producto_idsm');
+	let codigos = $input.val() ? $input.val().split(',') : [];
+
+	console.log(array_producto_ids);
+	console.log(codigos);
+
+	// Recorrer el array codigos
+    codigos.forEach(function(codigo) {
+		if (array_producto_ids.includes(codigo)){
+			console.log("Código encontrado en array_producto_ids:", codigo);
+		}else{
+			console.log("Código no encontrado, se asignará a #producto_idM:", codigo);
+			// Asignar el valor de cada codigo a #producto_idM
+			//$("#producto_idM").val(codigo);
+
+			// Ejecutar el evento blur después de asignar el valor
+			//$("#producto_idM").blur();
+		}
+    });
+
+}); */

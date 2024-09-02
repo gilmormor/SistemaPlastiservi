@@ -3944,3 +3944,85 @@ function genpdfVPODPicking(id){ //GENERAR PDF Vista Previa Orden Despacho
 	$('#contpdf').attr('src', '/despachoord/crearord/2-'+id);
 	$("#myModalpdf").modal('show')
 }
+
+function llenarlistaprodSelecMult(i,producto_id,checkbox){
+	const $input = $('#producto_idsm');
+	let codigos = $input.val() ? $input.val().split(',') : [];
+
+	if (checkbox.checked) {
+		// Añadir el código si no está ya en la lista
+		if ($.inArray(String(producto_id), codigos) === -1) {
+			codigos.push(producto_id);
+			// Ordenar los códigos en orden numérico ascendente
+			codigos.sort((a, b) => a - b);
+
+			// Agregar el producto a la matriz
+
+			aux_anchoM = '';
+			$("#anchoM").attr('valor','');
+			if($("#producto_idbm" + producto_id).attr("at_ancho")  != null){
+				aux_anchoM = $("#producto_idbm" + producto_id).attr("at_ancho");
+			}
+	
+			
+            productosSeleccionados.push({
+                producto_id: producto_id,
+                nombre: $("#producto_idbm" + producto_id).attr("nombre"),
+                cla_nombre: $("#producto_idbm" + producto_id).attr("cla_nombre"),
+                diametro: $("#producto_idbm" + producto_id).attr("diametro"),
+				espesor: $("#producto_idbm" + producto_id).attr("espesor"),
+				long1: $("#producto_idbm" + producto_id).attr("long1"),
+				long: $("#producto_idbm" + producto_id).attr("long"),
+				peso: $("#producto_idbm" + producto_id).attr("peso"),
+				tipounion: $("#producto_idbm" + producto_id).attr("tipounion"),
+				precio: $("#producto_idbm" + producto_id).attr("precio"),
+				precioneto: $("#producto_idbm" + producto_id).attr("precioneto"),
+				unidadmedidafact_id: $("#producto_idbm" + producto_id).attr("unidadmedidafact_id"),
+				ancho: $("#producto_idbm" + producto_id).attr("long"),
+				diamextmm: $("#producto_idbm" + producto_id).attr("diametro"),
+				tipoprod: $("#producto_idbm" + producto_id).attr("tipoprod"),
+				stakilos: $("#producto_idbm" + producto_id).attr("stakilos"),
+				categoriaprod_id: $("#producto_idbm" + producto_id).attr("categoriaprod_id"),
+				acuerdotecnico_id: $("#producto_idbm" + producto_id).attr("acuerdotecnico_id"),
+				at_unidadmedida_id: $("#producto_idbm" + producto_id).attr("at_unidadmedida_id"),
+				at_ancho: aux_anchoM,
+				diamextmm: aux_anchoM
+				// Otros datos pueden ser añadidos aquí
+            });
+		}
+	} else {
+		// Eliminar el código si está en la lista
+		codigos = $.grep(codigos, function(value) {
+			return value != String(producto_id);
+		});
+		// Eliminar el producto de la matriz
+        productosSeleccionados = $.grep(productosSeleccionados, function(producto) {
+            return producto.producto_id != producto_id;
+        });
+	}
+	// Actualizar el input con la lista actualizada de códigos
+	$input.val(codigos.join(','));
+
+	if(codigos.length === 0){
+		$('#aceptarmbpsm').prop('disabled', true);  // Deshabilitar botón
+	}else{
+		$('#aceptarmbpsm').prop('disabled', false);  // Habilitar botón
+	}
+	console.log(productosSeleccionados);
+}
+
+
+function obtenerValoresSelect(aux_nombreselect){
+	var valores = $('#' + aux_nombreselect + ' option').map(function() {
+		return $(this).val();
+	}).get();
+	return valores;
+}
+
+
+function buscarEnArray(id,cadena) {
+    const array_id = cadena.split(',');
+
+    // Verificar si el producto_id está en el array de productos
+    return $.inArray(String(id,cadena), array_id) !== -1;
+}

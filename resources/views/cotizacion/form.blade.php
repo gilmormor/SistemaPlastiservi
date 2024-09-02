@@ -260,6 +260,11 @@
                     <i class="fa fa-fw fa-plus-circle"></i> Nuevo Producto
                 </a>
             </div>                    
+            <div class="box-tools pull-right">
+                <a id="botonNewProdLote" name="botonNewProdLote" class="btn btn-block btn-success btn-sm">
+                    <i class="fa fa-fw fa-plus-circle"></i> Lote
+                </a>
+            </div>    
         @endif
         <div class="box-body">
             <div class="table-responsive">
@@ -564,6 +569,7 @@
 @else
     @include('generales.buscarclientebd')
     @include('generales.buscarproductobd')
+    @include('generales.buscarproductobdselectmult')
 @endif
 @include('generales.acuerdotecnico')
 @include('generales.modalpdf')
