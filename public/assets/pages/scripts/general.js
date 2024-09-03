@@ -4008,7 +4008,6 @@ function llenarlistaprodSelecMult(i,producto_id,checkbox){
 	}else{
 		$('#aceptarmbpsm').prop('disabled', false);  // Habilitar botón
 	}
-	console.log(productosSeleccionados);
 }
 
 

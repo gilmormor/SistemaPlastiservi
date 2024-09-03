@@ -236,30 +236,26 @@ function configTablaProdSelectMult(){
             }else{
                 $(row).attr('long', data.long);
             }
-
             aux_peso = data.peso;
             aux_peso = aux_peso.toFixed(3);
-            $(row).attr('peso', data.aux_peso);
+            $(row).attr('peso', aux_peso);
             $(row).attr('tipounion', data.tipounion);
             $(row).attr('precio', data.precio);
             $(row).attr('precioneto', data.precioneto);
 
 
             $(row).attr('unidadmedidafact_id', data.unidadmedidafact_id);
+            $(row).attr('at_ancho', "");
             if(data.at_ancho != null){
                 $(row).attr('at_ancho', data.at_ancho);
             }
+            $(row).attr('at_largo', "");
             if(data.at_largo != null){
-                $(row).attr('longM', data.at_largo);
-                $(row).attr('largoM', data.at_largo);
+                $(row).attr('at_largo', data.at_largo);
             }
-            if(data.at_largo != null){
-                $(row).attr('longM', data.at_largo);
-                $(row).attr('largoM', data.at_largo);
-            }
+            $(row).attr('at_espesor', "");
             if(data.at_espesor != null){
-                $(row).attr('espesor', data.at_espesor);
-                $(row).attr('espesor1', data.at_espesor);
+                $(row).attr('at_espesor', data.at_espesor);
             }
             $(row).attr('tipoprod', data.tipoprod);
             $(row).attr('stakilos', data.stakilos);
