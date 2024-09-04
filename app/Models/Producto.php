@@ -233,7 +233,8 @@ class Producto extends Model
                 acuerdotecnico.id as acuerdotecnico_id,at_ancho,at_largo,at_espesor,
                 at_color_id,at_formatofilm,at_complementonomprod,at_materiaprima_id,
                 categoriaprod.nombre as categoriaprod_nombre,
-                at_usoprevisto,at_impresoobs,at_tiposelloobs,at_feunidxpaqobs,producto.categoriaprod_id,categoriaprod.stakilos
+                at_usoprevisto,at_impresoobs,at_tiposelloobs,at_feunidxpaqobs,producto.categoriaprod_id,categoriaprod.stakilos,
+                categoriaprod.unidadmedidafact_id
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod

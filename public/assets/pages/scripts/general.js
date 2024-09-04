@@ -3866,7 +3866,6 @@ function imgToBase64(src, callback) {
         img.src = src;
     }
     return img;
-    console.log(img);
 }
 
 // Mapa de caracteres acentuados a no acentuados
@@ -4008,7 +4007,6 @@ function llenarlistaprodSelecMult(i,producto_id,checkbox){
 	}else{
 		$('#aceptarmbpsm').prop('disabled', false);  // Habilitar botón
 	}
-	console.log(productosSeleccionados);
 }
 
 
@@ -4025,4 +4023,18 @@ function buscarEnArray(id,cadena) {
 
     // Verificar si el producto_id está en el array de productos
     return $.inArray(String(id,cadena), array_id) !== -1;
+}
+
+function verificarloteClase(aux_clase){
+	aux_valido = true;
+	$(aux_clase).each(function() {
+		if($(this).prop('name')){
+			//alert($(this).prop('name'));
+			if(validacion($(this).prop('name'),$(this).attr('tipoval')) == false){
+				aux_valido = false;
+			}
+		}
+	});
+	return aux_valido;
+
 }

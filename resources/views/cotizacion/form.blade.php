@@ -575,8 +575,8 @@
 @include('generales.modalpdf')
 
     <!-- Modal -->
-    <!-- FORMULARIO DE CLIENTE TEMPORAL CON TODOS LOS CAMPOS 
-    <div class="modal fade" id="myModalClienteTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    {{-- FORMULARIO DE CLIENTE TEMPORAL CON TODOS LOS CAMPOS  --}}
+    {{-- <div class="modal fade" id="myModalClienteTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
         
             <div class="modal-content">
@@ -769,9 +769,8 @@
             </div>
             
         </div>
-    </div>
-    -->
-    <!-- NUEVO FORMULARIO DE CLIENTE TEMPORAL SOLO ALGUNOS DATOS SOLICITADO POR CGORIGOITIA 27/04/2023 -->
+    </div> --}}
+    {{-- NUEVO FORMULARIO DE CLIENTE TEMPORAL SOLO ALGUNOS DATOS SOLICITADO POR CGORIGOITIA 27/04/2023 --}}
     <div class="modal fade" id="myModalClienteTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
         

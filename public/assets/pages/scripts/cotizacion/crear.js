@@ -240,100 +240,7 @@ $(document).ready(function () {
 		});
 	}
 
-	/* function llenatPantallaPrecios(){
 
-		$.each(productosSeleccionados, function(index, producto) {
-			console.log("ID: " + producto.producto_id);
-			console.log("Nombre: " + producto.nombre);
-			console.log("Clasificación: " + producto.cla_nombre);
-			console.log("Diámetro: " + producto.diametro);
-			console.log("Espesor: " + producto.espesor);
-			console.log("Longitud 1: " + producto.long1);
-			console.log("Longitud 2: " + producto.long);
-			console.log("Peso: " + producto.peso);
-			console.log("Tipo de Unión: " + producto.tipounion);
-			console.log("Precio: " + producto.precio);
-			console.log("Precio Neto: " + producto.precioneto);
-			console.log("Unidad de Medida Facturación ID: " + producto.unidadmedidafact_id);
-			console.log("Ancho: " + producto.ancho);
-			console.log("Diámetro Exterior (mm): " + producto.diamextmm);
-			console.log("Tipo de Producto: " + producto.tipoprod);
-			console.log("Stock en Kilos: " + producto.stakilos);
-			console.log("Categoría Producto ID: " + producto.categoriaprod_id);
-			console.log("Acuerdo Técnico ID: " + producto.acuerdotecnico_id);
-			console.log("Unidad de Medida ID: " + producto.at_unidadmedida_id);
-			console.log("-------------------------");
-		});
-
-
-		$("#nombreprodM").val(producto.nombre);
-		$("#cla_nombreM").val(producto.cla_nombre);
-		$("#diamextmmM").val(producto.diametro);
-		$("#espesorM").val(producto.espesor);
-		$("#espesor1M").val(producto.espesor);
-		$("#espesor1M").attr('valor',producto.espesor);
-
-		$("#longM").val(producto.long);
-		$("#largoM").val(producto.long);
-		$("#largoM").attr('valor',producto.long);	
-		}
-		aux_peso = producto.peso;
-		aux_peso = aux_peso.toFixed(3);
-		$("#pesoM").val(aux_peso);
-		$("#tipounionM").val(producto.tipounion);
-		$("#precioM").val(producto.precio);
-		$("#precioM").attr('valor',producto.precio);
-		$("#precioM").attr('preciokgini',producto.precio);
-		$("#precioxkilorealM").val(producto.precio);
-		$("#precioxkilorealM").attr('valor',producto.precio);
-		$("#precionetoM").val(producto.precioneto);
-		$("#precionetoM").attr('valor',producto.precioneto);
-		//alert(respuesta['precio']);
-
-		$("#unidadmedida_idM").val(producto.unidadmedidafact_id);
-		$("#anchoM").val('');
-		$("#anchoM").attr('valor','');
-		if(respuesta['at_ancho'] != null){
-			$("#anchoM").val(producto.at_ancho);
-			$("#anchoM").attr('valor',producto.at_ancho);	
-			$("#diamextmmM").val(producto.at_ancho);
-			$("#diamextmmM").attr('valor',producto.at_ancho);	
-		}
-		if(respuesta['at_largo'] != null){
-			$("#longM").val(respuesta['at_largo']);
-			$("#longM").attr('valor',respuesta['at_largo']);	
-			$("#largoM").val(respuesta['at_largo']);
-			$("#largoM").attr('valor',respuesta['at_largo']);
-		}
-		if(respuesta['at_espesor'] != null){
-			$("#espesorM").val(respuesta['at_espesor']);
-			$("#espesorM").attr('valor',respuesta['at_espesor']);	
-			$("#espesor1M").val(respuesta['at_espesor']);
-			$("#espesor1M").attr('valor',respuesta['at_espesor']);
-		}
-
-		$("#obsM").val('');
-		$("#tipoprodM").attr('valor',respuesta['tipoprod']);
-		$("#stakilos").val(respuesta['stakilos']);
-		$("#categoriaprod_id").val(respuesta['categoriaprod_id']);
-		$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id']);
-		$("#at_unidadmedida_idM").val(respuesta['at_unidadmedida_id']);
-		activarCajasPreciokgUni();
-		mostrardatosadUniMed(respuesta);
-		llenarselectbodega(respuesta);
-
-		llenarcampostockM(respuesta);
-
-		$(".selectpicker").selectpicker('refresh');					
-		//$("#cantM").change();
-		quitarverificar();
-		$("#producto_idM").keyup();
-		$("#cantM").focus();
-		totalizarItem(1);
-		if($("#precionetoM").attr("valor")>0){
-			$("#precionetoM").blur();
-		}		
-	} */
 	// Procesar cada código de manera secuencial
 	async function procesarCodigos(codigos) {
 		let array_producto_ids = [];
@@ -346,7 +253,8 @@ $(document).ready(function () {
 	
 		for (const codigo of codigos) {
 			if (!array_producto_ids.includes(codigo)){
-				await procesarProducto(codigo);
+				//await procesarProducto(codigo);
+				llenatPantallaPrecios();
 				// Ejecutar el evento click del botón #btnGuardarM después de que termine la consulta
 				aux_precio = $("#preciosm").val()
 				$("#cantM").val(1);
@@ -361,16 +269,142 @@ $(document).ready(function () {
 	}
 
 	// Ejecutar procesarCodigos cuando se haga click en el botón #aceptarmbpsm
-	$("#aceptarmbpsm").on('click', function() {
+	$("#aceptarmbpsm").on('click', function(event) {
+		event.preventDefault();
+
+		showLoadingScreen();
 		// Obtener los códigos al hacer clic en el botón
 		const $input = $('#producto_idsm');
 		let codigos = $input.val() ? $input.val().split(',') : [];
 
 		// Iniciar el procesamiento de los códigos
-		procesarCodigos(codigos);
+		//procesarCodigos(codigos);
+		if(verificarloteClase(".requeridopantprodselmult"))
+		{
+			$("#myModalBuscarProdSelectMult").modal('hide');
+			llenatPantallaPrecios();
+		}else{
+			alertify.error("Falta incluir informacion");
+		}
+		hideLoadingScreen();
+		
 	});
 
 });
+
+function llenatPantallaPrecios(){
+	//console.log(productosSeleccionados);
+
+	let array_producto_ids = [];
+	// Recorrer cada elemento con la clase .filaproducto_id
+	$('.filaproducto_id').each(function() {
+		// Extraer el contenido HTML del elemento y agregarlo al array
+		let producto_id = $(this).html().trim(); // .trim() elimina espacios en blanco
+		array_producto_ids.push(producto_id);
+	});
+	$.each(productosSeleccionados, function(index, producto) {
+		if (!array_producto_ids.includes(producto.producto_id)){
+			//console.log(producto);
+			limpiarInputOT();
+			//quitarverificar();
+			$("#aux_sta").val('1');
+			//$("#myModal").modal('show');
+	
+			$("#producto_idM").val(producto.producto_id);
+			$("#codintprodM").val(producto.codintprod);
+			$("#nombreprodM").val(producto.nombre);
+			$("#cla_nombreM").val(producto.cla_nombre);
+			$("#diamextmmM").val(producto.diametro);
+			$("#espesorM").val(producto.espesor);
+			$("#espesor1M").val(producto.espesor);
+			$("#espesor1M").attr('valor',producto.espesor);
+		
+			$("#longM").val(producto.long);
+			if(producto.long == 0){
+				$("#largoM").val('');
+				$("#largoM").attr('valor','');
+			}else{
+				$("#largoM").val(producto.long);
+				$("#largoM").attr('valor',producto.long);	
+			}
+		
+			$("#pesoM").val(producto.peso);
+		
+			$("#tipounionM").val(producto.tipounion);
+			$("#precioM").val(producto.precio);
+			$("#precioM").attr('valor',producto.precio);
+			$("#precioM").attr('preciokgini',producto.precio);
+			$("#precioxkilorealM").val(producto.precio);
+			$("#precioxkilorealM").attr('valor',producto.precio);
+			$("#precionetoM").val(producto.precioneto);
+			$("#precionetoM").attr('valor',producto.precioneto);
+			//alert(respuesta['precio']);
+		
+			$("#unidadmedida_idM").val(producto.unidadmedidafact_id);
+		
+			$("#anchoM").val('');
+			$("#anchoM").attr('valor','');	
+			if(producto.at_ancho != null){
+				$("#anchoM").val(producto.at_ancho);
+				$("#anchoM").attr('valor',producto.at_ancho);	
+				$("#diamextmmM").val(producto.at_ancho);
+				$("#diamextmmM").attr('valor',producto.at_ancho);	
+			}
+			if(producto.at_largo != null){
+				$("#longM").val(producto.at_largo);
+				$("#longM").attr('valor',producto.at_largo);	
+				$("#largoM").val(producto.at_largo);
+				$("#largoM").attr('valor',producto.at_largo);
+			}
+			if(producto.at_espesor != null){
+				$("#espesorM").val(producto.at_espesor);
+				$("#espesorM").attr('valor',producto.at_espesor);	
+				$("#espesor1M").val(producto.at_espesor);
+				$("#espesor1M").attr('valor',producto.at_espesor);
+			}
+			
+			$("#obsM").val('');
+			$("#tipoprodM").attr('valor',producto.tipoprod);
+			$("#stakilos").val(producto.stakilos);
+			$("#categoriaprod_id").val(producto.categoriaprod_id);
+			$("#acuerdotecnico_id").val(producto.acuerdotecnico_id);
+			$("#at_unidadmedida_idM").val(producto.at_unidadmedida_id);
+	
+			//$(".selectpicker").selectpicker('refresh');
+	
+			//totalizarItem(1);
+			$("#cantM").val(1);
+			aux_precio = $("#preciosm").val()
+			if($("#precionetoM").attr("valor")>0){
+				$("#precionetoM").blur();
+			}
+			if($("#tipoprecio").val() == "1"){
+				$("#precionetoM").val(aux_precio);
+				$("#precionetoM").blur();
+			}else{
+				$("#precioM").val(aux_precio);
+				$("#precioxkilorealM").val($("#precioM").val())
+				$("#precioM").blur();
+			}
+			totalizarItem(0);
+			/* $("#precionetoM").val(1000);
+			$("#cantM").keyup(); */
+			if(verificar())
+			{
+				insertarModificar();
+			}else{
+				alertify.error("Falta incluir informacion");
+			}
+			//$("#btnGuardarM").click();	
+		}
+		
+
+		
+	});
+
+
+	
+}
 
 //CAPTURE DE PANTALLA Y GENERAR PDF
 /*
@@ -1491,66 +1525,6 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 
 		var ruta = '/acuerdotecnico/buscaratxcampos';
 		ajaxRequest(data,ruta,'buscaratxcampos');
-		return 0;
-		$.ajax({
-			url: '/acuerdotecnico/buscaratxcampos',
-			type: 'POST',
-			data: data,
-			success: function (respuesta) {
-				if(respuesta.length > 0){
-					/*
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: 'Something went wrong!',
-						footer: '<a href="">Why do I have this issue?</a>'
-					  })*/
-					swal({
-						title: 'Acuerdo técnico ya existe',
-						text: 'Producto Cod: ' + respuesta[0].producto_id + ', ' + respuesta[0].producto_nombre,
-						icon: 'warning',
-						buttons: {
-							cancel: "Cerrar",
-							//confirm: "Ver AT"
-						},
-						}).then((value) => {
-							/*
-							fila = $(this).closest("tr");
-							form = $(this);
-							id = fila.find('td:eq(0)').text();
-							//alert(id);
-							var data = {
-								_token  : $('input[name=_token]').val(),
-								id      : id
-							};
-							if (value) {
-								ajaxRequest(data,form.attr('href')+'/'+id+'/anular','anular',form);
-							}*/
-						});
-				}else{
-
-				}
-				//console.log(respuesta);
-				/*
-				if(respuesta['cont']>0){
-					mostrardatosadUniMed(respuesta);
-					if($("#invbodega_idM")){
-						llenarselectbodega(respuesta);
-						//console.log(respuesta);
-						$("#invbodega_idM").val($("#invbodega_idTD"+i).val());
-						$("#invbodega_idM").selectpicker('refresh');
-						$("#stakilos").val(respuesta['stakilos']);
-					}
-				}*/
-			}
-		});
-		
-
-		$("#acuerdotecnico" + aux_nfila).val(guardado); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
-		$("#myModalAcuerdoTecnico").modal('hide');
-		//alert($("#acuerdotecnico" + i).val());
-		$("#icoat" + aux_nfila).attr('class','fa fa-cog text-aqua');
-		//console.log(guardado);
 	
 	}else{
 		alertify.error("Falta incluir informacion");
@@ -1883,6 +1857,7 @@ function arrayAcuerdoTecnico(){
 }); */
 $("#botonNewProdLote").click(function(event){
     //$(this).val("");
+	productosSeleccionados = [];
     $(".input-sm").val('');
     aux_id = $("#producto_idPxP").val();
     if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){

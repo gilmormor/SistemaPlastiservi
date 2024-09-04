@@ -36,6 +36,16 @@
                                         <table id="tabla-data-productos-selectmult" class="table-hover display" style="width:100%">
                                             <thead>
                                                 <tr>
+                                                    <th id="thselectAll" name="thselectAll" class="width100" style="text-align:center">
+                                                        <div class="checkbox" style="padding-top: 0px;" title="Marcar todo">
+                                                            <div>
+                                                                <label style="font-size: 1.0em">
+                                                                    <input type="checkbox" class="checkllenarCantSol" id="SelecAll" name="SelecAll">
+                                                                    <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </th>
                                                     <th>ID</th>
                                                     <th>Nombre</th>
                                                     <th>Clase<br>Sello</th>
@@ -47,22 +57,13 @@
                                                     <th style="text-align:right">Precio</th>
                                                     <th class="ocultar">tipoprod</th>
                                                     <th class="ocultar">acuerdotecnico_id</th>
-                                                    <th id="thselectAll" name="thselectAll" class="width100" style="text-align:center">
-                                                        <div class="checkbox" style="padding-top: 0px;" title="Marcar todo">
-                                                            <div>
-                                                                <label style="font-size: 1.0em">
-                                                                    <input type="checkbox" class="checkllenarCantSol" id="SelecAll" name="SelecAll">
-                                                                    <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             </tbody>
                                             <tfoot>
                                                 <tr>
+                                                    <th>check</th>
                                                     <th>ID</th>
                                                     <th>Nombre</th>
                                                     <th>Clase</th>
@@ -74,35 +75,39 @@
                                                     <th>Prec</th>
                                                     <th class="ocultar">tipoprod</th>
                                                     <th class="ocultar">acuerdotecnico_id</th>
-                                                    <th class="ocultar">check</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
                                     </div>
-                                    <div class="col-xs-12" id="divprodselecsm" name="divprodselecsm">
-                                        <div class="col-xs-12 col-md-1 col-sm-1 text-left" title="Productos seleccionados">
-                                            <label for="producto_idsm">Selección:</label>
-                                        </div>
-                                        <div class="col-xs-12 col-md-11 col-sm-11" title="Productos seleccionados">
-                                            <input type="text" name="producto_idsm" id="producto_idsm" class="form-control"/>
-                                        </div>
-                                        <div class="col-xs-12 col-md-1 col-sm-1 text-left" title="Productos seleccionados">
-                                            <label for="preciosm">Precio Lote:</label>
-                                        </div>
-                                        <div class="col-xs-12 col-md-11 col-sm-11" title="Precio">
-                                            <input type="text" name="preciosm" id="preciosm" class="form-control"/>
-                                        </div>
-
-                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12" id="divprodselecsm" name="divprodselecsm">
+                        <input type="hidden" name="producto_idsm" id="producto_idsm" class="form-control"/>
+                        <div class="col-xs-12 col-md-2 col-sm-2 text-right">
+                            <label for="tipoprecio" >Tipo Precio</label>
+                        </div>
+                        <div class="col-xs-12 col-md-4 col-sm-4"  classorig="col-xs-12 col-md-4 col-sm-4">
+                            {{-- <select name="tipoprecio" id="tipoprecio" class="form-control select2 tipoprecio requeridopantprodselmult" data-live-search='true'  required> --}}
+                            <select name="tipoprecio" id="tipoprecio" class="selectpicker form-control requeridopantprodselmult" tipoval="combobox" required>
+                                <option value="">Seleccione...</option>
+                                <option value="1">Por Unidad</option>
+                                <option value="2">Por Kilo</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-md-2 col-sm-2 text-right" title="Precio">
+                            <label for="preciosm">Precio:</label>
+                        </div>
+                        <div class="col-xs-12 col-md-2 col-sm-2" title="Precio"  classorig="col-xs-12 col-md-2 col-sm-2">
+                            <input type="text" name="preciosm" id="preciosm" class="form-control requeridopantprodselmult numericoblanco" tipoval="texto" />
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <button id="aceptarmbpsm" name="aceptarmbpsm" type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+                <button type="button" id="aceptarmbpsm" name="aceptarmbpsm" class="btn btn-primary">Aceptar</button>
             </div>
             <input type="hidden" name="totalreg" id="totalreg">
         </div>
