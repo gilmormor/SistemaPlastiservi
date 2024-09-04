@@ -45,7 +45,8 @@ $(document).ready(function () {
                 {data: 'fact_nombrepdf',className:"ocultar"},
             ],
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             },
             "createdRow": function ( row, data, index ) {
                 $(row).attr('id','fila' + data.id);
@@ -171,7 +172,8 @@ function configurarTabla(aux_tabla){
         'autoWidth'   : false,
         "order"       : [[ 0, "desc" ]],
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
     });    
 }

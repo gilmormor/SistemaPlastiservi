@@ -36,7 +36,7 @@
                                         <table id="tabla-data-productos-selectmult" class="table-hover display" style="width:100%">
                                             <thead>
                                                 <tr>
-                                                    <th id="thselectAll" name="thselectAll" class="width100" style="text-align:center">
+                                                    <th class="width10" id="thselectAll" name="thselectAll" class="width100" style="text-align:center">
                                                         <div class="checkbox" style="padding-top: 0px;" title="Marcar todo">
                                                             <div>
                                                                 <label style="font-size: 1.0em">
@@ -85,7 +85,7 @@
                     </div>
                     <div class="col-xs-12" id="divprodselecsm" name="divprodselecsm">
                         <input type="hidden" name="producto_idsm" id="producto_idsm" class="form-control"/>
-                        <div class="col-xs-12 col-md-2 col-sm-2 text-right">
+                        <div class="col-xs-12 col-md-2 col-sm-2">
                             <label for="tipoprecio" >Tipo Precio</label>
                         </div>
                         <div class="col-xs-12 col-md-4 col-sm-4"  classorig="col-xs-12 col-md-4 col-sm-4">
@@ -96,7 +96,7 @@
                                 <option value="2">Por Kilo</option>
                             </select>
                         </div>
-                        <div class="col-xs-12 col-md-2 col-sm-2 text-right" title="Precio">
+                        <div class="col-xs-12 col-md-2 col-sm-2" title="Precio">
                             <label for="preciosm">Precio:</label>
                         </div>
                         <div class="col-xs-12 col-md-2 col-sm-2" title="Precio"  classorig="col-xs-12 col-md-2 col-sm-2">

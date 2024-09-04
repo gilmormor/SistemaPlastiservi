@@ -19,7 +19,8 @@ $(document).ready(function () {
             {defaultContent : "<a href='clienteproducto' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'><i class='fa fa-fw fa-pencil'></i></a>"}
         ],
 		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
       });
 /*

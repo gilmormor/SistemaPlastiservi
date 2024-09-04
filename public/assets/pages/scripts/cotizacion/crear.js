@@ -8,7 +8,8 @@ $(document).ready(function () {
 		'info'        : true,
 		'autoWidth'   : false,
 		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+			"url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
 	});
 	/*
@@ -281,13 +282,13 @@ $(document).ready(function () {
 		//procesarCodigos(codigos);
 		if(verificarloteClase(".requeridopantprodselmult"))
 		{
+			$('#aceptarmbpsm').prop('disabled', true);
 			$("#myModalBuscarProdSelectMult").modal('hide');
 			llenatPantallaPrecios();
 		}else{
 			alertify.error("Falta incluir informacion");
 		}
 		hideLoadingScreen();
-		
 	});
 
 });
@@ -1857,6 +1858,8 @@ function arrayAcuerdoTecnico(){
 }); */
 $("#botonNewProdLote").click(function(event){
     //$(this).val("");
+	$('#aceptarmbpsm').prop('disabled', false);
+
 	productosSeleccionados = [];
     $(".input-sm").val('');
     aux_id = $("#producto_idPxP").val();

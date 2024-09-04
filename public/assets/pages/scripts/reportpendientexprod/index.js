@@ -36,7 +36,8 @@ function configurarTabla(aux_tabla){
         'info'        : true,
         'autoWidth'   : false,
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
     });    
 }
@@ -51,7 +52,8 @@ function configurarTabla2(aux_tabla){
         'autoWidth'   : false,
         "order"       : [[ 0, "desc" ]],
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
     });    
 }

@@ -99,7 +99,8 @@ function configTablaProdSelectMult(){
             { "orderable": false, "targets": 0 } // Desactiva el ordenamiento en la columna 0
         ],
 		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
             aux_nfila++;
@@ -211,7 +212,7 @@ function configTablaProdSelectMult(){
             }
 
             aux_text = 
-            `<div class="checkbox" style="padding-top: 0px;">
+            `<div class="checkbox" style="padding-top: 4px;padding-left: 0px;">
                 <div>
                     <label style="font-size: 1.0em">
                         <input type="checkbox" class="columna11Checkbox" id="llenarProd_id${data.id}" name="llenarProd_id[]" onclick="llenarlistaprodSelecMult(${aux_nfila},${data.id},this)" ${aux_checked} producto_id="${data.id}">

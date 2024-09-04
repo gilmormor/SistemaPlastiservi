@@ -256,13 +256,13 @@
         <h3 class="box-title">Detalle</h3>
         @if (session('aux_aprocot')=='0') <!--Estatus en 0 si puede incluir -->
             <div class="box-tools pull-right">
-                <a id="botonNewProd" name="botonNewProd" class="btn btn-block btn-success btn-sm">
+                <a id="botonNewProd" name="botonNewProd" class="btn btn-block btn-success btn-sm" title="Agregar producto individual">
                     <i class="fa fa-fw fa-plus-circle"></i> Nuevo Producto
                 </a>
             </div>                    
             <div class="box-tools pull-right">
-                <a id="botonNewProdLote" name="botonNewProdLote" class="btn btn-block btn-success btn-sm">
-                    <i class="fa fa-fw fa-plus-circle"></i> Lote
+                <a id="botonNewProdLote" name="botonNewProdLote" class="btn btn-block btn-success btn-sm" title="Agregar producto por lote">
+                    <i class="fa fa-fw fa-plus-circle"></i> Por Lote
                 </a>
             </div>    
         @endif
