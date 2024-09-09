@@ -266,6 +266,8 @@ function configTablaProdSelectMult(){
             $(row).attr('categoriaprod_id', data.categoriaprod_id);
             $(row).attr('acuerdotecnico_id', data.acuerdotecnico_id);
             $(row).attr('at_unidadmedida_id', data.at_unidadmedida_id);
+            $(row).attr('prod_unidadmedida_nombre', data.prod_unidadmedida_nombre);
+            $(row).attr('at_unidadmedida_nombre', data.at_unidadmedida_nombre);
 
         },
         initComplete: function () {

@@ -46,7 +46,7 @@
 
                 <div class="col-xs-12 col-sm-2" id="mostunimed1" classorig="col-xs-12 col-sm-2" style="display:none;">
                     <label for="unidadmedida_idM" class="control-label unidadmedidacombo" >UniMedida</label>
-                    <select name="unidadmedida_idM" id="unidadmedida_idM"  class="selectpicker form-control unidadmedida_idM" data-live-search='true'>
+                    <select name="unidadmedida_idM" id="unidadmedida_idM"  class="selectpicker selectpickercot form-control unidadmedida_idM" data-live-search='true'>
                         <option value="">Seleccione...</option>
                         @foreach($tablas['unidadmedida'] as $unidadmedida)
                             <option
@@ -71,7 +71,7 @@
                 </div>
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
                     <label for="descuentoM" class="control-label" data-toggle='tooltip'>Descuento</label>
-                    <select name="descuentoM" id="descuentoM" class="selectpicker form-control descuentoM" tipoval="combobox" data-live-search='true'>
+                    <select name="descuentoM" id="descuentoM" class="selectpicker selectpickercot form-control descuentoM" tipoval="combobox" data-live-search='true'>
                         <option porc="0" value=1>0%</option>
                         <option porc="0.005" value=0.95>0.5%</option>
                         <option porc="0.010" value=0.90>1.0%</option>

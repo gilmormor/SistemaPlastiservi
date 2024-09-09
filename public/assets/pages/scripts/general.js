@@ -717,7 +717,7 @@ function totalizarItem(aux_estprec){
 		precioneto = $("#precioM").val() * aux_peso;
 		//$("#precionetoM").val(Math.round(precioneto));
 		$("#descuentoM").val('1');
-		$(".selectpicker").selectpicker('refresh');
+		$(".selectpickercot").selectpicker('refresh');
 	}
 		if($("#precionetoM").prop("disabled")){
 			$("#precionetoM").val(precioneto);
@@ -1083,7 +1083,7 @@ function limpiarInputOT(){
 		$("#invmovtipo_idM").val("");
 	}
 
-    $(".selectpicker").selectpicker('refresh');
+    $(".selectpickercot").selectpicker('refresh');
 }
 
 function verificar()
@@ -1099,6 +1099,13 @@ function verificar()
 	v3=validacion('descuentoM','combobox');
 	v2=validacion('cantM','numerico');
 	v1=validacion('producto_idM','textootro');
+	/* console.log("producto_idM: " + v1)
+	console.log("cantM: " + v2)
+	console.log("descuentoM: " + v3)
+	console.log("precioM: " + v4)
+	console.log("totalkilosM: " + v5)
+	console.log("precionetoM: " + v6)
+	console.log("unidadmedida_idM: " + v7) */
 
 	if (v1===false || v2===false || v3===false || v4===false || v5===false || v6===false || v7===false || v8===false || v9===false || v10===false || v11===false || v12===false || v13===false || v14===false)
 	{
@@ -3986,7 +3993,9 @@ function llenarlistaprodSelecMult(i,producto_id,checkbox){
 				acuerdotecnico_id: $("#producto_idbm" + producto_id).attr("acuerdotecnico_id"),
 				at_unidadmedida_id: $("#producto_idbm" + producto_id).attr("at_unidadmedida_id"),
 				at_ancho: aux_anchoM,
-				diamextmm: aux_anchoM
+				diamextmm: aux_anchoM,
+				prod_unidadmedida_nombre : $("#producto_idbm" + producto_id).attr("prod_unidadmedida_nombre"),
+				at_unidadmedida_nombre : $("#producto_idbm" + producto_id).attr("at_unidadmedida_nombre")
 				// Otros datos pueden ser añadidos aquí
             });
 		}
@@ -4038,4 +4047,90 @@ function verificarloteClase(aux_clase){
 	});
 	return aux_valido;
 
+}
+
+$("#VerTodosProdms").change(function(){
+	primerfiltrobuscarprodms();
+});
+
+function primerfiltrobuscarprodms(){
+	//$('#DivchVerAcuTec').show()
+	$(this).val("");
+	$(".input-sm").val('');
+	data = datos();
+	aux_tipoprod = "0";
+
+	$("#lblTitVerTosdosProdms").html("Productos X Cliente");
+	$("#lblVerTodosProdms").attr("data-original-title","Ver Productos X Cliente");
+
+	if($("#VerTodosProdms").prop("checked")){
+		aux_tipoprod = "";
+		$("#VerAcuTec").prop("checked",false);
+		$("#lbltipoprod").html("Productos");
+		$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");
+	
+		$("#lblTitVerTosdosProdms").html("Todos los productos");
+		$("#lblVerTodosProdms").attr("data-original-title","Ver Productos X Cliente");
+
+		var data1 = {
+			cliente_id  : "",
+			sucursal_id : $("#sucursal_id").val(),
+			_token      : $('input[name=_token]').val()
+		};
+	
+		var data2 = "?cliente_id="+data1.cliente_id +
+		"&sucursal_id="+data1.sucursal_id
+	
+		var data = {
+			data1 : data1,
+			data2 : data2
+		};
+	}
+	$('#tabla-data-productos-selectmult').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
+}
+
+function cargardatospantprodms(){
+	//$('#DivchVerAcuTec').show()
+	$(this).val("");
+	$(".input-sm").val('');
+	data = datos();
+	/* let aux_tipoprod = "0";
+	if($("#tipoprod").val()){ //0=PRODUCTO NORMAL, 1=PRODUCTO TRANSACCIONAL PARA HACER ACUERDO TECNICO, 2=PRODUCTO PARA HACER FACTURA DIRECTA
+        aux_tipoprod = $("#tipoprod").val();
+    }
+	$("#lbltipoprod").html("Productos");
+	$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");
+
+	if($("#VerAcuTec").prop("checked")){
+		aux_tipoprod = "1";
+		$("#VerTodosProd").prop("checked",false);
+		$("#lbltipoprod").html("Productos Base para crear Acuerdo Técnico");
+		$("#lblVerAcuTec").attr("data-original-title","Ver Productos existentes");		
+	}
+	if($("#VerTodosProd").prop("checked")){
+		aux_tipoprod = "0";
+		$("#VerAcuTec").prop("checked",false);
+		$("#lbltipoprod").html("Productos");
+		$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");		
+	} */
+	if(data.data1.sucursal_id){
+		let posicion1 = data.data1.sucursal_id.indexOf('1');//Para visualizar el status de Productos base para acuerdo tecnico Santa Ester
+		let posicion3 = data.data1.sucursal_id.indexOf('3');//Para visualizar el status de Productos base para acuerdo tecnico Puerto Montt
+		if(posicion1 >= 0 || posicion3 >= 0){
+			$("#staprodxclims").css({'display':'block'});
+		}
+	}
+	if(typeof aux_staprodxcli !== 'undefined' && aux_staprodxcli){
+		$("#staprodxclims").css({'display':'block'});
+		$("#DivVerTodosProdms").css({'display':'none'});
+		//$("#DivchVerAcuTec").css({'display':'none'});
+		if(aux_DivVerTodosProd){
+			$("#DivVerTodosProdms").css({'display':'block'});
+		}
+		/* if(aux_DivchVerAcuTec){
+			$("#DivchVerAcuTec").css({'display':'block'});
+		} */
+	}
+	//console.log(aux_tipoprod);
+	//$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
 }
