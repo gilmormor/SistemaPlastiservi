@@ -256,10 +256,15 @@
         <h3 class="box-title">Detalle</h3>
         @if (session('aux_aprocot')=='0') <!--Estatus en 0 si puede incluir -->
             <div class="box-tools pull-right">
-                <a id="botonNewProd" name="botonNewProd" class="btn btn-block btn-success btn-sm">
+                <a id="botonNewProd" name="botonNewProd" class="btn btn-block btn-success btn-sm" title="Agregar producto individual">
                     <i class="fa fa-fw fa-plus-circle"></i> Nuevo Producto
                 </a>
             </div>                    
+            <div class="box-tools pull-right">
+                <a id="botonNewProdLote" name="botonNewProdLote" class="btn btn-block btn-success btn-sm" title="Agregar producto por lote" style="display: none;">
+                    <i class="fa fa-fw fa-plus-circle"></i> Por Lote
+                </a>
+            </div>    
         @endif
         <div class="box-body">
             <div class="table-responsive">
@@ -564,13 +569,14 @@
 @else
     @include('generales.buscarclientebd')
     @include('generales.buscarproductobd')
+    @include('generales.buscarproductobdselectmult')
 @endif
 @include('generales.acuerdotecnico')
 @include('generales.modalpdf')
 
     <!-- Modal -->
-    <!-- FORMULARIO DE CLIENTE TEMPORAL CON TODOS LOS CAMPOS 
-    <div class="modal fade" id="myModalClienteTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    {{-- FORMULARIO DE CLIENTE TEMPORAL CON TODOS LOS CAMPOS  --}}
+    {{-- <div class="modal fade" id="myModalClienteTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
         
             <div class="modal-content">
@@ -763,9 +769,8 @@
             </div>
             
         </div>
-    </div>
-    -->
-    <!-- NUEVO FORMULARIO DE CLIENTE TEMPORAL SOLO ALGUNOS DATOS SOLICITADO POR CGORIGOITIA 27/04/2023 -->
+    </div> --}}
+    {{-- NUEVO FORMULARIO DE CLIENTE TEMPORAL SOLO ALGUNOS DATOS SOLICITADO POR CGORIGOITIA 27/04/2023 --}}
     <div class="modal fade" id="myModalClienteTemp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
         

@@ -233,7 +233,11 @@ class Producto extends Model
                 acuerdotecnico.id as acuerdotecnico_id,at_ancho,at_largo,at_espesor,
                 at_color_id,at_formatofilm,at_complementonomprod,at_materiaprima_id,
                 categoriaprod.nombre as categoriaprod_nombre,
-                at_usoprevisto,at_impresoobs,at_tiposelloobs,at_feunidxpaqobs
+                at_usoprevisto,at_impresoobs,at_tiposelloobs,at_feunidxpaqobs,producto.categoriaprod_id,categoriaprod.stakilos,
+                categoriaprod.unidadmedidafact_id,
+                prod_unidadmedida.nombre as prod_unidadmedida_nombre,
+                at_unidadmedida.nombre as at_unidadmedida_nombre,
+                acuerdotecnico.at_unidadmedida_id
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod
@@ -246,6 +250,10 @@ class Producto extends Model
                 ON producto.id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
                 LEFT JOIN claseprod as at_claseprod
                 ON at_claseprod.id = acuerdotecnico.at_claseprod_id
+                LEFT JOIN unidadmedida AS prod_unidadmedida
+                ON prod_unidadmedida.id = categoriaprod.unidadmedidafact_id
+                LEFT JOIN unidadmedida AS at_unidadmedida
+                ON at_unidadmedida.id = acuerdotecnico.at_unidadmedida_id
                 WHERE $aux_sucursalidCond
                 and $cliente_idCond
                 and $tipoprodCond

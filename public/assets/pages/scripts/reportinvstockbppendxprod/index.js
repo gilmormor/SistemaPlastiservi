@@ -22,7 +22,7 @@ $(document).ready(function () {
             'processing'  : true,
             'serverSide'  : true,
             'ajax'        : "reportinvstockbppendxprodpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
-            "order": [[ 0, "asc" ]],
+            "order": [[ 12, "asc" ]],
             'columns'     : [
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
@@ -40,7 +40,8 @@ $(document).ready(function () {
                 //{data: 'stockkg'}
             ],
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             },
             "createdRow": function ( row, data, index ) {
                 $('td', row).eq(8).attr('style','text-align:center');
@@ -146,6 +147,7 @@ function datosstockpicking(){
         tipobodega        : $("#tipobodega").val(),
         aprobstatus       : $("#aprobstatus").val(),
         aprobstatusdesc   : $("#aprobstatus option:selected").html(),
+        //orden             : ordentablaGen($('#tabla-data-reporte-stockpicking').DataTable()),
         _token            : $('input[name=_token]').val()
     };
 
@@ -157,6 +159,7 @@ function datosstockpicking(){
     "&tipobodega="+data1.tipobodega +
     "&aprobstatus="+data1.aprobstatus +
     "&aprobstatusdesc="+data1.aprobstatusdesc
+    //"&orden=" + ordentablaGen($('#tabla-data-reporte-stockpicking').DataTable())
 
 
     var data = {
@@ -201,8 +204,14 @@ function copiar_codprod(id,codintprod){
 
 $("#btnpdf").click(function(event){
     data = datosstockpicking();
+    table = $('#tabla-data-reporte-stockpicking').DataTable();
+    aux_orden = ordentablaGen(table);
+    // Acceder al th de esa columna en el thead
+    var thElement = table.columns(aux_orden[0]).header();
+    let aux_ordenString = $(thElement).attr("nomcampo") + "," + aux_orden[1];
+
     //alert(cadena);
-    $('#contpdf').attr('src', '/reportinvstockbppendxprod/exportPdf/'+data.data2);
+    $('#contpdf').attr('src', '/reportinvstockbppendxprod/exportPdf/'+data.data2+"&aux_orden="+aux_ordenString);
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 });

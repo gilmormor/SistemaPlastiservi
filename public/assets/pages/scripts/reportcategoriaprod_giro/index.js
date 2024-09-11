@@ -25,7 +25,8 @@ $(document).ready(function () {
                 {data: 'meson'}, // 5
             ],
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             },
             "createdRow": function ( row, data, index ) {
                 $('td', row).eq(1).attr('style','text-align:right');

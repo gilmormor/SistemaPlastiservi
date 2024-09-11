@@ -26,6 +26,7 @@ Aprobar Nota de Venta
                                 <th class="width30">ID</th>
                                 <th class="width30">Nro Cot</th>
                                 <th>Fecha</th>
+                                <th title='Fecha enviado para aprobacion'>Fec Env Aprobacion</th>
                                 <th>Cliente</th>
                                 <th>Vendedor</th>
                                 <th class="ocultar">contador</th>

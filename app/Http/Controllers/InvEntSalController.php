@@ -373,6 +373,7 @@ class InvEntSalController extends Controller
                             $array_inventsal['idmovmod'] = $array_inventsal['id'];
                             $invmov = InvMov::create($array_inventsal);
                             $inventsal->invmov_id = $invmov->id;
+                            $inventsal->usuarioaprob_id = auth()->id();
                         }
                         //$inventsal->staaprob = 2;
                         $inventsal->staaprob = $request->staaprob;

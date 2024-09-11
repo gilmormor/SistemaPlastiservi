@@ -16,6 +16,7 @@ $(document).ready(function () {
             {data: 'id'},
             {data: 'cotizacion_id'},
             {data: 'fechahora'},
+            {data: 'updated_at'},
             {data: 'razonsocial'},
             {data: 'vendedor_nombre'},
             {data: 'contador',className:"ocultar"},
@@ -31,7 +32,8 @@ $(document).ready(function () {
 				"</a>"}
         ],
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
             colorFila = "";
@@ -69,7 +71,7 @@ $(document).ready(function () {
 				"onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + 
 				"</a>";
             }
-            $('td', row).eq(9).html(aux_text);
+            $('td', row).eq(10).html(aux_text);
 
 			aux_text = 
 				"<a class='btn-accion-tabla btn-sm btngenpdfNV1 tooltipsC' title='Nota de venta: " + data.id + "'>" +
@@ -78,7 +80,7 @@ $(document).ready(function () {
 				"<a class='btn-accion-tabla btn-sm btngenpdfNV2 tooltipsC' title='Precio x Kg: " + data.id + "'>" +
 					"<i class='fa fa-fw fa-file-pdf-o'></i>" +
 				"</a>";
-			$('td', row).eq(10).html(aux_text);
+			$('td', row).eq(11).html(aux_text);
 
             if ( data.contador * 1 > 0 ) {
                 //console.log(row);

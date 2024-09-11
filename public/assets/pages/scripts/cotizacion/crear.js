@@ -1,20 +1,5 @@
 $(document).ready(function () {
 	Biblioteca.validacionGeneral('form-general');
-	//$("#comuna_idD").html($("#comunax").val());
-	//$(".selectpicker").selectpicker('refresh');
-	//$(".select2").selectmenu('refresh', true);
-	/*
-	$('#tabla-data-clientes').DataTable({
-		'paging'      : true, 
-		'lengthChange': true,
-		'searching'   : true,
-		'ordering'    : true,
-		'info'        : true,
-		'autoWidth'   : false,
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-        }
-	});*/
 	$('.tablas').DataTable({
 		'paging'      : true, 
 		'lengthChange': true,
@@ -23,7 +8,8 @@ $(document).ready(function () {
 		'info'        : true,
 		'autoWidth'   : false,
 		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+			"url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
 	});
 	/*
@@ -235,8 +221,70 @@ $(document).ready(function () {
 		});
 	});
 	//configTablaProd();
+
+	// Función para manejar la consulta y el click del botón
+	function procesarProducto(codigo) {
+		return new Promise((resolve) => {
+			// Asignar el valor de cada codigo a #producto_idM
+			$("#producto_idM").val(codigo);
+
+			// Ejecutar el evento blur y esperar a que termine el AJAX
+			$("#producto_idM").blur();
+
+			// Escuchar el fin de la consulta AJAX en blur
+			$(document).one('ajaxComplete', function(event, xhr, settings) {
+				if (settings.url === '/producto/buscarUnProducto') {
+					// Después de que la consulta finalice, resolver la promesa
+					resolve();
+				}
+			});
+		});
+	}
+
+
+	// Procesar cada código de manera secuencial
+	async function procesarCodigos(codigos) {
+		let array_producto_ids = [];
+		// Recorrer cada elemento con la clase .filaproducto_id
+		$('.filaproducto_id').each(function() {
+			// Extraer el contenido HTML del elemento y agregarlo al array
+			let producto_id = $(this).html().trim(); // .trim() elimina espacios en blanco
+			array_producto_ids.push(producto_id);
+		});
+	
+		for (const codigo of codigos) {
+			if (!array_producto_ids.includes(codigo)){
+				//await procesarProducto(codigo);
+				llenatPantallaPrecios();
+				// Ejecutar el evento click del botón #btnGuardarM después de que termine la consulta
+				aux_precio = $("#preciosm").val()
+				$("#cantM").val(1);
+				$("#precioM").val(aux_precio);
+				$("#precioxkilorealM").val($("#precioM").val())
+				totalizarItem(0);
+				/* $("#precionetoM").val(1000);
+				$("#cantM").keyup(); */
+				$("#btnGuardarM").click();	
+			}
+		}
+	}
 });
 
+function insertarproductos(){
+	// Obtener los códigos al hacer clic en el botón
+	const $input = $('#producto_idsm');
+	let codigos = $input.val() ? $input.val().split(',') : [];
+
+	if(verificarloteClase(".requeridopantprodselmult"))
+	{
+		$('#aceptarmbpsm').prop('disabled', true);
+		$("#myModalBuscarProdSelectMult").modal('hide');
+		insertarItem();
+	
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+}
 //CAPTURE DE PANTALLA Y GENERAR PDF
 /*
 const $boton = document.querySelector("#create_pdf"), // El botón que desencadena
@@ -879,6 +927,8 @@ $("#rut").blur(function(){
 						if (respuesta.sucursales.length == 1){
 							$("#sucursal_id").val(respuesta.sucursales[0].id);
 						}
+
+						MostrarBotonProdxLote($("#sucursal_id").val());
 				
 						//$("#comuna_idD option[value='101']").attr("selected",true);
 /*
@@ -1356,66 +1406,6 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 
 		var ruta = '/acuerdotecnico/buscaratxcampos';
 		ajaxRequest(data,ruta,'buscaratxcampos');
-		return 0;
-		$.ajax({
-			url: '/acuerdotecnico/buscaratxcampos',
-			type: 'POST',
-			data: data,
-			success: function (respuesta) {
-				if(respuesta.length > 0){
-					/*
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: 'Something went wrong!',
-						footer: '<a href="">Why do I have this issue?</a>'
-					  })*/
-					swal({
-						title: 'Acuerdo técnico ya existe',
-						text: 'Producto Cod: ' + respuesta[0].producto_id + ', ' + respuesta[0].producto_nombre,
-						icon: 'warning',
-						buttons: {
-							cancel: "Cerrar",
-							//confirm: "Ver AT"
-						},
-						}).then((value) => {
-							/*
-							fila = $(this).closest("tr");
-							form = $(this);
-							id = fila.find('td:eq(0)').text();
-							//alert(id);
-							var data = {
-								_token  : $('input[name=_token]').val(),
-								id      : id
-							};
-							if (value) {
-								ajaxRequest(data,form.attr('href')+'/'+id+'/anular','anular',form);
-							}*/
-						});
-				}else{
-
-				}
-				//console.log(respuesta);
-				/*
-				if(respuesta['cont']>0){
-					mostrardatosadUniMed(respuesta);
-					if($("#invbodega_idM")){
-						llenarselectbodega(respuesta);
-						//console.log(respuesta);
-						$("#invbodega_idM").val($("#invbodega_idTD"+i).val());
-						$("#invbodega_idM").selectpicker('refresh');
-						$("#stakilos").val(respuesta['stakilos']);
-					}
-				}*/
-			}
-		});
-		
-
-		$("#acuerdotecnico" + aux_nfila).val(guardado); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
-		$("#myModalAcuerdoTecnico").modal('hide');
-		//alert($("#acuerdotecnico" + i).val());
-		$("#icoat" + aux_nfila).attr('class','fa fa-cog text-aqua');
-		//console.log(guardado);
 	
 	}else{
 		alertify.error("Falta incluir informacion");
@@ -1721,4 +1711,404 @@ function arrayAcuerdoTecnico(){
 		}
 	}
 	return miArray;
+}
+
+//AL HACER CLIC EN BOTON INCLUIR NUEVO PRODUCTO. COTIZACION NOTA DE VENTA ETC
+/* $("#botonNewProdLote").click(function(event)
+{
+	$("#selecmultprod").val(true);
+    $(this).val("");
+    $(".input-sm").val('');
+    data = datosproducto();
+    $('#tabla-data-productos-selecmult').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+    $('#myModalBuscarProd').modal('show');
+	
+}); */
+$("#botonNewProdLote").click(function(event){
+    //$(this).val("");
+	cargardatospantprodms();
+	$('#aceptarmbpsm').prop('disabled', false);
+
+	productosSeleccionados = [];
+    $(".input-sm").val('');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+	let array_producto_ids = [];
+
+    // Recorrer cada elemento con la clase .filaproducto_id
+    $('.filaproducto_id').each(function() {
+        // Extraer el contenido HTML del elemento y agregarlo al array
+        let producto_id = $(this).html().trim(); // .trim() elimina espacios en blanco
+        array_producto_ids.push(producto_id);
+    });
+
+    // Convertir el array en un string separado por comas
+    let producto_ids = array_producto_ids.join(',');
+
+    // Aquí puedes usar la variable producto_ids como desees
+    // Por ejemplo, asignarlo a un input hidden
+    $('#producto_idsm').val(producto_ids);
+
+	//RECORRO LOS REGISTROS DE LA PANTALLA DE PRODUCTOS POR LOTE LO INSERTO EN UN ARRAY array_tdproducto_id
+	var array_tdproducto_id = [];
+	$('.tdproducto_id').each(function() {
+		// Tomamos el valor del atributo que necesites, por ejemplo "tdproducto_id"
+		var valor = $(this).attr('tdproducto_id');
+	
+		// Lo insertamos en el array
+		array_tdproducto_id.push(valor);
+	});
+	//LUEGO RECORRO EL array_tdproducto_id BUSCO SI ESTAN EN EL ARRAY array_producto_ids
+	//PARA MARCAR O DESMARCAR EN PANTALLA DE BUSQUEDA DE PRODUCTOS POR LOTE
+	$.each(array_tdproducto_id, function(index, producto_id) {
+		// Construimos el nombre del checkbox
+		var checkbox_name = 'llenarProd_id' + producto_id;
+	
+		// Comprobamos si el producto_id existe en array_tdproducto_id
+		if (array_producto_ids.includes(producto_id)) {
+			// Si existe, marcamos el checkbox como true
+			$('#' + checkbox_name).prop('checked', true);
+		} else {
+			// Si no existe, marcamos el checkbox como false
+			$('#' + checkbox_name).prop('checked', false);
+		}
+	});
+
+    $("#myModalBuscarProdSelectMult").modal('show');
+
+});
+
+
+/* $("#aceptarmbpsm").click(function(event){
+	let array_producto_ids = [];
+    // Recorrer cada elemento con la clase .filaproducto_id
+    $('.filaproducto_id').each(function() {
+        // Extraer el contenido HTML del elemento y agregarlo al array
+        let producto_id = $(this).html().trim(); // .trim() elimina espacios en blanco
+        array_producto_ids.push(producto_id);
+    });
+
+	const $input = $('#producto_idsm');
+	let codigos = $input.val() ? $input.val().split(',') : [];
+
+	console.log(array_producto_ids);
+	console.log(codigos);
+
+	// Recorrer el array codigos
+    codigos.forEach(function(codigo) {
+		if (array_producto_ids.includes(codigo)){
+			console.log("Código encontrado en array_producto_ids:", codigo);
+		}else{
+			console.log("Código no encontrado, se asignará a #producto_idM:", codigo);
+			// Asignar el valor de cada codigo a #producto_idM
+			//$("#producto_idM").val(codigo);
+
+			// Ejecutar el evento blur después de asignar el valor
+			//$("#producto_idM").blur();
+		}
+    });
+
+}); */
+
+
+function insertarItem(){
+	$("#trneto").remove();
+	$("#triva").remove();
+	$("#trtotal").remove();
+
+	let array_producto_ids = [];
+	// Recorrer cada elemento con la clase .filaproducto_id
+	$('.filaproducto_id').each(function() {
+		// Extraer el contenido HTML del elemento y agregarlo al array
+		let producto_id = $(this).html().trim(); // .trim() elimina espacios en blanco
+		array_producto_ids.push(producto_id);
+	});
+	$.each(productosSeleccionados, function(index, producto) {
+		if (!array_producto_ids.includes(producto.producto_id)){
+			//console.log(producto);
+		
+			//aux_nfila = 1; 
+			aux_nfila = 0;
+			$("#tabla-data tr .filaproducto_id").each(function() {
+				fila = $(this).attr('fila') ;
+				aux_nfila = Number(fila);
+			});
+			//var aux_nfila = $("#tabla-data tbody tr").length;
+			aux_nfila++;
+			//alert(aux_nfila);
+			aux_nombre = producto.nombre;
+			codintprod = producto.codintprod;
+			aux_porciva = $("#aux_iva").val()
+			aux_porciva = parseFloat(aux_porciva);
+
+			aux_cant = 1;
+			aux_tipoprecio = $("#tipoprecio").val();
+			aux_subtotal = 0;
+			aux_precio = $("#preciosm").val();
+			aux_precioxkiloreal = producto.precio;
+			if(aux_tipoprecio == 1){
+				aux_precionetoM = aux_precio;
+				aux_precioxkilo = aux_precio / producto.peso;
+				aux_precioxkilo = Math.round(aux_precioxkilo);
+			}else{
+				aux_precionetoM = aux_precio * producto.peso
+				aux_precionetoM = Math.round(aux_precionetoM);
+				aux_precioxkilo = aux_precio;
+			}
+			aux_descuento = $("#descuentosm").val();
+			if(aux_descuento < 0){
+				aux_descuento = aux_descuento * -1;
+			}
+
+			aux_descuento = 0;
+			aux_descuento = 100 - aux_descuento;
+			aux_descuento = (aux_descuento / 100);
+			
+			aux_total = (aux_cant * aux_precionetoM) * (aux_descuento);
+			aux_descuento = aux_descuento == 1 ? 0 : aux_descuento;
+			aux_total = Math.round(aux_total);
+			aux_subtotal = aux_total.toFixed(2);
+
+			aux_iva = aux_subtotal * (aux_porciva/100);
+			aux_total = aux_subtotal + aux_iva;
+			if(producto.acuerdotecnico_id != null){
+				aux_unidadmedida_nombre = producto.at_unidadmedida_nombre;
+				aux_unidamedida_id = producto.at_unidadmedida_id;
+				
+			}else{
+				aux_unidadmedida_nombre = producto.prod_unidadmedida_nombre;
+				aux_unidamedida_id = producto.unidadmedidafact_id;
+			}
+
+			if(producto.long == 0){
+				aux_largo = "";
+			}else{
+				aux_largo = producto.long;
+			}
+
+
+			aux_diametro = producto.diametro;
+			aux_at_ancho = "";
+			if(producto.at_ancho != null){
+				aux_at_ancho = producto.at_ancho;
+				aux_diametro = producto.at_ancho;
+			}
+			if(producto.at_largo != null){
+				aux_largo = producto.at_largo;
+			}
+			aux_espesor = producto.espesor
+			if(producto.at_espesor != null){
+				aux_espesor = producto.at_espesor;
+			}
+			aux_obs = "";
+
+			aux_botonAcuTec = '';
+			if(producto.tipoprod == 1) {
+				aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
+				'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>' +
+				'<div id="divMostrarImagenat'+ aux_nfila + '" name="divMostrarImagenat'+ aux_nfila + '" style="display:none;">' +
+					'<a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro('+ aux_nfila + ')">' +
+						'<i id="btnmostrarocultar'+ aux_nfila + '" class="fa fa-plus"></i>' +
+					'</a>' +
+					'<div id="div_at_imagen'+ aux_nfila + '" name="div_at_imagen'+ aux_nfila + '" style="display: none;">' +
+						'<input type="file" name="at_imagen'+ aux_nfila + '" id="at_imagen'+ aux_nfila + '" class="form-control at_imagen" accept="*"/>' +
+						'<input type="hidden" name="imagen'+ aux_nfila + '" id="imagen'+ aux_nfila + '" value="">' +
+					'</div>' +
+				'</div>';
+			}
+			//aux_botonAcuTec = producto.tipoprod == '1' ? 'x' : '';
+			let aux_productoId = producto.producto_id;
+			let aux_acuerdotecnicoId = producto.acuerdotecnico_id;
+			let aux_clienteId = $("#cliente_id").val();
+			if(aux_acuerdotecnicoId > 0){
+				aux_productoId = `<a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec(${aux_acuerdotecnicoId},${aux_clienteId},1)" data-original-title="Acuerdo Técnico PDF" aria-describedby="tooltip895039">
+									${aux_productoId}
+								</a>`;
+			}
+			$("#producto_idTDT"+aux_nfila).html(aux_productoId + aux_botonAcuTec);
+
+
+			var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '" class="prod_id' + producto.producto_id + '">'+
+					'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;" categoriaprod_id="' + producto.categoriaprod_id + '" class="filaproducto_id" fila="'+ aux_nfila + '">'+ 
+							aux_productoId + aux_botonAcuTec +
+					'</td>'+
+					'<td style="display:none;" name="cotdet_idTD'+ aux_nfila + '" id="cotdet_idTD'+ aux_nfila + '">'+ 
+						'0'+
+					'</td>'+
+					'<td style="display:none;">'+
+						'<input type="text" name="cotdet_id[]" id="cotdet_id'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
+					'</td>'+
+					'<td name="producto_idTD'+ aux_nfila + '" id="producto_idTD'+ aux_nfila + '" style="display:none;">'+ 
+						'<input type="text" name="producto_id[]" id="producto_id'+ aux_nfila + '" class="form-control" value="'+ producto.producto_id +'" style="display:none;"/>'+
+					'</td>'+
+					'<td style="display:none;" name="codintprodTD'+ aux_nfila + '" id="codintprodTD'+ aux_nfila + '">'+ 
+						codintprod+
+					'</td>'+
+					'<td style="display:none;">'+ 
+						'<input type="text" name="codintprod[]" id="codintprod'+ aux_nfila + '" class="form-control" value="'+ codintprod +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="cantTD'+ aux_nfila + '" id="cantTD'+ aux_nfila + '" style="text-align:right">'+ 
+						aux_cant+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="cant[]" id="cant'+ aux_nfila + '" class="form-control" value="'+ aux_cant +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="unidadmedida_nomnreTD'+ aux_nfila + '" id="unidadmedida_nomnreTD'+ aux_nfila + '">'+ 
+						aux_unidadmedida_nombre +
+					'</td>'+
+					'<td name="nombreProdTD'+ aux_nfila + '" id="nombreProdTD'+ aux_nfila + '" categoriaprod_nombre="' + aux_nombre +'">'+ 
+						aux_nombre+
+					'</td>'+
+					'<td style="display:none;">'+ 
+						'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id'+ aux_nfila + '" class="form-control" value="'+ aux_unidamedida_id + '" style="display:none;"/>'+
+					'</td>'+
+					'<td name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '">'+ 
+						producto.cla_nombre +
+					'</td>'+
+					'<td name="diamextmmTD'+ aux_nfila + '" id="diamextmmTD'+ aux_nfila + '" style="text-align:right">'+ 
+						aux_diametro +
+					'</td>'+
+					'<td style="display:none;">'+ 
+						'<input type="text" name="diamextmm[]" id="diamextmm'+ aux_nfila + '" class="form-control" value="'+ aux_diametro +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right">'+ 
+						aux_largo+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="long[]" id="long'+ aux_nfila + '" class="form-control" value="'+ aux_largo +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right">'+ 
+						MASKLA(aux_espesor,3)+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="espesor[]" id="espesor'+ aux_nfila + '" class="form-control" value="'+ aux_espesor +'" style="display:none;"/>'+
+						'<input type="text" name="ancho[]" id="ancho'+ aux_nfila + '" class="form-control" value="'+ aux_at_ancho +'" style="display:none;"/>'+
+						'<input type="text" name="obs[]" id="obs'+ aux_nfila + '" class="form-control" value="'+ aux_obs +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="pesoTD'+ aux_nfila + '" id="pesoTD'+ aux_nfila + '" style="text-align:right;">'+ 
+						producto.peso +
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="peso[]" id="peso'+ aux_nfila + '" class="form-control" value="'+ producto.peso +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="tipounionTD'+ aux_nfila + '" id="tipounionTD'+ aux_nfila + '">'+ 
+						producto.tipounion +
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="tipounion[]" id="tipounion'+ aux_nfila + '" class="form-control" value="'+ producto.tipounion +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="descuentoTD'+ aux_nfila + '" id="descuentoTD'+ aux_nfila + '" style="text-align:right">'+ 
+						aux_descuento + '%' +
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="descuento[]" id="descuento'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="descuentoval[]" id="descuentoval'+ aux_nfila + '" class="form-control" value="1" style="display:none;"/>'+
+					'</td>'+
+					'<td name="preciounitTD'+ aux_nfila + '" id="preciounitTD'+ aux_nfila + '" style="text-align:right">'+ 
+						MASKLA(aux_precionetoM,3) + //MASK(0, aux_precionetoM, '-##,###,##0.00',1)+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="preciounit[]" id="preciounit'+ aux_nfila + '" class="form-control" value="'+ aux_precionetoM +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="precioxkiloTD'+ aux_nfila + '" id="precioxkiloTD'+ aux_nfila + '" style="text-align:right">'+ 
+						MASKLA(aux_precioxkilo,0) + //MASK(0, aux_precioxkilo, '-##,###,##0.00',1)+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="precioxkilo[]" id="precioxkilo'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkilo +'" style="display:none;"/>'+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="precioxkiloreal[]" id="precioxkiloreal'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkiloreal +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="totalkilosTD'+ aux_nfila + '" id="totalkilosTD'+ aux_nfila + '" style="text-align:right">'+ 
+						MASKLA(producto.peso,4) + //MASK(0, producto.peso, '-##,###,##0.00',1)+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ producto.peso +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="subtotalCFTD'+ aux_nfila + '" id="subtotalCFTD'+ aux_nfila + '" class="subtotalCF" style="text-align:right">'+ 
+						MASKLA(aux_subtotal,0) + //MASK(0, aux_subtotal, '-#,###,###,##0.00',1)+
+					'</td>'+
+					'<td class="subtotalCF" style="text-align:right;display:none;">'+ 
+						'<input type="text" name="subtotal[]" id="subtotal'+ aux_nfila + '" class="form-control" value="'+ aux_subtotal +'" style="display:none;"/>'+
+					'</td>'+
+					'<td name="subtotalSFTD'+ aux_nfila + '" id="subtotalSFTD'+ aux_nfila + '" class="subtotal" style="text-align:right;display:none;">'+ 
+						aux_subtotal+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+ 
+						'<input type="text" name="acuerdotecnico[]" id="acuerdotecnico'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
+					'</td>'+
+					'<td style="text-align:right;display:none;">'+
+						'<input type="text" name="tipoprod[]" id="tipoprod'+ aux_nfila + '" class="form-control" value="' + producto.tipoprod + '" style="display:none;"/>'+
+					'</td>'+
+					'<td>' + 
+						'<a id="editarRegistro'+ aux_nfila + '" name="editarRegistro'+ aux_nfila + '" class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro('+ aux_nfila +',' + aux_acuerdotecnicoId + ')">'+
+							'<i class="fa fa-fw fa-pencil"></i>'+
+						'</a>'+
+						'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
+						'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
+					'</td>'+
+				'</tr>';
+				
+			
+			$('#tabla-data tbody').append(htmlTags);
+			//activarClases(aux_nfila);			
+		}		
+	});
+	htmlTags = 
+		'<tr id="trneto" name="trneto">'+
+			'<td colspan="14" style="text-align:right"><b>Neto</b></td>'+
+			'<td id="tdneto" name="tdneto" style="text-align:right">0,00</td>'+
+		'</tr>'+
+		'<tr id="triva" name="triva">'+
+			'<td colspan="14" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
+			'<td id="tdiva" name="tdiva" style="text-align:right">0,00</td>'+
+		'</tr>'+
+		'<tr id="trtotal" name="trtotal">'+
+			'<td colspan="14" style="text-align:right"><b>Total</b></td>'+
+			'<td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>'+
+		'</tr>';
+	$('#tabla-data tbody').append(htmlTags);
+
+	// Restaurar el texto del botón y ocultar el GIF
+	totalizar();
+}
+
+
+$('#sucursal_id').on('change', function() {
+	MostrarBotonProdxLote($('#sucursal_id').val())
+});
+
+function MostrarBotonProdxLote(sucursalVal){
+    console.log(sucursalVal); // Verificar el valor en consola
+	if(sucursalVal == 1 || sucursalVal == ""){
+		// Ocultar el botón cuando se seleccione una opción del select
+		$('#botonNewProdLote').hide();
+	}else{
+		$('#botonNewProdLote').show();
+	}
+
 }

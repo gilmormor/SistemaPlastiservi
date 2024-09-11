@@ -129,6 +129,7 @@ class NotaventaAprobarController extends Controller
 
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
         $sql = "SELECT DISTINCT notaventa.id,DATE_FORMAT(notaventa.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
+                    DATE_FORMAT(notaventa.updated_at,'%d/%m/%Y %h:%i %p') as updated_at,
                     notaventa.cotizacion_id,razonsocial,aprobstatus,aprobobs,oc_file,oc_id,'' as pdfnv, 
                     concat(persona.nombre, ' ' ,persona.apellido) as vendedor_nombre,
                     (SELECT COUNT(*) 

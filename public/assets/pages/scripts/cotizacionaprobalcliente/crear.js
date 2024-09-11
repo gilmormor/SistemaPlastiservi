@@ -20,7 +20,8 @@ $(document).ready(function () {
 		'info'        : true,
 		'autoWidth'   : false,
 		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+			"url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
 	});
 	$('.form-group').css({'margin-bottom':'0px','margin-left': '0px','margin-right': '0px'});
