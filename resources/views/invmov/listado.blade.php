@@ -22,8 +22,8 @@
 				<div class="round" style="padding-bottom: 3px;">
 					<span class="h3">Movimiento de Inventario</span>
 					<p>Nro: <strong> {{ str_pad($datas->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
-					<p>Fecha Creación: {{date('d-m-Y', strtotime($datas->created_at))}}</p>
-					<p>Fecha Inv: {{date('d-m-Y', strtotime($datas->fechahora))}}</p>
+					<p>Fecha Creación: {{date('d/m/Y h:i:s A', strtotime($datas->created_at))}}</p>
+					<p>Fecha Inv: {{date('d/m/Y', strtotime($datas->fechahora))}}</p>
 				</div>
 			</td>
 		</tr>

@@ -1,4 +1,38 @@
 <link rel="stylesheet" href="{{asset("assets/css/factura.css")}}">
+<style>
+    @page {
+        margin: 100px 25px;
+    }
+
+    header {
+        position: fixed;
+        top: -80px;
+        left: 0px;
+        right: 0px;
+        height: 100px;
+        /* Aquí puedes agregar el estilo de tu encabezado */
+    }
+
+    footer {
+        position: fixed;
+        bottom: -40px;
+        left: 0px;
+        right: 0px;
+        height: 50px;
+        text-align: center;
+        font-size: 12px;
+        color: gray;
+    }
+
+    body {
+        margin: 0;
+        padding-top: 130px;
+    }
+
+    .content {
+        margin-top: 20px;
+    }
+</style>
 
 <!--<img class="anulada" src="img/anulado.png" alt="Anulada">-->
 <?php
@@ -13,9 +47,7 @@
 		$aux_modena_simb = $cotizacion->moneda->simbolo;
 	}
 ?>
-<br>
-<br>
-<div id="page_pdf">
+<div id="page_header" style="position: fixed; top: 20px; left: 20px; right: 20px; height: 100px;">
 	<table id="factura_head">
 		<tr>
 			<td class="logo_factura">
@@ -49,6 +81,11 @@
 			</td>
 		</tr>
 	</table>
+</div>
+{{-- <div id="page_footer" style="position: fixed; bottom: 0px; left: 0px; right: 0px; height: 30px;">
+    <p style="text-align: center;">Página {PAGE_NUM} de {PAGE_COUNT}</p>
+</div> --}}
+<div id="page_pdf">
 	<table id="factura_cliente">
 		<tr>
 			<td class="info_cliente">
@@ -87,10 +124,8 @@
 					</table>
 				</div>
 			</td>
-
 		</tr>
 	</table>
-
 	<div class="round" style="padding-bottom: 0px;">
 		<table id="factura_detalle">
 			<thead>
@@ -127,7 +162,6 @@
 			</tbody>
 		</table>
 	</div>
-
 	<div class="round" style="padding-bottom: 0px;padding-top: 8px;margin-bottom: 3px;">
 		<table id="factura_detalle">
 			<tr>

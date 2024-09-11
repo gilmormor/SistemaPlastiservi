@@ -114,6 +114,7 @@ class ReportInvStockBPPendxProdController extends Controller
     public function exportPdf(Request $request)
     {
         can('reporte-stock-+-pendiente');
+        //dd($request->aux_orden);
         $request->request->add(['groupby' => " group by notaventadetalle.producto_id "]);
         $request->request->add(['orderby' => " order by notaventadetalle.producto_id "]);
         $request->request->add(['FiltarxVendedor' => false]);
@@ -170,7 +171,9 @@ class ReportInvStockBPPendxProdController extends Controller
         }
         $datas = $datas1;
         if($datas){
-            usort($datas, 'compararProductoId');
+            //usort($datas, 'compararProductoId');
+            $arrayOrden = explode(',', $request->aux_orden);    
+            usort($datas, ordenarArrayxCampo($arrayOrden[0], $arrayOrden[1]));
             $sucursal = Sucursal::findOrFail($request->sucursal_id);
             $request->request->add(['sucursal_nombre' => $sucursal->nombre]);
             if(env('APP_DEBUG')){

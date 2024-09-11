@@ -616,4 +616,17 @@ if (!function_exists('filtrarclientesbloqueados')) {
         }    
     }    
 }
+
+// Función de comparación para ordenar por 'producto_id'
+if (!function_exists('ordenarArrayxCampo')) {
+    function ordenarArrayxCampo($campo, $orden = 'asc') {
+        return function($a, $b) use ($campo, $orden) {
+
+            $resultado = $a->$campo <=> $b->$campo; // Comparar los dos objetos en base al campo
+
+            // Si el orden es descendente, invertimos el resultado
+            return $orden === 'desc' ? -$resultado : $resultado;
+        };
+    }
+}
 ?>

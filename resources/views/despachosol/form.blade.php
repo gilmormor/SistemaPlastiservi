@@ -192,7 +192,7 @@
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="plazoentrega" class="control-label requerido">Plazo Ent.</label>
-                            <input type="text" name="plazoentrega" id="plazoentrega" class="form-control pull-right datepicker"  value="{{old('plazoentrega', $data->plazoentrega ?? '')}}" readonly required {{$enableCamposCot}}>
+                            <input type="text" name="plazoentrega" id="plazoentrega" class="form-control pull-right"  value="{{old('plazoentrega', $data->plazoentrega ?? '')}}" readonly required {{$enableCamposCot}}>
                         </div>
                         
             

@@ -261,7 +261,7 @@
                 </a>
             </div>                    
             <div class="box-tools pull-right">
-                <a id="botonNewProdLote" name="botonNewProdLote" class="btn btn-block btn-success btn-sm" title="Agregar producto por lote">
+                <a id="botonNewProdLote" name="botonNewProdLote" class="btn btn-block btn-success btn-sm" title="Agregar producto por lote" style="display: none;">
                     <i class="fa fa-fw fa-plus-circle"></i> Por Lote
                 </a>
             </div>    

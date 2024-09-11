@@ -22,9 +22,9 @@
 				<div class="round" style="padding-bottom: 3px;">
 					<span class="h3">Entrada Salida Inventario</span>
 					<p>Nro: <strong> {{ str_pad($datas->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
-					<p>Fecha Creación: {{date('d-m-Y', strtotime($datas->created_at))}}</p>
-					<p>Fecha Inv: {{date('d-m-Y', strtotime($datas->fechahora))}}</p>
-					<p>Usuario: {{$datas->usuario->nombre}}</p>
+					<p>Creado: {{date('d/m/Y h:i:s A', strtotime($datas->created_at))}}</p>
+					<p>Fecha Inv: {{date('d/m/Y', strtotime($datas->fechahora))}}</p>
+					<p>Usuario creador: {{$datas->usuario->nombre}}</p>					
 					<p>Estado: 
 						@switch($datas->staaprob)
 							@case(0)
@@ -34,7 +34,7 @@
 								Enviado para aprobacion
 								@break
 							@case(2)
-								Aprobado
+								Aprobado, Mov paso a Inv.
 								@break
 							@case(3)
 								Rechazado
@@ -42,6 +42,11 @@
 							@default
 						@endswitch
 					</p>
+					@if ($datas->usuarioaprob_id)
+						<p>Aprobado por: {{$datas->usuarioaprob->nombre}}</p>	
+						<p>Fecha Aprob: {{date('d/m/Y h:i:s A', strtotime($datas->fechahoraaprob))}}</p>
+					@endif
+
 				</div>
 			</td>
 		</tr>

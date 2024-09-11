@@ -927,6 +927,8 @@ $("#rut").blur(function(){
 						if (respuesta.sucursales.length == 1){
 							$("#sucursal_id").val(respuesta.sucursales[0].id);
 						}
+
+						MostrarBotonProdxLote($("#sucursal_id").val());
 				
 						//$("#comuna_idD option[value='101']").attr("selected",true);
 /*
@@ -2093,4 +2095,20 @@ function insertarItem(){
 
 	// Restaurar el texto del botón y ocultar el GIF
 	totalizar();
+}
+
+
+$('#sucursal_id').on('change', function() {
+	MostrarBotonProdxLote($('#sucursal_id').val())
+});
+
+function MostrarBotonProdxLote(sucursalVal){
+    console.log(sucursalVal); // Verificar el valor en consola
+	if(sucursalVal == 1 || sucursalVal == ""){
+		// Ocultar el botón cuando se seleccione una opción del select
+		$('#botonNewProdLote').hide();
+	}else{
+		$('#botonNewProdLote').show();
+	}
+
 }

@@ -1181,10 +1181,6 @@ class CotizacionController extends Controller
                 break;
             }
         }
-        //dd($cotizacion->cliente);
-        //$rut = number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 );
-        //dd($empresa[0]['iva']);
-        //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         if(env('APP_DEBUG')){
             //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         }
@@ -1192,6 +1188,7 @@ class CotizacionController extends Controller
             $pdf = PDF::loadView('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
         }else{
             $pdf = PDF::loadView('cotizacion.listadosinesp', compact('cotizacion','cotizacionDetalles','empresa'));
+            //$pdf = PDF::loadView('cotizacion.listadosinesp', compact('cotizacion','cotizacionDetalles','empresa'))->setOptions(['isPhpEnabled' => true]);
         }
         //return $pdf->download('cotizacion.pdf');
         return $pdf->stream(str_pad($cotizacion->id, 5, "0", STR_PAD_LEFT) .' - '. $aux_razonsocial . '.pdf');

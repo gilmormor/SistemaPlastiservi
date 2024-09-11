@@ -21,6 +21,10 @@ class InvEntSal extends Model
         'invmovmodulo_id',
         'invmovtipo_id',
         'sucursal_id',
+        'staaprob',
+        'usuarioaprob_id',
+        'fechahoraaprob',
+        'obsaprob',
         'usuario_id',
         'usuariodel_id'
     ];
@@ -59,4 +63,11 @@ class InvEntSal extends Model
     {
         return $this->belongsTo(Usuario::class);
     }
+
+    //RELACION INVERSA User
+    public function usuarioaprob()
+    {
+        return $this->belongsTo(Usuario::class,"usuarioaprob_id");
+    }
+    
 }
