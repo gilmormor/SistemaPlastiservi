@@ -1907,19 +1907,17 @@ function insertarItem(){
 			}else{
 				aux_largo = producto.long;
 			}
-
-
 			aux_diametro = producto.diametro;
 			aux_at_ancho = "";
-			if(producto.at_ancho != null){
+			if(producto.at_ancho != null && producto.at_ancho != ""){
 				aux_at_ancho = producto.at_ancho;
 				aux_diametro = producto.at_ancho;
 			}
-			if(producto.at_largo != null){
+			if(producto.at_largo != null && producto.at_largo != ""){
 				aux_largo = producto.at_largo;
 			}
 			aux_espesor = producto.espesor
-			if(producto.at_espesor != null){
+			if(producto.at_espesor != null && producto.at_espesor != ""){
 				aux_espesor = producto.at_espesor;
 			}
 			aux_obs = "";
@@ -2103,7 +2101,6 @@ $('#sucursal_id').on('change', function() {
 });
 
 function MostrarBotonProdxLote(sucursalVal){
-    console.log(sucursalVal); // Verificar el valor en consola
 	if(sucursalVal == 1 || sucursalVal == ""){
 		// Ocultar el botón cuando se seleccione una opción del select
 		$('#botonNewProdLote').hide();
