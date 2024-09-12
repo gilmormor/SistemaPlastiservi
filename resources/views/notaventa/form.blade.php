@@ -266,7 +266,7 @@
                 
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
-                            <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" {{$enableCamposCot}}/>
+                            <input type="text" name="lugarentrega" id="lugarentrega" class="form-control delacento" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" {{$enableCamposCot}}/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="comunaentrega_id" class="control-label requerido">Comuna Entrega</label>
@@ -290,13 +290,13 @@
                         
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="contacto" class="control-label requerido">Contacto</label>
-                            <input type="text" name="contacto" id="contacto" class="form-control" value="{{old('contacto', $data->contacto ?? '')}}" required placeholder="Contacto Entrega" {{$enableCamposCot}}/>
+                            <input type="text" name="contacto" id="contacto" class="form-control delacento" value="{{old('contacto', $data->contacto ?? '')}}" required placeholder="Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="contactotelf" class="control-label requerido">Teléfono</label>
-                            <input type="text" name="contactotelf" id="contactotelf" class="form-control" value="{{old('contactotelf', $data->contactotelf ?? '')}}" required placeholder="Teléfono Contacto Entrega" {{$enableCamposCot}}/>
+                            <input type="text" name="contactotelf" id="contactotelf" class="form-control delacento" value="{{old('contactotelf', $data->contactotelf ?? '')}}" required placeholder="Teléfono Contacto Entrega" {{$enableCamposCot}}/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="contactoemail" class="control-label requerido">Email</label>
@@ -304,7 +304,7 @@
                         </div>
                         <div class="form-group col-xs-12 col-sm-5">
                             <label for="observacion" class="control-label">Observaciones</label>
-                            <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}} maxlength="200"/>
+                            <input type="text" name="observacion" id="observacion" class="form-control delacento" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" {{$enableCamposCot}} maxlength="200"/>
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label id="lblmoneda_id" name="lblmoneda_id" for="moneda_id" class="control-label requerido">Moneda</label>
