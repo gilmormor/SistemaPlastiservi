@@ -314,20 +314,6 @@ function ajaxRequest(data,url,funcion) {
                             cancel: "Cerrar",
                         },
                     });
-                    return 0;
-                    if (respuesta.mensaje == "sp"){
-                        Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
-                    }else{
-                        if(respuesta.mensaje == "hijos"){
-                            Biblioteca.notificaciones('No puede ser eliminado: ID tiene registros relacionados en otras tablas.', 'Plastiservi', 'error');
-                        }else{
-                            if(respuesta.mensaje == "ne"){
-                                Biblioteca.notificaciones('No tiene permiso para eliminar.', 'Plastiservi', 'error');
-                            }else{
-                                Biblioteca.notificaciones('El registro no pudo ser eliminado, hay recursos usandolo.', 'Plastiservi', 'error');
-                            }
-                        }
-                    }
                 }
                 $("#myModaldevsoldeps").modal('hide');
             }
