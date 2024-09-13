@@ -460,6 +460,7 @@ class SoapController extends Controller
 
         // URL del servicio SOAP
         $soapUrl = env('APP_URLMANAGER');
+        dd($soapUrl);
 
         // Cuerpo de la solicitud SOAP
         $soapRequest = '<?xml version="1.0" encoding="utf-8"?>
