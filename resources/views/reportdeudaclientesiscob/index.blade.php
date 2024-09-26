@@ -154,7 +154,7 @@ Deuda Clientes Sis Cob
             </div>
             <div class="table-responsive" id="divbloqueopro">
                 <div class="form-group col-xs-12 col-sm-12">
-                    <label for="bloqueopro" class="control-label" title="Observación ingresada Finanzas. El cliente está deshabilitado de forma manual y requiere habilitación o eliminación de la observación por Finanzas.">Observación Financiera</label>
+                    <label for="bloqueopro" class="control-label" title="Observación ingresada por Finanzas. El cliente está deshabilitado de forma manual y requiere habilitación o eliminación de la observación por Finanzas.">Observación Financiera</label>
                     <input type="text" name="bloqueopro" id="bloqueopro" class="form-control" value="" maxlength="70" style="color: red;" readonly/>
                 </div>
             </div>
