@@ -14,6 +14,7 @@ $(document).ready(function () {
             {data: 'id'},
             {data: 'rut'},
             {data: 'nombreapellido'},
+            {data: 'email'},
             {defaultContent : 
                 `<a href="persona" class="btn-accion-tabla tooltipsC btnEditar" title="Editar este registro">
                     <i class="fa fa-fw fa-pencil"></i>

@@ -28,6 +28,7 @@ Persona
                             <th class="width70">ID</th>
                             <th class="width70">RUT</th>
                             <th>Nombre Apellido</th>
+                            <th>Correo</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>

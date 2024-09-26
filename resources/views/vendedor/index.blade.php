@@ -26,15 +26,35 @@ Vendedor
                         <tr>
                             <th class="width70">ID</th>
                             <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Roles</th>
                             <th>Activo</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($datas as $data)
+                            <?php 
+                                $aux_usuario_id = $data->persona->usuario_id;
+                                $aux_rol_nombre = "";
+                                //dd($aux_usuario_id);
+                                if($aux_usuario_id){
+                                    $sql = "SELECT GROUP_CONCAT(DISTINCT rol.nombre) AS rol_nombre
+                                        FROM usuario_rol LEFT JOIN rol
+                                        ON rol.id = usuario_rol.rol_id
+                                        WHERE usuario_rol.usuario_id = $aux_usuario_id
+                                        GROUP BY usuario_rol.usuario_id;";
+                                    $usuario_rol = DB::select($sql);
+                                    $aux_rol_nombre = $usuario_rol[0]->rol_nombre;
+                                }
+
+                                //dd($usuario_rol);
+                            ?>
                         <tr>
                             <td>{{$data->id}}</td>
                             <td>{{$data->persona->nombre}} {{$data->persona->apellido}}</td>
+                            <td>{{$data->persona->usuario["email"]}}</td>
+                            <td>{{$aux_rol_nombre}}</td>
                             <td>{{$data->sta_activo ? 'Si' : 'No' }}</td>
                             <td>
                                 <a href="{{route('editar_vendedor', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">

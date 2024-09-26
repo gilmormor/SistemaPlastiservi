@@ -27,8 +27,9 @@ class PersonaController extends Controller
     }
 
     public function personapage(){
-        $sql = "SELECT persona.*, concat(nombre, ' ' ,apellido) AS nombreapellido
-            from persona
+        $sql = "SELECT persona.*, concat(persona.nombre, ' ' ,persona.apellido) AS nombreapellido,usuario.email
+            from persona LEFT JOIN usuario
+            ON persona.usuario_id = usuario.id
             where isnull(persona.deleted_at);";
         $datas = DB::select($sql);
         return datatables($datas)->toJson();
