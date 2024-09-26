@@ -476,6 +476,7 @@ $("#rut").blur(function(){
 });
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    $("#rut").focus();
     $("#myModalBusqueda").modal('show');
 });
 
