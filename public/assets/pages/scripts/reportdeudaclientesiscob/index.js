@@ -1,5 +1,6 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
+    $("#divbloqueopro").hide();
     
     $("#rut").focus(function(){
         eliminarFormatoRut($(this));
@@ -9,6 +10,9 @@ $(document).ready(function () {
         $("#limitecredito").val("");
         $("#TDeuda").val("");
         $("#TDeudaFec").val("");
+        $("#bloqueopro").val("");
+        $("#divbloqueopro").hide();
+        
 
         $('#tabla-data-consulta').DataTable().clear();
         $('#tabla-data-consulta').DataTable().draw();
@@ -418,6 +422,14 @@ $("#rut").blur(function(){
                         $("#rut").attr("cliente_id",respuesta.cliente[0].id);
                         $("#razonsocial").val(respuesta.cliente[0].razonsocial);
                         $("#limitecredito").val(MASKLA(respuesta.cliente[0].limitecredito,0));
+                        aux_bloqueodesc = respuesta.cliente[0].clientebloqueado_descripcion
+                        if(aux_bloqueodesc == "" || aux_bloqueodesc == null){
+                            $("#divbloqueopro").hide();
+                        }else{
+                            $("#divbloqueopro").show();
+                        }
+                        $("#bloqueopro").val(aux_bloqueodesc);
+                        
 					}else{
 						$.ajax({
 							url: '/cliente/buscarCli',

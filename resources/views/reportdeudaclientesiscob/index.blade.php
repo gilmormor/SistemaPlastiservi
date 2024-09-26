@@ -39,20 +39,20 @@ Deuda Clientes Sis Cob
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="rut" data-toggle='tooltip' title="RUT">RUT:</label>
+                                        <label for="rut" title="RUT">RUT:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
                                             <input type="text" name="rut" id="rut" cliente_id="" class="form-control" value="{{old('rut')}}" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12" data-toggle='tooltip'/>
                                             <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
+                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" title="Buscar">Buscar</button>
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label data-toggle='tooltip' title="Vendedor">Vendedor:</label>
+                                        <label title="Vendedor">Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <?php
@@ -64,7 +64,7 @@ Deuda Clientes Sis Cob
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" data-toggle='tooltip' title="Sucursal">Sucursal</label>
+                                        <label for="sucursal_id" title="Sucursal">Sucursal</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
@@ -79,7 +79,7 @@ Deuda Clientes Sis Cob
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="statusDeuda" data-toggle='tooltip' title="Estatus">Estatus Cliente</label>
+                                        <label for="statusDeuda" title="Estatus">Estatus Cliente</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="statusDeuda" id="statusDeuda" class="selectpicker form-control" required>
@@ -136,22 +136,34 @@ Deuda Clientes Sis Cob
             
             <div class="table-responsive" id="tablaconsulta1">
                 <div class="form-group col-xs-12 col-sm-6">
-                    <label for="razonsocial" class="control-label" data-toggle='tooltip' title="Razón Social">Razón Social</label>
+                    <label for="razonsocial" class="control-label" title="Razón Social">Razón Social</label>
                     <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="" maxlength="70" readonly/>
                 </div>
                 <div class="form-group col-xs-12 col-sm-2">
-                    <label for="limitecredito" class="control-label" data-toggle='tooltip' title="Limite de Crédito">Limite de Crédito</label>
+                    <label for="limitecredito" class="control-label" title="Limite de Crédito">Limite de Crédito</label>
                     <input type="text" name="limitecredito" id="limitecredito" class="form-control" value="" maxlength="70" style="text-align:right" readonly/>
                 </div>
                 <div class="form-group col-xs-12 col-sm-2">
-                    <label for="TDeuda" class="control-label" data-toggle='tooltip' title="Total Deuda">Total Deuda</label>
+                    <label for="TDeuda" class="control-label" title="Total Deuda">Total Deuda</label>
                     <input type="text" name="TDeuda" id="TDeuda" class="form-control" value="" maxlength="70" style="text-align:right" readonly/>
                 </div>
                 <div class="form-group col-xs-12 col-sm-2">
-                    <label for="TDeudaFec" class="control-label" data-toggle='tooltip' title="Total Deuda Fecha">Total Deuda Vencida</label>
+                    <label for="TDeudaFec" class="control-label" title="Total Deuda Fecha">Total Deuda Vencida</label>
                     <input type="text" name="TDeudaFec" id="TDeudaFec" class="form-control" value="" maxlength="70" style="text-align:right" readonly/>
                 </div>           
             </div>
+            <div class="table-responsive" id="divbloqueopro">
+                <div class="form-group col-xs-12 col-sm-12">
+                    <label for="bloqueopro" class="control-label" title="Observación ingresada por Cobranza. El cliente está deshabilitado de forma manual y requiere habilitación o eliminación de la observación por Finanzas.">Observación Financiera</label>
+                    <input type="text" name="bloqueopro" id="bloqueopro" class="form-control" value="" maxlength="70" style="color: red;" readonly/>
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    <legend></legend>
+                </div>
+            </div>
+
 
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover" id="tabla-data-consulta" data-page-length="25">
